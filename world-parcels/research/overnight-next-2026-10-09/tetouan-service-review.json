@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4148-tetouan.json",
+  "purpose": "Document separate English/local-language source discovery, land-registry custody, anonymous request outcomes and safe geometry limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official national cadastre and mapping custodian, with Tetouan office and a paid cadastral-plan order workflow. The plan service requires applicant/contact/title information; no such information was submitted and no geometry was retrieved.",
+  "registryAssessment": "Local or jurisdictionally local land/cadastral custodian supported at the limited scope stated; public geometry and runtime readiness remain separate.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.ancfcc.gov.ma/cadastre/",
+      "operator": "Agence Nationale de la Conservation Foncière, du Cadastre et de la Cartographie (ANCFCC)",
+      "scope": "Official national cadastre and mapping custodian, with Tetouan office and a paid cadastral-plan order workflow. The plan service requires applicant/contact/title information; no such information was submitted and no geometry was retrieved."
+    },
+    {
+      "url": "https://ancfcc.gov.ma/pr%C3%A9sentation/r%C3%A9seau-des-blocs-fonciers/",
+      "operator": "Agence Nationale de la Conservation Foncière, du Cadastre et de la Cartographie (ANCFCC)",
+      "scope": "Official national cadastre and mapping custodian, with Tetouan office and a paid cadastral-plan order workflow. The plan service requires applicant/contact/title information; no such information was submitted and no geometry was retrieved."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/Content/carto/PLAN-CATALOGUE-2022.pdf",
+      "operator": "Agence Nationale de la Conservation Foncière, du Cadastre et de la Cartographie (ANCFCC)",
+      "scope": "Official national cadastre and mapping custodian, with Tetouan office and a paid cadastral-plan order workflow. The plan service requires applicant/contact/title information; no such information was submitted and no geometry was retrieved."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/Plancadastralpage",
+      "operator": "Agence Nationale de la Conservation Foncière, du Cadastre et de la Cartographie (ANCFCC)",
+      "scope": "Official national cadastre and mapping custodian, with Tetouan office and a paid cadastral-plan order workflow. The plan service requires applicant/contact/title information; no such information was submitted and no geometry was retrieved."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Tétouan official cadastral parcel map land registry GIS",
+      "result": "Separate English-language discovery followed by first-party source review; only the government sources listed are retained.",
+      "actualResultUrls": [
+        "https://www.ancfcc.gov.ma/cadastre/",
+        "https://ancfcc.gov.ma/pr%C3%A9sentation/r%C3%A9seau-des-blocs-fonciers/",
+        "https://www.ancfcc.gov.ma/Content/carto/PLAN-CATALOGUE-2022.pdf",
+        "https://www.ancfcc.gov.ma/Plancadastralpage"
+      ],
+      "scope": "Identify local or jurisdictionally local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+    },
+    {
+      "language": "French",
+      "query": "Tétouan cadastre plan cadastral parcelle ANCFCC carte",
+      "result": "Official ANCFCC identifies itself as Morocco’s cadastre/map and land-conservation custodian and lists the Tetouan service network. Cadastral plan order requires identity/contact/title details and is paid; not used.",
+      "actualResultUrls": [
+        "https://www.ancfcc.gov.ma/cadastre/",
+        "https://ancfcc.gov.ma/pr%C3%A9sentation/r%C3%A9seau-des-blocs-fonciers/",
+        "https://www.ancfcc.gov.ma/Content/carto/PLAN-CATALOGUE-2022.pdf",
+        "https://www.ancfcc.gov.ma/Plancadastralpage"
+      ],
+      "method": "Separate French-language discovery followed by first-party source review.",
+      "scope": "Identify local or jurisdictionally local land/cadastral custody and public parcel geometry; no owner, address, tax, account, title, cadastral-number or applicant values submitted."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the exact unchanged WUP point. publicParcelGeometryFound:false means unverified in this investigation, not confirmed absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official national cadastre and mapping custodian, with Tetouan office and a paid cadastral-plan order workflow. The plan service requires applicant/contact/title information; no such information was submitted and no geometry was retrieved.",
+    "verifiedOpenScope": "No source-native full parcel polygon at the exact unchanged WUP point was retained; this investigation does not establish parcel absence or citywide coverage.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Official national cadastre and mapping custodian, with Tetouan office and a paid cadastral-plan order workflow. The plan service requires applicant/contact/title information; no such information was submitted and no geometry was retrieved. Exact WUP-point parcel geometry, legal/title meaning, coverage completeness and currentness remain unverified.",
+  "nextStep": "Keep runtime disabled until root review determines whether an official source and full native geometry meet adapter criteria.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

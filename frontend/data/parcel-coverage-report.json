@@ -5,20 +5,20 @@
     "asOf": "2026-10-09",
     "demographicSnapshotDate": "2026-10-07",
     "statisticsYear": 2025,
-    "cityCount": 1425,
+    "cityCount": 1451,
     "countryCount": 255,
     "statisticalJurisdictions": 237,
-    "checkedCityCount": 1344,
-    "uncheckedCityCount": 81,
-    "cityRegistryFoundCount": 996,
-    "verifiedCitySampleCount": 267,
+    "checkedCityCount": 1371,
+    "uncheckedCityCount": 80,
+    "cityRegistryFoundCount": 1022,
+    "verifiedCitySampleCount": 276,
     "nationalCadastreCount": 72,
     "countryTwoRegionCount": 50,
-    "populationMatchedCount": 1277,
-    "growthMatchedCount": 430,
+    "populationMatchedCount": 1303,
+    "growthMatchedCount": 435,
     "checkedCitiesMissingDate": 0,
     "wikiCityCount": 282,
-    "configuredAppCityCount": 187,
+    "configuredAppCityCount": 193,
     "unmatchedStatisticalAmounts": {
       "landAreaKm2": 0,
       "builtUpAreaKm2": 0.003000000084284693,
@@ -9204,6 +9204,60 @@
       }
     },
     {
+      "id": "wup2025:12016",
+      "name": "Beilun District",
+      "country": "China",
+      "countryCode": "CN",
+      "latitude": 29.9078688188933,
+      "longitude": 121.831098805701,
+      "registryCityIds": [
+        "wup2025:12016"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ],
+      "wupCityCode": 12016,
+      "wupName": "Beilun District",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 467912,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": "Moderate",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "checked": true,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/overnight-next-2026-10-09/city-12016-beilun-district.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Ningbo municipal registration appointment guidance explicitly includes Beilun district, excluding Daxie and the bonded area. This supports jurisdictionally local registration services at that stated scope; the appointment form is not a parcel API.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://xkjg.zgj.ningbo.gov.cn/bdc/Html/bdcyy.html"
+      ],
+      "evidenceFiles": [
+        "research/overnight-next-2026-10-09/city-12016-beilun-district.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=29.90787&mlon=121.83110#map=12/29.90787/121.83110",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=29.90787%2C121.83110",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:1869",
       "name": "Beira",
       "country": "Mozambique",
@@ -10898,6 +10952,60 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=25.19639&mlon=85.52493#map=12/25.19639/85.52493",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=25.19639%2C85.52493",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:8914",
+      "name": "Bijie",
+      "country": "China",
+      "countryCode": "CN",
+      "latitude": 27.2994822128137,
+      "longitude": 105.287401120227,
+      "registryCityIds": [
+        "wup2025:8914"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ],
+      "wupCityCode": 8914,
+      "wupName": "Bijie",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 463837,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": "Low",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "checked": true,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/overnight-next-2026-10-09/city-8914-bijie.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "The Guizhou 2024 Natural Resources Bulletin records real-estate registration and external-query operations for Bijie prefecture, the local jurisdiction containing the WUP city. This verifies jurisdictionally local registration activity, not the previously claimed specific city-office location or public vector geometry.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://zrzy.guizhou.gov.cn/wzgb/zwgk/zdlyxxgk/tjsj/202511/P020251119342232763673.pdf"
+      ],
+      "evidenceFiles": [
+        "research/overnight-next-2026-10-09/city-8914-bijie.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=27.29948&mlon=105.28740#map=12/27.29948/105.28740",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=27.29948%2C105.28740",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -15123,12 +15231,16 @@
       "name": "Changge",
       "country": "China",
       "countryCode": "CN",
-      "latitude": 34.2111006136739,
-      "longitude": 113.766000307535,
-      "registryCityIds": [],
+      "latitude": 34.2032184797196,
+      "longitude": 113.762855142875,
+      "registryCityIds": [
+        "wup2025:9720"
+      ],
       "appCityIds": [],
       "cohorts": [
-        "growth200"
+        "growth200",
+        "registry",
+        "overnight-next-1101-1200"
       ],
       "wupCityCode": 9720,
       "wupName": "Changge",
@@ -15140,24 +15252,34 @@
       "annualGrowthPct2015To2025": 6.890735,
       "populationPlausibility2025": "Moderate",
       "populationMatch": {
-        "basis": "queue_cityCode_to_WUP_city_code",
-        "distanceKm": 0,
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
-        "confidence": "high"
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
       },
-      "checked": false,
-      "checkedDate": null,
-      "checkedDateEvidence": null,
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
+      "checked": true,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/overnight-next-2026-10-09/city-9720-changge.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Changge municipal registration guide describes city land registration and cadastral survey materials. Direct HTTP200 text was inspected; this supports local registration responsibility, not a public geometry endpoint.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
-      "evidenceUrls": [],
-      "evidenceFiles": [],
-      "osmUrl": "https://www.openstreetmap.org/?mlat=34.21110&mlon=113.76600#map=12/34.21110/113.76600",
-      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=34.21110%2C113.76600",
+      "evidenceUrls": [
+        "https://www.changge.gov.cn/jczwgkbzhgfhml/027001/027001033/027001033006/027001033006001/20230112/42dceb49-9c85-43bc-863d-e0a2760fb688.html",
+        "https://www.changge.gov.cn/",
+        "https://www.changge.gov.cn/uploadfile/0d9bab1d-d5f8-44e5-816f-4bf3b1e11d82/20251120115755532.pdf"
+      ],
+      "evidenceFiles": [
+        "research/overnight-next-2026-10-09/city-9720-changge.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=34.20322&mlon=113.76286#map=12/34.20322/113.76286",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=34.20322%2C113.76286",
       "wikipediaUrl": "https://en.wikipedia.org/wiki/Changge",
       "wikipediaEvidence": {
         "verifiedBy": "MediaWiki action=query returned page title and coordinates; city name/alias matched and coordinate distance <=30 km",
@@ -17059,6 +17181,61 @@
         "distanceKm": 4.091,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "wup2025:7454",
+      "name": "Chuxiong",
+      "country": "China",
+      "countryCode": "CN",
+      "latitude": 25.03991885835,
+      "longitude": 101.551006942271,
+      "registryCityIds": [
+        "wup2025:7454"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ],
+      "wupCityCode": 7454,
+      "wupName": "Chuxiong",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 471251,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "checked": true,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/overnight-next-2026-10-09/city-7454-chuxiong.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Chuxiong municipal registration guide identifies the city registration service. Conditions for personal record inquiries are publisher context, not evidence that anonymous parcel geometry is unavailable.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://www.cxs.gov.cn/info/11295/324238.htm",
+        "https://www.cxs.gov.cn/"
+      ],
+      "evidenceFiles": [
+        "research/overnight-next-2026-10-09/city-7454-chuxiong.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=25.03992&mlon=101.55101#map=12/25.03992/101.55101",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=25.03992%2C101.55101",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "wup2025:5952",
@@ -22855,6 +23032,64 @@
       }
     },
     {
+      "id": "wup2025:377",
+      "name": "Dublin",
+      "country": "Ireland",
+      "countryCode": "IE",
+      "latitude": 53.330243126706,
+      "longitude": -6.27332800239088,
+      "registryCityIds": [
+        "wup2025:377"
+      ],
+      "appCityIds": [
+        "dublin"
+      ],
+      "cohorts": [
+        "registry",
+        "country_source_requalification"
+      ],
+      "wupCityCode": 377,
+      "wupName": "Dublin",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 1024306,
+      "population2025": 1142650,
+      "annualGrowthPct2015To2025": 1.093348,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "exact_WUP_city_code_and_year",
+        "distanceKm": 0,
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025"
+      },
+      "checked": true,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/country-integration-audit-2026-10-09/dublin-root-acceptance.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Tailte Éireann publishes freehold title boundaries",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "ie-tailte-hvd-freehold"
+      ],
+      "evidenceUrls": [
+        "https://services-eu1.arcgis.com/FH5XCsx8rYXqnjF5/arcgis/rest/services/Cadastral_Parcels_Freehold/FeatureServer/12"
+      ],
+      "evidenceFiles": [
+        "research/country-integration-audit-2026-10-09/dublin-root-acceptance.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=53.33024&mlon=-6.27333#map=12/53.33024/-6.27333",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=53.33024%2C-6.27333",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:854",
       "name": "Duhok",
       "country": "Iraq",
@@ -24374,6 +24609,63 @@
       }
     },
     {
+      "id": "wup2025:9279",
+      "name": "Etawah",
+      "country": "India",
+      "countryCode": "IN",
+      "latitude": 26.7828387119844,
+      "longitude": 79.0233814920568,
+      "registryCityIds": [
+        "wup2025:9279"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ],
+      "wupCityCode": 9279,
+      "wupName": "Etawah",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 475213,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": "Moderate",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "checked": true,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/overnight-next-2026-10-09/city-9279-etawah.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "The district government E-PORTAL links Bhulekh and the registry office. State selectors establish Etawah-specific land-record geography; public full parcel geometry remains unverified in the checked scope.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://etawah.nic.in/e-portal/",
+        "https://etawah.nic.in/",
+        "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=161",
+        "https://upbhunaksha.gov.in/home/"
+      ],
+      "evidenceFiles": [
+        "research/overnight-next-2026-10-09/city-9279-etawah.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=26.78284&mlon=79.02338#map=12/26.78284/79.02338",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=26.78284%2C79.02338",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:3714",
       "name": "Evaton",
       "country": "South Africa",
@@ -24673,6 +24965,62 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=39.71141&mlon=116.03913#map=12/39.71141/116.03913",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=39.71141%2C116.03913",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:6924",
+      "name": "Faqous",
+      "country": "Egypt",
+      "countryCode": "EG",
+      "latitude": 30.724896740623,
+      "longitude": 31.7910152915622,
+      "registryCityIds": [
+        "wup2025:6924"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ],
+      "wupCityCode": 6924,
+      "wupName": "Faqous",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 470110,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "checked": true,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/overnight-next-2026-10-09/city-6924-faqous.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "Egyptian Survey Authority national mapping and historical property-record functions plus Sharkia urban-planning context do not establish Faqous-specific cadastral custody. The previous positive local-registry classification was broader than its evidence.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://www.esa.gov.eg/main.aspx",
+        "https://gopp.gov.eg/%D8%A7%D9%84%D8%AE%D8%B1%D9%8A%D8%B7%D8%A9-%D8%A7%D9%84%D8%B9%D9%85%D8%B1%D8%A7%D9%86%D9%8A%D8%A9-%D9%84%D9%85%D8%AD%D8%A7%D9%81%D8%B8%D8%A9-%D8%A7%D9%84%D8%B4%D8%B1%D9%82%D9%8A%D8%A9/",
+        "https://www.esa.gov.eg/services.aspx"
+      ],
+      "evidenceFiles": [
+        "research/overnight-next-2026-10-09/city-6924-faqous.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=30.72490&mlon=31.79102#map=12/30.72490/31.79102",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=30.72490%2C31.79102",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -27895,6 +28243,62 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:7148",
+      "name": "Gusau",
+      "country": "Nigeria",
+      "countryCode": "NG",
+      "latitude": 12.1743944871879,
+      "longitude": 6.67653836825649,
+      "registryCityIds": [
+        "wup2025:7148"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ],
+      "wupCityCode": 7148,
+      "wupName": "Gusau",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 475004,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": "Moderate",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "checked": true,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/overnight-next-2026-10-09/city-7148-gusau.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "The first-party Zamfara registration guideline explicitly identifies ZAGIS and Gusau registration jurisdiction. Current public ZAGIS pages advertise portal/archive applications; inspection of their public scripts and configuration did not verify a parcel-vector route in this pass.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://zamfara.gov.ng/wp-content/uploads/2023/12/Guidelines-for-Residential-Property-Registration-Individual.pdf",
+        "https://zagis.org/",
+        "https://zamfara.gov.ng/2023/09/19/governor-dauda-lawal-appoints-heads-of-agencies-and-staff-for-urban-renewal-project/"
+      ],
+      "evidenceFiles": [
+        "research/overnight-next-2026-10-09/city-7148-gusau.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=12.17439&mlon=6.67654#map=12/12.17439/6.67654",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=12.17439%2C6.67654",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:11949",
       "name": "Guwahati",
       "country": "India",
@@ -31086,6 +31490,61 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-12.77024&mlon=15.74310#map=12/-12.77024/15.74310",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-12.77024%2C15.74310",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:2732",
+      "name": "Huancayo",
+      "country": "Peru",
+      "countryCode": "PE",
+      "latitude": -12.0626815606747,
+      "longitude": -75.2170085204294,
+      "registryCityIds": [
+        "wup2025:2732"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ],
+      "wupCityCode": 2732,
+      "wupName": "Huancayo",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 470685,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "checked": true,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/overnight-next-2026-10-09/city-2732-huancayo.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Huancayo municipal urban-development department duties include preparing and maintaining urban and rural cadastre. Indexed first-party text supports municipal cadastral responsibility; current direct TLS certificate failure and the earlier raster-service finding do not establish absence of vector parcels.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://documentos.munihuancayo.gob.pe/documentos/webgdu23/funciones.html",
+        "https://www.idemil.gob.pe/geoportal/rest/services/Hosted/HUANCAYO/MapServer/0"
+      ],
+      "evidenceFiles": [
+        "research/overnight-next-2026-10-09/city-2732-huancayo.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-12.06268&mlon=-75.21701#map=12/-12.06268/-75.21701",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-12.06268%2C-75.21701",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -35219,6 +35678,62 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:8767",
+      "name": "Jinzhong",
+      "country": "China",
+      "countryCode": "CN",
+      "latitude": 37.6887939356622,
+      "longitude": 112.736514077553,
+      "registryCityIds": [
+        "wup2025:8767"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ],
+      "wupCityCode": 8767,
+      "wupName": "Jinzhong",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 473959,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "checked": true,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/overnight-next-2026-10-09/city-8767-jinzhong.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "A government-hosted 2026-06-28 report explicitly identifies Jinzhong city real-estate registration and transaction service center. The publishing municipality is Jincheng, while the reported service is Jinzhong. Its panoramic registration hall is not a parcel map.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://www.jcgov.gov.cn/dtxx/sxyw/202606/t20260628_2364923.shtml",
+        "https://zrzyt.shanxi.gov.cn/zwgk/bzdt/gsdt1/",
+        "https://sxjz.gov.cn/"
+      ],
+      "evidenceFiles": [
+        "research/overnight-next-2026-10-09/city-8767-jinzhong.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=37.68879&mlon=112.73651#map=12/37.68879/112.73651",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.68879%2C112.73651",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:9830",
       "name": "Jinzhou",
       "country": "China",
@@ -35868,6 +36383,68 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-21.75205&mlon=-43.36327#map=12/-21.75205/-43.36327",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-21.75205%2C-43.36327",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:7290",
+      "name": "Jundiaí",
+      "country": "Brazil",
+      "countryCode": "BR",
+      "latitude": -23.1976446911945,
+      "longitude": -46.8554383147568,
+      "registryCityIds": [
+        "wup2025:7290"
+      ],
+      "appCityIds": [
+        "jundiai"
+      ],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ],
+      "wupCityCode": 7290,
+      "wupName": "Jundiaí",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 457481,
+      "population2025": 465531,
+      "annualGrowthPct2015To2025": 0.174433,
+      "populationPlausibility2025": "Moderate",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "checked": true,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/overnight-next-2026-10-09/city-7290-jundiai.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Official GeoJundiaí municipal WFS publishes public lot geometry; stable unique gid in GeoJundiai:lotes_jund identifies full ground polygons independently of the duplicate codlote label.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "br-jundiai-geojundiai-lotes-jund-gid"
+      ],
+      "evidenceUrls": [
+        "https://geo.jundiai.sp.gov.br/geoserver/ows",
+        "https://geo.jundiai.sp.gov.br/geojundiai/cfImob.jsp",
+        "https://geo.jundiai.sp.gov.br/geojundiai/?apenas_conteudo=S",
+        "https://jundiai.sp.gov.br/planejamento-e-meio-ambiente/geoinformacao/"
+      ],
+      "evidenceFiles": [
+        "research/overnight-next-2026-10-09/city-7290-jundiai.json",
+        "research/overnight-next-2026-10-09/jundiai-root-acceptance.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-23.19764&mlon=-46.85544#map=12/-23.19764/-46.85544",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-23.19764%2C-46.85544",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -45544,6 +46121,62 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:7995",
+      "name": "Lüliang",
+      "country": "China",
+      "countryCode": "CN",
+      "latitude": 37.5208137223457,
+      "longitude": 111.14629385973,
+      "registryCityIds": [
+        "wup2025:7995"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ],
+      "wupCityCode": 7995,
+      "wupName": "Lüliang",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 469647,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": "Moderate",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "checked": true,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/overnight-next-2026-10-09/city-7995-luliang.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "The municipal bureau describes unified registration, cadastral survey and its subordinate city registration center. Its center budget separately describes municipal registration, certification, platform maintenance and query services.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://www.lvliang.gov.cn/llxxgk/zfxxgk/xxgkml/gbmwj/gjj/fdzdgknr_54882/jgjs_54883/202108/t20210830_1541722.html",
+        "https://www.lvliang.gov.cn/zfjgzd/llgtj/qlzrqd/index_5.html",
+        "https://www.lvliang.gov.cn/zfjgzd/llgtj/jgjj/201906/t20190604_1290765.html"
+      ],
+      "evidenceFiles": [
+        "research/overnight-next-2026-10-09/city-7995-luliang.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=37.52081&mlon=111.14629#map=12/37.52081/111.14629",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.52081%2C111.14629",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:9874",
       "name": "Luohe",
       "country": "China",
@@ -46093,6 +46726,63 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=31.69049&mlon=118.50258#map=12/31.69049/118.50258",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=31.69049%2C118.50258",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:2928",
+      "name": "Macapá",
+      "country": "Brazil",
+      "countryCode": "BR",
+      "latitude": 0.0431561083287672,
+      "longitude": -51.0688251135422,
+      "registryCityIds": [
+        "wup2025:2928"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ],
+      "wupCityCode": 2928,
+      "wupName": "Macapá",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 471922,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "checked": true,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/overnight-next-2026-10-09/city-2928-macapa.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "The municipal SIT dynamically configures a physical-lot map layer; this supports public map geometry at bounded nearby scope, not registry/title status.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "macapa-egl-sit-physical-lot-layer-27"
+      ],
+      "evidenceUrls": [
+        "https://mapa.macapa.ap.gov.br/",
+        "https://mapa.macapa.ap.gov.br/macapacliente/sit/AjudaOnline/Documents/lote.htm"
+      ],
+      "evidenceFiles": [
+        "research/overnight-next-2026-10-09/city-2928-macapa.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=0.04316&mlon=-51.06883#map=12/0.04316/-51.06883",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=0.04316%2C-51.06883",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -50131,6 +50821,60 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=30.04722&mlon=103.83541#map=12/30.04722/103.83541",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=30.04722%2C103.83541",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:11710",
+      "name": "Meizhou",
+      "country": "China",
+      "countryCode": "CN",
+      "latitude": 24.3186796455347,
+      "longitude": 116.100671710308,
+      "registryCityIds": [
+        "wup2025:11710"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ],
+      "wupCityCode": 11710,
+      "wupName": "Meizhou",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 464343,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "checked": true,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/overnight-next-2026-10-09/city-11710-meizhou.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "The municipal bureau 2024 departmental accounts explicitly assign property registration, cadastral investigation/survey and registration information-system responsibilities. This primary municipal institutional document supports local custody; unrelated service guidance and individual notices do not establish an anonymous parcel-vector API.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://www.meizhou.gov.cn/attachment/0/226/226516/2834527.pdf"
+      ],
+      "evidenceFiles": [
+        "research/overnight-next-2026-10-09/city-11710-meizhou.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=24.31868&mlon=116.10067#map=12/24.31868/116.10067",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=24.31868%2C116.10067",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -57341,6 +58085,67 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:7432",
+      "name": "Orlando",
+      "country": "United States of America",
+      "countryCode": "US",
+      "latitude": 28.5718526010057,
+      "longitude": -81.3224429681126,
+      "registryCityIds": [
+        "wup2025:7432"
+      ],
+      "appCityIds": [
+        "orlando"
+      ],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ],
+      "wupCityCode": 7432,
+      "wupName": "Orlando",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 477249,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": "Moderate",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "checked": true,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/overnight-next-2026-10-09/city-7432-orlando.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Orange County Property Appraiser maintains the official county assessment parcel map. This is local assessor parcel coverage, not a title-registration extract.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "orlando-ocpa-arcgis"
+      ],
+      "evidenceUrls": [
+        "https://ocpaweb.ocpafl.org/?act=home",
+        "https://webmap.ocpafl.org/search",
+        "https://vgispublic.ocpafl.org/server/rest/services/Webmap/PARCEL/MapServer/4"
+      ],
+      "evidenceFiles": [
+        "research/overnight-next-2026-10-09/city-7432-orlando.json",
+        "research/overnight-next-2026-10-09/orlando-root-acceptance.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=28.57185&mlon=-81.32244#map=12/28.57185/-81.32244",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=28.57185%2C-81.32244",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:4490",
       "name": "Osaka",
       "country": "Japan",
@@ -57476,6 +58281,60 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=40.52604&mlon=72.80791#map=12/40.52604/72.80791",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=40.52604%2C72.80791",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:4390",
+      "name": "Oshogbo",
+      "country": "Nigeria",
+      "countryCode": "NG",
+      "latitude": 7.77187668103078,
+      "longitude": 4.56628909899883,
+      "registryCityIds": [
+        "wup2025:4390"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ],
+      "wupCityCode": 4390,
+      "wupName": "Oshogbo",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 473929,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": "Low",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "checked": true,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/overnight-next-2026-10-09/city-4390-osogbo.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "The official Osun Surveyor General page establishes state/local cadastral survey, GIS and certificate-of-occupancy work and explicitly identifies completed Osogbo surveys. No anonymous parcel-vector endpoint was verified in the reviewed page/link configuration.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://www.osunstate.gov.ng/ministries/office-of-surveyor-general/"
+      ],
+      "evidenceFiles": [
+        "research/overnight-next-2026-10-09/city-4390-osogbo.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=7.77188&mlon=4.56629#map=12/7.77188/4.56629",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=7.77188%2C4.56629",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -58180,6 +59039,62 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=6.91667&mlon=158.15000#map=12/6.91667/158.15000",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=6.91667%2C158.15000",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:5191",
+      "name": "Palma de Mallorca",
+      "country": "Spain",
+      "countryCode": "ES",
+      "latitude": 39.5730201363164,
+      "longitude": 2.65959892235363,
+      "registryCityIds": [
+        "wup2025:5191"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ],
+      "wupCityCode": 5191,
+      "wupName": "Palma de Mallorca",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 473499,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": "Moderate",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "checked": true,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/overnight-next-2026-10-09/city-5191-palma-de-mallorca.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Official Spanish DGC INSPIRE CadastralParcel service returned local parcel polygons and identifiers over Palma; this supports city-jurisdictional cadastral custody and nearby geometry, not citywide completeness or exact WUP-point coverage.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://www.catastro.hacienda.gob.es/es-ES/sede.html",
+        "https://www.catastro.hacienda.gob.es/webinspire/index.html",
+        "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx"
+      ],
+      "evidenceFiles": [
+        "research/overnight-next-2026-10-09/city-5191-palma-de-mallorca.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=39.57302&mlon=2.65960#map=12/39.57302/2.65960",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=39.57302%2C2.65960",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -59462,6 +60377,62 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:495",
+      "name": "Piura",
+      "country": "Peru",
+      "countryCode": "PE",
+      "latitude": -5.19036024947437,
+      "longitude": -80.6384430749245,
+      "registryCityIds": [
+        "wup2025:495"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ],
+      "wupCityCode": 495,
+      "wupName": "Piura",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 471521,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "checked": true,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/overnight-next-2026-10-09/city-495-piura.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "The Provincial Municipality of Piura reports a municipal urban-cadastre survey project covering Piura, Castilla, Veintiseis de Octubre and Catacaos. This establishes limited local cadastral project responsibility; the earlier property-tax-agency evidence alone did not. Anonymous native parcel geometry remains unverified.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://www.gob.pe/institucion/munipiura/noticias/946801-regidora-teresa-calva-participo-en-lanzamiento-del-proyecto-de-levantamiento-de-catastro-urbano-de-piura",
+        "https://www.gob.pe/institucion/satpiura/institucional",
+        "https://www.idep.gob.pe/geoportal/rest/services/DATOS_GEOESPACIALES/PROYECCIONES_25K/MapServer/7"
+      ],
+      "evidenceFiles": [
+        "research/overnight-next-2026-10-09/city-495-piura.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=-5.19036&mlon=-80.63844#map=12/-5.19036/-80.63844",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-5.19036%2C-80.63844",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "capital:ME:podgorica",
       "name": "Podgorica",
       "country": "Montenegro",
@@ -60611,6 +61582,62 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=41.82400&mlon=-71.41280#map=12/41.82400/-71.41280",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=41.82400%2C-71.41280",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:5621",
+      "name": "Provo",
+      "country": "United States of America",
+      "countryCode": "US",
+      "latitude": 40.3078525920474,
+      "longitude": -111.714794014436,
+      "registryCityIds": [
+        "wup2025:5621"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ],
+      "wupCityCode": 5621,
+      "wupName": "Provo",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 488429,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": "Moderate",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "checked": true,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/overnight-next-2026-10-09/city-5621-provo.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Utah County Government identifies its GIS Division as serving the county and publishes the Tax Parcel dataset, refreshed nightly and combining Recorder parcel linework with Assessor detail. The official local-authority map-service layer is county-wide and includes Provo; one exact-WUP-point polygon was verified. This is a public parcel source, but the map-service layer is a 16K-scale product and does not alone establish a production-ready feed.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://gispublicweb.provo.gov/ArcGIS/rest/services/Parcel/MapServer/1",
+        "https://is.utahcounty.gov/gis/maps",
+        "https://provo.gov/891/GIS"
+      ],
+      "evidenceFiles": [
+        "research/overnight-next-2026-10-09/city-5621-provo.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=40.30785&mlon=-111.71479#map=12/40.30785/-111.71479",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=40.30785%2C-111.71479",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -62044,6 +63071,63 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:9883",
+      "name": "Raebareli",
+      "country": "India",
+      "countryCode": "IN",
+      "latitude": 26.2276825649448,
+      "longitude": 81.243838038826,
+      "registryCityIds": [
+        "wup2025:9883"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ],
+      "wupCityCode": 9883,
+      "wupName": "Raebareli",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 472091,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "checked": true,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/overnight-next-2026-10-09/city-9883-raebareli.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Rae Bareli district government provides its Land Records service through the state Bhulekh portal. This establishes jurisdictionally local land-record responsibility; parcel geometry remains unverified.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://raebareli.nic.in/service/land-records/",
+        "https://raebareli.nic.in/hi/service/%E0%A4%AD%E0%A5%81%E0%A4%B2%E0%A5%87%E0%A4%96/",
+        "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=158",
+        "https://upbhunaksha.gov.in/home/"
+      ],
+      "evidenceFiles": [
+        "research/overnight-next-2026-10-09/city-9883-raebareli.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=26.22768&mlon=81.24384#map=12/26.22768/81.24384",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=26.22768%2C81.24384",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:10791",
       "name": "Raghunathpur",
       "country": "India",
@@ -63168,6 +64252,64 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=37.54070&mlon=-77.43600#map=12/37.54070/-77.43600",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.54070%2C-77.43600",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:260",
+      "name": "Riga",
+      "country": "Latvia",
+      "countryCode": "LV",
+      "latitude": 56.9551247864813,
+      "longitude": 24.1200225203638,
+      "registryCityIds": [
+        "wup2025:260"
+      ],
+      "appCityIds": [
+        "riga"
+      ],
+      "cohorts": [
+        "registry",
+        "country_source_requalification"
+      ],
+      "wupCityCode": 260,
+      "wupName": "Riga",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 563947,
+      "population2025": 550267,
+      "annualGrowthPct2015To2025": -0.245567,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "exact_WUP_city_code_and_year",
+        "distanceKm": 0,
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025"
+      },
+      "checked": true,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/country-integration-audit-2026-10-09/riga-root-acceptance.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "State Land Service of Latvia / Geolatvija publishes public cadastral parcels",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "lv-vzd-geolatvija-vraa-wfs"
+      ],
+      "evidenceUrls": [
+        "https://geolatvija.lv/geoserver/vraa/wfs"
+      ],
+      "evidenceFiles": [
+        "research/country-integration-audit-2026-10-09/riga-root-acceptance.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=56.95512&mlon=24.12002#map=12/56.95512/24.12002",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=56.95512%2C24.12002",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -68687,6 +69829,62 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:11736",
+      "name": "Shanwei",
+      "country": "China",
+      "countryCode": "CN",
+      "latitude": 22.7831667729166,
+      "longitude": 115.367998832657,
+      "registryCityIds": [
+        "wup2025:11736"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ],
+      "wupCityCode": 11736,
+      "wupName": "Shanwei",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 464738,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": "Moderate",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "checked": true,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/overnight-next-2026-10-09/city-11736-shanwei.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Shanwei municipal bureau duties explicitly cover city cadastral survey, real-estate registration, record management and the municipal registration platform. Its separate standard-map page does not establish a cadastral polygon service.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://www.shanwei.gov.cn/shanwei/zwgk/jcxx/zzjg/zfbmz/content/post_1091347.html",
+        "https://www.shanwei.gov.cn/swgtj/ztzl/bzdtfu/content/post_1131394.html",
+        "https://www.shanwei.gov.cn/attachment/0/81/81992/1228947.pdf"
+      ],
+      "evidenceFiles": [
+        "research/overnight-next-2026-10-09/city-11736-shanwei.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=22.78317&mlon=115.36800#map=12/22.78317/115.36800",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=22.78317%2C115.36800",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:10376",
       "name": "Shaoyang",
       "country": "China",
@@ -70127,6 +71325,64 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=26.60367&mlon=85.56119#map=12/26.60367/85.56119",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=26.60367%2C85.56119",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:9595",
+      "name": "Sitapur",
+      "country": "India",
+      "countryCode": "IN",
+      "latitude": 27.5635472049459,
+      "longitude": 80.6900013205048,
+      "registryCityIds": [
+        "wup2025:9595"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ],
+      "wupCityCode": 9595,
+      "wupName": "Sitapur",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 469750,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": "Moderate",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "checked": true,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/overnight-next-2026-10-09/city-9595-sitapur.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "The official Uttar Pradesh digitization dashboard explicitly identifies Sitapur district, Sitapur tehsil and cadastral map-sheet georeferencing. This is local cadastral custody evidence, not proof of public vector completeness.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=154&tehsilCode=00804",
+        "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=154",
+        "https://upbhulekh.gov.in/",
+        "https://bor.up.nic.in/",
+        "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/154"
+      ],
+      "evidenceFiles": [
+        "research/overnight-next-2026-10-09/city-9595-sitapur.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=27.56355&mlon=80.69000#map=12/27.56355/80.69000",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=27.56355%2C80.69000",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -72751,6 +74007,64 @@
       }
     },
     {
+      "id": "wup2025:91",
+      "name": "Tallinn",
+      "country": "Estonia",
+      "countryCode": "EE",
+      "latitude": 59.4231329005097,
+      "longitude": 24.7413568470487,
+      "registryCityIds": [
+        "wup2025:91"
+      ],
+      "appCityIds": [
+        "tallinn"
+      ],
+      "cohorts": [
+        "registry",
+        "country_source_requalification"
+      ],
+      "wupCityCode": 91,
+      "wupName": "Tallinn",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 386874,
+      "population2025": 439526,
+      "annualGrowthPct2015To2025": 1.275978,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "exact_WUP_city_code_and_year",
+        "distanceKm": 0,
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025"
+      },
+      "checked": true,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/country-integration-audit-2026-10-09/tallinn-root-acceptance.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Estonian Land and Spatial Development Board / public cadastral WFS publishes public cadastral parcels",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "ee-maaamet-kataster-wfs"
+      ],
+      "evidenceUrls": [
+        "https://gsavalik.envir.ee/geoserver/kataster/wfs"
+      ],
+      "evidenceFiles": [
+        "research/country-integration-audit-2026-10-09/tallinn-root-acceptance.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=59.42313&mlon=24.74136#map=12/59.42313/24.74136",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=59.42313%2C24.74136",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:2743",
       "name": "Tamale",
       "country": "Ghana",
@@ -75324,6 +76638,63 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=43.61854&mlon=122.24824#map=12/43.61854/122.24824",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=43.61854%2C122.24824",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:11756",
+      "name": "Tongxiang",
+      "country": "China",
+      "countryCode": "CN",
+      "latitude": 30.6457678687231,
+      "longitude": 120.575851300139,
+      "registryCityIds": [
+        "wup2025:11756"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ],
+      "wupCityCode": 11756,
+      "wupName": "Tongxiang",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 465450,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": "Moderate",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "checked": true,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/overnight-next-2026-10-09/city-11756-tongxiang.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Tongxiang municipal natural-resources and planning bureau issued city-specific homestead and house registration guidance on 2025-01-10. Indexed first-party text establishes local registration responsibility; the direct TLS handshake timed out and no public polygon endpoint was verified.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://www.tx.gov.cn/art/2025/1/10/art_1229401218_2542845.html",
+        "https://ditu.zjzwfw.gov.cn/platform-main/index.html",
+        "https://hyjg.zrzyt.zrzyt.zj.gov.cn/",
+        "https://cgfw.zjasm.net/#/staticmap"
+      ],
+      "evidenceFiles": [
+        "research/overnight-next-2026-10-09/city-11756-tongxiang.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=30.64577&mlon=120.57585#map=12/30.64577/120.57585",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=30.64577%2C120.57585",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -78083,6 +79454,64 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:699",
+      "name": "Vilnius",
+      "country": "Lithuania",
+      "countryCode": "LT",
+      "latitude": 54.695435447302,
+      "longitude": 25.2704077979851,
+      "registryCityIds": [
+        "wup2025:699"
+      ],
+      "appCityIds": [
+        "vilnius"
+      ],
+      "cohorts": [
+        "registry",
+        "country_source_requalification"
+      ],
+      "wupCityCode": 699,
+      "wupName": "Vilnius",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": 321278,
+      "population2025": 337871,
+      "annualGrowthPct2015To2025": 0.503574,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "exact_WUP_city_code_and_year",
+        "distanceKm": 0,
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025"
+      },
+      "checked": true,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/country-integration-audit-2026-10-09/vilnius-root-acceptance.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Lithuanian INSPIRE Geoportal / National Land Service publishes public cadastral parcels",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "lt-inspire-cp-wfs"
+      ],
+      "evidenceUrls": [
+        "https://www.inspire-geoportal.lt/geoserver/cp/ows"
+      ],
+      "evidenceFiles": [
+        "research/country-integration-audit-2026-10-09/vilnius-root-acceptance.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=54.69544&mlon=25.27041#map=12/54.69544/25.27041",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=54.69544%2C25.27041",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:11255",
       "name": "Visakhapatnam",
       "country": "India",
@@ -80518,6 +81947,60 @@
         "distanceKm": 7.581,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "wup2025:8942",
+      "name": "Yangquan",
+      "country": "China",
+      "countryCode": "CN",
+      "latitude": 37.8659735411705,
+      "longitude": 113.536135376174,
+      "registryCityIds": [
+        "wup2025:8942"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ],
+      "wupCityCode": 8942,
+      "wupName": "Yangquan",
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": 467148,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "checked": true,
+      "checkedDate": "2026-10-09",
+      "checkedDateEvidence": {
+        "date": "2026-10-09",
+        "path": "research/overnight-next-2026-10-09/city-8942-yangquan.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Yangquan municipal planning and natural-resources bureau publishes a city registration portal and guides. Cached first-party text establishes local registration services; current direct portal and linked query-route timeouts do not establish geometry absence.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://ghhzy.yq.gov.cn/yqgtbdc/"
+      ],
+      "evidenceFiles": [
+        "research/overnight-next-2026-10-09/city-8942-yangquan.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=37.86597&mlon=113.53614#map=12/37.86597/113.53614",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.86597%2C113.53614",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "wup2025:11354",
@@ -84752,8 +86235,8 @@
       "population": 212812405,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 34,
-      "citiesWithRegistry": 32,
+      "citiesChecked": 36,
+      "citiesWithRegistry": 34,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": null,
@@ -85485,8 +86968,8 @@
       "population": 1416096094,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 219,
-      "citiesWithRegistry": 167,
+      "citiesChecked": 229,
+      "citiesWithRegistry": 177,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": true,
@@ -86159,7 +87642,7 @@
       "population": 118365995,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 36,
+      "citiesChecked": 37,
       "citiesWithRegistry": 16,
       "checked": true,
       "checkedDate": "2026-09-30",
@@ -86279,8 +87762,8 @@
       "population": 1344232,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": true,
@@ -87372,8 +88855,8 @@
       "population": 1463865524,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 220,
-      "citiesWithRegistry": 165,
+      "citiesChecked": 223,
+      "citiesWithRegistry": 168,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": false,
@@ -87763,8 +89246,8 @@
       "population": 5308039,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": true,
@@ -88212,8 +89695,8 @@
       "population": 1853559,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": true,
@@ -88393,8 +89876,8 @@
       "population": 2830145,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": true,
@@ -89629,8 +91112,8 @@
       "population": 237527782,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 43,
-      "citiesWithRegistry": 27,
+      "citiesChecked": 45,
+      "citiesWithRegistry": 29,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": false,
@@ -90002,8 +91485,8 @@
       "population": 34576665,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 6,
-      "citiesWithRegistry": 5,
+      "citiesChecked": 8,
+      "citiesWithRegistry": 7,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": null,
@@ -91357,8 +92840,8 @@
       "population": 47889958,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 7,
-      "citiesWithRegistry": 7,
+      "citiesChecked": 8,
+      "citiesWithRegistry": 8,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": true,
@@ -92397,8 +93880,8 @@
       "population": 347275807,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 79,
-      "citiesWithRegistry": 79,
+      "citiesChecked": 81,
+      "citiesWithRegistry": 81,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": false,

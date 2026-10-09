@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T07:41:47.727527+00:00",
+  "method": "Independent GEOS/Shapely validity, exact topological equality and complete STRtree candidate-pair intersections; unmodified full polygon geometry.",
+  "inputSha256": "33d5ac7ba0a27d142ac98c1cf20dc61a59155a7ddae13f500f891195d81795d2",
+  "metricCrs": {
+    "type": "name",
+    "properties": {
+      "name": "EPSG:26917"
+    }
+  },
+  "featureCount": 6,
+  "invalidCount": 0,
+  "invalid": [],
+  "duplicatePairCount": 0,
+  "duplicatePairs": [],
+  "overlapThresholdM2": 0.01,
+  "overlapPairCount": 0,
+  "totalOverlapM2": 0,
+  "overlaps": [],
+  "operationErrorCount": 0,
+  "operationErrors": [],
+  "geometryChangedOrRepaired": false
+}

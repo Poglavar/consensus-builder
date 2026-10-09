@@ -1,5 +1,6 @@
 # Memory
 
+- 2026-10-09: Public parcel research must continue beyond human-facing UI: inspect viewer configuration, network requests and first-party WFS/OGC/ArcGIS/download endpoints, distinguishing a UI login or fetch failure from unavailable parcel geometry; source discovery and runtime qualification remain separate.
 
 - 2026-10-08: Keep the globe horizontally centered independently of the activity feed; desktop activity overlays the right screen edge, while mobile activity stays below the planet.
 

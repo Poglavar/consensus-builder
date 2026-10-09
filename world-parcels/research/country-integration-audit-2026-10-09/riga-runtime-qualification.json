@@ -1,0 +1,5436 @@
+{
+  "schemaVersion": "1",
+  "checkedAt": "2026-10-09T08:20:35.495Z",
+  "scope": {
+    "city": "Riga, Latvia",
+    "wupCityCode": 260,
+    "wupPointLatLon": [
+      56.9551247864813,
+      24.1200225203638
+    ],
+    "nativeCrs": "EPSG:3059",
+    "protocolRequests": "WFS 2.0.0, adapter output srsName=CRS:84 (WGS84 lon,lat) where accepted",
+    "maxFeaturesPerOperation": 3000,
+    "parallelOperations": 1,
+    "retainedGeometryCache": "/private/tmp/riga-runtime-safe.geojson (safe IDs + geometry only)"
+  },
+  "source": {
+    "id": "lv-vzd-geolatvija-vraa-wfs",
+    "endpoint": "https://geolatvija.lv/geoserver/vraa/wfs",
+    "featureType": "vraa:parcel",
+    "idField": "code",
+    "geometryField": "geom",
+    "outFields": [
+      "code"
+    ],
+    "requestProperties": true,
+    "pageSize": 1000,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 1,
+    "minRequestIntervalMs": 250
+  },
+  "cells": [
+    {
+      "id": "24120_56955",
+      "bbox": [
+        24.12,
+        56.955,
+        24.121,
+        56.956
+      ]
+    },
+    {
+      "id": "24119_56954",
+      "bbox": [
+        24.119,
+        56.954,
+        24.12,
+        56.955
+      ]
+    },
+    {
+      "id": "24120_56954",
+      "bbox": [
+        24.12,
+        56.954,
+        24.121,
+        56.955
+      ]
+    },
+    {
+      "id": "24121_56954",
+      "bbox": [
+        24.121,
+        56.954,
+        24.122,
+        56.955
+      ]
+    },
+    {
+      "id": "24119_56955",
+      "bbox": [
+        24.119,
+        56.955,
+        24.12,
+        56.956
+      ]
+    },
+    {
+      "id": "24121_56955",
+      "bbox": [
+        24.121,
+        56.955,
+        24.122,
+        56.956
+      ]
+    },
+    {
+      "id": "24119_56956",
+      "bbox": [
+        24.119,
+        56.956,
+        24.12,
+        56.957
+      ]
+    },
+    {
+      "id": "24120_56956",
+      "bbox": [
+        24.12,
+        56.956,
+        24.121,
+        56.957
+      ]
+    },
+    {
+      "id": "24121_56956",
+      "bbox": [
+        24.121,
+        56.956,
+        24.122,
+        56.957
+      ]
+    },
+    {
+      "id": "24120_56953",
+      "bbox": [
+        24.12,
+        56.953,
+        24.121,
+        56.954
+      ]
+    },
+    {
+      "id": "24122_56955",
+      "bbox": [
+        24.122,
+        56.955,
+        24.123,
+        56.956
+      ]
+    },
+    {
+      "id": "24120_56957",
+      "bbox": [
+        24.12,
+        56.957,
+        24.121,
+        56.958
+      ]
+    },
+    {
+      "id": "24118_56955",
+      "bbox": [
+        24.118,
+        56.955,
+        24.119,
+        56.956
+      ]
+    }
+  ],
+  "preCounts": [
+    {
+      "cell": "24120_56955",
+      "status": 200,
+      "contentType": "text/xml",
+      "numberMatched": 17,
+      "bytes": 826,
+      "sha256": "1e0f050c9528d0cd26aa83e4d278d73a0d4f104dd8579aac2c2270ffaca99436"
+    },
+    {
+      "cell": "24119_56954",
+      "status": 200,
+      "contentType": "text/xml",
+      "numberMatched": 17,
+      "bytes": 826,
+      "sha256": "9f385f69019e76575f1317fd8e995c5c0f8994643c41f6c711a7dde21786a3d4"
+    },
+    {
+      "cell": "24120_56954",
+      "status": 200,
+      "contentType": "text/xml",
+      "numberMatched": 15,
+      "bytes": 826,
+      "sha256": "5d3963a6241f980d80aa7cc0f7c191e87b5877a4a757f8c37754b997a0cff7ba"
+    },
+    {
+      "cell": "24121_56954",
+      "status": 200,
+      "contentType": "text/xml",
+      "numberMatched": 15,
+      "bytes": 827,
+      "sha256": "a75e2f338f0d0c0c805b7cbdabc4b2659b175c71adb590efae2b115759ddcfd3"
+    },
+    {
+      "cell": "24119_56955",
+      "status": 200,
+      "contentType": "text/xml",
+      "numberMatched": 19,
+      "bytes": 826,
+      "sha256": "89ddb1265894ca44fa5b0904d5a336a4510f917de41420e53efa0b2f3825ee98"
+    },
+    {
+      "cell": "24121_56955",
+      "status": 200,
+      "contentType": "text/xml",
+      "numberMatched": 15,
+      "bytes": 827,
+      "sha256": "0d08d80eec4f25599846a01107fa96626d041f9c0d561c33c4ac2bc05b118b4c"
+    },
+    {
+      "cell": "24119_56956",
+      "status": 200,
+      "contentType": "text/xml",
+      "numberMatched": 17,
+      "bytes": 826,
+      "sha256": "4b8f20dbcab53632ee3ce70c4065dedb1585d9243ab06961685eb024e934f75c"
+    },
+    {
+      "cell": "24120_56956",
+      "status": 200,
+      "contentType": "text/xml",
+      "numberMatched": 17,
+      "bytes": 826,
+      "sha256": "cf611a283aa2f7eab86e8955e6b956f02c73e0a81be0a3969963b5bc4cc246b9"
+    },
+    {
+      "cell": "24121_56956",
+      "status": 200,
+      "contentType": "text/xml",
+      "numberMatched": 17,
+      "bytes": 827,
+      "sha256": "2811ddc02376aaf94bca9ae4b8f209b52e426f60d669eacbdb7562e742a2b6ee"
+    },
+    {
+      "cell": "24120_56953",
+      "status": 200,
+      "contentType": "text/xml",
+      "numberMatched": 16,
+      "bytes": 826,
+      "sha256": "80c03a96cc06fa7053fab629591881a5012cc9d7db57255c73ad90e146a36d3b"
+    },
+    {
+      "cell": "24122_56955",
+      "status": 200,
+      "contentType": "text/xml",
+      "numberMatched": 15,
+      "bytes": 827,
+      "sha256": "399e15925861173e6cd95c17c8f839adc2c2bce0cf3d72116c605118809d94e9"
+    },
+    {
+      "cell": "24120_56957",
+      "status": 200,
+      "contentType": "text/xml",
+      "numberMatched": 17,
+      "bytes": 826,
+      "sha256": "a8faaec8489b0fe8d3d81d94ad9a69683bf5d5bebc215fa8665300cfcf75eec8"
+    },
+    {
+      "cell": "24118_56955",
+      "status": 200,
+      "contentType": "text/xml",
+      "numberMatched": 15,
+      "bytes": 827,
+      "sha256": "868ed955a1633a0b7d71c77a40455943ccf3ee29268cdb5c85040a07f57caa9a"
+    }
+  ],
+  "postCounts": [
+    {
+      "cell": "24120_56955",
+      "status": 200,
+      "contentType": "text/xml",
+      "numberMatched": 17,
+      "bytes": 826,
+      "sha256": "1e8bd197eed9de18f57393474ab4da79daa9f06736cb3cabdd909f66e083fa84"
+    },
+    {
+      "cell": "24119_56954",
+      "status": 200,
+      "contentType": "text/xml",
+      "numberMatched": 17,
+      "bytes": 826,
+      "sha256": "b5bd1118bbe667e924a5e520ee93c574302a302bad637e6199073b4e0665810d"
+    },
+    {
+      "cell": "24120_56954",
+      "status": 200,
+      "contentType": "text/xml",
+      "numberMatched": 15,
+      "bytes": 826,
+      "sha256": "8bef8c6a4754336bcab2d4df476130f2ad5bdb765cac4cdcc1d669964e3f5ef9"
+    },
+    {
+      "cell": "24121_56954",
+      "status": 200,
+      "contentType": "text/xml",
+      "numberMatched": 15,
+      "bytes": 827,
+      "sha256": "0523068819f8a93aa7e577ebbf1abbeb0b95984a870049000b083242a8134d52"
+    },
+    {
+      "cell": "24119_56955",
+      "status": 200,
+      "contentType": "text/xml",
+      "numberMatched": 19,
+      "bytes": 826,
+      "sha256": "526644d57d0970e18e9e7fa0c0a54f3b1f056dfd782ceecc8b61361f99781ccc"
+    },
+    {
+      "cell": "24121_56955",
+      "status": 200,
+      "contentType": "text/xml",
+      "numberMatched": 15,
+      "bytes": 827,
+      "sha256": "5986a3a9ec60b7809ee2187ce25a229f45045fd1ec62d261bfae73080f103ce1"
+    },
+    {
+      "cell": "24119_56956",
+      "status": 200,
+      "contentType": "text/xml",
+      "numberMatched": 17,
+      "bytes": 826,
+      "sha256": "3b5302f77d0d7cedede9fae2be32947cd2e9646a8c6993da40d0107adf850ded"
+    },
+    {
+      "cell": "24120_56956",
+      "status": 200,
+      "contentType": "text/xml",
+      "numberMatched": 17,
+      "bytes": 826,
+      "sha256": "53ab3db0acc8babae13ab9429b1e09067dfe913e93c40100f0588770e5438061"
+    },
+    {
+      "cell": "24121_56956",
+      "status": 200,
+      "contentType": "text/xml",
+      "numberMatched": 17,
+      "bytes": 827,
+      "sha256": "f2cef5659b3b2c4090cd0a575cd767949b76719ecad1fdb6cbfa72ab6c145cfa"
+    },
+    {
+      "cell": "24120_56953",
+      "status": 200,
+      "contentType": "text/xml",
+      "numberMatched": 16,
+      "bytes": 826,
+      "sha256": "7c0f83e225e2f7ec68e195c04557d77f5bf26370926c397c06eca84b3694dfd7"
+    },
+    {
+      "cell": "24122_56955",
+      "status": 200,
+      "contentType": "text/xml",
+      "numberMatched": 15,
+      "bytes": 827,
+      "sha256": "fa48d92c402e7ee6f39aac7874b0c2898904f930f92178234dcee204602b3393"
+    },
+    {
+      "cell": "24120_56957",
+      "status": 200,
+      "contentType": "text/xml",
+      "numberMatched": 17,
+      "bytes": 826,
+      "sha256": "28683bc61b211bd1a4f74a61ba36d53efe4fed9edee2da7f1dcc3b249a5e11d0"
+    },
+    {
+      "cell": "24118_56955",
+      "status": 200,
+      "contentType": "text/xml",
+      "numberMatched": 15,
+      "bytes": 827,
+      "sha256": "5ab57add39b27094e5f007bd5a60d8df669519b0bb8dfdf61f674ad1073182d6"
+    }
+  ],
+  "adapterCells": [
+    {
+      "cell": "24120_56955",
+      "bbox": [
+        24.12,
+        56.955,
+        24.121,
+        56.956
+      ],
+      "complete": true,
+      "featureCount": 17,
+      "nativeIds": [
+        "01000200090",
+        "01000200091",
+        "01000200092",
+        "01000202005",
+        "01000202036",
+        "01000209003",
+        "01000210005",
+        "01000210011",
+        "01000210012",
+        "01000210026",
+        "01000210027",
+        "01000210028",
+        "01000210029",
+        "01000210095",
+        "01000212003",
+        "01000219008",
+        "01000219010"
+      ]
+    },
+    {
+      "cell": "24119_56954",
+      "bbox": [
+        24.119,
+        56.954,
+        24.12,
+        56.955
+      ],
+      "complete": true,
+      "featureCount": 17,
+      "nativeIds": [
+        "01000050001",
+        "01000200148",
+        "01000209001",
+        "01000210026",
+        "01000210029",
+        "01000210030",
+        "01000210031",
+        "01000210032",
+        "01000210033",
+        "01000210034",
+        "01000210035",
+        "01000210036",
+        "01000210037",
+        "01000210039",
+        "01000212007",
+        "01000219007",
+        "01000219010"
+      ]
+    },
+    {
+      "cell": "24120_56954",
+      "bbox": [
+        24.12,
+        56.954,
+        24.121,
+        56.955
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "nativeIds": [
+        "01000210005",
+        "01000210020",
+        "01000210021",
+        "01000210022",
+        "01000210026",
+        "01000210027",
+        "01000210029",
+        "01000210032",
+        "01000210033",
+        "01000210034",
+        "01000210039",
+        "01000210040",
+        "01000212003",
+        "01000219008",
+        "01000219010"
+      ]
+    },
+    {
+      "cell": "24121_56954",
+      "bbox": [
+        24.121,
+        56.954,
+        24.122,
+        56.955
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "nativeIds": [
+        "01000210005",
+        "01000210014",
+        "01000210016",
+        "01000210017",
+        "01000210018",
+        "01000210019",
+        "01000210020",
+        "01000210021",
+        "01000210022",
+        "01000210027",
+        "01000210062",
+        "01000212003",
+        "01000219003",
+        "01000219008",
+        "01000219010"
+      ]
+    },
+    {
+      "cell": "24119_56955",
+      "bbox": [
+        24.119,
+        56.955,
+        24.12,
+        56.956
+      ],
+      "complete": true,
+      "featureCount": 19,
+      "nativeIds": [
+        "01000200091",
+        "01000200092",
+        "01000200094",
+        "01000200095",
+        "01000200096",
+        "01000200146",
+        "01000200148",
+        "01000202005",
+        "01000202007",
+        "01000202036",
+        "01000209001",
+        "01000209002",
+        "01000209003",
+        "01000209030",
+        "01000210026",
+        "01000210028",
+        "01000210029",
+        "01000210030",
+        "01000219010"
+      ]
+    },
+    {
+      "cell": "24121_56955",
+      "bbox": [
+        24.121,
+        56.955,
+        24.122,
+        56.956
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "nativeIds": [
+        "01000209003",
+        "01000210001",
+        "01000210002",
+        "01000210005",
+        "01000210009",
+        "01000210010",
+        "01000210011",
+        "01000210012",
+        "01000210014",
+        "01000210027",
+        "01000212003",
+        "01000219008",
+        "01000219010",
+        "01000220056",
+        "01000229013"
+      ]
+    },
+    {
+      "cell": "24119_56956",
+      "bbox": [
+        24.119,
+        56.956,
+        24.12,
+        56.957
+      ],
+      "complete": true,
+      "featureCount": 17,
+      "nativeIds": [
+        "01000200086",
+        "01000200087",
+        "01000200091",
+        "01000200093",
+        "01000200096",
+        "01000200097",
+        "01000200099",
+        "01000200102",
+        "01000200103",
+        "01000202005",
+        "01000202007",
+        "01000202036",
+        "01000203015",
+        "01000203016",
+        "01000203017",
+        "01000209003",
+        "01000209024"
+      ]
+    },
+    {
+      "cell": "24120_56956",
+      "bbox": [
+        24.12,
+        56.956,
+        24.121,
+        56.957
+      ],
+      "complete": true,
+      "featureCount": 17,
+      "nativeIds": [
+        "01000200084",
+        "01000200085",
+        "01000200086",
+        "01000200087",
+        "01000200088",
+        "01000200089",
+        "01000200090",
+        "01000200091",
+        "01000200093",
+        "01000202005",
+        "01000202012",
+        "01000202018",
+        "01000202036",
+        "01000209003",
+        "01000209024",
+        "01000209025",
+        "01000219008"
+      ]
+    },
+    {
+      "cell": "24121_56956",
+      "bbox": [
+        24.121,
+        56.956,
+        24.122,
+        56.957
+      ],
+      "complete": true,
+      "featureCount": 17,
+      "nativeIds": [
+        "01000200079",
+        "01000200083",
+        "01000200084",
+        "01000200085",
+        "01000202011",
+        "01000202012",
+        "01000202018",
+        "01000209003",
+        "01000209004",
+        "01000209005",
+        "01000209025",
+        "01000210001",
+        "01000219008",
+        "01000220053",
+        "01000220054",
+        "01000220056",
+        "01000229013"
+      ]
+    },
+    {
+      "cell": "24120_56953",
+      "bbox": [
+        24.12,
+        56.953,
+        24.121,
+        56.954
+      ],
+      "complete": true,
+      "featureCount": 16,
+      "nativeIds": [
+        "01000210020",
+        "01000210021",
+        "01000210033",
+        "01000210034",
+        "01000210039",
+        "01000210040",
+        "01000210041",
+        "01000210042",
+        "01000210043",
+        "01000210044",
+        "01000210045",
+        "01000210060",
+        "01000212002",
+        "01000219001",
+        "01000219002",
+        "01000219010"
+      ]
+    },
+    {
+      "cell": "24122_56955",
+      "bbox": [
+        24.122,
+        56.955,
+        24.123,
+        56.956
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "nativeIds": [
+        "01000210001",
+        "01000210002",
+        "01000210003",
+        "01000210004",
+        "01000210005",
+        "01000210006",
+        "01000210007",
+        "01000210008",
+        "01000210009",
+        "01000210010",
+        "01000219008",
+        "01000220056",
+        "01000220057",
+        "01000229007",
+        "01000229013"
+      ]
+    },
+    {
+      "cell": "24120_56957",
+      "bbox": [
+        24.12,
+        56.957,
+        24.121,
+        56.958
+      ],
+      "complete": true,
+      "featureCount": 17,
+      "nativeIds": [
+        "01000200067",
+        "01000200070",
+        "01000200073",
+        "01000200074",
+        "01000200075",
+        "01000200076",
+        "01000200082",
+        "01000200085",
+        "01000202010",
+        "01000202012",
+        "01000202017",
+        "01000202033",
+        "01000202034",
+        "01000202036",
+        "01000209019",
+        "01000209024",
+        "01000209025"
+      ]
+    },
+    {
+      "cell": "24118_56955",
+      "bbox": [
+        24.118,
+        56.955,
+        24.119,
+        56.956
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "nativeIds": [
+        "01000200094",
+        "01000200095",
+        "01000200096",
+        "01000200141",
+        "01000200144",
+        "01000200146",
+        "01000200148",
+        "01000202007",
+        "01000202036",
+        "01000202037",
+        "01000209001",
+        "01000209028",
+        "01000209029",
+        "01000209030",
+        "01000210030"
+      ]
+    }
+  ],
+  "freshIdReads": [
+    {
+      "requestedNativeId": "01000200090",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200090"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000200091",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200091"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000200092",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200092"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000202005",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000202005"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000202036",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000202036"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000209003",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000209003"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210005",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210005"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210011",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210011"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210012",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210012"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210026",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210026"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210027",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210027"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210028",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210028"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210029",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210029"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210095",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210095"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000212003",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000212003"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000219008",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000219008"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000219010",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000219010"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000050001",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000050001"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000200148",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200148"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000209001",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000209001"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210030",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210030"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210031",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210031"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210032",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210032"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210033",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210033"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210034",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210034"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210035",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210035"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210036",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210036"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210037",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210037"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210039",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210039"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000212007",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000212007"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000219007",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000219007"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210020",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210020"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210021",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210021"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210022",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210022"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210040",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210040"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210014",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210014"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210016",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210016"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210017",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210017"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210018",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210018"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210019",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210019"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210062",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210062"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000219003",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000219003"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000200094",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200094"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000200095",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200095"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000200096",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200096"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000200146",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200146"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000202007",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000202007"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000209002",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000209002"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000209030",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000209030"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210001",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210001"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210002",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210002"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210009",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210009"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210010",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210010"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000220056",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000220056"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000229013",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000229013"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000200086",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200086"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000200087",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200087"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000200093",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200093"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000200097",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200097"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000200099",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200099"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000200102",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200102"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000200103",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200103"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000203015",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000203015"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000203016",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000203016"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000203017",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000203017"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000209024",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000209024"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000200084",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200084"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000200085",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200085"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000200088",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200088"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000200089",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200089"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000202012",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000202012"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000202018",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000202018"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000209025",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000209025"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000200079",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200079"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000200083",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200083"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000202011",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000202011"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000209004",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000209004"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000209005",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000209005"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000220053",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000220053"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000220054",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000220054"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210041",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210041"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210042",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210042"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210043",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210043"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210044",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210044"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210045",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210045"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210060",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210060"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000212002",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000212002"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000219001",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000219001"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000219002",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000219002"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210003",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210003"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210004",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210004"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210006",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210006"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210007",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210007"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000210008",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000210008"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000220057",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000220057"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000229007",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000229007"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000200067",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200067"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000200070",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200070"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000200073",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200073"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000200074",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200074"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000200075",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200075"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000200076",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200076"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000200082",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200082"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000202010",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000202010"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000202017",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000202017"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000202033",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000202033"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000202034",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000202034"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000209019",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000209019"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000200141",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200141"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000200144",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000200144"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000202037",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000202037"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000209028",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000209028"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    },
+    {
+      "requestedNativeId": "01000209029",
+      "complete": true,
+      "found": true,
+      "returnedNativeIds": [
+        "01000209029"
+      ],
+      "absentIds": [],
+      "geometryType": "MultiPolygon"
+    }
+  ],
+  "pointCoveringIds": [
+    "01000210029"
+  ],
+  "absence": {
+    "requestedNativeId": "999999999999999999999999999999",
+    "complete": true,
+    "featureCount": 0,
+    "absentIds": [
+      "LV-VZD-999999999999999999999999999999"
+    ]
+  },
+  "pagingProbe": {
+    "cell": "24120_56955",
+    "bbox": [
+      24.12,
+      56.955,
+      24.121,
+      56.956
+    ],
+    "complete": true,
+    "featureCount": 17,
+    "nativeIds": [
+      "01000200090",
+      "01000200091",
+      "01000200092",
+      "01000202005",
+      "01000202036",
+      "01000209003",
+      "01000210005",
+      "01000210011",
+      "01000210012",
+      "01000210026",
+      "01000210027",
+      "01000210028",
+      "01000210029",
+      "01000210095",
+      "01000212003",
+      "01000219008",
+      "01000219010"
+    ],
+    "pages": [
+      {
+        "startIndex": "0",
+        "count": "1",
+        "numberMatched": 17,
+        "numberReturned": 1,
+        "featureCount": 1,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        }
+      },
+      {
+        "startIndex": "1",
+        "count": "1",
+        "numberMatched": 17,
+        "numberReturned": 1,
+        "featureCount": 1,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        }
+      },
+      {
+        "startIndex": "2",
+        "count": "1",
+        "numberMatched": 17,
+        "numberReturned": 1,
+        "featureCount": 1,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        }
+      },
+      {
+        "startIndex": "3",
+        "count": "1",
+        "numberMatched": 17,
+        "numberReturned": 1,
+        "featureCount": 1,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        }
+      },
+      {
+        "startIndex": "4",
+        "count": "1",
+        "numberMatched": 17,
+        "numberReturned": 1,
+        "featureCount": 1,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        }
+      },
+      {
+        "startIndex": "5",
+        "count": "1",
+        "numberMatched": 17,
+        "numberReturned": 1,
+        "featureCount": 1,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        }
+      },
+      {
+        "startIndex": "6",
+        "count": "1",
+        "numberMatched": 17,
+        "numberReturned": 1,
+        "featureCount": 1,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        }
+      },
+      {
+        "startIndex": "7",
+        "count": "1",
+        "numberMatched": 17,
+        "numberReturned": 1,
+        "featureCount": 1,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        }
+      },
+      {
+        "startIndex": "8",
+        "count": "1",
+        "numberMatched": 17,
+        "numberReturned": 1,
+        "featureCount": 1,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        }
+      },
+      {
+        "startIndex": "9",
+        "count": "1",
+        "numberMatched": 17,
+        "numberReturned": 1,
+        "featureCount": 1,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        }
+      },
+      {
+        "startIndex": "10",
+        "count": "1",
+        "numberMatched": 17,
+        "numberReturned": 1,
+        "featureCount": 1,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        }
+      },
+      {
+        "startIndex": "11",
+        "count": "1",
+        "numberMatched": 17,
+        "numberReturned": 1,
+        "featureCount": 1,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        }
+      },
+      {
+        "startIndex": "12",
+        "count": "1",
+        "numberMatched": 17,
+        "numberReturned": 1,
+        "featureCount": 1,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        }
+      },
+      {
+        "startIndex": "13",
+        "count": "1",
+        "numberMatched": 17,
+        "numberReturned": 1,
+        "featureCount": 1,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        }
+      },
+      {
+        "startIndex": "14",
+        "count": "1",
+        "numberMatched": 17,
+        "numberReturned": 1,
+        "featureCount": 1,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        }
+      },
+      {
+        "startIndex": "15",
+        "count": "1",
+        "numberMatched": 17,
+        "numberReturned": 1,
+        "featureCount": 1,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        }
+      },
+      {
+        "startIndex": "16",
+        "count": "1",
+        "numberMatched": 17,
+        "numberReturned": 1,
+        "featureCount": 1,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        }
+      }
+    ]
+  },
+  "footprintBinding": {
+    "requestedFootprint": "full WGS84 parcel geometry from exact WUP-point covering parcel",
+    "sourceComplete": true,
+    "parcelCount": 1,
+    "parcels": [
+      {
+        "parcelId": "LV-VZD-01000210029",
+        "overlapM2": 750.91
+      }
+    ],
+    "coverage": "complete",
+    "siteM2": 750.91,
+    "unsurveyedM2": 0,
+    "unknownM2": 0,
+    "toleranceM": 0,
+    "wupPointLatLon": [
+      56.9551247864813,
+      24.1200225203638
+    ],
+    "wupPointNativeParcelId": "01000210029",
+    "bindingFromActualAdapter": true,
+    "wholeReturnedParcelPolygonWasSite": true
+  },
+  "errors": [],
+  "protocolRequests": [
+    {
+      "srsName": "CRS:84",
+      "bbox": "24.12,56.955,24.121,56.956,CRS:84",
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 17,
+      "numberReturned": 17,
+      "featureCount": 17,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": "24.119,56.954,24.12,56.955,CRS:84",
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 17,
+      "numberReturned": 17,
+      "featureCount": 17,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": "24.12,56.954,24.121,56.955,CRS:84",
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 15,
+      "numberReturned": 15,
+      "featureCount": 15,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": "24.121,56.954,24.122,56.955,CRS:84",
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 15,
+      "numberReturned": 15,
+      "featureCount": 15,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": "24.119,56.955,24.12,56.956,CRS:84",
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 19,
+      "numberReturned": 19,
+      "featureCount": 19,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": "24.121,56.955,24.122,56.956,CRS:84",
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 15,
+      "numberReturned": 15,
+      "featureCount": 15,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": "24.119,56.956,24.12,56.957,CRS:84",
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 17,
+      "numberReturned": 17,
+      "featureCount": 17,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": "24.12,56.956,24.121,56.957,CRS:84",
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 17,
+      "numberReturned": 17,
+      "featureCount": 17,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": "24.121,56.956,24.122,56.957,CRS:84",
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 17,
+      "numberReturned": 17,
+      "featureCount": 17,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": "24.12,56.953,24.121,56.954,CRS:84",
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 16,
+      "numberReturned": 16,
+      "featureCount": 16,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": "24.122,56.955,24.123,56.956,CRS:84",
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 15,
+      "numberReturned": 15,
+      "featureCount": 15,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": "24.12,56.957,24.121,56.958,CRS:84",
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 17,
+      "numberReturned": 17,
+      "featureCount": 17,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": "24.118,56.955,24.119,56.956,CRS:84",
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 15,
+      "numberReturned": 15,
+      "featureCount": 15,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": null,
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 0,
+      "numberReturned": 0,
+      "featureCount": 0,
+      "crs": null,
+      "returnedPropertyKeys": []
+    },
+    {
+      "srsName": "CRS:84",
+      "bbox": "24.11965071,56.9548966,24.1202336,56.95533209,CRS:84",
+      "count": "1000",
+      "startIndex": "0",
+      "propertyName": "geom,code",
+      "httpStatus": 200,
+      "numberMatched": 10,
+      "numberReturned": 10,
+      "featureCount": 10,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      },
+      "returnedPropertyKeys": [
+        "id",
+        "code",
+        "owned_by_municipality",
+        "public_water"
+      ]
+    }
+  ],
+  "pagingProbeRequests": [
+    {
+      "startIndex": "0",
+      "count": "1",
+      "numberMatched": 17,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      }
+    },
+    {
+      "startIndex": "1",
+      "count": "1",
+      "numberMatched": 17,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      }
+    },
+    {
+      "startIndex": "2",
+      "count": "1",
+      "numberMatched": 17,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      }
+    },
+    {
+      "startIndex": "3",
+      "count": "1",
+      "numberMatched": 17,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      }
+    },
+    {
+      "startIndex": "4",
+      "count": "1",
+      "numberMatched": 17,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      }
+    },
+    {
+      "startIndex": "5",
+      "count": "1",
+      "numberMatched": 17,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      }
+    },
+    {
+      "startIndex": "6",
+      "count": "1",
+      "numberMatched": 17,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      }
+    },
+    {
+      "startIndex": "7",
+      "count": "1",
+      "numberMatched": 17,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      }
+    },
+    {
+      "startIndex": "8",
+      "count": "1",
+      "numberMatched": 17,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      }
+    },
+    {
+      "startIndex": "9",
+      "count": "1",
+      "numberMatched": 17,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      }
+    },
+    {
+      "startIndex": "10",
+      "count": "1",
+      "numberMatched": 17,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      }
+    },
+    {
+      "startIndex": "11",
+      "count": "1",
+      "numberMatched": 17,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      }
+    },
+    {
+      "startIndex": "12",
+      "count": "1",
+      "numberMatched": 17,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      }
+    },
+    {
+      "startIndex": "13",
+      "count": "1",
+      "numberMatched": 17,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      }
+    },
+    {
+      "startIndex": "14",
+      "count": "1",
+      "numberMatched": 17,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      }
+    },
+    {
+      "startIndex": "15",
+      "count": "1",
+      "numberMatched": 17,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      }
+    },
+    {
+      "startIndex": "16",
+      "count": "1",
+      "numberMatched": 17,
+      "numberReturned": 1,
+      "featureCount": 1,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:CRS::84"
+        }
+      }
+    }
+  ],
+  "stablePrePostCounts": true,
+  "uniqueFreshIdCount": 113,
+  "currentUniqueIdCount": 113,
+  "protocolCrsAssessment": {
+    "nativeSourceCrs": "EPSG:3059 (LKS-92/TM), the only CRS advertised in WFS capabilities",
+    "adapterUnchanged": true,
+    "adapterRequestedSrsName": "CRS:84",
+    "successfulFeatureResponseCrs": "urn:ogc:def:crs:CRS::84",
+    "interpretation": "CRS84 is WGS84 longitude/latitude and was accepted by the unchanged adapter; no EPSG:3857 reprojection path was used.",
+    "outputPrecisionCheck": {
+      "safeCachedFeatureCount": 113,
+      "positionCount": 1283,
+      "sampleCoordinateLonLat": [
+        24.12009639,
+        56.9561101
+      ],
+      "longitudeRange": [
+        24.11654271,
+        24.12459237
+      ],
+      "latitudeRange": [
+        56.95251125,
+        56.95953296
+      ],
+      "maximumObservedDecimalPlaces": 8,
+      "allCoordinatesWithinWgs84Range": true
+    },
+    "requestPropertyName": "geom,code",
+    "observedReturnedPropertyKeys": [
+      "id",
+      "code",
+      "owned_by_municipality",
+      "public_water"
+    ],
+    "onlyNativeIdRetainedInSafeCache": true,
+    "nonRequestedPropertyValuesRetained": false
+  },
+  "countsSummary": {
+    "alignedCellCount": 13,
+    "cellSizeDegrees": 0.001,
+    "preAndPostHttp200": true,
+    "preMatchedCounts": [
+      17,
+      17,
+      15,
+      15,
+      19,
+      15,
+      17,
+      17,
+      17,
+      16,
+      15,
+      17,
+      15
+    ],
+    "postMatchedCounts": [
+      17,
+      17,
+      15,
+      15,
+      19,
+      15,
+      17,
+      17,
+      17,
+      16,
+      15,
+      17,
+      15
+    ],
+    "stablePrePostMatchedCounts": true,
+    "adapterOnePageMatchedCountsMatchHitCounts": true,
+    "maximumObservedMatchedPerCell": 19,
+    "maximumFeaturesPerOperation": 3000
+  },
+  "pagingProbeSummary": {
+    "forcedPageSize": 1,
+    "cell": "24120_56955",
+    "matchedCount": 17,
+    "pageCount": 17,
+    "firstStartIndex": "0",
+    "lastStartIndex": "16",
+    "matchedCountStableAcrossEveryPage": true,
+    "numberReturnedEqualsOneOnEveryPage": true,
+    "adapterCompletedAllPages": true
+  },
+  "freshIdSummary": {
+    "uniqueNativeIdsFromAllCells": 113,
+    "freshQueryIdsCalls": 113,
+    "everyUniqueNativeIdRequeriedAndFound": true,
+    "pointCoveringNativeId": "01000210029",
+    "pointCoveringIdWasFreshlyRequeried": true
+  },
+  "explicitAbsence": {
+    "requestedSyntheticPublicId": "999999999999999999999999999999",
+    "complete": true,
+    "featureCount": 0,
+    "adapterReportedAbsentIds": [
+      "LV-VZD-999999999999999999999999999999"
+    ],
+    "verified": true
+  },
+  "durableGeometrySamples": 0,
+  "safeTempCache": {
+    "path": "/private/tmp/riga-runtime-safe.geojson",
+    "featureCount": 113,
+    "containsOnlyPublicNativeIdsAndGeometry": true,
+    "sha256": "6f364e58e527656f29177f3e9d42d38e12cf7ff2f5d7d2b15103a4e410e1447d"
+  },
+  "scopeNote": "This qualifies bounded runtime behavior around the unchanged official WUP point. It does not establish citywide parcel completeness, change source catalog entries, or imply an absence from any unsampled area."
+}

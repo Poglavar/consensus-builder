@@ -183,15 +183,15 @@
   },
   "registryFound": true,
   "verifiedSample": true,
-  "resultCategory": "official_utah_county_public_polygon_exact_wup_geometry_verified_runtime_unqualified",
-  "technicalBlocker": "Exact-point geometry is verified only in Utah County’s 16K scale map-service product, not in the separately hosted Provo detailed service, whose description also warns that condominium units can have redundant geometries. Runtime eligibility, scale-generalization suitability, stable pagination/ID behavior, and cross-layer binding have not been qualified.",
-  "remainingUncertainty": "Whether the 16K-scale county layer is sufficiently detailed/stable for the runtime contract; why the separate Provo-hosted detailed parcel layer returns zero at this coordinate; whether the two services differ in coverage/version or coordinate handling.",
-  "nextStep": "Root can qualify the candidate descriptor at the county layer endpoint using `PARCELID` as stable native ID (and `OBJECTID` as row ID), request only `OBJECTID,PARCELID` plus geometry, require exact-point and bounded grid results, verify paging/absence/footprint/binding, and retain the known separate Provo service condo/topology warning as a runtime hold until resolved.",
+  "resultCategory": "verified_public_parcel_geometry_runtime_held",
+  "technicalBlocker": "The Utah County public 4K assessment-map layer returns full point-containing parcel geometry and passes thirteen-cell count/OID manifests, forced small pages and fresh reads of all 157 native parcel IDs. Its complete polygons overlap: independent root EPSG:26912 GEOS audit records 183 pairs above 0.01 m², 787.125 m² aggregate overlap and no invalidity, duplicates or operation errors. The target-footprint proposal binds three parcels instead of one, including a material 9.44 m² intrusion. COGO completeness and an alternate profile transport failure are preserved separately. These are source-model/topology incompatibilities with exclusive parcel ground, not evidence of unavailable cadastre or absent public geometry.",
+  "remainingUncertainty": "The County TaxParcels layer is a scale-specific assessment/recorder product. Multiple parcel polygons overlap, including a material overlap of PARCELID 350180500 over target 350180070. No legal title, survey accuracy or citywide coverage is established.",
+  "nextStep": "Root independently audits the new qualification and topology evidence. Do not enable source for proposals until multi-ID binding and overlap topology are resolved.",
   "schemaVersion": "1.0",
   "checkedAt": "2026-10-09",
   "wupCityCode": 5621,
   "cityId": "wup2025:5621",
-  "runtimeReadiness": "not_enabled_root_qualification_pending_scale_and_topology_review",
+  "runtimeReadiness": "held_native_geometry_conflicts",
   "adapterReady": false,
   "centerLatLon": [
     40.3078525920474,
@@ -204,9 +204,7 @@
   "populationPlausibility2025": "Moderate",
   "pointBasis": "Exact unchanged UN WUP 2025 city point (latitude, longitude); not an administrative boundary or a cadastral result.",
   "publicParcelGeometryFound": true,
-  "sourceIds": [
-    "us-ut-utahcounty-taxparcels-mobile-21"
-  ],
+  "sourceIds": [],
   "registryBasis": "Utah County Government identifies its GIS Division as serving the county and publishes the Tax Parcel dataset, refreshed nightly and combining Recorder parcel linework with Assessor detail. The official local-authority map-service layer is county-wide and includes Provo; one exact-WUP-point polygon was verified. This is a public parcel source, but the map-service layer is a 16K-scale product and does not alone establish a production-ready feed.",
   "registryEvidenceUrls": [
     "https://gispublicweb.provo.gov/ArcGIS/rest/services/Parcel/MapServer/1",
@@ -214,10 +212,25 @@
     "https://provo.gov/891/GIS"
   ],
   "runtimeAssessment": {
-    "status": "not_enabled_root_qualification_pending_scale_and_topology_review",
-    "reason": "A complete, valid, safe-ID polygon was retained at the unchanged WUP point from Utah County TaxParcels_mobile layer 21. Runtime remains disabled pending root review because this is a scale-specific 16K map product and the detailed Provo-hosted polygon service returned no point match."
+    "status": "held_native_geometry_conflicts",
+    "reason": "The Utah County public 4K assessment-map layer returns full point-containing parcel geometry and passes thirteen-cell count/OID manifests, forced small pages and fresh reads of all 157 native parcel IDs. Its complete polygons overlap: independent root EPSG:26912 GEOS audit records 183 pairs above 0.01 m², 787.125 m² aggregate overlap and no invalidity, duplicates or operation errors. The target-footprint proposal binds three parcels instead of one, including a material 9.44 m² intrusion. COGO completeness and an alternate profile transport failure are preserved separately. These are source-model/topology incompatibilities with exclusive parcel ground, not evidence of unavailable cadastre or absent public geometry."
   },
   "cohort": "overnight-next-1101-1200",
-  "cohortState": "research_complete_pending_root_review",
-  "integrationState": "not_integrated"
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "runtimeQualificationEvidence": "provo-runtime-qualification.json",
+  "runtimeTopologyEvidence": "provo-runtime-topology-audit.json",
+  "rootReviewedAt": "2026-10-09T07:54:05.936008+00:00",
+  "candidateSourceIds": [
+    "us-ut-utahcounty-taxparcels-mobile-21",
+    "us-ut-utahcounty-taxparcels-mobile-4k"
+  ],
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:54:05.936008+00:00",
+    "decision": "Hold runtime admission: independently confirmed full-polygon overlaps and binding conflicts.",
+    "qualityFile": "provo-root-quality.json",
+    "qualificationFile": "provo-runtime-qualification.json",
+    "scope": "The Utah County public 4K assessment-map layer returns full point-containing parcel geometry and passes thirteen-cell count/OID manifests, forced small pages and fresh reads of all 157 native parcel IDs. Its complete polygons overlap: independent root EPSG:26912 GEOS audit records 183 pairs above 0.01 m², 787.125 m² aggregate overlap and no invalidity, duplicates or operation errors. The target-footprint proposal binds three parcels instead of one, including a material 9.44 m² intrusion. COGO completeness and an alternate profile transport failure are preserved separately. These are source-model/topology incompatibilities with exclusive parcel ground, not evidence of unavailable cadastre or absent public geometry."
+  },
+  "integratedAt": "2026-10-09T07:55:00.238655+00:00"
 }

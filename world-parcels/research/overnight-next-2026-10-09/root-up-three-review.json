@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T09:39:24.736128+00:00",
+  "reviewedCodes": [
+    9279,
+    9595,
+    9883
+  ],
+  "reviewedCount": 3,
+  "publicGeometryNewFindings": 0,
+  "sourceEvidence": "up-bhunaksha-public-api-followthrough.json",
+  "independentChecks": "root-up-api-recheck.json",
+  "pointOrNameMismatchNotAbsence": true,
+  "scope": "Root review of completed investigations; no additional fresh city counted."
+}

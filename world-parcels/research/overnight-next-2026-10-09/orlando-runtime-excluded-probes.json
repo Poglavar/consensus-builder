@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "1.0",
+  "city": "Orlando",
+  "wupCityCode": 7432,
+  "disposition": "Excluded qualification attempts. Their zero or repeated counts are not evidence of parcel absence or completeness. No raw response geometry or nonpublic attributes are included.",
+  "runs": [
+    {
+      "artifact": "orlando-initial-wrong-projection-probe.json",
+      "status": "excluded_failed_projection",
+      "reason": "EPSG:2236 conversion used an incorrect latitude of origin. All 13 cell counts were zero; this was a projection error, not parcel absence.",
+      "requestCount": 26,
+      "allHttp200": true,
+      "gridCounts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "artifact": "orlando-2236-false-easting-probe.json",
+      "status": "excluded_failed_projection",
+      "reason": "False easting was entered in feet while proj4 expects the equivalent value in metres. Projected point fell outside the published layer extent; repeated cell counts are invalid evidence.",
+      "requestCount": 42,
+      "allHttp200": true,
+      "gridCounts": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "artifact": "orlando-prior-footprint-limit-probe.json",
+      "status": "excluded_incomplete_harness_run",
+      "reason": "Projection was corrected, but the scratch descriptor capped queryBounds at 1 km² and stopped footprint binding. The final run used a bounded 25 km² cap and passed.",
+      "requestCount": 48,
+      "allHttp200": true,
+      "failedTestNames": [
+        "wup-footprint-and-proposal-binding"
+      ]
+    }
+  ],
+  "privacy": "Only test names, safe request counts/statuses, grid feature counts and failure explanations are retained. No raw response bodies, feature properties or geometries are included."
+}

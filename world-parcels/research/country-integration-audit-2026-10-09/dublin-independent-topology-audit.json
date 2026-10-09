@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09T08:04:02.450Z",
+  "purpose": "Independent GEOS topology/overlap/nearest audit on full adapter-returned safe polygons.",
+  "input": {
+    "rawPath": "ignored temporary dublin-full-safepolys.geojson",
+    "rawSha256": "8a8a4fe94357dcd55518045d5351bac761fc9b5d7071ee87dd41ad230ef1cc27",
+    "featureCount": 113
+  },
+  "geometryHandling": {
+    "projection": "EPSG:4326 to EPSG:2157 (Irish Transverse Mercator)",
+    "method": "proj4 transform followed by GEOS C API operations",
+    "repairApplied": false,
+    "sourceVerticesRetainedInRawInput": true
+  },
+  "featureCount": 113,
+  "invalidGeometryCount": 0,
+  "invalidGeometries": [],
+  "emptyGeometryCount": 0,
+  "operationErrorCount": 0,
+  "exactDuplicatePairs": 0,
+  "overlapThresholdM2": 0.01,
+  "overlapPairCountAboveThreshold": 0,
+  "maximumPairwiseOverlapM2": 0,
+  "overlapsAboveThreshold": [],
+  "nearestReturnedParcel": {
+    "parcelId": "IE-SP-4828269",
+    "objectId": "2736378",
+    "distanceFromWupCenterM": 31.026772202,
+    "nearestPointEpsg2157": [
+      714988.06700243,
+      732480.708899507
+    ],
+    "sourcePolygonAreaM2": 217.651313907,
+    "interiorPointEpsg2157": [
+      714984.925554348,
+      732466.115399514
+    ],
+    "boundaryClearanceM": 3.748566622,
+    "bindingSquareHalfWidthM": 0.5
+  },
+  "metricCrs": "EPSG:2157",
+  "verdict": "pass"
+}

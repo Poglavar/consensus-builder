@@ -1,0 +1,130 @@
+{
+  "name": "Balia",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 1195,
+  "point": [
+    26.3173952417814,
+    85.9061124111966
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Balia official cadastral parcel map land registry GIS",
+        "result": "Separate English-language discovery followed by first-party source review; only the government sources listed are retained.",
+        "actualResultUrls": [
+          "https://bhunaksha.bihar.gov.in/10/indexmain.jsp",
+          "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/1319",
+          "https://state.bihar.gov.in/lrc/CitizenHome.html",
+          "https://biharbhumi.bihar.gov.in/"
+        ],
+        "scope": "Identify local or jurisdictionally local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+      },
+      {
+        "language": "Hindi",
+        "query": "बछवाड़ा बलिया बेगूसराय भू नक्शा मौजा cadastral map",
+        "result": "Official Bihar BhuNaksha viewer requires district/subdivision/circle/mauza and map-sheet selection. India DILRMP identifies Balia tehsil in Begusarai and lists BaliaaLakhminia with 12/12 digitized, verified, geo-referenced sheets linked to ROR. No exact city-coordinate parcel or sheet was selected.",
+        "actualResultUrls": [
+          "https://bhunaksha.bihar.gov.in/10/indexmain.jsp",
+          "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/1319",
+          "https://state.bihar.gov.in/lrc/CitizenHome.html",
+          "https://biharbhumi.bihar.gov.in/"
+        ],
+        "method": "Separate Hindi-language discovery followed by first-party source review.",
+        "scope": "Identify local or jurisdictionally local land/cadastral custody and public parcel geometry; no owner, address, tax, account, title, cadastral-number or applicant values submitted."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://bhunaksha.bihar.gov.in/10/indexmain.jsp",
+        "operator": "Bihar Revenue and Land Reforms Department / DILRMP",
+        "scope": "Government cadastral mapping is present for Begusarai/Balia and the BaliaaLakhminia village-level mapsheets are verified and georeferenced; the public viewer requires administrative and sheet selection. No plot, record-of-rights, or owner query was made."
+      },
+      {
+        "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/1319",
+        "operator": "Bihar Revenue and Land Reforms Department / DILRMP",
+        "scope": "Government cadastral mapping is present for Begusarai/Balia and the BaliaaLakhminia village-level mapsheets are verified and georeferenced; the public viewer requires administrative and sheet selection. No plot, record-of-rights, or owner query was made."
+      },
+      {
+        "url": "https://state.bihar.gov.in/lrc/CitizenHome.html",
+        "operator": "Bihar Revenue and Land Reforms Department / DILRMP",
+        "scope": "Government cadastral mapping is present for Begusarai/Balia and the BaliaaLakhminia village-level mapsheets are verified and georeferenced; the public viewer requires administrative and sheet selection. No plot, record-of-rights, or owner query was made."
+      },
+      {
+        "url": "https://biharbhumi.bihar.gov.in/",
+        "operator": "Bihar Revenue and Land Reforms Department / DILRMP",
+        "scope": "Government cadastral mapping is present for Begusarai/Balia and the BaliaaLakhminia village-level mapsheets are verified and georeferenced; the public viewer requires administrative and sheet selection. No plot, record-of-rights, or owner query was made."
+      }
+    ],
+    "requests": [],
+    "historicalContext": [
+      "Preflight audit on 2026-10-09: this exact WUP 2025 code was absent from existing city/service packets and prior-attempt entries; only pending-roster and cohort-ledger rows matched."
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "Bihar Revenue and Land Reforms Department / DILRMP",
+    "url": "https://bhunaksha.bihar.gov.in/10/indexmain.jsp",
+    "operator": "Bihar Revenue and Land Reforms Department / DILRMP",
+    "serviceType": "Official registry, map or cadastral source reviewed; no safe source-native full parcel polygon was retained at the exact unchanged WUP point.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See source review; custody, point coverage, parcel geometry, dataset scope and runtime readiness are assessed separately."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Government cadastral mapping is present for Begusarai/Balia and the BaliaaLakhminia village-level mapsheets are verified and georeferenced; the public viewer requires administrative and sheet selection. No plot, record-of-rights, or owner query was made.",
+    "verifiedOpenScope": "No source-native full parcel polygon at the exact unchanged WUP point was retained; this investigation does not establish parcel absence or citywide coverage.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "Government cadastral mapping is present for Begusarai/Balia and the BaliaaLakhminia village-level mapsheets are verified and georeferenced; the public viewer requires administrative and sheet selection. No plot, record-of-rights, or owner query was made.",
+  "remainingUncertainty": "Government cadastral mapping is present for Begusarai/Balia and the BaliaaLakhminia village-level mapsheets are verified and georeferenced; the public viewer requires administrative and sheet selection. No plot, record-of-rights, or owner query was made. Exact WUP-point parcel geometry, legal/title meaning, coverage completeness and currentness remain unverified.",
+  "nextStep": "Keep runtime disabled until root review determines whether an official source and full native geometry meet adapter criteria.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 11147,
+  "cityId": "wup2025:11147",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    26.3173952417814,
+    85.9061124111966
+  ],
+  "population2025k": 465.399,
+  "populationUnit": "persons",
+  "queueRank": 1195,
+  "population2025": 465399,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Official BhuNaksha viewer and DILRMP village-level map status identify the exact Balia subdivision and digitized map coverage.",
+  "registryEvidenceUrls": [
+    "https://bhunaksha.bihar.gov.in/10/indexmain.jsp",
+    "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/1319",
+    "https://state.bihar.gov.in/lrc/CitizenHome.html",
+    "https://biharbhumi.bihar.gov.in/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No source-native full parcel polygon at the exact unchanged WUP point was retained; runtime remains disabled."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

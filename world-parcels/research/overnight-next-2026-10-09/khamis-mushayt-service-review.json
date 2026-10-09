@@ -158,5 +158,24 @@
     "custodyScope": "Aseer Municipality GeoExplorer visibly lists land-plot boundary layers covering the region, including Khamis Mushayt. The map terms limit copying/reuse and no downloadable safe geometry schema was verified. Formal cadastral reports are owner/deed-based and authenticated.",
     "transportFailuresDoNotProveAbsence": true,
     "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  },
+  "rootNetworkContextRecheck": {
+    "checkedAt": "2026-10-09T09:11:34.409502+00:00",
+    "executionContext": "Root explicitly escalated public-network metadata reads",
+    "observations": [
+      {
+        "url": "https://asirgis.ars.gov.sa/server/rest/services/ALMostaksif/SubDivisionParcelS/FeatureServer/0?f=pjson",
+        "httpStatus": null,
+        "bytesRead": 0,
+        "transportOutcome": "curl exit6 DNS resolution failure before any HTTP response"
+      },
+      {
+        "url": "https://asirgis.ars.gov.sa/server/rest/services/AsirLayers/SubDivisionParcelSBalady/FeatureServer/0?f=pjson",
+        "httpStatus": null,
+        "bytesRead": 0,
+        "transportOutcome": "curl exit6 DNS resolution failure before any HTTP response"
+      }
+    ],
+    "interpretation": "Unlike restricted-execution DNS failures corrected elsewhere, these two actual escalated reads also failed DNS. Source schema and geometry remain unverified; cause and current endpoint availability remain unresolved, not a parcel-absence conclusion."
   }
 }

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T09:09:33.635078+00:00",
+  "reviewedCodes": [
+    7454,
+    7995,
+    9720,
+    12016,
+    8942,
+    11736,
+    11756,
+    8767,
+    2732,
+    6924,
+    495
+  ],
+  "reviewedCount": 11,
+  "custodyCorrections": {
+    "11756": "null -> true, city-specific primary registration guidance",
+    "8767": "null -> true, city-specific registration center report",
+    "6924": "true -> null, local custody unproven"
+  },
+  "fullGeometryNewFindings": 0,
+  "rawHtmlRetained": false,
+  "transportScope": "Actual escalated public-network checks and indexed primary-page text distinguished; failed fetches do not establish absence."
+}

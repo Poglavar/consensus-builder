@@ -1,0 +1,146 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4390-osogbo.json",
+  "purpose": "Document separate English/local-language research, local land-registry custody scope, anonymous request outcomes and safe geometry limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Osun Surveyor General page establishes state/local cadastral survey, GIS and certificate-of-occupancy work and explicitly identifies completed Osogbo surveys. No anonymous parcel-vector endpoint was verified in the reviewed page/link configuration.",
+  "registryAssessment": "The official Osun Surveyor General page establishes state/local cadastral survey, GIS and certificate-of-occupancy work and explicitly identifies completed Osogbo surveys. No anonymous parcel-vector endpoint was verified in the reviewed page/link configuration.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.osunstate.gov.ng/ministries/office-of-surveyor-general/",
+      "operator": "Osun State Office of the Surveyor General",
+      "scope": "Official office describes cadastral survey, mapping and land-related functions; local Osogbo is within state scope."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Oshogbo official cadastral parcel map GIS Osun State land registry",
+      "result": "Separate English-language search followed by first-party source review; listed official sources are the evidence retained.",
+      "actualResultUrls": [
+        "https://www.osunstate.gov.ng/ministries/office-of-surveyor-general/"
+      ],
+      "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+    },
+    {
+      "language": "Yoruba",
+      "query": "Osogbo Yoruba maapu ilẹ cadastre GIS ilẹ Osun osun state official",
+      "result": "Official Osun surveyor-general cadastral and land-mapping responsibilities found; no public parcel layer.",
+      "actualResultUrls": [
+        "https://www.osunstate.gov.ng/ministries/office-of-surveyor-general/"
+      ],
+      "method": "Separate Yoruba-language discovery followed by first-party source review.",
+      "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry; no owner, address, tax, account or applicant values submitted."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the exact unchanged WUP point. publicParcelGeometryFound:false means unverified in this investigation, not confirmed absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official Osun Surveyor General page establishes state/local cadastral survey, GIS and certificate-of-occupancy work and explicitly identifies completed Osogbo surveys. No anonymous parcel-vector endpoint was verified in the reviewed page/link configuration.",
+    "verifiedOpenScope": "No anonymous full parcel geometry with stable native IDs was verified within the reviewed discovery scope. Institutional documents and UI login pages do not establish geometry absence; continued first-party service discovery remains open.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "No anonymous full parcel geometry with stable native IDs was verified within the reviewed discovery scope. Institutional documents and UI login pages do not establish geometry absence; continued first-party service discovery remains open.",
+  "nextStep": "Continue viewer configuration, public advertised service and API discovery; verify full native polygons and retrieval completeness before city admission.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootReviewedAt": "2026-10-09T09:46:31.498552+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T09:46:31.498552+00:00",
+    "decision": "Paired discovery, exact roster identity and actual primary institutional evidence reviewed. Public geometry remains unverified in this bounded pass.",
+    "custodyScope": "The official Osun Surveyor General page establishes state/local cadastral survey, GIS and certificate-of-occupancy work and explicitly identifies completed Osogbo surveys. No anonymous parcel-vector endpoint was verified in the reviewed page/link configuration.",
+    "source": "https://www.osunstate.gov.ng/ministries/office-of-surveyor-general/",
+    "rootNetworkEvidence": "root-primary-four-recheck.json",
+    "uiLoginOrTransportFailureNotAbsence": true,
+    "legalTitleTermsNotEligibilityGates": true,
+    "noCitywideAbsenceClaim": true
+  },
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 4390,
+      "stage": "surveyor",
+      "url": "https://www.osunstate.gov.ng/ministries/office-of-surveyor-general/",
+      "httpStatus": 200,
+      "curlExit": 0,
+      "bytes": 366727,
+      "sha256": "2ef7cda79a81d20452aaa3ed58efb32067b70398d0c1d1e89006af554a94bfa8",
+      "checkedAt": "2026-10-09T09:40:32.747177+00:00",
+      "executionContext": "require_escalated public network",
+      "scriptUrls": [
+        "https://www.osunstate.gov.ng/wp-includes/js/jquery/jquery.min.js?ver=3.7.0",
+        "https://www.osunstate.gov.ng/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1",
+        "https://www.osunstate.gov.ng/wp-content/plugins/download-manager/assets/bootstrap/js/popper.min.js?ver=6.3.13",
+        "https://www.osunstate.gov.ng/wp-content/plugins/download-manager/assets/bootstrap/js/bootstrap.min.js?ver=6.3.13",
+        "https://www.osunstate.gov.ng/wp-content/plugins/download-manager/assets/js/front.js?ver=3.2.76",
+        "https://www.osunstate.gov.ng/wp-includes/js/jquery/ui/core.min.js?ver=1.13.2",
+        "https://www.osunstate.gov.ng/wp-includes/js/jquery/ui/mouse.min.js?ver=1.13.2",
+        "https://www.osunstate.gov.ng/wp-includes/js/jquery/ui/sortable.min.js?ver=1.13.2",
+        "https://www.osunstate.gov.ng/wp-includes/js/jquery/ui/datepicker.min.js?ver=1.13.2",
+        "https://www.osunstate.gov.ng/wp-includes/js/jquery/ui/resizable.min.js?ver=1.13.2",
+        "https://www.osunstate.gov.ng/wp-includes/js/jquery/ui/draggable.min.js?ver=1.13.2",
+        "https://www.osunstate.gov.ng/wp-includes/js/jquery/ui/controlgroup.min.js?ver=1.13.2",
+        "https://www.osunstate.gov.ng/wp-includes/js/jquery/ui/checkboxradio.min.js?ver=1.13.2",
+        "https://www.osunstate.gov.ng/wp-includes/js/jquery/ui/button.min.js?ver=1.13.2",
+        "https://www.osunstate.gov.ng/wp-includes/js/jquery/ui/dialog.min.js?ver=1.13.2",
+        "https://www.osunstate.gov.ng/wp-content/plugins/events-manager/includes/js/events-manager.min.js?ver=6.4.5.1",
+        "https://www.osunstate.gov.ng/wp-content/plugins/revslider/public/assets/js/rbtools.min.js?ver=6.6.8",
+        "https://www.osunstate.gov.ng/wp-content/plugins/revslider/public/assets/js/rs6.min.js?ver=6.6.8",
+        "https://www.osunstate.gov.ng/wp-content/themes/thegov/js/perfect-scrollbar.min.js?ver=6.3.13",
+        "https://www.osunstate.gov.ng/wp-content/plugins/awesome-weather/js/awesome-weather-widget-frontend.js?ver=1.1",
+        "https://www.osunstate.gov.ng/wp-content/plugins/contact-form-7/includes/swv/js/index.js?ver=5.8",
+        "https://www.osunstate.gov.ng/wp-content/plugins/contact-form-7/includes/js/index.js?ver=5.8",
+        "https://www.osunstate.gov.ng/wp-includes/js/dist/vendor/wp-polyfill-inert.min.js?ver=3.1.2",
+        "https://www.osunstate.gov.ng/wp-includes/js/dist/vendor/regenerator-runtime.min.js?ver=0.13.11",
+        "https://www.osunstate.gov.ng/wp-includes/js/dist/vendor/wp-polyfill.min.js?ver=3.15.0",
+        "https://www.osunstate.gov.ng/wp-includes/js/dist/hooks.min.js?ver=c6aec9a8d4e5a5d543a1",
+        "https://www.osunstate.gov.ng/wp-includes/js/dist/i18n.min.js?ver=7701b0c3857f914212ef",
+        "https://www.osunstate.gov.ng/wp-includes/js/jquery/jquery.form.min.js?ver=4.3.0",
+        "https://www.osunstate.gov.ng/wp-content/plugins/ultimate-social-media-icons/js/shuffle/modernizr.custom.min.js?ver=6.3.13",
+        "https://www.osunstate.gov.ng/wp-content/plugins/ultimate-social-media-icons/js/shuffle/jquery.shuffle.min.js?ver=6.3.13",
+        "https://www.osunstate.gov.ng/wp-content/plugins/ultimate-social-media-icons/js/shuffle/random-shuffle-min.js?ver=6.3.13",
+        "https://www.osunstate.gov.ng/wp-content/plugins/ultimate-social-media-icons/js/custom.js?ver=2.8.5",
+        "https://www.osunstate.gov.ng/wp-content/themes/thegov/js/theme-addons.min.js?ver=6.3.13",
+        "https://www.osunstate.gov.ng/wp-content/themes/thegov/js/theme.js?ver=6.3.13",
+        "https://www.osunstate.gov.ng/wp-content/plugins/mystickyelements/js/jquery.cookie.js?ver=2.1.3",
+        "https://www.osunstate.gov.ng/wp-content/plugins/mystickyelements/js/mystickyelements-fronted.min.js?ver=2.1.3",
+        "https://www.osunstate.gov.ng/wp-content/plugins/mystickyelements/intl-tel-input-src/build/js/intlTelInput.js?ver=2.1.3",
+        "https://www.osunstate.gov.ng/wp-content/plugins/thegov-core/includes/elementor//assets/js/wgl_elementor_widgets.js?ver=1.0.0",
+        "https://www.osunstate.gov.ng/wp-content/plugins/thegov-core/includes/elementor/assets/js/wgl_elementor_sections.js?ver=6.3.13",
+        "https://www.osunstate.gov.ng/wp-content/plugins/elementor/assets/js/webpack.runtime.min.js?ver=3.14.0",
+        "https://www.osunstate.gov.ng/wp-content/plugins/elementor/assets/js/frontend-modules.min.js?ver=3.14.0",
+        "https://www.osunstate.gov.ng/wp-content/plugins/elementor/assets/lib/waypoints/waypoints.min.js?ver=4.0.2",
+        "https://www.osunstate.gov.ng/wp-content/plugins/elementor/assets/lib/swiper/swiper.min.js?ver=5.3.6",
+        "https://www.osunstate.gov.ng/wp-content/plugins/elementor/assets/lib/share-link/share-link.min.js?ver=3.14.0",
+        "https://www.osunstate.gov.ng/wp-content/plugins/elementor/assets/lib/dialog/dialog.min.js?ver=4.9.0",
+        "https://www.osunstate.gov.ng/wp-content/plugins/elementor/assets/js/frontend.min.js?ver=3.14.0",
+        "https://www.osunstate.gov.ng/wp-content/plugins/elementor/assets/js/preloaded-modules.min.js?ver=3.14.0"
+      ],
+      "advertisedMapOrPortalLinks": [
+        "https://www.osunstate.gov.ng/about/geography/",
+        "https://www.osunstate.gov.ng/download/osun-commerce-procedures-for-registration-and-renewal-of-registration-of-business-premises/",
+        "https://www.osunstate.gov.ng/download/osun-agric-procedures-for-registraion-and-renewal-of-produce-licences-and-stores/"
+      ],
+      "publicMapLibraryTokens": []
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "cityCount": 0,
+  "cities": [],
+  "cohort": "overnight-next-1201-1300",
+  "cohortState": "pending_unintegrated",
+  "integrationState": "not_integrated",
+  "proposalStatus": "awaiting_root_queue_confirmation",
+  "sourceRoster": "ranked-population.json",
+  "sourceRosterSha256": "3bfad4448253fa7dc9d049e4849601b990ba45bd19611da6de139b7730ad0dbd",
+  "sourceHashes": "source-hashes.json",
+  "sourceHashesSha256": "279510906900722f437d333344d755ca2ada7fde044600af126fd4fe8d97e310",
+  "identityDecisionOverlay": "world-parcels/research/overnight-next-1201-1300-2026-10-09/root-identity-decision-overlay.json",
+  "identityDecisionOverlaySha256": "94bb446008d720eb0639a62f09fac74646cc36a2977389606672bea535df8af7",
+  "resolvedDecisions": [
+    {
+      "rank": 1212,
+      "cityCode": 7328,
+      "name": "Atlanta",
+      "decision": "confirmed_attempt",
+      "source": "world-parcels/research/overnight-next-1201-1300-2026-10-09/root-identity-decision-overlay.json"
+    }
+  ]
+}

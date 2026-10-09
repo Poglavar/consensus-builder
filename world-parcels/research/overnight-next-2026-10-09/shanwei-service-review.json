@@ -1,0 +1,163 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11736-shanwei.json",
+  "purpose": "Document separate English/local-language source discovery, land-registry custody, anonymous request outcomes and safe geometry limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Shanwei municipal bureau duties explicitly cover city cadastral survey, real-estate registration, record management and the municipal registration platform. Its separate standard-map page does not establish a cadastral polygon service.",
+  "registryAssessment": "Shanwei municipal bureau duties explicitly cover city cadastral survey, real-estate registration, record management and the municipal registration platform. Its separate standard-map page does not establish a cadastral polygon service.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.shanwei.gov.cn/swgtj/ztzl/bzdtfu/content/post_1131394.html",
+      "operator": "Shanwei Natural Resources Bureau / Real Estate Registration Transaction Center",
+      "scope": "Local bureau handles cadastral survey and unified real-estate registration; public standard-map page contains administrative/transport themes, and registry-information requests are protected workflows. No anonymous parcel geometry endpoint was found."
+    },
+    {
+      "url": "https://www.shanwei.gov.cn/shanwei/zwgk/jcxx/zzjg/zfbmz/content/post_1091347.html",
+      "operator": "Shanwei Natural Resources Bureau / Real Estate Registration Transaction Center",
+      "scope": "Local bureau handles cadastral survey and unified real-estate registration; public standard-map page contains administrative/transport themes, and registry-information requests are protected workflows. No anonymous parcel geometry endpoint was found."
+    },
+    {
+      "url": "https://www.shanwei.gov.cn/attachment/0/81/81992/1228947.pdf",
+      "operator": "Shanwei Natural Resources Bureau / Real Estate Registration Transaction Center",
+      "scope": "Local bureau handles cadastral survey and unified real-estate registration; public standard-map page contains administrative/transport themes, and registry-information requests are protected workflows. No anonymous parcel geometry endpoint was found."
+    },
+    {
+      "url": "https://www.shanwei.gov.cn/shanwei/zwgk/jcxx/zzjg/zfbmz/content/post_1091347.html",
+      "operator": "Government source with the jurisdictional scope stated in observation",
+      "observation": "Shanwei municipal bureau duties explicitly cover city cadastral survey, real-estate registration, record management and the municipal registration platform. Its separate standard-map page does not establish a cadastral polygon service."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Shanwei official cadastral parcel map land registry GIS",
+      "result": "Separate English-language discovery followed by first-party source review; only the government sources listed are retained.",
+      "actualResultUrls": [
+        "https://www.shanwei.gov.cn/swgtj/ztzl/bzdtfu/content/post_1131394.html",
+        "https://www.shanwei.gov.cn/shanwei/zwgk/jcxx/zzjg/zfbmz/content/post_1091347.html",
+        "https://www.shanwei.gov.cn/attachment/0/81/81992/1228947.pdf"
+      ],
+      "scope": "Identify local or jurisdictionally local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+    },
+    {
+      "language": "Chinese (Simplified)",
+      "query": "汕尾 不动产登记中心 地籍测绘 地籍图 自然资源局",
+      "result": "Official Shanwei natural-resources bureau functions and registration-center notices confirm local real-estate registration and cadastral duties; accessible official map pages found were thematic/admin maps, not parcel polygons.",
+      "actualResultUrls": [
+        "https://www.shanwei.gov.cn/swgtj/ztzl/bzdtfu/content/post_1131394.html",
+        "https://www.shanwei.gov.cn/shanwei/zwgk/jcxx/zzjg/zfbmz/content/post_1091347.html",
+        "https://www.shanwei.gov.cn/attachment/0/81/81992/1228947.pdf"
+      ],
+      "method": "Separate Chinese (Simplified)-language discovery followed by first-party source review.",
+      "scope": "Identify local or jurisdictionally local land/cadastral custody and public parcel geometry; no owner, address, tax, account, title, cadastral-number or applicant values submitted."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the exact unchanged WUP point. publicParcelGeometryFound:false means unverified in this investigation, not confirmed absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Shanwei municipal bureau duties explicitly cover city cadastral survey, real-estate registration, record management and the municipal registration platform. Its separate standard-map page does not establish a cadastral polygon service.",
+    "verifiedOpenScope": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+  "nextStep": "Continue first-party viewer configuration, advertised service and API discovery; qualify complete geometry and retrieval semantics before enabling runtime.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T09:09:33.635078+00:00",
+    "decision": "Reviewed paired discovery, exact WUP identity, primary custodial evidence and scoped endpoint outcomes. Public geometry remains unverified in this pass.",
+    "custodyScope": "Shanwei municipal bureau duties explicitly cover city cadastral survey, real-estate registration, record management and the municipal registration platform. Its separate standard-map page does not establish a cadastral polygon service.",
+    "transportFailuresDoNotProveAbsence": true,
+    "uiOrTermsAreNotGeometryGates": true,
+    "geometryClaimScope": "Investigation outcome only; no citywide absence asserted."
+  },
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 11736,
+      "url": "https://www.shanwei.gov.cn/shanwei/zwgk/jcxx/zzjg/zfbmz/content/post_1091347.html",
+      "checkedAt": "2026-10-09T08:58:48.204294+00:00",
+      "method": "Anonymous read-only GET; no property values or credentials submitted",
+      "executionContext": "Explicit require_escalated network execution",
+      "rawHtmlRetained": false,
+      "httpStatus": 200,
+      "finalUrl": "https://www.shanwei.gov.cn/shanwei/zwgk/jcxx/zzjg/zfbmz/content/post_1091347.html",
+      "contentType": "text/html; charset=utf-8",
+      "bytesRead": 64728,
+      "sha256": "4ddee6510f050f140f90abb5a9ae971a24cd65c85cf9f897a5d935b9bc0b584b",
+      "complete": true,
+      "termPresence": {
+        "不动产": true,
+        "地籍": false,
+        "北仑": false,
+        "桐乡": false,
+        "晋中": false,
+        "登记": true,
+        "catastro": false,
+        "Piura": false,
+        "COFOPRI": false
+      },
+      "parcelProtocolStringsPresent": {
+        "FeatureServer": false,
+        "geoserver": false,
+        "GetFeature": false,
+        "MapServer": false,
+        "OpenLayers": false,
+        "WFS": false
+      }
+    },
+    {
+      "wupCityCode": 11736,
+      "url": "https://www.shanwei.gov.cn/swgtj/ztzl/bzdtfu/content/post_1131394.html",
+      "checkedAt": "2026-10-09T08:58:51.518252+00:00",
+      "method": "Anonymous read-only GET; no property values or credentials submitted",
+      "executionContext": "Explicit require_escalated network execution",
+      "rawHtmlRetained": false,
+      "httpStatus": 200,
+      "finalUrl": "https://www.shanwei.gov.cn/swgtj/ztzl/bzdtfu/content/post_1131394.html",
+      "contentType": "text/html; charset=utf-8",
+      "bytesRead": 28494,
+      "sha256": "49dfaf304376830e94a6ed43081d2436bfff9d84009c5173dcf49b764a3a822c",
+      "complete": true,
+      "termPresence": {
+        "不动产": false,
+        "地籍": false,
+        "北仑": false,
+        "桐乡": false,
+        "晋中": false,
+        "登记": false,
+        "catastro": false,
+        "Piura": false,
+        "COFOPRI": false
+      },
+      "parcelProtocolStringsPresent": {
+        "FeatureServer": false,
+        "geoserver": false,
+        "GetFeature": false,
+        "MapServer": false,
+        "OpenLayers": false,
+        "WFS": false
+      }
+    }
+  ]
+}

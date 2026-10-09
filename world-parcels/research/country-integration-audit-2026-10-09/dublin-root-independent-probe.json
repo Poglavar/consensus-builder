@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T08:10:10.526Z",
+  "descriptor": {
+    "id": "ie-tailte-hvd-freehold",
+    "adapter": "arcgis",
+    "endpoint": "https://services-eu1.arcgis.com/FH5XCsx8rYXqnjF5/arcgis/rest/services/Cadastral_Parcels_Freehold/FeatureServer/12",
+    "idField": "SP_ID",
+    "objectIdField": "OBJECTID",
+    "idType": "integer",
+    "idPrefix": "IE-SP-",
+    "outFields": [
+      "OBJECTID",
+      "SP_ID"
+    ],
+    "boundsQueryMode": "object-ids",
+    "pageSize": 100,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 1,
+    "maxConcurrentQueries": 1,
+    "countryCode": "IE",
+    "cityIds": [
+      "dublin"
+    ],
+    "metricSrid": 2157
+  },
+  "metricDefinition": "+proj=tmerc +lat_0=53.5 +lon_0=-8 +k=0.99982 +x_0=600000 +y_0=750000 +ellps=GRS80 +units=m +no_defs",
+  "sourceGeometryWgs84Sha256": "8a8a4fe94357dcd55518045d5351bac761fc9b5d7071ee87dd41ad230ef1cc27",
+  "freshId": {
+    "id": "IE-SP-4828269",
+    "complete": true,
+    "geometryMatches": true
+  },
+  "explicitAbsence": [
+    "IE-SP-7207373"
+  ],
+  "unchangedWupCenter": [
+    53.330243126706,
+    -6.27332800239088
+  ],
+  "centerCell": {
+    "bbox": [
+      -6.274,
+      53.33,
+      -6.273,
+      53.331
+    ],
+    "count": 3,
+    "complete": true,
+    "allFullGeometriesMatch": true
+  },
+  "fullParcelFootprint": {
+    "targetId": "IE-SP-4828269",
+    "returnedIds": [
+      "IE-SP-4828269"
+    ],
+    "complete": true
+  },
+  "fullParcelBinding": {
+    "parcels": [
+      {
+        "parcelId": "IE-SP-4828269",
+        "overlapM2": 217.243,
+        "intrusionM": 7.7665
+      }
+    ],
+    "touched": [],
+    "toleranceM": 0,
+    "coverage": "complete",
+    "unsurveyedM2": 0,
+    "siteM2": 217.24,
+    "source": "server:ie-tailte-hvd-freehold",
+    "unknownM2": 0,
+    "computedAt": "2026-10-09T08:10:10.526Z"
+  },
+  "geometryChangedOrRepaired": false,
+  "requests": [
+    {
+      "url": "https://services-eu1.arcgis.com/FH5XCsx8rYXqnjF5/arcgis/rest/services/Cadastral_Parcels_Freehold/FeatureServer/12/query?where=SP_ID+IN+%284828269%29&outFields=OBJECTID%2CSP_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=100&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "responseBytes": 706,
+      "sha256": "ebc4c7b2b2eb48219abfd756ec7324974c31cb6f09f7befec0e6e44050d2a973"
+    },
+    {
+      "url": "https://services-eu1.arcgis.com/FH5XCsx8rYXqnjF5/arcgis/rest/services/Cadastral_Parcels_Freehold/FeatureServer/12/query?where=SP_ID+IN+%287207373%29&outFields=OBJECTID%2CSP_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=100&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "responseBytes": 98,
+      "sha256": "1ce7eb457779acd1dc230a1bcb4692d06f27533481f26cbfe0e9e599134c0cd4"
+    },
+    {
+      "url": "https://services-eu1.arcgis.com/FH5XCsx8rYXqnjF5/arcgis/rest/services/Cadastral_Parcels_Freehold/FeatureServer/12/query?where=1%3D1&geometry=-6.274%2C53.33%2C-6.273%2C53.331&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "httpStatus": 200,
+      "responseBytes": 11,
+      "sha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6"
+    },
+    {
+      "url": "https://services-eu1.arcgis.com/FH5XCsx8rYXqnjF5/arcgis/rest/services/Cadastral_Parcels_Freehold/FeatureServer/12/query?where=1%3D1&geometry=-6.274%2C53.33%2C-6.273%2C53.331&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "httpStatus": 200,
+      "responseBytes": 70,
+      "sha256": "63a49e8a63705f751ecb40a69089869e0ee42a71ef1844d7bd2f386b64e22aa1"
+    },
+    {
+      "url": "https://services-eu1.arcgis.com/FH5XCsx8rYXqnjF5/arcgis/rest/services/Cadastral_Parcels_Freehold/FeatureServer/12/query?where=1%3D1&outFields=OBJECTID%2CSP_ID&returnGeometry=true&outSR=4326&f=geojson&objectIds=2530037%2C2736378%2C3048764",
+      "method": "GET",
+      "httpStatus": 200,
+      "responseBytes": 2288,
+      "sha256": "ca8fd187783a0b153e9accb57ea4014fcfa7dc0e9a2f1d55d70f169449f8c41e"
+    },
+    {
+      "url": "https://services-eu1.arcgis.com/FH5XCsx8rYXqnjF5/arcgis/rest/services/Cadastral_Parcels_Freehold/FeatureServer/12/query?where=1%3D1&geometry=-6.27381281304142%2C53.3298102819756%2C-6.27368213988382%2C53.3300700690432&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "httpStatus": 200,
+      "responseBytes": 11,
+      "sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661"
+    },
+    {
+      "url": "https://services-eu1.arcgis.com/FH5XCsx8rYXqnjF5/arcgis/rest/services/Cadastral_Parcels_Freehold/FeatureServer/12/query?where=1%3D1&geometry=-6.27381281304142%2C53.3298102819756%2C-6.27368213988382%2C53.3300700690432&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "httpStatus": 200,
+      "responseBytes": 54,
+      "sha256": "b6df05a14981c822bdffb5e28200de99ee3ad3dc28852ed84d2cb548b031bb02"
+    },
+    {
+      "url": "https://services-eu1.arcgis.com/FH5XCsx8rYXqnjF5/arcgis/rest/services/Cadastral_Parcels_Freehold/FeatureServer/12/query?where=1%3D1&outFields=OBJECTID%2CSP_ID&returnGeometry=true&outSR=4326&f=geojson&objectIds=2736378",
+      "method": "GET",
+      "httpStatus": 200,
+      "responseBytes": 706,
+      "sha256": "ebc4c7b2b2eb48219abfd756ec7324974c31cb6f09f7befec0e6e44050d2a973"
+    },
+    {
+      "url": "https://services-eu1.arcgis.com/FH5XCsx8rYXqnjF5/arcgis/rest/services/Cadastral_Parcels_Freehold/FeatureServer/12/query?where=1%3D1&geometry=-6.27381281304142%2C53.3298102819756%2C-6.27368213988382%2C53.3300700690432&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "httpStatus": 200,
+      "responseBytes": 11,
+      "sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661"
+    },
+    {
+      "url": "https://services-eu1.arcgis.com/FH5XCsx8rYXqnjF5/arcgis/rest/services/Cadastral_Parcels_Freehold/FeatureServer/12/query?where=1%3D1&geometry=-6.27381281304142%2C53.3298102819756%2C-6.27368213988382%2C53.3300700690432&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "httpStatus": 200,
+      "responseBytes": 54,
+      "sha256": "b6df05a14981c822bdffb5e28200de99ee3ad3dc28852ed84d2cb548b031bb02"
+    },
+    {
+      "url": "https://services-eu1.arcgis.com/FH5XCsx8rYXqnjF5/arcgis/rest/services/Cadastral_Parcels_Freehold/FeatureServer/12/query?where=1%3D1&outFields=OBJECTID%2CSP_ID&returnGeometry=true&outSR=4326&f=geojson&objectIds=2736378",
+      "method": "GET",
+      "httpStatus": 200,
+      "responseBytes": 706,
+      "sha256": "ebc4c7b2b2eb48219abfd756ec7324974c31cb6f09f7befec0e6e44050d2a973"
+    }
+  ]
+}

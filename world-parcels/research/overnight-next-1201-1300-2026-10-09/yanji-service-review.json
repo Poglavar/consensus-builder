@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11162-yanji.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Review official Yanji/Jilin land-registration and public-geospatial channels for an anonymous parcel geometry service with native identifiers.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Yanji has a municipal real-property registration/transaction portal, and the Jilin Natural Resources Department describes the city registration center and integrated digital service system. A published project award confirms an integrated registration/transaction management platform. These sources establish registry custody and operational infrastructure, but the reviewed materials do not document an anonymous parcel polygon service. The city homepage timed out on escalated anonymous access and the public Jilin Tianditu landing response contained no readable layer metadata. No exact WUP point query was run; no geometry absence or coverage claim is made.",
+  "registryAssessment": "Official sources confirm Yanji property registration and property-information systems. They do not verify unrestricted, anonymous parcel-vector access.",
+  "coverageAssessment": {
+    "claimedScope": "Official Yanji city registration and Jilin provincial public map-service routes and indexed service documents reviewed.",
+    "verifiedOpenScope": "No anonymous full parcel geometry or stable native parcel ID verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "officialPrimarySources": [
+    {
+      "url": "https://www.yanji.gov.cn/",
+      "operator": "Yanji Municipal People’s Government",
+      "scope": "The official homepage link list names “Yanji Real Estate Registration and Transaction Information Network,” indicating a local registration/transaction portal. Direct homepage retrieval timed out; no live service URL/config or anonymous geometry was verified."
+    },
+    {
+      "url": "https://zrzy.jl.gov.cn/jlsbdcdj/gzdt/bdcsngzdt/201805/t20180508_5196494.html",
+      "operator": "Jilin Provincial Department of Natural Resources; Yanji Real Estate Registration Center",
+      "scope": "Official provincial report describes integrated registration services, self-service archive queries, public service policies, appointment services and the center’s service system. It does not document an anonymous parcel geometry endpoint."
+    },
+    {
+      "url": "https://zrzy.jl.gov.cn/zwgk/tjxx/ch/",
+      "operator": "Jilin Provincial Department of Natural Resources",
+      "scope": "Official provincial survey/mapping page links to the Jilin geographic information public service platform (Tianditu Jilin). The linked platform entry did not expose readable service metadata in the reviewed web response."
+    },
+    {
+      "url": "https://grade.scagis.org.cn/scagisweb/api/file/download/KTF202307070000000138",
+      "operator": "Jilin Geographic Information Association / official award publication naming Yanji Natural Resources Bureau",
+      "scope": "An industry award listing names the Yanji property registration and transaction integrated information management platform and data-quality project. It establishes that a local operational system exists, not anonymous public access."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Yanji Jilin official cadastral parcel map GIS property registration",
+      "result": "English-language discovery followed by first-party Jilin Natural Resources and Yanji government source review. The government site advertises a city property-registration/transaction information portal, but its direct page did not respond in this network pass.",
+      "actualResultUrls": [
+        "https://www.yanji.gov.cn/",
+        "https://zrzy.jl.gov.cn/jlsbdcdj/gzdt/bdcsngzdt/201805/t20180508_5196494.html",
+        "https://zrzy.jl.gov.cn/zwgk/tjxx/ch/"
+      ],
+      "scope": "Identify official cadastral custody and anonymous parcel-geometry service; preserve exact WUP coordinates and avoid resident, title, or transaction data."
+    },
+    {
+      "language": "Chinese (Simplified)",
+      "query": "延吉市 不动产登记交易信息网 地籍图 GIS 自然资源局 延吉",
+      "result": "Chinese-language discovery found an official Yanji property-registry/transaction information portal link, official Jilin Natural Resources descriptions of registration and self-service record services, and a named Yanji registry information-platform procurement result. None documents an anonymous full-parcel geometry API.",
+      "actualResultUrls": [
+        "https://www.yanji.gov.cn/",
+        "https://zrzy.jl.gov.cn/jlsbdcdj/gzdt/bdcsngzdt/201805/t20180508_5196494.html",
+        "https://grade.scagis.org.cn/scagisweb/api/file/download/KTF202307070000000138",
+        "https://jilin.tianditu.gov.cn/"
+      ],
+      "method": "Independent Simplified-Chinese-language search followed by first-party municipal and provincial natural-resource source review.",
+      "scope": "Find public native geometry and stable parcel identifiers; do not submit owner, address, certificate, parcel, account, or applicant identifiers."
+    }
+  ],
+  "attempts": [
+    "Separate English and Chinese searches were run for the Yanji cadastral map, official property portal, and city/provincial GIS routes.",
+    "Official Yanji government homepage indexed link text names “Yanji Real Estate Registration and Transaction Information Network”; an escalated HTTPS request to the homepage timed out before a response.",
+    "Official Jilin Provincial Natural Resources page documents Yanji’s registration center, service hall, self-service archive inquiry equipment, policy and appointment services. It does not describe a public parcel vector endpoint.",
+    "The official Jilin public map platform is linked by the provincial natural-resources site, but the landing page returned zero readable lines in the web reader; no layer schema was extracted.",
+    "An official industry award listing names the Yanji property registration and transaction integrated information management platform and data quality improvement project; it does not establish public API access.",
+    "No exact WUP point query was run because no documented anonymous parcel geometry endpoint was located. No personal, holder, address, account, title-certificate, or transaction data were requested or retained."
+  ],
+  "geometryEvidence": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not run: no anonymous full parcel-geometry endpoint was verified. The WUP 2025 point [42.9065559396498,129.512043765091] is preserved unchanged.",
+    "requestEvidence": [
+      {
+        "url": "https://www.yanji.gov.cn/",
+        "method": "GET; anonymous; escalated fresh retry of municipal homepage",
+        "httpStatus": null,
+        "contentType": null,
+        "responseBytes": null,
+        "error": "UND_ERR_CONNECT_TIMEOUT to www.yanji.gov.cn:443",
+        "assessment": "The official homepage could not be retrieved in this network pass. Its advertised local portal link is recorded from indexed site content; no inference about underlying service availability."
+      },
+      {
+        "url": "https://jilin.tianditu.gov.cn/",
+        "method": "GET; anonymous; public geospatial platform page through web reader",
+        "httpStatus": null,
+        "contentType": null,
+        "responseBytes": null,
+        "error": "The page returned zero readable lines; no machine-readable metadata surfaced.",
+        "assessment": "No parcel service schema was verified; this is not evidence that the platform lacks unindexed data."
+      }
+    ]
+  },
+  "nextStep": "Continue bounded discovery from the official Yanji property portal, city geospatial-info center, or documented public Tianditu service API; do not use certificates, identity/login, or record-specific values.",
+  "remainingUncertainty": "The live Yanji property-registration portal’s access model, data APIs and the Jilin Tianditu platform’s full service inventory remain unknown. No exact-point query or absence conclusion was made.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

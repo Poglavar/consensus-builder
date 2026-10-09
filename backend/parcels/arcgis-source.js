@@ -7,6 +7,8 @@ import { retainParcel } from './parcel-components.js';
 import { parseEsriParcelCollection } from './esri-parcel-reader.js';
 export { validateBounds } from './source-contract.js';
 
+const MAX_DISTINCT_MANIFEST_PAGES = 128;
+
 export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fetch } = {}) {
     const { id, endpoint, idField, objectIdField, idPrefix, outFields } = descriptor;
     const pageSize = descriptor.pageSize || 2000;
@@ -41,15 +43,28 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
         || !Number.isInteger(idBatchSize) || idBatchSize < 1 || idBatchSize > 80
         || (descriptor.idQueryBraces !== undefined && typeof descriptor.idQueryBraces !== 'boolean')
         || (idQueryBraces && idType !== 'string')
-        || ![undefined, 'offset', 'object-ids'].includes(descriptor.boundsQueryMode)
-        || ![undefined, 'offset', 'object-ids', 'single-equality'].includes(descriptor.idsQueryMode)
+        || ![undefined, 'offset', 'object-ids', 'distinct-ids'].includes(descriptor.boundsQueryMode)
+        || ![undefined, 'offset', 'object-ids', 'single-equality', 'distinct-ids'].includes(descriptor.idsQueryMode)
         || ![undefined, 'geojson', 'esri-json'].includes(descriptor.queryFormat)
         || (responseSrid !== undefined && (responseSrid !== 3857 || descriptor.queryFormat === 'esri-json'))
         || (geometryPrecision !== undefined && (responseSrid !== 3857
             || !Number.isInteger(geometryPrecision) || geometryPrecision < 6 || geometryPrecision > 8))
         || (descriptor.idsQueryMode === 'single-equality' && (composite || idBatchSize !== 1))
-        || ![undefined, 'parts'].includes(descriptor.nativeGeometryMode)
+        || ![undefined, 'parts', 'identical-join-rows'].includes(descriptor.nativeGeometryMode)
         || (descriptor.nativeGeometryMode === 'parts' && (descriptor.boundsQueryMode !== 'object-ids' || descriptor.idsQueryMode !== 'object-ids'))
+        || (descriptor.nativeGeometryMode === 'identical-join-rows' && (composite || idType !== 'integer'
+            || idField !== objectIdField || outFields.length !== 1 || outFields[0] !== idField
+            || descriptor.boundsQueryMode !== 'distinct-ids' || descriptor.idsQueryMode !== 'distinct-ids'
+            || !Number.isSafeInteger(pageSize) || pageSize < 1
+            || ![undefined, 'geojson'].includes(descriptor.queryFormat)
+            || responseSrid !== undefined || geometryPrecision !== undefined
+            || descriptor.attributeFilters || descriptor.attributeExclusions || descriptor.attributeNotNull
+            || descriptor.attributeNull || descriptor.attributeDateEquals || descriptor.partMatchFields
+            || descriptor.disjointParts !== undefined || descriptor.partsCoordinatePrecision !== undefined))
+        || (descriptor.boundsQueryMode === 'distinct-ids' && descriptor.nativeGeometryMode !== 'identical-join-rows')
+        || (descriptor.idsQueryMode === 'distinct-ids' && descriptor.nativeGeometryMode !== 'identical-join-rows')
+        || (descriptor.nativeGeometryMode === 'identical-join-rows'
+            && (descriptor.boundsQueryMode !== 'distinct-ids' || descriptor.idsQueryMode !== 'distinct-ids'))
         || (descriptor.disjointParts !== undefined && (typeof descriptor.disjointParts !== 'boolean' || descriptor.nativeGeometryMode !== 'parts'))
         || (descriptor.partMatchFields !== undefined && (descriptor.nativeGeometryMode !== 'parts'
             || !Array.isArray(descriptor.partMatchFields) || !descriptor.partMatchFields.length || descriptor.partMatchFields.length > 8
@@ -242,6 +257,7 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
         const projected = corners ? [Math.min(...corners.map(p => p[0])), Math.min(...corners.map(p => p[1])),
             Math.max(...corners.map(p => p[0])), Math.max(...corners.map(p => p[1]))] : bbox;
         const spatial = { geometry: projected.join(','), geometryType: 'esriGeometryEnvelope', inSR: String(descriptor.boundsSrid || 4326), spatialRel: 'esriSpatialRelIntersects' };
+        if (descriptor.boundsQueryMode === 'distinct-ids') return queryDistinctBounds(spatial);
         if (descriptor.boundsQueryMode !== 'object-ids') return query(spatial);
         const result = await queryObjectIds(spatial);
         if (descriptor.nativeGeometryMode !== 'parts' || !result.features.length) return result;
@@ -288,6 +304,154 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
             ...(descriptor.nativeGeometryMode === 'parts' ? { sourceRows: objects.length } : {}) };
     }
 
+    // Some joined ArcGIS views expose one native parcel ID but repeat its identical
+    // geometry across relationship rows. This opt-in path proves the distinct ID
+    // membership twice, then reads complete unfiltered geometry and accepts duplicate
+    // rows only when every complete polygon is byte-for-byte equivalent.
+    async function distinctCount(params) {
+        const search = new URLSearchParams({
+            where: params.where || baseWhere, outFields: idField, returnGeometry: 'false',
+            returnCountOnly: 'true', returnDistinctValues: 'true', f: 'json',
+            ...Object.fromEntries(Object.entries(params).filter(([key]) => key !== 'where'))
+        });
+        if (params.where && params.where !== baseWhere) search.set('where', `(${baseWhere}) AND (${params.where})`);
+        const payload = await request(search);
+        if (!Number.isSafeInteger(payload.count) || payload.count < 0 || payload.count > maxFeatures) {
+            throw upstreamError('Parcel provider returned an invalid distinct-ID count.');
+        }
+        return payload.count;
+    }
+
+    async function distinctManifestPages(params, expectedCount) {
+        const pageCount = Math.ceil(expectedCount / pageSize);
+        if (pageCount > MAX_DISTINCT_MANIFEST_PAGES) {
+            throw upstreamError('Parcel provider distinct-ID manifest exceeds the request budget.');
+        }
+        const ids = [];
+        const seen = new Set();
+        for (let offset = 0; offset < expectedCount; offset += pageSize) {
+            const requested = Math.min(pageSize, expectedCount - offset);
+            const search = new URLSearchParams({
+                where: params.where || baseWhere, outFields: idField, returnGeometry: 'false',
+                returnDistinctValues: 'true', orderByFields: idField, resultRecordCount: String(requested),
+                resultOffset: String(offset), f: 'json',
+                ...Object.fromEntries(Object.entries(params).filter(([key]) => key !== 'where'))
+            });
+            if (params.where && params.where !== baseWhere) search.set('where', `(${baseWhere}) AND (${params.where})`);
+            const payload = await request(search);
+            if (!Array.isArray(payload.features)) throw upstreamError('Parcel provider returned an invalid distinct-ID page.');
+            const limitFlag = payload.exceededTransferLimit ?? payload.properties?.exceededTransferLimit;
+            if (payload.features.length !== requested
+                || (limitFlag === true && offset + requested >= expectedCount)
+                || (limitFlag !== undefined && typeof limitFlag !== 'boolean')) {
+                throw upstreamError('Parcel provider returned incomplete distinct-ID paging.');
+            }
+            for (const feature of payload.features) {
+                const props = feature.attributes || feature.properties || {};
+                const value = props[idField];
+                if (!validNativeId(value) || seen.has(String(value))) {
+                    throw upstreamError('Parcel provider returned duplicate or invalid distinct parcel IDs.');
+                }
+                seen.add(String(value));
+                ids.push(Number(value));
+            }
+        }
+        if (ids.length !== expectedCount) throw upstreamError('Parcel provider returned an incomplete distinct-ID manifest.');
+        return ids;
+    }
+
+    async function queryDistinctManifest(params) {
+        const countBefore = await distinctCount(params);
+        const first = await distinctManifestPages(params, countBefore);
+        const countMiddle = await distinctCount(params);
+        if (countBefore !== countMiddle) throw upstreamError('Parcel provider distinct-ID membership changed during the query.');
+        const second = await distinctManifestPages(params, countMiddle);
+        const countAfter = await distinctCount(params);
+        if (countMiddle !== countAfter
+            || first.length !== second.length || first.some((value, index) => value !== second[index])) {
+            throw upstreamError('Parcel provider distinct-ID membership changed during the query.');
+        }
+        return first;
+    }
+
+    async function queryIdenticalJoinRows(queryIds, expectedIds = queryIds) {
+        const result = new Map();
+        let rawRows = 0;
+        const expected = new Set(expectedIds.map(String));
+        for (let start = 0; start < queryIds.length; start += idBatchSize) {
+            const batch = queryIds.slice(start, start + idBatchSize);
+            const expectedBatch = batch.filter(value => expected.has(String(value)));
+            const where = `${idField} IN (${batch.join(',')})`;
+            const params = { where };
+            const rawCount = await rawRowCount(params);
+            if (!Number.isSafeInteger(rawCount) || rawCount < expectedBatch.length || rawCount > maxFeatures) {
+                throw upstreamError('Parcel provider returned an invalid raw-row count for exact geometry reads.');
+            }
+            rawRows += rawCount;
+            if (rawRows > maxFeatures) throw upstreamError('Complete parcel rows exceed the parcel limit; use a smaller area.');
+            const search = new URLSearchParams({
+                where: `(${baseWhere}) AND (${where})`, outFields: idField, returnGeometry: 'true',
+                outSR: '4326', resultRecordCount: String(Math.max(1, rawCount)), f: 'geojson'
+            });
+            const payload = await request(search);
+            const transferFlag = payload.exceededTransferLimit ?? payload.properties?.exceededTransferLimit;
+            if (payload.type !== 'FeatureCollection' || !Array.isArray(payload.features)
+                || payload.features.length !== rawCount || transferFlag === true
+                || (transferFlag !== undefined && typeof transferFlag !== 'boolean')
+                || (rawCount === 0 && transferFlag !== false)) {
+                throw upstreamError('Parcel provider returned incomplete exact geometry rows.');
+            }
+            const batchSet = new Set(batch.map(String));
+            const grouped = new Map();
+            for (const feature of payload.features) {
+                const props = feature.properties || {};
+                const rawId = props[idField];
+                if (!validNativeId(rawId) || !batchSet.has(String(rawId)) || !expected.has(String(rawId))) {
+                    throw upstreamError('Parcel provider returned an unexpected native parcel ID.');
+                }
+                const geometry = responseGeometry(feature.geometry);
+                if (!validateGeometry(geometry)) throw upstreamError('Parcel provider returned invalid polygon geometry.');
+                const previous = grouped.get(String(rawId));
+                if (previous && JSON.stringify(previous) !== JSON.stringify(geometry)) {
+                    throw upstreamError('Parcel provider returned conflicting geometry for repeated join rows.');
+                }
+                grouped.set(String(rawId), geometry);
+            }
+            if (grouped.size !== expectedBatch.length || expectedBatch.some(value => !grouped.has(String(value)))) {
+                throw upstreamError('Parcel provider exact geometry rows omitted a distinct native parcel ID.');
+            }
+            const rawCountAfter = await rawRowCount(params);
+            if (rawCountAfter !== rawCount) throw upstreamError('Parcel provider raw rows changed during exact geometry reads.');
+            for (const value of expectedBatch) {
+                const nativeId = String(value);
+                const feature = canonicalParcelFeature(descriptor, {
+                    type: 'Feature', properties: { [idField]: Number(value) }, geometry: grouped.get(nativeId)
+                }, nativeId);
+                if (result.has(feature.id)) throw upstreamError('Parcel provider returned a duplicate distinct parcel ID.');
+                result.set(feature.id, feature);
+            }
+        }
+        return { features: [...result.values()], sourceRows: rawRows };
+    }
+
+    async function rawRowCount(params) {
+        const where = params.where === undefined || params.where === baseWhere
+            ? baseWhere : `(${baseWhere}) AND (${params.where})`;
+        const payload = await request(new URLSearchParams({ where, outFields: idField, returnGeometry: 'false',
+            returnCountOnly: 'true', f: 'json' }));
+        if (!Number.isSafeInteger(payload.count) || payload.count < 0 || payload.count > maxFeatures) {
+            throw upstreamError('Parcel provider returned an invalid raw-row count.');
+        }
+        return payload.count;
+    }
+
+    async function queryDistinctBounds(spatial) {
+        const nativeIds = await queryDistinctManifest(spatial);
+        const rows = await queryIdenticalJoinRows(nativeIds);
+        return { type: 'FeatureCollection', features: rows.features, complete: true, sourceId: id,
+            returnsWGS84: true, sourceRows: rows.sourceRows };
+    }
+
     async function queryIds(ids) {
         if (!Array.isArray(ids) || !ids.length || ids.length > 80) throw new HttpError(400, 'Provide between 1 and 80 parcel IDs.');
         const unique = [...new Set(ids)];
@@ -311,6 +475,20 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
             const queryValue = idQueryBraces ? `{${tail}}` : tail;
             return idType === 'string' ? `'${queryValue.replaceAll("'", "''")}'` : tail;
         });
+        if (descriptor.idsQueryMode === 'distinct-ids') {
+            const expected = new Set(unique);
+            const nativeIds = await queryDistinctManifest({ where: `${idField} IN (${native.join(',')})` });
+            const requestedNative = new Set(native.map(Number));
+            if (nativeIds.some(value => !requestedNative.has(value))) {
+                throw upstreamError('Parcel ID query returned unexpected distinct native IDs.');
+            }
+            const rows = await queryIdenticalJoinRows(native.map(Number), nativeIds);
+            const features = rows.features;
+            if (features.some(feature => !expected.has(feature.id))) throw upstreamError('Parcel ID query returned unexpected parcels.');
+            const present = new Set(features.map(feature => feature.id));
+            return { type: 'FeatureCollection', features, complete: true, sourceId: id, returnsWGS84: true,
+                sourceRows: rows.sourceRows, absentIds: unique.filter(value => !present.has(value)) };
+        }
         // Some statewide providers time out on large native-ID predicates. Validate the entire
         // request first, then fetch configured small batches; publish only after every batch passes.
         const result = { type: 'FeatureCollection', features: [], complete: true, sourceId: id, returnsWGS84: true };

@@ -1,0 +1,76 @@
+{
+  "type": "FeatureCollection",
+  "name": "dublin-nearest-returned-freehold-footprint",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "IE-SP-4828269",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -6.27381281304142,
+              53.3300700690432
+            ],
+            [
+              -6.27369160422549,
+              53.3300689262146
+            ],
+            [
+              -6.27369227332606,
+              53.330054847921
+            ],
+            [
+              -6.27369239860906,
+              53.3300522287987
+            ],
+            [
+              -6.27369328325658,
+              53.3300493582126
+            ],
+            [
+              -6.27368453894715,
+              53.3298743120984
+            ],
+            [
+              -6.27368403137661,
+              53.3298653166344
+            ],
+            [
+              -6.27368213988382,
+              53.3298102819756
+            ],
+            [
+              -6.27380023217731,
+              53.3298149659796
+            ],
+            [
+              -6.27380052459021,
+              53.3298783723984
+            ],
+            [
+              -6.27380021097173,
+              53.3300002916847
+            ],
+            [
+              -6.27380347214843,
+              53.330015088378
+            ],
+            [
+              -6.27381281304142,
+              53.3300700690432
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "IE-SP-4828269",
+        "sourceParcelId": "4828269",
+        "OBJECTID": 2736378,
+        "SP_ID": 4828269,
+        "selectionNote": "Nearest returned full freehold footprint for illustration/runtime qualification; WUP Dublin center remains fixed at its original coordinate."
+      }
+    }
+  ]
+}

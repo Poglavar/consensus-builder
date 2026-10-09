@@ -6111,6 +6111,225 @@
       "attribution": "Poznań GEOPOZ EGiB parcel geometry · adapted",
       "catalogueUrl": "https://geopoz.poznan.pl/",
       "licenceNote": "Anonymous bounded parcel geometry and publisher attribution verified. ID_DZIALKI is the published cadastral identifier. Publisher conditions and source currency remain informational; personal and KW record fields are excluded."
+    },
+    {
+      "id": "orlando-ocpa-arcgis",
+      "name": "Orlando Orange County assessment parcel polygons",
+      "adapter": "arcgis",
+      "endpoint": "https://vgispublic.ocpafl.org/server/rest/services/Webmap/PARCEL/MapServer/4",
+      "idField": "PARCEL",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPrefix": "US-ORANGE-COUNTY-PARCEL-",
+      "outFields": [
+        "OBJECTID",
+        "PARCEL"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 25,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 25,
+      "boundsSrid": 2236,
+      "boundsProjection": "+proj=tmerc +lat_0=24.3333333333333 +lon_0=-81 +k=0.999941177 +x_0=200000.0001016 +y_0=0 +datum=NAD83 +units=us-ft +no_defs +type=crs",
+      "countryCode": "US",
+      "metricSrid": 26917,
+      "cityIds": [
+        "orlando"
+      ],
+      "maxConcurrentQueries": 1,
+      "operator": "Orange County Property Appraiser",
+      "scope": "Six distinct Orange County assessment parcel polygons passed bounded public adapter qualification around the unchanged Orlando WUP settlement locator. Thirteen 0.001-degree cells contain the same large point-containing parcel; its complete footprint discovers six distinct parcels. All six native PARCEL strings passed fresh independent reads, forced one-feature pages and matching full geometry hashes. Exact-point containment, explicit absence and one-parcel proposal binding passed. Independent root EPSG:26917 full-polygon GEOS audit found no invalidity, duplicate geometry, overlap above 0.01 m² or operation errors. Assessment parcel references are not legal title; bounded evidence does not establish citywide completeness, survey accuracy or currentness.",
+      "stateCode": "FL",
+      "responseCrs": "EPSG:4326",
+      "parcelNumberField": "PARCEL",
+      "evidenceFile": "research/overnight-next-2026-10-09/orlando-root-acceptance.json",
+      "catalogueUrl": "https://webmap.ocpafl.org/search",
+      "attribution": "Orange County Property Appraiser · assessment parcel references · adapted",
+      "licenceNote": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public PARCEL/OBJECTID identifiers and geometry requested."
+    },
+    {
+      "id": "ie-tailte-hvd-freehold",
+      "adapter": "arcgis",
+      "endpoint": "https://services-eu1.arcgis.com/FH5XCsx8rYXqnjF5/arcgis/rest/services/Cadastral_Parcels_Freehold/FeatureServer/12",
+      "idField": "SP_ID",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "idPrefix": "IE-SP-",
+      "outFields": [
+        "OBJECTID",
+        "SP_ID"
+      ],
+      "boundsQueryMode": "object-ids",
+      "pageSize": 100,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "maxConcurrentQueries": 1,
+      "countryCode": "IE",
+      "cityIds": [
+        "dublin"
+      ],
+      "metricSrid": 2157,
+      "name": "Dublin Tailte Éireann freehold cadastral parcels",
+      "operator": "Tailte Éireann",
+      "scope": "Public Tailte Éireann freehold title parcel boundaries only; leasehold and unregistered land are outside this layer. Thirteen aligned cells around the unchanged Dublin WUP locator returned 113 unique full polygons with stable count/OID manifests, forced one-feature paging and 113 matching fresh native SP_ID reads. Root independently confirmed native lookup, explicit absence, center-cell completeness, full-parcel footprint binding and zero invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors in EPSG:2157. The WUP point is outside freehold polygons; the nearest verified parcel is 31.027 m away. Bounded evidence does not establish citywide completeness, survey precision, exclusive legal ownership or currency.",
+      "responseCrs": "EPSG:4326",
+      "parcelNumberField": "SP_ID",
+      "evidenceFile": "research/country-integration-audit-2026-10-09/dublin-root-acceptance.json",
+      "catalogueUrl": "https://data.gov.ie/dataset/high-value-dataset-cadastral-parcels-freehold1",
+      "attribution": "© Tailte Éireann · freehold title boundaries only · adapted",
+      "licenceNote": "Published national High Value Dataset. Source terms, title certainty and currentness are informational; only public OBJECTID/SP_ID and geometry requested."
+    },
+    {
+      "id": "lv-vzd-geolatvija-vraa-wfs",
+      "endpoint": "https://geolatvija.lv/geoserver/vraa/wfs",
+      "featureType": "vraa:parcel",
+      "idField": "code",
+      "geometryField": "geom",
+      "outFields": [
+        "code"
+      ],
+      "requestProperties": true,
+      "pageSize": 1000,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "minRequestIntervalMs": 250,
+      "adapter": "wfs",
+      "idType": "string",
+      "idPrefix": "LV-VZD-",
+      "idPattern": "^[0-9A-Z]{1,64}$",
+      "version": "2.0.0",
+      "metricSrid": 3059,
+      "countryCode": "LV",
+      "cityIds": [
+        "riga"
+      ],
+      "maxConcurrentQueries": 1,
+      "name": "Riga public cadastral parcel polygons",
+      "operator": "State Land Service of Latvia / Geolatvija",
+      "scope": "Public cadastral parcel geometry around the unchanged Riga WUP settlement locator. Thirteen aligned cells and 113 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:3059 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The WUP locator is covered by LV-VZD-01000210029. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness.",
+      "responseCrs": "CRS:84",
+      "parcelNumberField": "code",
+      "evidenceFile": "research/country-integration-audit-2026-10-09/riga-root-acceptance.json",
+      "catalogueUrl": "https://geolatvija.lv/",
+      "attribution": "State Land Service of Latvia / Geolatvija · cadastral references · adapted",
+      "licenceNote": "Publisher conditions, legal effect and update schedule are informational. Public native parcel IDs and geometry only; ownership is not imported."
+    },
+    {
+      "id": "ee-maaamet-kataster-wfs",
+      "endpoint": "https://gsavalik.envir.ee/geoserver/kataster/wfs",
+      "featureType": "kataster:ky_kehtiv",
+      "idField": "tunnus",
+      "geometryField": "geom",
+      "idPrefix": "EE-KATASTER-",
+      "outFields": [
+        "tunnus"
+      ],
+      "requestProperties": true,
+      "responseSrid": 3857,
+      "metricSrid": 3301,
+      "adapter": "wfs",
+      "version": "2.0.0",
+      "pageSize": 100,
+      "idBatchSize": 80,
+      "maxFeatures": 3000,
+      "minRequestIntervalMs": 150,
+      "idType": "string",
+      "maxBboxKm2": 1,
+      "countryCode": "EE",
+      "cityIds": [
+        "tallinn"
+      ],
+      "maxConcurrentQueries": 1,
+      "name": "Tallinn public cadastral parcel polygons",
+      "operator": "Estonian Land and Spatial Development Board / public cadastral WFS",
+      "scope": "Public cadastral parcel geometry around the unchanged Tallinn WUP settlement locator. Thirteen aligned cells and 60 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:3301 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The WUP locator is covered by EE-KATASTER-78401:109:0710. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness.",
+      "responseCrs": "EPSG:3857",
+      "parcelNumberField": "tunnus",
+      "evidenceFile": "research/country-integration-audit-2026-10-09/tallinn-root-acceptance.json",
+      "catalogueUrl": "https://gsavalik.envir.ee/geoserver/kataster/wfs",
+      "attribution": "Estonian Land and Spatial Development Board / public cadastral WFS · cadastral references · adapted",
+      "licenceNote": "Publisher conditions, legal effect and update schedule are informational. Public native parcel IDs and geometry only; ownership is not imported."
+    },
+    {
+      "id": "lt-inspire-cp-wfs",
+      "endpoint": "https://www.inspire-geoportal.lt/geoserver/cp/ows",
+      "featureType": "cp:CP.CadastralParcel",
+      "nativeCrs": "urn:ogc:def:crs:EPSG::4258",
+      "nativeCrsAuthorityAxisOrder": [
+        "latitude",
+        "longitude"
+      ],
+      "previouslyObservedNativeGeoJsonCoordinates": [
+        "longitude",
+        "latitude"
+      ],
+      "adapter": "wfs",
+      "version": "2.0.0",
+      "idField": "nationalcadastralreference",
+      "idType": "integer",
+      "idPrefix": "LT-INSP-CADASTRAL-",
+      "geometryField": "geometry",
+      "outFields": [
+        "nationalcadastralreference"
+      ],
+      "requestProperties": true,
+      "srsName": "CRS:84",
+      "pageSize": 100,
+      "idBatchSize": 80,
+      "maxFeatures": 3000,
+      "minRequestIntervalMs": 150,
+      "propertyNameRequestValue": "geometry,nationalcadastralreference",
+      "countryCode": "LT",
+      "cityIds": [
+        "vilnius"
+      ],
+      "maxBboxKm2": 1,
+      "maxConcurrentQueries": 1,
+      "metricSrid": 32635,
+      "name": "Vilnius public cadastral parcel polygons",
+      "operator": "Lithuanian INSPIRE Geoportal / National Land Service",
+      "scope": "Public cadastral parcel geometry around the unchanged Vilnius WUP settlement locator. Thirteen aligned cells and 7 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:32635 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The WUP locator is covered by LT-INSP-CADASTRAL-440051231650. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness.",
+      "responseCrs": "CRS:84",
+      "parcelNumberField": "nationalcadastralreference",
+      "evidenceFile": "research/country-integration-audit-2026-10-09/vilnius-root-acceptance.json",
+      "catalogueUrl": "https://www.inspire-geoportal.lt/geoserver/cp/ows",
+      "attribution": "Lithuanian INSPIRE Geoportal / National Land Service · cadastral references · adapted",
+      "licenceNote": "Publisher conditions, legal effect and update schedule are informational. Public native parcel IDs and geometry only; ownership is not imported."
+    },
+    {
+      "id": "br-jundiai-geojundiai-lotes-jund-gid",
+      "endpoint": "https://geo.jundiai.sp.gov.br/geoserver/ows",
+      "featureType": "GeoJundiai:lotes_jund",
+      "idField": "gid",
+      "idType": "integer",
+      "idPrefix": "BR-JUNDIAI-LOTES-JUND-GID-",
+      "geometryField": "geom",
+      "outFields": [
+        "gid"
+      ],
+      "requestProperties": true,
+      "pageSize": 1000,
+      "idBatchSize": 80,
+      "maxFeatures": 3000,
+      "minRequestIntervalMs": 500,
+      "adapter": "wfs",
+      "countryCode": "BR",
+      "cityIds": [
+        "jundiai"
+      ],
+      "maxBboxKm2": 1,
+      "maxConcurrentQueries": 1,
+      "metricSrid": 31983,
+      "name": "Jundiaí public cadastral parcel polygons",
+      "operator": "Município de Jundiaí / GeoJundiaí",
+      "scope": "Public cadastral parcel geometry around the unchanged Jundiaí WUP settlement locator. Thirteen aligned cells and 205 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:31983 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The exact unchanged WUP locator has no parcel hit in its containing cell; nearby public parcel BR-JUNDIAI-LOTES-JUND-GID-46298 supports complete one-parcel binding. Native gid identifies individual GIS ground polygons; the duplicate codlote business reference is not used as runtime identity. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness.",
+      "responseCrs": "CRS:84",
+      "parcelNumberField": "gid",
+      "evidenceFile": "research/overnight-next-2026-10-09/jundiai-root-acceptance.json",
+      "catalogueUrl": "https://geo.jundiai.sp.gov.br/geojundiai/",
+      "attribution": "Município de Jundiaí / GeoJundiaí · cadastral references · adapted",
+      "licenceNote": "Publisher conditions, legal effect and update schedule are informational. Public native parcel IDs and geometry only; ownership is not imported."
     }
   ]
 }

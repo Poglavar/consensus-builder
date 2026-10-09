@@ -1,0 +1,673 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T08:27:08.625Z",
+  "city": "riga",
+  "descriptor": {
+    "id": "lv-vzd-geolatvija-vraa-wfs",
+    "endpoint": "https://geolatvija.lv/geoserver/vraa/wfs",
+    "featureType": "vraa:parcel",
+    "idField": "code",
+    "geometryField": "geom",
+    "outFields": [
+      "code"
+    ],
+    "requestProperties": true,
+    "pageSize": 1000,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 1,
+    "minRequestIntervalMs": 250,
+    "adapter": "wfs",
+    "idType": "string",
+    "idPrefix": "LV-VZD-",
+    "idPattern": "^[0-9A-Z]{1,64}$",
+    "version": "2.0.0",
+    "metricSrid": 3059,
+    "countryCode": "LV",
+    "cityIds": [
+      "riga"
+    ],
+    "maxConcurrentQueries": 1
+  },
+  "metricDefinition": "+proj=tmerc +lat_0=0 +lon_0=24 +k=0.9996 +x_0=500000 +y_0=-6000000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+  "qualifiedFeatureCount": 113,
+  "fullSafeCacheSha256": "bb6ea0d05577ed18c0b3e1d3ad93b7285a6de9b1b8f0cf35cda0f23cdce40df2",
+  "freshFullGeometryReads": {
+    "count": 113,
+    "allGeometryHashesMatch": true,
+    "hashes": [
+      {
+        "id": "LV-VZD-01000050001",
+        "sha256": "2237146c3160667fce0eb18d297ca5269df575475e8a692fe9baffd41cc1c825"
+      },
+      {
+        "id": "LV-VZD-01000200079",
+        "sha256": "acd7a7dc03a3e7c50441c49417f551bd5455cdef145699ee1e7c813cbf507336"
+      },
+      {
+        "id": "LV-VZD-01000200083",
+        "sha256": "59c6a9d4ea19de72b01707753a07fb970c19fc96764d2f59c2d95b58ca817fec"
+      },
+      {
+        "id": "LV-VZD-01000200084",
+        "sha256": "9adeaae34dcb7c5899f25e8e96a6d343702bfc1daac2b6c33f77989ee4bd9bcb"
+      },
+      {
+        "id": "LV-VZD-01000200085",
+        "sha256": "59ee9e7e2eb5e3c60e6a7f5be66392206b0b125db156b97faa8686e19f166282"
+      },
+      {
+        "id": "LV-VZD-01000200086",
+        "sha256": "18d299e28c80cd628ed20e809a06b4bd7f7eb4f88810396b29d105490cc19795"
+      },
+      {
+        "id": "LV-VZD-01000200087",
+        "sha256": "c8ae811150281d6cff85adb0f092d18d41999ef68ca99b290e7882b85869b54b"
+      },
+      {
+        "id": "LV-VZD-01000200088",
+        "sha256": "0e4c18d11dff1d5e860a3cdcdbf2cc2d1ca0c5af4a2c6ee241ce3fe5b4ff0f0c"
+      },
+      {
+        "id": "LV-VZD-01000200089",
+        "sha256": "cbcd4492f5a5ce867537d283ca3c15ba281ba073d82621189e65bc5987d26251"
+      },
+      {
+        "id": "LV-VZD-01000200090",
+        "sha256": "b2c4879ef18dca06c1dce0372ee534efb7215e163f3b404c8a184f44ee6df255"
+      },
+      {
+        "id": "LV-VZD-01000200091",
+        "sha256": "fe3613d83f3787bd223a1927e7cbf832279cf70700dfaeefb3bf2b2ae5450c25"
+      },
+      {
+        "id": "LV-VZD-01000200092",
+        "sha256": "b3cd74524e0aa0d023a1086fcdb1b6e6358a41d529a8f86cb7d8aeb7ae379738"
+      },
+      {
+        "id": "LV-VZD-01000200093",
+        "sha256": "f446296a11174640d81cab8a273c2dcfa776faca9ea55bf84cbfa1065f31ab3e"
+      },
+      {
+        "id": "LV-VZD-01000200094",
+        "sha256": "3efaace4081ae88ba4f4bbba2951f1596b8bfc55042ca18d3e308a8ebd4fdb6e"
+      },
+      {
+        "id": "LV-VZD-01000200095",
+        "sha256": "b6b93d9cf2d0e4c23b443be5698bc8ec21c524952115682453f11b02267e3383"
+      },
+      {
+        "id": "LV-VZD-01000200096",
+        "sha256": "12e30c4e14b25094b135f02f8a83f71e87e59953142507325a4029463baeb317"
+      },
+      {
+        "id": "LV-VZD-01000200097",
+        "sha256": "ca3ea8882b9fa25795d64d3b881ded3c3805aa6fd5bec349f45db5a35476dc3f"
+      },
+      {
+        "id": "LV-VZD-01000200099",
+        "sha256": "93769dd38e3b68cd6bc6d7e0211f6ed89173df3d62a412bd1fc78f28754bcae4"
+      },
+      {
+        "id": "LV-VZD-01000200102",
+        "sha256": "4b9178013a67692e81e2f42ab73fda515e7ea8ac1ddd0449f26013ba88c3313f"
+      },
+      {
+        "id": "LV-VZD-01000200103",
+        "sha256": "afbe20b36e9f62e752a5e8e130496a7026a620c3d560f7d6bc12f75a1053d78c"
+      },
+      {
+        "id": "LV-VZD-01000200146",
+        "sha256": "74817d78b5141b57da1399de2a8a7ab12d830901468b8bafe9cd444f9c6ba4a5"
+      },
+      {
+        "id": "LV-VZD-01000200148",
+        "sha256": "318e17e14887ba98cd0aac8c1976c79b83fb322468140a900afeb758a26dabbb"
+      },
+      {
+        "id": "LV-VZD-01000202005",
+        "sha256": "af4286d0eedc081fe4a7802b03b7e45cdd2ac91ed29f122316caca1cd8bdf44a"
+      },
+      {
+        "id": "LV-VZD-01000202007",
+        "sha256": "3fed84eedea4bc31f1d3be048ee6b11d12c8cbae0d3811e33821d191f15d51e7"
+      },
+      {
+        "id": "LV-VZD-01000202011",
+        "sha256": "6ac18faee02d114244509b4a799dc236a0b0c252fe22b95a83407d60a873bd24"
+      },
+      {
+        "id": "LV-VZD-01000202012",
+        "sha256": "cddd30162fdea9de488da86919c74388b730d40c96625394dc879dd964424971"
+      },
+      {
+        "id": "LV-VZD-01000202018",
+        "sha256": "dabb59fd418437dd90dc550bd3aa99342d27a1ad1bf721c6a17f18bad02222fa"
+      },
+      {
+        "id": "LV-VZD-01000202036",
+        "sha256": "05d33797eda376f1a19e375bb59caa136517245dc1b5c3af1eb494ef96ebabfe"
+      },
+      {
+        "id": "LV-VZD-01000203015",
+        "sha256": "4745272b7070415bec1d15e4d31c15cd1dedefa16f46df29d802a127cfbbc455"
+      },
+      {
+        "id": "LV-VZD-01000203016",
+        "sha256": "77fc717602312f4433df51cdc8746c30857aca2092ca4450fb3a579946d7de2e"
+      },
+      {
+        "id": "LV-VZD-01000203017",
+        "sha256": "4a545988dc58c756bd8f352113736fc23b3825b1b93d2c2f701a6b4ca43c90ac"
+      },
+      {
+        "id": "LV-VZD-01000209001",
+        "sha256": "015d8d5bb0e068de83241bc67926c9314eeebae0cc602c09f1b3ac1742131005"
+      },
+      {
+        "id": "LV-VZD-01000209002",
+        "sha256": "2d72703eb4189890e9d3fa2983c9f6373c801a73a88bcb5cd314d5a3cddd83c5"
+      },
+      {
+        "id": "LV-VZD-01000209003",
+        "sha256": "b3bc5563676d0dce9556d4c311d36ba38521ca290fd08f9eaae3b2cac766a06c"
+      },
+      {
+        "id": "LV-VZD-01000209004",
+        "sha256": "e84c0f676558a3831bb81fe857a1f90f350e7d5f1c2045cfac06b649f5402bd0"
+      },
+      {
+        "id": "LV-VZD-01000209005",
+        "sha256": "55221fc61e9b517665dadef8b6c7d5f840ed521eb1d23ff5a2ef9ca4531aa04b"
+      },
+      {
+        "id": "LV-VZD-01000209024",
+        "sha256": "0b2aa32300fc21a60b1a6c08ea73d76b8ba7ecb5a2b502bfabcae17f46a2d40e"
+      },
+      {
+        "id": "LV-VZD-01000209025",
+        "sha256": "0e688342dd76b4790bce42392613ea3426b3ca80000d9e22ea4d2576cc11f8e7"
+      },
+      {
+        "id": "LV-VZD-01000209030",
+        "sha256": "0053f3726db7e9710389b417a0b77064ecf2f3c305b17e8b41aa902e0fba357b"
+      },
+      {
+        "id": "LV-VZD-01000210001",
+        "sha256": "208b47ee39c370beea54bf3286a6c3c4d4abb719b7ec0afc33cd97dfe8c411e9"
+      },
+      {
+        "id": "LV-VZD-01000210002",
+        "sha256": "f01e152f77dcf60bfabaeb245ca674d9ee2b0b273ad259f716affbc834c347b7"
+      },
+      {
+        "id": "LV-VZD-01000210005",
+        "sha256": "41322978e48415d40c70f7fc08390dbd1d96eb2deb7371d4890375468e659243"
+      },
+      {
+        "id": "LV-VZD-01000210009",
+        "sha256": "08ddeca74954c6581f8f326584d3f03eb3361cefed60d6f776f081a5f31b1825"
+      },
+      {
+        "id": "LV-VZD-01000210010",
+        "sha256": "770ebbc9b3cb48a4d05f0dfb30ab14d2496b3c90a668ba26446721b08fca3a19"
+      },
+      {
+        "id": "LV-VZD-01000210011",
+        "sha256": "87eb42435c16724ebf3ca824991ee12244811540354f8d651bc55e67af451ec1"
+      },
+      {
+        "id": "LV-VZD-01000210012",
+        "sha256": "211aadfecfe0213bf5156cd4543112b9ed58c96d66214b9487fa139a8783c138"
+      },
+      {
+        "id": "LV-VZD-01000210014",
+        "sha256": "c37d80171032afdc8221c32a5647d735cfc23be3b86ce675ba760c63ca1feb17"
+      },
+      {
+        "id": "LV-VZD-01000210016",
+        "sha256": "637d6941f6777e676cdb7e1fcde7198ee90141cf6fe3a441a6dc63f7b9549da4"
+      },
+      {
+        "id": "LV-VZD-01000210017",
+        "sha256": "a997e109cf6fd9ee739a748eccbc6e7df836a1f1a66bd9c9a5de00088358b8ae"
+      },
+      {
+        "id": "LV-VZD-01000210018",
+        "sha256": "d181f13c76e20a7095554c0cc75232e73348eceab587634d779893f3ead74223"
+      },
+      {
+        "id": "LV-VZD-01000210019",
+        "sha256": "ee904947eac42b8fc5bc573ea6ed851e87e49bec16759695943bb57754d57866"
+      },
+      {
+        "id": "LV-VZD-01000210020",
+        "sha256": "f09bf37868123d92b9ca7c329fa0aa7cfa73c2c032559069031971127c5e6631"
+      },
+      {
+        "id": "LV-VZD-01000210021",
+        "sha256": "918351e57581f3663d66f5c9b801c21e35801a2b8ef74156dedbd1d107c46317"
+      },
+      {
+        "id": "LV-VZD-01000210022",
+        "sha256": "c4efd6eb7f371455e197a4456d1ad3cd6e5243888549459ab98cdcd94b3eb8c2"
+      },
+      {
+        "id": "LV-VZD-01000210026",
+        "sha256": "6241805c59c2715c38d00a1fd62737dfb3c35acdea4d75a2bb64cbe362828204"
+      },
+      {
+        "id": "LV-VZD-01000210027",
+        "sha256": "bc78275148d9c45915372d4234b2df83ad65186f5fd86b42d20cfdc4d2927ef5"
+      },
+      {
+        "id": "LV-VZD-01000210028",
+        "sha256": "305c85d70381a3be3eaaaf0d0eddf794999630b49878fba0756b2c20488e7be9"
+      },
+      {
+        "id": "LV-VZD-01000210029",
+        "sha256": "5fb10130a5d1d17ef9975fcb57801f6047cd5992a1aebacb49fb427038761f15"
+      },
+      {
+        "id": "LV-VZD-01000210030",
+        "sha256": "865e2f555db911f2ce5229d2fa9e57a0d8c2a3d742348df51d5a922cbf481703"
+      },
+      {
+        "id": "LV-VZD-01000210031",
+        "sha256": "33d2d30ebfe520e37a5b81b3515e336d2e69d27b1e02a5370e15642b107ef844"
+      },
+      {
+        "id": "LV-VZD-01000210032",
+        "sha256": "93d9b1d82b34941106b21f5c4f58ca34d64ae8867faf7c9c200c6184e2e970e8"
+      },
+      {
+        "id": "LV-VZD-01000210033",
+        "sha256": "c456058afe4bf927e708cd0e5290714fc339a16980720bf8d632ade7be01dd99"
+      },
+      {
+        "id": "LV-VZD-01000210034",
+        "sha256": "1d362d2d9750da7c9cbee059ec4dfb845e8067509208aceff4b4bf856618881f"
+      },
+      {
+        "id": "LV-VZD-01000210035",
+        "sha256": "c2b17a2c18e7c8d20821f5805b0808080d5dfc301e27bdf678272ded98e7f840"
+      },
+      {
+        "id": "LV-VZD-01000210036",
+        "sha256": "0711eabc2758b4dcc7768592639fdc861dc7b7f5bd8df79169cad9f67867b7b2"
+      },
+      {
+        "id": "LV-VZD-01000210037",
+        "sha256": "4e692ba705aa4ad7390d0e4cc843702e69b2b7b77db1fa9abe2e2c21f67ac44d"
+      },
+      {
+        "id": "LV-VZD-01000210039",
+        "sha256": "d604df0372526a892287e1bbf2bb4b83541e21a88612e3fae9e45c2531e70394"
+      },
+      {
+        "id": "LV-VZD-01000210040",
+        "sha256": "9bb700ea0048f66f7be0a8218bfdd574076e6196e4e7d294658f2d04db8a84da"
+      },
+      {
+        "id": "LV-VZD-01000210062",
+        "sha256": "bc63d90c8080a69376e2816aaa0b0ca7096c662dd555dab8a8cfbf7cd9714af0"
+      },
+      {
+        "id": "LV-VZD-01000210095",
+        "sha256": "a3877fe1428cce63d39eddb3a796e6f40d5b05160989ff16c4750c88ae9c8354"
+      },
+      {
+        "id": "LV-VZD-01000212003",
+        "sha256": "b1df5cea1059ed84a0ddcae401679b158a713b10982ab3c6eb066c90aaf4154f"
+      },
+      {
+        "id": "LV-VZD-01000212007",
+        "sha256": "7dd7f270693b1d53d4d88755ed6ccfd6ce7d47da88b78e8e5f1889525906dfca"
+      },
+      {
+        "id": "LV-VZD-01000219003",
+        "sha256": "d5e529a87598768acc35580b27fff4d40b83c5e83595dcf1c1fd9f04bacf365c"
+      },
+      {
+        "id": "LV-VZD-01000219007",
+        "sha256": "d0b7002ae434d0cba170d52d569348d8ced3794b3c4cf3dd491c318936120e28"
+      },
+      {
+        "id": "LV-VZD-01000219008",
+        "sha256": "d7976a48b5fa8a0ee77034584f51bd84e42a1a002ba165ae4362f6d495410b9b"
+      },
+      {
+        "id": "LV-VZD-01000219010",
+        "sha256": "0d4f72cf5e608c57490d847a2042281b4212a557cc7fa98293b9804d1f23ac51"
+      },
+      {
+        "id": "LV-VZD-01000220053",
+        "sha256": "e9b3c7c8f82406bf93f5b6a53a4b9754beff06f71379d59176b4983fd61371c3"
+      },
+      {
+        "id": "LV-VZD-01000220054",
+        "sha256": "dc7b74defebbf6cf516d2e48665e25556aca98a547212573ce715e6f13c0047b"
+      },
+      {
+        "id": "LV-VZD-01000220056",
+        "sha256": "192a94bfd7698ae3496b2c12cb59defa61980018131782b03062246938ac7e51"
+      },
+      {
+        "id": "LV-VZD-01000229013",
+        "sha256": "84daf5a8e5b683148c1a53095aa172f05ea3204350c4e5150afaf60dd0dd15e1"
+      },
+      {
+        "id": "LV-VZD-01000200067",
+        "sha256": "8039ca7a823ba6e2561ff47c512659e72bac0ec27f57116a27cd23a18adef17b"
+      },
+      {
+        "id": "LV-VZD-01000200070",
+        "sha256": "77a6cfb9f9a59dbc33c1b42b02c41532851c07513dbf9fb480001b4c0e909fe9"
+      },
+      {
+        "id": "LV-VZD-01000200073",
+        "sha256": "ce0baa29f7f10340602071346080d7a40ea5f5e5c966757a47f728a66d1ec152"
+      },
+      {
+        "id": "LV-VZD-01000200074",
+        "sha256": "564278e89ab5e4b8b4904c91248b8c0cc7455508b7d5b59b380554a320afeeab"
+      },
+      {
+        "id": "LV-VZD-01000200075",
+        "sha256": "a1dd2446b76d185f0ce899acd085bf744dca98e4329e8dd6e192fd2336e36b80"
+      },
+      {
+        "id": "LV-VZD-01000200076",
+        "sha256": "11e4730288905030d30f3dc43c83fa43adf0f64ae6ffe406c5bc178d78dc9175"
+      },
+      {
+        "id": "LV-VZD-01000200082",
+        "sha256": "4e3c6c518697d6f38c5bbe90ec35bcbf8d05a57d8afc9bb240ce4b666761c178"
+      },
+      {
+        "id": "LV-VZD-01000200141",
+        "sha256": "1001aa74ab5581d3a06f9ef54932c8d9f3c21c3eb0220e7bc5e93b849022ef9b"
+      },
+      {
+        "id": "LV-VZD-01000200144",
+        "sha256": "86137345386413c6c9aa62bde1b71ff892f0539d62d9494ca40792b71775c218"
+      },
+      {
+        "id": "LV-VZD-01000202010",
+        "sha256": "e6b5cc1be194ab3247275761a807335d4b2158dfd7446cd14448bbc0dc861011"
+      },
+      {
+        "id": "LV-VZD-01000202017",
+        "sha256": "e9cc935e42d8bfd630cc87a25aee6ff330c4908b47a11ad7933cbd6209c1a19b"
+      },
+      {
+        "id": "LV-VZD-01000202033",
+        "sha256": "cffe6ca4346ee287961b12aacd184c6e4704d28038b167aac66f9a7765e66bbb"
+      },
+      {
+        "id": "LV-VZD-01000202034",
+        "sha256": "2022945ccbc8b6afb5c2cd359fdc5ef6fc49eff2a8232b88cd54edc8ae4c1a3b"
+      },
+      {
+        "id": "LV-VZD-01000202037",
+        "sha256": "f97c11c5bdaea9ca3a768ff23d24c2d28ee51c8b8e65789741a1da7f957ea09d"
+      },
+      {
+        "id": "LV-VZD-01000209019",
+        "sha256": "eef7500a1cd54a72f15711d3383223d243517ef7738f12fe25a5a065cfc039c3"
+      },
+      {
+        "id": "LV-VZD-01000209028",
+        "sha256": "412671008b53a5d0491035d109827435ca1ef459e13f62e36c34f89bd1398c2c"
+      },
+      {
+        "id": "LV-VZD-01000209029",
+        "sha256": "586629d3743b5e2462454756063d971a3ad98444db15a5b7fd2957022d5e5dfb"
+      },
+      {
+        "id": "LV-VZD-01000210003",
+        "sha256": "32840df45179061de2e367a2c3bce1b86184a92e326de9b16e89f008446e810d"
+      },
+      {
+        "id": "LV-VZD-01000210004",
+        "sha256": "94b598ec8127b39da391f72b56347dd621a48c09f4c82c5d396573ecd104189d"
+      },
+      {
+        "id": "LV-VZD-01000210006",
+        "sha256": "4af0095da301f3a0d15887eb0fd13e66b92bef581331f6bc7f26e1348f304200"
+      },
+      {
+        "id": "LV-VZD-01000210007",
+        "sha256": "6e24099829e462ab81af87dd34a03853082cd20465737d93b3854d8ae6c93de6"
+      },
+      {
+        "id": "LV-VZD-01000210008",
+        "sha256": "b958e864a36fa102f9e07c8c24cd7c589584214860d856680aef2e0e84b0b1de"
+      },
+      {
+        "id": "LV-VZD-01000210041",
+        "sha256": "14afcd8b55dc695df41a92cc7ffd158c90d79fed249cd8d8a866478637306e0c"
+      },
+      {
+        "id": "LV-VZD-01000210042",
+        "sha256": "b9541f0cf668c75b20a9b57f3cc08b4a1caec1401ebd8d523bf5bf8026a17b72"
+      },
+      {
+        "id": "LV-VZD-01000210043",
+        "sha256": "3dc5eed44d0051290c0f5cbc8dfcf2eb29052d170e79f3885019971d884a5ea1"
+      },
+      {
+        "id": "LV-VZD-01000210044",
+        "sha256": "67e67c5435a607529e5a0e8b6784857ca64802d7724134971c6afd245666991b"
+      },
+      {
+        "id": "LV-VZD-01000210045",
+        "sha256": "751c632504e84ee7749438d30d147792c46a49482508339c3c0e26bd5a150016"
+      },
+      {
+        "id": "LV-VZD-01000210060",
+        "sha256": "40db32bea11a96815cbe4a04c49a5604003289498d520745218cc75c94aaa744"
+      },
+      {
+        "id": "LV-VZD-01000212002",
+        "sha256": "11717398f4a4703748a7456139dde0c14076f47f2ce34b64917a1ae9553c5c54"
+      },
+      {
+        "id": "LV-VZD-01000219001",
+        "sha256": "f4485f56d75bac433d7aa60fd3053fcc8848b7e5f094b9b6a357ee443ab119bc"
+      },
+      {
+        "id": "LV-VZD-01000219002",
+        "sha256": "46a3211aab1b9c824e3af6628c8b9a56bb28616e8c47322f4ea8362bfa687b73"
+      },
+      {
+        "id": "LV-VZD-01000220057",
+        "sha256": "33ec7c7629aa6b47e3eb41b07121e29dc137606db896149747c3cdd148de86a1"
+      },
+      {
+        "id": "LV-VZD-01000229007",
+        "sha256": "804cce29a977f7b65706554666701842348429dc9bd560d9a8c6b322cfbc934f"
+      }
+    ]
+  },
+  "nativeShapedExplicitAbsence": "LV-VZD-01009999999",
+  "forcedOneFeaturePaging": {
+    "bbox": [
+      24.12,
+      56.955,
+      24.121,
+      56.956
+    ],
+    "count": 17,
+    "complete": true,
+    "allFullGeometryMatches": true
+  },
+  "targetId": "LV-VZD-01000210029",
+  "unchangedWupCenter": [
+    56.9551247864813,
+    24.1200225203638
+  ],
+  "fullParcelFootprint": {
+    "complete": true,
+    "returnedIds": [
+      "LV-VZD-01000209002",
+      "LV-VZD-01000209003",
+      "LV-VZD-01000210026",
+      "LV-VZD-01000210028",
+      "LV-VZD-01000210029",
+      "LV-VZD-01000210095",
+      "LV-VZD-01000219010"
+    ]
+  },
+  "fullParcelBinding": {
+    "parcels": [
+      {
+        "parcelId": "LV-VZD-01000210029",
+        "overlapM2": 750.91,
+        "intrusionM": 18.3327
+      }
+    ],
+    "touched": [],
+    "toleranceM": 0,
+    "coverage": "complete",
+    "unsurveyedM2": 0,
+    "siteM2": 750.91,
+    "source": "server:lv-vzd-geolatvija-vraa-wfs",
+    "unknownM2": 0,
+    "computedAt": "2026-10-09T08:27:08.613Z"
+  },
+  "geometryChangedOrRepaired": false,
+  "requests": [
+    {
+      "url": "https://geolatvija.lv/geoserver/vraa/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=vraa%3Aparcel&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=code&propertyName=geom%2Ccode&count=1000&startIndex=0&cql_filter=code+IN+%28%2701000200090%27%2C%2701000200091%27%2C%2701000200092%27%2C%2701000202005%27%2C%2701000202036%27%2C%2701000209003%27%2C%2701000210005%27%2C%2701000210011%27%2C%2701000210012%27%2C%2701000210026%27%2C%2701000210027%27%2C%2701000210028%27%2C%2701000210029%27%2C%2701000210095%27%2C%2701000212003%27%2C%2701000219008%27%2C%2701000219010%27%2C%2701000050001%27%2C%2701000200148%27%2C%2701000209001%27%2C%2701000210030%27%2C%2701000210031%27%2C%2701000210032%27%2C%2701000210033%27%2C%2701000210034%27%2C%2701000210035%27%2C%2701000210036%27%2C%2701000210037%27%2C%2701000210039%27%2C%2701000212007%27%2C%2701000219007%27%2C%2701000210020%27%2C%2701000210021%27%2C%2701000210022%27%2C%2701000210040%27%2C%2701000210014%27%2C%2701000210016%27%2C%2701000210017%27%2C%2701000210018%27%2C%2701000210019%27%2C%2701000210062%27%2C%2701000219003%27%2C%2701000200094%27%2C%2701000200095%27%2C%2701000200096%27%2C%2701000200146%27%2C%2701000202007%27%2C%2701000209002%27%2C%2701000209030%27%2C%2701000210001%27%2C%2701000210002%27%2C%2701000210009%27%2C%2701000210010%27%2C%2701000220056%27%2C%2701000229013%27%2C%2701000200086%27%2C%2701000200087%27%2C%2701000200093%27%2C%2701000200097%27%2C%2701000200099%27%2C%2701000200102%27%2C%2701000200103%27%2C%2701000203015%27%2C%2701000203016%27%2C%2701000203017%27%2C%2701000209024%27%2C%2701000200084%27%2C%2701000200085%27%2C%2701000200088%27%2C%2701000200089%27%2C%2701000202012%27%2C%2701000202018%27%2C%2701000209025%27%2C%2701000200079%27%2C%2701000200083%27%2C%2701000202011%27%2C%2701000209004%27%2C%2701000209005%27%2C%2701000220053%27%2C%2701000220054%27%29",
+      "httpStatus": 200,
+      "responseBytes": 41602,
+      "sha256": "8e963450d1d6d8578554f39d21489a85caa2a865c13504f2443ff3cee220b430"
+    },
+    {
+      "url": "https://geolatvija.lv/geoserver/vraa/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=vraa%3Aparcel&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=code&propertyName=geom%2Ccode&count=1000&startIndex=0&cql_filter=code+IN+%28%2701000210041%27%2C%2701000210042%27%2C%2701000210043%27%2C%2701000210044%27%2C%2701000210045%27%2C%2701000210060%27%2C%2701000212002%27%2C%2701000219001%27%2C%2701000219002%27%2C%2701000210003%27%2C%2701000210004%27%2C%2701000210006%27%2C%2701000210007%27%2C%2701000210008%27%2C%2701000220057%27%2C%2701000229007%27%2C%2701000200067%27%2C%2701000200070%27%2C%2701000200073%27%2C%2701000200074%27%2C%2701000200075%27%2C%2701000200076%27%2C%2701000200082%27%2C%2701000202010%27%2C%2701000202017%27%2C%2701000202033%27%2C%2701000202034%27%2C%2701000209019%27%2C%2701000200141%27%2C%2701000200144%27%2C%2701000202037%27%2C%2701000209028%27%2C%2701000209029%27%29",
+      "httpStatus": 200,
+      "responseBytes": 17122,
+      "sha256": "43fb7d7af5b549c30717a4654f41c4863e374e20d6193af5d790c6c0ad7e8031"
+    },
+    {
+      "url": "https://geolatvija.lv/geoserver/vraa/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=vraa%3Aparcel&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=code&propertyName=geom%2Ccode&count=1000&startIndex=0&cql_filter=code+IN+%28%2701009999999%27%29",
+      "httpStatus": 200,
+      "responseBytes": 147,
+      "sha256": "177cf2be4a762e0718da18879650e02f842930566ab60e331f7634e6cdb1956b"
+    },
+    {
+      "url": "https://geolatvija.lv/geoserver/vraa/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=vraa%3Aparcel&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=code&propertyName=geom%2Ccode&count=1&startIndex=0&bbox=24.12%2C56.955%2C24.121%2C56.956%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 954,
+      "sha256": "f209773f765e2663c27008caf3d2f8a24bd4724c84964d4510807e1bb63b8822"
+    },
+    {
+      "url": "https://geolatvija.lv/geoserver/vraa/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=vraa%3Aparcel&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=code&propertyName=geom%2Ccode&count=1&startIndex=1&bbox=24.12%2C56.955%2C24.121%2C56.956%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 1377,
+      "sha256": "6eb08fcfb225e0a0ac7a7b8ab3058a4b22ac1dc053a72f33be96ec1a611c1912"
+    },
+    {
+      "url": "https://geolatvija.lv/geoserver/vraa/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=vraa%3Aparcel&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=code&propertyName=geom%2Ccode&count=1&startIndex=2&bbox=24.12%2C56.955%2C24.121%2C56.956%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 1328,
+      "sha256": "4722e7a2ee14ff3510b87cd3fcfdc0bd2dcbae93bb877df79d3a51cb88cd9e48"
+    },
+    {
+      "url": "https://geolatvija.lv/geoserver/vraa/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=vraa%3Aparcel&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=code&propertyName=geom%2Ccode&count=1&startIndex=3&bbox=24.12%2C56.955%2C24.121%2C56.956%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 1249,
+      "sha256": "3244c38f280fc6c2c421e7a7267e5bf3c69b1f5a4022c10eb9c37425763cacd5"
+    },
+    {
+      "url": "https://geolatvija.lv/geoserver/vraa/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=vraa%3Aparcel&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=code&propertyName=geom%2Ccode&count=1&startIndex=4&bbox=24.12%2C56.955%2C24.121%2C56.956%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 2265,
+      "sha256": "9cdf2808bf4c5c4c7e762ca53c0354031897ede5be225c07eae02ea44683e62b"
+    },
+    {
+      "url": "https://geolatvija.lv/geoserver/vraa/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=vraa%3Aparcel&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=code&propertyName=geom%2Ccode&count=1&startIndex=5&bbox=24.12%2C56.955%2C24.121%2C56.956%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 1688,
+      "sha256": "8dafa43f438248ebe57c8c8519205fd6100d943b6d68ea31924f75d968c81734"
+    },
+    {
+      "url": "https://geolatvija.lv/geoserver/vraa/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=vraa%3Aparcel&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=code&propertyName=geom%2Ccode&count=1&startIndex=6&bbox=24.12%2C56.955%2C24.121%2C56.956%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 1819,
+      "sha256": "18a35980091c9953876b7aa295b4776851ea37b44c5db40346e559a17a632e3f"
+    },
+    {
+      "url": "https://geolatvija.lv/geoserver/vraa/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=vraa%3Aparcel&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=code&propertyName=geom%2Ccode&count=1&startIndex=7&bbox=24.12%2C56.955%2C24.121%2C56.956%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 1351,
+      "sha256": "e7107e0defa4bcb2b623d5e7b5bbbc67345ccec0b8d2340dd2afaae880a412f4"
+    },
+    {
+      "url": "https://geolatvija.lv/geoserver/vraa/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=vraa%3Aparcel&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=code&propertyName=geom%2Ccode&count=1&startIndex=8&bbox=24.12%2C56.955%2C24.121%2C56.956%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 1352,
+      "sha256": "035c922ac251fe1fb9e1bf221c277dbb7a0ed61ed2afb41b1a0e5e43f2f8b833"
+    },
+    {
+      "url": "https://geolatvija.lv/geoserver/vraa/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=vraa%3Aparcel&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=code&propertyName=geom%2Ccode&count=1&startIndex=9&bbox=24.12%2C56.955%2C24.121%2C56.956%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 1426,
+      "sha256": "0faf3932bb71d1a4defd0826ef2227a8df1be2d840b19640c2035b30653259b4"
+    },
+    {
+      "url": "https://geolatvija.lv/geoserver/vraa/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=vraa%3Aparcel&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=code&propertyName=geom%2Ccode&count=1&startIndex=10&bbox=24.12%2C56.955%2C24.121%2C56.956%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 1534,
+      "sha256": "7ae054bd61b7e350e4cae54065798913ea70ed504f3bc7d9793dfd5a96ee82b8"
+    },
+    {
+      "url": "https://geolatvija.lv/geoserver/vraa/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=vraa%3Aparcel&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=code&propertyName=geom%2Ccode&count=1&startIndex=11&bbox=24.12%2C56.955%2C24.121%2C56.956%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 1355,
+      "sha256": "9c81fc0c96c7d5ced286e50d9e345db8b97c230326a060495562f636b7c79bbb"
+    },
+    {
+      "url": "https://geolatvija.lv/geoserver/vraa/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=vraa%3Aparcel&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=code&propertyName=geom%2Ccode&count=1&startIndex=12&bbox=24.12%2C56.955%2C24.121%2C56.956%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 1301,
+      "sha256": "9d461866b1eb9a5565334bdf78f7a594226b6ae75af3bd7b890e39142f080936"
+    },
+    {
+      "url": "https://geolatvija.lv/geoserver/vraa/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=vraa%3Aparcel&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=code&propertyName=geom%2Ccode&count=1&startIndex=13&bbox=24.12%2C56.955%2C24.121%2C56.956%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 1352,
+      "sha256": "28306144f3f1efcf7a7b093ccbe9d6481369c4cbd93bf851623d13a66158ed52"
+    },
+    {
+      "url": "https://geolatvija.lv/geoserver/vraa/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=vraa%3Aparcel&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=code&propertyName=geom%2Ccode&count=1&startIndex=14&bbox=24.12%2C56.955%2C24.121%2C56.956%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 1482,
+      "sha256": "8574f30c8e84aac016fdf15c14ee13573d0bed3fad7ecc383c9324a64ac5c085"
+    },
+    {
+      "url": "https://geolatvija.lv/geoserver/vraa/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=vraa%3Aparcel&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=code&propertyName=geom%2Ccode&count=1&startIndex=15&bbox=24.12%2C56.955%2C24.121%2C56.956%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 2003,
+      "sha256": "cd1ad0a23b7fd378c22c3cb8d88ad8603c416c7a1f8b51b51bc4fc9bbc56f1c2"
+    },
+    {
+      "url": "https://geolatvija.lv/geoserver/vraa/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=vraa%3Aparcel&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=code&propertyName=geom%2Ccode&count=1&startIndex=16&bbox=24.12%2C56.955%2C24.121%2C56.956%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 1819,
+      "sha256": "325a22044da58d39494f864fb9eb353617b4cf26eb9e29ab12fa1acb412b0be8"
+    },
+    {
+      "url": "https://geolatvija.lv/geoserver/vraa/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=vraa%3Aparcel&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=code&propertyName=geom%2Ccode&count=1000&startIndex=0&bbox=24.11965071%2C56.9548966%2C24.1202336%2C56.95533209%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 6124,
+      "sha256": "8a4a12688f9f70933c2399b8affedcfb7196db41720937372eff75c891ef55d6"
+    },
+    {
+      "url": "https://geolatvija.lv/geoserver/vraa/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=vraa%3Aparcel&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=code&propertyName=geom%2Ccode&count=1000&startIndex=0&bbox=24.11965071%2C56.9548966%2C24.1202336%2C56.95533209%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 6124,
+      "sha256": "195ca581fef83adf818667d71ed32fdda68294bff1414a625996b69f8e1257a4"
+    }
+  ]
+}

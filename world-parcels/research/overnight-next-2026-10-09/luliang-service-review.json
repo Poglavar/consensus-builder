@@ -1,0 +1,123 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7995-luliang.json",
+  "purpose": "Document separate English/local-language source discovery, land-registry custody, anonymous request outcomes and safe geometry limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The municipal bureau describes unified registration, cadastral survey and its subordinate city registration center. Its center budget separately describes municipal registration, certification, platform maintenance and query services.",
+  "registryAssessment": "The municipal bureau describes unified registration, cadastral survey and its subordinate city registration center. Its center budget separately describes municipal registration, certification, platform maintenance and query services.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.lvliang.gov.cn/zfjgzd/llgtj/qlzrqd/index_5.html",
+      "operator": "Lüliang Municipal Natural Resources and Planning Bureau / Real Estate Registration Center",
+      "scope": "Official bureau pages and municipal materials describe cadastral survey and unified real-estate registration functions; public notices may include personal names and were not queried or retained. No public anonymous geometry endpoint was identified."
+    },
+    {
+      "url": "https://www.lvliang.gov.cn/zfjgzd/llgtj/jgjj/201906/t20190604_1290765.html",
+      "operator": "Lüliang Municipal Natural Resources and Planning Bureau / Real Estate Registration Center",
+      "scope": "Official bureau pages and municipal materials describe cadastral survey and unified real-estate registration functions; public notices may include personal names and were not queried or retained. No public anonymous geometry endpoint was identified."
+    },
+    {
+      "url": "https://www.lvliang.gov.cn/llxxgk/zfxxgk/xxgkml/gbmwj/gjj/fdzdgknr_54882/jgjs_54883/202108/t20210830_1541722.html",
+      "operator": "Government source with the jurisdictional scope stated in observation",
+      "observation": "The municipal bureau describes unified registration, cadastral survey and its subordinate city registration center. Its center budget separately describes municipal registration, certification, platform maintenance and query services."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Lüliang official cadastral parcel map land registry GIS",
+      "result": "Separate English-language discovery followed by first-party source review; only the government sources listed are retained.",
+      "actualResultUrls": [
+        "https://www.lvliang.gov.cn/zfjgzd/llgtj/qlzrqd/index_5.html",
+        "https://www.lvliang.gov.cn/zfjgzd/llgtj/jgjj/201906/t20190604_1290765.html"
+      ],
+      "scope": "Identify local or jurisdictionally local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+    },
+    {
+      "language": "Chinese (Simplified)",
+      "query": "吕梁 自然资源局 不动产登记 地籍调查 地籍图",
+      "result": "Official Luliang Natural Resources and Planning Bureau publishes cadastral-survey/registration duties; municipal registration center operates city registration platform. No anonymous public parcel vector was found.",
+      "actualResultUrls": [
+        "https://www.lvliang.gov.cn/zfjgzd/llgtj/qlzrqd/index_5.html",
+        "https://www.lvliang.gov.cn/zfjgzd/llgtj/jgjj/201906/t20190604_1290765.html"
+      ],
+      "method": "Separate Chinese (Simplified)-language discovery followed by first-party source review.",
+      "scope": "Identify local or jurisdictionally local land/cadastral custody and public parcel geometry; no owner, address, tax, account, title, cadastral-number or applicant values submitted."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the exact unchanged WUP point. publicParcelGeometryFound:false means unverified in this investigation, not confirmed absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "The municipal bureau describes unified registration, cadastral survey and its subordinate city registration center. Its center budget separately describes municipal registration, certification, platform maintenance and query services.",
+    "verifiedOpenScope": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+  "nextStep": "Continue first-party viewer configuration, advertised service and API discovery; qualify complete geometry and retrieval semantics before enabling runtime.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T09:09:33.635078+00:00",
+    "decision": "Reviewed paired discovery, exact WUP identity, primary custodial evidence and scoped endpoint outcomes. Public geometry remains unverified in this pass.",
+    "custodyScope": "The municipal bureau describes unified registration, cadastral survey and its subordinate city registration center. Its center budget separately describes municipal registration, certification, platform maintenance and query services.",
+    "transportFailuresDoNotProveAbsence": true,
+    "uiOrTermsAreNotGeometryGates": true,
+    "geometryClaimScope": "Investigation outcome only; no citywide absence asserted."
+  },
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 7995,
+      "url": "https://www.lvliang.gov.cn/llxxgk/zfxxgk/xxgkml/gbmwj/gjj/fdzdgknr_54882/jgjs_54883/202108/t20210830_1541722.html",
+      "checkedAt": "2026-10-09T08:58:45.774481+00:00",
+      "method": "Anonymous read-only GET; no property values or credentials submitted",
+      "executionContext": "Explicit require_escalated network execution",
+      "rawHtmlRetained": false,
+      "httpStatus": 200,
+      "finalUrl": "http://www.lvliang.gov.cn/llxxgk/zfxxgk/xxgkml/gbmwj/gjj/fdzdgknr_54882/jgjs_54883/202108/t20210830_1541722.html",
+      "contentType": "text/html",
+      "bytesRead": 85287,
+      "sha256": "41646ff5b604a3c867c4be259fbe3f558071ed660358054b1fc811b0d55ca6a4",
+      "complete": true,
+      "termPresence": {
+        "不动产": true,
+        "地籍": false,
+        "北仑": false,
+        "桐乡": false,
+        "晋中": false,
+        "登记": true,
+        "catastro": false,
+        "Piura": false,
+        "COFOPRI": false
+      },
+      "parcelProtocolStringsPresent": {
+        "FeatureServer": false,
+        "geoserver": false,
+        "GetFeature": false,
+        "MapServer": false,
+        "OpenLayers": false,
+        "WFS": false
+      }
+    }
+  ]
+}

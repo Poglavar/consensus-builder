@@ -1,0 +1,1421 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T09:39:49.453Z",
+  "endpoint": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27",
+  "cell": {
+    "index": 4,
+    "bboxWgs84": [
+      -51.069,
+      0.043,
+      -51.068,
+      0.044
+    ]
+  },
+  "safeFields": [
+    "idlote"
+  ],
+  "protocol": "Test distinct count/list stability and forced pageSize=1 for attribute-only manifests, then exact-ID raw full-geometry batches with count-before/data/count-after.",
+  "tests": {
+    "distinctCountAndManifest": {
+      "beforeCount": 22,
+      "manifestFeatureRows": 22,
+      "uniqueManifestIds": 22,
+      "afterCount": 22,
+      "countMatchesManifest": true,
+      "distinctManifestHasUniqueIds": true,
+      "prePostCountStable": true,
+      "manifestIds": [
+        "502725",
+        "503050",
+        "503265",
+        "503266",
+        "527008",
+        "527009",
+        "527010",
+        "527011",
+        "527012",
+        "527013",
+        "527355",
+        "527538",
+        "527539",
+        "537518",
+        "605268",
+        "605269",
+        "605270",
+        "605271",
+        "605272",
+        "606579",
+        "606580",
+        "606581"
+      ],
+      "transferFlags": [
+        null,
+        null,
+        null
+      ],
+      "complete": true
+    },
+    "forcedDistinctPageSizeOne": {
+      "attempted": true,
+      "pageSize": 1,
+      "maximumPageCount": 100,
+      "ids": [
+        "502725",
+        "503050",
+        "503265",
+        "503266",
+        "527008",
+        "527009",
+        "527010",
+        "527011",
+        "527012",
+        "527013",
+        "527355",
+        "527538",
+        "527539",
+        "537518",
+        "605268",
+        "605269",
+        "605270",
+        "605271",
+        "605272",
+        "606579",
+        "606580",
+        "606581"
+      ],
+      "perPage": [
+        {
+          "offset": 0,
+          "status": 200,
+          "featureCount": 1,
+          "exceededTransferLimit": true,
+          "expectedMore": true,
+          "ids": [
+            "502725"
+          ],
+          "valid": true
+        },
+        {
+          "offset": 1,
+          "status": 200,
+          "featureCount": 1,
+          "exceededTransferLimit": true,
+          "expectedMore": true,
+          "ids": [
+            "503050"
+          ],
+          "valid": true
+        },
+        {
+          "offset": 2,
+          "status": 200,
+          "featureCount": 1,
+          "exceededTransferLimit": true,
+          "expectedMore": true,
+          "ids": [
+            "503265"
+          ],
+          "valid": true
+        },
+        {
+          "offset": 3,
+          "status": 200,
+          "featureCount": 1,
+          "exceededTransferLimit": true,
+          "expectedMore": true,
+          "ids": [
+            "503266"
+          ],
+          "valid": true
+        },
+        {
+          "offset": 4,
+          "status": 200,
+          "featureCount": 1,
+          "exceededTransferLimit": true,
+          "expectedMore": true,
+          "ids": [
+            "527008"
+          ],
+          "valid": true
+        },
+        {
+          "offset": 5,
+          "status": 200,
+          "featureCount": 1,
+          "exceededTransferLimit": true,
+          "expectedMore": true,
+          "ids": [
+            "527009"
+          ],
+          "valid": true
+        },
+        {
+          "offset": 6,
+          "status": 200,
+          "featureCount": 1,
+          "exceededTransferLimit": true,
+          "expectedMore": true,
+          "ids": [
+            "527010"
+          ],
+          "valid": true
+        },
+        {
+          "offset": 7,
+          "status": 200,
+          "featureCount": 1,
+          "exceededTransferLimit": true,
+          "expectedMore": true,
+          "ids": [
+            "527011"
+          ],
+          "valid": true
+        },
+        {
+          "offset": 8,
+          "status": 200,
+          "featureCount": 1,
+          "exceededTransferLimit": true,
+          "expectedMore": true,
+          "ids": [
+            "527012"
+          ],
+          "valid": true
+        },
+        {
+          "offset": 9,
+          "status": 200,
+          "featureCount": 1,
+          "exceededTransferLimit": true,
+          "expectedMore": true,
+          "ids": [
+            "527013"
+          ],
+          "valid": true
+        },
+        {
+          "offset": 10,
+          "status": 200,
+          "featureCount": 1,
+          "exceededTransferLimit": true,
+          "expectedMore": true,
+          "ids": [
+            "527355"
+          ],
+          "valid": true
+        },
+        {
+          "offset": 11,
+          "status": 200,
+          "featureCount": 1,
+          "exceededTransferLimit": true,
+          "expectedMore": true,
+          "ids": [
+            "527538"
+          ],
+          "valid": true
+        },
+        {
+          "offset": 12,
+          "status": 200,
+          "featureCount": 1,
+          "exceededTransferLimit": true,
+          "expectedMore": true,
+          "ids": [
+            "527539"
+          ],
+          "valid": true
+        },
+        {
+          "offset": 13,
+          "status": 200,
+          "featureCount": 1,
+          "exceededTransferLimit": true,
+          "expectedMore": true,
+          "ids": [
+            "537518"
+          ],
+          "valid": true
+        },
+        {
+          "offset": 14,
+          "status": 200,
+          "featureCount": 1,
+          "exceededTransferLimit": true,
+          "expectedMore": true,
+          "ids": [
+            "605268"
+          ],
+          "valid": true
+        },
+        {
+          "offset": 15,
+          "status": 200,
+          "featureCount": 1,
+          "exceededTransferLimit": true,
+          "expectedMore": true,
+          "ids": [
+            "605269"
+          ],
+          "valid": true
+        },
+        {
+          "offset": 16,
+          "status": 200,
+          "featureCount": 1,
+          "exceededTransferLimit": true,
+          "expectedMore": true,
+          "ids": [
+            "605270"
+          ],
+          "valid": true
+        },
+        {
+          "offset": 17,
+          "status": 200,
+          "featureCount": 1,
+          "exceededTransferLimit": true,
+          "expectedMore": true,
+          "ids": [
+            "605271"
+          ],
+          "valid": true
+        },
+        {
+          "offset": 18,
+          "status": 200,
+          "featureCount": 1,
+          "exceededTransferLimit": true,
+          "expectedMore": true,
+          "ids": [
+            "605272"
+          ],
+          "valid": true
+        },
+        {
+          "offset": 19,
+          "status": 200,
+          "featureCount": 1,
+          "exceededTransferLimit": true,
+          "expectedMore": true,
+          "ids": [
+            "606579"
+          ],
+          "valid": true
+        },
+        {
+          "offset": 20,
+          "status": 200,
+          "featureCount": 1,
+          "exceededTransferLimit": true,
+          "expectedMore": true,
+          "ids": [
+            "606580"
+          ],
+          "valid": true
+        },
+        {
+          "offset": 21,
+          "status": 200,
+          "featureCount": 1,
+          "exceededTransferLimit": null,
+          "expectedMore": false,
+          "ids": [
+            "606581"
+          ],
+          "valid": true
+        }
+      ],
+      "complete": true,
+      "idsUnique": true,
+      "fullSetMatchesUnpaged": true,
+      "postPageCount": 22,
+      "preAndPostCountsStable": true
+    },
+    "exactIdRawGeometryBatchFirst": {
+      "preCount": 11,
+      "geometryRows": 11,
+      "postCount": 11,
+      "nativeCrs": "EPSG:31982",
+      "transferFlag": null,
+      "returnedIdsOnlyExpected": true,
+      "nativeRowsById": {
+        "527009": {
+          "rows": 1,
+          "distinctFullNativeGeometryHashes": 1,
+          "geometrySha256": "313642145f9b4946c3325c02a1b9b424aa234bc30728b53e1fffb3be625234e7",
+          "allFullPolygonsComplete": true,
+          "geometryTypes": [
+            "Polygon"
+          ]
+        },
+        "605270": {
+          "rows": 10,
+          "distinctFullNativeGeometryHashes": 1,
+          "geometrySha256": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89",
+          "allFullPolygonsComplete": true,
+          "geometryTypes": [
+            "Polygon"
+          ]
+        }
+      },
+      "expectedNativeIdRowCounts": {
+        "527009": 1,
+        "605270": 10
+      },
+      "allRowsCounted": true,
+      "prePostCountsStable": true,
+      "eachPresentIdHasExpectedCompleteIdenticalPolygons": true,
+      "syntheticAbsentIdMissingFromGeometry": true,
+      "complete": true
+    },
+    "exactIdRawGeometryBatchRepeat": {
+      "preCount": 11,
+      "geometryRows": 11,
+      "postCount": 11,
+      "nativeCrs": "EPSG:31982",
+      "transferFlag": null,
+      "returnedIdsOnlyExpected": true,
+      "nativeRowsById": {
+        "527009": {
+          "rows": 1,
+          "distinctFullNativeGeometryHashes": 1,
+          "geometrySha256": "313642145f9b4946c3325c02a1b9b424aa234bc30728b53e1fffb3be625234e7",
+          "allFullPolygonsComplete": true,
+          "geometryTypes": [
+            "Polygon"
+          ]
+        },
+        "605270": {
+          "rows": 10,
+          "distinctFullNativeGeometryHashes": 1,
+          "geometrySha256": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89",
+          "allFullPolygonsComplete": true,
+          "geometryTypes": [
+            "Polygon"
+          ]
+        }
+      },
+      "expectedNativeIdRowCounts": {
+        "527009": 1,
+        "605270": 10
+      },
+      "allRowsCounted": true,
+      "prePostCountsStable": true,
+      "eachPresentIdHasExpectedCompleteIdenticalPolygons": true,
+      "syntheticAbsentIdMissingFromGeometry": true,
+      "complete": true
+    },
+    "explicitAbsence": {
+      "count": 0,
+      "geometryFeatureCount": 0,
+      "transferFlag": null,
+      "emptyCountAndGeometry": true
+    },
+    "batchHashStability": {
+      "firstComplete": true,
+      "repeatComplete": true,
+      "perIdFullNativeGeometryHashesMatch": true,
+      "firstHashes": {
+        "527009": "313642145f9b4946c3325c02a1b9b424aa234bc30728b53e1fffb3be625234e7",
+        "605270": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+      },
+      "repeatHashes": {
+        "527009": "313642145f9b4946c3325c02a1b9b424aa234bc30728b53e1fffb3be625234e7",
+        "605270": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+      }
+    }
+  },
+  "requests": [
+    {
+      "stage": "held-cell-distinct-count-pre",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=json&where=1%3D1&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.043%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.044%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=false&returnCountOnly=true&returnDistinctValues=true",
+      "status": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "sha256": "bd067fc23d73cdd4d33068cde59fdb859d185e3ebdcfa796a120af35c24d27f3",
+      "esriError": null,
+      "count": 22,
+      "exceededTransferLimit": null
+    },
+    {
+      "stage": "held-cell-distinct-attribute-manifest",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.043%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.044%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=false&returnDistinctValues=true&resultRecordCount=100&orderByFields=idlote+ASC",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1813,
+      "sha256": "0574060d168b4c4fc4591919a59c51ec5827753bfcbe503db5a2971897308d38",
+      "esriError": null,
+      "featureCount": 22,
+      "exceededTransferLimit": null,
+      "returnedRows": [
+        {
+          "id": "502725",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        },
+        {
+          "id": "503050",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        },
+        {
+          "id": "503265",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        },
+        {
+          "id": "503266",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        },
+        {
+          "id": "527008",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        },
+        {
+          "id": "527009",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        },
+        {
+          "id": "527010",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        },
+        {
+          "id": "527011",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        },
+        {
+          "id": "527012",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        },
+        {
+          "id": "527013",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        },
+        {
+          "id": "527355",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        },
+        {
+          "id": "527538",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        },
+        {
+          "id": "527539",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        },
+        {
+          "id": "537518",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        },
+        {
+          "id": "605268",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        },
+        {
+          "id": "605269",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        },
+        {
+          "id": "605270",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        },
+        {
+          "id": "605271",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        },
+        {
+          "id": "605272",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        },
+        {
+          "id": "606579",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        },
+        {
+          "id": "606580",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        },
+        {
+          "id": "606581",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        }
+      ]
+    },
+    {
+      "stage": "held-cell-distinct-count-post",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=json&where=1%3D1&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.043%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.044%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=false&returnCountOnly=true&returnDistinctValues=true",
+      "status": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "sha256": "bd067fc23d73cdd4d33068cde59fdb859d185e3ebdcfa796a120af35c24d27f3",
+      "esriError": null,
+      "count": 22,
+      "exceededTransferLimit": null
+    },
+    {
+      "stage": "held-cell-distinct-page-0",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.043%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.044%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=false&returnDistinctValues=true&resultRecordCount=1&resultOffset=0&orderByFields=idlote+ASC",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 204,
+      "sha256": "0d7cd354e79395813ebd573de07b5839c1e3c2e6d561cfdcaeadacd52964cd8a",
+      "esriError": null,
+      "featureCount": 1,
+      "exceededTransferLimit": true,
+      "returnedRows": [
+        {
+          "id": "502725",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        }
+      ]
+    },
+    {
+      "stage": "held-cell-distinct-page-1",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.043%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.044%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=false&returnDistinctValues=true&resultRecordCount=1&resultOffset=1&orderByFields=idlote+ASC",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 204,
+      "sha256": "af65761f5edc2680ccce202b2a07c7fee5824d7623bc8717ab034e4951f1fe85",
+      "esriError": null,
+      "featureCount": 1,
+      "exceededTransferLimit": true,
+      "returnedRows": [
+        {
+          "id": "503050",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        }
+      ]
+    },
+    {
+      "stage": "held-cell-distinct-page-2",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.043%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.044%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=false&returnDistinctValues=true&resultRecordCount=1&resultOffset=2&orderByFields=idlote+ASC",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 204,
+      "sha256": "79d34f22fabdbc3185cffee234e14b77b24c1178e9a2f9288fe9fac894e42e78",
+      "esriError": null,
+      "featureCount": 1,
+      "exceededTransferLimit": true,
+      "returnedRows": [
+        {
+          "id": "503265",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        }
+      ]
+    },
+    {
+      "stage": "held-cell-distinct-page-3",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.043%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.044%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=false&returnDistinctValues=true&resultRecordCount=1&resultOffset=3&orderByFields=idlote+ASC",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 204,
+      "sha256": "eda10f567dcb04c5eb4823fa324d16c10c1176ce871cc0a20331e1465c49cb36",
+      "esriError": null,
+      "featureCount": 1,
+      "exceededTransferLimit": true,
+      "returnedRows": [
+        {
+          "id": "503266",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        }
+      ]
+    },
+    {
+      "stage": "held-cell-distinct-page-4",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.043%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.044%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=false&returnDistinctValues=true&resultRecordCount=1&resultOffset=4&orderByFields=idlote+ASC",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 204,
+      "sha256": "093cd9a45af092ffcca004c1b3171522c2de5be18550c32901f445df9b7dfe27",
+      "esriError": null,
+      "featureCount": 1,
+      "exceededTransferLimit": true,
+      "returnedRows": [
+        {
+          "id": "527008",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        }
+      ]
+    },
+    {
+      "stage": "held-cell-distinct-page-5",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.043%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.044%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=false&returnDistinctValues=true&resultRecordCount=1&resultOffset=5&orderByFields=idlote+ASC",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 204,
+      "sha256": "92df2d5546ca08e6c46989ed1fe36c11d8410a7fd3a1217675d4cf357a5f1e1a",
+      "esriError": null,
+      "featureCount": 1,
+      "exceededTransferLimit": true,
+      "returnedRows": [
+        {
+          "id": "527009",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        }
+      ]
+    },
+    {
+      "stage": "held-cell-distinct-page-6",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.043%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.044%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=false&returnDistinctValues=true&resultRecordCount=1&resultOffset=6&orderByFields=idlote+ASC",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 204,
+      "sha256": "b9c55b7997aefc05f3821b34cf1a3e7d2256a4b8bc50e47b581a1faa34daca99",
+      "esriError": null,
+      "featureCount": 1,
+      "exceededTransferLimit": true,
+      "returnedRows": [
+        {
+          "id": "527010",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        }
+      ]
+    },
+    {
+      "stage": "held-cell-distinct-page-7",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.043%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.044%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=false&returnDistinctValues=true&resultRecordCount=1&resultOffset=7&orderByFields=idlote+ASC",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 204,
+      "sha256": "6e2d2fb164e8c0575b1226e8b5bf52b22d32c2e627a1282185a0a3e1d127c881",
+      "esriError": null,
+      "featureCount": 1,
+      "exceededTransferLimit": true,
+      "returnedRows": [
+        {
+          "id": "527011",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        }
+      ]
+    },
+    {
+      "stage": "held-cell-distinct-page-8",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.043%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.044%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=false&returnDistinctValues=true&resultRecordCount=1&resultOffset=8&orderByFields=idlote+ASC",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 204,
+      "sha256": "0e76582d55019369bbb535acece668856d0921893f6140396383be9be16df6a0",
+      "esriError": null,
+      "featureCount": 1,
+      "exceededTransferLimit": true,
+      "returnedRows": [
+        {
+          "id": "527012",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        }
+      ]
+    },
+    {
+      "stage": "held-cell-distinct-page-9",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.043%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.044%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=false&returnDistinctValues=true&resultRecordCount=1&resultOffset=9&orderByFields=idlote+ASC",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 204,
+      "sha256": "a02ffc4557f52447faa2cfcc4b479b7ce3dc3f66009bb766339ebf90e8fec2d2",
+      "esriError": null,
+      "featureCount": 1,
+      "exceededTransferLimit": true,
+      "returnedRows": [
+        {
+          "id": "527013",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        }
+      ]
+    },
+    {
+      "stage": "held-cell-distinct-page-10",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.043%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.044%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=false&returnDistinctValues=true&resultRecordCount=1&resultOffset=10&orderByFields=idlote+ASC",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 204,
+      "sha256": "215d5a6e2344041b772ffed33b37e3c1a623968c2573c78c84864b66f4b6a216",
+      "esriError": null,
+      "featureCount": 1,
+      "exceededTransferLimit": true,
+      "returnedRows": [
+        {
+          "id": "527355",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        }
+      ]
+    },
+    {
+      "stage": "held-cell-distinct-page-11",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.043%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.044%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=false&returnDistinctValues=true&resultRecordCount=1&resultOffset=11&orderByFields=idlote+ASC",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 204,
+      "sha256": "5bb1d41ddb7823b71ca539bb96491151820ae5f2170308f5a492665db6d6f323",
+      "esriError": null,
+      "featureCount": 1,
+      "exceededTransferLimit": true,
+      "returnedRows": [
+        {
+          "id": "527538",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        }
+      ]
+    },
+    {
+      "stage": "held-cell-distinct-page-12",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.043%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.044%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=false&returnDistinctValues=true&resultRecordCount=1&resultOffset=12&orderByFields=idlote+ASC",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 204,
+      "sha256": "b5a7b917df77b20be4ae73f098353d7ab891245bc925a66203395db3fad9fd3e",
+      "esriError": null,
+      "featureCount": 1,
+      "exceededTransferLimit": true,
+      "returnedRows": [
+        {
+          "id": "527539",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        }
+      ]
+    },
+    {
+      "stage": "held-cell-distinct-page-13",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.043%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.044%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=false&returnDistinctValues=true&resultRecordCount=1&resultOffset=13&orderByFields=idlote+ASC",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 204,
+      "sha256": "6760f705105270277a94c6b751a4fb366b1359121ae556a355cc72e878ff50ad",
+      "esriError": null,
+      "featureCount": 1,
+      "exceededTransferLimit": true,
+      "returnedRows": [
+        {
+          "id": "537518",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        }
+      ]
+    },
+    {
+      "stage": "held-cell-distinct-page-14",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.043%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.044%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=false&returnDistinctValues=true&resultRecordCount=1&resultOffset=14&orderByFields=idlote+ASC",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 204,
+      "sha256": "d8f7192cfbebd1b4b69ac95619ff3eab3f7050ebde4755185fe69abd16832c14",
+      "esriError": null,
+      "featureCount": 1,
+      "exceededTransferLimit": true,
+      "returnedRows": [
+        {
+          "id": "605268",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        }
+      ]
+    },
+    {
+      "stage": "held-cell-distinct-page-15",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.043%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.044%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=false&returnDistinctValues=true&resultRecordCount=1&resultOffset=15&orderByFields=idlote+ASC",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 204,
+      "sha256": "1b6f51f004a6d782adfc72ea9325114d1b875bf6581d03c1131809440cd6c3e8",
+      "esriError": null,
+      "featureCount": 1,
+      "exceededTransferLimit": true,
+      "returnedRows": [
+        {
+          "id": "605269",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        }
+      ]
+    },
+    {
+      "stage": "held-cell-distinct-page-16",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.043%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.044%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=false&returnDistinctValues=true&resultRecordCount=1&resultOffset=16&orderByFields=idlote+ASC",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 204,
+      "sha256": "98a6ca844b93084ad001ea51d1f1e670be02b61c4c9d5f579473b93aed589c48",
+      "esriError": null,
+      "featureCount": 1,
+      "exceededTransferLimit": true,
+      "returnedRows": [
+        {
+          "id": "605270",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        }
+      ]
+    },
+    {
+      "stage": "held-cell-distinct-page-17",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.043%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.044%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=false&returnDistinctValues=true&resultRecordCount=1&resultOffset=17&orderByFields=idlote+ASC",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 204,
+      "sha256": "40f8b4325e61725dfdc205d12aafea2a4e7f74256d857dff927031774897cb68",
+      "esriError": null,
+      "featureCount": 1,
+      "exceededTransferLimit": true,
+      "returnedRows": [
+        {
+          "id": "605271",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        }
+      ]
+    },
+    {
+      "stage": "held-cell-distinct-page-18",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.043%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.044%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=false&returnDistinctValues=true&resultRecordCount=1&resultOffset=18&orderByFields=idlote+ASC",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 204,
+      "sha256": "99901468f7983fdc5a5b45ff0c5206c38033cc25c3949ce1b58db61d4e9ea7b4",
+      "esriError": null,
+      "featureCount": 1,
+      "exceededTransferLimit": true,
+      "returnedRows": [
+        {
+          "id": "605272",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        }
+      ]
+    },
+    {
+      "stage": "held-cell-distinct-page-19",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.043%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.044%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=false&returnDistinctValues=true&resultRecordCount=1&resultOffset=19&orderByFields=idlote+ASC",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 204,
+      "sha256": "b851066fdbc614df5e642b00a88b890c290b29169c59e64dd9b00aa8b6a1a51e",
+      "esriError": null,
+      "featureCount": 1,
+      "exceededTransferLimit": true,
+      "returnedRows": [
+        {
+          "id": "606579",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        }
+      ]
+    },
+    {
+      "stage": "held-cell-distinct-page-20",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.043%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.044%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=false&returnDistinctValues=true&resultRecordCount=1&resultOffset=20&orderByFields=idlote+ASC",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 204,
+      "sha256": "a47ce64eee86daf3d36654ce70eec85baa9341c1ecc61f7ee5a088dcdbeda3e2",
+      "esriError": null,
+      "featureCount": 1,
+      "exceededTransferLimit": true,
+      "returnedRows": [
+        {
+          "id": "606580",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        }
+      ]
+    },
+    {
+      "stage": "held-cell-distinct-page-21",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.043%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.044%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=false&returnDistinctValues=true&resultRecordCount=1&resultOffset=21&orderByFields=idlote+ASC",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 175,
+      "sha256": "cd82b7ad808d9fcaabefe7bb2ffb18378dad04612d84cd2b2f1933a4dd843464",
+      "esriError": null,
+      "featureCount": 1,
+      "exceededTransferLimit": null,
+      "returnedRows": [
+        {
+          "id": "606581",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": null,
+          "geometryHash": null
+        }
+      ]
+    },
+    {
+      "stage": "held-cell-distinct-count-after-forced-pages",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=json&where=1%3D1&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.043%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.044%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=false&returnCountOnly=true&returnDistinctValues=true",
+      "status": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "sha256": "bd067fc23d73cdd4d33068cde59fdb859d185e3ebdcfa796a120af35c24d27f3",
+      "esriError": null,
+      "count": 22,
+      "exceededTransferLimit": null
+    },
+    {
+      "stage": "exact-id-batch-1-count-pre",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=json&where=idlote+IN+%28605270%2C527009%2C2147483647%29&outFields=idlote&returnGeometry=false&returnCountOnly=true",
+      "status": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "sha256": "7512669ba3d728b7c043f6d90372533fbd036755844fb231b0bf242e2f712bbf",
+      "esriError": null,
+      "count": 11,
+      "exceededTransferLimit": null
+    },
+    {
+      "stage": "exact-id-batch-1-geometry-raw",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=idlote+IN+%28605270%2C527009%2C2147483647%29&outFields=idlote&returnGeometry=true&outSR=31982&resultRecordCount=100&orderByFields=idlote+ASC",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 4308,
+      "sha256": "57207e53ba032b31999dd7c43062fcda371892e77137a45ddde0409c10c214ee",
+      "esriError": null,
+      "featureCount": 11,
+      "exceededTransferLimit": null,
+      "returnedRows": [
+        {
+          "id": "527009",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometryHash": "313642145f9b4946c3325c02a1b9b424aa234bc30728b53e1fffb3be625234e7"
+        },
+        {
+          "id": "605270",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometryHash": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        },
+        {
+          "id": "605270",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometryHash": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        },
+        {
+          "id": "605270",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometryHash": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        },
+        {
+          "id": "605270",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometryHash": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        },
+        {
+          "id": "605270",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometryHash": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        },
+        {
+          "id": "605270",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometryHash": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        },
+        {
+          "id": "605270",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometryHash": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        },
+        {
+          "id": "605270",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometryHash": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        },
+        {
+          "id": "605270",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometryHash": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        },
+        {
+          "id": "605270",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometryHash": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        }
+      ]
+    },
+    {
+      "stage": "exact-id-batch-1-count-post",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=json&where=idlote+IN+%28605270%2C527009%2C2147483647%29&outFields=idlote&returnGeometry=false&returnCountOnly=true",
+      "status": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "sha256": "7512669ba3d728b7c043f6d90372533fbd036755844fb231b0bf242e2f712bbf",
+      "esriError": null,
+      "count": 11,
+      "exceededTransferLimit": null
+    },
+    {
+      "stage": "exact-id-batch-2-count-pre",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=json&where=idlote+IN+%28605270%2C527009%2C2147483647%29&outFields=idlote&returnGeometry=false&returnCountOnly=true",
+      "status": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "sha256": "7512669ba3d728b7c043f6d90372533fbd036755844fb231b0bf242e2f712bbf",
+      "esriError": null,
+      "count": 11,
+      "exceededTransferLimit": null
+    },
+    {
+      "stage": "exact-id-batch-2-geometry-raw",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=idlote+IN+%28605270%2C527009%2C2147483647%29&outFields=idlote&returnGeometry=true&outSR=31982&resultRecordCount=100&orderByFields=idlote+ASC",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 4308,
+      "sha256": "57207e53ba032b31999dd7c43062fcda371892e77137a45ddde0409c10c214ee",
+      "esriError": null,
+      "featureCount": 11,
+      "exceededTransferLimit": null,
+      "returnedRows": [
+        {
+          "id": "527009",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometryHash": "313642145f9b4946c3325c02a1b9b424aa234bc30728b53e1fffb3be625234e7"
+        },
+        {
+          "id": "605270",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometryHash": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        },
+        {
+          "id": "605270",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometryHash": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        },
+        {
+          "id": "605270",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometryHash": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        },
+        {
+          "id": "605270",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometryHash": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        },
+        {
+          "id": "605270",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometryHash": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        },
+        {
+          "id": "605270",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometryHash": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        },
+        {
+          "id": "605270",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometryHash": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        },
+        {
+          "id": "605270",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometryHash": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        },
+        {
+          "id": "605270",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometryHash": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        },
+        {
+          "id": "605270",
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometryHash": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        }
+      ]
+    },
+    {
+      "stage": "exact-id-batch-2-count-post",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=json&where=idlote+IN+%28605270%2C527009%2C2147483647%29&outFields=idlote&returnGeometry=false&returnCountOnly=true",
+      "status": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "sha256": "7512669ba3d728b7c043f6d90372533fbd036755844fb231b0bf242e2f712bbf",
+      "esriError": null,
+      "count": 11,
+      "exceededTransferLimit": null
+    },
+    {
+      "stage": "synthetic-absent-count-only",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=json&where=idlote+%3D+2147483647&outFields=idlote&returnGeometry=false&returnCountOnly=true",
+      "status": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "sha256": "618de7d9f46f3f697d827a1b6d84974760d5deda62e4e592adaa3c646602a94c",
+      "esriError": null,
+      "count": 0,
+      "exceededTransferLimit": null
+    },
+    {
+      "stage": "synthetic-absent-empty-geometry",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=idlote+%3D+2147483647&outFields=idlote&returnGeometry=true&outSR=31982&resultRecordCount=100",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 99,
+      "sha256": "63175f1032fd6c72fbd742933c5ae052230086890b6281a6084fdf5a44570fda",
+      "esriError": null,
+      "featureCount": 0,
+      "exceededTransferLimit": null,
+      "returnedRows": []
+    }
+  ],
+  "layerMetadata": {
+    "status": 200,
+    "bytes": 2924,
+    "sha256": "151e0c3835dc618168c24f89d87609170076d97ff85957a378cb51048e080d68",
+    "supportsDistinct": true,
+    "supportsCountDistinct": true,
+    "supportsPagination": true,
+    "supportsOrderBy": true,
+    "oidFields": [
+      "idlote"
+    ]
+  },
+  "paginationSafety": {
+    "distinctIdPageSize": 1,
+    "pagesRequested": 22,
+    "maximumPageCount": 100,
+    "derivedFromStablePreDistinctCount": 22,
+    "allRequestedOffsetsBoundedByPreDistinctCount": true
+  },
+  "designCandidateForReview": {
+    "mode": "opt-in distinct-native-ID manifest plus complete raw-row geometry validation",
+    "implemented": false,
+    "manifest": "Use returnCountOnly=true and returnDistinctValues=true with outFields=idlote and returnGeometry=false; require count to equal the distinct attribute manifest length, unique IDs, stable pre/post counts, and a complete bounded pageSize=1 ID set when pagination is supported.",
+    "geometry": "For each bounded exact native-ID batch, count raw matching rows before geometry, fetch un-distinct full geometry with safe idlote only, then count again; require response row count to equal both counts, no transfer-limit flag, only requested IDs, and repeatable reads.",
+    "duplicateRule": "Group raw full geometries by idlote and collapse only if every complete full native polygon hash for that ID is identical; fail closed on conflicting hashes, incomplete geometry, count drift, truncation, missing/extra IDs, or unstable repeat hashes.",
+    "absenceRule": "Require an absent ID count of zero and an empty, untruncated geometry response.",
+    "scope": "Opt-in mode only; default strict duplicate-object-ID rejection remains unchanged."
+  },
+  "requestSummary": {
+    "total": 34,
+    "statuses": {
+      "200": 34
+    },
+    "onlyIdloteRequestedOrReturned": true,
+    "responseBodiesCachedOnlyInIgnoredTmp": true
+  }
+}

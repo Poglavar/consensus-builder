@@ -1,0 +1,133 @@
+{
+  "checkedAt": "2026-10-09T08:10:56Z",
+  "scope": "Read-only current source recheck for existing Iceland, Sweden, Portugal, and Romania country evidence. No authentication, tokens, cookies, owner/address fields, or bypasses used. Retained samples are limited to public source IDs and full parcel geometries, maximum three per country.",
+  "countries": {
+    "IS": {
+      "status": "anonymous_geometry_verified",
+      "officialSource": "https://landeignaskra.hms.is/",
+      "viewerScript": "https://landeignaskra.hms.is/_next/static/chunks/3796-bcc04733f651d800.js",
+      "observedRoute": "GET /api/geo/wfs/landeign?bbox=357000,406400,357300,406700",
+      "request": {
+        "status": 200,
+        "contentType": "application/json;charset=UTF-8",
+        "bytes": 9373,
+        "sha256": "8250d86b19e4e17b78dc35a9a733844ec1b2e8d16a2b82244a0a5e75b88cdbf5",
+        "featureCount": 4,
+        "safeSamplesRetained": 3,
+        "nativeCrs": "EPSG:3057"
+      },
+      "sampleFile": "named-country-recheck-IS-samples.json",
+      "limits": "Viewer proxy WFS bbox route was observed in current official viewer JavaScript. No stable page or per-ID route was verified; response cap/pagination behavior remains unknown."
+    },
+    "SE": {
+      "status": "prior_anonymous_geometry_verified_current_access_inconclusive",
+      "officialSource": "https://minkarta.lantmateriet.se/",
+      "priorEvidenceFile": "../retry/countries/SE.json",
+      "priorEvidenceDate": "2026-09-30",
+      "observedRoute": "GET /api/searchservice/fastighetsgeometri/v1?objektidentitet=<public property-unit UUID>",
+      "priorRequest": {
+        "status": 200,
+        "featureCount": 3,
+        "regions": [
+          "Stockholm",
+          "Kiruna"
+        ],
+        "nativeCrs": "EPSG:3006",
+        "safeSamplesRetained": 3
+      },
+      "currentRetry": {
+        "viewerShell": "ConnectTimeout",
+        "exactPublicIdGeometry": "ConnectTimeout",
+        "officialDocumentedOgcItemsEndpoint": "HTTP 401; no credentials used"
+      },
+      "sampleFile": "named-country-recheck-SE-samples.json",
+      "limits": "The three retained geometries preserve prior anonymous viewer API evidence. Current host unavailability is inconclusive and does not invalidate the prior response. The documented official OGC API remains credential-gated."
+    },
+    "PT": {
+      "status": "anonymous_geometry_verified_bounded_region_sample",
+      "officialSource": "https://ogcapi.dgterritorio.gov.pt/collections/cadastro?f=json",
+      "collectionId": "cadastro",
+      "request": {
+        "status": 200,
+        "collectionStorageCrs": "OGC:CRS84",
+        "nativeOutputCrs": "OGC:CRS84",
+        "bbox": "-9.32,39.16,-9.30,39.18",
+        "limit": 3,
+        "featureCount": 3,
+        "numberMatched": 414,
+        "nextPageObserved": true,
+        "exactItemRouteStatus": 200,
+        "exactItemGeometryType": "MultiPolygon",
+        "safeSamplesRetained": 3
+      },
+      "sampleFile": "named-country-recheck-PT-samples.json",
+      "region": "Mafra, Lisboa district; this is not Lisbon municipality.",
+      "limits": "Only a bounded Mafra-area sample and one exact item route were checked. Existing Lisbon records document zero/adjacent-area findings; do not generalize this Mafra result to Lisbon city."
+    },
+    "RO": {
+      "status": "official_source_found_live_access_timed_out",
+      "officialSource": "https://geoportal.gov.ro/",
+      "currentMigrationNotice": "https://geoportal.gov.ro/",
+      "currentService": "https://geoportal.gov.ro/inspireview/rest/services/CP/CP_View/MapServer/1",
+      "serviceDescription": "Official search-indexed service metadata identifies cadastral parcel polygons (CP_View layer 1), spatial reference EPSG:4258, public cadastral identifiers and pagination.",
+      "currentRequests": {
+        "layerMetadata": "ConnectTimeout with no HTTP response",
+        "boundedPointQuery": "ConnectTimeout with no HTTP response"
+      },
+      "sampleFile": null,
+      "limits": "Official search-indexed evidence points to the current migrated host (notice dated 2026-05-27), but direct live requests timed out. No parcel geometry was retrieved; this is temporary access uncertainty, not evidence that data is absent."
+    }
+  },
+  "sampleValidation": {
+    "IS": {
+      "count": 3,
+      "ids": [
+        "221261",
+        "106748",
+        "106641"
+      ],
+      "geometryTypes": [
+        "Polygon"
+      ],
+      "properties": [
+        "LANDEIGN_NR"
+      ],
+      "nativeCrs": "EPSG:3057"
+    },
+    "SE": {
+      "count": 3,
+      "ids": [
+        "909a6a47-1deb-90ec-e040-ed8f66444c3f",
+        "909a6a47-1dec-90ec-e040-ed8f66444c3f",
+        "909a6a89-5fd8-90ec-e040-ed8f66444c3f"
+      ],
+      "geometryTypes": [
+        "Polygon",
+        "MultiPolygon"
+      ],
+      "properties": [
+        "objektidentitet"
+      ],
+      "nativeCrs": "EPSG:3006"
+    },
+    "PT": {
+      "count": 3,
+      "ids": [
+        "AAA000000001",
+        "AAA000000002",
+        "AAA000000003"
+      ],
+      "geometryTypes": [
+        "MultiPolygon"
+      ],
+      "properties": [
+        "nationalcadastralreference"
+      ],
+      "nativeCrs": "OGC:CRS84"
+    },
+    "RO": {
+      "count": 0,
+      "reason": "no live geometry response"
+    }
+  }
+}

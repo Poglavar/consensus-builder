@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T09:20:14.837937+00:00",
+  "executionContext": "require_escalated actual anonymous public-network reads",
+  "requests": [
+    {
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27?f=pjson",
+      "httpStatus": 200,
+      "bytesRead": 2924,
+      "bodySha256": "151e0c3835dc618168c24f89d87609170076d97ff85957a378cb51048e080d68",
+      "layerName": "sit_macapa.vw.vw_info_fisico",
+      "objectIdField": null,
+      "geometryType": "esriGeometryPolygon",
+      "nativeCrs": {
+        "wkid": 31982,
+        "latestWkid": 31982
+      }
+    },
+    {
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=idlote%3D502134&outFields=idlote&returnGeometry=true&outSR=31982&resultRecordCount=3",
+      "httpStatus": 200,
+      "bytesRead": 726,
+      "bodySha256": "f6f40af7ccdfaf8e6275679cd129704f7092aeaa3fc4b7797707c8bccc405215",
+      "returnedFeatures": 1,
+      "ids": [
+        502134
+      ],
+      "exceededTransferLimit": null,
+      "geometries": [
+        {
+          "type": "Polygon",
+          "sha256": "e4907c5af2ed4614ed935e7e631c9555ebd6893ee46af99f8da4a239fc8debcc"
+        }
+      ]
+    }
+  ],
+  "extraDurablePolygons": 0,
+  "decision": "Public native parcel geometry confirmed; adapter completeness remains held for repeated idlote join rows. Point zero and service hostname are informational."
+}

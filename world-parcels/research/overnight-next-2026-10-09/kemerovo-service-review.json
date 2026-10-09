@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7534-kemerovo.json",
+  "purpose": "Document separate English/local-language research, local land-registry custody scope, anonymous request outcomes and safe geometry limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official national and municipal pages were not enough to establish Kemerovo-local cadastral custody.",
+  "registryAssessment": "A city-level legal land/cadastral custodian was not established by this research.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.rosreestr.gov.ru/",
+      "operator": "Federal Service for State Registration, Cadastre and Cartography (Rosreestr)",
+      "scope": "National cadastral authority; research did not establish an official Kemerovo city-specific public geometry route."
+    },
+    {
+      "url": "https://kemerovo.ru/",
+      "operator": "Kemerovo Municipal Administration",
+      "scope": "Official local government source; no cadastral parcel portal verified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Kemerovo official cadastral parcel map cadastral register public map Росреестр кадастровая карта",
+      "result": "Separate English-language search followed by first-party source review; listed official sources are the evidence retained.",
+      "actualResultUrls": [
+        "https://www.rosreestr.gov.ru/",
+        "https://kemerovo.ru/"
+      ],
+      "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+    },
+    {
+      "language": "Russian",
+      "query": "Кемерово публичная кадастровая карта земельные участки официальный Росреестр карта кадастра",
+      "result": "Official city-specific geometry source not found; only national cadastral authority and city government context.",
+      "actualResultUrls": [
+        "https://www.rosreestr.gov.ru/",
+        "https://kemerovo.ru/"
+      ],
+      "method": "Separate Russian-language discovery followed by first-party source review.",
+      "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry; no owner, address, tax, account or applicant values submitted."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the exact unchanged WUP point. publicParcelGeometryFound:false means unverified in this investigation, not confirmed absence.",
+    "requestEvidence": [
+      {
+        "url": "https://www.rosreestr.gov.ru/",
+        "method": "Official public site check",
+        "httpStatus": null,
+        "contentType": null,
+        "bytesRead": null,
+        "assessment": "Network request timed out; no geometry query was made."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official national and municipal pages were not enough to establish Kemerovo-local cadastral custody.",
+    "verifiedOpenScope": "No source-native full parcel polygon at the exact unchanged WUP point was retained; this investigation does not establish parcel absence or citywide coverage.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    "No HTTP response: Network request timed out; no geometry query was made."
+  ],
+  "remainingUncertainty": "Official national and municipal pages were not enough to establish Kemerovo-local cadastral custody. Exact-point public parcel geometry, legal/title scope, coverage completeness, and currentness remain unverified.",
+  "nextStep": "Keep runtime disabled until root review determines whether an official source and full native geometry meet adapter criteria.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

@@ -1,0 +1,160 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9279-etawah.json",
+  "purpose": "Document separate English/local-language research, local land-registry custody scope, anonymous request outcomes and safe geometry limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The district government E-PORTAL links Bhulekh and the registry office. State selectors establish Etawah-specific land-record geography; public full parcel geometry remains unverified in the checked scope.",
+  "registryAssessment": "The district government E-PORTAL links Bhulekh and the registry office. State selectors establish Etawah-specific land-record geography; public full parcel geometry remains unverified in the checked scope.",
+  "officialPrimarySources": [
+    {
+      "url": "https://etawah.nic.in/",
+      "operator": "Etawah District Administration, Government of Uttar Pradesh",
+      "scope": "Official district portal links the state land-record service."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=161",
+      "operator": "Uttar Pradesh Bhulekh",
+      "scope": "Official district map-digitization dashboard identifies Etawah district."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/home/",
+      "operator": "Uttar Pradesh BhuNaksha",
+      "scope": "Official public cadastral map and geography selectors; city point not identified to a parcel."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Etawah official parcel cadastral map GIS Uttar Pradesh Bhu Naksha Etawah district",
+      "result": "Separate English-language search followed by first-party source review; listed official sources are the evidence retained.",
+      "actualResultUrls": [
+        "https://etawah.nic.in/",
+        "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=161",
+        "https://upbhunaksha.gov.in/home/"
+      ],
+      "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+    },
+    {
+      "language": "Hindi",
+      "query": "इटावा भू नक्शा आधिकारिक पार्सल नक्शा उत्तर प्रदेश भूलेख",
+      "result": "Official district sources link state cadastral maps; public selectors exposed six candidate city-area names, but the unchanged WUP point was outside checked nonzero candidate extents.",
+      "actualResultUrls": [
+        "https://etawah.nic.in/",
+        "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=161",
+        "https://upbhunaksha.gov.in/home/"
+      ],
+      "method": "Separate Hindi-language discovery followed by first-party source review.",
+      "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry; no owner, address, tax, account or applicant values submitted."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the exact unchanged WUP point. publicParcelGeometryFound:false means unverified in this investigation, not confirmed absence.",
+    "requestEvidence": [
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+        "method": "POST level=2 codes=161 (district tehsil selector)",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "bytesRead": 919,
+        "assessment": "Returned six tehsils."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+        "method": "POST level=3 codes=161,00838 (village selectors)",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "bytesRead": 40003,
+        "assessment": "Returned 234 villages, including four city-name candidates."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref",
+        "method": "POST gisLevels=161,00838,219897; 161,00838,219898",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "bytesRead": 473,
+        "assessment": "Both municipal city selectors returned zero extents."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref",
+        "method": "POST gisLevels=161,00838,147582; 161,00838,147621",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "bytesRead": 640,
+        "assessment": "Both neighboring named selectors returned nonzero EPSG:32644 extents. The WUP point reprojected using lon/lat axis order to [303490.8,2963910.8], outside both; no XY identify sent."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "The district government E-PORTAL links Bhulekh and the registry office. State selectors establish Etawah-specific land-record geography; public full parcel geometry remains unverified in the checked scope.",
+    "verifiedOpenScope": "Anonymous source-native full parcel polygons with stable IDs remain unverified within the checked source/selector scope. Empty results at the WUP point are not an eligibility gate and do not establish citywide parcel absence.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "attempts": [
+    "HTTP 200 application/json; 919 response bytes. Returned six tehsils.",
+    "HTTP 200 application/json; 40003 response bytes. Returned 234 villages, including four city-name candidates.",
+    "HTTP 200 application/json; 473 response bytes. Both municipal city selectors returned zero extents.",
+    "HTTP 200 application/json; 640 response bytes. Both neighboring named selectors returned nonzero EPSG:32644 extents. The WUP point reprojected using lon/lat axis order to [303490.8,2963910.8], outside both; no XY identify sent."
+  ],
+  "remainingUncertainty": "Anonymous source-native full parcel polygons with stable IDs remain unverified within the checked source/selector scope. Empty results at the WUP point are not an eligibility gate and do not establish citywide parcel absence.",
+  "nextStep": "Continue bounded geographic selector/extent discovery and actual native geometry readback, including nearby city coverage; qualify complete spatial and native-ID semantics before runtime admission.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootReviewedAt": "2026-10-09T09:39:24.736128+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T09:39:24.736128+00:00",
+    "decision": "Paired discovery and first-party local custody reviewed; anonymous geometry remains unverified.",
+    "primarySource": "https://etawah.nic.in/e-portal/",
+    "observation": "Reviewed city-named zero extents and two nearby nonzero extents outside the WUP point. These bounded selector checks do not establish absence across Etawah or nearby city land.",
+    "nativePolygonEndpoint": "POST /v1/khasramap/plot; frontend reads wkbGeometry and kide; no live verified parcel-ID readback established.",
+    "endpointFollowthrough": "up-bhunaksha-public-api-followthrough.json",
+    "independentChecks": "root-up-api-recheck.json",
+    "uiLoginAndTermsAreNotGeometryGates": true,
+    "wupPointIsNotEligibilityGate": true,
+    "noCitywideAbsenceAsserted": true
+  },
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 9279,
+      "stage": "tehsils",
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+      "method": "POST",
+      "requestFields": {
+        "level": "2",
+        "codes": "161"
+      },
+      "httpStatus": 200,
+      "curlExit": 0,
+      "bytes": 919,
+      "sha256": "3892e717db749b69f6d806e5bc957916b4e4caf737794f8119e841d2cb78ef75",
+      "checkedAt": "2026-10-09T09:38:25.682468+00:00",
+      "responseType": "list",
+      "rowCount": 6,
+      "rowKeys": [
+        "code",
+        "value",
+        "extraParams",
+        "object",
+        "toStringIsCode",
+        "toStringIsValue",
+        "extraParm"
+      ]
+    }
+  ]
+}

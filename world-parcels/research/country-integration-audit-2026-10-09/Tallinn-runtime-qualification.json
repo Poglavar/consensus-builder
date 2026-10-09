@@ -1,0 +1,2032 @@
+{
+  "schemaVersion": "1.0",
+  "status": "passed",
+  "checkedAt": "2026-10-09T08:23:43.582Z",
+  "city": "Tallinn",
+  "country": "Estonia",
+  "wupCityCode": 91,
+  "scope": {
+    "purpose": "Bounded live city runtime qualification through unchanged createWfsParcelSource; not a citywide completeness or legal-boundary determination.",
+    "durableOutput": "Metadata only; no full polygon geometry copied into this report.",
+    "maxDistinctFullPolygonsRetainedInIgnoredCache": 3,
+    "ignoredNativeGeometryCache": "/private/tmp/Tallinn-runtime-native-3301-cache.geojson",
+    "ignoredCacheFeatureCount": 3,
+    "adapterFullGeometryRetainedDurably": false
+  },
+  "wup": {
+    "cityCode": 91,
+    "name": "Tallinn",
+    "pointLatLon": [
+      59.4231329005097,
+      24.7413568470487
+    ],
+    "year": 2025,
+    "source": "UN DESA WUP 2025 Revision, WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "sourceUrl": "https://population.un.org/wup/assets/Download/Cities/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "archiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "pointBasis": "Official bulk WUP 2025 City_Code 91 Year=2025 PWCent latitude/longitude; used unchanged as center; not moved to a parcel.",
+    "metricCrs": "EPSG:3301",
+    "metricCenterEastingNorthing": [
+      542085.728,
+      6587483.765
+    ]
+  },
+  "source": {
+    "id": "ee-maaamet-kataster-wfs",
+    "endpoint": "https://gsavalik.envir.ee/geoserver/kataster/wfs",
+    "featureType": "kataster:ky_kehtiv",
+    "idField": "tunnus",
+    "geometryField": "geom",
+    "idPrefix": "EE-KATASTER-",
+    "outFields": [
+      "tunnus"
+    ],
+    "requestProperties": true,
+    "responseSrid": 3857,
+    "metricSrid": 3301,
+    "adapter": "createWfsParcelSource",
+    "version": "2.0.0",
+    "pageSize": 100,
+    "idBatchSize": 80,
+    "maxFeatures": 5000,
+    "minRequestIntervalMs": 150
+  },
+  "grid": {
+    "cellSizeDegrees": 0.001,
+    "alignmentOrigin": [
+      0,
+      0
+    ],
+    "cellCount": 13,
+    "centerCell": {
+      "cell": "dx0_dy0",
+      "offset": [
+        0,
+        0
+      ],
+      "bounds": [
+        24.741,
+        59.423,
+        24.742,
+        59.424
+      ]
+    },
+    "cells": [
+      {
+        "cell": "dx0_dy0",
+        "offset": [
+          0,
+          0
+        ],
+        "bounds": [
+          24.741,
+          59.423,
+          24.742,
+          59.424
+        ]
+      },
+      {
+        "cell": "dx-1_dy-1",
+        "offset": [
+          -1,
+          -1
+        ],
+        "bounds": [
+          24.74,
+          59.422,
+          24.741,
+          59.423
+        ]
+      },
+      {
+        "cell": "dx0_dy-1",
+        "offset": [
+          0,
+          -1
+        ],
+        "bounds": [
+          24.741,
+          59.422,
+          24.742,
+          59.423
+        ]
+      },
+      {
+        "cell": "dx1_dy-1",
+        "offset": [
+          1,
+          -1
+        ],
+        "bounds": [
+          24.742,
+          59.422,
+          24.743,
+          59.423
+        ]
+      },
+      {
+        "cell": "dx-1_dy0",
+        "offset": [
+          -1,
+          0
+        ],
+        "bounds": [
+          24.74,
+          59.423,
+          24.741,
+          59.424
+        ]
+      },
+      {
+        "cell": "dx1_dy0",
+        "offset": [
+          1,
+          0
+        ],
+        "bounds": [
+          24.742,
+          59.423,
+          24.743,
+          59.424
+        ]
+      },
+      {
+        "cell": "dx-1_dy1",
+        "offset": [
+          -1,
+          1
+        ],
+        "bounds": [
+          24.74,
+          59.424,
+          24.741,
+          59.425
+        ]
+      },
+      {
+        "cell": "dx0_dy1",
+        "offset": [
+          0,
+          1
+        ],
+        "bounds": [
+          24.741,
+          59.424,
+          24.742,
+          59.425
+        ]
+      },
+      {
+        "cell": "dx1_dy1",
+        "offset": [
+          1,
+          1
+        ],
+        "bounds": [
+          24.742,
+          59.424,
+          24.743,
+          59.425
+        ]
+      },
+      {
+        "cell": "dx0_dy-2",
+        "offset": [
+          0,
+          -2
+        ],
+        "bounds": [
+          24.741,
+          59.421,
+          24.742,
+          59.422
+        ]
+      },
+      {
+        "cell": "dx0_dy2",
+        "offset": [
+          0,
+          2
+        ],
+        "bounds": [
+          24.741,
+          59.425,
+          24.742,
+          59.426
+        ]
+      },
+      {
+        "cell": "dx-2_dy0",
+        "offset": [
+          -2,
+          0
+        ],
+        "bounds": [
+          24.739,
+          59.423,
+          24.74,
+          59.424
+        ]
+      },
+      {
+        "cell": "dx2_dy0",
+        "offset": [
+          2,
+          0
+        ],
+        "bounds": [
+          24.743,
+          59.423,
+          24.744,
+          59.424
+        ]
+      }
+    ],
+    "maxConcurrentRequestsObserved": 1,
+    "allOperationsSequential": true
+  },
+  "boundedQueries": {
+    "status": "passed",
+    "countBefore": [
+      {
+        "cell": "dx0_dy0",
+        "bounds": [
+          24.741,
+          59.423,
+          24.742,
+          59.424
+        ],
+        "numberMatched": 14,
+        "returnedAcrossPages": 14,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          14
+        ],
+        "uniqueIds": 14,
+        "complete": true
+      },
+      {
+        "cell": "dx-1_dy-1",
+        "bounds": [
+          24.74,
+          59.422,
+          24.741,
+          59.423
+        ],
+        "numberMatched": 7,
+        "returnedAcrossPages": 7,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          7
+        ],
+        "uniqueIds": 7,
+        "complete": true
+      },
+      {
+        "cell": "dx0_dy-1",
+        "bounds": [
+          24.741,
+          59.422,
+          24.742,
+          59.423
+        ],
+        "numberMatched": 5,
+        "returnedAcrossPages": 5,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          5
+        ],
+        "uniqueIds": 5,
+        "complete": true
+      },
+      {
+        "cell": "dx1_dy-1",
+        "bounds": [
+          24.742,
+          59.422,
+          24.743,
+          59.423
+        ],
+        "numberMatched": 4,
+        "returnedAcrossPages": 4,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          4
+        ],
+        "uniqueIds": 4,
+        "complete": true
+      },
+      {
+        "cell": "dx-1_dy0",
+        "bounds": [
+          24.74,
+          59.423,
+          24.741,
+          59.424
+        ],
+        "numberMatched": 12,
+        "returnedAcrossPages": 12,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          12
+        ],
+        "uniqueIds": 12,
+        "complete": true
+      },
+      {
+        "cell": "dx1_dy0",
+        "bounds": [
+          24.742,
+          59.423,
+          24.743,
+          59.424
+        ],
+        "numberMatched": 8,
+        "returnedAcrossPages": 8,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          8
+        ],
+        "uniqueIds": 8,
+        "complete": true
+      },
+      {
+        "cell": "dx-1_dy1",
+        "bounds": [
+          24.74,
+          59.424,
+          24.741,
+          59.425
+        ],
+        "numberMatched": 10,
+        "returnedAcrossPages": 10,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          10
+        ],
+        "uniqueIds": 10,
+        "complete": true
+      },
+      {
+        "cell": "dx0_dy1",
+        "bounds": [
+          24.741,
+          59.424,
+          24.742,
+          59.425
+        ],
+        "numberMatched": 12,
+        "returnedAcrossPages": 12,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          12
+        ],
+        "uniqueIds": 12,
+        "complete": true
+      },
+      {
+        "cell": "dx1_dy1",
+        "bounds": [
+          24.742,
+          59.424,
+          24.743,
+          59.425
+        ],
+        "numberMatched": 6,
+        "returnedAcrossPages": 6,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          6
+        ],
+        "uniqueIds": 6,
+        "complete": true
+      },
+      {
+        "cell": "dx0_dy-2",
+        "bounds": [
+          24.741,
+          59.421,
+          24.742,
+          59.422
+        ],
+        "numberMatched": 12,
+        "returnedAcrossPages": 12,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          12
+        ],
+        "uniqueIds": 12,
+        "complete": true
+      },
+      {
+        "cell": "dx0_dy2",
+        "bounds": [
+          24.741,
+          59.425,
+          24.742,
+          59.426
+        ],
+        "numberMatched": 9,
+        "returnedAcrossPages": 9,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          9
+        ],
+        "uniqueIds": 9,
+        "complete": true
+      },
+      {
+        "cell": "dx-2_dy0",
+        "bounds": [
+          24.739,
+          59.423,
+          24.74,
+          59.424
+        ],
+        "numberMatched": 8,
+        "returnedAcrossPages": 8,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          8
+        ],
+        "uniqueIds": 8,
+        "complete": true
+      },
+      {
+        "cell": "dx2_dy0",
+        "bounds": [
+          24.743,
+          59.423,
+          24.744,
+          59.424
+        ],
+        "numberMatched": 7,
+        "returnedAcrossPages": 7,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          7
+        ],
+        "uniqueIds": 7,
+        "complete": true
+      }
+    ],
+    "countAfter": [
+      {
+        "cell": "dx0_dy0",
+        "bounds": [
+          24.741,
+          59.423,
+          24.742,
+          59.424
+        ],
+        "numberMatched": 14,
+        "returnedAcrossPages": 14,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          14
+        ],
+        "uniqueIds": 14,
+        "complete": true
+      },
+      {
+        "cell": "dx-1_dy-1",
+        "bounds": [
+          24.74,
+          59.422,
+          24.741,
+          59.423
+        ],
+        "numberMatched": 7,
+        "returnedAcrossPages": 7,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          7
+        ],
+        "uniqueIds": 7,
+        "complete": true
+      },
+      {
+        "cell": "dx0_dy-1",
+        "bounds": [
+          24.741,
+          59.422,
+          24.742,
+          59.423
+        ],
+        "numberMatched": 5,
+        "returnedAcrossPages": 5,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          5
+        ],
+        "uniqueIds": 5,
+        "complete": true
+      },
+      {
+        "cell": "dx1_dy-1",
+        "bounds": [
+          24.742,
+          59.422,
+          24.743,
+          59.423
+        ],
+        "numberMatched": 4,
+        "returnedAcrossPages": 4,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          4
+        ],
+        "uniqueIds": 4,
+        "complete": true
+      },
+      {
+        "cell": "dx-1_dy0",
+        "bounds": [
+          24.74,
+          59.423,
+          24.741,
+          59.424
+        ],
+        "numberMatched": 12,
+        "returnedAcrossPages": 12,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          12
+        ],
+        "uniqueIds": 12,
+        "complete": true
+      },
+      {
+        "cell": "dx1_dy0",
+        "bounds": [
+          24.742,
+          59.423,
+          24.743,
+          59.424
+        ],
+        "numberMatched": 8,
+        "returnedAcrossPages": 8,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          8
+        ],
+        "uniqueIds": 8,
+        "complete": true
+      },
+      {
+        "cell": "dx-1_dy1",
+        "bounds": [
+          24.74,
+          59.424,
+          24.741,
+          59.425
+        ],
+        "numberMatched": 10,
+        "returnedAcrossPages": 10,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          10
+        ],
+        "uniqueIds": 10,
+        "complete": true
+      },
+      {
+        "cell": "dx0_dy1",
+        "bounds": [
+          24.741,
+          59.424,
+          24.742,
+          59.425
+        ],
+        "numberMatched": 12,
+        "returnedAcrossPages": 12,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          12
+        ],
+        "uniqueIds": 12,
+        "complete": true
+      },
+      {
+        "cell": "dx1_dy1",
+        "bounds": [
+          24.742,
+          59.424,
+          24.743,
+          59.425
+        ],
+        "numberMatched": 6,
+        "returnedAcrossPages": 6,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          6
+        ],
+        "uniqueIds": 6,
+        "complete": true
+      },
+      {
+        "cell": "dx0_dy-2",
+        "bounds": [
+          24.741,
+          59.421,
+          24.742,
+          59.422
+        ],
+        "numberMatched": 12,
+        "returnedAcrossPages": 12,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          12
+        ],
+        "uniqueIds": 12,
+        "complete": true
+      },
+      {
+        "cell": "dx0_dy2",
+        "bounds": [
+          24.741,
+          59.425,
+          24.742,
+          59.426
+        ],
+        "numberMatched": 9,
+        "returnedAcrossPages": 9,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          9
+        ],
+        "uniqueIds": 9,
+        "complete": true
+      },
+      {
+        "cell": "dx-2_dy0",
+        "bounds": [
+          24.739,
+          59.423,
+          24.74,
+          59.424
+        ],
+        "numberMatched": 8,
+        "returnedAcrossPages": 8,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          8
+        ],
+        "uniqueIds": 8,
+        "complete": true
+      },
+      {
+        "cell": "dx2_dy0",
+        "bounds": [
+          24.743,
+          59.423,
+          24.744,
+          59.424
+        ],
+        "numberMatched": 7,
+        "returnedAcrossPages": 7,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          7
+        ],
+        "uniqueIds": 7,
+        "complete": true
+      }
+    ],
+    "allMatchedCountsStable": true,
+    "changedMatchedCountCells": [],
+    "distinctIdsBefore": 60,
+    "distinctIdsAfter": 60,
+    "distinctUnionIds": 60,
+    "stableFeatureGeometryBetweenRepeatedCellReads": true,
+    "requestCount": 30,
+    "allResponsesHttp200": true,
+    "adapterReturnedWgs84": true,
+    "returnedPropertyKeys": [
+      "tunnus"
+    ],
+    "requestPages": [
+      {
+        "label": "before:dx0_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.741,59.423,24.742,59.424,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 14,
+        "numberReturned": 14,
+        "featureCount": 14,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "before:dx-1_dy-1",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.74,59.422,24.741,59.423,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 7,
+        "numberReturned": 7,
+        "featureCount": 7,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "before:dx0_dy-1",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.741,59.422,24.742,59.423,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 5,
+        "numberReturned": 5,
+        "featureCount": 5,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "before:dx1_dy-1",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.742,59.422,24.743,59.423,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 4,
+        "numberReturned": 4,
+        "featureCount": 4,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "before:dx-1_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.74,59.423,24.741,59.424,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 12,
+        "numberReturned": 12,
+        "featureCount": 12,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "before:dx1_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.742,59.423,24.743,59.424,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 8,
+        "numberReturned": 8,
+        "featureCount": 8,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "before:dx-1_dy1",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.74,59.424,24.741,59.425,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 10,
+        "numberReturned": 10,
+        "featureCount": 10,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "before:dx0_dy1",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.741,59.424,24.742,59.425,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 12,
+        "numberReturned": 12,
+        "featureCount": 12,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "before:dx1_dy1",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.742,59.424,24.743,59.425,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 6,
+        "numberReturned": 6,
+        "featureCount": 6,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "before:dx0_dy-2",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.741,59.421,24.742,59.422,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 12,
+        "numberReturned": 12,
+        "featureCount": 12,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "before:dx0_dy2",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.741,59.425,24.742,59.426,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 9,
+        "numberReturned": 9,
+        "featureCount": 9,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "before:dx-2_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.739,59.423,24.74,59.424,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 8,
+        "numberReturned": 8,
+        "featureCount": 8,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "before:dx2_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.743,59.423,24.744,59.424,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 7,
+        "numberReturned": 7,
+        "featureCount": 7,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "after:dx0_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.741,59.423,24.742,59.424,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 14,
+        "numberReturned": 14,
+        "featureCount": 14,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "after:dx-1_dy-1",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.74,59.422,24.741,59.423,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 7,
+        "numberReturned": 7,
+        "featureCount": 7,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "after:dx0_dy-1",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.741,59.422,24.742,59.423,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 5,
+        "numberReturned": 5,
+        "featureCount": 5,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "after:dx1_dy-1",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.742,59.422,24.743,59.423,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 4,
+        "numberReturned": 4,
+        "featureCount": 4,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "after:dx-1_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.74,59.423,24.741,59.424,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 12,
+        "numberReturned": 12,
+        "featureCount": 12,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "after:dx1_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.742,59.423,24.743,59.424,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 8,
+        "numberReturned": 8,
+        "featureCount": 8,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "after:dx-1_dy1",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.74,59.424,24.741,59.425,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 10,
+        "numberReturned": 10,
+        "featureCount": 10,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "after:dx0_dy1",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.741,59.424,24.742,59.425,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 12,
+        "numberReturned": 12,
+        "featureCount": 12,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "after:dx1_dy1",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.742,59.424,24.743,59.425,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 6,
+        "numberReturned": 6,
+        "featureCount": 6,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "after:dx0_dy-2",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.741,59.421,24.742,59.422,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 12,
+        "numberReturned": 12,
+        "featureCount": 12,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "after:dx0_dy2",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.741,59.425,24.742,59.426,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 9,
+        "numberReturned": 9,
+        "featureCount": 9,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "after:dx-2_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.739,59.423,24.74,59.424,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 8,
+        "numberReturned": 8,
+        "featureCount": 8,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "after:dx2_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.743,59.423,24.744,59.424,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 7,
+        "numberReturned": 7,
+        "featureCount": 7,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "fresh-id-read:1",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": null,
+        "filterKind": "native-id-in",
+        "filterSha256": "33e61b321e81d5acc9ca8447832950a6977f394fff9f0ca2d768aa7a98e87114",
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 60,
+        "numberReturned": 60,
+        "featureCount": 60,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "explicit-absence",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": null,
+        "filterKind": "native-id-shaped-absence",
+        "filterSha256": "bce7d7219c3093b8863c04e58641f98e156224763d3ba7a83c3fe933d4cb301e",
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 0,
+        "numberReturned": 0,
+        "featureCount": 0,
+        "responseCrs": null,
+        "returnedPropertyKeys": []
+      },
+      {
+        "label": "compute-source-binding",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.740596910326474,59.42263085706127,24.741844151505987,59.42319444690018,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 3,
+        "numberReturned": 3,
+        "featureCount": 3,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "native-3301-exact-geometry",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "urn:ogc:def:crs:EPSG::3301",
+        "bbox": null,
+        "filterKind": "native-id-native-geometry",
+        "filterSha256": "0a07028064fa5a7747cafe36a3e4e6a2ee8069de4ad3a828eca377aecce36cde",
+        "startIndex": 0,
+        "requestedPageSize": 3,
+        "numberMatched": 3,
+        "numberReturned": 3,
+        "featureCount": 3,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3301",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      }
+    ]
+  },
+  "freshIdReads": {
+    "status": "passed",
+    "requested": 60,
+    "found": 60,
+    "explicitlyAbsentFreshIds": [],
+    "missing": [],
+    "unexpected": [],
+    "geometryHashChangesVsBoundedRead": [],
+    "allMatched": true
+  },
+  "explicitAbsence": {
+    "status": "passed",
+    "queriedId": "EE-KATASTER-99999:999:9999",
+    "found": 0,
+    "absentIds": [
+      "EE-KATASTER-99999:999:9999"
+    ]
+  },
+  "pointContainment": {
+    "pointLatLon": [
+      59.4231329005097,
+      24.7413568470487
+    ],
+    "containingParcelCount": 1,
+    "containingParcelIds": [
+      "EE-KATASTER-78401:109:0710"
+    ],
+    "contained": true,
+    "nearestCandidate": {
+      "id": "EE-KATASTER-78401:109:0710",
+      "nativeId": "78401:109:0710",
+      "distanceFromPointM": 0,
+      "fullParcelAreaM2": 3928.227,
+      "geometryType": "Polygon",
+      "geometryHashWgs84": "d4fb955516676920bed76faf65e9ac971b03bf2b9d76767245f0e45a71ae8e0e",
+      "selectedAs": "point-containing full parcel"
+    },
+    "eligibilityGate": "Containment/absence is reported only; it is not an eligibility gate."
+  },
+  "native3301Comparison": {
+    "status": "passed",
+    "requestedCount": 3,
+    "returnedCount": 3,
+    "responseCrs": "urn:ogc:def:crs:EPSG::3301",
+    "comparisons": [
+      {
+        "externalId": "EE-KATASTER-78401:109:0092",
+        "nativeId": "78401:109:0092",
+        "nativeGeometryHash": "79a3815524e298bbb70232309b3a569874522da1351bb006ba31b95ab41e8832",
+        "adapterGeometryHashWgs84": "c343e2893de27f75acd1a96bdf929a891ed59f234b2981592c5fa6cbbc62fc1a",
+        "nativeGeometryType": "Polygon",
+        "adapterGeometryType": "Polygon",
+        "vertexComparison": {
+          "sameRingAndVertexCounts": true,
+          "nativeRings": 3,
+          "adapterRings": 3,
+          "nativeVertices": 167,
+          "adapterVertices": 167,
+          "maxVertexDisplacementM": 0.003051,
+          "meanVertexDisplacementM": 0.00305
+        },
+        "pointContainedInNative": false
+      },
+      {
+        "externalId": "EE-KATASTER-78401:109:0710",
+        "nativeId": "78401:109:0710",
+        "nativeGeometryHash": "60fcbabb2a145fb3875286bb3c61b1034c823bf25d442bcfc10cdc0d6a1ef78b",
+        "adapterGeometryHashWgs84": "d4fb955516676920bed76faf65e9ac971b03bf2b9d76767245f0e45a71ae8e0e",
+        "nativeGeometryType": "Polygon",
+        "adapterGeometryType": "Polygon",
+        "vertexComparison": {
+          "sameRingAndVertexCounts": true,
+          "nativeRings": 1,
+          "adapterRings": 1,
+          "nativeVertices": 9,
+          "adapterVertices": 9,
+          "maxVertexDisplacementM": 0.00305,
+          "meanVertexDisplacementM": 0.00305
+        },
+        "pointContainedInNative": true
+      },
+      {
+        "externalId": "EE-KATASTER-78401:109:1320",
+        "nativeId": "78401:109:1320",
+        "nativeGeometryHash": "4aa23b83d43ca9afa524c06da67cc3dda2fb22b957d020cd88a33a6e8e12ae06",
+        "adapterGeometryHashWgs84": "e885ad165487b81424551ce19379d7d13b286b93e467adcf970b8c03a240e259",
+        "nativeGeometryType": "Polygon",
+        "adapterGeometryType": "Polygon",
+        "vertexComparison": {
+          "sameRingAndVertexCounts": true,
+          "nativeRings": 1,
+          "adapterRings": 1,
+          "nativeVertices": 7,
+          "adapterVertices": 7,
+          "maxVertexDisplacementM": 0.00305,
+          "meanVertexDisplacementM": 0.00305
+        },
+        "pointContainedInNative": false
+      }
+    ],
+    "cachePath": "/private/tmp/Tallinn-runtime-native-3301-cache.geojson"
+  },
+  "computeSourceBinding": {
+    "status": "passed",
+    "complete": true,
+    "coverage": "complete",
+    "siteM2": 3928.23,
+    "unsurveyedM2": 0,
+    "unknownM2": 0,
+    "toleranceM": 0,
+    "parcels": [
+      {
+        "parcelId": "EE-KATASTER-78401:109:0710",
+        "overlapM2": 3928.227,
+        "intrusionM": 59.283
+      }
+    ],
+    "touched": [],
+    "source": "server:ee-maaamet-kataster-wfs"
+  },
+  "requestLog": {
+    "requestCount": 30,
+    "maxConcurrentRequestsObserved": 1,
+    "allRequestsHttps": true,
+    "noAuthorizationConfigured": true,
+    "requests": [
+      {
+        "label": "before:dx0_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.741,59.423,24.742,59.424,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 14,
+        "numberReturned": 14,
+        "featureCount": 14,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "before:dx-1_dy-1",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.74,59.422,24.741,59.423,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 7,
+        "numberReturned": 7,
+        "featureCount": 7,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "before:dx0_dy-1",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.741,59.422,24.742,59.423,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 5,
+        "numberReturned": 5,
+        "featureCount": 5,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "before:dx1_dy-1",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.742,59.422,24.743,59.423,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 4,
+        "numberReturned": 4,
+        "featureCount": 4,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "before:dx-1_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.74,59.423,24.741,59.424,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 12,
+        "numberReturned": 12,
+        "featureCount": 12,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "before:dx1_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.742,59.423,24.743,59.424,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 8,
+        "numberReturned": 8,
+        "featureCount": 8,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "before:dx-1_dy1",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.74,59.424,24.741,59.425,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 10,
+        "numberReturned": 10,
+        "featureCount": 10,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "before:dx0_dy1",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.741,59.424,24.742,59.425,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 12,
+        "numberReturned": 12,
+        "featureCount": 12,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "before:dx1_dy1",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.742,59.424,24.743,59.425,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 6,
+        "numberReturned": 6,
+        "featureCount": 6,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "before:dx0_dy-2",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.741,59.421,24.742,59.422,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 12,
+        "numberReturned": 12,
+        "featureCount": 12,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "before:dx0_dy2",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.741,59.425,24.742,59.426,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 9,
+        "numberReturned": 9,
+        "featureCount": 9,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "before:dx-2_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.739,59.423,24.74,59.424,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 8,
+        "numberReturned": 8,
+        "featureCount": 8,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "before:dx2_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.743,59.423,24.744,59.424,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 7,
+        "numberReturned": 7,
+        "featureCount": 7,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "after:dx0_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.741,59.423,24.742,59.424,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 14,
+        "numberReturned": 14,
+        "featureCount": 14,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "after:dx-1_dy-1",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.74,59.422,24.741,59.423,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 7,
+        "numberReturned": 7,
+        "featureCount": 7,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "after:dx0_dy-1",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.741,59.422,24.742,59.423,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 5,
+        "numberReturned": 5,
+        "featureCount": 5,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "after:dx1_dy-1",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.742,59.422,24.743,59.423,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 4,
+        "numberReturned": 4,
+        "featureCount": 4,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "after:dx-1_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.74,59.423,24.741,59.424,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 12,
+        "numberReturned": 12,
+        "featureCount": 12,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "after:dx1_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.742,59.423,24.743,59.424,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 8,
+        "numberReturned": 8,
+        "featureCount": 8,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "after:dx-1_dy1",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.74,59.424,24.741,59.425,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 10,
+        "numberReturned": 10,
+        "featureCount": 10,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "after:dx0_dy1",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.741,59.424,24.742,59.425,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 12,
+        "numberReturned": 12,
+        "featureCount": 12,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "after:dx1_dy1",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.742,59.424,24.743,59.425,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 6,
+        "numberReturned": 6,
+        "featureCount": 6,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "after:dx0_dy-2",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.741,59.421,24.742,59.422,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 12,
+        "numberReturned": 12,
+        "featureCount": 12,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "after:dx0_dy2",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.741,59.425,24.742,59.426,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 9,
+        "numberReturned": 9,
+        "featureCount": 9,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "after:dx-2_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.739,59.423,24.74,59.424,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 8,
+        "numberReturned": 8,
+        "featureCount": 8,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "after:dx2_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.743,59.423,24.744,59.424,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 7,
+        "numberReturned": 7,
+        "featureCount": 7,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "fresh-id-read:1",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": null,
+        "filterKind": "native-id-in",
+        "filterSha256": "33e61b321e81d5acc9ca8447832950a6977f394fff9f0ca2d768aa7a98e87114",
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 60,
+        "numberReturned": 60,
+        "featureCount": 60,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "explicit-absence",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": null,
+        "filterKind": "native-id-shaped-absence",
+        "filterSha256": "bce7d7219c3093b8863c04e58641f98e156224763d3ba7a83c3fe933d4cb301e",
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 0,
+        "numberReturned": 0,
+        "featureCount": 0,
+        "responseCrs": null,
+        "returnedPropertyKeys": []
+      },
+      {
+        "label": "compute-source-binding",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "EPSG:3857",
+        "bbox": "24.740596910326474,59.42263085706127,24.741844151505987,59.42319444690018,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 3,
+        "numberReturned": 3,
+        "featureCount": 3,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3857",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      },
+      {
+        "label": "native-3301-exact-geometry",
+        "status": 200,
+        "protocol": "https:",
+        "version": "2.0.0",
+        "srsName": "urn:ogc:def:crs:EPSG::3301",
+        "bbox": null,
+        "filterKind": "native-id-native-geometry",
+        "filterSha256": "0a07028064fa5a7747cafe36a3e4e6a2ee8069de4ad3a828eca377aecce36cde",
+        "startIndex": 0,
+        "requestedPageSize": 3,
+        "numberMatched": 3,
+        "numberReturned": 3,
+        "featureCount": 3,
+        "responseCrs": "urn:ogc:def:crs:EPSG::3301",
+        "returnedPropertyKeys": [
+          "tunnus"
+        ]
+      }
+    ]
+  },
+  "limitations": [
+    "The 13 local cells and selected full-parcel footprint do not establish Tallinn-wide coverage.",
+    "The native EPSG:3301 comparison is limited to at most three fresh parcel IDs; independent geometry/topology review is separate.",
+    "Source terms, refresh schedule, legal effect, and continuity across provider revisions are not adjudicated by this runtime check."
+  ]
+}

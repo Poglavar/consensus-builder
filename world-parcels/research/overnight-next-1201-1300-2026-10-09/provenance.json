@@ -1,0 +1,63 @@
+{
+  "organization": "United Nations, Department of Economic and Social Affairs, Population Division",
+  "publication": "World Urbanization Prospects: The 2025 Revision, Online Edition",
+  "downloadPage": "https://population.un.org/wup/downloads?tab=Cities",
+  "bulkFile": "WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+  "downloadUrl": "https://population.un.org/wup/assets/Download/Cities/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+  "localSourceSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+  "retrievedAt": "2026-10-09",
+  "populationField": "Pop for Year=2025; units are thousands; ranking does not remove low-plausibility rows.",
+  "identity": "City_Code is the WUP settlement identity; coordinates use the Year=2025 PWCent fields and are settlement points, not municipal boundaries or cadastral coverage claims. Some older normalized queue coordinates differ; e.g. Dighwara old point 25.969189,84.824243 vs this source point 25.9220863,84.8502742.",
+  "sourceDescription": "Official WUP 2025 downloadable bulk city table; includes annual population, settlement centroid, city code, and source-reported population plausibility.",
+  "downloadPageObservation": "Official UN download page lists WUP2025 F21 city population and the bulk CSV format for DEGURBA city statistics.",
+  "priorCoordinatesComparison": "New queue coordinates use official Year=2025 PWCent fields. Older normalized coordinates are historical and not reused; Dighwara example: old 25.969189,84.824243; current source 25.9220863,84.8502742.",
+  "localFileBytes": 58726569,
+  "localFileSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+  "sourceRows2025": 12138,
+  "outputFiles": [
+    "ranked-population.json",
+    "skip-identity-review-ledger.json",
+    "pending-queue.json",
+    "identity-review.json",
+    "provenance.json",
+    "source-hashes.json"
+  ],
+  "cohort": "overnight-next-1201-1300",
+  "cohortState": "root_confirmed_research_started",
+  "integrationState": "research_started_pending_root_review",
+  "proposalStatus": "root_queue_confirmed",
+  "sourceRoster": "ranked-population.json",
+  "sourceRosterSha256": "3bfad4448253fa7dc9d049e4849601b990ba45bd19611da6de139b7730ad0dbd",
+  "sourceHashes": "source-hashes.json",
+  "sourceHashesSha256": "279510906900722f437d333344d755ca2ada7fde044600af126fd4fe8d97e310",
+  "identityDecisionOverlay": "world-parcels/research/overnight-next-1201-1300-2026-10-09/root-identity-decision-overlay.json",
+  "identityDecisionOverlaySha256": "94bb446008d720eb0639a62f09fac74646cc36a2977389606672bea535df8af7",
+  "rankRange": [
+    1201,
+    1300
+  ],
+  "classificationInputs": {
+    "registrySha256": "60ee6021f75043f39890ef8c9fb27b3aa3070766ac1d2e91d42aed83985ced00",
+    "pairedResearchEvidenceCorpusFileCount": 4686,
+    "pairedResearchEvidenceCorpusManifestSha256": "43a7d2bcf5514c1a8e9739a7320428047a359b4c6a89e12d3660f929677c2db1",
+    "rootOverlayDecisionCount": 3,
+    "rootOverlayDecisionsAppliedInRange": 1,
+    "queuedRowsCountedAsAttempted": false,
+    "allOutcomesOfMatchedPriorAttemptsExcluded": true
+  },
+  "cohortCounts": {
+    "full2025CityRows": 12138,
+    "rankedRows": 100,
+    "attempted": 3,
+    "identityReviewRequired": 0,
+    "pending": 97,
+    "reviewedAttemptCrosswalks": 1,
+    "reviewedDifferentSettlements": 0,
+    "capitalPriorChecksScanned": 156,
+    "capitalRosterRowsScanned": 225,
+    "runtimeCityConfigsScanned": 193,
+    "rootOverlayDecisionsInSource": 3,
+    "rootOverlayDecisionsAppliedInRange": 1
+  },
+  "rootQueueConfirmedAt": "2026-10-09T09:28:34.916149+00:00"
+}

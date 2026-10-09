@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8993-ichalkaranji.json",
+  "purpose": "Document separate English/local-language source discovery, land-registry custody, anonymous request outcomes and safe geometry limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "State land-record portal supplies property card, survey/CTS and map products; official municipal map page is a ward map, not cadastral parcels. Searches require administrative and parcel identifiers, none were submitted.",
+  "registryAssessment": "Local or jurisdictionally local land/cadastral custodian supported at the limited scope stated; public geometry and runtime readiness remain separate.",
+  "officialPrimarySources": [
+    {
+      "url": "https://ichalkaranjimnp.in/%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A4%AD%E0%A4%BE%E0%A4%97%E0%A4%A8%E0%A4%BF%E0%A4%B9%E0%A4%BE%E0%A4%AF-%E0%A4%A8%E0%A4%95%E0%A4%BE%E0%A4%B6%E0%A4%BE-%E0%A5%A7-%E0%A4%A4%E0%A5%87-%E0%A5%A7%E0%A5%AC/",
+      "operator": "Maharashtra Settlement Commissioner and Director of Land Records / Ichalkaranji Municipal Corporation",
+      "scope": "State land-record portal supplies property card, survey/CTS and map products; official municipal map page is a ward map, not cadastral parcels. Searches require administrative and parcel identifiers, none were submitted."
+    },
+    {
+      "url": "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+      "operator": "Maharashtra Settlement Commissioner and Director of Land Records / Ichalkaranji Municipal Corporation",
+      "scope": "State land-record portal supplies property card, survey/CTS and map products; official municipal map page is a ward map, not cadastral parcels. Searches require administrative and parcel identifiers, none were submitted."
+    },
+    {
+      "url": "https://mahavillages.mahabhumi.gov.in/newjurisdiction.php",
+      "operator": "Maharashtra Settlement Commissioner and Director of Land Records / Ichalkaranji Municipal Corporation",
+      "scope": "State land-record portal supplies property card, survey/CTS and map products; official municipal map page is a ward map, not cadastral parcels. Searches require administrative and parcel identifiers, none were submitted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Ichalkaranji official cadastral parcel map land registry GIS",
+      "result": "Separate English-language discovery followed by first-party source review; only the government sources listed are retained.",
+      "actualResultUrls": [
+        "https://ichalkaranjimnp.in/%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A4%AD%E0%A4%BE%E0%A4%97%E0%A4%A8%E0%A4%BF%E0%A4%B9%E0%A4%BE%E0%A4%AF-%E0%A4%A8%E0%A4%95%E0%A4%BE%E0%A4%B6%E0%A4%BE-%E0%A5%A7-%E0%A4%A4%E0%A5%87-%E0%A5%A7%E0%A5%AC/",
+        "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+        "https://mahavillages.mahabhumi.gov.in/newjurisdiction.php"
+      ],
+      "scope": "Identify local or jurisdictionally local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+    },
+    {
+      "language": "Marathi",
+      "query": "इचलकरंजी नगर भूमापन नकाशा मालमत्ता पत्रक महाभूमी जमीन नोंद",
+      "result": "Official Ichalkaranji municipal site publishes ward maps only; Maharashtra Mahabhumi provides property-card/CTS and land-map services using district/office/village and CTS/survey inputs. No parcel-specific geometry was queried.",
+      "actualResultUrls": [
+        "https://ichalkaranjimnp.in/%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A4%AD%E0%A4%BE%E0%A4%97%E0%A4%A8%E0%A4%BF%E0%A4%B9%E0%A4%BE%E0%A4%AF-%E0%A4%A8%E0%A4%95%E0%A4%BE%E0%A4%B6%E0%A4%BE-%E0%A5%A7-%E0%A4%A4%E0%A5%87-%E0%A5%A7%E0%A5%AC/",
+        "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+        "https://mahavillages.mahabhumi.gov.in/newjurisdiction.php"
+      ],
+      "method": "Separate Marathi-language discovery followed by first-party source review.",
+      "scope": "Identify local or jurisdictionally local land/cadastral custody and public parcel geometry; no owner, address, tax, account, title, cadastral-number or applicant values submitted."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the exact unchanged WUP point. publicParcelGeometryFound:false means unverified in this investigation, not confirmed absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "State land-record portal supplies property card, survey/CTS and map products; official municipal map page is a ward map, not cadastral parcels. Searches require administrative and parcel identifiers, none were submitted.",
+    "verifiedOpenScope": "No source-native full parcel polygon at the exact unchanged WUP point was retained; this investigation does not establish parcel absence or citywide coverage.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "State land-record portal supplies property card, survey/CTS and map products; official municipal map page is a ward map, not cadastral parcels. Searches require administrative and parcel identifiers, none were submitted. Exact WUP-point parcel geometry, legal/title meaning, coverage completeness and currentness remain unverified.",
+  "nextStep": "Keep runtime disabled until root review determines whether an official source and full native geometry meet adapter criteria.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

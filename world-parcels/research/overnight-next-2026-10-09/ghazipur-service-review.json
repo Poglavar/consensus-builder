@@ -1,0 +1,104 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10619-ghazipur.json",
+  "purpose": "Document separate English/local-language research, local land-registry custody scope, anonymous request outcomes and safe geometry limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Ghazipur district land-map sources link to official Uttar Pradesh Bhulekh/BhuNaksha; the exact WUP city point produced no usable public parcel extent.",
+  "registryAssessment": "Local or jurisdictionally local land/cadastral custodian supported at the limited scope stated; public geometry and runtime readiness remain separate.",
+  "officialPrimarySources": [
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=195",
+      "operator": "Uttar Pradesh Bhulekh",
+      "scope": "Official district map-digitization dashboard identifies Ghazipur district."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/home/",
+      "operator": "Uttar Pradesh BhuNaksha",
+      "scope": "Official public cadastral map and geography selectors; city point did not yield a usable extent or polygon."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Ghazipur official cadastral parcel map GIS Uttar Pradesh Bhu Naksha Ghazipur district",
+      "result": "Separate English-language search followed by first-party source review; listed official sources are the evidence retained.",
+      "actualResultUrls": [
+        "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=195",
+        "https://upbhunaksha.gov.in/home/"
+      ],
+      "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+    },
+    {
+      "language": "Hindi",
+      "query": "गाजीपुर भू नक्शा आधिकारिक पार्सल नक्शा उत्तर प्रदेश भूलेख",
+      "result": "Official district BhuNaksha selectors found; point-matched city selector returned a zero extent.",
+      "actualResultUrls": [
+        "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=195",
+        "https://upbhunaksha.gov.in/home/"
+      ],
+      "method": "Separate Hindi-language discovery followed by first-party source review.",
+      "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry; no owner, address, tax, account or applicant values submitted."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the exact unchanged WUP point. publicParcelGeometryFound:false means unverified in this investigation, not confirmed absence.",
+    "requestEvidence": [
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+        "method": "POST level=2 codes=195",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "bytesRead": 1122,
+        "assessment": "Returned seven tehsils."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+        "method": "POST level=3 codes=195,00989",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "bytesRead": 96765,
+        "assessment": "Returned 582 villages and the city selector 219756."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref",
+        "method": "POST gisLevels=195,00989,219756",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "bytesRead": 231,
+        "assessment": "Returned zero bounds/no CRS; no XY identify sent."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Ghazipur district land-map sources link to official Uttar Pradesh Bhulekh/BhuNaksha; the exact WUP city point produced no usable public parcel extent.",
+    "verifiedOpenScope": "No source-native full parcel polygon at the exact unchanged WUP point was retained; this investigation does not establish parcel absence or citywide coverage.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    "HTTP 200 application/json; 1122 response bytes. Returned seven tehsils.",
+    "HTTP 200 application/json; 96765 response bytes. Returned 582 villages and the city selector 219756.",
+    "HTTP 200 application/json; 231 response bytes. Returned zero bounds/no CRS; no XY identify sent."
+  ],
+  "remainingUncertainty": "Ghazipur district land-map sources link to official Uttar Pradesh Bhulekh/BhuNaksha; the exact WUP city point produced no usable public parcel extent. Exact-point public parcel geometry, legal/title scope, coverage completeness, and currentness remain unverified.",
+  "nextStep": "Keep runtime disabled until root review determines whether an official source and full native geometry meet adapter criteria.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

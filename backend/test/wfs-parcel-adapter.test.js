@@ -42,8 +42,48 @@ const AHMEDABAD_CAPPED_PROFILE = {
     geometryField: 'the_geom', pageSize: 1000, maxFeatures: 1000, maxBboxKm2: 2
 };
 const AHMEDABAD_BOUNDS = [72.59, 23.015, 72.595, 23.02];
+const VILNIUS_INSPIRE_DESCRIPTOR = {
+    id: 'lt-inspire-cp-wfs', endpoint: 'https://www.inspire-geoportal.lt/geoserver/cp/ows',
+    featureType: 'cp:CP.CadastralParcel', geometryField: 'geometry', idField: 'nationalcadastralreference',
+    idType: 'integer', idPrefix: 'LT-INSP-CADASTRAL-', outFields: ['nationalcadastralreference'], requestProperties: true,
+    pageSize: 100, maxFeatures: 3000
+};
+const VILNIUS_FEATURE = {
+    type: 'Feature', id: 'CP.CadastralParcel.CadastralParcel_id_020d7fa5',
+    properties: { nationalcadastralreference: 10100410067, ignored: 'drop' },
+    geometry: { type: 'Polygon', coordinates: [[[25.2701, 54.6951], [25.2702, 54.6951], [25.2702, 54.6952], [25.2701, 54.6952], [25.2701, 54.6951]]] }
+};
 
 describe('WFS parcel adapter', () => {
+    it('accepts the published punctuated INSPIRE QName and uses it for bounds and native-ID reads', async () => {
+        const fetchImpl = vi.fn().mockResolvedValueOnce(page([VILNIUS_FEATURE])).mockResolvedValueOnce(page([VILNIUS_FEATURE]));
+        const adapter = createWfsParcelSource(VILNIUS_INSPIRE_DESCRIPTOR, { fetchImpl });
+        const bounds = await adapter.queryBounds([25.27, 54.695, 25.271, 54.696]);
+        const exact = await adapter.queryIds(['LT-INSP-CADASTRAL-10100410067']);
+
+        expect(bounds.features).toMatchObject([{ id: 'LT-INSP-CADASTRAL-10100410067',
+            properties: { sourceParcelId: '10100410067', sourceProperties: { nationalcadastralreference: 10100410067 } } }]);
+        expect(exact).toMatchObject({ complete: true, absentIds: [], features: [{ id: 'LT-INSP-CADASTRAL-10100410067' }] });
+        expect(fetchImpl).toHaveBeenCalledTimes(2);
+        const urls = fetchImpl.mock.calls.map(([url]) => new URL(url));
+        for (const url of urls) {
+            expect(url.searchParams.get('typeNames')).toBe('cp:CP.CadastralParcel');
+            expect(url.searchParams.get('propertyName')).toBe('geometry,nationalcadastralreference');
+        }
+        expect(urls[0].searchParams.get('bbox')).toBe('25.27,54.695,25.271,54.696,CRS:84');
+        expect(urls[1].searchParams.get('cql_filter')).toBe('nationalcadastralreference IN (10100410067)');
+    });
+    it.each([
+        'cp:CP:CadastralParcel',
+        'cp:CP.CadastralParcel<script>',
+        'cp: CP.CadastralParcel',
+        'cp:CP CadastralParcel'
+    ])('rejects malformed feature QName %s before fetch', featureType => {
+        const fetchImpl = vi.fn();
+        expect(() => createWfsParcelSource({ ...VILNIUS_INSPIRE_DESCRIPTOR, featureType }, { fetchImpl }))
+            .toThrow(/Invalid WFS parcel source descriptor/);
+        expect(fetchImpl).not.toHaveBeenCalled();
+    });
     it('batches native ID filters at the configured limit and reports absence after every batch completes', async () => {
         const { adapter, fetchImpl } = source([page([feature(1)]), page([])], { idBatchSize: 1 });
         const result = await adapter.queryIds(['FR-PCI-75105000AD0011', 'FR-PCI-75105000AD0012', 'FR-PCI-75105000AD0011']);

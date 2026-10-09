@@ -1,0 +1,291 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T09:17:32Z",
+  "city": "Macapá",
+  "sourceEndpoint": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27",
+  "purpose": "Explain why the current ArcGIS adapter rejects several otherwise bounded ID manifests; use safe idlote+full-geometry responses only.",
+  "layerIdentityMetadata": {
+    "layerName": "sit_macapa.vw.vw_info_fisico",
+    "geometryType": "esriGeometryPolygon",
+    "nativeCrs": {
+      "wkid": 31982,
+      "latestWkid": 31982
+    },
+    "objectIdFieldMetadata": null,
+    "oidFields": [
+      "idlote"
+    ],
+    "globalIdField": null,
+    "uniqueIdInfo": null,
+    "supportsPagination": true,
+    "fieldSchema": [
+      {
+        "name": "idlote",
+        "type": "esriFieldTypeOID",
+        "alias": "idlote"
+      },
+      {
+        "name": "lote_area",
+        "type": "esriFieldTypeDouble",
+        "alias": "lote_area"
+      },
+      {
+        "name": "lote_testadalote",
+        "type": "esriFieldTypeDouble",
+        "alias": "lote_testadalote"
+      },
+      {
+        "name": "qtd_edificacoes",
+        "type": "esriFieldTypeDouble",
+        "alias": "qtd_edificacoes"
+      },
+      {
+        "name": "caminhofoto",
+        "type": "esriFieldTypeString",
+        "alias": "caminhofoto"
+      },
+      {
+        "name": "shape",
+        "type": "esriFieldTypeGeometry",
+        "alias": "shape"
+      }
+    ],
+    "configuredPhysicalLayer": "Identificar Lote Físico maps to MapServer/27 with key field idlote (per macapa-endpoint-followthrough.json)",
+    "alternativeNativeRowIdExposed": false,
+    "nonIdentityAttributesRequested": false
+  },
+  "normalAdapterRun": {
+    "mode": "boundsQueryMode=object-ids; idsQueryMode=object-ids; pageSize=100",
+    "cellCount": 13,
+    "completeCells": 9,
+    "heldCells": [
+      0,
+      1,
+      4,
+      9
+    ],
+    "holdReason": "count and returnIdsOnly produce the same row-count manifest but objectIds contains duplicates, violating the adapter’s uniqueness check.",
+    "sourceAdapterEdited": false,
+    "allFourRawCountManifestAndGeometryRowCountsAgree": true
+  },
+  "rawCompleteDuplicateCells": [
+    {
+      "cell": 0,
+      "bboxWgs84": [
+        -51.07,
+        0.042,
+        -51.069,
+        0.043
+      ],
+      "completeRawFeatureResponse": true,
+      "responseFeatureCount": 43,
+      "requestedFields": [
+        "idlote"
+      ],
+      "noAdditionalReturnedFields": true,
+      "responseSha256": "9fe6abbde44e2d7c3382fbcae61f241dd81a5a979513114a4089e2ca0d0d7e93",
+      "duplicateIdGroups": [
+        {
+          "nativeId": "605261",
+          "rowCount": 10,
+          "distinctFullGeometryHashes": 1,
+          "geometrySha256": "51cb7ad514f0747ae0f2e2c6309899435e6e44e3d1ca10f08cdfbeda7a694274"
+        },
+        {
+          "nativeId": "605262",
+          "rowCount": 5,
+          "distinctFullGeometryHashes": 1,
+          "geometrySha256": "fa6a6df6ab4c74ebf8ddd7f661eef20082bba72326b7f867c1efafe3f03abe0f"
+        },
+        {
+          "nativeId": "605265",
+          "rowCount": 5,
+          "distinctFullGeometryHashes": 1,
+          "geometrySha256": "4dc8d50b8f9f134f19253539ab269739df58f7a22047468106e7997a9b93c56a"
+        }
+      ],
+      "allRepeatedIdRowsHaveIdenticalFullPolygons": true,
+      "uniqueNativeIds": 26,
+      "duplicateRows": 17,
+      "returnCountOnlyCount": 43,
+      "returnIdsOnlyRowCount": 43,
+      "returnCountAndManifestLengthsAgree": true,
+      "returnCountResponseSha256": "f72ead787aa237120c8b5149fa33647c46d3297f90daab36bcce8e91bc796571",
+      "returnIdsOnlyResponseSha256": "24654e505fea947f9b9c2254c9bb8523a76779a85810c77926baf51da5715690",
+      "manifestHasDuplicateIds": true
+    },
+    {
+      "cell": 1,
+      "bboxWgs84": [
+        -51.069,
+        0.042,
+        -51.068,
+        0.043
+      ],
+      "completeRawFeatureResponse": true,
+      "responseFeatureCount": 33,
+      "requestedFields": [
+        "idlote"
+      ],
+      "noAdditionalReturnedFields": true,
+      "responseSha256": "4d46979da4eebc781ecb5111ada8bd8b6e245481ad6bbcd0ec1a05a9165e8405",
+      "duplicateIdGroups": [
+        {
+          "nativeId": "605265",
+          "rowCount": 5,
+          "distinctFullGeometryHashes": 1,
+          "geometrySha256": "4dc8d50b8f9f134f19253539ab269739df58f7a22047468106e7997a9b93c56a"
+        },
+        {
+          "nativeId": "605274",
+          "rowCount": 5,
+          "distinctFullGeometryHashes": 1,
+          "geometrySha256": "5e5379972077242007b9ee9f4a9a458cee78454389d3bca8ee9bcac61251e985"
+        }
+      ],
+      "allRepeatedIdRowsHaveIdenticalFullPolygons": true,
+      "uniqueNativeIds": 25,
+      "duplicateRows": 8,
+      "returnCountOnlyCount": 33,
+      "returnIdsOnlyRowCount": 33,
+      "returnCountAndManifestLengthsAgree": true,
+      "returnCountResponseSha256": "52aa0abe7b47012a5285efab6e22093d351180321938c1cdd985859a4bda1c0d",
+      "returnIdsOnlyResponseSha256": "fb66657ae2c0070f201fb4f094ad1f67c045673e3e2c3f0df2f361b33d6a6f72",
+      "manifestHasDuplicateIds": true
+    },
+    {
+      "cell": 4,
+      "bboxWgs84": [
+        -51.069,
+        0.043,
+        -51.068,
+        0.044
+      ],
+      "completeRawFeatureResponse": true,
+      "responseFeatureCount": 62,
+      "requestedFields": [
+        "idlote"
+      ],
+      "noAdditionalReturnedFields": true,
+      "responseSha256": "30c6ec4d0c4afd5c5ee2f8fc70df61891c2522ac4abd9f173352ca8295255099",
+      "duplicateIdGroups": [
+        {
+          "nativeId": "502725",
+          "rowCount": 6,
+          "distinctFullGeometryHashes": 1,
+          "geometrySha256": "97d6f5d15b4c6a60cdbb88fa68a210e2f03290ee6e0c75b91d62425b56b2965f"
+        },
+        {
+          "nativeId": "527010",
+          "rowCount": 6,
+          "distinctFullGeometryHashes": 1,
+          "geometrySha256": "d7612a54004e2b7ff8dbffd89c166d8fb9a3737c77094f71c8094bbfa7708ad4"
+        },
+        {
+          "nativeId": "605268",
+          "rowCount": 5,
+          "distinctFullGeometryHashes": 1,
+          "geometrySha256": "2d80d6f3f7a3dd29bcc493d8f37271cf8239cac5bf51e4d7ac04f825f08d0e78"
+        },
+        {
+          "nativeId": "605269",
+          "rowCount": 5,
+          "distinctFullGeometryHashes": 1,
+          "geometrySha256": "413ad9d8d63f849bfd89ccf0c5ad9e8b69be352ed64d8f92ed52c8017899e1ba"
+        },
+        {
+          "nativeId": "605270",
+          "rowCount": 10,
+          "distinctFullGeometryHashes": 1,
+          "geometrySha256": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        },
+        {
+          "nativeId": "605271",
+          "rowCount": 5,
+          "distinctFullGeometryHashes": 1,
+          "geometrySha256": "00f9ecdaabafcfe66432b474e0e8b247be5e9e954fde75b4f71f6a65a89a5b02"
+        },
+        {
+          "nativeId": "605272",
+          "rowCount": 10,
+          "distinctFullGeometryHashes": 1,
+          "geometrySha256": "0afb72f471899ef30e35f24ba728215db033cee05c56d5e299f55c1c7f9b084a"
+        }
+      ],
+      "allRepeatedIdRowsHaveIdenticalFullPolygons": true,
+      "uniqueNativeIds": 22,
+      "duplicateRows": 40,
+      "returnCountOnlyCount": 62,
+      "returnIdsOnlyRowCount": 62,
+      "returnCountAndManifestLengthsAgree": true,
+      "returnCountResponseSha256": "4d7fa0dcf0b577004dc5203fef7b4cb9af7132f677b6227575588819d5b01de6",
+      "returnIdsOnlyResponseSha256": "af3b31d942ede28cff496ce0c76ec1bb12c1115c22162104054cd40ecb04a793",
+      "manifestHasDuplicateIds": true
+    },
+    {
+      "cell": 9,
+      "bboxWgs84": [
+        -51.069,
+        0.041,
+        -51.068,
+        0.042
+      ],
+      "completeRawFeatureResponse": true,
+      "responseFeatureCount": 38,
+      "requestedFields": [
+        "idlote"
+      ],
+      "noAdditionalReturnedFields": true,
+      "responseSha256": "d917cc8b6d1ed0d91d8e15adf86c9e41a0fbe7a0e28512431895256cd831e0b4",
+      "duplicateIdGroups": [
+        {
+          "nativeId": "605264",
+          "rowCount": 5,
+          "distinctFullGeometryHashes": 1,
+          "geometrySha256": "9d1ce3a9fbae9f4452546c0a4a39c0e204845635d1fe7f7503b71db3129becab"
+        },
+        {
+          "nativeId": "605265",
+          "rowCount": 5,
+          "distinctFullGeometryHashes": 1,
+          "geometrySha256": "4dc8d50b8f9f134f19253539ab269739df58f7a22047468106e7997a9b93c56a"
+        },
+        {
+          "nativeId": "605274",
+          "rowCount": 5,
+          "distinctFullGeometryHashes": 1,
+          "geometrySha256": "5e5379972077242007b9ee9f4a9a458cee78454389d3bca8ee9bcac61251e985"
+        }
+      ],
+      "allRepeatedIdRowsHaveIdenticalFullPolygons": true,
+      "uniqueNativeIds": 26,
+      "duplicateRows": 12,
+      "returnCountOnlyCount": 38,
+      "returnIdsOnlyRowCount": 38,
+      "returnCountAndManifestLengthsAgree": true,
+      "returnCountResponseSha256": "d64031d385f466fa27ac912bb11c2f71c5aecbf3a86e3e24a96d870528901f2c",
+      "returnIdsOnlyResponseSha256": "b0cfdf8d6e6ae9867db557c851f8d253c707f81d8c035712362fcf81a8a36896",
+      "manifestHasDuplicateIds": true
+    }
+  ],
+  "duplicateClassification": "Every repeated idlote group in each of the four full native-CRS geometry responses has one distinct full-polygon hash: repeated join/view rows duplicate identical polygons, with no conflicting geometry for an ID in these cells.",
+  "offsetModeProbe": {
+    "requestStatus": 200,
+    "responseBytes": 25036,
+    "bodySha256": "0467c71ec0e22d2fff0f19de2693d9063471f53c02bf2fb0844054731f884dea",
+    "responseFeatureCount": 43,
+    "adapterComplete": false,
+    "adapterError": "Parcel provider pagination repeated or omitted an object ID.",
+    "fieldsRequested": [
+      "idlote"
+    ],
+    "sourceAdapterEdited": false
+  },
+  "limitations": {
+    "noUnambiguousNativeRowIdentityBeyondIdloteInPublishedSchema": true,
+    "noClaimOfCitywideCompleteness": true,
+    "noOwnerAddressTaxOrApplicantDataRequestedOrRetained": true,
+    "noDurableFullGeometryAddedBeyondExistingThreeSampleFeatures": true,
+    "rowsCollapsedOrAcceptedByAdapter": false
+  }
+}

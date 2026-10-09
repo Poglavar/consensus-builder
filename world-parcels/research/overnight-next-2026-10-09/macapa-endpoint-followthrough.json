@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2928-macapa.json",
+  "sourceId": "macapa-egl-sit-physical-lot-layer-27",
+  "purpose": "Endpoint-first followthrough on the unchanged WUP 2025 Macapá locator; anonymous safe fields only.",
+  "officialViewer": "https://mapa.macapa.ap.gov.br/",
+  "officialHelp": "https://mapa.macapa.ap.gov.br/macapacliente/sit/AjudaOnline/Documents/lote.htm",
+  "configurationRoute": {
+    "url": "https://mapa.macapa.ap.gov.br/macapacliente/sit/Analise/ServicosMapa/ListarParametrosSistema",
+    "method": "POST",
+    "body": "empty",
+    "httpStatus": 200,
+    "bytes": 6125,
+    "sha256": "bb6f999127deb5e581b66c74bf9382b4fa6dc1ba8583bc7e374b0ea62e6cd031",
+    "resolved": "Identificar Lote Físico -> https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27",
+    "keyField": "idlote"
+  },
+  "layerMetadata": {
+    "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27?f=pjson",
+    "httpStatus": 200,
+    "bytes": 2924,
+    "sha256": "151e0c3835dc618168c24f89d87609170076d97ff85957a378cb51048e080d68",
+    "layerName": "sit_macapa.vw.vw_info_fisico",
+    "geometryType": "esriGeometryPolygon",
+    "nativeCrs": "EPSG:31982",
+    "safeOidField": "idlote"
+  },
+  "exactWupPointQuery": {
+    "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query",
+    "httpStatus": 200,
+    "bytes": 245,
+    "sha256": "0f3a1f2c2878623361f3e3f7601a501604ff79ce6b13c6adc52bf6b91e6fb71f",
+    "pointLonLat": [
+      -51.0688251135422,
+      0.0431561083287672
+    ],
+    "outFields": [
+      "idlote"
+    ],
+    "returnedFeatureCount": 0
+  },
+  "boundedQuery": {
+    "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query",
+    "httpStatus": 200,
+    "contentType": "application/geo+json;charset=UTF-8",
+    "bytes": 1790,
+    "sha256": "66265b4c142292878ef1a0ec3d5eb5447faa312700d710b0ea15a2eb7b830788",
+    "bboxLonLat": [
+      -51.0693251135422,
+      0.0426561083287672,
+      -51.068325113542194,
+      0.0436561083287672
+    ],
+    "outFields": [
+      "idlote"
+    ],
+    "outCrs": "EPSG:31982",
+    "resultRecordCount": 3,
+    "returnedFeatureIds": [
+      502134,
+      502135,
+      502136
+    ],
+    "exceededTransferLimit": true,
+    "retainedPolygons": 3
+  },
+  "sampleFile": "macapa-parcel-samples-native.geojson",
+  "sampleFileBytes": 1774,
+  "sampleFileSha256": "24766fd0ac15a20f9cd2411f40499c0ba890f2e39a4379640b8f151429010566",
+  "limits": [
+    "No owner/address, tax, account or applicant fields requested or retained.",
+    "Exact WUP point query returned zero features; nearby bounded geometry does not establish point containment.",
+    "The bounded query exceeded transfer limit and is not a complete neighborhood or city extract.",
+    "Configured service hostname contains hml; production stability is unverified.",
+    "No runtime integration, global catalog change, or root review stamp was made."
+  ]
+}

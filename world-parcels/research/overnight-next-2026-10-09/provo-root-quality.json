@@ -1,0 +1,1489 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T07:45:24.236807+00:00",
+  "method": "Independent GEOS/Shapely validity, exact topological equality and complete STRtree candidate-pair intersections; unmodified full polygon geometry.",
+  "inputSha256": "159969b01a5ec3d4b426520234bb7ad5b26bd0c9c9f173b44b6c3f857609e091",
+  "metricCrs": {
+    "type": "name",
+    "properties": {
+      "name": "EPSG:26912"
+    }
+  },
+  "featureCount": 157,
+  "invalidCount": 0,
+  "invalid": [],
+  "duplicatePairCount": 0,
+  "duplicatePairs": [],
+  "overlapThresholdM2": 0.01,
+  "overlapPairCount": 183,
+  "totalOverlapM2": 787.1254207018861,
+  "overlaps": [
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-170340027",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-340230023"
+      ],
+      "areaM2": 108.39423187208882,
+      "fractionOfSmaller": 0.1737061729746826
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-170340027",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-340230500"
+      ],
+      "areaM2": 54.30207790200942,
+      "fractionOfSmaller": 0.06903542858272342
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160055"
+      ],
+      "areaM2": 46.566555072639,
+      "fractionOfSmaller": 0.021482838182770136
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160019"
+      ],
+      "areaM2": 42.012146341032775,
+      "fractionOfSmaller": 0.06471393323054493
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160037",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160500"
+      ],
+      "areaM2": 41.979057966979596,
+      "fractionOfSmaller": 0.0646630693459343
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-170340052",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-340230005"
+      ],
+      "areaM2": 27.443755364318278,
+      "fractionOfSmaller": 0.024496392359063455
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180040"
+      ],
+      "areaM2": 24.6220421250592,
+      "fractionOfSmaller": 0.034035444089206966
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160038",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160500"
+      ],
+      "areaM2": 14.551591045623606,
+      "fractionOfSmaller": 0.02640253311050144
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160022"
+      ],
+      "areaM2": 14.550645643980005,
+      "fractionOfSmaller": 0.02640106524053477
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160035"
+      ],
+      "areaM2": 14.542968009949131,
+      "fractionOfSmaller": 0.022360456417640038
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160021"
+      ],
+      "areaM2": 14.538573840560428,
+      "fractionOfSmaller": 0.026379017663757682
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160020"
+      ],
+      "areaM2": 14.534215118715494,
+      "fractionOfSmaller": 0.02995356089605016
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160036"
+      ],
+      "areaM2": 14.010563543048946,
+      "fractionOfSmaller": 0.027963182509913975
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160041",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160500"
+      ],
+      "areaM2": 12.216686739070493,
+      "fractionOfSmaller": 0.012793449613951695
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160039",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160500"
+      ],
+      "areaM2": 12.205122619506602,
+      "fractionOfSmaller": 0.022697733984648444
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180071"
+      ],
+      "areaM2": 11.762471111287923,
+      "fractionOfSmaller": 0.011759894161520984
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180042"
+      ],
+      "areaM2": 10.41679435617762,
+      "fractionOfSmaller": 0.014375678230595322
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180041"
+      ],
+      "areaM2": 9.719284265319441,
+      "fractionOfSmaller": 0.01745867127614411
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180070"
+      ],
+      "areaM2": 9.422405043739165,
+      "fractionOfSmaller": 0.01179052632965016
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350170055",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350170500"
+      ],
+      "areaM2": 9.414346092830383,
+      "fractionOfSmaller": 0.012747618059650734
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160040",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160500"
+      ],
+      "areaM2": 9.342228582113934,
+      "fractionOfSmaller": 0.014386614979511205
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180003",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500"
+      ],
+      "areaM2": 8.63798576613828,
+      "fractionOfSmaller": 0.011754722735425356
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180004",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500"
+      ],
+      "areaM2": 8.63559085437463,
+      "fractionOfSmaller": 0.011751473800599897
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180005"
+      ],
+      "areaM2": 8.630754863411564,
+      "fractionOfSmaller": 0.011744853092639
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160042"
+      ],
+      "areaM2": 8.457129652115437,
+      "fractionOfSmaller": 0.01516235367823673
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180069"
+      ],
+      "areaM2": 8.329561337464954,
+      "fractionOfSmaller": 0.012807110337253378
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-170340052",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-170340002"
+      ],
+      "areaM2": 7.875596454576419,
+      "fractionOfSmaller": 0.0032867270548417606
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350170054",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350170500"
+      ],
+      "areaM2": 7.7101709872217645,
+      "fractionOfSmaller": 0.010451001566856116
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350170053",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350170500"
+      ],
+      "areaM2": 7.5872521805652315,
+      "fractionOfSmaller": 0.010526942842368919
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350170052",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350170500"
+      ],
+      "areaM2": 7.581935351819804,
+      "fractionOfSmaller": 0.010519565381615527
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180013"
+      ],
+      "areaM2": 7.477867249113536,
+      "fractionOfSmaller": 0.011817313023080376
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180012"
+      ],
+      "areaM2": 7.471157937932464,
+      "fractionOfSmaller": 0.01180671359307436
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180014"
+      ],
+      "areaM2": 7.275242603843671,
+      "fractionOfSmaller": 0.011497000348007266
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180030"
+      ],
+      "areaM2": 6.769978383640144,
+      "fractionOfSmaller": 0.009174437170456774
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180059"
+      ],
+      "areaM2": 6.642576211539844,
+      "fractionOfSmaller": 0.01205246315107008
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180063"
+      ],
+      "areaM2": 6.632964613860622,
+      "fractionOfSmaller": 0.012035043863618042
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180060"
+      ],
+      "areaM2": 6.6258906600232494,
+      "fractionOfSmaller": 0.01202211590336699
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180057"
+      ],
+      "areaM2": 6.621187930539598,
+      "fractionOfSmaller": 0.012013654663603423
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180061"
+      ],
+      "areaM2": 6.612270879263331,
+      "fractionOfSmaller": 0.011997459719965995
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180058"
+      ],
+      "areaM2": 6.606133689390167,
+      "fractionOfSmaller": 0.011986231334181576
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180062"
+      ],
+      "areaM2": 6.597147768998214,
+      "fractionOfSmaller": 0.011970002013662606
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180038"
+      ],
+      "areaM2": 6.5927013342614424,
+      "fractionOfSmaller": 0.011961948995514572
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180035"
+      ],
+      "areaM2": 6.587396752497855,
+      "fractionOfSmaller": 0.011952195449236893
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180032"
+      ],
+      "areaM2": 6.580986972726656,
+      "fractionOfSmaller": 0.011940709126716256
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180039"
+      ],
+      "areaM2": 6.578473471861659,
+      "fractionOfSmaller": 0.011936147253836817
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180036"
+      ],
+      "areaM2": 6.574609625000479,
+      "fractionOfSmaller": 0.011929068494912501
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180033"
+      ],
+      "areaM2": 6.565042816126629,
+      "fractionOfSmaller": 0.011911780160045633
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180037"
+      ],
+      "areaM2": 6.558672575512699,
+      "fractionOfSmaller": 0.011900079227701406
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180034"
+      ],
+      "areaM2": 6.552349595186733,
+      "fractionOfSmaller": 0.011888749911745109
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180031"
+      ],
+      "areaM2": 6.5428093864238095,
+      "fractionOfSmaller": 0.011871456018627184
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180006"
+      ],
+      "areaM2": 6.510787637882787,
+      "fractionOfSmaller": 0.011813336715220727
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180007"
+      ],
+      "areaM2": 6.496477310491823,
+      "fractionOfSmaller": 0.011787354832191782
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180002",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500"
+      ],
+      "areaM2": 6.481514726407962,
+      "fractionOfSmaller": 0.011760215789541907
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160043"
+      ],
+      "areaM2": 4.72650616062771,
+      "fractionOfSmaller": 0.009556049212041715
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160052",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160500"
+      ],
+      "areaM2": 4.639049245812653,
+      "fractionOfSmaller": 0.010790133158627922
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160043",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160046"
+      ],
+      "areaM2": 3.614759807813127,
+      "fractionOfSmaller": 0.007308320657850404
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180001",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500"
+      ],
+      "areaM2": 3.5735319679918747,
+      "fractionOfSmaller": 0.016209832911989186
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160041",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160042"
+      ],
+      "areaM2": 3.0586521828997775,
+      "fractionOfSmaller": 0.005483700508746111
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160040",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160041"
+      ],
+      "areaM2": 3.0014735602471734,
+      "fractionOfSmaller": 0.004622135297045785
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160047",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160042"
+      ],
+      "areaM2": 2.0740128342093302,
+      "fractionOfSmaller": 0.0037631182487333353
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180030"
+      ],
+      "areaM2": 2.0047017217914087,
+      "fractionOfSmaller": 0.0027167014353438176
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160039",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160040"
+      ],
+      "areaM2": 1.3405897381045406,
+      "fractionOfSmaller": 0.0024930801767951817
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180072"
+      ],
+      "areaM2": 1.2068685114466617,
+      "fractionOfSmaller": 0.011824727245869845
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160042",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160048"
+      ],
+      "areaM2": 1.050607319663657,
+      "fractionOfSmaller": 0.001906242447931127
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350200007",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-440110001"
+      ],
+      "areaM2": 0.9952622956699808,
+      "fractionOfSmaller": 0.0013082264247128372
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210017",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210001"
+      ],
+      "areaM2": 0.9305144881104709,
+      "fractionOfSmaller": 0.0013562237870423251
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350190002",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210016"
+      ],
+      "areaM2": 0.9050690975872113,
+      "fractionOfSmaller": 0.00129897574607304
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350200006",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-440110001"
+      ],
+      "areaM2": 0.9034096587016182,
+      "fractionOfSmaller": 0.001264501753426448
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180062",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-480300019"
+      ],
+      "areaM2": 0.5165841001790966,
+      "fractionOfSmaller": 0.0009373009269896718
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180061",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-480300018"
+      ],
+      "areaM2": 0.4491275705897728,
+      "fractionOfSmaller": 0.0008149076218543092
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350190500"
+      ],
+      "areaM2": 0.44147621507501833,
+      "fractionOfSmaller": 0.0002699416359830356
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180058",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-480300016"
+      ],
+      "areaM2": 0.390640499480782,
+      "fractionOfSmaller": 0.000708781810273829
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180057",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-480300015"
+      ],
+      "areaM2": 0.38140481863073766,
+      "fractionOfSmaller": 0.0006920307694227554
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180063",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-480300020"
+      ],
+      "areaM2": 0.3789117399850003,
+      "fractionOfSmaller": 0.0006875084787321218
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180060",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-480300017"
+      ],
+      "areaM2": 0.28633269695136027,
+      "fractionOfSmaller": 0.0005195263620092443
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350200007",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350200500"
+      ],
+      "areaM2": 0.28307538876164035,
+      "fractionOfSmaller": 0.0003720895540552396
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180059",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-480300017"
+      ],
+      "areaM2": 0.2632186103574503,
+      "fractionOfSmaller": 0.0004775906968892161
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350200500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350200017"
+      ],
+      "areaM2": 0.2352716220206038,
+      "fractionOfSmaller": 0.0002832314601889866
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160052",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500"
+      ],
+      "areaM2": 0.21033722774360608,
+      "fractionOfSmaller": 0.0004892309987049043
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350170035",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210004"
+      ],
+      "areaM2": 0.20675368835613614,
+      "fractionOfSmaller": 0.000298078619150904
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350200001",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350200002"
+      ],
+      "areaM2": 0.1807524556889671,
+      "fractionOfSmaller": 0.00021069494332784548
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210015",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210016"
+      ],
+      "areaM2": 0.15788977887352235,
+      "fractionOfSmaller": 0.00022662535857512957
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210011",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210012"
+      ],
+      "areaM2": 0.15785716694319007,
+      "fractionOfSmaller": 0.00022661830284815158
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180060",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-480300018"
+      ],
+      "areaM2": 0.1551129016323884,
+      "fractionOfSmaller": 0.0002814391871545904
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-340230004",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-340230500"
+      ],
+      "areaM2": 0.14702061405280775,
+      "fractionOfSmaller": 0.00020984971582608313
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350170036",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210003"
+      ],
+      "areaM2": 0.14432217378943943,
+      "fractionOfSmaller": 0.00020807027496316794
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180059",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-480300016"
+      ],
+      "areaM2": 0.13963159231760702,
+      "fractionOfSmaller": 0.0002533511950091841
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180063",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-480300019"
+      ],
+      "areaM2": 0.12116024412768922,
+      "fractionOfSmaller": 0.00021983666994941252
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350200005",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350200500"
+      ],
+      "areaM2": 0.10478114513790793,
+      "fractionOfSmaller": 0.00010961271521026877
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-440110002",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-170350030"
+      ],
+      "areaM2": 0.10330510036914609,
+      "fractionOfSmaller": 0.0001602000704167842
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350200003",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-440110001"
+      ],
+      "areaM2": 0.10111614590935819,
+      "fractionOfSmaller": 0.00011786678125420238
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350190002",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350190500"
+      ],
+      "areaM2": 0.09764587767752499,
+      "fractionOfSmaller": 0.00013093298470664814
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-340230005",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-340230500"
+      ],
+      "areaM2": 0.09574640166564315,
+      "fractionOfSmaller": 8.54635741732186e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350170054",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350170053"
+      ],
+      "areaM2": 0.09456960377378998,
+      "fractionOfSmaller": 0.00013121071896123515
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-440110002",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-170350019"
+      ],
+      "areaM2": 0.08272932801206889,
+      "fractionOfSmaller": 0.00012829223824774077
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350200500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350200012"
+      ],
+      "areaM2": 0.06689125402150209,
+      "fractionOfSmaller": 9.930184784083621e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350200004",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-440110001"
+      ],
+      "areaM2": 0.06494734949815498,
+      "fractionOfSmaller": 7.570623206504844e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180023",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180022"
+      ],
+      "areaM2": 0.057079250613360534,
+      "fractionOfSmaller": 0.00010356588032841337
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180038",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180037"
+      ],
+      "areaM2": 0.057076214125996574,
+      "fractionOfSmaller": 0.00010356039620422524
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180035",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180036"
+      ],
+      "areaM2": 0.056888681663817664,
+      "fractionOfSmaller": 0.00010321966152521251
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180021",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180020"
+      ],
+      "areaM2": 0.05688207114220756,
+      "fractionOfSmaller": 0.00010320811668321109
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180063",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180062"
+      ],
+      "areaM2": 0.055401437012974356,
+      "fractionOfSmaller": 0.00010052197823659745
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180019",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180018"
+      ],
+      "areaM2": 0.05521360631127692,
+      "fractionOfSmaller": 0.00010018112633079246
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180049",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180048"
+      ],
+      "areaM2": 0.05521042474095417,
+      "fractionOfSmaller": 0.00010017520423781566
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180024",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180025"
+      ],
+      "areaM2": 0.05520698709743499,
+      "fractionOfSmaller": 0.00010016914317673575
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210014"
+      ],
+      "areaM2": 0.05480221215600831,
+      "fractionOfSmaller": 7.866067648662489e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180058",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180059"
+      ],
+      "areaM2": 0.05373601843725856,
+      "fractionOfSmaller": 9.750003033087464e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180061",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180060"
+      ],
+      "areaM2": 0.05353544809081434,
+      "fractionOfSmaller": 9.713597548977493e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180046",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180047"
+      ],
+      "areaM2": 0.05353212878294844,
+      "fractionOfSmaller": 9.713021505188185e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350170038",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350170062"
+      ],
+      "areaM2": 0.05347315146100229,
+      "fractionOfSmaller": 7.85474146708485e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-340230023",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-340230500"
+      ],
+      "areaM2": 0.052813062862000264,
+      "fractionOfSmaller": 8.463508504451766e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350200003",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350200004"
+      ],
+      "areaM2": 0.052663108613896475,
+      "fractionOfSmaller": 6.138714096880905e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160047",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160046"
+      ],
+      "areaM2": 0.05205811660715833,
+      "fractionOfSmaller": 9.445555930568659e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180031",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180032"
+      ],
+      "areaM2": 0.050386293981916574,
+      "fractionOfSmaller": 9.142229852960545e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180045",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180044"
+      ],
+      "areaM2": 0.050376863518649014,
+      "fractionOfSmaller": 9.140522107570627e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180006",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180005"
+      ],
+      "areaM2": 0.05037681250909401,
+      "fractionOfSmaller": 9.140495465507071e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180034",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180033"
+      ],
+      "areaM2": 0.050189157709797705,
+      "fractionOfSmaller": 9.106448543759577e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180071",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180007"
+      ],
+      "areaM2": 0.05018579387206934,
+      "fractionOfSmaller": 9.10582353531737e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180051",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180052"
+      ],
+      "areaM2": 0.050185696938181756,
+      "fractionOfSmaller": 9.105806738512258e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180030",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160043"
+      ],
+      "areaM2": 0.04934415259641648,
+      "fractionOfSmaller": 9.97639978692483e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180027",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160050"
+      ],
+      "areaM2": 0.04868352071236437,
+      "fractionOfSmaller": 8.833242199989737e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210010"
+      ],
+      "areaM2": 0.046975947591055264,
+      "fractionOfSmaller": 6.743903056014097e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210001",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210500"
+      ],
+      "areaM2": 0.045884988109880315,
+      "fractionOfSmaller": 6.687731694445788e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-431770002",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-431770003"
+      ],
+      "areaM2": 0.045790292883667705,
+      "fractionOfSmaller": 6.1750293964626e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180013",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180012"
+      ],
+      "areaM2": 0.04524224850010715,
+      "fractionOfSmaller": 7.149658390106058e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-340230002",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-340230500"
+      ],
+      "areaM2": 0.04516837433914782,
+      "fractionOfSmaller": 5.128727515803783e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-340230022",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-340230500"
+      ],
+      "areaM2": 0.044247655326683746,
+      "fractionOfSmaller": 7.041227366087113e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180016",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180015"
+      ],
+      "areaM2": 0.04374040942313895,
+      "fractionOfSmaller": 5.4944016455151885e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-480300016",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-480300015"
+      ],
+      "areaM2": 0.04353021537701629,
+      "fractionOfSmaller": 6.0927796554406624e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350200002",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-440110001"
+      ],
+      "areaM2": 0.04292264469073215,
+      "fractionOfSmaller": 5.003298105203594e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210012",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210013"
+      ],
+      "areaM2": 0.04179453992919083,
+      "fractionOfSmaller": 5.9994898799852655e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210013",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210014"
+      ],
+      "areaM2": 0.04177594903299184,
+      "fractionOfSmaller": 5.9968212085799896e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-170340002",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-340230003"
+      ],
+      "areaM2": 0.040906520800077034,
+      "fractionOfSmaller": 4.606665755841972e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350200002",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-440110002"
+      ],
+      "areaM2": 0.04008841816677769,
+      "fractionOfSmaller": 4.672925168046696e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350170036",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350170062"
+      ],
+      "areaM2": 0.03985426197704542,
+      "fractionOfSmaller": 5.745816481475946e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180004",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180003"
+      ],
+      "areaM2": 0.038513813982419265,
+      "fractionOfSmaller": 5.2410319526231626e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180026",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180003"
+      ],
+      "areaM2": 0.03786276719111492,
+      "fractionOfSmaller": 6.869925393974566e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210013"
+      ],
+      "areaM2": 0.037835646884835594,
+      "fractionOfSmaller": 5.4312018022652263e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160037",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160036"
+      ],
+      "areaM2": 0.03705725224603212,
+      "fractionOfSmaller": 7.396124393481833e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-480300019",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-480300020"
+      ],
+      "areaM2": 0.03683371125998214,
+      "fractionOfSmaller": 5.155461440552385e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180003",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180002"
+      ],
+      "areaM2": 0.0368290566800793,
+      "fractionOfSmaller": 6.682352384672202e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210010",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210011"
+      ],
+      "areaM2": 0.03616068209581158,
+      "fractionOfSmaller": 5.1912552486739484e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210014",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210015"
+      ],
+      "areaM2": 0.03615396240725044,
+      "fractionOfSmaller": 5.189380188760374e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210003",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210004"
+      ],
+      "areaM2": 0.0359723741802644,
+      "fractionOfSmaller": 5.1849897429317245e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-480300016",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-480300017"
+      ],
+      "areaM2": 0.035180110127422164,
+      "fractionOfSmaller": 4.9240431595404546e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160036",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160035"
+      ],
+      "areaM2": 0.03424359899370799,
+      "fractionOfSmaller": 6.834557407453014e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-480300018",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-480300017"
+      ],
+      "areaM2": 0.033483689460177324,
+      "fractionOfSmaller": 4.686586499698753e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-340230021",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-340230500"
+      ],
+      "areaM2": 0.03222740823911305,
+      "fractionOfSmaller": 5.0928195610310425e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350200010",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350200500"
+      ],
+      "areaM2": 0.032018574223742345,
+      "fractionOfSmaller": 4.131413438022398e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180072",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180070"
+      ],
+      "areaM2": 0.03174231318131593,
+      "fractionOfSmaller": 0.0003110067020243311
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180071",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180019"
+      ],
+      "areaM2": 0.03055375450858733,
+      "fractionOfSmaller": 5.543759491181147e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210017",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210500"
+      ],
+      "areaM2": 0.03014884782142033,
+      "fractionOfSmaller": 4.3464481347725326e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350200500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350200011"
+      ],
+      "areaM2": 0.029949117875970308,
+      "fractionOfSmaller": 3.935012854721401e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210016"
+      ],
+      "areaM2": 0.02969667558844003,
+      "fractionOfSmaller": 4.26213439738681e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210003",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210500"
+      ],
+      "areaM2": 0.02735413818568782,
+      "fractionOfSmaller": 3.9427735630900156e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160035",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160034"
+      ],
+      "areaM2": 0.02723110930501365,
+      "fractionOfSmaller": 4.940884533861242e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350200500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350200013"
+      ],
+      "areaM2": 0.025683466328762172,
+      "fractionOfSmaller": 3.812769468440236e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180061",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-480300019"
+      ],
+      "areaM2": 0.02557606075733504,
+      "fractionOfSmaller": 4.6405805862223815e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350200019",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350200010"
+      ],
+      "areaM2": 0.02493229486664994,
+      "fractionOfSmaller": 3.217058240414525e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180058",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-480300015"
+      ],
+      "areaM2": 0.024040661303817962,
+      "fractionOfSmaller": 4.361960283623477e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-340230022",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-340230023"
+      ],
+      "areaM2": 0.023987877157022996,
+      "fractionOfSmaller": 3.844155050289372e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180014",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180015"
+      ],
+      "areaM2": 0.023220910969869335,
+      "fractionOfSmaller": 3.669579642067014e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180041",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180042"
+      ],
+      "areaM2": 0.02313880735648155,
+      "fractionOfSmaller": 4.1564051460075205e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-340230004",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-340230003"
+      ],
+      "areaM2": 0.022864414097248688,
+      "fractionOfSmaller": 3.263549694544276e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-340230005",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-340230004"
+      ],
+      "areaM2": 0.022579714177418886,
+      "fractionOfSmaller": 3.22291308201419e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180027",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160054"
+      ],
+      "areaM2": 0.021692239661632307,
+      "fractionOfSmaller": 4.329231126384786e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210012"
+      ],
+      "areaM2": 0.0208761833422997,
+      "fractionOfSmaller": 2.9967153367244875e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210009"
+      ],
+      "areaM2": 0.020800704023610502,
+      "fractionOfSmaller": 3.023760058869096e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180039",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180040"
+      ],
+      "areaM2": 0.020703622105411768,
+      "fractionOfSmaller": 3.75651711897916e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180017",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180016"
+      ],
+      "areaM2": 0.018414550707285038,
+      "fractionOfSmaller": 3.3411876501947244e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180500"
+      ],
+      "areaM2": 0.018389497253428852,
+      "fractionOfSmaller": 2.031134128532415e-06
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160020",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160017"
+      ],
+      "areaM2": 0.018261925046804343,
+      "fractionOfSmaller": 3.7635997506613294e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-340230003",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-340230002"
+      ],
+      "areaM2": 0.017719024617047923,
+      "fractionOfSmaller": 2.0119397794641287e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180004",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350180025"
+      ],
+      "areaM2": 0.01608520256805077,
+      "fractionOfSmaller": 2.9185453577138535e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160036",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160034"
+      ],
+      "areaM2": 0.015529914979178994,
+      "fractionOfSmaller": 3.099560168239494e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-480300020",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-480300500"
+      ],
+      "areaM2": 0.015084565501234085,
+      "fractionOfSmaller": 2.1113239238965785e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350200019",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350200500"
+      ],
+      "areaM2": 0.014960980474990187,
+      "fractionOfSmaller": 9.984588010173914e-06
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210500",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210015"
+      ],
+      "areaM2": 0.013341229333468459,
+      "fractionOfSmaller": 1.914918687644924e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160017",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350160021"
+      ],
+      "areaM2": 0.012318583806483763,
+      "fractionOfSmaller": 2.2351151394233172e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-340230003",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-340230500"
+      ],
+      "areaM2": 0.011287480455003268,
+      "fractionOfSmaller": 1.2711335177080422e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-480300019",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-480300500"
+      ],
+      "areaM2": 0.011132092301260872,
+      "fractionOfSmaller": 1.558110615718141e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-480300018",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-480300500"
+      ],
+      "areaM2": 0.010608870591061432,
+      "fractionOfSmaller": 1.4848838491424814e-05
+    },
+    {
+      "ids": [
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210004",
+        "US-UT-UTAHCOUNTY-TAX-PARCEL-350210500"
+      ],
+      "areaM2": 0.010316407396931567,
+      "fractionOfSmaller": 1.4869772075618065e-05
+    }
+  ],
+  "operationErrorCount": 0,
+  "operationErrors": [],
+  "geometryChangedOrRepaired": false
+}

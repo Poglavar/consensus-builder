@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3976-maringa.json",
+  "purpose": "Document separate English/local-language research, local land-registry custody scope, anonymous request outcomes and safe geometry limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Maringá FAQ/tutorial confirms public lot highlighting in GeoMaringá and a separate Registro de Imóveis app with Zona/Quadra/Lote search and map-layer display. A candidate ArcGIS MapServer layer on the municipal host was discovered through a nonofficial client, but metadata and a bounded WUP-envelope request both timed out. No geometry/absence inference is made.",
+  "registryAssessment": "Local or jurisdictionally local land/cadastral custodian supported at the limited scope stated; public geometry and runtime readiness remain separate.",
+  "officialPrimarySources": [
+    {
+      "url": "https://transparencia.maringa.pr.gov.br/portaltransparencia/1/publicacoes",
+      "operator": "Maringá Municipality, Transparency Portal",
+      "scope": "Current official portal lists Geoprocessamento, FAQ/tutorial, Registro de Imóveis > Lotes com Registro de Imóveis and map services."
+    },
+    {
+      "url": "https://maringa.oxy.elotech.com.br/portaltransparencia-api/api/files/arquivo/145041",
+      "operator": "Prefeitura do Município de Maringá, FAQ/tutorial (2019)",
+      "scope": "Lines 15-20 describe address search highlighting a lot; lines 105-113 describe the public Registro de Imóveis application, Zona/Quadra/Lote search and map-layer display."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Maringá official cadastral parcel map GIS municipal cadastre geoserver English",
+      "result": "Separate English-language search followed by first-party source review; listed official sources are the evidence retained.",
+      "actualResultUrls": [
+        "https://transparencia.maringa.pr.gov.br/portaltransparencia/1/publicacoes",
+        "https://paranainterativo.pr.gov.br/portal/apps/webappviewer/index.html"
+      ],
+      "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+    },
+    {
+      "language": "Portuguese",
+      "query": "Maringá mapa cadastral parcelas cadastro georreferenciado prefeitura serviços geográficos oficial",
+      "result": "Municipal mapping and geoprocessing materials found; no parcel vector layer established.",
+      "actualResultUrls": [
+        "https://transparencia.maringa.pr.gov.br/portaltransparencia/1/publicacoes",
+        "https://paranainterativo.pr.gov.br/portal/apps/webappviewer/index.html"
+      ],
+      "method": "Separate Portuguese-language discovery followed by first-party source review.",
+      "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry; no owner, address, tax, account or applicant values submitted."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "A 0.001-degree envelope centered on the unchanged WUP point was attempted, but the municipal host timed out before an HTTP response. No exact-point absence inference is supported.",
+    "requestEvidence": [
+      {
+        "url": "https://geoproc.maringa.pr.gov.br/arcgis/rest/services/SIGMARINGA/CONSULTAS/MapServer/13?f=pjson",
+        "method": "GET",
+        "httpStatus": "ConnectTimeout",
+        "timeoutSeconds": 18,
+        "assessment": "The public GeoMaringá candidate ArcGIS layer metadata endpoint did not establish a connection. No response schema or attribute list was obtained."
+      },
+      {
+        "url": "https://geoproc.maringa.pr.gov.br/arcgis/rest/services/SIGMARINGA/CONSULTAS/MapServer/13/query",
+        "method": "GET",
+        "httpStatus": "ConnectTimeout",
+        "timeoutSeconds": 15,
+        "requestFilter": "Anonymous 0.001-degree envelope centered on unchanged WUP point; outFields=OBJECTID; returnGeometry=true; resultRecordCount=3.",
+        "assessment": "Connection timed out before an HTTP response. No feature data were returned or retained. Further feature requests were withheld because the layer schema/native ID could not be verified."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official municipal documentation describes a public lot map and public app for Zona/Quadra/Lote search with map layers.",
+    "verifiedOpenScope": "No source-native parcel geometry or safe ID schema was obtained: candidate metadata and bounded query both timed out. This is unavailable/inconclusive, not confirmed absence.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    "Official municipal FAQ/tutorial `https://maringa.oxy.elotech.com.br/portaltransparencia-api/api/files/arquivo/145041` (3-page PDF; accessed through web document retrieval): public GeoMaringá lot highlight at lines 15-20; separate Registro de Imóveis app and map-layer workflow at lines 105-113.",
+    "Candidate metadata GET `https://geoproc.maringa.pr.gov.br/arcgis/rest/services/SIGMARINGA/CONSULTAS/MapServer/13?f=pjson`: connection timeout (18 s); no response body.",
+    "Candidate anonymous bounded query `https://geoproc.maringa.pr.gov.br/arcgis/rest/services/SIGMARINGA/CONSULTAS/MapServer/13/query`: envelope centered on unchanged WUP point, 0.001 degrees per side, OBJECTID+geometry only, cap 3; connection timeout (15 s), no response body."
+  ],
+  "remainingUncertainty": "The official 2019 tutorial describes the public lot map and Registro de Imóveis app, while a candidate municipal REST layer is currently unreachable. Exact-point public geometry, service schema/currentness, and citywide coverage are unknown; no legal-title terminology was used as a geometry gate.",
+  "nextStep": "Recheck the municipal GeoMaringá service when reachable. First verify layer metadata and safe native ID, then query only that ID plus geometry in a bounded unchanged-WUP envelope.",
+  "runtimeAssessment": "not_enabled_service_unavailable_schema_unverified",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

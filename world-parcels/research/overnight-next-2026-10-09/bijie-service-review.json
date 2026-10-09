@@ -1,0 +1,135 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8914-bijie.json",
+  "purpose": "Document separate English/local-language source discovery, land-registry custody, anonymous request outcomes and safe geometry limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The Guizhou 2024 Natural Resources Bulletin records real-estate registration and external-query operations for Bijie prefecture, the local jurisdiction containing the WUP city. This verifies jurisdictionally local registration activity, not the previously claimed specific city-office location or public vector geometry.",
+  "registryAssessment": "The Guizhou 2024 Natural Resources Bulletin records real-estate registration and external-query operations for Bijie prefecture, the local jurisdiction containing the WUP city. This verifies jurisdictionally local registration activity, not the previously claimed specific city-office location or public vector geometry.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zrzy.guizhou.gov.cn/wzgb/ztzl/rdzt/wwbdcdjtjy_1/bdcdjzcfg/202410/P020241015550915516227.pdf",
+      "operator": "Guizhou Provincial Natural Resources Department / Bijie Municipal Government Service Center",
+      "scope": "Provincial official notice identifies the Bijie real-estate registration service counter; this proves registration custody but not publicly accessible cadastral geometry. No parcel or owner query was submitted."
+    },
+    {
+      "url": "https://rerc.com.cn/",
+      "operator": "Guizhou Provincial Natural Resources Department / Bijie Municipal Government Service Center",
+      "scope": "Provincial official notice identifies the Bijie real-estate registration service counter; this proves registration custody but not publicly accessible cadastral geometry. No parcel or owner query was submitted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Bijie official cadastral parcel map land registry GIS",
+      "result": "Separate English-language discovery followed by first-party source review; only the government sources listed are retained.",
+      "actualResultUrls": [
+        "https://zrzy.guizhou.gov.cn/wzgb/ztzl/rdzt/wwbdcdjtjy_1/bdcdjzcfg/202410/P020241015550915516227.pdf",
+        "https://rerc.com.cn/"
+      ],
+      "scope": "Identify local or jurisdictionally local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+    },
+    {
+      "language": "Chinese (Simplified)",
+      "query": "毕节 不动产登记 地籍图 自然资源局 登记中心",
+      "result": "Official Guizhou Natural Resources Department lists a Bijie government service-center property-registration window; no Bijie public parcel-map service or anonymous full geometry response was found.",
+      "actualResultUrls": [
+        "https://zrzy.guizhou.gov.cn/wzgb/ztzl/rdzt/wwbdcdjtjy_1/bdcdjzcfg/202410/P020241015550915516227.pdf",
+        "https://rerc.com.cn/"
+      ],
+      "method": "Separate Chinese (Simplified)-language discovery followed by first-party source review.",
+      "scope": "Identify local or jurisdictionally local land/cadastral custody and public parcel geometry; no owner, address, tax, account, title, cadastral-number or applicant values submitted."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the exact unchanged WUP point. publicParcelGeometryFound:false means unverified in this investigation, not confirmed absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "The Guizhou 2024 Natural Resources Bulletin records real-estate registration and external-query operations for Bijie prefecture, the local jurisdiction containing the WUP city. This verifies jurisdictionally local registration activity, not the previously claimed specific city-office location or public vector geometry.",
+    "verifiedOpenScope": "No anonymous full parcel geometry with stable native IDs was verified within the reviewed discovery scope. Institutional documents and UI login pages do not establish geometry absence; continued first-party service discovery remains open.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "No anonymous full parcel geometry with stable native IDs was verified within the reviewed discovery scope. Institutional documents and UI login pages do not establish geometry absence; continued first-party service discovery remains open.",
+  "nextStep": "Continue viewer configuration, public advertised service and API discovery; verify full native polygons and retrieval completeness before city admission.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootReviewedAt": "2026-10-09T09:46:31.498552+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T09:46:31.498552+00:00",
+    "decision": "Paired discovery, exact roster identity and actual primary institutional evidence reviewed. Public geometry remains unverified in this bounded pass.",
+    "custodyScope": "The Guizhou 2024 Natural Resources Bulletin records real-estate registration and external-query operations for Bijie prefecture, the local jurisdiction containing the WUP city. This verifies jurisdictionally local registration activity, not the previously claimed specific city-office location or public vector geometry.",
+    "source": "https://zrzy.guizhou.gov.cn/wzgb/zwgk/zdlyxxgk/tjsj/202511/P020251119342232763673.pdf",
+    "rootNetworkEvidence": "root-primary-four-recheck.json",
+    "uiLoginOrTransportFailureNotAbsence": true,
+    "legalTitleTermsNotEligibilityGates": true,
+    "noCitywideAbsenceClaim": true,
+    "sourceCorrection": "The earlier 167-page cited PDF contained no extractable Bijie reference and did not substantiate the claimed municipal registration counter. National rerc.com.cn likewise does not establish that specific local office. Replaced the current custody basis with the verified provincial 2024 registration table, PDF page14.",
+    "additionalPrimaryEvidence": "bijie-root-primary-correction.json"
+  },
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 8914,
+      "stage": "bijie-office",
+      "url": "https://zrzy.guizhou.gov.cn/wzgb/ztzl/rdzt/wwbdcdjtjy_1/bdcdjzcfg/202410/P020241015550915516227.pdf",
+      "httpStatus": 200,
+      "curlExit": 0,
+      "bytes": 4503783,
+      "sha256": "123c6f8d4dc0cb6ede75a3dfc452dc4475beba60df5eed3c5a5b319fd24ef89a",
+      "checkedAt": "2026-10-09T09:40:33.735687+00:00",
+      "executionContext": "require_escalated public network",
+      "pdfExtracted": true,
+      "pageCountFromFormFeed": 167,
+      "termCounts": {
+        "毕节": 0,
+        "不动产登记": 943,
+        "权籍调查": 0,
+        "梅州市自然资源局": 0,
+        "Gusau": 0
+      },
+      "institutionalContext": [],
+      "bijieInstitutionNameFound": false
+    },
+    {
+      "schemaVersion": 1,
+      "checkedAt": "2026-10-09T09:42:53.947141+00:00",
+      "wupCityCode": 8914,
+      "url": "https://zrzy.guizhou.gov.cn/wzgb/zwgk/zdlyxxgk/tjsj/202511/P020251119342232763673.pdf",
+      "httpStatus": 200,
+      "curlExit": 0,
+      "bytes": 2874957,
+      "sha256": "22a0d5532db9f53397f32542e7c55f02b13cedbab3efe77a5ec270965b20336f",
+      "executionContext": "require_escalated public network",
+      "pdfExtracted": true,
+      "bijieTermCount": 14,
+      "matchingRegistrationTablePages": [
+        {
+          "pdfPageNumber": 14,
+          "tableDescription": "2024 real-estate registration operations by prefecture",
+          "bijieRow": [
+            "毕节市 756414 119838 513307 67629 63769"
+          ]
+        }
+      ],
+      "scope": "Bijie prefecture registration activity includes the city jurisdiction; not a parcel endpoint or proof of nationwide/citywide geometry coverage.",
+      "priorSourceCorrection": "The earlier cited 167-page registration guide contained no extractable Bijie reference, so it does not support the claimed city registration counter."
+    }
+  ]
+}

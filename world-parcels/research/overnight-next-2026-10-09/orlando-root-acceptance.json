@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T07:44:11.133463+00:00",
+  "sourceId": "orlando-ocpa-arcgis",
+  "descriptor": {
+    "id": "orlando-ocpa-arcgis",
+    "name": "Orlando Orange County assessment parcel polygons",
+    "adapter": "arcgis",
+    "endpoint": "https://vgispublic.ocpafl.org/server/rest/services/Webmap/PARCEL/MapServer/4",
+    "idField": "PARCEL",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "idPrefix": "US-ORANGE-COUNTY-PARCEL-",
+    "outFields": [
+      "OBJECTID",
+      "PARCEL"
+    ],
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "pageSize": 25,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 25,
+    "boundsSrid": 2236,
+    "boundsProjection": "+proj=tmerc +lat_0=24.3333333333333 +lon_0=-81 +k=0.999941177 +x_0=200000.0001016 +y_0=0 +datum=NAD83 +units=us-ft +no_defs +type=crs",
+    "countryCode": "US",
+    "metricSrid": 26917,
+    "cityIds": [
+      "orlando"
+    ],
+    "maxConcurrentQueries": 1,
+    "operator": "Orange County Property Appraiser",
+    "scope": "Six distinct Orange County assessment parcel polygons passed bounded public adapter qualification around the unchanged Orlando WUP settlement locator. Thirteen 0.001-degree cells contain the same large point-containing parcel; its complete footprint discovers six distinct parcels. All six native PARCEL strings passed fresh independent reads, forced one-feature pages and matching full geometry hashes. Exact-point containment, explicit absence and one-parcel proposal binding passed. Independent root EPSG:26917 full-polygon GEOS audit found no invalidity, duplicate geometry, overlap above 0.01 m² or operation errors. Assessment parcel references are not legal title; bounded evidence does not establish citywide completeness, survey accuracy or currentness.",
+    "stateCode": "FL",
+    "responseCrs": "EPSG:4326",
+    "parcelNumberField": "PARCEL",
+    "evidenceFile": "research/overnight-next-2026-10-09/orlando-root-acceptance.json",
+    "catalogueUrl": "https://webmap.ocpafl.org/search",
+    "attribution": "Orange County Property Appraiser · assessment parcel references · adapted",
+    "licenceNote": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public PARCEL/OBJECTID identifiers and geometry requested."
+  },
+  "workerQualification": "orlando-runtime-qualification.json",
+  "rootIndependentProbe": "orlando-root-independent-probe.json",
+  "rootQualityFile": "orlando-root-quality.json",
+  "excludedProbes": "orlando-runtime-excluded-probes.json",
+  "rootReviewedAt": "2026-10-09T07:44:11.133463+00:00",
+  "qualityStatus": "approved_bounded_full_geometry",
+  "scope": "Six distinct Orange County assessment parcel polygons passed bounded public adapter qualification around the unchanged Orlando WUP settlement locator. Thirteen 0.001-degree cells contain the same large point-containing parcel; its complete footprint discovers six distinct parcels. All six native PARCEL strings passed fresh independent reads, forced one-feature pages and matching full geometry hashes. Exact-point containment, explicit absence and one-parcel proposal binding passed. Independent root EPSG:26917 full-polygon GEOS audit found no invalidity, duplicate geometry, overlap above 0.01 m² or operation errors. Assessment parcel references are not legal title; bounded evidence does not establish citywide completeness, survey accuracy or currentness.",
+  "sourceGeometryWgs84Sha256": "5c812259141734c2f8b2e87660c7e38c1e7a3d1f68bb8823fedcdf6c3d0256bb",
+  "protocolRequestCount": 75,
+  "rootIndependentRequestCount": 14,
+  "qualifiedUniqueParcels": 6,
+  "geometryChangedOrRepaired": false
+}

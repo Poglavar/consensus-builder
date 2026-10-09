@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T08:50:28.013277+00:00",
+  "city": "Jundiaí",
+  "appCityId": "jundiai",
+  "sourceId": "br-jundiai-geojundiai-lotes-jund-gid",
+  "configuredCenterLatLon": [
+    -23.1976446911945,
+    -46.8554383147568
+  ],
+  "observedCenterLatLon": [
+    -23.197644944677982,
+    -46.85543954372407
+  ],
+  "centerPrecisionNote": "Leaflet screen-pixel rounding; configured WUP center unchanged.",
+  "zoom": 19,
+  "loadedParcelCount": 300,
+  "targetId": "BR-JUNDIAI-LOTES-JUND-GID-46298",
+  "pointerPosition": [
+    518,
+    587
+  ],
+  "detailsHeadingVerified": true,
+  "interaction": "Actual mouse move/down/up at native polygon screen location, then menu Details click.",
+  "uncaughtPageErrors": [],
+  "screenshot": "tmp/overnight-cities-2026-10-09/jundiai-parcel-details.png",
+  "geometryChangedOrRepaired": false,
+  "browserSession": "jundiai-ui",
+  "browserClosed": true,
+  "readOnlyPreview": true,
+  "productionDeployment": false,
+  "basemapVisualInspection": "Screenshot shows loaded OSM street map throughout viewport beneath native lot outlines and selected parcel fill."
+}

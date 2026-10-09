@@ -13926,6 +13926,168 @@
       "cityScopes": {
         "wup2025:1381": "51 valid, distinct native EGiB parcel polygons across thirteen bounded cells around the unchanged Poznań WUP settlement locator. Before/after hit counts, all feature pages, forced three-row pagination, fresh exact reads of every ID, explicit absence, footprint lookup and one-parcel proposal binding pass. Independent EPSG:2180 full-polygon topology audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. This verifies bounded reference geometry, without asserting whole-city completeness."
       }
+    },
+    {
+      "sourceId": "orlando-ocpa-arcgis",
+      "name": "Orlando Orange County assessment parcel polygons",
+      "operator": "Orange County Property Appraiser",
+      "countryCode": "US",
+      "scope": "Six distinct Orange County assessment parcel polygons passed bounded public adapter qualification around the unchanged Orlando WUP settlement locator. Thirteen 0.001-degree cells contain the same large point-containing parcel; its complete footprint discovers six distinct parcels. All six native PARCEL strings passed fresh independent reads, forced one-feature pages and matching full geometry hashes. Exact-point containment, explicit absence and one-parcel proposal binding passed. Independent root EPSG:26917 full-polygon GEOS audit found no invalidity, duplicate geometry, overlap above 0.01 m² or operation errors. Assessment parcel references are not legal title; bounded evidence does not establish citywide completeness, survey accuracy or currentness.",
+      "endpoint": "https://vgispublic.ocpafl.org/server/rest/services/Webmap/PARCEL/MapServer/4",
+      "method": "Public bounded real-adapter qualification, independent native ID rereads, explicit absence, footprint and binding",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:2236 native bounds; EPSG:4326 output; EPSG:26917 independent metric audit",
+      "reuseStatus": "Source conditions and data age are informational. Legal title and survey accuracy unverified; only public PARCEL/OBJECTID identifiers and geometry requested.",
+      "evidenceFile": "research/overnight-next-2026-10-09/orlando-root-acceptance.json",
+      "verifiedCityIds": [
+        "wup2025:7432"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "orlando"
+        ],
+        "evidenceFile": "research/overnight-next-2026-10-09/orlando-root-acceptance.json"
+      },
+      "cityScopes": {
+        "wup2025:7432": "Six distinct Orange County assessment parcel polygons passed bounded public adapter qualification around the unchanged Orlando WUP settlement locator. Thirteen 0.001-degree cells contain the same large point-containing parcel; its complete footprint discovers six distinct parcels. All six native PARCEL strings passed fresh independent reads, forced one-feature pages and matching full geometry hashes. Exact-point containment, explicit absence and one-parcel proposal binding passed. Independent root EPSG:26917 full-polygon GEOS audit found no invalidity, duplicate geometry, overlap above 0.01 m² or operation errors. Assessment parcel references are not legal title; bounded evidence does not establish citywide completeness, survey accuracy or currentness."
+      }
+    },
+    {
+      "sourceId": "ie-tailte-hvd-freehold",
+      "name": "Dublin Tailte Éireann freehold cadastral parcels",
+      "operator": "Tailte Éireann",
+      "countryCode": "IE",
+      "scope": "Public Tailte Éireann freehold title parcel boundaries only; leasehold and unregistered land are outside this layer. Thirteen aligned cells around the unchanged Dublin WUP locator returned 113 unique full polygons with stable count/OID manifests, forced one-feature paging and 113 matching fresh native SP_ID reads. Root independently confirmed native lookup, explicit absence, center-cell completeness, full-parcel footprint binding and zero invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors in EPSG:2157. The WUP point is outside freehold polygons; the nearest verified parcel is 31.027 m away. Bounded evidence does not establish citywide completeness, survey precision, exclusive legal ownership or currency.",
+      "endpoint": "https://services-eu1.arcgis.com/FH5XCsx8rYXqnjF5/arcgis/rest/services/Cadastral_Parcels_Freehold/FeatureServer/12",
+      "method": "Public bounded real-adapter qualification and independent root full-parcel review",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:2157 native; EPSG:4326 output",
+      "reuseStatus": "Published national High Value Dataset. Source terms, title certainty and currentness are informational; only public OBJECTID/SP_ID and geometry requested.",
+      "evidenceFile": "research/country-integration-audit-2026-10-09/dublin-root-acceptance.json",
+      "verifiedCityIds": [
+        "wup2025:377"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "dublin"
+        ],
+        "evidenceFile": "research/country-integration-audit-2026-10-09/dublin-root-acceptance.json"
+      },
+      "cityScopes": {
+        "wup2025:377": "Public Tailte Éireann freehold title parcel boundaries only; leasehold and unregistered land are outside this layer. Thirteen aligned cells around the unchanged Dublin WUP locator returned 113 unique full polygons with stable count/OID manifests, forced one-feature paging and 113 matching fresh native SP_ID reads. Root independently confirmed native lookup, explicit absence, center-cell completeness, full-parcel footprint binding and zero invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors in EPSG:2157. The WUP point is outside freehold polygons; the nearest verified parcel is 31.027 m away. Bounded evidence does not establish citywide completeness, survey precision, exclusive legal ownership or currency."
+      }
+    },
+    {
+      "sourceId": "lv-vzd-geolatvija-vraa-wfs",
+      "name": "Riga public cadastral parcel polygons",
+      "operator": "State Land Service of Latvia / Geolatvija",
+      "countryCode": "LV",
+      "scope": "Public cadastral parcel geometry around the unchanged Riga WUP settlement locator. Thirteen aligned cells and 113 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:3059 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The WUP locator is covered by LV-VZD-01000210029. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness.",
+      "endpoint": "https://geolatvija.lv/geoserver/vraa/wfs",
+      "method": "Public bounded real-adapter qualification and independent root full-polygon review",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:3059 native; WGS84 runtime output",
+      "reuseStatus": "Publisher conditions, legal effect and update schedule are informational. Public native parcel IDs and geometry only; ownership is not imported.",
+      "evidenceFile": "research/country-integration-audit-2026-10-09/riga-root-acceptance.json",
+      "verifiedCityIds": [
+        "wup2025:260"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "riga"
+        ],
+        "evidenceFile": "research/country-integration-audit-2026-10-09/riga-root-acceptance.json"
+      },
+      "cityScopes": {
+        "wup2025:260": "Public cadastral parcel geometry around the unchanged Riga WUP settlement locator. Thirteen aligned cells and 113 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:3059 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The WUP locator is covered by LV-VZD-01000210029. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness."
+      }
+    },
+    {
+      "sourceId": "ee-maaamet-kataster-wfs",
+      "name": "Tallinn public cadastral parcel polygons",
+      "operator": "Estonian Land and Spatial Development Board / public cadastral WFS",
+      "countryCode": "EE",
+      "scope": "Public cadastral parcel geometry around the unchanged Tallinn WUP settlement locator. Thirteen aligned cells and 60 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:3301 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The WUP locator is covered by EE-KATASTER-78401:109:0710. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness.",
+      "endpoint": "https://gsavalik.envir.ee/geoserver/kataster/wfs",
+      "method": "Public bounded real-adapter qualification and independent root full-polygon review",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:3301 native; WGS84 runtime output",
+      "reuseStatus": "Publisher conditions, legal effect and update schedule are informational. Public native parcel IDs and geometry only; ownership is not imported.",
+      "evidenceFile": "research/country-integration-audit-2026-10-09/tallinn-root-acceptance.json",
+      "verifiedCityIds": [
+        "wup2025:91"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "tallinn"
+        ],
+        "evidenceFile": "research/country-integration-audit-2026-10-09/tallinn-root-acceptance.json"
+      },
+      "cityScopes": {
+        "wup2025:91": "Public cadastral parcel geometry around the unchanged Tallinn WUP settlement locator. Thirteen aligned cells and 60 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:3301 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The WUP locator is covered by EE-KATASTER-78401:109:0710. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness."
+      }
+    },
+    {
+      "sourceId": "lt-inspire-cp-wfs",
+      "name": "Vilnius public cadastral parcel polygons",
+      "operator": "Lithuanian INSPIRE Geoportal / National Land Service",
+      "countryCode": "LT",
+      "scope": "Public cadastral parcel geometry around the unchanged Vilnius WUP settlement locator. Thirteen aligned cells and 7 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:32635 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The WUP locator is covered by LT-INSP-CADASTRAL-440051231650. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness.",
+      "endpoint": "https://www.inspire-geoportal.lt/geoserver/cp/ows",
+      "method": "Public bounded real-adapter qualification and independent root full-polygon review",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:4258 native; CRS:84 runtime output; EPSG:32635 metric calculations",
+      "reuseStatus": "Publisher conditions, legal effect and update schedule are informational. Public native parcel IDs and geometry only; ownership is not imported.",
+      "evidenceFile": "research/country-integration-audit-2026-10-09/vilnius-root-acceptance.json",
+      "verifiedCityIds": [
+        "wup2025:699"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "vilnius"
+        ],
+        "evidenceFile": "research/country-integration-audit-2026-10-09/vilnius-root-acceptance.json"
+      },
+      "cityScopes": {
+        "wup2025:699": "Public cadastral parcel geometry around the unchanged Vilnius WUP settlement locator. Thirteen aligned cells and 7 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:32635 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The WUP locator is covered by LT-INSP-CADASTRAL-440051231650. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness."
+      }
+    },
+    {
+      "sourceId": "br-jundiai-geojundiai-lotes-jund-gid",
+      "name": "Jundiaí public cadastral parcel polygons",
+      "operator": "Município de Jundiaí / GeoJundiaí",
+      "countryCode": "BR",
+      "scope": "Public cadastral parcel geometry around the unchanged Jundiaí WUP settlement locator. Thirteen aligned cells and 205 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:31983 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The exact unchanged WUP locator has no parcel hit in its containing cell; nearby public parcel BR-JUNDIAI-LOTES-JUND-GID-46298 supports complete one-parcel binding. Native gid identifies individual GIS ground polygons; the duplicate codlote business reference is not used as runtime identity. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness.",
+      "endpoint": "https://geo.jundiai.sp.gov.br/geoserver/ows",
+      "method": "Public bounded real-adapter qualification and independent root full-polygon review",
+      "responseFormat": "Canonical GeoJSON Polygon/MultiPolygon",
+      "crs": "EPSG:31983 native; CRS:84 runtime output and EPSG:31983 metric calculations",
+      "reuseStatus": "Publisher conditions, legal effect and update schedule are informational. Public native parcel IDs and geometry only; ownership is not imported.",
+      "evidenceFile": "research/overnight-next-2026-10-09/jundiai-root-acceptance.json",
+      "verifiedCityIds": [
+        "wup2025:7290"
+      ],
+      "verificationStatus": "verified_live_city_adapter",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "jundiai"
+        ],
+        "evidenceFile": "research/overnight-next-2026-10-09/jundiai-root-acceptance.json"
+      },
+      "cityScopes": {
+        "wup2025:7290": "Public cadastral parcel geometry around the unchanged Jundiaí WUP settlement locator. Thirteen aligned cells and 205 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:31983 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The exact unchanged WUP locator has no parcel hit in its containing cell; nearby public parcel BR-JUNDIAI-LOTES-JUND-GID-46298 supports complete one-parcel binding. Native gid identifies individual GIS ground polygons; the duplicate codlote business reference is not used as runtime identity. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness."
+      }
     }
   ],
   "countryCoverage": [
@@ -76202,6 +76364,2107 @@
           "pointBasis": "Exact unchanged UN WUP 2025 city point (latitude, longitude); not an administrative boundary or cadastral result."
         }
       }
+    },
+    {
+      "cityId": "wup2025:7432",
+      "researchOrder": 1214,
+      "wupCityCode": 7432,
+      "name": "Orlando",
+      "country": "United States of America",
+      "countryCode": "US",
+      "centerLatLon": [
+        28.5718526010057,
+        -81.3224429681126
+      ],
+      "checkedAt": "2026-10-09",
+      "rootReviewedAt": "2026-10-09T07:44:11.133463+00:00",
+      "registryFound": true,
+      "verifiedSample": true,
+      "publicParcelGeometryFound": true,
+      "runtimeReadiness": "enabled",
+      "runtimeAssessment": {
+        "status": "enabled",
+        "reason": "Six distinct Orange County assessment parcel polygons passed bounded public adapter qualification around the unchanged Orlando WUP settlement locator. Thirteen 0.001-degree cells contain the same large point-containing parcel; its complete footprint discovers six distinct parcels. All six native PARCEL strings passed fresh independent reads, forced one-feature pages and matching full geometry hashes. Exact-point containment, explicit absence and one-parcel proposal binding passed. Independent root EPSG:26917 full-polygon GEOS audit found no invalidity, duplicate geometry, overlap above 0.01 m² or operation errors. Assessment parcel references are not legal title; bounded evidence does not establish citywide completeness, survey accuracy or currentness."
+      },
+      "coverageAssessment": {
+        "claimedScope": "Orange County Property Appraiser maintains the official county assessment parcel map. This is local assessor parcel coverage, not a title-registration extract.",
+        "verifiedOpenScope": "Six distinct Orange County assessment parcel polygons passed bounded public adapter qualification around the unchanged Orlando WUP settlement locator. Thirteen 0.001-degree cells contain the same large point-containing parcel; its complete footprint discovers six distinct parcels. All six native PARCEL strings passed fresh independent reads, forced one-feature pages and matching full geometry hashes. Exact-point containment, explicit absence and one-parcel proposal binding passed. Independent root EPSG:26917 full-polygon GEOS audit found no invalidity, duplicate geometry, overlap above 0.01 m² or operation errors. Assessment parcel references are not legal title; bounded evidence does not establish citywide completeness, survey accuracy or currentness.",
+        "countrywideVerified": false,
+        "citywideVerified": false
+      },
+      "resultCategory": "verified_public_parcel_geometry_runtime_enabled",
+      "technicalBlocker": null,
+      "population2025": 477249,
+      "populationPlausibility2025": "Moderate",
+      "appCityId": "orlando",
+      "checked": true,
+      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "registryGeometryFound": true,
+      "researchFile": "research/overnight-next-2026-10-09/city-7432-orlando.json",
+      "latestAssessmentFile": "research/overnight-next-2026-10-09/city-7432-orlando.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "orlando-ocpa-arcgis"
+      ],
+      "aliases": [
+        "wup2025:7432",
+        "Orlando"
+      ],
+      "populationUnit": "persons",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Orange County Property Appraiser maintains the official county assessment parcel map. This is local assessor parcel coverage, not a title-registration extract.",
+        "registryEvidenceUrls": [
+          "https://ocpaweb.ocpafl.org/?act=home",
+          "https://webmap.ocpafl.org/search",
+          "https://vgispublic.ocpafl.org/server/rest/services/Webmap/PARCEL/MapServer/4"
+        ],
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true,
+        "runtimeReadiness": "enabled",
+        "registryGeometryFound": true,
+        "reason": "Six distinct Orange County assessment parcel polygons passed bounded public adapter qualification around the unchanged Orlando WUP settlement locator. Thirteen 0.001-degree cells contain the same large point-containing parcel; its complete footprint discovers six distinct parcels. All six native PARCEL strings passed fresh independent reads, forced one-feature pages and matching full geometry hashes. Exact-point containment, explicit absence and one-parcel proposal binding passed. Independent root EPSG:26917 full-polygon GEOS audit found no invalidity, duplicate geometry, overlap above 0.01 m² or operation errors. Assessment parcel references are not legal title; bounded evidence does not establish citywide completeness, survey accuracy or currentness."
+      },
+      "populationResearch": {
+        "overnightNext": {
+          "cohort": "overnight-next-1101-1200",
+          "queueRank": 1165,
+          "wupCityCode": 7432,
+          "population2025": 477249,
+          "populationPlausibility2025": "Moderate",
+          "populationUnit": "persons",
+          "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+          "populationSourceUnit": "source Pop is in thousands; this record stores persons",
+          "evidenceFile": "research/overnight-next-2026-10-09/city-7432-orlando.json",
+          "checkedAt": "2026-10-09",
+          "rootReviewedAt": "2026-10-09T07:44:11.133463+00:00",
+          "pointBasis": "Exact unchanged UN WUP 2025 city point (latitude, longitude); not an administrative boundary or cadastral result."
+        }
+      }
+    },
+    {
+      "cityId": "wup2025:5621",
+      "researchOrder": 1215,
+      "wupCityCode": 5621,
+      "name": "Provo",
+      "country": "United States of America",
+      "countryCode": "US",
+      "centerLatLon": [
+        40.3078525920474,
+        -111.714794014436
+      ],
+      "checkedAt": "2026-10-09",
+      "rootReviewedAt": "2026-10-09T07:54:05.936008+00:00",
+      "registryFound": true,
+      "verifiedSample": true,
+      "publicParcelGeometryFound": true,
+      "runtimeReadiness": "held_native_geometry_conflicts",
+      "runtimeAssessment": {
+        "status": "held_native_geometry_conflicts",
+        "reason": "The Utah County public 4K assessment-map layer returns full point-containing parcel geometry and passes thirteen-cell count/OID manifests, forced small pages and fresh reads of all 157 native parcel IDs. Its complete polygons overlap: independent root EPSG:26912 GEOS audit records 183 pairs above 0.01 m², 787.125 m² aggregate overlap and no invalidity, duplicates or operation errors. The target-footprint proposal binds three parcels instead of one, including a material 9.44 m² intrusion. COGO completeness and an alternate profile transport failure are preserved separately. These are source-model/topology incompatibilities with exclusive parcel ground, not evidence of unavailable cadastre or absent public geometry."
+      },
+      "coverageAssessment": {
+        "claimedScope": "Utah County Government’s official GIS portal advertises its parcel map and nightly-updated Tax Parcel data combining Recorder parcel linework with Assessor detail. The official county `TaxParcels_mobile` MapServer layer 21 (`live_parcel_polygon`, 16K scale product) returned one full polygon at the unchanged WUP point with safe fields only. A separate Provo-hosted detailed polygon layer returned zero at that point and documents redundant condo geometries; therefore the county alternate is a concrete exact-point geometry candidate, but its scale-specific behavior and source consistency require root qualification before runtime.",
+        "verifiedOpenScope": "The official county layer 21 schema and one exact WUP polygon are verified; countywide/complete source coverage and runtime contract behavior are not. Separate Provo-hosted detailed layer returned zero at exact point.",
+        "countrywideVerified": false,
+        "citywideVerified": false
+      },
+      "resultCategory": "verified_public_parcel_geometry_runtime_held",
+      "technicalBlocker": "The Utah County public 4K assessment-map layer returns full point-containing parcel geometry and passes thirteen-cell count/OID manifests, forced small pages and fresh reads of all 157 native parcel IDs. Its complete polygons overlap: independent root EPSG:26912 GEOS audit records 183 pairs above 0.01 m², 787.125 m² aggregate overlap and no invalidity, duplicates or operation errors. The target-footprint proposal binds three parcels instead of one, including a material 9.44 m² intrusion. COGO completeness and an alternate profile transport failure are preserved separately. These are source-model/topology incompatibilities with exclusive parcel ground, not evidence of unavailable cadastre or absent public geometry.",
+      "population2025": 488429,
+      "populationPlausibility2025": "Moderate",
+      "checked": true,
+      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "registryGeometryFound": true,
+      "researchFile": "research/overnight-next-2026-10-09/city-5621-provo.json",
+      "latestAssessmentFile": "research/overnight-next-2026-10-09/city-5621-provo.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [],
+      "aliases": [
+        "wup2025:5621",
+        "Provo"
+      ],
+      "populationUnit": "persons",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Utah County Government identifies its GIS Division as serving the county and publishes the Tax Parcel dataset, refreshed nightly and combining Recorder parcel linework with Assessor detail. The official local-authority map-service layer is county-wide and includes Provo; one exact-WUP-point polygon was verified. This is a public parcel source, but the map-service layer is a 16K-scale product and does not alone establish a production-ready feed.",
+        "registryEvidenceUrls": [
+          "https://gispublicweb.provo.gov/ArcGIS/rest/services/Parcel/MapServer/1",
+          "https://is.utahcounty.gov/gis/maps",
+          "https://provo.gov/891/GIS"
+        ],
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true,
+        "runtimeReadiness": "held_native_geometry_conflicts",
+        "registryGeometryFound": true,
+        "reason": "The Utah County public 4K assessment-map layer returns full point-containing parcel geometry and passes thirteen-cell count/OID manifests, forced small pages and fresh reads of all 157 native parcel IDs. Its complete polygons overlap: independent root EPSG:26912 GEOS audit records 183 pairs above 0.01 m², 787.125 m² aggregate overlap and no invalidity, duplicates or operation errors. The target-footprint proposal binds three parcels instead of one, including a material 9.44 m² intrusion. COGO completeness and an alternate profile transport failure are preserved separately. These are source-model/topology incompatibilities with exclusive parcel ground, not evidence of unavailable cadastre or absent public geometry."
+      },
+      "populationResearch": {
+        "overnightNext": {
+          "cohort": "overnight-next-1101-1200",
+          "queueRank": 1136,
+          "wupCityCode": 5621,
+          "population2025": 488429,
+          "populationPlausibility2025": "Moderate",
+          "populationUnit": "persons",
+          "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+          "populationSourceUnit": "source Pop is in thousands; this record stores persons",
+          "evidenceFile": "research/overnight-next-2026-10-09/city-5621-provo.json",
+          "checkedAt": "2026-10-09",
+          "rootReviewedAt": "2026-10-09T07:54:05.936008+00:00",
+          "pointBasis": "Exact unchanged UN WUP 2025 city point (latitude, longitude); not an administrative boundary or a cadastral result."
+        }
+      }
+    },
+    {
+      "cityId": "wup2025:377",
+      "wupCityCode": 377,
+      "name": "Dublin",
+      "country": "Ireland",
+      "countryCode": "IE",
+      "centerLatLon": [
+        53.330243126706,
+        -6.27332800239088
+      ],
+      "checkedAt": "2026-10-09T08:12:06.378767+00:00",
+      "rootReviewedAt": "2026-10-09T08:12:06.378767+00:00",
+      "checked": true,
+      "registryFound": true,
+      "registryGeometryFound": true,
+      "verifiedSample": true,
+      "publicParcelGeometryFound": true,
+      "runtimeReadiness": "enabled",
+      "runtimeAssessment": {
+        "status": "enabled",
+        "reason": "Public Tailte Éireann freehold title parcel boundaries only; leasehold and unregistered land are outside this layer. Thirteen aligned cells around the unchanged Dublin WUP locator returned 113 unique full polygons with stable count/OID manifests, forced one-feature paging and 113 matching fresh native SP_ID reads. Root independently confirmed native lookup, explicit absence, center-cell completeness, full-parcel footprint binding and zero invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors in EPSG:2157. The WUP point is outside freehold polygons; the nearest verified parcel is 31.027 m away. Bounded evidence does not establish citywide completeness, survey precision, exclusive legal ownership or currency."
+      },
+      "coverageAssessment": {
+        "claimedScope": "National freehold title boundaries only",
+        "verifiedOpenScope": "Public Tailte Éireann freehold title parcel boundaries only; leasehold and unregistered land are outside this layer. Thirteen aligned cells around the unchanged Dublin WUP locator returned 113 unique full polygons with stable count/OID manifests, forced one-feature paging and 113 matching fresh native SP_ID reads. Root independently confirmed native lookup, explicit absence, center-cell completeness, full-parcel footprint binding and zero invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors in EPSG:2157. The WUP point is outside freehold polygons; the nearest verified parcel is 31.027 m away. Bounded evidence does not establish citywide completeness, survey precision, exclusive legal ownership or currency.",
+        "countrywideVerified": false,
+        "citywideVerified": false
+      },
+      "resultCategory": "verified_public_parcel_geometry_runtime_enabled",
+      "technicalBlocker": null,
+      "population2025": 1142650,
+      "appCityId": "dublin",
+      "citySource": "UN DESA WUP 2025 exact city code 377, settlement locator not municipal boundary",
+      "researchFile": "research/country-integration-audit-2026-10-09/dublin-root-acceptance.json",
+      "latestAssessmentFile": "research/country-integration-audit-2026-10-09/dublin-root-acceptance.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "ie-tailte-hvd-freehold"
+      ],
+      "aliases": [
+        "wup2025:377",
+        "Dublin"
+      ],
+      "dataFindings": {
+        "registryFound": true,
+        "registryGeometryFound": true,
+        "publicParcelGeometryFound": true,
+        "verifiedSample": true,
+        "runtimeReadiness": "enabled",
+        "registryBasis": "Tailte Éireann publishes freehold title boundaries",
+        "reason": "Public Tailte Éireann freehold title parcel boundaries only; leasehold and unregistered land are outside this layer. Thirteen aligned cells around the unchanged Dublin WUP locator returned 113 unique full polygons with stable count/OID manifests, forced one-feature paging and 113 matching fresh native SP_ID reads. Root independently confirmed native lookup, explicit absence, center-cell completeness, full-parcel footprint binding and zero invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors in EPSG:2157. The WUP point is outside freehold polygons; the nearest verified parcel is 31.027 m away. Bounded evidence does not establish citywide completeness, survey precision, exclusive legal ownership or currency."
+      },
+      "researchContinuation": "Requalification of previously attempted IE country-source sample; excluded from fresh population-cohort investigation counts."
+    },
+    {
+      "cityId": "wup2025:5191",
+      "researchOrder": 1216,
+      "wupCityCode": 5191,
+      "name": "Palma de Mallorca",
+      "country": "Spain",
+      "countryCode": "ES",
+      "centerLatLon": [
+        39.5730201363164,
+        2.65959892235363
+      ],
+      "checkedAt": "2026-10-09",
+      "rootReviewedAt": "2026-10-09T08:16:47.193300+00:00",
+      "registryFound": true,
+      "verifiedSample": true,
+      "publicParcelGeometryFound": true,
+      "runtimeReadiness": "held_protocol_and_native_precision_review",
+      "runtimeAssessment": {
+        "status": "held_protocol_and_native_precision_review",
+        "reason": "Official DGC INSPIRE WFS returned 231 unique nearby Palma polygons from 13 complete WUP-centered cells, with all 231 fresh exact-ID reads. WUP point uncovered; nearest parcel is 8.246 m away, which is not city absence or an admission gate. Root GEOS EPSG:25831 audit found all polygons valid, no duplicates or operation errors, and two small positive overlaps totaling 0.02895 m² above the current 0.01 m² threshold. Exact reads use EPSG:25830 and differ after reprojection by up to 10.18 mm. Existing-adapter explicit absence is still unverified because both attempts reset before HTTP; the provider-level separate no-match response is not adapter proof. Hold runtime admission pending protocol and precision review; public geometry is verified."
+      },
+      "coverageAssessment": {
+        "claimedScope": "The official Spanish DGC INSPIRE public cadastral parcel layer returned complete local geometry around the unchanged Palma WUP point in 13 bounded viewport queries; this verifies local service access only.",
+        "verifiedOpenScope": "All 13 bounded cells were complete (302 returns; 231 unique IDs) and all 231 IDs were freshly read by a new sequential adapter instance. Native GEOS found 231 valid polygons and no WUP-point coverage; the nearest is 8.246 m away. Only 3 nearest full polygons are retained.",
+        "countrywideVerified": false,
+        "citywideVerified": false,
+        "geometryVerified": true,
+        "wupPointCovered": false
+      },
+      "resultCategory": "verified_public_geometry_runtime_held",
+      "technicalBlocker": "Existing-adapter explicit absence remains unverified; tiny native coordinate overlaps and cross-CRS exact-read precision require runtime review.",
+      "population2025": 473499,
+      "populationPlausibility2025": "Moderate",
+      "checked": true,
+      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "registryGeometryFound": true,
+      "researchFile": "research/overnight-next-2026-10-09/city-5191-palma-de-mallorca.json",
+      "latestAssessmentFile": "research/overnight-next-2026-10-09/city-5191-palma-de-mallorca.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [],
+      "aliases": [
+        "wup2025:5191",
+        "Palma de Mallorca"
+      ],
+      "populationUnit": "persons",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Official Spanish DGC INSPIRE CadastralParcel service returned local parcel polygons and identifiers over Palma; this supports city-jurisdictional cadastral custody and nearby geometry, not citywide completeness or exact WUP-point coverage.",
+        "registryEvidenceUrls": [
+          "https://www.catastro.hacienda.gob.es/es-ES/sede.html",
+          "https://www.catastro.hacienda.gob.es/webinspire/index.html",
+          "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx"
+        ],
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true,
+        "runtimeReadiness": "held_protocol_and_native_precision_review",
+        "registryGeometryFound": true,
+        "reason": "Official DGC INSPIRE WFS returned 231 unique nearby Palma polygons from 13 complete WUP-centered cells, with all 231 fresh exact-ID reads. WUP point uncovered; nearest parcel is 8.246 m away, which is not city absence or an admission gate. Root GEOS EPSG:25831 audit found all polygons valid, no duplicates or operation errors, and two small positive overlaps totaling 0.02895 m² above the current 0.01 m² threshold. Exact reads use EPSG:25830 and differ after reprojection by up to 10.18 mm. Existing-adapter explicit absence is still unverified because both attempts reset before HTTP; the provider-level separate no-match response is not adapter proof. Hold runtime admission pending protocol and precision review; public geometry is verified."
+      },
+      "populationResearch": {
+        "overnightNext": {
+          "cohort": "overnight-next-1101-1200",
+          "queueRank": 1173,
+          "wupCityCode": 5191,
+          "population2025": 473499,
+          "populationPlausibility2025": "Moderate",
+          "populationUnit": "persons",
+          "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+          "populationSourceUnit": "source Pop is in thousands; this record stores persons",
+          "evidenceFile": "research/overnight-next-2026-10-09/city-5191-palma-de-mallorca.json",
+          "checkedAt": "2026-10-09",
+          "rootReviewedAt": "2026-10-09T08:16:47.193300+00:00",
+          "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result."
+        }
+      }
+    },
+    {
+      "cityId": "wup2025:260",
+      "wupCityCode": 260,
+      "name": "Riga",
+      "country": "Latvia",
+      "countryCode": "LV",
+      "centerLatLon": [
+        56.9551247864813,
+        24.1200225203638
+      ],
+      "checkedAt": "2026-10-09T08:30:45.684495+00:00",
+      "rootReviewedAt": "2026-10-09T08:30:45.684495+00:00",
+      "checked": true,
+      "registryFound": true,
+      "registryGeometryFound": true,
+      "verifiedSample": true,
+      "publicParcelGeometryFound": true,
+      "runtimeReadiness": "enabled",
+      "runtimeAssessment": {
+        "status": "enabled",
+        "reason": "Public cadastral parcel geometry around the unchanged Riga WUP settlement locator. Thirteen aligned cells and 113 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:3059 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The WUP locator is covered by LV-VZD-01000210029. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness."
+      },
+      "coverageAssessment": {
+        "claimedScope": "Public cadastral parcels",
+        "verifiedOpenScope": "Public cadastral parcel geometry around the unchanged Riga WUP settlement locator. Thirteen aligned cells and 113 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:3059 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The WUP locator is covered by LV-VZD-01000210029. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness.",
+        "countrywideVerified": false,
+        "citywideVerified": false
+      },
+      "resultCategory": "verified_public_parcel_geometry_runtime_enabled",
+      "technicalBlocker": null,
+      "population2025": 550267,
+      "appCityId": "riga",
+      "citySource": "UN DESA WUP 2025 exact city code 260, settlement locator not municipal boundary",
+      "researchFile": "research/country-integration-audit-2026-10-09/riga-root-acceptance.json",
+      "latestAssessmentFile": "research/country-integration-audit-2026-10-09/riga-root-acceptance.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "lv-vzd-geolatvija-vraa-wfs"
+      ],
+      "aliases": [
+        "wup2025:260",
+        "Riga"
+      ],
+      "dataFindings": {
+        "registryFound": true,
+        "registryGeometryFound": true,
+        "publicParcelGeometryFound": true,
+        "verifiedSample": true,
+        "runtimeReadiness": "enabled",
+        "registryBasis": "State Land Service of Latvia / Geolatvija publishes public cadastral parcels",
+        "reason": "Public cadastral parcel geometry around the unchanged Riga WUP settlement locator. Thirteen aligned cells and 113 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:3059 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The WUP locator is covered by LV-VZD-01000210029. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness."
+      },
+      "researchContinuation": "Requalification of previously attempted country/capital source; excluded from fresh population-cohort investigation counts."
+    },
+    {
+      "cityId": "wup2025:91",
+      "wupCityCode": 91,
+      "name": "Tallinn",
+      "country": "Estonia",
+      "countryCode": "EE",
+      "centerLatLon": [
+        59.4231329005097,
+        24.7413568470487
+      ],
+      "checkedAt": "2026-10-09T08:30:45.684495+00:00",
+      "rootReviewedAt": "2026-10-09T08:30:45.684495+00:00",
+      "checked": true,
+      "registryFound": true,
+      "registryGeometryFound": true,
+      "verifiedSample": true,
+      "publicParcelGeometryFound": true,
+      "runtimeReadiness": "enabled",
+      "runtimeAssessment": {
+        "status": "enabled",
+        "reason": "Public cadastral parcel geometry around the unchanged Tallinn WUP settlement locator. Thirteen aligned cells and 60 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:3301 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The WUP locator is covered by EE-KATASTER-78401:109:0710. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness."
+      },
+      "coverageAssessment": {
+        "claimedScope": "Public cadastral parcels",
+        "verifiedOpenScope": "Public cadastral parcel geometry around the unchanged Tallinn WUP settlement locator. Thirteen aligned cells and 60 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:3301 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The WUP locator is covered by EE-KATASTER-78401:109:0710. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness.",
+        "countrywideVerified": false,
+        "citywideVerified": false
+      },
+      "resultCategory": "verified_public_parcel_geometry_runtime_enabled",
+      "technicalBlocker": null,
+      "population2025": 439526,
+      "appCityId": "tallinn",
+      "citySource": "UN DESA WUP 2025 exact city code 91, settlement locator not municipal boundary",
+      "researchFile": "research/country-integration-audit-2026-10-09/tallinn-root-acceptance.json",
+      "latestAssessmentFile": "research/country-integration-audit-2026-10-09/tallinn-root-acceptance.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "ee-maaamet-kataster-wfs"
+      ],
+      "aliases": [
+        "wup2025:91",
+        "Tallinn"
+      ],
+      "dataFindings": {
+        "registryFound": true,
+        "registryGeometryFound": true,
+        "publicParcelGeometryFound": true,
+        "verifiedSample": true,
+        "runtimeReadiness": "enabled",
+        "registryBasis": "Estonian Land and Spatial Development Board / public cadastral WFS publishes public cadastral parcels",
+        "reason": "Public cadastral parcel geometry around the unchanged Tallinn WUP settlement locator. Thirteen aligned cells and 60 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:3301 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The WUP locator is covered by EE-KATASTER-78401:109:0710. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness."
+      },
+      "researchContinuation": "Requalification of previously attempted country/capital source; excluded from fresh population-cohort investigation counts."
+    },
+    {
+      "cityId": "wup2025:699",
+      "wupCityCode": 699,
+      "name": "Vilnius",
+      "country": "Lithuania",
+      "countryCode": "LT",
+      "centerLatLon": [
+        54.695435447302,
+        25.2704077979851
+      ],
+      "checkedAt": "2026-10-09T08:42:05.525724+00:00",
+      "rootReviewedAt": "2026-10-09T08:42:05.525724+00:00",
+      "checked": true,
+      "registryFound": true,
+      "registryGeometryFound": true,
+      "verifiedSample": true,
+      "publicParcelGeometryFound": true,
+      "runtimeReadiness": "enabled",
+      "runtimeAssessment": {
+        "status": "enabled",
+        "reason": "Public cadastral parcel geometry around the unchanged Vilnius WUP settlement locator. Thirteen aligned cells and 7 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:32635 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The WUP locator is covered by LT-INSP-CADASTRAL-440051231650. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness."
+      },
+      "coverageAssessment": {
+        "claimedScope": "Public cadastral parcels",
+        "verifiedOpenScope": "Public cadastral parcel geometry around the unchanged Vilnius WUP settlement locator. Thirteen aligned cells and 7 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:32635 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The WUP locator is covered by LT-INSP-CADASTRAL-440051231650. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness.",
+        "countrywideVerified": false,
+        "citywideVerified": false
+      },
+      "resultCategory": "verified_public_parcel_geometry_runtime_enabled",
+      "technicalBlocker": null,
+      "population2025": 337871,
+      "appCityId": "vilnius",
+      "citySource": "UN DESA WUP 2025 exact city code 699, settlement locator not municipal boundary",
+      "researchFile": "research/country-integration-audit-2026-10-09/vilnius-root-acceptance.json",
+      "latestAssessmentFile": "research/country-integration-audit-2026-10-09/vilnius-root-acceptance.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "lt-inspire-cp-wfs"
+      ],
+      "aliases": [
+        "wup2025:699",
+        "Vilnius"
+      ],
+      "dataFindings": {
+        "registryFound": true,
+        "registryGeometryFound": true,
+        "publicParcelGeometryFound": true,
+        "verifiedSample": true,
+        "runtimeReadiness": "enabled",
+        "registryBasis": "Lithuanian INSPIRE Geoportal / National Land Service publishes public cadastral parcels",
+        "reason": "Public cadastral parcel geometry around the unchanged Vilnius WUP settlement locator. Thirteen aligned cells and 7 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:32635 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The WUP locator is covered by LT-INSP-CADASTRAL-440051231650. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness."
+      },
+      "researchContinuation": "Requalification of previously attempted country/capital source; excluded from fresh population-cohort investigation counts."
+    },
+    {
+      "cityId": "wup2025:7290",
+      "wupCityCode": 7290,
+      "name": "Jundiaí",
+      "country": "Brazil",
+      "countryCode": "BR",
+      "centerLatLon": [
+        -23.1976446911945,
+        -46.8554383147568
+      ],
+      "checkedAt": "2026-10-09",
+      "rootReviewedAt": "2026-10-09T08:47:00.804712+00:00",
+      "checked": true,
+      "registryFound": true,
+      "registryGeometryFound": true,
+      "verifiedSample": true,
+      "publicParcelGeometryFound": true,
+      "runtimeReadiness": "enabled",
+      "runtimeAssessment": {
+        "status": "enabled",
+        "reason": "Public cadastral parcel geometry around the unchanged Jundiaí WUP settlement locator. Thirteen aligned cells and 205 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:31983 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The exact unchanged WUP locator has no parcel hit in its containing cell; nearby public parcel BR-JUNDIAI-LOTES-JUND-GID-46298 supports complete one-parcel binding. Native gid identifies individual GIS ground polygons; the duplicate codlote business reference is not used as runtime identity. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness."
+      },
+      "coverageAssessment": {
+        "claimedScope": "Public municipal GIS lot polygons",
+        "verifiedOpenScope": "Public cadastral parcel geometry around the unchanged Jundiaí WUP settlement locator. Thirteen aligned cells and 205 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:31983 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The exact unchanged WUP locator has no parcel hit in its containing cell; nearby public parcel BR-JUNDIAI-LOTES-JUND-GID-46298 supports complete one-parcel binding. Native gid identifies individual GIS ground polygons; the duplicate codlote business reference is not used as runtime identity. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness.",
+        "countrywideVerified": false,
+        "citywideVerified": false,
+        "exactWupPointCovered": false,
+        "pointZeroMeansNoParcel": false
+      },
+      "resultCategory": "verified_public_parcel_geometry_runtime_enabled",
+      "technicalBlocker": null,
+      "population2025": 465531,
+      "appCityId": "jundiai",
+      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "researchFile": "research/overnight-next-2026-10-09/city-7290-jundiai.json",
+      "latestAssessmentFile": "research/overnight-next-2026-10-09/city-7290-jundiai.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "br-jundiai-geojundiai-lotes-jund-gid"
+      ],
+      "aliases": [
+        "wup2025:7290",
+        "Jundiaí"
+      ],
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Official GeoJundiaí municipal WFS publishes public lot geometry; stable unique gid in GeoJundiai:lotes_jund identifies full ground polygons independently of the duplicate codlote label.",
+        "registryEvidenceUrls": [
+          "https://geo.jundiai.sp.gov.br/geoserver/ows",
+          "https://geo.jundiai.sp.gov.br/geojundiai/cfImob.jsp",
+          "https://geo.jundiai.sp.gov.br/geojundiai/?apenas_conteudo=S",
+          "https://jundiai.sp.gov.br/planejamento-e-meio-ambiente/geoinformacao/"
+        ],
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true,
+        "runtimeReadiness": "enabled",
+        "registryGeometryFound": true,
+        "reason": "Public cadastral parcel geometry around the unchanged Jundiaí WUP settlement locator. Thirteen aligned cells and 205 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:31983 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The exact unchanged WUP locator has no parcel hit in its containing cell; nearby public parcel BR-JUNDIAI-LOTES-JUND-GID-46298 supports complete one-parcel binding. Native gid identifies individual GIS ground polygons; the duplicate codlote business reference is not used as runtime identity. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness."
+      },
+      "researchContinuation": "Fresh rank1193 population-cohort investigation; root-reviewed municipal public geometry and qualified GIS gid identity.",
+      "populationPlausibility2025": "Moderate",
+      "populationUnit": "persons",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "populationResearch": {
+        "overnightNext": {
+          "cohort": "overnight-next-1101-1200",
+          "queueRank": 1193,
+          "wupCityCode": 7290,
+          "population2025": 465531,
+          "populationPlausibility2025": "Moderate",
+          "populationUnit": "persons",
+          "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+          "populationSourceUnit": "source Pop is in thousands; this record stores persons",
+          "evidenceFile": "research/overnight-next-2026-10-09/city-7290-jundiai.json",
+          "checkedAt": "2026-10-09",
+          "rootReviewedAt": "2026-10-09T08:47:00.804712+00:00",
+          "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result."
+        }
+      }
+    },
+    {
+      "cityId": "wup2025:7454",
+      "researchOrder": 1217,
+      "wupCityCode": 7454,
+      "name": "Chuxiong",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        25.03991885835,
+        101.551006942271
+      ],
+      "checkedAt": "2026-10-09",
+      "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "runtimeAssessment": {
+        "status": "not_enabled_no_verified_public_geometry",
+        "reason": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted."
+      },
+      "coverageAssessment": {
+        "claimedScope": "Chuxiong municipal registration guide identifies the city registration service. Conditions for personal record inquiries are publisher context, not evidence that anonymous parcel geometry is unavailable.",
+        "verifiedOpenScope": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+        "countrywideVerified": false,
+        "citywideVerified": false
+      },
+      "resultCategory": "official_local_registry_geometry_unverified",
+      "technicalBlocker": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+      "population2025": 471251,
+      "populationPlausibility2025": "High",
+      "checked": true,
+      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "registryGeometryFound": false,
+      "researchFile": "research/overnight-next-2026-10-09/city-7454-chuxiong.json",
+      "latestAssessmentFile": "research/overnight-next-2026-10-09/city-7454-chuxiong.json",
+      "parcelStatus": "no_open_geometry_found",
+      "sourceIds": [],
+      "aliases": [
+        "wup2025:7454",
+        "Chuxiong"
+      ],
+      "populationUnit": "persons",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Chuxiong municipal registration guide identifies the city registration service. Conditions for personal record inquiries are publisher context, not evidence that anonymous parcel geometry is unavailable.",
+        "registryEvidenceUrls": [
+          "https://www.cxs.gov.cn/info/11295/324238.htm",
+          "https://www.cxs.gov.cn/"
+        ],
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false,
+        "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+        "registryGeometryFound": false,
+        "reason": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted."
+      },
+      "populationResearch": {
+        "overnightNext": {
+          "cohort": "overnight-next-1101-1200",
+          "queueRank": 1178,
+          "wupCityCode": 7454,
+          "population2025": 471251,
+          "populationPlausibility2025": "High",
+          "populationUnit": "persons",
+          "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+          "populationSourceUnit": "source Pop is in thousands; this record stores persons",
+          "evidenceFile": "research/overnight-next-2026-10-09/city-7454-chuxiong.json",
+          "checkedAt": "2026-10-09",
+          "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+          "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result."
+        }
+      }
+    },
+    {
+      "cityId": "wup2025:7995",
+      "researchOrder": 1218,
+      "wupCityCode": 7995,
+      "name": "Lüliang",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        37.5208137223457,
+        111.14629385973
+      ],
+      "checkedAt": "2026-10-09",
+      "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "runtimeAssessment": {
+        "status": "not_enabled_no_verified_public_geometry",
+        "reason": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted."
+      },
+      "coverageAssessment": {
+        "claimedScope": "The municipal bureau describes unified registration, cadastral survey and its subordinate city registration center. Its center budget separately describes municipal registration, certification, platform maintenance and query services.",
+        "verifiedOpenScope": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+        "countrywideVerified": false,
+        "citywideVerified": false
+      },
+      "resultCategory": "official_local_registry_geometry_unverified",
+      "technicalBlocker": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+      "population2025": 469647,
+      "populationPlausibility2025": "Moderate",
+      "checked": true,
+      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "registryGeometryFound": false,
+      "researchFile": "research/overnight-next-2026-10-09/city-7995-luliang.json",
+      "latestAssessmentFile": "research/overnight-next-2026-10-09/city-7995-luliang.json",
+      "parcelStatus": "no_open_geometry_found",
+      "sourceIds": [],
+      "aliases": [
+        "wup2025:7995",
+        "Lüliang"
+      ],
+      "populationUnit": "persons",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "The municipal bureau describes unified registration, cadastral survey and its subordinate city registration center. Its center budget separately describes municipal registration, certification, platform maintenance and query services.",
+        "registryEvidenceUrls": [
+          "https://www.lvliang.gov.cn/llxxgk/zfxxgk/xxgkml/gbmwj/gjj/fdzdgknr_54882/jgjs_54883/202108/t20210830_1541722.html",
+          "https://www.lvliang.gov.cn/zfjgzd/llgtj/qlzrqd/index_5.html",
+          "https://www.lvliang.gov.cn/zfjgzd/llgtj/jgjj/201906/t20190604_1290765.html"
+        ],
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false,
+        "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+        "registryGeometryFound": false,
+        "reason": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted."
+      },
+      "populationResearch": {
+        "overnightNext": {
+          "cohort": "overnight-next-1101-1200",
+          "queueRank": 1184,
+          "wupCityCode": 7995,
+          "population2025": 469647,
+          "populationPlausibility2025": "Moderate",
+          "populationUnit": "persons",
+          "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+          "populationSourceUnit": "source Pop is in thousands; this record stores persons",
+          "evidenceFile": "research/overnight-next-2026-10-09/city-7995-luliang.json",
+          "checkedAt": "2026-10-09",
+          "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+          "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result."
+        }
+      }
+    },
+    {
+      "cityId": "wup2025:9720",
+      "researchOrder": 1219,
+      "wupCityCode": 9720,
+      "name": "Changge",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        34.2032184797196,
+        113.762855142875
+      ],
+      "checkedAt": "2026-10-09",
+      "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "runtimeAssessment": {
+        "status": "not_enabled_no_verified_public_geometry",
+        "reason": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted."
+      },
+      "coverageAssessment": {
+        "claimedScope": "Changge municipal registration guide describes city land registration and cadastral survey materials. Direct HTTP200 text was inspected; this supports local registration responsibility, not a public geometry endpoint.",
+        "verifiedOpenScope": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+        "countrywideVerified": false,
+        "citywideVerified": false
+      },
+      "resultCategory": "official_local_registry_geometry_unverified",
+      "technicalBlocker": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+      "population2025": 468159,
+      "populationPlausibility2025": "Moderate",
+      "checked": true,
+      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "registryGeometryFound": false,
+      "researchFile": "research/overnight-next-2026-10-09/city-9720-changge.json",
+      "latestAssessmentFile": "research/overnight-next-2026-10-09/city-9720-changge.json",
+      "parcelStatus": "no_open_geometry_found",
+      "sourceIds": [],
+      "aliases": [
+        "wup2025:9720",
+        "Changge"
+      ],
+      "populationUnit": "persons",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Changge municipal registration guide describes city land registration and cadastral survey materials. Direct HTTP200 text was inspected; this supports local registration responsibility, not a public geometry endpoint.",
+        "registryEvidenceUrls": [
+          "https://www.changge.gov.cn/jczwgkbzhgfhml/027001/027001033/027001033006/027001033006001/20230112/42dceb49-9c85-43bc-863d-e0a2760fb688.html",
+          "https://www.changge.gov.cn/",
+          "https://www.changge.gov.cn/uploadfile/0d9bab1d-d5f8-44e5-816f-4bf3b1e11d82/20251120115755532.pdf"
+        ],
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false,
+        "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+        "registryGeometryFound": false,
+        "reason": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted."
+      },
+      "populationResearch": {
+        "overnightNext": {
+          "cohort": "overnight-next-1101-1200",
+          "queueRank": 1187,
+          "wupCityCode": 9720,
+          "population2025": 468159,
+          "populationPlausibility2025": "Moderate",
+          "populationUnit": "persons",
+          "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+          "populationSourceUnit": "source Pop is in thousands; this record stores persons",
+          "evidenceFile": "research/overnight-next-2026-10-09/city-9720-changge.json",
+          "checkedAt": "2026-10-09",
+          "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+          "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result."
+        }
+      }
+    },
+    {
+      "cityId": "wup2025:12016",
+      "researchOrder": 1220,
+      "wupCityCode": 12016,
+      "name": "Beilun District",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        29.9078688188933,
+        121.831098805701
+      ],
+      "checkedAt": "2026-10-09",
+      "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "runtimeAssessment": {
+        "status": "not_enabled_no_verified_public_geometry",
+        "reason": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted."
+      },
+      "coverageAssessment": {
+        "claimedScope": "Ningbo municipal registration appointment guidance explicitly includes Beilun district, excluding Daxie and the bonded area. This supports jurisdictionally local registration services at that stated scope; the appointment form is not a parcel API.",
+        "verifiedOpenScope": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+        "countrywideVerified": false,
+        "citywideVerified": false
+      },
+      "resultCategory": "official_local_registry_geometry_unverified",
+      "technicalBlocker": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+      "population2025": 467912,
+      "populationPlausibility2025": "Moderate",
+      "checked": true,
+      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "registryGeometryFound": false,
+      "researchFile": "research/overnight-next-2026-10-09/city-12016-beilun-district.json",
+      "latestAssessmentFile": "research/overnight-next-2026-10-09/city-12016-beilun-district.json",
+      "parcelStatus": "no_open_geometry_found",
+      "sourceIds": [],
+      "aliases": [
+        "wup2025:12016",
+        "Beilun District"
+      ],
+      "populationUnit": "persons",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Ningbo municipal registration appointment guidance explicitly includes Beilun district, excluding Daxie and the bonded area. This supports jurisdictionally local registration services at that stated scope; the appointment form is not a parcel API.",
+        "registryEvidenceUrls": [
+          "https://xkjg.zgj.ningbo.gov.cn/bdc/Html/bdcyy.html"
+        ],
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false,
+        "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+        "registryGeometryFound": false,
+        "reason": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted."
+      },
+      "populationResearch": {
+        "overnightNext": {
+          "cohort": "overnight-next-1101-1200",
+          "queueRank": 1189,
+          "wupCityCode": 12016,
+          "population2025": 467912,
+          "populationPlausibility2025": "Moderate",
+          "populationUnit": "persons",
+          "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+          "populationSourceUnit": "source Pop is in thousands; this record stores persons",
+          "evidenceFile": "research/overnight-next-2026-10-09/city-12016-beilun-district.json",
+          "checkedAt": "2026-10-09",
+          "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+          "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result."
+        }
+      }
+    },
+    {
+      "cityId": "wup2025:8942",
+      "researchOrder": 1221,
+      "wupCityCode": 8942,
+      "name": "Yangquan",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        37.8659735411705,
+        113.536135376174
+      ],
+      "checkedAt": "2026-10-09",
+      "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "runtimeAssessment": {
+        "status": "not_enabled_no_verified_public_geometry",
+        "reason": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted."
+      },
+      "coverageAssessment": {
+        "claimedScope": "Yangquan municipal planning and natural-resources bureau publishes a city registration portal and guides. Cached first-party text establishes local registration services; current direct portal and linked query-route timeouts do not establish geometry absence.",
+        "verifiedOpenScope": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+        "countrywideVerified": false,
+        "citywideVerified": false
+      },
+      "resultCategory": "official_local_registry_geometry_unverified",
+      "technicalBlocker": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+      "population2025": 467148,
+      "populationPlausibility2025": "High",
+      "checked": true,
+      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "registryGeometryFound": false,
+      "researchFile": "research/overnight-next-2026-10-09/city-8942-yangquan.json",
+      "latestAssessmentFile": "research/overnight-next-2026-10-09/city-8942-yangquan.json",
+      "parcelStatus": "no_open_geometry_found",
+      "sourceIds": [],
+      "aliases": [
+        "wup2025:8942",
+        "Yangquan"
+      ],
+      "populationUnit": "persons",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Yangquan municipal planning and natural-resources bureau publishes a city registration portal and guides. Cached first-party text establishes local registration services; current direct portal and linked query-route timeouts do not establish geometry absence.",
+        "registryEvidenceUrls": [
+          "https://ghhzy.yq.gov.cn/yqgtbdc/"
+        ],
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false,
+        "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+        "registryGeometryFound": false,
+        "reason": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted."
+      },
+      "populationResearch": {
+        "overnightNext": {
+          "cohort": "overnight-next-1101-1200",
+          "queueRank": 1190,
+          "wupCityCode": 8942,
+          "population2025": 467148,
+          "populationPlausibility2025": "High",
+          "populationUnit": "persons",
+          "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+          "populationSourceUnit": "source Pop is in thousands; this record stores persons",
+          "evidenceFile": "research/overnight-next-2026-10-09/city-8942-yangquan.json",
+          "checkedAt": "2026-10-09",
+          "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+          "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result."
+        }
+      }
+    },
+    {
+      "cityId": "wup2025:11736",
+      "researchOrder": 1222,
+      "wupCityCode": 11736,
+      "name": "Shanwei",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        22.7831667729166,
+        115.367998832657
+      ],
+      "checkedAt": "2026-10-09",
+      "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "runtimeAssessment": {
+        "status": "not_enabled_no_verified_public_geometry",
+        "reason": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted."
+      },
+      "coverageAssessment": {
+        "claimedScope": "Shanwei municipal bureau duties explicitly cover city cadastral survey, real-estate registration, record management and the municipal registration platform. Its separate standard-map page does not establish a cadastral polygon service.",
+        "verifiedOpenScope": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+        "countrywideVerified": false,
+        "citywideVerified": false
+      },
+      "resultCategory": "official_local_registry_geometry_unverified",
+      "technicalBlocker": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+      "population2025": 464738,
+      "populationPlausibility2025": "Moderate",
+      "checked": true,
+      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "registryGeometryFound": false,
+      "researchFile": "research/overnight-next-2026-10-09/city-11736-shanwei.json",
+      "latestAssessmentFile": "research/overnight-next-2026-10-09/city-11736-shanwei.json",
+      "parcelStatus": "no_open_geometry_found",
+      "sourceIds": [],
+      "aliases": [
+        "wup2025:11736",
+        "Shanwei"
+      ],
+      "populationUnit": "persons",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Shanwei municipal bureau duties explicitly cover city cadastral survey, real-estate registration, record management and the municipal registration platform. Its separate standard-map page does not establish a cadastral polygon service.",
+        "registryEvidenceUrls": [
+          "https://www.shanwei.gov.cn/shanwei/zwgk/jcxx/zzjg/zfbmz/content/post_1091347.html",
+          "https://www.shanwei.gov.cn/swgtj/ztzl/bzdtfu/content/post_1131394.html",
+          "https://www.shanwei.gov.cn/attachment/0/81/81992/1228947.pdf"
+        ],
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false,
+        "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+        "registryGeometryFound": false,
+        "reason": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted."
+      },
+      "populationResearch": {
+        "overnightNext": {
+          "cohort": "overnight-next-1101-1200",
+          "queueRank": 1197,
+          "wupCityCode": 11736,
+          "population2025": 464738,
+          "populationPlausibility2025": "Moderate",
+          "populationUnit": "persons",
+          "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+          "populationSourceUnit": "source Pop is in thousands; this record stores persons",
+          "evidenceFile": "research/overnight-next-2026-10-09/city-11736-shanwei.json",
+          "checkedAt": "2026-10-09",
+          "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+          "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result."
+        }
+      }
+    },
+    {
+      "cityId": "wup2025:11756",
+      "researchOrder": 1223,
+      "wupCityCode": 11756,
+      "name": "Tongxiang",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        30.6457678687231,
+        120.575851300139
+      ],
+      "checkedAt": "2026-10-09",
+      "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "runtimeAssessment": {
+        "status": "not_enabled_no_verified_public_geometry",
+        "reason": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted."
+      },
+      "coverageAssessment": {
+        "claimedScope": "Tongxiang municipal natural-resources and planning bureau issued city-specific homestead and house registration guidance on 2025-01-10. Indexed first-party text establishes local registration responsibility; the direct TLS handshake timed out and no public polygon endpoint was verified.",
+        "verifiedOpenScope": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+        "countrywideVerified": false,
+        "citywideVerified": false
+      },
+      "resultCategory": "official_local_registry_geometry_unverified",
+      "technicalBlocker": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+      "population2025": 465450,
+      "populationPlausibility2025": "Moderate",
+      "checked": true,
+      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "registryGeometryFound": false,
+      "researchFile": "research/overnight-next-2026-10-09/city-11756-tongxiang.json",
+      "latestAssessmentFile": "research/overnight-next-2026-10-09/city-11756-tongxiang.json",
+      "parcelStatus": "no_open_geometry_found",
+      "sourceIds": [],
+      "aliases": [
+        "wup2025:11756",
+        "Tongxiang"
+      ],
+      "populationUnit": "persons",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Tongxiang municipal natural-resources and planning bureau issued city-specific homestead and house registration guidance on 2025-01-10. Indexed first-party text establishes local registration responsibility; the direct TLS handshake timed out and no public polygon endpoint was verified.",
+        "registryEvidenceUrls": [
+          "https://www.tx.gov.cn/art/2025/1/10/art_1229401218_2542845.html",
+          "https://ditu.zjzwfw.gov.cn/platform-main/index.html",
+          "https://hyjg.zrzyt.zrzyt.zj.gov.cn/",
+          "https://cgfw.zjasm.net/#/staticmap"
+        ],
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false,
+        "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+        "registryGeometryFound": false,
+        "reason": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted."
+      },
+      "populationResearch": {
+        "overnightNext": {
+          "cohort": "overnight-next-1101-1200",
+          "queueRank": 1194,
+          "wupCityCode": 11756,
+          "population2025": 465450,
+          "populationPlausibility2025": "Moderate",
+          "populationUnit": "persons",
+          "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+          "populationSourceUnit": "source Pop is in thousands; this record stores persons",
+          "evidenceFile": "research/overnight-next-2026-10-09/city-11756-tongxiang.json",
+          "checkedAt": "2026-10-09",
+          "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+          "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result."
+        }
+      }
+    },
+    {
+      "cityId": "wup2025:8767",
+      "researchOrder": 1224,
+      "wupCityCode": 8767,
+      "name": "Jinzhong",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        37.6887939356622,
+        112.736514077553
+      ],
+      "checkedAt": "2026-10-09",
+      "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "runtimeAssessment": {
+        "status": "not_enabled_no_verified_public_geometry",
+        "reason": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted."
+      },
+      "coverageAssessment": {
+        "claimedScope": "A government-hosted 2026-06-28 report explicitly identifies Jinzhong city real-estate registration and transaction service center. The publishing municipality is Jincheng, while the reported service is Jinzhong. Its panoramic registration hall is not a parcel map.",
+        "verifiedOpenScope": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+        "countrywideVerified": false,
+        "citywideVerified": false
+      },
+      "resultCategory": "official_local_registry_geometry_unverified",
+      "technicalBlocker": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+      "population2025": 473959,
+      "populationPlausibility2025": "High",
+      "checked": true,
+      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "registryGeometryFound": false,
+      "researchFile": "research/overnight-next-2026-10-09/city-8767-jinzhong.json",
+      "latestAssessmentFile": "research/overnight-next-2026-10-09/city-8767-jinzhong.json",
+      "parcelStatus": "no_open_geometry_found",
+      "sourceIds": [],
+      "aliases": [
+        "wup2025:8767",
+        "Jinzhong"
+      ],
+      "populationUnit": "persons",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "A government-hosted 2026-06-28 report explicitly identifies Jinzhong city real-estate registration and transaction service center. The publishing municipality is Jincheng, while the reported service is Jinzhong. Its panoramic registration hall is not a parcel map.",
+        "registryEvidenceUrls": [
+          "https://www.jcgov.gov.cn/dtxx/sxyw/202606/t20260628_2364923.shtml",
+          "https://zrzyt.shanxi.gov.cn/zwgk/bzdt/gsdt1/",
+          "https://sxjz.gov.cn/"
+        ],
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false,
+        "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+        "registryGeometryFound": false,
+        "reason": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted."
+      },
+      "populationResearch": {
+        "overnightNext": {
+          "cohort": "overnight-next-1101-1200",
+          "queueRank": 1169,
+          "wupCityCode": 8767,
+          "population2025": 473959,
+          "populationPlausibility2025": "High",
+          "populationUnit": "persons",
+          "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+          "populationSourceUnit": "source Pop is in thousands; this record stores persons",
+          "evidenceFile": "research/overnight-next-2026-10-09/city-8767-jinzhong.json",
+          "checkedAt": "2026-10-09",
+          "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+          "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result."
+        }
+      }
+    },
+    {
+      "cityId": "wup2025:2732",
+      "researchOrder": 1225,
+      "wupCityCode": 2732,
+      "name": "Huancayo",
+      "country": "Peru",
+      "countryCode": "PE",
+      "centerLatLon": [
+        -12.0626815606747,
+        -75.2170085204294
+      ],
+      "checkedAt": "2026-10-09",
+      "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "runtimeAssessment": {
+        "status": "not_enabled_no_verified_public_geometry",
+        "reason": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted."
+      },
+      "coverageAssessment": {
+        "claimedScope": "Huancayo municipal urban-development department duties include preparing and maintaining urban and rural cadastre. Indexed first-party text supports municipal cadastral responsibility; current direct TLS certificate failure and the earlier raster-service finding do not establish absence of vector parcels.",
+        "verifiedOpenScope": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+        "countrywideVerified": false,
+        "citywideVerified": false
+      },
+      "resultCategory": "official_local_registry_geometry_unverified",
+      "technicalBlocker": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+      "population2025": 470685,
+      "populationPlausibility2025": "High",
+      "checked": true,
+      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "registryGeometryFound": false,
+      "researchFile": "research/overnight-next-2026-10-09/city-2732-huancayo.json",
+      "latestAssessmentFile": "research/overnight-next-2026-10-09/city-2732-huancayo.json",
+      "parcelStatus": "no_open_geometry_found",
+      "sourceIds": [],
+      "aliases": [
+        "wup2025:2732",
+        "Huancayo"
+      ],
+      "populationUnit": "persons",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Huancayo municipal urban-development department duties include preparing and maintaining urban and rural cadastre. Indexed first-party text supports municipal cadastral responsibility; current direct TLS certificate failure and the earlier raster-service finding do not establish absence of vector parcels.",
+        "registryEvidenceUrls": [
+          "https://documentos.munihuancayo.gob.pe/documentos/webgdu23/funciones.html",
+          "https://www.idemil.gob.pe/geoportal/rest/services/Hosted/HUANCAYO/MapServer/0"
+        ],
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false,
+        "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+        "registryGeometryFound": false,
+        "reason": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted."
+      },
+      "populationResearch": {
+        "overnightNext": {
+          "cohort": "overnight-next-1101-1200",
+          "queueRank": 1179,
+          "wupCityCode": 2732,
+          "population2025": 470685,
+          "populationPlausibility2025": "High",
+          "populationUnit": "persons",
+          "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+          "populationSourceUnit": "source Pop is in thousands; this record stores persons",
+          "evidenceFile": "research/overnight-next-2026-10-09/city-2732-huancayo.json",
+          "checkedAt": "2026-10-09",
+          "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+          "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result."
+        }
+      }
+    },
+    {
+      "cityId": "wup2025:6924",
+      "researchOrder": 1226,
+      "wupCityCode": 6924,
+      "name": "Faqous",
+      "country": "Egypt",
+      "countryCode": "EG",
+      "centerLatLon": [
+        30.724896740623,
+        31.7910152915622
+      ],
+      "checkedAt": "2026-10-09",
+      "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "registryFound": null,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "runtimeAssessment": {
+        "status": "not_enabled_no_verified_public_geometry",
+        "reason": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted."
+      },
+      "coverageAssessment": {
+        "claimedScope": "Egyptian Survey Authority national mapping and historical property-record functions plus Sharkia urban-planning context do not establish Faqous-specific cadastral custody. The previous positive local-registry classification was broader than its evidence.",
+        "verifiedOpenScope": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+        "countrywideVerified": false,
+        "citywideVerified": false
+      },
+      "resultCategory": "official_regional_map_service_city_registry_unconfirmed",
+      "technicalBlocker": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+      "population2025": 470110,
+      "populationPlausibility2025": "High",
+      "checked": true,
+      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "registryGeometryFound": false,
+      "researchFile": "research/overnight-next-2026-10-09/city-6924-faqous.json",
+      "latestAssessmentFile": "research/overnight-next-2026-10-09/city-6924-faqous.json",
+      "parcelStatus": "no_open_geometry_found",
+      "sourceIds": [],
+      "aliases": [
+        "wup2025:6924",
+        "Faqous"
+      ],
+      "populationUnit": "persons",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "dataFindings": {
+        "registryFound": null,
+        "registryBasis": "Egyptian Survey Authority national mapping and historical property-record functions plus Sharkia urban-planning context do not establish Faqous-specific cadastral custody. The previous positive local-registry classification was broader than its evidence.",
+        "registryEvidenceUrls": [
+          "https://www.esa.gov.eg/main.aspx",
+          "https://gopp.gov.eg/%D8%A7%D9%84%D8%AE%D8%B1%D9%8A%D8%B7%D8%A9-%D8%A7%D9%84%D8%B9%D9%85%D8%B1%D8%A7%D9%86%D9%8A%D8%A9-%D9%84%D9%85%D8%AD%D8%A7%D9%81%D8%B8%D8%A9-%D8%A7%D9%84%D8%B4%D8%B1%D9%82%D9%8A%D8%A9/",
+          "https://www.esa.gov.eg/services.aspx"
+        ],
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false,
+        "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+        "registryGeometryFound": false,
+        "reason": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted."
+      },
+      "populationResearch": {
+        "overnightNext": {
+          "cohort": "overnight-next-1101-1200",
+          "queueRank": 1181,
+          "wupCityCode": 6924,
+          "population2025": 470110,
+          "populationPlausibility2025": "High",
+          "populationUnit": "persons",
+          "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+          "populationSourceUnit": "source Pop is in thousands; this record stores persons",
+          "evidenceFile": "research/overnight-next-2026-10-09/city-6924-faqous.json",
+          "checkedAt": "2026-10-09",
+          "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+          "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result."
+        }
+      }
+    },
+    {
+      "cityId": "wup2025:495",
+      "researchOrder": 1227,
+      "wupCityCode": 495,
+      "name": "Piura",
+      "country": "Peru",
+      "countryCode": "PE",
+      "centerLatLon": [
+        -5.19036024947437,
+        -80.6384430749245
+      ],
+      "checkedAt": "2026-10-09",
+      "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "runtimeAssessment": {
+        "status": "not_enabled_no_verified_public_geometry",
+        "reason": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted."
+      },
+      "coverageAssessment": {
+        "claimedScope": "The Provincial Municipality of Piura reports a municipal urban-cadastre survey project covering Piura, Castilla, Veintiseis de Octubre and Catacaos. This establishes limited local cadastral project responsibility; the earlier property-tax-agency evidence alone did not. Anonymous native parcel geometry remains unverified.",
+        "verifiedOpenScope": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+        "countrywideVerified": false,
+        "citywideVerified": false
+      },
+      "resultCategory": "official_local_registry_geometry_unverified",
+      "technicalBlocker": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+      "population2025": 471521,
+      "populationPlausibility2025": "High",
+      "checked": true,
+      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "registryGeometryFound": false,
+      "researchFile": "research/overnight-next-2026-10-09/city-495-piura.json",
+      "latestAssessmentFile": "research/overnight-next-2026-10-09/city-495-piura.json",
+      "parcelStatus": "no_open_geometry_found",
+      "sourceIds": [],
+      "aliases": [
+        "wup2025:495",
+        "Piura"
+      ],
+      "populationUnit": "persons",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "The Provincial Municipality of Piura reports a municipal urban-cadastre survey project covering Piura, Castilla, Veintiseis de Octubre and Catacaos. This establishes limited local cadastral project responsibility; the earlier property-tax-agency evidence alone did not. Anonymous native parcel geometry remains unverified.",
+        "registryEvidenceUrls": [
+          "https://www.gob.pe/institucion/munipiura/noticias/946801-regidora-teresa-calva-participo-en-lanzamiento-del-proyecto-de-levantamiento-de-catastro-urbano-de-piura",
+          "https://www.gob.pe/institucion/satpiura/institucional",
+          "https://www.idep.gob.pe/geoportal/rest/services/DATOS_GEOESPACIALES/PROYECCIONES_25K/MapServer/7"
+        ],
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false,
+        "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+        "registryGeometryFound": false,
+        "reason": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted."
+      },
+      "populationResearch": {
+        "overnightNext": {
+          "cohort": "overnight-next-1101-1200",
+          "queueRank": 1177,
+          "wupCityCode": 495,
+          "population2025": 471521,
+          "populationPlausibility2025": "High",
+          "populationUnit": "persons",
+          "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+          "populationSourceUnit": "source Pop is in thousands; this record stores persons",
+          "evidenceFile": "research/overnight-next-2026-10-09/city-495-piura.json",
+          "checkedAt": "2026-10-09",
+          "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+          "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result."
+        }
+      }
+    },
+    {
+      "cityId": "wup2025:2928",
+      "researchOrder": 1228,
+      "wupCityCode": 2928,
+      "name": "Macapá",
+      "country": "Brazil",
+      "countryCode": "BR",
+      "centerLatLon": [
+        0.0431561083287672,
+        -51.0688251135422
+      ],
+      "checkedAt": "2026-10-09",
+      "rootReviewedAt": "2026-10-09T09:20:30.305586+00:00",
+      "registryFound": true,
+      "verifiedSample": true,
+      "publicParcelGeometryFound": true,
+      "runtimeReadiness": "not_enabled_adapter_duplicate_idlote_manifest_hold",
+      "runtimeAssessment": {
+        "status": "not_enabled_adapter_duplicate_idlote_manifest_hold",
+        "reason": "Existing ArcGIS adapter holds four of the 13 bounded cells because the anonymous layer's returnIdsOnly manifest repeats its only exposed OID, idlote. Full native polygons for all 15 repeated-ID groups are identical within each ID, but layer metadata exposes no GlobalID or separate unique row identifier; offset mode also rejects the repeated IDs. This adapter identity-contract failure is the runtime hold.",
+        "qualificationReport": "macapa-runtime-qualification.json",
+        "duplicateDiagnosis": "macapa-duplicate-id-manifest-review.json",
+        "informationalObservations": [
+          "unchanged WUP point query returned zero features; nearby public polygons are verified",
+          "configured host contains hml; production stability is unverified"
+        ],
+        "passedBoundedChecks": [
+          "9 of 13 bounded cells complete through normal adapter",
+          "161 distinct IDs independently re-read with matching full geometry hashes",
+          "forced page-size-1 paging",
+          "synthetic absent-ID response",
+          "nearby full-footprint query and complete proposal binding",
+          "ring closure, self-intersection, overlap and duplicate-geometry checks on adapter-accepted bounded features"
+        ]
+      },
+      "coverageAssessment": {
+        "claimedScope": "Macapá’s public SIT dynamically configures an “Identificar Lote Físico” ArcGIS polygon layer with idlote as its key.",
+        "verifiedOpenScope": "Nearby source-native public polygons are verified. The existing adapter completed 9/13 bounded cells (161 distinct IDs); it held cells 0, 1, 4 and 9 because each manifest contains duplicate idlote OIDs. Raw full-geometry responses show all repeated IDs in those cells have identical polygon hashes. Exact WUP point returned zero, which is informational and not a source gate. Citywide completeness and production stability remain unverified.",
+        "countrywideVerified": false,
+        "citywideVerified": false,
+        "adapterQualificationReport": "macapa-runtime-qualification.json",
+        "pointMissIsEligibilityGate": false,
+        "hmlHostnameIsEligibilityGate": false
+      },
+      "resultCategory": "verified_nearby_public_parcel_geometry_adapter_held_duplicate_oid_manifest",
+      "technicalBlocker": "Existing ArcGIS adapter holds four of the 13 bounded cells because the anonymous layer's returnIdsOnly manifest repeats its only exposed OID, idlote. Full native polygons for all 15 repeated-ID groups are identical within each ID, but layer metadata exposes no GlobalID or separate unique row identifier; offset mode also rejects the repeated IDs. This adapter identity-contract failure is the runtime hold.",
+      "population2025": 471922,
+      "populationPlausibility2025": "High",
+      "checked": true,
+      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "registryGeometryFound": true,
+      "researchFile": "research/overnight-next-2026-10-09/city-2928-macapa.json",
+      "latestAssessmentFile": "research/overnight-next-2026-10-09/city-2928-macapa.json",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "macapa-egl-sit-physical-lot-layer-27"
+      ],
+      "aliases": [
+        "wup2025:2928",
+        "Macapá"
+      ],
+      "populationUnit": "persons",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "The municipal SIT dynamically configures a physical-lot map layer; this supports public map geometry at bounded nearby scope, not registry/title status.",
+        "registryEvidenceUrls": [
+          "https://mapa.macapa.ap.gov.br/",
+          "https://mapa.macapa.ap.gov.br/macapacliente/sit/AjudaOnline/Documents/lote.htm"
+        ],
+        "verifiedSample": true,
+        "publicParcelGeometryFound": true,
+        "runtimeReadiness": "not_enabled_adapter_duplicate_idlote_manifest_hold",
+        "registryGeometryFound": true,
+        "reason": "Existing ArcGIS adapter holds four of the 13 bounded cells because the anonymous layer's returnIdsOnly manifest repeats its only exposed OID, idlote. Full native polygons for all 15 repeated-ID groups are identical within each ID, but layer metadata exposes no GlobalID or separate unique row identifier; offset mode also rejects the repeated IDs. This adapter identity-contract failure is the runtime hold."
+      },
+      "populationResearch": {
+        "overnightNext": {
+          "cohort": "overnight-next-1101-1200",
+          "queueRank": 1176,
+          "wupCityCode": 2928,
+          "population2025": 471922,
+          "populationPlausibility2025": "High",
+          "populationUnit": "persons",
+          "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+          "populationSourceUnit": "source Pop is in thousands; this record stores persons",
+          "evidenceFile": "research/overnight-next-2026-10-09/city-2928-macapa.json",
+          "checkedAt": "2026-10-09",
+          "rootReviewedAt": "2026-10-09T09:20:30.305586+00:00",
+          "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result."
+        }
+      }
+    },
+    {
+      "cityId": "wup2025:9279",
+      "researchOrder": 1229,
+      "wupCityCode": 9279,
+      "name": "Etawah",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.7828387119844,
+        79.0233814920568
+      ],
+      "checkedAt": "2026-10-09",
+      "rootReviewedAt": "2026-10-09T09:39:24.736128+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "runtimeAssessment": {
+        "status": "not_enabled_no_verified_public_geometry",
+        "reason": "Anonymous source-native full parcel polygons with stable IDs remain unverified within the checked source/selector scope. Empty results at the WUP point are not an eligibility gate and do not establish citywide parcel absence."
+      },
+      "coverageAssessment": {
+        "claimedScope": "The district government E-PORTAL links Bhulekh and the registry office. State selectors establish Etawah-specific land-record geography; public full parcel geometry remains unverified in the checked scope.",
+        "verifiedOpenScope": "Anonymous source-native full parcel polygons with stable IDs remain unverified within the checked source/selector scope. Empty results at the WUP point are not an eligibility gate and do not establish citywide parcel absence.",
+        "countrywideVerified": false,
+        "citywideVerified": false
+      },
+      "resultCategory": "official_local_registry_geometry_unverified",
+      "technicalBlocker": "Anonymous source-native full parcel polygons with stable IDs remain unverified within the checked source/selector scope. Empty results at the WUP point are not an eligibility gate and do not establish citywide parcel absence.",
+      "population2025": 475213,
+      "populationPlausibility2025": "Moderate",
+      "checked": true,
+      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "registryGeometryFound": false,
+      "researchFile": "research/overnight-next-2026-10-09/city-9279-etawah.json",
+      "latestAssessmentFile": "research/overnight-next-2026-10-09/city-9279-etawah.json",
+      "parcelStatus": "no_open_geometry_found",
+      "sourceIds": [],
+      "aliases": [
+        "wup2025:9279",
+        "Etawah"
+      ],
+      "populationUnit": "persons",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "The district government E-PORTAL links Bhulekh and the registry office. State selectors establish Etawah-specific land-record geography; public full parcel geometry remains unverified in the checked scope.",
+        "registryEvidenceUrls": [
+          "https://etawah.nic.in/e-portal/",
+          "https://etawah.nic.in/",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=161",
+          "https://upbhunaksha.gov.in/home/"
+        ],
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false,
+        "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+        "registryGeometryFound": false,
+        "reason": "Anonymous source-native full parcel polygons with stable IDs remain unverified within the checked source/selector scope. Empty results at the WUP point are not an eligibility gate and do not establish citywide parcel absence."
+      },
+      "populationResearch": {
+        "overnightNext": {
+          "cohort": "overnight-next-1101-1200",
+          "queueRank": 1166,
+          "wupCityCode": 9279,
+          "population2025": 475213,
+          "populationPlausibility2025": "Moderate",
+          "populationUnit": "persons",
+          "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+          "populationSourceUnit": "source Pop is in thousands; this record stores persons",
+          "evidenceFile": "research/overnight-next-2026-10-09/city-9279-etawah.json",
+          "checkedAt": "2026-10-09",
+          "rootReviewedAt": "2026-10-09T09:39:24.736128+00:00",
+          "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result."
+        }
+      }
+    },
+    {
+      "cityId": "wup2025:9595",
+      "researchOrder": 1230,
+      "wupCityCode": 9595,
+      "name": "Sitapur",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        27.5635472049459,
+        80.6900013205048
+      ],
+      "checkedAt": "2026-10-09",
+      "rootReviewedAt": "2026-10-09T09:39:24.736128+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "runtimeAssessment": {
+        "status": "not_enabled_no_verified_public_geometry",
+        "reason": "Anonymous source-native full parcel polygons with stable IDs remain unverified within the checked source/selector scope. Empty results at the WUP point are not an eligibility gate and do not establish citywide parcel absence."
+      },
+      "coverageAssessment": {
+        "claimedScope": "The official Uttar Pradesh digitization dashboard explicitly identifies Sitapur district, Sitapur tehsil and cadastral map-sheet georeferencing. This is local cadastral custody evidence, not proof of public vector completeness.",
+        "verifiedOpenScope": "Anonymous source-native full parcel polygons with stable IDs remain unverified within the checked source/selector scope. Empty results at the WUP point are not an eligibility gate and do not establish citywide parcel absence.",
+        "countrywideVerified": false,
+        "citywideVerified": false
+      },
+      "resultCategory": "official_local_registry_geometry_unverified",
+      "technicalBlocker": "Anonymous source-native full parcel polygons with stable IDs remain unverified within the checked source/selector scope. Empty results at the WUP point are not an eligibility gate and do not establish citywide parcel absence.",
+      "population2025": 469750,
+      "populationPlausibility2025": "Moderate",
+      "checked": true,
+      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "registryGeometryFound": false,
+      "researchFile": "research/overnight-next-2026-10-09/city-9595-sitapur.json",
+      "latestAssessmentFile": "research/overnight-next-2026-10-09/city-9595-sitapur.json",
+      "parcelStatus": "no_open_geometry_found",
+      "sourceIds": [],
+      "aliases": [
+        "wup2025:9595",
+        "Sitapur"
+      ],
+      "populationUnit": "persons",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "The official Uttar Pradesh digitization dashboard explicitly identifies Sitapur district, Sitapur tehsil and cadastral map-sheet georeferencing. This is local cadastral custody evidence, not proof of public vector completeness.",
+        "registryEvidenceUrls": [
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=154&tehsilCode=00804",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=154",
+          "https://upbhulekh.gov.in/",
+          "https://bor.up.nic.in/",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/154"
+        ],
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false,
+        "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+        "registryGeometryFound": false,
+        "reason": "Anonymous source-native full parcel polygons with stable IDs remain unverified within the checked source/selector scope. Empty results at the WUP point are not an eligibility gate and do not establish citywide parcel absence."
+      },
+      "populationResearch": {
+        "overnightNext": {
+          "cohort": "overnight-next-1101-1200",
+          "queueRank": 1183,
+          "wupCityCode": 9595,
+          "population2025": 469750,
+          "populationPlausibility2025": "Moderate",
+          "populationUnit": "persons",
+          "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+          "populationSourceUnit": "source Pop is in thousands; this record stores persons",
+          "evidenceFile": "research/overnight-next-2026-10-09/city-9595-sitapur.json",
+          "checkedAt": "2026-10-09",
+          "rootReviewedAt": "2026-10-09T09:39:24.736128+00:00",
+          "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result."
+        }
+      }
+    },
+    {
+      "cityId": "wup2025:9883",
+      "researchOrder": 1231,
+      "wupCityCode": 9883,
+      "name": "Raebareli",
+      "country": "India",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.2276825649448,
+        81.243838038826
+      ],
+      "checkedAt": "2026-10-09",
+      "rootReviewedAt": "2026-10-09T09:39:24.736128+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "runtimeAssessment": {
+        "status": "not_enabled_no_verified_public_geometry",
+        "reason": "Anonymous source-native full parcel polygons with stable IDs remain unverified within the checked source/selector scope. Empty results at the WUP point are not an eligibility gate and do not establish citywide parcel absence."
+      },
+      "coverageAssessment": {
+        "claimedScope": "Rae Bareli district government provides its Land Records service through the state Bhulekh portal. This establishes jurisdictionally local land-record responsibility; parcel geometry remains unverified.",
+        "verifiedOpenScope": "Anonymous source-native full parcel polygons with stable IDs remain unverified within the checked source/selector scope. Empty results at the WUP point are not an eligibility gate and do not establish citywide parcel absence.",
+        "countrywideVerified": false,
+        "citywideVerified": false
+      },
+      "resultCategory": "official_local_registry_geometry_unverified",
+      "technicalBlocker": "Anonymous source-native full parcel polygons with stable IDs remain unverified within the checked source/selector scope. Empty results at the WUP point are not an eligibility gate and do not establish citywide parcel absence.",
+      "population2025": 472091,
+      "populationPlausibility2025": "High",
+      "checked": true,
+      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "registryGeometryFound": false,
+      "researchFile": "research/overnight-next-2026-10-09/city-9883-raebareli.json",
+      "latestAssessmentFile": "research/overnight-next-2026-10-09/city-9883-raebareli.json",
+      "parcelStatus": "no_open_geometry_found",
+      "sourceIds": [],
+      "aliases": [
+        "wup2025:9883",
+        "Raebareli"
+      ],
+      "populationUnit": "persons",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "Rae Bareli district government provides its Land Records service through the state Bhulekh portal. This establishes jurisdictionally local land-record responsibility; parcel geometry remains unverified.",
+        "registryEvidenceUrls": [
+          "https://raebareli.nic.in/service/land-records/",
+          "https://raebareli.nic.in/hi/service/%E0%A4%AD%E0%A5%81%E0%A4%B2%E0%A5%87%E0%A4%96/",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=158",
+          "https://upbhunaksha.gov.in/home/"
+        ],
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false,
+        "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+        "registryGeometryFound": false,
+        "reason": "Anonymous source-native full parcel polygons with stable IDs remain unverified within the checked source/selector scope. Empty results at the WUP point are not an eligibility gate and do not establish citywide parcel absence."
+      },
+      "populationResearch": {
+        "overnightNext": {
+          "cohort": "overnight-next-1101-1200",
+          "queueRank": 1175,
+          "wupCityCode": 9883,
+          "population2025": 472091,
+          "populationPlausibility2025": "High",
+          "populationUnit": "persons",
+          "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+          "populationSourceUnit": "source Pop is in thousands; this record stores persons",
+          "evidenceFile": "research/overnight-next-2026-10-09/city-9883-raebareli.json",
+          "checkedAt": "2026-10-09",
+          "rootReviewedAt": "2026-10-09T09:39:24.736128+00:00",
+          "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result."
+        }
+      }
+    },
+    {
+      "cityId": "wup2025:4390",
+      "researchOrder": 1232,
+      "wupCityCode": 4390,
+      "name": "Oshogbo",
+      "country": "Nigeria",
+      "countryCode": "NG",
+      "centerLatLon": [
+        7.77187668103078,
+        4.56628909899883
+      ],
+      "checkedAt": "2026-10-09",
+      "rootReviewedAt": "2026-10-09T09:46:31.498552+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "runtimeAssessment": {
+        "status": "not_enabled_no_verified_public_geometry",
+        "reason": "No anonymous full parcel geometry with stable native IDs was verified within the reviewed discovery scope. Institutional documents and UI login pages do not establish geometry absence; continued first-party service discovery remains open."
+      },
+      "coverageAssessment": {
+        "claimedScope": "The official Osun Surveyor General page establishes state/local cadastral survey, GIS and certificate-of-occupancy work and explicitly identifies completed Osogbo surveys. No anonymous parcel-vector endpoint was verified in the reviewed page/link configuration.",
+        "verifiedOpenScope": "No anonymous full parcel geometry with stable native IDs was verified within the reviewed discovery scope. Institutional documents and UI login pages do not establish geometry absence; continued first-party service discovery remains open.",
+        "countrywideVerified": false,
+        "citywideVerified": false
+      },
+      "resultCategory": "official_local_registry_geometry_unverified",
+      "technicalBlocker": "No anonymous full parcel geometry with stable native IDs was verified within the reviewed discovery scope. Institutional documents and UI login pages do not establish geometry absence; continued first-party service discovery remains open.",
+      "population2025": 473929,
+      "populationPlausibility2025": "Low",
+      "checked": true,
+      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "registryGeometryFound": false,
+      "researchFile": "research/overnight-next-2026-10-09/city-4390-osogbo.json",
+      "latestAssessmentFile": "research/overnight-next-2026-10-09/city-4390-osogbo.json",
+      "parcelStatus": "no_open_geometry_found",
+      "sourceIds": [],
+      "aliases": [
+        "wup2025:4390",
+        "Oshogbo"
+      ],
+      "populationUnit": "persons",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "The official Osun Surveyor General page establishes state/local cadastral survey, GIS and certificate-of-occupancy work and explicitly identifies completed Osogbo surveys. No anonymous parcel-vector endpoint was verified in the reviewed page/link configuration.",
+        "registryEvidenceUrls": [
+          "https://www.osunstate.gov.ng/ministries/office-of-surveyor-general/"
+        ],
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false,
+        "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+        "registryGeometryFound": false,
+        "reason": "No anonymous full parcel geometry with stable native IDs was verified within the reviewed discovery scope. Institutional documents and UI login pages do not establish geometry absence; continued first-party service discovery remains open."
+      },
+      "populationResearch": {
+        "overnightNext": {
+          "cohort": "overnight-next-1101-1200",
+          "queueRank": 1170,
+          "wupCityCode": 4390,
+          "population2025": 473929,
+          "populationPlausibility2025": "Low",
+          "populationUnit": "persons",
+          "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+          "populationSourceUnit": "source Pop is in thousands; this record stores persons",
+          "evidenceFile": "research/overnight-next-2026-10-09/city-4390-osogbo.json",
+          "checkedAt": "2026-10-09",
+          "rootReviewedAt": "2026-10-09T09:46:31.498552+00:00",
+          "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result."
+        }
+      }
+    },
+    {
+      "cityId": "wup2025:7148",
+      "researchOrder": 1233,
+      "wupCityCode": 7148,
+      "name": "Gusau",
+      "country": "Nigeria",
+      "countryCode": "NG",
+      "centerLatLon": [
+        12.1743944871879,
+        6.67653836825649
+      ],
+      "checkedAt": "2026-10-09",
+      "rootReviewedAt": "2026-10-09T09:46:31.498552+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "runtimeAssessment": {
+        "status": "not_enabled_no_verified_public_geometry",
+        "reason": "No anonymous full parcel geometry with stable native IDs was verified within the reviewed discovery scope. Institutional documents and UI login pages do not establish geometry absence; continued first-party service discovery remains open."
+      },
+      "coverageAssessment": {
+        "claimedScope": "The first-party Zamfara registration guideline explicitly identifies ZAGIS and Gusau registration jurisdiction. Current public ZAGIS pages advertise portal/archive applications; inspection of their public scripts and configuration did not verify a parcel-vector route in this pass.",
+        "verifiedOpenScope": "No anonymous full parcel geometry with stable native IDs was verified within the reviewed discovery scope. Institutional documents and UI login pages do not establish geometry absence; continued first-party service discovery remains open.",
+        "countrywideVerified": false,
+        "citywideVerified": false
+      },
+      "resultCategory": "official_local_registry_geometry_unverified",
+      "technicalBlocker": "No anonymous full parcel geometry with stable native IDs was verified within the reviewed discovery scope. Institutional documents and UI login pages do not establish geometry absence; continued first-party service discovery remains open.",
+      "population2025": 475004,
+      "populationPlausibility2025": "Moderate",
+      "checked": true,
+      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "registryGeometryFound": false,
+      "researchFile": "research/overnight-next-2026-10-09/city-7148-gusau.json",
+      "latestAssessmentFile": "research/overnight-next-2026-10-09/city-7148-gusau.json",
+      "parcelStatus": "no_open_geometry_found",
+      "sourceIds": [],
+      "aliases": [
+        "wup2025:7148",
+        "Gusau"
+      ],
+      "populationUnit": "persons",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "The first-party Zamfara registration guideline explicitly identifies ZAGIS and Gusau registration jurisdiction. Current public ZAGIS pages advertise portal/archive applications; inspection of their public scripts and configuration did not verify a parcel-vector route in this pass.",
+        "registryEvidenceUrls": [
+          "https://zamfara.gov.ng/wp-content/uploads/2023/12/Guidelines-for-Residential-Property-Registration-Individual.pdf",
+          "https://zagis.org/",
+          "https://zamfara.gov.ng/2023/09/19/governor-dauda-lawal-appoints-heads-of-agencies-and-staff-for-urban-renewal-project/"
+        ],
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false,
+        "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+        "registryGeometryFound": false,
+        "reason": "No anonymous full parcel geometry with stable native IDs was verified within the reviewed discovery scope. Institutional documents and UI login pages do not establish geometry absence; continued first-party service discovery remains open."
+      },
+      "populationResearch": {
+        "overnightNext": {
+          "cohort": "overnight-next-1101-1200",
+          "queueRank": 1167,
+          "wupCityCode": 7148,
+          "population2025": 475004,
+          "populationPlausibility2025": "Moderate",
+          "populationUnit": "persons",
+          "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+          "populationSourceUnit": "source Pop is in thousands; this record stores persons",
+          "evidenceFile": "research/overnight-next-2026-10-09/city-7148-gusau.json",
+          "checkedAt": "2026-10-09",
+          "rootReviewedAt": "2026-10-09T09:46:31.498552+00:00",
+          "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result."
+        }
+      }
+    },
+    {
+      "cityId": "wup2025:8914",
+      "researchOrder": 1234,
+      "wupCityCode": 8914,
+      "name": "Bijie",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        27.2994822128137,
+        105.287401120227
+      ],
+      "checkedAt": "2026-10-09",
+      "rootReviewedAt": "2026-10-09T09:46:31.498552+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "runtimeAssessment": {
+        "status": "not_enabled_no_verified_public_geometry",
+        "reason": "No anonymous full parcel geometry with stable native IDs was verified within the reviewed discovery scope. Institutional documents and UI login pages do not establish geometry absence; continued first-party service discovery remains open."
+      },
+      "coverageAssessment": {
+        "claimedScope": "The Guizhou 2024 Natural Resources Bulletin records real-estate registration and external-query operations for Bijie prefecture, the local jurisdiction containing the WUP city. This verifies jurisdictionally local registration activity, not the previously claimed specific city-office location or public vector geometry.",
+        "verifiedOpenScope": "No anonymous full parcel geometry with stable native IDs was verified within the reviewed discovery scope. Institutional documents and UI login pages do not establish geometry absence; continued first-party service discovery remains open.",
+        "countrywideVerified": false,
+        "citywideVerified": false
+      },
+      "resultCategory": "official_local_registry_geometry_unverified",
+      "technicalBlocker": "No anonymous full parcel geometry with stable native IDs was verified within the reviewed discovery scope. Institutional documents and UI login pages do not establish geometry absence; continued first-party service discovery remains open.",
+      "population2025": 463837,
+      "populationPlausibility2025": "Low",
+      "checked": true,
+      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "registryGeometryFound": false,
+      "researchFile": "research/overnight-next-2026-10-09/city-8914-bijie.json",
+      "latestAssessmentFile": "research/overnight-next-2026-10-09/city-8914-bijie.json",
+      "parcelStatus": "no_open_geometry_found",
+      "sourceIds": [],
+      "aliases": [
+        "wup2025:8914",
+        "Bijie"
+      ],
+      "populationUnit": "persons",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "The Guizhou 2024 Natural Resources Bulletin records real-estate registration and external-query operations for Bijie prefecture, the local jurisdiction containing the WUP city. This verifies jurisdictionally local registration activity, not the previously claimed specific city-office location or public vector geometry.",
+        "registryEvidenceUrls": [
+          "https://zrzy.guizhou.gov.cn/wzgb/zwgk/zdlyxxgk/tjsj/202511/P020251119342232763673.pdf"
+        ],
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false,
+        "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+        "registryGeometryFound": false,
+        "reason": "No anonymous full parcel geometry with stable native IDs was verified within the reviewed discovery scope. Institutional documents and UI login pages do not establish geometry absence; continued first-party service discovery remains open."
+      },
+      "populationResearch": {
+        "overnightNext": {
+          "cohort": "overnight-next-1101-1200",
+          "queueRank": 1200,
+          "wupCityCode": 8914,
+          "population2025": 463837,
+          "populationPlausibility2025": "Low",
+          "populationUnit": "persons",
+          "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+          "populationSourceUnit": "source Pop is in thousands; this record stores persons",
+          "evidenceFile": "research/overnight-next-2026-10-09/city-8914-bijie.json",
+          "checkedAt": "2026-10-09",
+          "rootReviewedAt": "2026-10-09T09:46:31.498552+00:00",
+          "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result."
+        }
+      }
+    },
+    {
+      "cityId": "wup2025:11710",
+      "researchOrder": 1235,
+      "wupCityCode": 11710,
+      "name": "Meizhou",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        24.3186796455347,
+        116.100671710308
+      ],
+      "checkedAt": "2026-10-09",
+      "rootReviewedAt": "2026-10-09T09:46:31.498552+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "runtimeAssessment": {
+        "status": "not_enabled_no_verified_public_geometry",
+        "reason": "No anonymous full parcel geometry with stable native IDs was verified within the reviewed discovery scope. Institutional documents and UI login pages do not establish geometry absence; continued first-party service discovery remains open."
+      },
+      "coverageAssessment": {
+        "claimedScope": "The municipal bureau 2024 departmental accounts explicitly assign property registration, cadastral investigation/survey and registration information-system responsibilities. This primary municipal institutional document supports local custody; unrelated service guidance and individual notices do not establish an anonymous parcel-vector API.",
+        "verifiedOpenScope": "No anonymous full parcel geometry with stable native IDs was verified within the reviewed discovery scope. Institutional documents and UI login pages do not establish geometry absence; continued first-party service discovery remains open.",
+        "countrywideVerified": false,
+        "citywideVerified": false
+      },
+      "resultCategory": "official_local_registry_geometry_unverified",
+      "technicalBlocker": "No anonymous full parcel geometry with stable native IDs was verified within the reviewed discovery scope. Institutional documents and UI login pages do not establish geometry absence; continued first-party service discovery remains open.",
+      "population2025": 464343,
+      "populationPlausibility2025": "High",
+      "checked": true,
+      "citySource": "UN DESA World Urbanization Prospects 2025; population-ranked settlement locator, not a municipal boundary.",
+      "registryGeometryFound": false,
+      "researchFile": "research/overnight-next-2026-10-09/city-11710-meizhou.json",
+      "latestAssessmentFile": "research/overnight-next-2026-10-09/city-11710-meizhou.json",
+      "parcelStatus": "no_open_geometry_found",
+      "sourceIds": [],
+      "aliases": [
+        "wup2025:11710",
+        "Meizhou"
+      ],
+      "populationUnit": "persons",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "dataFindings": {
+        "registryFound": true,
+        "registryBasis": "The municipal bureau 2024 departmental accounts explicitly assign property registration, cadastral investigation/survey and registration information-system responsibilities. This primary municipal institutional document supports local custody; unrelated service guidance and individual notices do not establish an anonymous parcel-vector API.",
+        "registryEvidenceUrls": [
+          "https://www.meizhou.gov.cn/attachment/0/226/226516/2834527.pdf"
+        ],
+        "verifiedSample": false,
+        "publicParcelGeometryFound": false,
+        "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+        "registryGeometryFound": false,
+        "reason": "No anonymous full parcel geometry with stable native IDs was verified within the reviewed discovery scope. Institutional documents and UI login pages do not establish geometry absence; continued first-party service discovery remains open."
+      },
+      "populationResearch": {
+        "overnightNext": {
+          "cohort": "overnight-next-1101-1200",
+          "queueRank": 1199,
+          "wupCityCode": 11710,
+          "population2025": 464343,
+          "populationPlausibility2025": "High",
+          "populationUnit": "persons",
+          "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+          "populationSourceUnit": "source Pop is in thousands; this record stores persons",
+          "evidenceFile": "research/overnight-next-2026-10-09/city-11710-meizhou.json",
+          "checkedAt": "2026-10-09",
+          "rootReviewedAt": "2026-10-09T09:46:31.498552+00:00",
+          "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result."
+        }
+      }
     }
   ],
   "countryProbes": [
@@ -83174,12 +85437,12 @@
       "status": "active",
       "cohort": "overnight-next-1101-1200",
       "previouslyAttempted": 5,
-      "reviewedThisRun": 58,
-      "integratedThisRun": 58,
-      "geometryVerifiedThisRun": 2,
-      "registryGeometryFoundThisRun": 2,
-      "enabledThisRun": 1,
-      "updatedAt": "2026-10-09T07:25:03.115223+00:00"
+      "reviewedThisRun": 81,
+      "integratedThisRun": 81,
+      "geometryVerifiedThisRun": 7,
+      "registryGeometryFoundThisRun": 7,
+      "enabledThisRun": 3,
+      "updatedAt": "2026-10-09T09:46:31.670998+00:00"
     }
   }
 }

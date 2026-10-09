@@ -1,0 +1,2300 @@
+{
+  "schemaVersion": "1.0",
+  "status": "passed",
+  "checkedAt": "2026-10-09T08:29:56.007Z",
+  "city": "Vilnius",
+  "country": "Lithuania",
+  "wupCityCode": 699,
+  "identity": {
+    "priorAttemptSameWupIdentity": true,
+    "freshAttemptCountAdded": 0,
+    "reason": "Repeat qualification of previously attempted WUP City_Code 699; no new city attempt is counted."
+  },
+  "scope": {
+    "purpose": "Bounded runtime qualification through the repaired but otherwise unchanged WFS adapter.",
+    "durableGeometryCopiesAdded": 0,
+    "ignoredNativeGeometryCache": "tmp/overnight-cities-2026-10-09/vilnius-runtime-native-4258-cache.geojson",
+    "ignoredCacheFullFeatureCount": 3,
+    "metadataOnlyReport": true,
+    "sourceTermsOrCurrentnessWereNotUsedAsEligibilityGates": true,
+    "ignoredCanonicalGeometryCache": "tmp/overnight-cities-2026-10-09/vilnius-runtime-canonical-cache.geojson",
+    "ignoredCanonicalCacheFullFeatureCount": 7,
+    "ignoredCanonicalCacheSha256": "256b5ce8812b0d7d87b3c2e6bf2c6674c0c9b93b45726f8a9574b11e3f9bad39",
+    "maxNativePolygonsRetained": 3
+  },
+  "wup": {
+    "cityCode": 699,
+    "name": "Vilnius",
+    "country": "Lithuania",
+    "year": 2025,
+    "pointLatLon": [
+      54.695435447302,
+      25.2704077979851
+    ],
+    "source": "UN DESA WUP 2025 Revision, WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "sourceUrl": "https://population.un.org/wup/assets/Download/Cities/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "archiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "pointBasis": "Official WUP 2025 City_Code 699 Year=2025 PWCent point; used unchanged as center."
+  },
+  "source": {
+    "id": "lt-inspire-cp-wfs",
+    "endpoint": "https://www.inspire-geoportal.lt/geoserver/cp/ows",
+    "featureType": "cp:CP.CadastralParcel",
+    "nativeCrs": "urn:ogc:def:crs:EPSG::4258",
+    "nativeCrsAuthorityAxisOrder": [
+      "latitude",
+      "longitude"
+    ],
+    "previouslyObservedNativeGeoJsonCoordinates": [
+      "longitude",
+      "latitude"
+    ],
+    "adapter": "createWfsParcelSource",
+    "version": "2.0.0",
+    "idField": "nationalcadastralreference",
+    "idType": "integer",
+    "idPrefix": "LT-INSP-CADASTRAL-",
+    "geometryField": "geometry",
+    "outFields": [
+      "nationalcadastralreference"
+    ],
+    "requestProperties": true,
+    "srsName": "CRS:84",
+    "pageSize": 100,
+    "idBatchSize": 80,
+    "maxFeatures": 3000,
+    "minRequestIntervalMs": 150,
+    "propertyNameRequestValue": "geometry,nationalcadastralreference"
+  },
+  "grid": {
+    "cellSizeDegrees": 0.001,
+    "alignmentOrigin": [
+      0,
+      0
+    ],
+    "cellCount": 13,
+    "centerCell": {
+      "cell": "dx0_dy0",
+      "offset": [
+        0,
+        0
+      ],
+      "bounds": [
+        25.27,
+        54.695,
+        25.271,
+        54.696
+      ]
+    },
+    "cells": [
+      {
+        "cell": "dx0_dy0",
+        "offset": [
+          0,
+          0
+        ],
+        "bounds": [
+          25.27,
+          54.695,
+          25.271,
+          54.696
+        ]
+      },
+      {
+        "cell": "dx-1_dy-1",
+        "offset": [
+          -1,
+          -1
+        ],
+        "bounds": [
+          25.269,
+          54.694,
+          25.27,
+          54.695
+        ]
+      },
+      {
+        "cell": "dx0_dy-1",
+        "offset": [
+          0,
+          -1
+        ],
+        "bounds": [
+          25.27,
+          54.694,
+          25.271,
+          54.695
+        ]
+      },
+      {
+        "cell": "dx1_dy-1",
+        "offset": [
+          1,
+          -1
+        ],
+        "bounds": [
+          25.271,
+          54.694,
+          25.272,
+          54.695
+        ]
+      },
+      {
+        "cell": "dx-1_dy0",
+        "offset": [
+          -1,
+          0
+        ],
+        "bounds": [
+          25.269,
+          54.695,
+          25.27,
+          54.696
+        ]
+      },
+      {
+        "cell": "dx1_dy0",
+        "offset": [
+          1,
+          0
+        ],
+        "bounds": [
+          25.271,
+          54.695,
+          25.272,
+          54.696
+        ]
+      },
+      {
+        "cell": "dx-1_dy1",
+        "offset": [
+          -1,
+          1
+        ],
+        "bounds": [
+          25.269,
+          54.696,
+          25.27,
+          54.697
+        ]
+      },
+      {
+        "cell": "dx0_dy1",
+        "offset": [
+          0,
+          1
+        ],
+        "bounds": [
+          25.27,
+          54.696,
+          25.271,
+          54.697
+        ]
+      },
+      {
+        "cell": "dx1_dy1",
+        "offset": [
+          1,
+          1
+        ],
+        "bounds": [
+          25.271,
+          54.696,
+          25.272,
+          54.697
+        ]
+      },
+      {
+        "cell": "dx0_dy-2",
+        "offset": [
+          0,
+          -2
+        ],
+        "bounds": [
+          25.27,
+          54.693,
+          25.271,
+          54.694
+        ]
+      },
+      {
+        "cell": "dx0_dy2",
+        "offset": [
+          0,
+          2
+        ],
+        "bounds": [
+          25.27,
+          54.697,
+          25.271,
+          54.698
+        ]
+      },
+      {
+        "cell": "dx-2_dy0",
+        "offset": [
+          -2,
+          0
+        ],
+        "bounds": [
+          25.268,
+          54.695,
+          25.269,
+          54.696
+        ]
+      },
+      {
+        "cell": "dx2_dy0",
+        "offset": [
+          2,
+          0
+        ],
+        "bounds": [
+          25.272,
+          54.695,
+          25.273,
+          54.696
+        ]
+      }
+    ],
+    "maxConcurrentRequestsObserved": 1
+  },
+  "boundedQueries": {
+    "status": "passed",
+    "countBefore": [
+      {
+        "cell": "dx0_dy0",
+        "bounds": [
+          25.27,
+          54.695,
+          25.271,
+          54.696
+        ],
+        "numberMatched": 2,
+        "returnedAcrossPages": 2,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          2
+        ],
+        "uniqueIds": 2,
+        "complete": true
+      },
+      {
+        "cell": "dx-1_dy-1",
+        "bounds": [
+          25.269,
+          54.694,
+          25.27,
+          54.695
+        ],
+        "numberMatched": 2,
+        "returnedAcrossPages": 2,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          2
+        ],
+        "uniqueIds": 2,
+        "complete": true
+      },
+      {
+        "cell": "dx0_dy-1",
+        "bounds": [
+          25.27,
+          54.694,
+          25.271,
+          54.695
+        ],
+        "numberMatched": 2,
+        "returnedAcrossPages": 2,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          2
+        ],
+        "uniqueIds": 2,
+        "complete": true
+      },
+      {
+        "cell": "dx1_dy-1",
+        "bounds": [
+          25.271,
+          54.694,
+          25.272,
+          54.695
+        ],
+        "numberMatched": 2,
+        "returnedAcrossPages": 2,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          2
+        ],
+        "uniqueIds": 2,
+        "complete": true
+      },
+      {
+        "cell": "dx-1_dy0",
+        "bounds": [
+          25.269,
+          54.695,
+          25.27,
+          54.696
+        ],
+        "numberMatched": 2,
+        "returnedAcrossPages": 2,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          2
+        ],
+        "uniqueIds": 2,
+        "complete": true
+      },
+      {
+        "cell": "dx1_dy0",
+        "bounds": [
+          25.271,
+          54.695,
+          25.272,
+          54.696
+        ],
+        "numberMatched": 2,
+        "returnedAcrossPages": 2,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          2
+        ],
+        "uniqueIds": 2,
+        "complete": true
+      },
+      {
+        "cell": "dx-1_dy1",
+        "bounds": [
+          25.269,
+          54.696,
+          25.27,
+          54.697
+        ],
+        "numberMatched": 2,
+        "returnedAcrossPages": 2,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          2
+        ],
+        "uniqueIds": 2,
+        "complete": true
+      },
+      {
+        "cell": "dx0_dy1",
+        "bounds": [
+          25.27,
+          54.696,
+          25.271,
+          54.697
+        ],
+        "numberMatched": 2,
+        "returnedAcrossPages": 2,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          2
+        ],
+        "uniqueIds": 2,
+        "complete": true
+      },
+      {
+        "cell": "dx1_dy1",
+        "bounds": [
+          25.271,
+          54.696,
+          25.272,
+          54.697
+        ],
+        "numberMatched": 2,
+        "returnedAcrossPages": 2,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          2
+        ],
+        "uniqueIds": 2,
+        "complete": true
+      },
+      {
+        "cell": "dx0_dy-2",
+        "bounds": [
+          25.27,
+          54.693,
+          25.271,
+          54.694
+        ],
+        "numberMatched": 4,
+        "returnedAcrossPages": 4,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          4
+        ],
+        "uniqueIds": 4,
+        "complete": true
+      },
+      {
+        "cell": "dx0_dy2",
+        "bounds": [
+          25.27,
+          54.697,
+          25.271,
+          54.698
+        ],
+        "numberMatched": 2,
+        "returnedAcrossPages": 2,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          2
+        ],
+        "uniqueIds": 2,
+        "complete": true
+      },
+      {
+        "cell": "dx-2_dy0",
+        "bounds": [
+          25.268,
+          54.695,
+          25.269,
+          54.696
+        ],
+        "numberMatched": 2,
+        "returnedAcrossPages": 2,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          2
+        ],
+        "uniqueIds": 2,
+        "complete": true
+      },
+      {
+        "cell": "dx2_dy0",
+        "bounds": [
+          25.272,
+          54.695,
+          25.273,
+          54.696
+        ],
+        "numberMatched": 3,
+        "returnedAcrossPages": 3,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          3
+        ],
+        "uniqueIds": 3,
+        "complete": true
+      }
+    ],
+    "countAfter": [
+      {
+        "cell": "dx0_dy0",
+        "bounds": [
+          25.27,
+          54.695,
+          25.271,
+          54.696
+        ],
+        "numberMatched": 2,
+        "returnedAcrossPages": 2,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          2
+        ],
+        "uniqueIds": 2,
+        "complete": true
+      },
+      {
+        "cell": "dx-1_dy-1",
+        "bounds": [
+          25.269,
+          54.694,
+          25.27,
+          54.695
+        ],
+        "numberMatched": 2,
+        "returnedAcrossPages": 2,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          2
+        ],
+        "uniqueIds": 2,
+        "complete": true
+      },
+      {
+        "cell": "dx0_dy-1",
+        "bounds": [
+          25.27,
+          54.694,
+          25.271,
+          54.695
+        ],
+        "numberMatched": 2,
+        "returnedAcrossPages": 2,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          2
+        ],
+        "uniqueIds": 2,
+        "complete": true
+      },
+      {
+        "cell": "dx1_dy-1",
+        "bounds": [
+          25.271,
+          54.694,
+          25.272,
+          54.695
+        ],
+        "numberMatched": 2,
+        "returnedAcrossPages": 2,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          2
+        ],
+        "uniqueIds": 2,
+        "complete": true
+      },
+      {
+        "cell": "dx-1_dy0",
+        "bounds": [
+          25.269,
+          54.695,
+          25.27,
+          54.696
+        ],
+        "numberMatched": 2,
+        "returnedAcrossPages": 2,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          2
+        ],
+        "uniqueIds": 2,
+        "complete": true
+      },
+      {
+        "cell": "dx1_dy0",
+        "bounds": [
+          25.271,
+          54.695,
+          25.272,
+          54.696
+        ],
+        "numberMatched": 2,
+        "returnedAcrossPages": 2,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          2
+        ],
+        "uniqueIds": 2,
+        "complete": true
+      },
+      {
+        "cell": "dx-1_dy1",
+        "bounds": [
+          25.269,
+          54.696,
+          25.27,
+          54.697
+        ],
+        "numberMatched": 2,
+        "returnedAcrossPages": 2,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          2
+        ],
+        "uniqueIds": 2,
+        "complete": true
+      },
+      {
+        "cell": "dx0_dy1",
+        "bounds": [
+          25.27,
+          54.696,
+          25.271,
+          54.697
+        ],
+        "numberMatched": 2,
+        "returnedAcrossPages": 2,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          2
+        ],
+        "uniqueIds": 2,
+        "complete": true
+      },
+      {
+        "cell": "dx1_dy1",
+        "bounds": [
+          25.271,
+          54.696,
+          25.272,
+          54.697
+        ],
+        "numberMatched": 2,
+        "returnedAcrossPages": 2,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          2
+        ],
+        "uniqueIds": 2,
+        "complete": true
+      },
+      {
+        "cell": "dx0_dy-2",
+        "bounds": [
+          25.27,
+          54.693,
+          25.271,
+          54.694
+        ],
+        "numberMatched": 4,
+        "returnedAcrossPages": 4,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          4
+        ],
+        "uniqueIds": 4,
+        "complete": true
+      },
+      {
+        "cell": "dx0_dy2",
+        "bounds": [
+          25.27,
+          54.697,
+          25.271,
+          54.698
+        ],
+        "numberMatched": 2,
+        "returnedAcrossPages": 2,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          2
+        ],
+        "uniqueIds": 2,
+        "complete": true
+      },
+      {
+        "cell": "dx-2_dy0",
+        "bounds": [
+          25.268,
+          54.695,
+          25.269,
+          54.696
+        ],
+        "numberMatched": 2,
+        "returnedAcrossPages": 2,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          2
+        ],
+        "uniqueIds": 2,
+        "complete": true
+      },
+      {
+        "cell": "dx2_dy0",
+        "bounds": [
+          25.272,
+          54.695,
+          25.273,
+          54.696
+        ],
+        "numberMatched": 3,
+        "returnedAcrossPages": 3,
+        "pageStarts": [
+          0
+        ],
+        "pageCounts": [
+          3
+        ],
+        "uniqueIds": 3,
+        "complete": true
+      }
+    ],
+    "allMatchedCountsStable": true,
+    "changedMatchedCountCells": [],
+    "distinctIdsBefore": 7,
+    "distinctIdsAfter": 7,
+    "distinctUnionIds": 7,
+    "allResponsesHttp200": true,
+    "returnedPropertyKeys": [
+      "gml_id",
+      "nationalcadastralreference",
+      "ogc_fid"
+    ],
+    "requestCount": 32,
+    "requestPages": [
+      {
+        "label": "before:dx0_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.27,54.695,25.271,54.696,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "before:dx-1_dy-1",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.269,54.694,25.27,54.695,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "before:dx0_dy-1",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.27,54.694,25.271,54.695,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "before:dx1_dy-1",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.271,54.694,25.272,54.695,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "before:dx-1_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.269,54.695,25.27,54.696,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "before:dx1_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.271,54.695,25.272,54.696,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "before:dx-1_dy1",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.269,54.696,25.27,54.697,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "before:dx0_dy1",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.27,54.696,25.271,54.697,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "before:dx1_dy1",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.271,54.696,25.272,54.697,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "before:dx0_dy-2",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.27,54.693,25.271,54.694,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 4,
+        "numberReturned": 4,
+        "featureCount": 4,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "before:dx0_dy2",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.27,54.697,25.271,54.698,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "before:dx-2_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.268,54.695,25.269,54.696,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "before:dx2_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.272,54.695,25.273,54.696,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 3,
+        "numberReturned": 3,
+        "featureCount": 3,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "after:dx0_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.27,54.695,25.271,54.696,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "after:dx-1_dy-1",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.269,54.694,25.27,54.695,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "after:dx0_dy-1",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.27,54.694,25.271,54.695,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "after:dx1_dy-1",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.271,54.694,25.272,54.695,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "after:dx-1_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.269,54.695,25.27,54.696,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "after:dx1_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.271,54.695,25.272,54.696,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "after:dx-1_dy1",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.269,54.696,25.27,54.697,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "after:dx0_dy1",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.27,54.696,25.271,54.697,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "after:dx1_dy1",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.271,54.696,25.272,54.697,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "after:dx0_dy-2",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.27,54.693,25.271,54.694,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 4,
+        "numberReturned": 4,
+        "featureCount": 4,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "after:dx0_dy2",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.27,54.697,25.271,54.698,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "after:dx-2_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.268,54.695,25.269,54.696,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "after:dx2_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.272,54.695,25.273,54.696,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 3,
+        "numberReturned": 3,
+        "featureCount": 3,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "forced-page-size-1-center-cell",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.27,54.695,25.271,54.696,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 1,
+        "numberMatched": 2,
+        "numberReturned": 1,
+        "featureCount": 1,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "forced-page-size-1-center-cell",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.27,54.695,25.271,54.696,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 1,
+        "requestedPageSize": 1,
+        "numberMatched": 2,
+        "numberReturned": 1,
+        "featureCount": 1,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "fresh-id-read:1",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": null,
+        "filterKind": "native-id-in",
+        "filterSha256": "97b0fce5260a81b13725461f3bae673d7ef08c41e5ec3ae3a22a40212aaea25e",
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 7,
+        "numberReturned": 7,
+        "featureCount": 7,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "explicit-absence",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": null,
+        "filterKind": "native-id-shaped-absence",
+        "filterSha256": "08b199fd92437cb1088f5a4b269727190f3229fec8592228b938382905b9a287",
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 0,
+        "numberReturned": 0,
+        "featureCount": 0,
+        "responseCrs": null,
+        "returnedPropertyKeys": []
+      },
+      {
+        "label": "compute-source-binding",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.26436338,54.69176756,25.27975067,54.69615009,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 48,
+        "numberReturned": 48,
+        "featureCount": 48,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "native-4258-geometry",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::4258",
+        "bbox": null,
+        "filterKind": "native-id-native-geometry",
+        "filterSha256": "270c207bacde3a139af9aed8baa5cb157aeca97d8751d59c5c5729f69d11e11c",
+        "startIndex": 0,
+        "requestedPageSize": 3,
+        "numberMatched": 3,
+        "numberReturned": 3,
+        "featureCount": 3,
+        "responseCrs": "urn:ogc:def:crs:EPSG::4258",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      }
+    ]
+  },
+  "forcedPageSize1": {
+    "status": "passed",
+    "cell": "dx0_dy0",
+    "numberMatched": 2,
+    "returnedFeatureCount": 2,
+    "pageCount": 2,
+    "pageStarts": [
+      0,
+      1
+    ],
+    "pageCounts": [
+      1,
+      1
+    ],
+    "sameIDsAsCenterCell": true,
+    "missing": [],
+    "unexpected": [],
+    "serviceFeatureIdValidation": {
+      "passed": true,
+      "method": "The existing adapter rejects an omitted or repeated WFS feature.id across pages; the query completed successfully."
+    },
+    "canonicalResultCount": 2,
+    "distinctCanonicalResultCount": 2
+  },
+  "freshNativeIdReads": {
+    "status": "passed",
+    "requested": 7,
+    "found": 7,
+    "missing": [],
+    "unexpected": [],
+    "explicitlyAbsentFreshIds": [],
+    "geometryHashChangesVsBoundedReads": [],
+    "allMatched": true,
+    "geometryHashMethod": "SHA-256 over the full normalized adapter WGS84 geometry JSON; every bounded-read geometry matched its fresh native-ID adapter read."
+  },
+  "explicitAbsence": {
+    "status": "passed",
+    "nativeId": "LT-INSP-CADASTRAL-999999999999",
+    "found": 0,
+    "absentIds": [
+      "LT-INSP-CADASTRAL-999999999999"
+    ]
+  },
+  "pointContainment": {
+    "pointLatLon": [
+      54.695435447302,
+      25.2704077979851
+    ],
+    "containingParcelCount": 1,
+    "containingParcelIds": [
+      "LT-INSP-CADASTRAL-440051231650"
+    ],
+    "contained": true,
+    "selectedFullParcel": {
+      "id": "LT-INSP-CADASTRAL-440051231650",
+      "nativeId": "440051231650",
+      "selectedAs": "point-containing full parcel",
+      "distanceFromPointM": 0,
+      "areaM2": 87011.541,
+      "geometryType": "Polygon",
+      "geometryHashWgs84": "0c93464ad84adc7b07c816c08bd1806c881aca8d7a6d781896c405c5103fe639"
+    },
+    "eligibilityGate": "Point containment/absence is reported only; it is not a runtime eligibility gate."
+  },
+  "computeSourceBinding": {
+    "status": "passed",
+    "coverage": "complete",
+    "complete": true,
+    "siteM2": 87011.54,
+    "unsurveyedM2": 0,
+    "unknownM2": 0,
+    "toleranceM": 0,
+    "parcels": [
+      {
+        "parcelId": "LT-INSP-CADASTRAL-440051231650",
+        "overlapM2": 87011.541,
+        "intrusionM": 152.0601
+      }
+    ],
+    "touched": [],
+    "source": "server:lt-inspire-cp-wfs"
+  },
+  "native4258Comparison": {
+    "status": "passed",
+    "requestedCount": 3,
+    "returnedCount": 3,
+    "request": {
+      "status": "response_received",
+      "requests": 1,
+      "httpStatus": 200,
+      "error": null,
+      "responseCrs": "urn:ogc:def:crs:EPSG::4258",
+      "numberMatched": 3,
+      "returned": 3
+    },
+    "comparisons": [
+      {
+        "externalId": "LT-INSP-CADASTRAL-10100320697",
+        "nativeGeometryHash": "db98129c55dafbe8d6fb6fa7b94f0dcc101973265ba2ba9541e728d3cc55801b",
+        "adapterGeometryHash": "fa69491aef2db2e9cd313f080c58d565d0a877640816ca9d5fe4939abae851a6",
+        "nativeType": "Polygon",
+        "adapterType": "Polygon",
+        "vertexComparison": {
+          "sameRingAndVertexCounts": true,
+          "nativeRings": 1,
+          "adapterRings": 1,
+          "nativeVertices": 12,
+          "adapterVertices": 12,
+          "maxVertexDisplacementM": 0.004448,
+          "meanVertexDisplacementM": 0.003614
+        },
+        "pointContainedInNative": false
+      },
+      {
+        "externalId": "LT-INSP-CADASTRAL-440051231650",
+        "nativeGeometryHash": "009073a7c150aa9f8c24a3f62b720ea25bec0d46a4d4afb5cb46a00c1a4dff96",
+        "adapterGeometryHash": "0c93464ad84adc7b07c816c08bd1806c881aca8d7a6d781896c405c5103fe639",
+        "nativeType": "Polygon",
+        "adapterType": "Polygon",
+        "vertexComparison": {
+          "sameRingAndVertexCounts": true,
+          "nativeRings": 1,
+          "adapterRings": 1,
+          "nativeVertices": 118,
+          "adapterVertices": 118,
+          "maxVertexDisplacementM": 0.004448,
+          "meanVertexDisplacementM": 0.003864
+        },
+        "pointContainedInNative": true
+      },
+      {
+        "externalId": "LT-INSP-CADASTRAL-440052891217",
+        "nativeGeometryHash": "bbcb3d01278c1b8482661bcdd84329254e5bb238c100733cd56ff0cc9cbe00b2",
+        "adapterGeometryHash": "41d62a11b41b012f4f46477c25e40bb22084db6a3dfb4c7a77b2d5a20b54e0c7",
+        "nativeType": "Polygon",
+        "adapterType": "Polygon",
+        "vertexComparison": {
+          "sameRingAndVertexCounts": true,
+          "nativeRings": 1,
+          "adapterRings": 1,
+          "nativeVertices": 51,
+          "adapterVertices": 51,
+          "maxVertexDisplacementM": 0.004448,
+          "meanVertexDisplacementM": 0.003707
+        },
+        "pointContainedInNative": false
+      }
+    ],
+    "cachePath": "tmp/overnight-cities-2026-10-09/vilnius-runtime-native-4258-cache.geojson",
+    "coordinateOrderEvidence": "EPSG:4258 GeoJSON coordinates are longitude/latitude in the direct geometry response, confirmed by full vertex comparison against CRS:84: same ring and vertex counts, maximum displacement 0.004448 m."
+  },
+  "requestLog": {
+    "requestCount": 32,
+    "maxConcurrentRequestsObserved": 1,
+    "allRequestsHttps": true,
+    "noAuthorizationConfigured": true,
+    "requests": [
+      {
+        "label": "before:dx0_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.27,54.695,25.271,54.696,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "before:dx-1_dy-1",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.269,54.694,25.27,54.695,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "before:dx0_dy-1",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.27,54.694,25.271,54.695,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "before:dx1_dy-1",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.271,54.694,25.272,54.695,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "before:dx-1_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.269,54.695,25.27,54.696,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "before:dx1_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.271,54.695,25.272,54.696,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "before:dx-1_dy1",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.269,54.696,25.27,54.697,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "before:dx0_dy1",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.27,54.696,25.271,54.697,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "before:dx1_dy1",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.271,54.696,25.272,54.697,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "before:dx0_dy-2",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.27,54.693,25.271,54.694,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 4,
+        "numberReturned": 4,
+        "featureCount": 4,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "before:dx0_dy2",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.27,54.697,25.271,54.698,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "before:dx-2_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.268,54.695,25.269,54.696,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "before:dx2_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.272,54.695,25.273,54.696,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 3,
+        "numberReturned": 3,
+        "featureCount": 3,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "after:dx0_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.27,54.695,25.271,54.696,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "after:dx-1_dy-1",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.269,54.694,25.27,54.695,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "after:dx0_dy-1",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.27,54.694,25.271,54.695,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "after:dx1_dy-1",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.271,54.694,25.272,54.695,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "after:dx-1_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.269,54.695,25.27,54.696,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "after:dx1_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.271,54.695,25.272,54.696,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "after:dx-1_dy1",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.269,54.696,25.27,54.697,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "after:dx0_dy1",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.27,54.696,25.271,54.697,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "after:dx1_dy1",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.271,54.696,25.272,54.697,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "after:dx0_dy-2",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.27,54.693,25.271,54.694,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 4,
+        "numberReturned": 4,
+        "featureCount": 4,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "after:dx0_dy2",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.27,54.697,25.271,54.698,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "after:dx-2_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.268,54.695,25.269,54.696,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "after:dx2_dy0",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.272,54.695,25.273,54.696,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 3,
+        "numberReturned": 3,
+        "featureCount": 3,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "forced-page-size-1-center-cell",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.27,54.695,25.271,54.696,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 1,
+        "numberMatched": 2,
+        "numberReturned": 1,
+        "featureCount": 1,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "forced-page-size-1-center-cell",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.27,54.695,25.271,54.696,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 1,
+        "requestedPageSize": 1,
+        "numberMatched": 2,
+        "numberReturned": 1,
+        "featureCount": 1,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "fresh-id-read:1",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": null,
+        "filterKind": "native-id-in",
+        "filterSha256": "97b0fce5260a81b13725461f3bae673d7ef08c41e5ec3ae3a22a40212aaea25e",
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 7,
+        "numberReturned": 7,
+        "featureCount": 7,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "explicit-absence",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": null,
+        "filterKind": "native-id-shaped-absence",
+        "filterSha256": "08b199fd92437cb1088f5a4b269727190f3229fec8592228b938382905b9a287",
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 0,
+        "numberReturned": 0,
+        "featureCount": 0,
+        "responseCrs": null,
+        "returnedPropertyKeys": []
+      },
+      {
+        "label": "compute-source-binding",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "CRS:84",
+        "bbox": "25.26436338,54.69176756,25.27975067,54.69615009,CRS:84",
+        "filterKind": "bbox",
+        "filterSha256": null,
+        "startIndex": 0,
+        "requestedPageSize": 100,
+        "numberMatched": 48,
+        "numberReturned": 48,
+        "featureCount": 48,
+        "responseCrs": "urn:ogc:def:crs:CRS::84",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      },
+      {
+        "label": "native-4258-geometry",
+        "status": 200,
+        "protocol": "https:",
+        "typeNames": "cp:CP.CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::4258",
+        "bbox": null,
+        "filterKind": "native-id-native-geometry",
+        "filterSha256": "270c207bacde3a139af9aed8baa5cb157aeca97d8751d59c5c5729f69d11e11c",
+        "startIndex": 0,
+        "requestedPageSize": 3,
+        "numberMatched": 3,
+        "numberReturned": 3,
+        "featureCount": 3,
+        "responseCrs": "urn:ogc:def:crs:EPSG::4258",
+        "returnedPropertyKeys": [
+          "gml_id",
+          "nationalcadastralreference",
+          "ogc_fid"
+        ]
+      }
+    ],
+    "allResponsesHttp200": true
+  },
+  "limitations": [
+    "Thirteen aligned 0.001° cells and one selected parcel footprint do not establish citywide completeness.",
+    "Native EPSG:4258 geometry comparison is bounded to at most three selected fresh parcel IDs.",
+    "The documented source marks paging transaction safety false; matched-count stability was checked before and after this run but does not establish source freshness or continuity."
+  ],
+  "propertyProjection": {
+    "requestProperties": true,
+    "requestedFeatureFields": [
+      "geometry",
+      "nationalcadastralreference"
+    ],
+    "returnedGeoJsonPropertyKeys": [
+      "gml_id",
+      "nationalcadastralreference",
+      "ogc_fid"
+    ],
+    "extraReturnedPropertyNames": [
+      "gml_id",
+      "ogc_fid"
+    ],
+    "sourcePropertiesRetainedByAdapter": [
+      "nationalcadastralreference"
+    ],
+    "providerExtraPropertyValuesPersisted": false,
+    "note": "The provider returned gml_id and ogc_fid in addition to the requested native ID; only nationalcadastralreference was retained in canonical features and caches. No values for the extra fields were written to this report or cache."
+  },
+  "geometryHandling": "No snapping, clipping, rounding, or repair was applied; source geometries were compared as returned."
+}

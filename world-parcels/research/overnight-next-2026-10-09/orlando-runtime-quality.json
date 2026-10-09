@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T07:31:36.494160+00:00",
+  "method": "Independent Shapely/GEOS validity, exact equality and complete STRtree candidate-pair intersection audit of all six unmodified qualification polygons in temporary EPSG:26917 coordinates.",
+  "inputSha256": "8132bd34cbec5063515daa93f4af730621cd731c0f70e2dfe4295db9937799ec",
+  "metricCrs": "EPSG:26917 (NAD83 / UTM zone 17N)",
+  "featureCount": 6,
+  "invalidCount": 0,
+  "invalid": [],
+  "duplicatePairCount": 0,
+  "duplicatePairs": [],
+  "overlapThresholdM2": 0.01,
+  "overlapPairCount": 0,
+  "totalOverlapM2": 0,
+  "overlaps": [],
+  "operationErrorCount": 0,
+  "operationErrors": [],
+  "geometryChangedOrRepaired": false,
+  "metricProjection": "+proj=utm +zone=17 +datum=NAD83 +units=m +no_defs +type=crs",
+  "geometryInput": "orlando-full-safe-geometry-epsg26917.geojson; full source polygons reprojected without simplification or repair",
+  "sourceGeometryWgs84Sha256": "5c812259141734c2f8b2e87660c7e38c1e7a3d1f68bb8823fedcdf6c3d0256bb",
+  "assessment": "All six polygon geometries are valid; no exact duplicates, pair overlaps over 0.01 m², or GEOS operation errors.",
+  "city": "Orlando",
+  "wupCityCode": 7432,
+  "rank": 1165,
+  "persistedSampleCount": 3,
+  "persistedSampleObjectIds": [
+    167862,
+    166712,
+    166926
+  ],
+  "disposition": "The full six-feature temporary set passed; three safe full polygons are retained in overnight-next research. Geometry was not repaired or simplified.",
+  "auditedPublicIds": [
+    {
+      "OBJECTID": 167862,
+      "PARCEL": "302216051000349"
+    },
+    {
+      "OBJECTID": 166712,
+      "PARCEL": "302217052500193"
+    },
+    {
+      "OBJECTID": 166926,
+      "PARCEL": "302217052300128"
+    },
+    {
+      "OBJECTID": 167788,
+      "PARCEL": "302216531200021"
+    },
+    {
+      "OBJECTID": 167854,
+      "PARCEL": "302216051000348"
+    },
+    {
+      "OBJECTID": 167983,
+      "PARCEL": "302216051000347"
+    }
+  ]
+}

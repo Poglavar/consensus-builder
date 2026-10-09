@@ -1,0 +1,114 @@
+{
+  "name": "Cox's Bazar",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "rank": 1182,
+  "point": [
+    21.4407822517003,
+    92.0100285427203
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Cox's Bazar official cadastral parcel map land registry GIS",
+        "result": "Separate English-language discovery followed by first-party source review; only the government sources listed are retained.",
+        "actualResultUrls": [
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://dlrs.gov.bd/site/page/359236ae-4c8a-49e0-b2ab-1e9b13994908/Digital-BRS-%28Search-Map/-Khatian)"
+        ],
+        "scope": "Identify local or jurisdictionally local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+      },
+      {
+        "language": "Bangla",
+        "query": "কক্সবাজার মৌজা নকশা দাগ খতিয়ান ভূমি রেকর্ড মানচিত্র",
+        "result": "Official Department of Land Records and Surveys digital BRS provides cadastral map search by administrative selections and sheet/plot identifiers. No coordinate-only exact-point polygon query was used.",
+        "actualResultUrls": [
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://dlrs.gov.bd/site/page/359236ae-4c8a-49e0-b2ab-1e9b13994908/Digital-BRS-%28Search-Map/-Khatian)"
+        ],
+        "method": "Separate Bangla-language discovery followed by first-party source review.",
+        "scope": "Identify local or jurisdictionally local land/cadastral custody and public parcel geometry; no owner, address, tax, account, title, cadastral-number or applicant values submitted."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://settlement.gov.bd/Map/MapSearch",
+        "operator": "Bangladesh Department of Land Records and Surveys (DLRS)",
+        "scope": "Official DLRS cadastral survey map interface exposes division, district, survey, upazila/thana, mouza, sheet and dag selector fields; its result flow can expose khatian/owner attributes, so no plot or owner field was submitted."
+      },
+      {
+        "url": "https://dlrs.gov.bd/site/page/359236ae-4c8a-49e0-b2ab-1e9b13994908/Digital-BRS-%28Search-Map/-Khatian)",
+        "operator": "Bangladesh Department of Land Records and Surveys (DLRS)",
+        "scope": "Official DLRS cadastral survey map interface exposes division, district, survey, upazila/thana, mouza, sheet and dag selector fields; its result flow can expose khatian/owner attributes, so no plot or owner field was submitted."
+      }
+    ],
+    "requests": [],
+    "historicalContext": [
+      "Preflight audit on 2026-10-09: this exact WUP 2025 code was absent from existing city/service packets and prior-attempt entries; only pending-roster and cohort-ledger rows matched."
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "Bangladesh Department of Land Records and Surveys (DLRS)",
+    "url": "https://settlement.gov.bd/Map/MapSearch",
+    "operator": "Bangladesh Department of Land Records and Surveys (DLRS)",
+    "serviceType": "Official registry, map or cadastral source reviewed; no safe source-native full parcel polygon was retained at the exact unchanged WUP point.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See source review; custody, point coverage, parcel geometry, dataset scope and runtime readiness are assessed separately."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official DLRS cadastral survey map interface exposes division, district, survey, upazila/thana, mouza, sheet and dag selector fields; its result flow can expose khatian/owner attributes, so no plot or owner field was submitted.",
+    "verifiedOpenScope": "No source-native full parcel polygon at the exact unchanged WUP point was retained; this investigation does not establish parcel absence or citywide coverage.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "Official DLRS cadastral survey map interface exposes division, district, survey, upazila/thana, mouza, sheet and dag selector fields; its result flow can expose khatian/owner attributes, so no plot or owner field was submitted.",
+  "remainingUncertainty": "Official DLRS cadastral survey map interface exposes division, district, survey, upazila/thana, mouza, sheet and dag selector fields; its result flow can expose khatian/owner attributes, so no plot or owner field was submitted. Exact WUP-point parcel geometry, legal/title meaning, coverage completeness and currentness remain unverified.",
+  "nextStep": "Keep runtime disabled until root review determines whether an official source and full native geometry meet adapter criteria.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 7651,
+  "cityId": "wup2025:7651",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    21.4407822517003,
+    92.0100285427203
+  ],
+  "population2025k": 470.1,
+  "populationUnit": "persons",
+  "queueRank": 1182,
+  "population2025": 470100,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "National DLRS is the government cadastral-survey/map custodian; public map search exists but is selector/plot based.",
+  "registryEvidenceUrls": [
+    "https://settlement.gov.bd/Map/MapSearch",
+    "https://dlrs.gov.bd/site/page/359236ae-4c8a-49e0-b2ab-1e9b13994908/Digital-BRS-%28Search-Map/-Khatian)"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No source-native full parcel polygon at the exact unchanged WUP point was retained; runtime remains disabled."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

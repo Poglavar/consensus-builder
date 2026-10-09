@@ -1,0 +1,401 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T09:18:00.388Z",
+  "descriptor": {
+    "adapter": "gml-wfs",
+    "id": "fi-inspire-cp-wfs",
+    "endpoint": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs",
+    "featureType": "cp:CadastralParcel",
+    "idField": "localId",
+    "geometryField": "geometry",
+    "responseCrs": "EPSG:3067",
+    "idPrefix": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/",
+    "idType": "string",
+    "parcelNumberField": "localId",
+    "outFields": [
+      "localId"
+    ],
+    "pageSize": 50,
+    "maxFeatures": 1500,
+    "maxBboxKm2": 1,
+    "maxResponseBytes": 2097152,
+    "maxTotalResponseBytes": 8388608,
+    "timeoutMs": 12000,
+    "countryCode": "FI",
+    "cityIds": [
+      "helsinki"
+    ],
+    "metricSrid": 3067
+  },
+  "metricDefinition": "+proj=utm +zone=35 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+  "unchangedWupCenter": [
+    60.2151504892048,
+    24.9229563703619
+  ],
+  "uniqueWupCellParcels": 2,
+  "stressBoxParcels": 36,
+  "independentQualityParcelCount": 38,
+  "freshExactIdReadback": {
+    "count": 2,
+    "allFullGeometryHashesMatch": true,
+    "hashes": [
+      {
+        "id": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/382791887",
+        "sha256": "4804ba27914499cf2e7219e6f9d9cc5a3649ef44143a166e416d287b2744528e"
+      },
+      {
+        "id": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/411715261",
+        "sha256": "704851a77b98e76a13b402e8ccbfa652630c01dc5c510f51d4d8831260d8b5e4"
+      }
+    ]
+  },
+  "explicitAbsence": [
+    "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/9999999999999999"
+  ],
+  "fullFootprintQuery": {
+    "complete": true,
+    "returnedIds": [
+      "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/382791887"
+    ]
+  },
+  "fullParcelBinding": {
+    "parcels": [
+      {
+        "parcelId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/382791887",
+        "overlapM2": 223.048,
+        "intrusionM": 13.2212
+      }
+    ],
+    "touched": [],
+    "toleranceM": 0,
+    "coverage": "complete",
+    "unsurveyedM2": 0,
+    "siteM2": 223.05,
+    "source": "server:fi-inspire-cp-wfs",
+    "unknownM2": 0,
+    "computedAt": "2026-10-09T09:17:53.570Z"
+  },
+  "forcedOneFeaturePaging": {
+    "complete": true,
+    "count": 36,
+    "fullGeometryManifestMatchesNormal": true
+  },
+  "targetId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/382791887",
+  "geometryChangedOrRepaired": false,
+  "priorProbeSetupFailures": "Two forced-page descriptor setups with maxFeatures1500 then1000 exceeded the 128-operation request budget at pageSize1. Corrected to maxFeatures100. No provider failure inferred.",
+  "runtimeAssessment": "Not admitted yet: independently known-contained small interior site returned zero in worker followthrough; spatial semantics still being diagnosed.",
+  "requests": [
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&RESOURCEID=FI_CP_CADASTRALPARCEL_382791887%2CFI_CP_CADASTRALPARCEL_411715261&resultType=hits",
+      "httpStatus": 200,
+      "bytesRead": 936,
+      "sha256": "283426c530e941f30371bf2165b87a13e20c297d6f685a10e8ba96857d789799"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&RESOURCEID=FI_CP_CADASTRALPARCEL_382791887%2CFI_CP_CADASTRALPARCEL_411715261&count=2&startIndex=0",
+      "httpStatus": 200,
+      "bytesRead": 6006,
+      "sha256": "6341eb438faa9b9b219bb00382ab72dbb26924d11ba5c351c850a2869af0b865"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&RESOURCEID=FI_CP_CADASTRALPARCEL_382791887%2CFI_CP_CADASTRALPARCEL_411715261&resultType=hits",
+      "httpStatus": 200,
+      "bytesRead": 936,
+      "sha256": "73f1c4f77d6af1ed3acedb27e081dffd5cea3b97105c01fcd58e0fcffc6a5951"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&RESOURCEID=FI_CP_CADASTRALPARCEL_9999999999999999&resultType=hits",
+      "httpStatus": 200,
+      "bytesRead": 909,
+      "sha256": "f241379409927ff6f283022b97afad238a124048613f52ae70e4ebf114d842b8"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&RESOURCEID=FI_CP_CADASTRALPARCEL_9999999999999999&resultType=hits",
+      "httpStatus": 200,
+      "bytesRead": 909,
+      "sha256": "e16868bce890f1c658145a0780f6e55dc552f151fbcbfe4c4bb81ba7dea287e2"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384881.857134316%2C6677330.6432793215%2C384903.45703568053%2C6677348.316437719%2CEPSG%3A3067&resultType=hits",
+      "httpStatus": 200,
+      "bytesRead": 957,
+      "sha256": "ae368996c75064ce9805b841b3bc3db36f6c48126fd252e004f78cd7dc26e3e9"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384881.857134316%2C6677330.6432793215%2C384903.45703568053%2C6677348.316437719%2CEPSG%3A3067&count=1&startIndex=0",
+      "httpStatus": 200,
+      "bytesRead": 2754,
+      "sha256": "8afee9b6fc359b95c582ba12c810da2a9b20af7175a14f676739a00a6887a176"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384881.857134316%2C6677330.6432793215%2C384903.45703568053%2C6677348.316437719%2CEPSG%3A3067&resultType=hits",
+      "httpStatus": 200,
+      "bytesRead": 957,
+      "sha256": "7b0de09b79d7df662104c41a56eea88c487271f4f2448e9f778719138b00762d"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384881.857134316%2C6677330.6432793215%2C384903.45703568053%2C6677348.316437719%2CEPSG%3A3067&resultType=hits",
+      "httpStatus": 200,
+      "bytesRead": 957,
+      "sha256": "572671e10a4f5650cb60351e8b3fd0c07464db63847495f55a02fca8bbc5c184"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384881.857134316%2C6677330.6432793215%2C384903.45703568053%2C6677348.316437719%2CEPSG%3A3067&count=1&startIndex=0",
+      "httpStatus": 200,
+      "bytesRead": 2754,
+      "sha256": "26acd10b9e263d955ba516c8a758b21aaa1ff410cc46c419d140ad8e7a69681c"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384881.857134316%2C6677330.6432793215%2C384903.45703568053%2C6677348.316437719%2CEPSG%3A3067&resultType=hits",
+      "httpStatus": 200,
+      "bytesRead": 957,
+      "sha256": "49edf35a8eef953273affd456ca548fa20714f8bb2ed9e8d6828bd3d7b012d0f"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&resultType=hits",
+      "httpStatus": 200,
+      "bytesRead": 959,
+      "sha256": "2a988e05b6175d7d8ebe0ec6d1f9fc37345cfad8cc0ba60365af693737c757c2"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=0",
+      "httpStatus": 200,
+      "bytesRead": 3303,
+      "sha256": "580bbf93d9aca8d85293e33a8422291b52abf8e5c28a301b12ed65e319d6330e"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=1",
+      "httpStatus": 200,
+      "bytesRead": 3408,
+      "sha256": "2ad6865f507480b3f4d2a130f09f8bce47ff181c953a3c34e7c2da2fc706829c"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=2",
+      "httpStatus": 200,
+      "bytesRead": 3134,
+      "sha256": "4e08740ff9c863d1ea5d4d42b23f3d8e0fdbd6a79126e76e575d3dc42dcff84a"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=3",
+      "httpStatus": 200,
+      "bytesRead": 3067,
+      "sha256": "b32732aa2544031a14711fa08a7f47ba32616bfdb08544da5b9874741085963e"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=4",
+      "httpStatus": 200,
+      "bytesRead": 3429,
+      "sha256": "d8049340e5b0ea19fc201dae65e300264dbc6525962bea8b0e9bac49cf6d0e4f"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=5",
+      "httpStatus": 200,
+      "bytesRead": 3063,
+      "sha256": "b27694928ab95c08132996502a653804fdd2213157d320d65d8542145813d642"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=6",
+      "httpStatus": 200,
+      "bytesRead": 3273,
+      "sha256": "eaf74ad4dbc4ffab4ae78588f0aa992a723ad4b411336e35568c90126f8e3ece"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=7",
+      "httpStatus": 200,
+      "bytesRead": 3068,
+      "sha256": "e6f02384f5b928cf46dcb5d47a3bdb411f956a07dfee543cdb8dbcee1f151402"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=8",
+      "httpStatus": 200,
+      "bytesRead": 3065,
+      "sha256": "d2b50a15fdacc6b79eac7e63bd9ba1cbc5b087ed7b8ff615ddffba595834d774"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=9",
+      "httpStatus": 200,
+      "bytesRead": 3042,
+      "sha256": "8365207447f33dcdbbff8fab1d912e4ab7425073a366a8ca62f52122c474cde7"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=10",
+      "httpStatus": 200,
+      "bytesRead": 3041,
+      "sha256": "21b834cf241441afe4b955cc51239b087624d62f60ca7d9c38abdb1b044f5f8b"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=11",
+      "httpStatus": 200,
+      "bytesRead": 3091,
+      "sha256": "52acb53037243c3ee8694683fc101dacd359b67104a3ffbd7cfebf197b23f251"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=12",
+      "httpStatus": 200,
+      "bytesRead": 3046,
+      "sha256": "ae7c596f0cedb942396b2151a82d0a0e030a98ebaa08692b6437624947361d10"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=13",
+      "httpStatus": 200,
+      "bytesRead": 3135,
+      "sha256": "fbe447a9030eaa9b0466133d1300607b2574f922182a10c00fc6c8d4f68a5232"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=14",
+      "httpStatus": 200,
+      "bytesRead": 3160,
+      "sha256": "747e6aad6a7aca18f1a221bad011166265874fea54105c8ab6e05739160ed4bf"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=15",
+      "httpStatus": 200,
+      "bytesRead": 3069,
+      "sha256": "c008af1d8b0022759fd10f5c240f2177cfb202a492a25376c823504c80d1d135"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=16",
+      "httpStatus": 200,
+      "bytesRead": 3047,
+      "sha256": "5c16854b20c65d04c4677ff4eacbad2a6cb7699f4200e16837c38a4277a2e53f"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=17",
+      "httpStatus": 200,
+      "bytesRead": 3070,
+      "sha256": "8ba663d5700963e719584586226f6862b9fb9449367384d75355d878f5432f5e"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=18",
+      "httpStatus": 200,
+      "bytesRead": 3068,
+      "sha256": "b05e884e3f76d473f16472445291448e598be4c07d8ade3edcf7bd1547b7434d"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=19",
+      "httpStatus": 200,
+      "bytesRead": 3070,
+      "sha256": "6d5722b35a2bae622269e36a6c34acb7a7e7d3a507735ebd4c71eef563a1efbf"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=20",
+      "httpStatus": 200,
+      "bytesRead": 3047,
+      "sha256": "0da1eeab78a21b062a2e1b876c02c0e3032884aedd50dc8e82a8a250be92ab32"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=21",
+      "httpStatus": 200,
+      "bytesRead": 3092,
+      "sha256": "4f7b1a47dcb22dde7f05d16edb15276a5a7b4fafc2a795628a3f61639d0606c1"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=22",
+      "httpStatus": 200,
+      "bytesRead": 3046,
+      "sha256": "5c5dc3e5e306226aa8b8d63df5939f2c08478488797258c15b08ba170d33aa27"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=23",
+      "httpStatus": 200,
+      "bytesRead": 3067,
+      "sha256": "cd047e98a789d73ab6abb5bd02e9d1526ee8b106efacefbe9fd264d376fe5a08"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=24",
+      "httpStatus": 200,
+      "bytesRead": 3069,
+      "sha256": "f22098acae6e92a072a2d081ff2f1a593feb85acd1ce42960aa35044f8a294c8"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=25",
+      "httpStatus": 200,
+      "bytesRead": 3068,
+      "sha256": "f39dd5085806916a015184dedfec93ec7a22cfaa8dbb9cb620456f0466af5035"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=26",
+      "httpStatus": 200,
+      "bytesRead": 3091,
+      "sha256": "629f847b1be88b0ad2e1e8876eb460940669298ce178c6882323ad4ee87c8b28"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=27",
+      "httpStatus": 200,
+      "bytesRead": 3047,
+      "sha256": "f78e03b38ba2dc7a8aab5131550e53e1e4fc6946cacd995d02f56a82965fb3fd"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=28",
+      "httpStatus": 200,
+      "bytesRead": 3111,
+      "sha256": "f27c2c11c9e1bce83a9c541bf791917cc21540a85c228ebf06969a930c46f37d"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=29",
+      "httpStatus": 200,
+      "bytesRead": 3089,
+      "sha256": "41b91ba111f92d0b36f5b93f996b38d3ecf4efa5699e16e78d3a9ce5d8d6fddf"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=30",
+      "httpStatus": 200,
+      "bytesRead": 7143,
+      "sha256": "887070f3d3bf89028d9180b43280f0b04b1c2b259e71546676cbababdb6d6b12"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=31",
+      "httpStatus": 200,
+      "bytesRead": 3111,
+      "sha256": "7aa5d6051298f48a5bea85af16dc253a4fd7f66ea2c31bb058a2ddb64f28bdcd"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=32",
+      "httpStatus": 200,
+      "bytesRead": 3088,
+      "sha256": "334d432486dbd0a162c21e91882fea316a62a7f65cf6ea7dd747f82c681042ec"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=33",
+      "httpStatus": 200,
+      "bytesRead": 3158,
+      "sha256": "766895ad2a0867a9570538d8222154129ac5e7dfb543146d83c3b142e39fbf28"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=34",
+      "httpStatus": 200,
+      "bytesRead": 3316,
+      "sha256": "87bfc2f7715338520e4ae40d79bd27d0190ed00715fd2063d422224c51ac0580"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=35",
+      "httpStatus": 200,
+      "bytesRead": 3067,
+      "sha256": "ec5e4ee33ccc41bb621fbe2f42a7e2b3b65aab0a866dd876d2baf5b19e4d099b"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&resultType=hits",
+      "httpStatus": 200,
+      "bytesRead": 959,
+      "sha256": "9210f1a986e38a50af0f600d7a97931b7f0965f9f6cc2f1824b120be45f47e07"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&resultType=hits",
+      "httpStatus": 200,
+      "bytesRead": 959,
+      "sha256": "f24ec696cd2d24eb5ad2b90dea345005c9bc7077db3139cbae5cfe09085f3200"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=36&startIndex=0",
+      "httpStatus": 200,
+      "bytesRead": 57060,
+      "sha256": "6aa26631452070bdfb03a8e79c3efd7381c8bbec7eb53d8168d79789a42307d0"
+    },
+    {
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&resultType=hits",
+      "httpStatus": 200,
+      "bytesRead": 959,
+      "sha256": "ecb7e1b72e08ba6e2dca440186f7bc0a38f554168918ead87104e6884fce49f4"
+    }
+  ]
+}

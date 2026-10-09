@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T08:46:57.132000+00:00",
+  "rootReviewedAt": "2026-10-09T08:46:57.132000+00:00",
+  "cityId": "wup2025:7290",
+  "appCityId": "jundiai",
+  "city": "Jundiaí",
+  "countryCode": "BR",
+  "wupCityCode": 7290,
+  "pointLatLon": [
+    -23.1976446911945,
+    -46.8554383147568
+  ],
+  "sourceId": "br-jundiai-geojundiai-lotes-jund-gid",
+  "descriptor": {
+    "id": "br-jundiai-geojundiai-lotes-jund-gid",
+    "endpoint": "https://geo.jundiai.sp.gov.br/geoserver/ows",
+    "featureType": "GeoJundiai:lotes_jund",
+    "idField": "gid",
+    "idType": "integer",
+    "idPrefix": "BR-JUNDIAI-LOTES-JUND-GID-",
+    "geometryField": "geom",
+    "outFields": [
+      "gid"
+    ],
+    "requestProperties": true,
+    "pageSize": 1000,
+    "idBatchSize": 80,
+    "maxFeatures": 3000,
+    "minRequestIntervalMs": 500,
+    "adapter": "wfs",
+    "countryCode": "BR",
+    "cityIds": [
+      "jundiai"
+    ],
+    "maxBboxKm2": 1,
+    "maxConcurrentQueries": 1,
+    "metricSrid": 31983,
+    "name": "Jundiaí public cadastral parcel polygons",
+    "operator": "Município de Jundiaí / GeoJundiaí",
+    "scope": "Public cadastral parcel geometry around the unchanged Jundiaí WUP settlement locator. Thirteen aligned cells and 205 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:31983 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The exact unchanged WUP locator has no parcel hit in its containing cell; nearby public parcel BR-JUNDIAI-LOTES-JUND-GID-46298 supports complete one-parcel binding. Native gid identifies individual GIS ground polygons; the duplicate codlote business reference is not used as runtime identity. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness.",
+    "responseCrs": "CRS:84",
+    "parcelNumberField": "gid",
+    "evidenceFile": "research/overnight-next-2026-10-09/jundiai-root-acceptance.json",
+    "catalogueUrl": "https://geo.jundiai.sp.gov.br/geojundiai/",
+    "attribution": "Município de Jundiaí / GeoJundiaí · cadastral references · adapted",
+    "licenceNote": "Publisher conditions, legal effect and update schedule are informational. Public native parcel IDs and geometry only; ownership is not imported."
+  },
+  "scope": "Public cadastral parcel geometry around the unchanged Jundiaí WUP settlement locator. Thirteen aligned cells and 205 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:31983 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The exact unchanged WUP locator has no parcel hit in its containing cell; nearby public parcel BR-JUNDIAI-LOTES-JUND-GID-46298 supports complete one-parcel binding. Native gid identifies individual GIS ground polygons; the duplicate codlote business reference is not used as runtime identity. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness.",
+  "qualityStatus": "approved_bounded_full_geometry",
+  "workerQualification": "jundiai-gid-alternative-qualification.json",
+  "rootIndependentProbe": "jundiai-root-independent-probe.json",
+  "rootIndependentQuality": "jundiai-root-quality.json",
+  "qualifiedUniqueParcels": 205,
+  "geometryChangedOrRepaired": false,
+  "registryFound": true,
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "enabled"
+}

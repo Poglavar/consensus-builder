@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T08:40:56.727Z",
+  "city": "Vilnius",
+  "descriptor": {
+    "id": "lt-inspire-cp-wfs",
+    "endpoint": "https://www.inspire-geoportal.lt/geoserver/cp/ows",
+    "featureType": "cp:CP.CadastralParcel",
+    "nativeCrs": "urn:ogc:def:crs:EPSG::4258",
+    "nativeCrsAuthorityAxisOrder": [
+      "latitude",
+      "longitude"
+    ],
+    "previouslyObservedNativeGeoJsonCoordinates": [
+      "longitude",
+      "latitude"
+    ],
+    "adapter": "wfs",
+    "version": "2.0.0",
+    "idField": "nationalcadastralreference",
+    "idType": "integer",
+    "idPrefix": "LT-INSP-CADASTRAL-",
+    "geometryField": "geometry",
+    "outFields": [
+      "nationalcadastralreference"
+    ],
+    "requestProperties": true,
+    "srsName": "CRS:84",
+    "pageSize": 100,
+    "idBatchSize": 80,
+    "maxFeatures": 3000,
+    "minRequestIntervalMs": 150,
+    "propertyNameRequestValue": "geometry,nationalcadastralreference",
+    "countryCode": "LT",
+    "cityIds": [
+      "vilnius"
+    ],
+    "maxBboxKm2": 1,
+    "maxConcurrentQueries": 1,
+    "metricSrid": 32635
+  },
+  "metricDefinition": "+proj=utm +zone=35 +datum=WGS84 +units=m +no_defs",
+  "qualifiedFeatureCount": 7,
+  "unchangedWupCenter": [
+    54.695435447302,
+    25.2704077979851
+  ],
+  "targetId": "LT-INSP-CADASTRAL-440051231650",
+  "freshFullGeometryReads": {
+    "count": 7,
+    "allGeometryHashesMatch": true,
+    "hashes": [
+      {
+        "id": "LT-INSP-CADASTRAL-10100320697",
+        "sha256": "fa69491aef2db2e9cd313f080c58d565d0a877640816ca9d5fe4939abae851a6"
+      },
+      {
+        "id": "LT-INSP-CADASTRAL-10100400042",
+        "sha256": "91bbad606341462f650705b488d1d47f695860488aa96c65b15aa5711507c26d"
+      },
+      {
+        "id": "LT-INSP-CADASTRAL-440000415152",
+        "sha256": "34511fe752f8590ee500fc08c5f1c20d8739ac70d359d9a363ed61e387ac83ac"
+      },
+      {
+        "id": "LT-INSP-CADASTRAL-440007599598",
+        "sha256": "4f6e641e08381072a75f54983cbc3f9c5d23670100a3e72eab804de4fa53d119"
+      },
+      {
+        "id": "LT-INSP-CADASTRAL-440021392350",
+        "sha256": "9cb07fb0bf07ada92c8856b92a396ef30bd97315c562dc5bf287daa5e8191a70"
+      },
+      {
+        "id": "LT-INSP-CADASTRAL-440051231650",
+        "sha256": "0c93464ad84adc7b07c816c08bd1806c881aca8d7a6d781896c405c5103fe639"
+      },
+      {
+        "id": "LT-INSP-CADASTRAL-440052891217",
+        "sha256": "41d62a11b41b012f4f46477c25e40bb22084db6a3dfb4c7a77b2d5a20b54e0c7"
+      }
+    ]
+  },
+  "nativeShapedExplicitAbsence": "LT-INSP-CADASTRAL-999999999999",
+  "forcedOneFeaturePaging": {
+    "bbox": [
+      25.27,
+      54.695,
+      25.271,
+      54.696
+    ],
+    "count": 2,
+    "complete": true,
+    "allFullGeometryMatches": true
+  },
+  "fullParcelFootprint": {
+    "complete": true,
+    "returnedIds": [
+      "LT-INSP-CADASTRAL-10100320028",
+      "LT-INSP-CADASTRAL-440051231650"
+    ]
+  },
+  "fullParcelBinding": {
+    "parcels": [
+      {
+        "parcelId": "LT-INSP-CADASTRAL-440051231650",
+        "overlapM2": 87011.541,
+        "intrusionM": 152.0601
+      }
+    ],
+    "touched": [],
+    "toleranceM": 0,
+    "coverage": "complete",
+    "unsurveyedM2": 0,
+    "siteM2": 87011.54,
+    "source": "server:lt-inspire-cp-wfs",
+    "unknownM2": 0,
+    "computedAt": "2026-10-09T08:40:56.722Z"
+  },
+  "geometryChangedOrRepaired": false,
+  "requests": [
+    {
+      "url": "https://www.inspire-geoportal.lt/geoserver/cp/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACP.CadastralParcel&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=nationalcadastralreference&propertyName=geometry%2Cnationalcadastralreference&count=100&startIndex=0&cql_filter=nationalcadastralreference+IN+%2810100320697%2C10100400042%2C440000415152%2C440007599598%2C440021392350%2C440051231650%2C440052891217%29",
+      "httpStatus": 200,
+      "responseBytes": 8068,
+      "sha256": "2ccbe118bae2f27b6413493261d71ba760d28dd88cf2011ebb5fb5ae9d10d541"
+    },
+    {
+      "url": "https://www.inspire-geoportal.lt/geoserver/cp/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACP.CadastralParcel&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=nationalcadastralreference&propertyName=geometry%2Cnationalcadastralreference&count=100&startIndex=0&cql_filter=nationalcadastralreference+IN+%28999999999999%29",
+      "httpStatus": 200,
+      "responseBytes": 147,
+      "sha256": "d1c409a5c91627104314d43f30b4d263dc70c16d2194c65435d6fdcaf78aed23"
+    },
+    {
+      "url": "https://www.inspire-geoportal.lt/geoserver/cp/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACP.CadastralParcel&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=nationalcadastralreference&propertyName=geometry%2Cnationalcadastralreference&count=1&startIndex=0&bbox=25.27%2C54.695%2C25.271%2C54.696%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 3975,
+      "sha256": "de3759171356fc5865432d2e2b23cb728f00bbb035a191a3877785db7a1a6b44"
+    },
+    {
+      "url": "https://www.inspire-geoportal.lt/geoserver/cp/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACP.CadastralParcel&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=nationalcadastralreference&propertyName=geometry%2Cnationalcadastralreference&count=1&startIndex=1&bbox=25.27%2C54.695%2C25.271%2C54.696%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 2662,
+      "sha256": "c14420772beadb3b2c1bd38f5c14c77acfc2cec6105ac2c14bf4e98aa2c1dea7"
+    },
+    {
+      "url": "https://www.inspire-geoportal.lt/geoserver/cp/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACP.CadastralParcel&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=nationalcadastralreference&propertyName=geometry%2Cnationalcadastralreference&count=100&startIndex=0&bbox=25.26436338%2C54.69176756%2C25.27975067%2C54.69615009%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 37622,
+      "sha256": "1cd49fcf4a92b5243457c2b20762b880ea1fc5f4e1f4655d29ca61c2ba895e1d"
+    },
+    {
+      "url": "https://www.inspire-geoportal.lt/geoserver/cp/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACP.CadastralParcel&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=nationalcadastralreference&propertyName=geometry%2Cnationalcadastralreference&count=100&startIndex=0&bbox=25.26436338%2C54.69176756%2C25.27975067%2C54.69615009%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 37622,
+      "sha256": "38c55d35ab5f4dcf9a7c36446e1f9f2c2ffa49d1e2b243dfa77e0161eb981a63"
+    }
+  ]
+}

@@ -1,0 +1,192 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:9127",
+  "wupCityCode": 9127,
+  "queueRank": 1201,
+  "rank": 1201,
+  "name": "Haldwani",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [
+    29.2175763639524,
+    79.51183207031
+  ],
+  "centerLatLon": [
+    29.2175763639524,
+    79.51183207031
+  ],
+  "pointBasis": "Immutable pending-queue WUP 2025 City_Code 9127 coordinate, copied without adjustment.",
+  "population2025k": 463.53,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "status": "complete",
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "registryFound": true,
+  "registryBasis": "The Nainital district administration links to the Uttarakhand Bhulekh public Record of Rights/Khata-Khatauni portal; Board of Revenue Uttarakhand lists Bhulekh and BhuNaksha as revenue applications. This establishes official record custody and service routes, not the public availability of parcel geometry or title conclusions.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "blocker": "The public land-record portal and state BhuNaksha entry point did not return a usable anonymous response during this review. The separate public registration GIS configuration advertises administrative, village, road, and village-union layers; its configured MapServer hosts did not respond to the direct HTTPS metadata requests. No claim of parcel-data absence is made.",
+  "source": {
+    "sourceId": null,
+    "name": "Board of Revenue Uttarakhand Bhulekh/BhuNaksha and Uttarakhand Stamps & Registration GIS",
+    "url": "https://bor.uk.gov.in/hi/",
+    "operator": "Board of Revenue Uttarakhand; Department of Stamps and Registration, Government of Uttarakhand",
+    "serviceType": "Official public RoR portal link, official BhuNaksha portal link, and separate public ArcGIS registration/rate GIS viewer; no public cadastral feature service verified",
+    "layer": "Viewer JavaScript names UK_admin MapServer (visible layer IDs 0-2), UK_stamp_reg MapServer/2 (village), /1 (road), and /4 (village_union); these are not documented as parcel layers",
+    "geometryType": null,
+    "nativeIdField": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "Do not use RoR owner/holder details or any account lookup. Only public geometry and public parcel identifiers may be retained if a suitable anonymous geometry service is established.",
+    "outputCrs": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Official district/state land-record links and the configured state registration/rate GIS service family were reviewed. These establish revenue record custody and expose administrative/village-related GIS layers, but no anonymous cadastral parcel layer was verified.",
+    "verifiedOpenScope": "Anonymous source-native full parcel geometry and a stable parcel identifier remain unverified in this pass. The WUP point was not used to infer source absence; city and state coverage remain unknown.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "technicalBlocker": "Current anonymous parcel-geometry access is unknown. Escalated public-network retries to the official Bhulekh, BhuNaksha, and configured map-service endpoints timed out before HTTP responses. No absence conclusion is supported.",
+  "remainingUncertainty": "Whether the Uttarakhand Bhulekh or BhuNaksha endpoints expose anonymous parcel geometry, whether another state parcel service exists, and whether any parcel layer covers Haldwani remain unverified. The public registration GIS configuration does not identify the listed admin/village/road/village-union layers as parcel layers.",
+  "registryEvidenceUrls": [
+    "https://nainital.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%B2%E0%A5%87%E0%A4%96-%E0%A4%96%E0%A4%BE%E0%A4%A4%E0%A5%8C%E0%A4%A8%E0%A5%80/",
+    "https://bor.uk.gov.in/hi/",
+    "https://bhulekh.uk.gov.in/Bhulekh/public/public_ror/Public_ROR.jsp",
+    "https://bhunaksha.uk.gov.in/"
+  ],
+  "rootReview": null,
+  "rootReviewedAt": null,
+  "checkedAt": "2026-10-09",
+  "population2025": 463530,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Haldwani Uttarakhand official cadastral map Bhu Naksha land records GIS",
+        "result": "English-language search followed by first-party review of district, Board of Revenue, state registration, and national land-record sources.",
+        "actualResultUrls": [
+          "https://nainital.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%B2%E0%A5%87%E0%A4%96-%E0%A4%96%E0%A4%BE%E0%A4%A4%E0%A5%8C%E0%A4%A8%E0%A5%80/",
+          "https://bor.uk.gov.in/hi/",
+          "https://eregistrationukgov.in/GIS/MapClient.aspx",
+          "https://bhunaksha.nic.in/bhunaksha/userhome.jsp"
+        ],
+        "scope": "Find official Haldwani/Nainital revenue custody and anonymous public parcel geometry; keep the exact WUP point unchanged and avoid holder, address, account, or tax-value records."
+      },
+      {
+        "language": "Hindi",
+        "query": "हल्द्वानी उत्तराखंड भूलेख नक्शा आधिकारिक भू नक्शा भूमि रिकॉर्ड",
+        "result": "Separate Hindi-language search followed by first-party review of the Nainital district and Uttarakhand Board of Revenue pages.",
+        "actualResultUrls": [
+          "https://nainital.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%B2%E0%A5%87%E0%A4%96-%E0%A4%96%E0%A4%BE%E0%A4%A4%E0%A5%8C%E0%A4%A8%E0%A5%80/",
+          "https://bor.uk.gov.in/hi/",
+          "https://eregistrationukgov.in/GIS/MapClient.aspx"
+        ],
+        "scope": "सिर्फ आधिकारिक राजस्व/भू-अभिलेख और सार्वजनिक भू-स्थानिक स्रोत जाँचना; WUP निर्देशांक यथावत रखना; खातेदार, पता, खाता या कर-मूल्य संबंधी विवरण न लेना।"
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://nainital.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%B2%E0%A5%87%E0%A4%96-%E0%A4%96%E0%A4%BE%E0%A4%A4%E0%A5%8C%E0%A4%A8%E0%A5%80/",
+        "operator": "District Administration Nainital, Government of Uttarakhand",
+        "scope": "The district's Bhulekh/Khata-Khatauni page directs users to the Uttarakhand public RoR portal and lists a tehsil-level land-record service center. It is an official land-record route, not evidence of a downloadable geometry API."
+      },
+      {
+        "url": "https://bor.uk.gov.in/hi/",
+        "operator": "Board of Revenue Uttarakhand",
+        "scope": "The Board's official homepage lists Bhulekh and BhuNaksha as separate revenue applications. This supplies the state-specific BhuNaksha endpoint `https://bhunaksha.uk.gov.in/`."
+      },
+      {
+        "url": "https://bhunaksha.nic.in/bhunaksha/userhome.jsp",
+        "operator": "Department of Land Resources / National Informatics Centre, Government of India",
+        "scope": "The national Bhu-Naksha product description says the parcel-map management system is intended for authorized state/UT officials and requires a valid user ID to enter. This is documentation of the product's access model, not a test proving that the Uttarakhand public endpoint lacks geometry."
+      },
+      {
+        "url": "https://eregistrationukgov.in/GIS/MapClient.aspx",
+        "operator": "Department of Stamps and Registration, Government of Uttarakhand",
+        "scope": "The official public GIS map is a location/rate-list client. Its public JavaScript config assigns UK_admin MapServer layers 0-2 and UK_stamp_reg MapServer/2 village, /1 road, /4 village_union; it does not identify a cadastral parcel layer."
+      },
+      {
+        "url": "https://gis.eregistrationukgov.in/gisportal/HelpDocument/Citizen%20Portal/help.html",
+        "operator": "Department of Stamps and Registration, Government of Uttarakhand",
+        "scope": "The Citizen Portal help describes public GIS layer query, village/road search, and circle-rate features. These user-facing functions do not document parcel-boundary downloads or a cadastral feature API."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://bhulekh.uk.gov.in/Bhulekh/public/public_ror/Public_ROR.jsp",
+        "method": "GET; anonymous public read; escalated fresh retry",
+        "httpStatus": null,
+        "contentType": null,
+        "bytesRead": null,
+        "error": "UND_ERR_CONNECT_TIMEOUT to bhulekh.uk.gov.in:443 after 10 seconds",
+        "assessment": "Transport connection timed out before HTTP; does not establish presence or absence of parcel geometry."
+      },
+      {
+        "url": "https://bhunaksha.uk.gov.in/",
+        "method": "GET; anonymous public read; escalated fresh retry",
+        "httpStatus": null,
+        "contentType": null,
+        "bytesRead": null,
+        "error": "UND_ERR_CONNECT_TIMEOUT to bhunaksha.uk.gov.in:443 after 10 seconds",
+        "assessment": "Transport connection timed out before HTTP; does not establish presence or absence of parcel geometry."
+      },
+      {
+        "url": "http://bharatnetprogress.nic.in/nicclouddb/rest/services/uk/UK_admin/MapServer?f=pjson",
+        "method": "GET; anonymous ArcGIS metadata only; escalated fresh retry over advertised HTTP",
+        "httpStatus": null,
+        "contentType": null,
+        "bytesRead": null,
+        "error": "UND_ERR_CONNECT_TIMEOUT to bharatnetprogress.nic.in:80 after 10 seconds",
+        "assessment": "Advertised HTTP metadata route timed out before HTTP response."
+      },
+      {
+        "url": "https://bharatnetprogress.nic.in/nicclouddb/rest/services/uk/UK_admin/MapServer?f=pjson",
+        "method": "GET; anonymous ArcGIS metadata only; escalated fresh retry over HTTPS",
+        "httpStatus": null,
+        "contentType": null,
+        "bytesRead": null,
+        "error": "UND_ERR_CONNECT_TIMEOUT to bharatnetprogress.nic.in:443 after 10 seconds",
+        "assessment": "HTTPS metadata route timed out before HTTP response."
+      },
+      {
+        "url": "http://bharatnetprogress.nic.in/nicclouddb/rest/services/uk/UK_stamp_reg/MapServer?f=pjson",
+        "method": "GET; anonymous ArcGIS metadata only; escalated fresh retry over advertised HTTP",
+        "httpStatus": null,
+        "contentType": null,
+        "bytesRead": null,
+        "error": "UND_ERR_CONNECT_TIMEOUT to bharatnetprogress.nic.in:80 after 10 seconds",
+        "assessment": "Advertised HTTP metadata route timed out before HTTP response."
+      },
+      {
+        "url": "https://bharatnetprogress.nic.in/nicclouddb/rest/services/uk/UK_stamp_reg/MapServer?f=pjson",
+        "method": "GET; anonymous ArcGIS metadata only; escalated fresh retry over HTTPS",
+        "httpStatus": null,
+        "contentType": null,
+        "bytesRead": null,
+        "error": "UND_ERR_CONNECT_TIMEOUT to bharatnetprogress.nic.in:443 after 10 seconds",
+        "assessment": "HTTPS metadata route timed out before HTTP response."
+      }
+    ],
+    "historicalContext": [
+      "Preflight audit on 2026-10-09: WUP 2025 City_Code 9127 had not been previously attempted or integrated before this pass."
+    ]
+  },
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "sourceIds": [],
+  "nextStep": "Continue bounded discovery of documented anonymous native parcel-geometry endpoints and inspect their metadata/schema; do not treat the unanswered WUP point or connection timeouts as evidence of absence.",
+  "adapterReady": false,
+  "runtimeAssessment": {
+    "status": "unknown_no_verified_public_geometry",
+    "reason": "Anonymous parcel geometry runtime status is unknown in this pass. Fresh escalated requests to Bhulekh, BhuNaksha, and advertised map-service HTTP/HTTPS endpoints all timed out before HTTP responses; no WUP-point zero-result query or absence inference was made."
+  }
+}

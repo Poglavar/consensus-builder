@@ -1,0 +1,197 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "purpose": "Read-only protocol and identity qualification around the existing Oslo locator. No production/global configuration was changed and no polygon was added.",
+  "source": {
+    "provider": "Kartverket / Geonorge",
+    "dataset": "Matrikkelen - Eiendomskart Teig",
+    "featureType": "app:Teig",
+    "publicEndpoint": "https://wfs.geonorge.no/skwms1/wfs.matrikkelen-eiendomskart-teig",
+    "advertisedVersion": "WFS 2.0.0 only in the current GetCapabilities document",
+    "supportedMethods": [
+      "GET",
+      "POST"
+    ],
+    "nativeCrs": "EPSG:25833",
+    "otherAdvertisedCrs": [
+      "EPSG:25832",
+      "EPSG:25835"
+    ],
+    "defaultResponse": "application/gml+xml; version=3.2 request is accepted and returns text/xml; subtype=gml/3.2.1 with GML 3.2 namespace",
+    "capabilitiesHttpStatus": 200,
+    "capabilitiesBytes": 32246,
+    "capabilitiesSha256": "7f21559857679ce9c25980be9822445cd59c7d3b4ca5f76cd128a6b6ecf2a8a1",
+    "featureSchemaHttpStatus": 200,
+    "featureSchemaBytes": 180974,
+    "featureSchemaSha256": "122c772d2ffea90bb408253f899af5b55228021ff2c3105e98aa03849ede54ac",
+    "featureNamespace": "http://skjema.geonorge.no/SOSI/produktspesifikasjon/Matrikkelen-Eiendomskart-Teig/20211101",
+    "schemaPropertiesRelevantToRead": {
+      "geometry": "app:område (gml:SurfacePropertyType)",
+      "nativeIdentifier": "app:identTeig/app:teigId (xs:integer)",
+      "observedIdentityMapping": "gml:id teig.N suffix equals app:identTeig/app:teigId N for all three current Oslo sample records and the exact-ID readback."
+    },
+    "storedQueries": [
+      {
+        "id": "urn:ogc:def:query:OGC-WFS::GetFeatureById",
+        "parameter": "ID (xsd:string)",
+        "caveat": "A successful real-ID response has an app:Teig document root rather than wfs:FeatureCollection; a synthetic valid-range ID returns HTTP 403 OperationProcessingFailed. Do not infer no-data from that error."
+      },
+      {
+        "id": "urn:ogc:def:query:OGC-WFS::GetFeatureByType",
+        "parameter": "typeName (xs:QName)"
+      }
+    ],
+    "alternateEndpointReview": {
+      "publicTeigServiceCatalog": "https://data.norge.no/en/data-services/82e8b72d-3ad8-3f36-8c3b-5904c777bf7f/matrikkelen-eiendomskart-teig-wfs",
+      "publicTeigServiceDocumentation": "https://kartkatalog.geonorge.no/Metadata/uuid/339d49c3-06a5-4310-9605-fced1fe465cb",
+      "separateRestrictedService": "https://data.norge.no/en/data-services/6a32b76a-9136-38c0-9ced-94fd1cfe8a9f/matrikkelen-norges-offisielle-eiendomsregister-matrikkelen-wfs",
+      "restrictedServiceEndpoint": "https://www.matrikkel.no/geoservergeo/wfs/MATRIKKEL",
+      "restrictedServiceHandling": "Catalog marks this separate Matrikkelen WFS as restricted access; it was not queried and no access restriction was bypassed.",
+      "otherPublicDistribution": "Catalog also lists Geonorge download/INSPIRE feed distributions; they are file/feed routes, not a verified alternate bounded WFS query endpoint."
+    },
+    "catalogCaveats": {
+      "serviceFreshness": "Geonorge describes a daily extracted dataset, with delay possible after large changes.",
+      "geometryCaveat": "The catalog says curves may be delivered as LineString/Kurve and may be deformed by transformation. The bounded Oslo sample uses native EPSG:25833 surface/polygon GML; this audit does not validate every national geometry encoding.",
+      "license": "CC BY 4.0 in the public service catalog; not treated as a technical gate."
+    }
+  },
+  "boundedOsloEvidence": {
+    "locatorBbox": "261600,6649100,261900,6649400,urn:ogc:def:crs:EPSG::25833",
+    "existingSampleFile": "NO-samples.json",
+    "existingDurablePolygonCount": 3,
+    "existingDurableFeatureProperties": [
+      "id",
+      "geometry"
+    ],
+    "existingIds": [
+      "teig.291142538",
+      "teig.291745513",
+      "teig.291144672"
+    ],
+    "polygonCapPolicy": "No additional geometry was persisted. The pre-existing three-polygon file remains the sole Norway geometry sample.",
+    "queryFindings": [
+      {
+        "kind": "getFeature-bbox-count3",
+        "httpStatus": 200,
+        "responseBytes": 11668,
+        "requestedProperties": [
+          "app:identTeig/app:teigId",
+          "app:område"
+        ],
+        "memberCount": 3,
+        "numberMatched": "unknown",
+        "numberReturned": "0",
+        "returnedIds": [
+          "teig.291142538",
+          "teig.291745513",
+          "teig.291144672"
+        ],
+        "projectionHonored": false,
+        "projectionFinding": "Response still included standard Teig properties such as identTeig, oppdateringsdato, område, kommunenummer, kommunenavn, matrikkelenhet, matrikkelnummerTekst, teigMedFlereMatrikkelenheter, tvist, uregistrertJordsameie and uuidTeig. Values outside public ID and geometry were discarded in memory."
+      },
+      {
+        "kind": "getFeature-count1-startIndex1",
+        "httpStatus": 200,
+        "responseBytes": 6075,
+        "memberCount": 1,
+        "numberMatched": "unknown",
+        "numberReturned": "0",
+        "returnedId": "teig.291745513",
+        "pagingFinding": "The one-record page at startIndex=1 matches the second ID in the bounded count=3 response. Offset paging works for this bounded check; each data page still misreports numberReturned."
+      },
+      {
+        "kind": "resultType-hits-bbox",
+        "httpStatus": 200,
+        "numberMatched": "74",
+        "numberReturned": "0",
+        "memberCount": 0
+      },
+      {
+        "kind": "resultType-hits-reader-intersects-filter",
+        "httpStatus": 200,
+        "numberMatched": "82",
+        "numberReturned": "0",
+        "memberCount": 0,
+        "filter": "FES 2.0 Intersects on app:område with a native EPSG:25833 polygon using the fixed Oslo locator bounds.",
+        "countDiscrepancy": "The KVP BBOX hit count (74) differs from the exact FES Intersects hit count (82). The same FES filter returns three feature members on a count=3 data page; these hit counts should not be conflated or treated as a validated complete population."
+      },
+      {
+        "kind": "getFeature-resourceId-real",
+        "httpStatus": 200,
+        "responseBytes": 4074,
+        "outputFormatRequested": "application/gml+xml; version=3.2",
+        "responseContentType": "text/xml; subtype=gml/3.2.1;charset=UTF-8",
+        "root": "wfs:FeatureCollection",
+        "numberMatched": "unknown",
+        "numberReturned": "0",
+        "memberCount": 1,
+        "resourceId": "teig.291142538",
+        "returnedGmlId": "teig.291142538",
+        "returnedTeigId": "291142538",
+        "geometryMatchesExistingSample": true,
+        "geometrySha256": "554f1d524898a88c9f5711eb60f82bcddf800133565a4a23aab0363f5daffb93",
+        "geometryCrs": "EPSG:25833",
+        "geometryFinding": "The single native-ID readback reproduces the existing sample geometry exactly; no polygon copy was saved."
+      },
+      {
+        "kind": "getFeature-resourceId-nativeShapedAbsence",
+        "httpStatus": 200,
+        "responseBytes": 1152,
+        "resourceId": "teig.999999999",
+        "identifierShape": "teig.<integer>; within the declared integer type range",
+        "root": "wfs:FeatureCollection",
+        "numberMatched": "unknown",
+        "numberReturned": "0",
+        "memberCount": 0,
+        "interpretation": "Explicit absence for this single native-shaped resource ID under the public RESOURCEID filter only. This is not evidence of missing coverage for any area."
+      },
+      {
+        "kind": "getFeature-resourceId-overflow-error",
+        "httpStatus": 500,
+        "resourceId": "teig.9999999999999999",
+        "interpretation": "Malformed/out-of-range ID caused an HTTP 500. This is a request error, not absence."
+      },
+      {
+        "kind": "getFeatureById-storedQuery-nativeShapedAbsence",
+        "httpStatus": 403,
+        "resourceId": "teig.999999999",
+        "exceptionCode": "OperationProcessingFailed",
+        "exceptionText": "feature not found",
+        "interpretation": "The advertised stored query uses an error response for this unknown ID; it is not a successful empty result and must not be interpreted as absence."
+      },
+      {
+        "kind": "getFeatureById-storedQuery-real",
+        "httpStatus": 200,
+        "resourceId": "teig.291142538",
+        "root": "app:Teig (single feature, no wfs:FeatureCollection wrapper)",
+        "returnedGmlId": "teig.291142538",
+        "returnedTeigId": "291142538",
+        "interpretation": "Identity lookup succeeds, but its response shape is rejected by the current FeatureCollection-only GML reader."
+      },
+      {
+        "kind": "fes-property-equality-nativeId",
+        "testedPath": "app:identTeig/app:teigId",
+        "realIdResult": "HTTP 200 empty FeatureCollection for teigId 291142538 despite that ID being present in the bbox and RESOURCEID results.",
+        "absentIdResult": "HTTP 200 empty FeatureCollection for teigId 999999999.",
+        "interpretation": "This property filter did not match a known real ID, so its empty response does not establish absence. RESOURCEID was the only successful exact filter demonstrated."
+      }
+    ]
+  },
+  "readerCompatibility": {
+    "currentFixedProfileReaderSupportsNorwayAsIs": false,
+    "reasons": [
+      "backend/parcels/gml-wfs-source.js has only fixed Lodz, Dresden and Poznan profiles; descriptor validation rejects any other profile/schema.",
+      "backend/parcels/gml-parcel-reader.js custom schemas are restricted to the three existing schemas, and it rejects a FeatureCollection when numberReturned differs from parsed featureCount. Kartverket reports numberReturned=0 on data responses with one or three real members.",
+      "The existing exactIds implementation builds a FES PropertyIsEqualTo filter on the configured property. The observed nested teigId property filter fails even for a known real ID; a Norway profile would need the working WFS RESOURCEID mechanism.",
+      "Stored GetFeatureById works for a known ID but returns a bare app:Teig root, not the FeatureCollection expected by the parser.",
+      "The exact FES Intersects hit count is available (82), but the KVP BBOX hit count differs (74); all-page consistency has not been qualified.",
+      "Geonorge documents possible curve geometry and transformation deformation; the current three Oslo Polygon samples do not prove that all nationwide geometry is supported by the existing Polygon/PolygonPatch reader."
+    ],
+    "assessment": "The published endpoint demonstrably supports bounded native-CRS geometry reads, one correct RESOURCEID readback, a valid-range empty RESOURCEID response, and startIndex paging in the Oslo sample. The existing fixed-profile reader cannot consume it without a Norway-specific schema and narrowly scoped protocol handling. The current count mismatch, filter behavior and curve caveat make this evidence insufficient to enable a runtime profile; do not treat the source as qualified for broad city ingestion yet."
+  },
+  "sourceDocumentation": [
+    "https://data.norge.no/en/data-services/82e8b72d-3ad8-3f36-8c3b-5904c777bf7f/matrikkelen-eiendomskart-teig-wfs",
+    "https://kartkatalog.geonorge.no/Metadata/uuid/339d49c3-06a5-4310-9605-fced1fe465cb",
+    "https://data.norge.no/en/data-services/6a32b76a-9136-38c0-9ced-94fd1cfe8a9f/matrikkelen-norges-offisielle-eiendomsregister-matrikkelen-wfs"
+  ]
+}

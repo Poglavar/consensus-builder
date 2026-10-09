@@ -1,0 +1,122 @@
+{
+  "name": "Ichalkaranji",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 1192,
+  "point": [
+    16.6982924157306,
+    74.459250736313
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ichalkaranji official cadastral parcel map land registry GIS",
+        "result": "Separate English-language discovery followed by first-party source review; only the government sources listed are retained.",
+        "actualResultUrls": [
+          "https://ichalkaranjimnp.in/%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A4%AD%E0%A4%BE%E0%A4%97%E0%A4%A8%E0%A4%BF%E0%A4%B9%E0%A4%BE%E0%A4%AF-%E0%A4%A8%E0%A4%95%E0%A4%BE%E0%A4%B6%E0%A4%BE-%E0%A5%A7-%E0%A4%A4%E0%A5%87-%E0%A5%A7%E0%A5%AC/",
+          "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+          "https://mahavillages.mahabhumi.gov.in/newjurisdiction.php"
+        ],
+        "scope": "Identify local or jurisdictionally local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+      },
+      {
+        "language": "Marathi",
+        "query": "इचलकरंजी नगर भूमापन नकाशा मालमत्ता पत्रक महाभूमी जमीन नोंद",
+        "result": "Official Ichalkaranji municipal site publishes ward maps only; Maharashtra Mahabhumi provides property-card/CTS and land-map services using district/office/village and CTS/survey inputs. No parcel-specific geometry was queried.",
+        "actualResultUrls": [
+          "https://ichalkaranjimnp.in/%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A4%AD%E0%A4%BE%E0%A4%97%E0%A4%A8%E0%A4%BF%E0%A4%B9%E0%A4%BE%E0%A4%AF-%E0%A4%A8%E0%A4%95%E0%A4%BE%E0%A4%B6%E0%A4%BE-%E0%A5%A7-%E0%A4%A4%E0%A5%87-%E0%A5%A7%E0%A5%AC/",
+          "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+          "https://mahavillages.mahabhumi.gov.in/newjurisdiction.php"
+        ],
+        "method": "Separate Marathi-language discovery followed by first-party source review.",
+        "scope": "Identify local or jurisdictionally local land/cadastral custody and public parcel geometry; no owner, address, tax, account, title, cadastral-number or applicant values submitted."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://ichalkaranjimnp.in/%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A4%AD%E0%A4%BE%E0%A4%97%E0%A4%A8%E0%A4%BF%E0%A4%B9%E0%A4%BE%E0%A4%AF-%E0%A4%A8%E0%A4%95%E0%A4%BE%E0%A4%B6%E0%A4%BE-%E0%A5%A7-%E0%A4%A4%E0%A5%87-%E0%A5%A7%E0%A5%AC/",
+        "operator": "Maharashtra Settlement Commissioner and Director of Land Records / Ichalkaranji Municipal Corporation",
+        "scope": "State land-record portal supplies property card, survey/CTS and map products; official municipal map page is a ward map, not cadastral parcels. Searches require administrative and parcel identifiers, none were submitted."
+      },
+      {
+        "url": "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+        "operator": "Maharashtra Settlement Commissioner and Director of Land Records / Ichalkaranji Municipal Corporation",
+        "scope": "State land-record portal supplies property card, survey/CTS and map products; official municipal map page is a ward map, not cadastral parcels. Searches require administrative and parcel identifiers, none were submitted."
+      },
+      {
+        "url": "https://mahavillages.mahabhumi.gov.in/newjurisdiction.php",
+        "operator": "Maharashtra Settlement Commissioner and Director of Land Records / Ichalkaranji Municipal Corporation",
+        "scope": "State land-record portal supplies property card, survey/CTS and map products; official municipal map page is a ward map, not cadastral parcels. Searches require administrative and parcel identifiers, none were submitted."
+      }
+    ],
+    "requests": [],
+    "historicalContext": [
+      "Preflight audit on 2026-10-09: this exact WUP 2025 code was absent from existing city/service packets and prior-attempt entries; only pending-roster and cohort-ledger rows matched."
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "Maharashtra Settlement Commissioner and Director of Land Records / Ichalkaranji Municipal Corporation",
+    "url": "https://ichalkaranjimnp.in/%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A4%AD%E0%A4%BE%E0%A4%97%E0%A4%A8%E0%A4%BF%E0%A4%B9%E0%A4%BE%E0%A4%AF-%E0%A4%A8%E0%A4%95%E0%A4%BE%E0%A4%B6%E0%A4%BE-%E0%A5%A7-%E0%A4%A4%E0%A5%87-%E0%A5%A7%E0%A5%AC/",
+    "operator": "Maharashtra Settlement Commissioner and Director of Land Records / Ichalkaranji Municipal Corporation",
+    "serviceType": "Official registry, map or cadastral source reviewed; no safe source-native full parcel polygon was retained at the exact unchanged WUP point.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See source review; custody, point coverage, parcel geometry, dataset scope and runtime readiness are assessed separately."
+  },
+  "coverageAssessment": {
+    "claimedScope": "State land-record portal supplies property card, survey/CTS and map products; official municipal map page is a ward map, not cadastral parcels. Searches require administrative and parcel identifiers, none were submitted.",
+    "verifiedOpenScope": "No source-native full parcel polygon at the exact unchanged WUP point was retained; this investigation does not establish parcel absence or citywide coverage.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "State land-record portal supplies property card, survey/CTS and map products; official municipal map page is a ward map, not cadastral parcels. Searches require administrative and parcel identifiers, none were submitted.",
+  "remainingUncertainty": "State land-record portal supplies property card, survey/CTS and map products; official municipal map page is a ward map, not cadastral parcels. Searches require administrative and parcel identifiers, none were submitted. Exact WUP-point parcel geometry, legal/title meaning, coverage completeness and currentness remain unverified.",
+  "nextStep": "Keep runtime disabled until root review determines whether an official source and full native geometry meet adapter criteria.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 8993,
+  "cityId": "wup2025:8993",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    16.6982924157306,
+    74.459250736313
+  ],
+  "population2025k": 465.814,
+  "populationUnit": "persons",
+  "queueRank": 1192,
+  "population2025": 465814,
+  "populationPlausibility2025": "High",
+  "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Official state portal identifies the land-records custodian and map/property-card products; municipal portal provides jurisdiction ward maps.",
+  "registryEvidenceUrls": [
+    "https://ichalkaranjimnp.in/%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A4%AD%E0%A4%BE%E0%A4%97%E0%A4%A8%E0%A4%BF%E0%A4%B9%E0%A4%BE%E0%A4%AF-%E0%A4%A8%E0%A4%95%E0%A4%BE%E0%A4%B6%E0%A4%BE-%E0%A5%A7-%E0%A4%A4%E0%A5%87-%E0%A5%A7%E0%A5%AC/",
+    "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+    "https://mahavillages.mahabhumi.gov.in/newjurisdiction.php"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No source-native full parcel polygon at the exact unchanged WUP point was retained; runtime remains disabled."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

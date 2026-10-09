@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T09:47:57.091609+00:00",
+  "wupCityCode": 3976,
+  "primaryUrl": "https://maringa.oxy.elotech.com.br/portaltransparencia-api/api/files/arquivo/145041",
+  "httpStatus": 403,
+  "curlExit": 0,
+  "bytes": 118,
+  "sha256": "58bf2215b395dcac74c009aa98701854e43cbe54a1cd3a95fee6a647ca9910d4",
+  "executionContext": "require_escalated public network",
+  "pdfExtracted": false,
+  "advertisedUrls": [],
+  "institutionalTermCounts": {
+    "Registro de Imóveis": 0,
+    "geoprocessamento": 0,
+    "lote": 0,
+    "Zona": 0,
+    "Quadra": 0
+  },
+  "metadataRetries": [
+    {
+      "url": "https://geoproc.maringa.pr.gov.br/arcgis/rest/services/SIGMARINGA/CONSULTAS/MapServer/13?f=pjson",
+      "httpStatus": null,
+      "curlExit": 28,
+      "bytes": 0,
+      "timeoutSeconds": 15,
+      "scope": "Connection failure only; no geometry absence inference."
+    },
+    {
+      "url": "http://geoproc.maringa.pr.gov.br/arcgis/rest/services/SIGMARINGA/CONSULTAS/MapServer/13?f=pjson",
+      "httpStatus": null,
+      "curlExit": 28,
+      "bytes": 0,
+      "timeoutSeconds": 15,
+      "scope": "Connection failure only; no geometry absence inference."
+    },
+    {
+      "url": "https://geoproc.maringa.pr.gov.br/",
+      "httpStatus": null,
+      "curlExit": 28,
+      "bytes": 0,
+      "timeoutSeconds": 15,
+      "scope": "Connection failure only; no geometry absence inference."
+    }
+  ],
+  "scope": "Root checks of official lot-map instructions and candidate municipal REST transport; not a complete search of municipal services."
+}

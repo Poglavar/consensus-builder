@@ -2,7 +2,7 @@
 import { bbox as geometryBbox, booleanIntersects, bboxPolygon, feature as geoFeature } from '@turf/turf';
 import proj4 from 'proj4';
 import { HttpError } from '../utils/helpers.js';
-import { MAPSERVER_GML_SCHEMA, SAXONY_GML_SCHEMA, POZNAN_GML_SCHEMA, parseGmlParcels } from './gml-parcel-reader.js';
+import { MAPSERVER_GML_SCHEMA, SAXONY_GML_SCHEMA, POZNAN_GML_SCHEMA, NORWAY_TEIG_GML_SCHEMA, FINLAND_CP_GML_SCHEMA, parseGmlParcels } from './gml-parcel-reader.js';
 import { canonicalParcelFeature, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
 
 const FES_NS = 'http://www.opengis.net/fes/2.0';
@@ -30,6 +30,26 @@ const PROFILES = Object.freeze({
         responseCrs: 'EPSG:2177', responseCrsUrn: 'urn:ogc:def:crs:EPSG::2177',
         propertyName: 'ms:ID_DZIALKI,ms:MSGEOMETRY', sortBy: undefined, namespaces: undefined,
         schema: POZNAN_GML_SCHEMA
+    }),
+    // Kartverket's public Teig endpoint supports the observed WFS 2.0 RESOURCEID
+    // semantics and narrowly documented numberReturned=0 data-page quirk; the
+    // profile remains pending runtime qualification. Do not switch to an
+    // attribute filter: it returned empty results for a known teigId.
+    'no-teig-gml-wfs': Object.freeze({
+        endpoint: 'https://wfs.geonorge.no/skwms1/wfs.matrikkelen-eiendomskart-teig',
+        typeName: 'app:Teig', idField: 'teigId', geometryField: 'område',
+        featureNamespace: NORWAY_TEIG_GML_SCHEMA.featureNamespace, idPrefix: 'NO-TEIG-',
+        responseCrs: 'EPSG:25833', responseCrsUrn: 'urn:ogc:def:crs:EPSG::25833',
+        propertyName: 'app:identTeig/app:teigId,app:område', sortBy: undefined, namespaces: undefined,
+        resourceIdPrefix: NORWAY_TEIG_GML_SCHEMA.gmlIdPrefix, schema: NORWAY_TEIG_GML_SCHEMA
+    }),
+    'fi-inspire-cp-wfs': Object.freeze({
+        endpoint: 'https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs',
+        typeName: 'cp:CadastralParcel', idField: 'localId', geometryField: 'geometry',
+        featureNamespace: FINLAND_CP_GML_SCHEMA.featureNamespace, idPrefix: FINLAND_CP_GML_SCHEMA.canonicalIdPrefix,
+        responseCrs: 'EPSG:3067', responseCrsUrn: 'urn:ogc:def:crs:EPSG::3067',
+        propertyName: undefined, sortBy: undefined, namespaces: undefined,
+        resourceIdPrefix: FINLAND_CP_GML_SCHEMA.gmlIdPrefix, bboxKvp: true, schema: FINLAND_CP_GML_SCHEMA
     })
 });
 const MAX_OPERATION_MS = 60000;
@@ -102,12 +122,14 @@ export function createGmlWfsParcelSource(descriptor, { fetchImpl = globalThis.fe
     const timeoutMs = descriptor.timeoutMs ?? 12000;
     const profile = PROFILES[descriptor.id];
 
-    function makeParams({ filter, resultType, count, startIndex }) {
+    function makeParams({ filter, resourceIds, bbox, resultType, count, startIndex }) {
         return new URLSearchParams({
             service: 'WFS', version: '2.0.0', request: 'GetFeature', typeNames: profile.typeName,
             srsName: profile.responseCrsUrn, outputFormat: 'application/gml+xml; version=3.2',
-            propertyName: profile.propertyName,
+            ...(profile.propertyName ? { propertyName: profile.propertyName } : {}),
             ...(profile.namespaces ? { namespaces: profile.namespaces } : {}),
+            ...(resourceIds?.length ? { RESOURCEID: resourceIds.join(',') } : {}),
+            ...(bbox ? { bbox } : {}),
             ...(filter ? { filter } : {}), ...(resultType ? { resultType } : {}),
             ...(count !== undefined ? { count: String(count) } : {}),
             ...(startIndex !== undefined ? { startIndex: String(startIndex) } : {}),
@@ -223,7 +245,9 @@ export function createGmlWfsParcelSource(descriptor, { fetchImpl = globalThis.fe
     async function queryBounds(bounds) {
         validateBounds(bounds, descriptor.maxBboxKm2 ?? 1, descriptor);
         const bbox = projectedBounds(bounds, profile);
-        const result = await readComplete({ filter: intersectsFilter(bbox, profile) });
+        const result = await readComplete(profile.bboxKvp
+            ? { bbox: `${bbox.join(',')},${profile.responseCrs}` }
+            : { filter: intersectsFilter(bbox, profile) });
         const shape = bboxPolygon(bounds);
         result.features = result.features.filter(feature => booleanIntersects(feature, shape));
         return result;
@@ -233,14 +257,20 @@ export function createGmlWfsParcelSource(descriptor, { fetchImpl = globalThis.fe
         if (!Array.isArray(ids) || !ids.length || ids.length > 80) throw new HttpError(400, 'Provide between 1 and 80 parcel IDs.');
         const unique = [...new Set(ids)];
         if (unique.some(id => typeof id !== 'string' || !id.startsWith(descriptor.idPrefix)
-            || !safeNativeId(id.slice(descriptor.idPrefix.length)))) throw new HttpError(400, 'Invalid parcel ID or different source.');
+            || !safeNativeId(id.slice(descriptor.idPrefix.length))
+            || (profile.resourceIdPrefix && !/^(?:0|[1-9]\d*)$/.test(id.slice(descriptor.idPrefix.length))))) {
+            throw new HttpError(400, 'Invalid parcel ID or different source.');
+        }
         const budget = newOperationBudget();
         const features = [], absentIds = [], foundNativeIds = new Set();
         let numberMatched = 0, duplicateNativeCount = 0;
         for (let offset = 0; offset < unique.length; offset += MAX_ID_BATCH_SIZE) {
             const batchIds = unique.slice(offset, offset + MAX_ID_BATCH_SIZE);
             const nativeIds = batchIds.map(id => id.slice(descriptor.idPrefix.length));
-            const result = await readComplete({ filter: exactIdFilter(nativeIds, profile) }, new Set(nativeIds), budget);
+            const spec = profile.resourceIdPrefix
+                ? { resourceIds: nativeIds.map(id => `${profile.resourceIdPrefix}${id}`) }
+                : { filter: exactIdFilter(nativeIds, profile) };
+            const result = await readComplete(spec, new Set(nativeIds), budget);
             const found = new Set(result.features.map(feature => feature.properties.sourceParcelId));
             for (const feature of result.features) {
                 const nativeId = feature.properties.sourceParcelId;

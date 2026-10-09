@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T08:02:05.597037+00:00",
+  "status": "passed",
+  "cityId": "orlando",
+  "sourceId": "orlando-ocpa-arcgis",
+  "url": "http://127.0.0.1:5640/?city=orlando&backend=http%3A%2F%2F127.0.0.1%3A5640&reduceMotion=1",
+  "renderedParcelLayers": 1,
+  "pointerClickPixels": [
+    600,
+    409
+  ],
+  "selectedNativeParcelId": "US-ORANGE-COUNTY-PARCEL-302216051000349",
+  "detailsHeadingMatched": true,
+  "pageErrors": [],
+  "screenshotVisuallyInspected": true,
+  "ownedBrowserClosed": true,
+  "previewScope": "Owned local real parcel gateway plus frontend, no database/proposal persistence."
+}

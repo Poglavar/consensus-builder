@@ -32,10 +32,46 @@ export const POZNAN_GML_SCHEMA = Object.freeze({
     sourceCrs: 'EPSG:2177',
     axisOrder: 'northing-easting'
 });
+// Kartverket's public Teig WFS uses a numeric app:teigId and a matching
+// gml:id (teig.<teigId>). Its data responses incorrectly report
+// numberReturned="0" even when wfs:member elements are present; keep this
+// schema identity explicit so only this fixed publisher profile can normalize
+// that one declared count quirk after parsing the actual members.
+export const NORWAY_TEIG_GML_SCHEMA = Object.freeze({
+    featureNamespace: 'http://skjema.geonorge.no/SOSI/produktspesifikasjon/Matrikkelen-Eiendomskart-Teig/20211101',
+    featureName: 'Teig',
+    idField: 'teigId',
+    geometryField: 'område',
+    gmlNamespace: GML32,
+    sourceCrs: 'EPSG:25833',
+    gmlIdPrefix: 'teig.'
+});
+export const FINLAND_CP_GML_SCHEMA = Object.freeze({
+    featureNamespace: 'http://inspire.ec.europa.eu/schemas/cp/4.0',
+    featureName: 'CadastralParcel',
+    idField: 'localId',
+    idNamespace: 'http://inspire.ec.europa.eu/schemas/base/3.3',
+    identityPath: 'cp:inspireId/base:Identifier',
+    namespaceField: 'namespace',
+    expectedInspireNamespace: 'http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/',
+    canonicalIdPrefix: 'http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/',
+    gmlIdentifierField: 'identifier',
+    gmlIdentifierCodeSpace: 'http://paikkatiedot.fi',
+    gmlNamespace: GML32,
+    gmlIdPrefix: 'FI_CP_CADASTRALPARCEL_',
+    localIdPattern: '^(?:0|[1-9]\\d*)$',
+    geometryField: 'geometry',
+    sourceCrs: 'EPSG:3067',
+    axisOrder: 'easting-northing'
+});
+const CUSTOM_SCHEMAS = [MAPSERVER_GML_SCHEMA, SAXONY_GML_SCHEMA, POZNAN_GML_SCHEMA, NORWAY_TEIG_GML_SCHEMA, FINLAND_CP_GML_SCHEMA];
 proj4.defs('EPSG:27700', '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.1502,0.2470,0.8421,-20.4894 +units=m +no_defs');
 proj4.defs('EPSG:2177', '+proj=tmerc +lat_0=0 +lon_0=18 +k=0.999923 +x_0=6500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
 for (const zone of [30,31,33]) proj4.defs(`EPSG:258${zone}`, `+proj=utm +zone=${zone} +ellps=GRS80 +towgs84=0,0,0 +units=m +no_defs`);
+// EPSG:3067 is EUREF-FIN / TM35FIN(E,N); the Finnish INSPIRE service emits E,N order.
+proj4.defs('EPSG:3067', '+proj=utm +zone=35 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
 const attr = (tag,name) => Object.values(tag.attributes).find(a => a.local === name && !a.uri)?.value;
+const namespacedAttr = (tag, namespace, name) => Object.values(tag.attributes).find(a => a.local === name && a.uri === namespace)?.value;
 function crsName(value, customSchema) {
     const supported = customSchema ? [customSchema.sourceCrs.slice(5)] : ['27700','25830','25831'];
     const match = /^(?:EPSG:|urn:ogc:def:crs:EPSG::|http:\/\/www\.opengis\.net\/def\/crs\/EPSG\/0\/)([0-9]+)$/.exec(value);
@@ -55,9 +91,10 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
     maxFeatures = 150000, signal, featureNamespace, featureName, schema } = {}) {
     const hasCustomSchema = schema !== undefined;
     const customSchema = hasCustomSchema ? schema : null;
-    const validCustomSchema = customSchema && typeof customSchema === 'object' && !Array.isArray(customSchema)
-        && [MAPSERVER_GML_SCHEMA, SAXONY_GML_SCHEMA, POZNAN_GML_SCHEMA].some(known => Object.keys(customSchema).length === Object.keys(known).length
-            && Object.entries(known).every(([key,value]) => customSchema[key] === value));
+    const canonicalCustomSchema = customSchema && typeof customSchema === 'object' && !Array.isArray(customSchema)
+        ? CUSTOM_SCHEMAS.find(known => Object.keys(customSchema).length === Object.keys(known).length
+            && Object.entries(known).every(([key,value]) => customSchema[key] === value)) : null;
+    const validCustomSchema = Boolean(canonicalCustomSchema);
     if ((hasCustomSchema && !validCustomSchema) || (customSchema && (idField !== 'INSPIREID'
         || featureNamespace !== undefined || featureName !== undefined))
         || (!customSchema && !['INSPIREID','nationalCadastralReference'].includes(idField))
@@ -66,6 +103,7 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
     const activeIdField = customSchema ? customSchema.idField : idField;
     const activeFeatureNamespace = customSchema ? customSchema.featureNamespace : featureNamespace;
     const activeFeatureName = customSchema ? customSchema.featureName : featureName;
+    const isFinland = canonicalCustomSchema === FINLAND_CP_GML_SCHEMA;
     const isGmlTag = tag => customSchema ? tag.uri === customSchema.gmlNamespace : GML.has(tag.uri);
     const isFeatureTag = tag => customSchema
         ? tag.uri === customSchema.featureNamespace && tag.local === customSchema.featureName : featureTag(tag);
@@ -102,7 +140,12 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
         if (dim !== undefined && dim !== '2') fail('Parcel GML must have two-dimensional coordinates.');
         if (isFeatureTag(tag)) {
             if (current || (activeFeatureNamespace && tag.uri !== activeFeatureNamespace) || (activeFeatureName && tag.local !== activeFeatureName)) fail('Unexpected parcel GML feature.');
-            current = { depth: stack.length, namespace: tag.uri, id: null, polygons: [], geometrySeen: false };
+            current = { depth: stack.length, namespace: tag.uri, id: null,
+                gmlId: customSchema?.gmlIdPrefix ? namespacedAttr(tag, customSchema.gmlNamespace, 'id') : null,
+                polygons: [], geometrySeen: false,
+                ...(isFinland ? { inspireIdSeen: false, identifierObjectSeen: false, localIdSeen: false,
+                    namespaceSeen: false, gmlIdentifierSeen: false, inspireNamespace: null, gmlIdentifier: null,
+                    gmlIdentifierCodeSpace: null } : {}) };
         } else if (current && (customSchema
             ? tag.uri === current.namespace && tag.local === customSchema.geometryField
             : geometryTag(tag))) {
@@ -120,10 +163,47 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
             }
             if (tag.local === 'posList' && (!polygon || !ringKind)) fail('Invalid parcel GML coordinate list.');
         }
+        if (current && isFinland) {
+            const frames = stack.map(item => item.tag);
+            const atPathDepth = depth => frames.length === current.depth + depth;
+            const directFeatureChild = frames.length === current.depth + 1;
+            const directInspireIdentifier = atPathDepth(2)
+                && frames.at(-2)?.uri === current.namespace && frames.at(-2)?.local === 'inspireId'
+                && frames.at(-1)?.uri === customSchema.idNamespace && frames.at(-1)?.local === 'Identifier';
+            const directIdentifierMember = atPathDepth(3)
+                && frames.at(-3)?.uri === current.namespace && frames.at(-3)?.local === 'inspireId'
+                && frames.at(-2)?.uri === customSchema.idNamespace && frames.at(-2)?.local === 'Identifier';
+            if (tag.local === 'inspireId' && tag.uri === current.namespace) {
+                if (!directFeatureChild || current.inspireIdSeen) fail('Parcel GML has a path-confused or duplicate INSPIRE identifier.');
+                current.inspireIdSeen = true;
+            }
+            if (tag.local === 'Identifier' && tag.uri === customSchema.idNamespace) {
+                if (!directInspireIdentifier || current.identifierObjectSeen) fail('Parcel GML has a path-confused or duplicate INSPIRE identifier.');
+                current.identifierObjectSeen = true;
+            }
+            if (tag.local === customSchema.idField) {
+                if (tag.uri !== customSchema.idNamespace || !directIdentifierMember || current.localIdSeen) {
+                    fail('Parcel GML has a path-confused or duplicate INSPIRE local identifier.');
+                }
+                current.localIdSeen = true;
+                frame.finlandIdentityField = 'localId';
+            } else if (tag.local === customSchema.namespaceField) {
+                if (tag.uri !== customSchema.idNamespace || !directIdentifierMember || current.namespaceSeen) {
+                    fail('Parcel GML has a path-confused or duplicate INSPIRE namespace.');
+                }
+                current.namespaceSeen = true;
+                frame.finlandIdentityField = 'namespace';
+            } else if (tag.local === customSchema.gmlIdentifierField && tag.uri === customSchema.gmlNamespace) {
+                if (!directFeatureChild || current.gmlIdentifierSeen) fail('Parcel GML has a path-confused or duplicate gml:identifier.');
+                current.gmlIdentifierSeen = true;
+                current.gmlIdentifierCodeSpace = attr(tag, 'codeSpace') ?? null;
+                frame.finlandIdentityField = 'gmlIdentifier';
+            }
+        }
     });
     parser.on('text', text => {
         const frame = stack.at(-1);
-        if (current && frame && ((frame.tag.local === activeIdField && frame.tag.uri === current.namespace)
+        if (current && frame && (frame.finlandIdentityField || (frame.tag.local === activeIdField && frame.tag.uri === current.namespace)
             || (frame.tag.local === 'posList' && isGmlTag(frame.tag)))) {
             frame.text += text;
             if (frame.text.length > 2 * 1024 * 1024) fail('Parcel GML coordinate or identifier text exceeds limit.');
@@ -132,9 +212,20 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
     parser.on('cdata', () => fail('Parcel GML CDATA is unsupported.'));
     parser.on('closetag', tag => {
         const frame = stack.pop();
-        if (current && tag.local === activeIdField && tag.uri === current.namespace) {
+        if (current && isFinland && frame.finlandIdentityField) {
+            const value = frame.text.trim();
+            if (!value || value.length > 512 || /[\s\u0000-\u001f]/.test(value)) fail('Parcel GML has a missing or invalid Finland identity value.');
+            if (frame.finlandIdentityField === 'localId') {
+                if (!new RegExp(customSchema.localIdPattern).test(value)) fail('Parcel GML has a missing or invalid native identifier.');
+                if (current.id !== null) fail('Parcel GML repeats a native parcel identifier.');
+                current.id = value;
+            } else if (frame.finlandIdentityField === 'namespace') current.inspireNamespace = value;
+            else current.gmlIdentifier = value;
+        } else if (current && tag.local === activeIdField && tag.uri === current.namespace) {
             const native = frame.text.trim();
-            if (!native || native.length > 256 || /[\s\u0000-\u001f]/.test(native) || (activeIdField === 'INSPIREID' && !/^\d+$/.test(native))) fail('Parcel GML has a missing or invalid native identifier.');
+            if (!native || native.length > 256 || /[\s\u0000-\u001f]/.test(native)
+                || (activeIdField === 'INSPIREID' && !/^\d+$/.test(native))
+                || (canonicalCustomSchema === NORWAY_TEIG_GML_SCHEMA && !/^(?:0|[1-9]\d*)$/.test(native))) fail('Parcel GML has a missing or invalid native identifier.');
             if (current.id !== null) fail('Parcel GML repeats a native identifier field.');
             current.id = native;
         }
@@ -167,6 +258,15 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
         if (current && geometryDepth === stack.length+1) geometryDepth = null;
         if (current && current.depth === stack.length+1) {
             if (!current.id || !current.geometrySeen || !current.polygons.length || polygon || ringKind) fail('Parcel GML feature is missing identity or polygon geometry.');
+            if (customSchema?.gmlIdPrefix && (!current.gmlId || !current.gmlId.startsWith(customSchema.gmlIdPrefix)
+                || current.gmlId !== `${customSchema.gmlIdPrefix}${current.id}`)) fail('Parcel GML feature ID does not match its native identifier.');
+            if (isFinland && (!current.inspireIdSeen || !current.identifierObjectSeen || !current.localIdSeen || !current.namespaceSeen
+                || !current.gmlIdentifierSeen || current.inspireNamespace !== customSchema.expectedInspireNamespace
+                || customSchema.canonicalIdPrefix !== customSchema.expectedInspireNamespace
+                || current.gmlIdentifier !== `${current.inspireNamespace}${current.id}`
+                || current.gmlIdentifierCodeSpace !== customSchema.gmlIdentifierCodeSpace)) {
+                fail('Parcel GML Finland identities do not agree.');
+            }
             const geometry = { type: current.polygons.length === 1 ? 'Polygon' : 'MultiPolygon',
                 coordinates: current.polygons.length === 1 ? current.polygons[0] : current.polygons };
             if (!validateGeometry(geometry)) fail('Invalid projected parcel GML polygon.');
@@ -204,9 +304,20 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
         }
         parser.write(decoder.decode()).close();
     } catch (error) { if (error.status) throw error; fail('Malformed parcel GML or coordinate transformation.'); }
-    if (!collection || !closedCollection || current || (numberReturned !== undefined && numberReturned !== featureCount)
+    const declaredNumberReturned = numberReturned;
+    let numberReturnedNormalized = false;
+    let numberReturnedProtocolException = null;
+    if (numberReturned !== undefined && numberReturned !== featureCount) {
+        if (canonicalCustomSchema === NORWAY_TEIG_GML_SCHEMA && numberReturned === 0 && featureCount > 0) {
+            numberReturned = featureCount;
+            numberReturnedNormalized = true;
+            numberReturnedProtocolException = 'kartverket-no-teig-zero-numberReturned-on-data-response';
+        } else fail('Parcel GML has incomplete or inconsistent feature counts.');
+    }
+    if (!collection || !closedCollection || current
         || (numberMatched !== undefined && numberMatched < featureCount)) fail('Parcel GML has incomplete or inconsistent feature counts.');
     const features = [...byId.values()];
     const extent = features.length ? features.reduce((out,f)=>[Math.min(out[0],f.bbox[0]),Math.min(out[1],f.bbox[1]),Math.max(out[2],f.bbox[2]),Math.max(out[3],f.bbox[3])],[Infinity,Infinity,-Infinity,-Infinity]) : null;
-    return { features,featureCount,uniqueFeatureCount:features.length,numberMatched,numberMatchedUnknown,numberReturned,sourceCrs,extent,duplicateNativeCount };
+    return { features,featureCount,uniqueFeatureCount:features.length,numberMatched,numberMatchedUnknown,numberReturned,
+        declaredNumberReturned,numberReturnedNormalized,numberReturnedProtocolException,sourceCrs,extent,duplicateNativeCount };
 }

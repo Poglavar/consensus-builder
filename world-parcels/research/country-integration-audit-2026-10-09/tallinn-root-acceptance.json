@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T08:30:45.684495+00:00",
+  "rootReviewedAt": "2026-10-09T08:30:45.684495+00:00",
+  "cityId": "wup2025:91",
+  "appCityId": "tallinn",
+  "city": "Tallinn",
+  "countryCode": "EE",
+  "wupCityCode": 91,
+  "pointLatLon": [
+    59.4231329005097,
+    24.7413568470487
+  ],
+  "sourceId": "ee-maaamet-kataster-wfs",
+  "descriptor": {
+    "id": "ee-maaamet-kataster-wfs",
+    "endpoint": "https://gsavalik.envir.ee/geoserver/kataster/wfs",
+    "featureType": "kataster:ky_kehtiv",
+    "idField": "tunnus",
+    "geometryField": "geom",
+    "idPrefix": "EE-KATASTER-",
+    "outFields": [
+      "tunnus"
+    ],
+    "requestProperties": true,
+    "responseSrid": 3857,
+    "metricSrid": 3301,
+    "adapter": "wfs",
+    "version": "2.0.0",
+    "pageSize": 100,
+    "idBatchSize": 80,
+    "maxFeatures": 3000,
+    "minRequestIntervalMs": 150,
+    "idType": "string",
+    "maxBboxKm2": 1,
+    "countryCode": "EE",
+    "cityIds": [
+      "tallinn"
+    ],
+    "maxConcurrentQueries": 1,
+    "name": "Tallinn public cadastral parcel polygons",
+    "operator": "Estonian Land and Spatial Development Board / public cadastral WFS",
+    "scope": "Public cadastral parcel geometry around the unchanged Tallinn WUP settlement locator. Thirteen aligned cells and 60 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:3301 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The WUP locator is covered by EE-KATASTER-78401:109:0710. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness.",
+    "responseCrs": "EPSG:3857",
+    "parcelNumberField": "tunnus",
+    "evidenceFile": "research/country-integration-audit-2026-10-09/tallinn-root-acceptance.json",
+    "catalogueUrl": "https://gsavalik.envir.ee/geoserver/kataster/wfs",
+    "attribution": "Estonian Land and Spatial Development Board / public cadastral WFS · cadastral references · adapted",
+    "licenceNote": "Publisher conditions, legal effect and update schedule are informational. Public native parcel IDs and geometry only; ownership is not imported."
+  },
+  "scope": "Public cadastral parcel geometry around the unchanged Tallinn WUP settlement locator. Thirteen aligned cells and 60 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:3301 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The WUP locator is covered by EE-KATASTER-78401:109:0710. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness.",
+  "qualityStatus": "approved_bounded_full_geometry",
+  "workerQualification": "Tallinn-runtime-qualification.json",
+  "rootIndependentProbe": "tallinn-root-independent-probe.json",
+  "rootIndependentQuality": "tallinn-root-quality.json",
+  "qualifiedUniqueParcels": 60,
+  "geometryChangedOrRepaired": false,
+  "registryFound": true,
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "enabled"
+}

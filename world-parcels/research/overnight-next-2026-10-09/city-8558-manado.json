@@ -1,0 +1,130 @@
+{
+  "name": "Manado",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "rank": 1196,
+  "point": [
+    1.47338708187465,
+    124.845657141248
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Manado official cadastral parcel map land registry GIS",
+        "result": "Separate English-language discovery followed by first-party source review; only the government sources listed are retained.",
+        "actualResultUrls": [
+          "https://bhumi.atrbpn.go.id/bantuan/peta",
+          "https://bhumi.atrbpn.go.id/bantuan/landing",
+          "https://geoportal.manadokota.go.id",
+          "https://portal.manadokota.go.id/"
+        ],
+        "scope": "Identify local or jurisdictionally local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+      },
+      {
+        "language": "Bahasa Indonesia",
+        "query": "Manado peta bidang tanah ATR BPN BHUMI kadaster",
+        "result": "Official ATR/BPN BHUMI help describes visible bidang tanah layer and coordinate search; its official data disclaimer says displayed spatial data is not guaranteed accurate/current/complete for official use. City Geoportal showed government asset layers but no verified parcel dataset.",
+        "actualResultUrls": [
+          "https://bhumi.atrbpn.go.id/bantuan/peta",
+          "https://bhumi.atrbpn.go.id/bantuan/landing",
+          "https://geoportal.manadokota.go.id",
+          "https://portal.manadokota.go.id/"
+        ],
+        "method": "Separate Bahasa Indonesia-language discovery followed by first-party source review.",
+        "scope": "Identify local or jurisdictionally local land/cadastral custody and public parcel geometry; no owner, address, tax, account, title, cadastral-number or applicant values submitted."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+        "operator": "Ministry of Agrarian Affairs and Spatial Planning / National Land Agency (ATR/BPN), North Sulawesi Land Office",
+        "scope": "National official BHUMI map describes parcel layers, but cautions that map data are not guaranteed complete/current/accurate and official use follows a formal information-request process. City geoportal did not show a public parcel dataset. No parcel lookup or geometry sample was obtained."
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/bantuan/landing",
+        "operator": "Ministry of Agrarian Affairs and Spatial Planning / National Land Agency (ATR/BPN), North Sulawesi Land Office",
+        "scope": "National official BHUMI map describes parcel layers, but cautions that map data are not guaranteed complete/current/accurate and official use follows a formal information-request process. City geoportal did not show a public parcel dataset. No parcel lookup or geometry sample was obtained."
+      },
+      {
+        "url": "https://geoportal.manadokota.go.id",
+        "operator": "Ministry of Agrarian Affairs and Spatial Planning / National Land Agency (ATR/BPN), North Sulawesi Land Office",
+        "scope": "National official BHUMI map describes parcel layers, but cautions that map data are not guaranteed complete/current/accurate and official use follows a formal information-request process. City geoportal did not show a public parcel dataset. No parcel lookup or geometry sample was obtained."
+      },
+      {
+        "url": "https://portal.manadokota.go.id/",
+        "operator": "Ministry of Agrarian Affairs and Spatial Planning / National Land Agency (ATR/BPN), North Sulawesi Land Office",
+        "scope": "National official BHUMI map describes parcel layers, but cautions that map data are not guaranteed complete/current/accurate and official use follows a formal information-request process. City geoportal did not show a public parcel dataset. No parcel lookup or geometry sample was obtained."
+      }
+    ],
+    "requests": [],
+    "historicalContext": [
+      "Preflight audit on 2026-10-09: this exact WUP 2025 code was absent from existing city/service packets and prior-attempt entries; only pending-roster and cohort-ledger rows matched."
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "Ministry of Agrarian Affairs and Spatial Planning / National Land Agency (ATR/BPN), North Sulawesi Land Office",
+    "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+    "operator": "Ministry of Agrarian Affairs and Spatial Planning / National Land Agency (ATR/BPN), North Sulawesi Land Office",
+    "serviceType": "Official registry, map or cadastral source reviewed; no safe source-native full parcel polygon was retained at the exact unchanged WUP point.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See source review; custody, point coverage, parcel geometry, dataset scope and runtime readiness are assessed separately."
+  },
+  "coverageAssessment": {
+    "claimedScope": "National official BHUMI map describes parcel layers, but cautions that map data are not guaranteed complete/current/accurate and official use follows a formal information-request process. City geoportal did not show a public parcel dataset. No parcel lookup or geometry sample was obtained.",
+    "verifiedOpenScope": "No source-native full parcel polygon at the exact unchanged WUP point was retained; this investigation does not establish parcel absence or citywide coverage.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "National official BHUMI map describes parcel layers, but cautions that map data are not guaranteed complete/current/accurate and official use follows a formal information-request process. City geoportal did not show a public parcel dataset. No parcel lookup or geometry sample was obtained.",
+  "remainingUncertainty": "National official BHUMI map describes parcel layers, but cautions that map data are not guaranteed complete/current/accurate and official use follows a formal information-request process. City geoportal did not show a public parcel dataset. No parcel lookup or geometry sample was obtained. Exact WUP-point parcel geometry, legal/title meaning, coverage completeness and currentness remain unverified.",
+  "nextStep": "Keep runtime disabled until root review determines whether an official source and full native geometry meet adapter criteria.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 8558,
+  "cityId": "wup2025:8558",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    1.47338708187465,
+    124.845657141248
+  ],
+  "population2025k": 464.793,
+  "populationUnit": "persons",
+  "queueRank": 1196,
+  "population2025": 464793,
+  "populationPlausibility2025": "High",
+  "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Official national land agency map and data-use pages establish registry/map custodian, with a limitation on its public map layer.",
+  "registryEvidenceUrls": [
+    "https://bhumi.atrbpn.go.id/bantuan/peta",
+    "https://bhumi.atrbpn.go.id/bantuan/landing",
+    "https://geoportal.manadokota.go.id",
+    "https://portal.manadokota.go.id/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No source-native full parcel polygon at the exact unchanged WUP point was retained; runtime remains disabled."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

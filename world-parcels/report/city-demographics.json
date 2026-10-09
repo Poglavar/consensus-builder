@@ -19094,23 +19094,27 @@
       "id": "wup2025:9720",
       "name": "Changge",
       "countryCode": "CN",
-      "latitude": 34.2111006136739,
-      "longitude": 113.766000307535,
-      "registryCityIds": [],
+      "latitude": 34.2032184797196,
+      "longitude": 113.762855142875,
+      "registryCityIds": [
+        "wup2025:9720"
+      ],
       "appCityIds": [],
       "wupCityCode": 9720,
       "cohorts": [
-        "growth200"
+        "growth200",
+        "registry",
+        "overnight-next-1101-1200"
       ],
       "population2015": 235035,
       "population2025": 468159,
       "annualGrowthPct2015To2025": 6.890735,
       "populationPlausibility2025": "Moderate",
       "populationMatch": {
-        "basis": "queue_cityCode_to_WUP_city_code",
-        "distanceKm": 0,
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
         "sourceName": "UN DESA WUP 2025",
-        "confidence": "high"
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
       },
       "wikipediaUrl": "https://en.wikipedia.org/wiki/Changge",
       "wikipediaEvidence": {
@@ -19133,8 +19137,8 @@
         "coordinateThresholdKm": 30
       },
       "wupName": "Changge",
-      "wupLatitude": 34.2111006136739,
-      "wupLongitude": 113.766000307535,
+      "wupLatitude": 34.2032184797196,
+      "wupLongitude": 113.762855142875,
       "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate",
       "wupCityQualityFlag": null,
       "qualityFlagNote": "The supplied normalized city JSON has no WUP 0–3 quality-flag field; left null.",
@@ -19152,7 +19156,9 @@
           "distanceKm": 0
         }
       ],
-      "wikipediaLookupStatus": "verified"
+      "wikipediaLookupStatus": "verified",
+      "populationUnit": "persons",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row"
     },
     {
       "id": "wup2025:2697",
@@ -59637,6 +59643,894 @@
         "registry",
         "overnight-next-1101-1200"
       ]
+    },
+    {
+      "id": "wup2025:7432",
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted",
+      "name": "Orlando",
+      "countryCode": "US",
+      "latitude": 28.5718526010057,
+      "longitude": -81.3224429681126,
+      "wupCityCode": 7432,
+      "wupName": "Orlando",
+      "wupLatitude": 28.5718526010057,
+      "wupLongitude": -81.3224429681126,
+      "population2025": 477249,
+      "populationUnit": "persons",
+      "populationPlausibility2025": "Moderate",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "registryCityIds": [
+        "wup2025:7432"
+      ],
+      "appCityIds": [
+        "orlando"
+      ],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ]
+    },
+    {
+      "id": "wup2025:5621",
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted",
+      "name": "Provo",
+      "countryCode": "US",
+      "latitude": 40.3078525920474,
+      "longitude": -111.714794014436,
+      "wupCityCode": 5621,
+      "wupName": "Provo",
+      "wupLatitude": 40.3078525920474,
+      "wupLongitude": -111.714794014436,
+      "population2025": 488429,
+      "populationUnit": "persons",
+      "populationPlausibility2025": "Moderate",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "registryCityIds": [
+        "wup2025:5621"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ]
+    },
+    {
+      "id": "wup2025:377",
+      "name": "Dublin",
+      "countryCode": "IE",
+      "latitude": 53.330243126706,
+      "longitude": -6.27332800239088,
+      "registryCityIds": [
+        "wup2025:377"
+      ],
+      "appCityIds": [
+        "dublin"
+      ],
+      "wupCityCode": 377,
+      "cohorts": [
+        "registry",
+        "country_source_requalification"
+      ],
+      "population2015": 1024306,
+      "population2025": 1142650,
+      "annualGrowthPct2015To2025": 1.093348,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "exact_WUP_city_code_and_year",
+        "distanceKm": 0,
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025"
+      },
+      "wupName": "Dublin",
+      "wupLatitude": 53.330243126706,
+      "wupLongitude": -6.27332800239088,
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate",
+      "wupCityQualityFlag": null,
+      "qualityFlagNote": "No WUP quality-flag field in supplied source; left null."
+    },
+    {
+      "id": "wup2025:5191",
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted",
+      "name": "Palma de Mallorca",
+      "countryCode": "ES",
+      "latitude": 39.5730201363164,
+      "longitude": 2.65959892235363,
+      "wupCityCode": 5191,
+      "wupName": "Palma de Mallorca",
+      "wupLatitude": 39.5730201363164,
+      "wupLongitude": 2.65959892235363,
+      "population2025": 473499,
+      "populationUnit": "persons",
+      "populationPlausibility2025": "Moderate",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "registryCityIds": [
+        "wup2025:5191"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ]
+    },
+    {
+      "id": "wup2025:260",
+      "name": "Riga",
+      "countryCode": "LV",
+      "latitude": 56.9551247864813,
+      "longitude": 24.1200225203638,
+      "registryCityIds": [
+        "wup2025:260"
+      ],
+      "appCityIds": [
+        "riga"
+      ],
+      "wupCityCode": 260,
+      "cohorts": [
+        "registry",
+        "country_source_requalification"
+      ],
+      "population2015": 563947,
+      "population2025": 550267,
+      "annualGrowthPct2015To2025": -0.245567,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "exact_WUP_city_code_and_year",
+        "distanceKm": 0,
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025"
+      },
+      "wupName": "Riga",
+      "wupLatitude": 56.9551247864813,
+      "wupLongitude": 24.1200225203638,
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate",
+      "wupCityQualityFlag": null,
+      "qualityFlagNote": "No WUP quality-flag field in supplied source; left null."
+    },
+    {
+      "id": "wup2025:91",
+      "name": "Tallinn",
+      "countryCode": "EE",
+      "latitude": 59.4231329005097,
+      "longitude": 24.7413568470487,
+      "registryCityIds": [
+        "wup2025:91"
+      ],
+      "appCityIds": [
+        "tallinn"
+      ],
+      "wupCityCode": 91,
+      "cohorts": [
+        "registry",
+        "country_source_requalification"
+      ],
+      "population2015": 386874,
+      "population2025": 439526,
+      "annualGrowthPct2015To2025": 1.275978,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "exact_WUP_city_code_and_year",
+        "distanceKm": 0,
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025"
+      },
+      "wupName": "Tallinn",
+      "wupLatitude": 59.4231329005097,
+      "wupLongitude": 24.7413568470487,
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate",
+      "wupCityQualityFlag": null,
+      "qualityFlagNote": "No WUP quality-flag field in supplied source; left null."
+    },
+    {
+      "id": "wup2025:699",
+      "name": "Vilnius",
+      "countryCode": "LT",
+      "latitude": 54.695435447302,
+      "longitude": 25.2704077979851,
+      "registryCityIds": [
+        "wup2025:699"
+      ],
+      "appCityIds": [
+        "vilnius"
+      ],
+      "wupCityCode": 699,
+      "cohorts": [
+        "registry",
+        "country_source_requalification"
+      ],
+      "population2015": 321278,
+      "population2025": 337871,
+      "annualGrowthPct2015To2025": 0.503574,
+      "populationPlausibility2025": "High",
+      "populationMatch": {
+        "basis": "exact_WUP_city_code_and_year",
+        "distanceKm": 0,
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025"
+      },
+      "wupName": "Vilnius",
+      "wupLatitude": 54.695435447302,
+      "wupLongitude": 25.2704077979851,
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate",
+      "wupCityQualityFlag": null,
+      "qualityFlagNote": "No WUP quality-flag field in supplied source; left null."
+    },
+    {
+      "id": "wup2025:7290",
+      "name": "Jundiaí",
+      "countryCode": "BR",
+      "latitude": -23.1976446911945,
+      "longitude": -46.8554383147568,
+      "registryCityIds": [
+        "wup2025:7290"
+      ],
+      "appCityIds": [
+        "jundiai"
+      ],
+      "wupCityCode": 7290,
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ],
+      "population2015": 457481,
+      "population2025": 465531,
+      "annualGrowthPct2015To2025": 0.174433,
+      "populationPlausibility2025": "Moderate",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "wupName": "Jundiaí",
+      "wupLatitude": -23.1976446911945,
+      "wupLongitude": -46.8554383147568,
+      "populationGrowthFormula": "100 * ln(population2025 / population2015) / 10; UN annual average exponential rate",
+      "wupCityQualityFlag": null,
+      "qualityFlagNote": "No WUP quality-flag field in supplied source; left null.",
+      "populationUnit": "persons",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row"
+    },
+    {
+      "id": "wup2025:7454",
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted",
+      "name": "Chuxiong",
+      "countryCode": "CN",
+      "latitude": 25.03991885835,
+      "longitude": 101.551006942271,
+      "wupCityCode": 7454,
+      "wupName": "Chuxiong",
+      "wupLatitude": 25.03991885835,
+      "wupLongitude": 101.551006942271,
+      "population2025": 471251,
+      "populationUnit": "persons",
+      "populationPlausibility2025": "High",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "registryCityIds": [
+        "wup2025:7454"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ]
+    },
+    {
+      "id": "wup2025:7995",
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted",
+      "name": "Lüliang",
+      "countryCode": "CN",
+      "latitude": 37.5208137223457,
+      "longitude": 111.14629385973,
+      "wupCityCode": 7995,
+      "wupName": "Lüliang",
+      "wupLatitude": 37.5208137223457,
+      "wupLongitude": 111.14629385973,
+      "population2025": 469647,
+      "populationUnit": "persons",
+      "populationPlausibility2025": "Moderate",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "registryCityIds": [
+        "wup2025:7995"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ]
+    },
+    {
+      "id": "wup2025:12016",
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted",
+      "name": "Beilun District",
+      "countryCode": "CN",
+      "latitude": 29.9078688188933,
+      "longitude": 121.831098805701,
+      "wupCityCode": 12016,
+      "wupName": "Beilun District",
+      "wupLatitude": 29.9078688188933,
+      "wupLongitude": 121.831098805701,
+      "population2025": 467912,
+      "populationUnit": "persons",
+      "populationPlausibility2025": "Moderate",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "registryCityIds": [
+        "wup2025:12016"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ]
+    },
+    {
+      "id": "wup2025:8942",
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted",
+      "name": "Yangquan",
+      "countryCode": "CN",
+      "latitude": 37.8659735411705,
+      "longitude": 113.536135376174,
+      "wupCityCode": 8942,
+      "wupName": "Yangquan",
+      "wupLatitude": 37.8659735411705,
+      "wupLongitude": 113.536135376174,
+      "population2025": 467148,
+      "populationUnit": "persons",
+      "populationPlausibility2025": "High",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "registryCityIds": [
+        "wup2025:8942"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ]
+    },
+    {
+      "id": "wup2025:11736",
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted",
+      "name": "Shanwei",
+      "countryCode": "CN",
+      "latitude": 22.7831667729166,
+      "longitude": 115.367998832657,
+      "wupCityCode": 11736,
+      "wupName": "Shanwei",
+      "wupLatitude": 22.7831667729166,
+      "wupLongitude": 115.367998832657,
+      "population2025": 464738,
+      "populationUnit": "persons",
+      "populationPlausibility2025": "Moderate",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "registryCityIds": [
+        "wup2025:11736"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ]
+    },
+    {
+      "id": "wup2025:11756",
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted",
+      "name": "Tongxiang",
+      "countryCode": "CN",
+      "latitude": 30.6457678687231,
+      "longitude": 120.575851300139,
+      "wupCityCode": 11756,
+      "wupName": "Tongxiang",
+      "wupLatitude": 30.6457678687231,
+      "wupLongitude": 120.575851300139,
+      "population2025": 465450,
+      "populationUnit": "persons",
+      "populationPlausibility2025": "Moderate",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "registryCityIds": [
+        "wup2025:11756"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ]
+    },
+    {
+      "id": "wup2025:8767",
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted",
+      "name": "Jinzhong",
+      "countryCode": "CN",
+      "latitude": 37.6887939356622,
+      "longitude": 112.736514077553,
+      "wupCityCode": 8767,
+      "wupName": "Jinzhong",
+      "wupLatitude": 37.6887939356622,
+      "wupLongitude": 112.736514077553,
+      "population2025": 473959,
+      "populationUnit": "persons",
+      "populationPlausibility2025": "High",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "registryCityIds": [
+        "wup2025:8767"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ]
+    },
+    {
+      "id": "wup2025:2732",
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted",
+      "name": "Huancayo",
+      "countryCode": "PE",
+      "latitude": -12.0626815606747,
+      "longitude": -75.2170085204294,
+      "wupCityCode": 2732,
+      "wupName": "Huancayo",
+      "wupLatitude": -12.0626815606747,
+      "wupLongitude": -75.2170085204294,
+      "population2025": 470685,
+      "populationUnit": "persons",
+      "populationPlausibility2025": "High",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "registryCityIds": [
+        "wup2025:2732"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ]
+    },
+    {
+      "id": "wup2025:6924",
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted",
+      "name": "Faqous",
+      "countryCode": "EG",
+      "latitude": 30.724896740623,
+      "longitude": 31.7910152915622,
+      "wupCityCode": 6924,
+      "wupName": "Faqous",
+      "wupLatitude": 30.724896740623,
+      "wupLongitude": 31.7910152915622,
+      "population2025": 470110,
+      "populationUnit": "persons",
+      "populationPlausibility2025": "High",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "registryCityIds": [
+        "wup2025:6924"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ]
+    },
+    {
+      "id": "wup2025:495",
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted",
+      "name": "Piura",
+      "countryCode": "PE",
+      "latitude": -5.19036024947437,
+      "longitude": -80.6384430749245,
+      "wupCityCode": 495,
+      "wupName": "Piura",
+      "wupLatitude": -5.19036024947437,
+      "wupLongitude": -80.6384430749245,
+      "population2025": 471521,
+      "populationUnit": "persons",
+      "populationPlausibility2025": "High",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "registryCityIds": [
+        "wup2025:495"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ]
+    },
+    {
+      "id": "wup2025:2928",
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted",
+      "name": "Macapá",
+      "countryCode": "BR",
+      "latitude": 0.0431561083287672,
+      "longitude": -51.0688251135422,
+      "wupCityCode": 2928,
+      "wupName": "Macapá",
+      "wupLatitude": 0.0431561083287672,
+      "wupLongitude": -51.0688251135422,
+      "population2025": 471922,
+      "populationUnit": "persons",
+      "populationPlausibility2025": "High",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "registryCityIds": [
+        "wup2025:2928"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ]
+    },
+    {
+      "id": "wup2025:9279",
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted",
+      "name": "Etawah",
+      "countryCode": "IN",
+      "latitude": 26.7828387119844,
+      "longitude": 79.0233814920568,
+      "wupCityCode": 9279,
+      "wupName": "Etawah",
+      "wupLatitude": 26.7828387119844,
+      "wupLongitude": 79.0233814920568,
+      "population2025": 475213,
+      "populationUnit": "persons",
+      "populationPlausibility2025": "Moderate",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "registryCityIds": [
+        "wup2025:9279"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ]
+    },
+    {
+      "id": "wup2025:9595",
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted",
+      "name": "Sitapur",
+      "countryCode": "IN",
+      "latitude": 27.5635472049459,
+      "longitude": 80.6900013205048,
+      "wupCityCode": 9595,
+      "wupName": "Sitapur",
+      "wupLatitude": 27.5635472049459,
+      "wupLongitude": 80.6900013205048,
+      "population2025": 469750,
+      "populationUnit": "persons",
+      "populationPlausibility2025": "Moderate",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "registryCityIds": [
+        "wup2025:9595"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ]
+    },
+    {
+      "id": "wup2025:9883",
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted",
+      "name": "Raebareli",
+      "countryCode": "IN",
+      "latitude": 26.2276825649448,
+      "longitude": 81.243838038826,
+      "wupCityCode": 9883,
+      "wupName": "Raebareli",
+      "wupLatitude": 26.2276825649448,
+      "wupLongitude": 81.243838038826,
+      "population2025": 472091,
+      "populationUnit": "persons",
+      "populationPlausibility2025": "High",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "registryCityIds": [
+        "wup2025:9883"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ]
+    },
+    {
+      "id": "wup2025:4390",
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted",
+      "name": "Oshogbo",
+      "countryCode": "NG",
+      "latitude": 7.77187668103078,
+      "longitude": 4.56628909899883,
+      "wupCityCode": 4390,
+      "wupName": "Oshogbo",
+      "wupLatitude": 7.77187668103078,
+      "wupLongitude": 4.56628909899883,
+      "population2025": 473929,
+      "populationUnit": "persons",
+      "populationPlausibility2025": "Low",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "registryCityIds": [
+        "wup2025:4390"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ]
+    },
+    {
+      "id": "wup2025:7148",
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted",
+      "name": "Gusau",
+      "countryCode": "NG",
+      "latitude": 12.1743944871879,
+      "longitude": 6.67653836825649,
+      "wupCityCode": 7148,
+      "wupName": "Gusau",
+      "wupLatitude": 12.1743944871879,
+      "wupLongitude": 6.67653836825649,
+      "population2025": 475004,
+      "populationUnit": "persons",
+      "populationPlausibility2025": "Moderate",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "registryCityIds": [
+        "wup2025:7148"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ]
+    },
+    {
+      "id": "wup2025:8914",
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted",
+      "name": "Bijie",
+      "countryCode": "CN",
+      "latitude": 27.2994822128137,
+      "longitude": 105.287401120227,
+      "wupCityCode": 8914,
+      "wupName": "Bijie",
+      "wupLatitude": 27.2994822128137,
+      "wupLongitude": 105.287401120227,
+      "population2025": 463837,
+      "populationUnit": "persons",
+      "populationPlausibility2025": "Low",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "registryCityIds": [
+        "wup2025:8914"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ]
+    },
+    {
+      "id": "wup2025:11710",
+      "population2015": null,
+      "annualGrowthPct2015To2025": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted",
+      "name": "Meizhou",
+      "countryCode": "CN",
+      "latitude": 24.3186796455347,
+      "longitude": 116.100671710308,
+      "wupCityCode": 11710,
+      "wupName": "Meizhou",
+      "wupLatitude": 24.3186796455347,
+      "wupLongitude": 116.100671710308,
+      "population2025": 464343,
+      "populationUnit": "persons",
+      "populationPlausibility2025": "High",
+      "populationSource": "UN DESA World Urbanization Prospects 2025, exact City_Code and Year=2025 row",
+      "populationMatch": {
+        "basis": "exact_WUP2025_city_code_fresh_bulk_2025_row",
+        "confidence": "high",
+        "sourceName": "UN DESA WUP 2025",
+        "evidenceFile": "research/overnight-next-2026-10-09/ranked-population.json"
+      },
+      "registryCityIds": [
+        "wup2025:11710"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "registry",
+        "overnight-next-1101-1200"
+      ]
     }
   ],
   "wikipediaLookupErrors": [
@@ -59681,8 +60575,8 @@
     "populationYear": 2025,
     "populationUnits": "persons",
     "note": "2015 population and annual growth remain null without a corresponding source row; existing values preserved.",
-    "reviewedThisRun": 58,
-    "integratedThisRun": 58,
-    "distinctOutputRows": 1354
+    "reviewedThisRun": 81,
+    "integratedThisRun": 81,
+    "distinctOutputRows": 1380
   }
 }

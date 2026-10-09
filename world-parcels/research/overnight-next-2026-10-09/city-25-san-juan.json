@@ -1,0 +1,130 @@
+{
+  "name": "San Juan",
+  "country": "Argentina",
+  "countryCode": "AR",
+  "rank": 1198,
+  "point": [
+    -31.5395129374039,
+    -68.5413653624017
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "San Juan official cadastral parcel map land registry GIS",
+        "result": "Separate English-language discovery followed by first-party source review; only the government sources listed are retained.",
+        "actualResultUrls": [
+          "https://catastro.sanjuan.gob.ar/",
+          "https://tramite.sanjuan.gob.ar/tramite/d/297/consultas-catastrales",
+          "https://servicioscatastro.sanjuan.gob.ar/descargas/index.php",
+          "https://nomenclaturas.municipiosanjuan.gob.ar"
+        ],
+        "scope": "Identify local or jurisdictionally local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+      },
+      {
+        "language": "Spanish",
+        "query": "San Juan Catastro provincial consulta parcelaria mapa geográfico parcelas",
+        "result": "Official San Juan provincial cadastre states parcel mapping/registry responsibilities and public consultation; public plan downloads are static cartography. A candidate map service could not be reliably inspected due client-side TLS negotiation failure, so no geometry is claimed.",
+        "actualResultUrls": [
+          "https://catastro.sanjuan.gob.ar/",
+          "https://tramite.sanjuan.gob.ar/tramite/d/297/consultas-catastrales",
+          "https://servicioscatastro.sanjuan.gob.ar/descargas/index.php",
+          "https://nomenclaturas.municipiosanjuan.gob.ar"
+        ],
+        "method": "Separate Spanish-language discovery followed by first-party source review.",
+        "scope": "Identify local or jurisdictionally local land/cadastral custody and public parcel geometry; no owner, address, tax, account, title, cadastral-number or applicant values submitted."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://catastro.sanjuan.gob.ar/",
+        "operator": "Dirección General de Catastro, Gobierno de San Juan",
+        "scope": "Provincial cadastre provides public parcel consultation and plan/cartography products; access path may identify parcel nomenclature but full coordinate-based polygon response was not verified. No personal, property or owner values were submitted."
+      },
+      {
+        "url": "https://tramite.sanjuan.gob.ar/tramite/d/297/consultas-catastrales",
+        "operator": "Dirección General de Catastro, Gobierno de San Juan",
+        "scope": "Provincial cadastre provides public parcel consultation and plan/cartography products; access path may identify parcel nomenclature but full coordinate-based polygon response was not verified. No personal, property or owner values were submitted."
+      },
+      {
+        "url": "https://servicioscatastro.sanjuan.gob.ar/descargas/index.php",
+        "operator": "Dirección General de Catastro, Gobierno de San Juan",
+        "scope": "Provincial cadastre provides public parcel consultation and plan/cartography products; access path may identify parcel nomenclature but full coordinate-based polygon response was not verified. No personal, property or owner values were submitted."
+      },
+      {
+        "url": "https://nomenclaturas.municipiosanjuan.gob.ar",
+        "operator": "Dirección General de Catastro, Gobierno de San Juan",
+        "scope": "Provincial cadastre provides public parcel consultation and plan/cartography products; access path may identify parcel nomenclature but full coordinate-based polygon response was not verified. No personal, property or owner values were submitted."
+      }
+    ],
+    "requests": [],
+    "historicalContext": [
+      "Preflight audit on 2026-10-09: this exact WUP 2025 code was absent from existing city/service packets and prior-attempt entries; only pending-roster and cohort-ledger rows matched."
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "Dirección General de Catastro, Gobierno de San Juan",
+    "url": "https://catastro.sanjuan.gob.ar/",
+    "operator": "Dirección General de Catastro, Gobierno de San Juan",
+    "serviceType": "Official registry, map or cadastral source reviewed; no safe source-native full parcel polygon was retained at the exact unchanged WUP point.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See source review; custody, point coverage, parcel geometry, dataset scope and runtime readiness are assessed separately."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Provincial cadastre provides public parcel consultation and plan/cartography products; access path may identify parcel nomenclature but full coordinate-based polygon response was not verified. No personal, property or owner values were submitted.",
+    "verifiedOpenScope": "No source-native full parcel polygon at the exact unchanged WUP point was retained; this investigation does not establish parcel absence or citywide coverage.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "Provincial cadastre provides public parcel consultation and plan/cartography products; access path may identify parcel nomenclature but full coordinate-based polygon response was not verified. No personal, property or owner values were submitted.",
+  "remainingUncertainty": "Provincial cadastre provides public parcel consultation and plan/cartography products; access path may identify parcel nomenclature but full coordinate-based polygon response was not verified. No personal, property or owner values were submitted. Exact WUP-point parcel geometry, legal/title meaning, coverage completeness and currentness remain unverified.",
+  "nextStep": "Keep runtime disabled until root review determines whether an official source and full native geometry meet adapter criteria.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 25,
+  "cityId": "wup2025:25",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    -31.5395129374039,
+    -68.5413653624017
+  ],
+  "population2025k": 464.466,
+  "populationUnit": "persons",
+  "queueRank": 1198,
+  "population2025": 464466,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Official provincial cadastral mandate and public consultation service establish the registry/map custodian; no map feature geometry verified.",
+  "registryEvidenceUrls": [
+    "https://catastro.sanjuan.gob.ar/",
+    "https://tramite.sanjuan.gob.ar/tramite/d/297/consultas-catastrales",
+    "https://servicioscatastro.sanjuan.gob.ar/descargas/index.php",
+    "https://nomenclaturas.municipiosanjuan.gob.ar"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No source-native full parcel polygon at the exact unchanged WUP point was retained; runtime remains disabled."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

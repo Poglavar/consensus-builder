@@ -1,0 +1,1229 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T09:25:28.697Z",
+  "purpose": "Bounded test of ArcGIS returnDistinctValues semantics for Macapá layer 27, only safe idlote field and geometry; inspect official SIT dynamic config for an alternative physical-lot layer.",
+  "endpoint": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27",
+  "layerMetadata": {
+    "httpStatus": 200,
+    "bytes": 2924,
+    "sha256": "151e0c3835dc618168c24f89d87609170076d97ff85957a378cb51048e080d68",
+    "name": "sit_macapa.vw.vw_info_fisico",
+    "geometryType": "esriGeometryPolygon",
+    "oidFields": [
+      "idlote"
+    ],
+    "globalIdField": null,
+    "uniqueIdInfo": null,
+    "supportsDistinct": true,
+    "supportsCountDistinct": true,
+    "supportsPagination": true,
+    "fields": [
+      {
+        "name": "idlote",
+        "type": "esriFieldTypeOID",
+        "alias": "idlote"
+      },
+      {
+        "name": "lote_area",
+        "type": "esriFieldTypeDouble",
+        "alias": "lote_area"
+      },
+      {
+        "name": "lote_testadalote",
+        "type": "esriFieldTypeDouble",
+        "alias": "lote_testadalote"
+      },
+      {
+        "name": "qtd_edificacoes",
+        "type": "esriFieldTypeDouble",
+        "alias": "qtd_edificacoes"
+      },
+      {
+        "name": "caminhofoto",
+        "type": "esriFieldTypeString",
+        "alias": "caminhofoto"
+      },
+      {
+        "name": "shape",
+        "type": "esriFieldTypeGeometry",
+        "alias": "shape"
+      }
+    ]
+  },
+  "officialConfig": {
+    "url": "https://mapa.macapa.ap.gov.br/macapacliente/sit/Analise/ServicosMapa/ListarParametrosSistema",
+    "method": "POST",
+    "httpStatus": 200,
+    "bytes": 6125,
+    "sha256": "bb6f999127deb5e581b66c74bf9382b4fa6dc1ba8583bc7e374b0ea62e6cd031",
+    "parcelRelatedNonFiscalEntries": [
+      {
+        "name": "Consulta TestadaLote",
+        "url": "https://hml.egl.eng.br:443/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/6",
+        "keyField": "idtestadalote"
+      },
+      {
+        "name": "Consulta Loteamento",
+        "url": "https://hml.egl.eng.br:443/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/9",
+        "keyField": "idloteamento"
+      },
+      {
+        "name": "Identificar Lote Físico",
+        "url": "https://hml.egl.eng.br:443/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27",
+        "keyField": "idlote"
+      },
+      {
+        "name": "Consulta Geo Lote Físico",
+        "url": "https://hml.egl.eng.br:443/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/18",
+        "keyField": "idlote"
+      }
+    ],
+    "identifiedAlternativePhysicalLayer": true
+  },
+  "cellTests": [
+    {
+      "cell": 0,
+      "bboxWgs84": [
+        -51.07,
+        0.042,
+        -51.069,
+        0.043
+      ],
+      "rawFullGeometryBaseline": {
+        "returnedFeatureCount": 43,
+        "uniqueIdCount": 26,
+        "duplicateIds": [
+          {
+            "id": "605261",
+            "rowCount": 10
+          },
+          {
+            "id": "605262",
+            "rowCount": 5
+          },
+          {
+            "id": "605265",
+            "rowCount": 5
+          }
+        ],
+        "geometryHashesById": {
+          "502134": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "e4907c5af2ed4614ed935e7e631c9555ebd6893ee46af99f8da4a239fc8debcc"
+          },
+          "502135": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "e1c7e6052a499996f562a01f046e896a010915ce443e6ca928a75765cd9c9151"
+          },
+          "503042": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "8017c49ec28ef955ae568d674e41eff240a2fd8d5ed3d91407ae80527f15d638"
+          },
+          "503043": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "c6afa61458f74e05fb48a14c00b6e1674e717298f4e4f0b402ca35e8860d95f1"
+          },
+          "503044": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "59600130ef34c4a137e0753d2859f6ffc9126f009ad74272d4e39ed54711cb8d"
+          },
+          "503045": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "022ce286027dfc8d34163378dbcc1fc166cd2a95ce9c66b8a65e58e22638e2e0"
+          },
+          "503046": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "2dc726bf5b974b54cadd9ed1fe39854018a149ac6460d472eebfdeb7ee5ef052"
+          },
+          "503047": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "debf6a715c52002359014e6a2495900af92e3eee0ffb842743807c7c22676f53"
+          },
+          "503048": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "7990394e8dc254fa52011d918e7abc199fc7695a3e273b9783b7a62490059967"
+          },
+          "503049": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "c11e57a373486d4dc7425ed8e09ae318677d063f13d8ce5922a2b7c87b269105"
+          },
+          "503050": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "e76f16875470f4abc43724394eae9792964e9e819dbd8a44bb87f09837deaffe"
+          },
+          "503052": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "0f4cd31e96794216cbea958250addb081a92aa6c4a704ddeb798048107da3e3a"
+          },
+          "503058": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "48472ba3497d69c280277d82aadefb5340227b1ca01537f6b8a465b23e123fd6"
+          },
+          "503059": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "a1aeafab226851938ad7bc9cd13f05311d211b092827d573b2880421cf12f970"
+          },
+          "503087": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "464b8af4da6a5af54db514f0c26bf914943b826e5317eb202398d24debcb235f"
+          },
+          "503088": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "6368cdff50ff762e0d6262c214739085833b6cd80ac40ba281e340bdb10eac76"
+          },
+          "503089": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "4d6ee47f5c02c4236b36b67734a3baa55f6c1f7ebf3f6f7c66154d769ad20c86"
+          },
+          "503090": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "a213243bb5dd26e4167edf67e2d33241a4b177da0ae35b3d150aba54e3301ea7"
+          },
+          "503091": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "f16dbfb8c01a5a2da254adeac39904874d35291d90cdb2d1f84943c8bd6f20d9"
+          },
+          "503092": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "d489a917e72d42f10a37a755f672ad5edefda5a927c5187de3d18d39471cb964"
+          },
+          "503093": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "22edf33d39b03916a56b360f538da84b89a74d92302fa9fee5643aa4cb2cc644"
+          },
+          "526997": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "d4aaf80358b1f2272ae821a672f287898ede08f1eb5eacd1fa02ccd5ff45b16a"
+          },
+          "526998": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "9cb0b71875710ba14115cf748d1e34c7249e63c7f0ed50a1427d13bc700f312e"
+          },
+          "605261": {
+            "rowCount": 10,
+            "distinctGeometryHashCount": 1,
+            "sha256": "51cb7ad514f0747ae0f2e2c6309899435e6e44e3d1ca10f08cdfbeda7a694274"
+          },
+          "605262": {
+            "rowCount": 5,
+            "distinctGeometryHashCount": 1,
+            "sha256": "fa6a6df6ab4c74ebf8ddd7f661eef20082bba72326b7f867c1efafe3f03abe0f"
+          },
+          "605265": {
+            "rowCount": 5,
+            "distinctGeometryHashCount": 1,
+            "sha256": "4dc8d50b8f9f134f19253539ab269739df58f7a22047468106e7997a9b93c56a"
+          }
+        },
+        "exceededTransferLimit": null
+      },
+      "attributeOnly": {
+        "request": {
+          "stage": "cell-0-distinct-attributes",
+          "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&outFields=idlote&returnDistinctValues=true&returnGeometry=false&resultRecordCount=100&orderByFields=idlote&geometry=%7B%22xmin%22%3A-51.07%2C%22ymin%22%3A0.042%2C%22xmax%22%3A-51.069%2C%22ymax%22%3A0.043%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/geo+json;charset=UTF-8",
+          "bytes": 2125,
+          "bodySha256": "4f590c6a5b3d58b24f01cbf4f75350bc207dee0cb2aa1fb0f1cd83bb8347e045",
+          "isEsriError": false
+        },
+        "summary": {
+          "httpStatus": 200,
+          "returnedFeatureCount": 26,
+          "uniqueIdCount": 26,
+          "duplicateIds": [],
+          "nativeIds": [
+            "502134",
+            "502135",
+            "503042",
+            "503043",
+            "503044",
+            "503045",
+            "503046",
+            "503047",
+            "503048",
+            "503049",
+            "503050",
+            "503052",
+            "503058",
+            "503059",
+            "503087",
+            "503088",
+            "503089",
+            "503090",
+            "503091",
+            "503092",
+            "503093",
+            "526997",
+            "526998",
+            "605261",
+            "605262",
+            "605265"
+          ],
+          "geometryRequested": false,
+          "exceededTransferLimit": null,
+          "esriError": null,
+          "returnDistinctValues": true,
+          "contentType": "application/geo+json;charset=UTF-8",
+          "responseBytes": 2125,
+          "responseSha256": "4f590c6a5b3d58b24f01cbf4f75350bc207dee0cb2aa1fb0f1cd83bb8347e045"
+        }
+      },
+      "geometry": {
+        "request": {
+          "stage": "cell-0-distinct-geometry",
+          "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&outFields=idlote&returnDistinctValues=true&returnGeometry=true&resultRecordCount=100&orderByFields=idlote&geometry=%7B%22xmin%22%3A-51.07%2C%22ymin%22%3A0.042%2C%22xmax%22%3A-51.069%2C%22ymax%22%3A0.043%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=31982",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/geo+json;charset=UTF-8",
+          "bytes": 88,
+          "bodySha256": "18b356c4d6f0192a347b267306f5c34e117fd63cf1a48921524059c68d58b400",
+          "isEsriError": true,
+          "error": {
+            "code": 400,
+            "message": "Geometry is not supported with DISTINCT."
+          }
+        },
+        "summary": {
+          "httpStatus": 200,
+          "returnedFeatureCount": 0,
+          "uniqueIdCount": 0,
+          "duplicateIds": [],
+          "nativeIds": [],
+          "geometryRequested": true,
+          "geometryHashesById": {},
+          "hasGeometry": true,
+          "exceededTransferLimit": null,
+          "esriError": {
+            "code": 400,
+            "message": "Geometry is not supported with DISTINCT."
+          },
+          "returnDistinctValues": true,
+          "contentType": "application/geo+json;charset=UTF-8",
+          "responseBytes": 88,
+          "responseSha256": "18b356c4d6f0192a347b267306f5c34e117fd63cf1a48921524059c68d58b400"
+        }
+      },
+      "comparison": {
+        "distinctAttributeIdsMatchRawUniqueIds": true,
+        "distinctGeometryIdsAndHashesMatchRawUniqueIdPolygons": false
+      }
+    },
+    {
+      "cell": 1,
+      "bboxWgs84": [
+        -51.069,
+        0.042,
+        -51.068,
+        0.043
+      ],
+      "rawFullGeometryBaseline": {
+        "returnedFeatureCount": 33,
+        "uniqueIdCount": 25,
+        "duplicateIds": [
+          {
+            "id": "605265",
+            "rowCount": 5
+          },
+          {
+            "id": "605274",
+            "rowCount": 5
+          }
+        ],
+        "geometryHashesById": {
+          "502134": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "e4907c5af2ed4614ed935e7e631c9555ebd6893ee46af99f8da4a239fc8debcc"
+          },
+          "502136": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "af7f34d494b3755d3156957fc6579f08c8bd95c905ffca8fd1a027ebfb19f3fe"
+          },
+          "502137": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "85a82f41a6949541ba24c64b55bebf02867d4d036988542f857af7453e53e421"
+          },
+          "502475": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "8008889e6e2ea91abdb53003b6e31670833059a857fd7ee4781928c7f994ec53"
+          },
+          "502476": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "a40bffb846ade946561dc8f862383e3f6adbd3b297a144612b6a3dd6a03d3df8"
+          },
+          "502677": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "3f87e08e3fb0fe70b0e0bbc79c00fa47131b6eea58a3a7e1aca41bed5f6f3e3b"
+          },
+          "502678": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "54c4f410ad70479ba176194c4d79f80283676e6363c10c5dc64c369a11aaa49c"
+          },
+          "502679": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "53422aae45d82f9dbf28ded26cc3af721db429451e23a3e1f77323a07bede31b"
+          },
+          "502723": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "6d4fc583fd327c1d02fd1c7807513b579d36f0d578d00ef63fb2f92a173d4b48"
+          },
+          "502724": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "676c4baabb2c711d2ac6ffd2e10c4906489101be15e8b71571d377d7a7ed20cd"
+          },
+          "503050": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "e76f16875470f4abc43724394eae9792964e9e819dbd8a44bb87f09837deaffe"
+          },
+          "503051": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "116a710d48e64b138e7d7fabc37b9e145c48a4514b6a2adf26886c763736e601"
+          },
+          "503052": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "0f4cd31e96794216cbea958250addb081a92aa6c4a704ddeb798048107da3e3a"
+          },
+          "503053": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "37ef610d101191dd38cb80a1455fc46bede411a7c8965b23cca68d21ef52320f"
+          },
+          "503054": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "ba6f6930bb474e7198ae6accd71944e25540777934d179788802c71fc4e7855f"
+          },
+          "503055": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "55f1dc676da014e8c9349aad762fc5663818eb1db8e5ff92743d70e23f1e46f6"
+          },
+          "503057": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "ea3b4d1ece87d71949abafb3b493f90bf4fe8c9523344c827f53febf28d6f415"
+          },
+          "503060": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "17dbfef28ba84aa7e41b5b697d0c501be9d541374633c504d6bb5e3bf23dffa8"
+          },
+          "523735": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "ff450a0e37873b19bfbb72f31ebebf9124f7e94e33e4687b6b2c6dc72d658a33"
+          },
+          "526978": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "49a9d732e5241eb93b7c34620cc763e7cca97806e929e55152745a43285ae809"
+          },
+          "526999": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "699ab3a6d0c892c1eb921a46f1ac55318a16a168bec8138fc95d427bc61484eb"
+          },
+          "605265": {
+            "rowCount": 5,
+            "distinctGeometryHashCount": 1,
+            "sha256": "4dc8d50b8f9f134f19253539ab269739df58f7a22047468106e7997a9b93c56a"
+          },
+          "605267": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "37f9d01441f5d3013e5f33f8eb1ba0b413631d5b24798701aca859ce86cb4f54"
+          },
+          "605273": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "e8d3faa05753706674914612de955eb3b5bb3953797126546aa300f5cf95d2fa"
+          },
+          "605274": {
+            "rowCount": 5,
+            "distinctGeometryHashCount": 1,
+            "sha256": "5e5379972077242007b9ee9f4a9a458cee78454389d3bca8ee9bcac61251e985"
+          }
+        },
+        "exceededTransferLimit": null
+      },
+      "attributeOnly": {
+        "request": {
+          "stage": "cell-1-distinct-attributes",
+          "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&outFields=idlote&returnDistinctValues=true&returnGeometry=false&resultRecordCount=100&orderByFields=idlote&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.042%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.043%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/geo+json;charset=UTF-8",
+          "bytes": 2047,
+          "bodySha256": "1de0e58cc76cea088815bf5831050b4219678fe8504e651c75d78a1781d824a2",
+          "isEsriError": false
+        },
+        "summary": {
+          "httpStatus": 200,
+          "returnedFeatureCount": 25,
+          "uniqueIdCount": 25,
+          "duplicateIds": [],
+          "nativeIds": [
+            "502134",
+            "502136",
+            "502137",
+            "502475",
+            "502476",
+            "502677",
+            "502678",
+            "502679",
+            "502723",
+            "502724",
+            "503050",
+            "503051",
+            "503052",
+            "503053",
+            "503054",
+            "503055",
+            "503057",
+            "503060",
+            "523735",
+            "526978",
+            "526999",
+            "605265",
+            "605267",
+            "605273",
+            "605274"
+          ],
+          "geometryRequested": false,
+          "exceededTransferLimit": null,
+          "esriError": null,
+          "returnDistinctValues": true,
+          "contentType": "application/geo+json;charset=UTF-8",
+          "responseBytes": 2047,
+          "responseSha256": "1de0e58cc76cea088815bf5831050b4219678fe8504e651c75d78a1781d824a2"
+        }
+      },
+      "geometry": {
+        "request": {
+          "stage": "cell-1-distinct-geometry",
+          "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&outFields=idlote&returnDistinctValues=true&returnGeometry=true&resultRecordCount=100&orderByFields=idlote&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.042%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.043%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=31982",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/geo+json;charset=UTF-8",
+          "bytes": 88,
+          "bodySha256": "18b356c4d6f0192a347b267306f5c34e117fd63cf1a48921524059c68d58b400",
+          "isEsriError": true,
+          "error": {
+            "code": 400,
+            "message": "Geometry is not supported with DISTINCT."
+          }
+        },
+        "summary": {
+          "httpStatus": 200,
+          "returnedFeatureCount": 0,
+          "uniqueIdCount": 0,
+          "duplicateIds": [],
+          "nativeIds": [],
+          "geometryRequested": true,
+          "geometryHashesById": {},
+          "hasGeometry": true,
+          "exceededTransferLimit": null,
+          "esriError": {
+            "code": 400,
+            "message": "Geometry is not supported with DISTINCT."
+          },
+          "returnDistinctValues": true,
+          "contentType": "application/geo+json;charset=UTF-8",
+          "responseBytes": 88,
+          "responseSha256": "18b356c4d6f0192a347b267306f5c34e117fd63cf1a48921524059c68d58b400"
+        }
+      },
+      "comparison": {
+        "distinctAttributeIdsMatchRawUniqueIds": true,
+        "distinctGeometryIdsAndHashesMatchRawUniqueIdPolygons": false
+      }
+    },
+    {
+      "cell": 4,
+      "bboxWgs84": [
+        -51.069,
+        0.043,
+        -51.068,
+        0.044
+      ],
+      "rawFullGeometryBaseline": {
+        "returnedFeatureCount": 62,
+        "uniqueIdCount": 22,
+        "duplicateIds": [
+          {
+            "id": "502725",
+            "rowCount": 6
+          },
+          {
+            "id": "527010",
+            "rowCount": 6
+          },
+          {
+            "id": "605268",
+            "rowCount": 5
+          },
+          {
+            "id": "605269",
+            "rowCount": 5
+          },
+          {
+            "id": "605270",
+            "rowCount": 10
+          },
+          {
+            "id": "605271",
+            "rowCount": 5
+          },
+          {
+            "id": "605272",
+            "rowCount": 10
+          }
+        ],
+        "geometryHashesById": {
+          "502725": {
+            "rowCount": 6,
+            "distinctGeometryHashCount": 1,
+            "sha256": "97d6f5d15b4c6a60cdbb88fa68a210e2f03290ee6e0c75b91d62425b56b2965f"
+          },
+          "503050": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "e76f16875470f4abc43724394eae9792964e9e819dbd8a44bb87f09837deaffe"
+          },
+          "503265": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "3286814aa71f64ab235aedfe8641c590d85f76c9380c5286780ee7deaf9622c5"
+          },
+          "503266": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "24d2004ca66d4a48bb1d6c2a7966b8a360df55124438e2b5ed3f913ae40755b7"
+          },
+          "527008": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "fd77d5188af1b1593414bc177f961d7ba021078bbc55d086def543e82390e371"
+          },
+          "527009": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "313642145f9b4946c3325c02a1b9b424aa234bc30728b53e1fffb3be625234e7"
+          },
+          "527010": {
+            "rowCount": 6,
+            "distinctGeometryHashCount": 1,
+            "sha256": "d7612a54004e2b7ff8dbffd89c166d8fb9a3737c77094f71c8094bbfa7708ad4"
+          },
+          "527011": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "25925ea7353940de37a0fbb964992c32e074546a6d0803fa96e50cedd09e4452"
+          },
+          "527012": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "60e159f70d58731aaa8febedca1692d6dd727b04d32fc64596ad95d8b9aa984c"
+          },
+          "527013": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "dcfc4b813e1d91d28fb763209bd1e0adb8014ae531091c1577a69db367ba5a79"
+          },
+          "527355": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "12a35195bf0ce5f22c30ebde772d8b9784f03e5f40db3d109195f5a48f2b86c8"
+          },
+          "527538": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "f315854da4b3b3a881872e8dd7f37dcfbbf4fa93fb99502eb0296b09283afdf4"
+          },
+          "527539": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "c2e2cc4ba64372c1b2bc0146749dc3f1211cfef77dd0aa709ea6421d2def70c5"
+          },
+          "537518": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "a5fb4e94acbec9d810e1025cba587a7ec295f36512ca350cc9c14fef1e6f8b37"
+          },
+          "605268": {
+            "rowCount": 5,
+            "distinctGeometryHashCount": 1,
+            "sha256": "2d80d6f3f7a3dd29bcc493d8f37271cf8239cac5bf51e4d7ac04f825f08d0e78"
+          },
+          "605269": {
+            "rowCount": 5,
+            "distinctGeometryHashCount": 1,
+            "sha256": "413ad9d8d63f849bfd89ccf0c5ad9e8b69be352ed64d8f92ed52c8017899e1ba"
+          },
+          "605270": {
+            "rowCount": 10,
+            "distinctGeometryHashCount": 1,
+            "sha256": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+          },
+          "605271": {
+            "rowCount": 5,
+            "distinctGeometryHashCount": 1,
+            "sha256": "00f9ecdaabafcfe66432b474e0e8b247be5e9e954fde75b4f71f6a65a89a5b02"
+          },
+          "605272": {
+            "rowCount": 10,
+            "distinctGeometryHashCount": 1,
+            "sha256": "0afb72f471899ef30e35f24ba728215db033cee05c56d5e299f55c1c7f9b084a"
+          },
+          "606579": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "a037470666ff5c22cbb18fcce7debad90c995c52d3002f82697e8942b0f073dc"
+          },
+          "606580": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "54f995ab11955410f15001e1ebb39f01c8a82288eb9b956ca6dcb9a7ae48131f"
+          },
+          "606581": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "df72d563da23720ccff0a123cc36d9560619f8e029cb6581275c775daf64ee7e"
+          }
+        },
+        "exceededTransferLimit": null
+      },
+      "attributeOnly": {
+        "request": {
+          "stage": "cell-4-distinct-attributes",
+          "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&outFields=idlote&returnDistinctValues=true&returnGeometry=false&resultRecordCount=100&orderByFields=idlote&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.043%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.044%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/geo+json;charset=UTF-8",
+          "bytes": 1813,
+          "bodySha256": "0574060d168b4c4fc4591919a59c51ec5827753bfcbe503db5a2971897308d38",
+          "isEsriError": false
+        },
+        "summary": {
+          "httpStatus": 200,
+          "returnedFeatureCount": 22,
+          "uniqueIdCount": 22,
+          "duplicateIds": [],
+          "nativeIds": [
+            "502725",
+            "503050",
+            "503265",
+            "503266",
+            "527008",
+            "527009",
+            "527010",
+            "527011",
+            "527012",
+            "527013",
+            "527355",
+            "527538",
+            "527539",
+            "537518",
+            "605268",
+            "605269",
+            "605270",
+            "605271",
+            "605272",
+            "606579",
+            "606580",
+            "606581"
+          ],
+          "geometryRequested": false,
+          "exceededTransferLimit": null,
+          "esriError": null,
+          "returnDistinctValues": true,
+          "contentType": "application/geo+json;charset=UTF-8",
+          "responseBytes": 1813,
+          "responseSha256": "0574060d168b4c4fc4591919a59c51ec5827753bfcbe503db5a2971897308d38"
+        }
+      },
+      "geometry": {
+        "request": {
+          "stage": "cell-4-distinct-geometry",
+          "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&outFields=idlote&returnDistinctValues=true&returnGeometry=true&resultRecordCount=100&orderByFields=idlote&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.043%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.044%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=31982",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/geo+json;charset=UTF-8",
+          "bytes": 88,
+          "bodySha256": "18b356c4d6f0192a347b267306f5c34e117fd63cf1a48921524059c68d58b400",
+          "isEsriError": true,
+          "error": {
+            "code": 400,
+            "message": "Geometry is not supported with DISTINCT."
+          }
+        },
+        "summary": {
+          "httpStatus": 200,
+          "returnedFeatureCount": 0,
+          "uniqueIdCount": 0,
+          "duplicateIds": [],
+          "nativeIds": [],
+          "geometryRequested": true,
+          "geometryHashesById": {},
+          "hasGeometry": true,
+          "exceededTransferLimit": null,
+          "esriError": {
+            "code": 400,
+            "message": "Geometry is not supported with DISTINCT."
+          },
+          "returnDistinctValues": true,
+          "contentType": "application/geo+json;charset=UTF-8",
+          "responseBytes": 88,
+          "responseSha256": "18b356c4d6f0192a347b267306f5c34e117fd63cf1a48921524059c68d58b400"
+        }
+      },
+      "comparison": {
+        "distinctAttributeIdsMatchRawUniqueIds": true,
+        "distinctGeometryIdsAndHashesMatchRawUniqueIdPolygons": false
+      }
+    },
+    {
+      "cell": 9,
+      "bboxWgs84": [
+        -51.069,
+        0.041,
+        -51.068,
+        0.042
+      ],
+      "rawFullGeometryBaseline": {
+        "returnedFeatureCount": 38,
+        "uniqueIdCount": 26,
+        "duplicateIds": [
+          {
+            "id": "605264",
+            "rowCount": 5
+          },
+          {
+            "id": "605265",
+            "rowCount": 5
+          },
+          {
+            "id": "605274",
+            "rowCount": 5
+          }
+        ],
+        "geometryHashesById": {
+          "502475": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "8008889e6e2ea91abdb53003b6e31670833059a857fd7ee4781928c7f994ec53"
+          },
+          "502476": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "a40bffb846ade946561dc8f862383e3f6adbd3b297a144612b6a3dd6a03d3df8"
+          },
+          "502675": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "84605b61567c4b86f09502b1476837c30bf223725ac659b331153922adcae5f2"
+          },
+          "502678": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "54c4f410ad70479ba176194c4d79f80283676e6363c10c5dc64c369a11aaa49c"
+          },
+          "502679": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "53422aae45d82f9dbf28ded26cc3af721db429451e23a3e1f77323a07bede31b"
+          },
+          "502721": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "9e7c4acc64b2c5eb0d98c6706b1105885db462cb1737e2882ef3520a7d2fc83d"
+          },
+          "502722": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "869b3d6f7fbff52158c43880f7b7f0c9ab73ea3339845bab250e50a5a479fa84"
+          },
+          "503056": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "72eb07de97c2b5f2b79948b54ad4db4b4690b6d6ae779fbb85cc45d5309bb134"
+          },
+          "503057": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "ea3b4d1ece87d71949abafb3b493f90bf4fe8c9523344c827f53febf28d6f415"
+          },
+          "503085": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "be7c0a6100e0ac53d73da2fa964092c0756e5150005f4d039d90e612106f947b"
+          },
+          "503086": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "14954b6e3ce25c394c424423d3bec758da7ec559e69625fc51319f908b02cd73"
+          },
+          "503099": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "6f0cfb4bd916d2df0116bbeea307bb199e5bb41345629f8caba9b778a64a7c3f"
+          },
+          "503100": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "b4f3a98ee42380a9ea324ea37a05bb7c14db4947c15983144132d69a20c45268"
+          },
+          "503101": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "77cb3ceee988a076feec149acedd4c9cc4cac2e98afbb4f9e5ded519cb9f2170"
+          },
+          "503102": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "b944b4dddf645d8b5b69a702e0d3cbd435cd207fecf1591eaeee1a6826246399"
+          },
+          "503103": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "d838a7b59a9bf6310992fd75f5bf0621e5b36ad92a7a1b07d464cc2d2eac6b0c"
+          },
+          "503104": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "139b9c5305ee77e76af1c0e5ebef3b4f2abef1629649126fff6c1f4d7bd8f661"
+          },
+          "503105": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "3733f35769e985bf15d331f80c1206c12be5f1a454a0f83d8c937185c0a09988"
+          },
+          "503106": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "d70ee09714c3d3796b0ec92e3e60ca34a52be4de96bb4d8421ab4c2781047de8"
+          },
+          "527361": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "180a1ea15a90c378d3a500dad981ec673208902152be699513e24a45e1f45e4e"
+          },
+          "537519": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "ca6223a8bee5cd2256afcba187a991c0b3f9c6baee3b38bb9db92f5ab25a8cc0"
+          },
+          "605264": {
+            "rowCount": 5,
+            "distinctGeometryHashCount": 1,
+            "sha256": "9d1ce3a9fbae9f4452546c0a4a39c0e204845635d1fe7f7503b71db3129becab"
+          },
+          "605265": {
+            "rowCount": 5,
+            "distinctGeometryHashCount": 1,
+            "sha256": "4dc8d50b8f9f134f19253539ab269739df58f7a22047468106e7997a9b93c56a"
+          },
+          "605274": {
+            "rowCount": 5,
+            "distinctGeometryHashCount": 1,
+            "sha256": "5e5379972077242007b9ee9f4a9a458cee78454389d3bca8ee9bcac61251e985"
+          },
+          "605275": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "d147c9834ee54065cec874f4a9eeee6459366166b1dcfd7ecf892452a086fc50"
+          },
+          "606560": {
+            "rowCount": 1,
+            "distinctGeometryHashCount": 1,
+            "sha256": "81ed129734ea107fe0cb2442ad9070be9edb67c1326dd969ad3b5c3b18f2a9a6"
+          }
+        },
+        "exceededTransferLimit": null
+      },
+      "attributeOnly": {
+        "request": {
+          "stage": "cell-9-distinct-attributes",
+          "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&outFields=idlote&returnDistinctValues=true&returnGeometry=false&resultRecordCount=100&orderByFields=idlote&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.041%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.042%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/geo+json;charset=UTF-8",
+          "bytes": 2125,
+          "bodySha256": "5d4dae60f52b387f17c320a3e3783d9328e04a6e3f2c1f745b8d0d4c5fa07e15",
+          "isEsriError": false
+        },
+        "summary": {
+          "httpStatus": 200,
+          "returnedFeatureCount": 26,
+          "uniqueIdCount": 26,
+          "duplicateIds": [],
+          "nativeIds": [
+            "502475",
+            "502476",
+            "502675",
+            "502678",
+            "502679",
+            "502721",
+            "502722",
+            "503056",
+            "503057",
+            "503085",
+            "503086",
+            "503099",
+            "503100",
+            "503101",
+            "503102",
+            "503103",
+            "503104",
+            "503105",
+            "503106",
+            "527361",
+            "537519",
+            "605264",
+            "605265",
+            "605274",
+            "605275",
+            "606560"
+          ],
+          "geometryRequested": false,
+          "exceededTransferLimit": null,
+          "esriError": null,
+          "returnDistinctValues": true,
+          "contentType": "application/geo+json;charset=UTF-8",
+          "responseBytes": 2125,
+          "responseSha256": "5d4dae60f52b387f17c320a3e3783d9328e04a6e3f2c1f745b8d0d4c5fa07e15"
+        }
+      },
+      "geometry": {
+        "request": {
+          "stage": "cell-9-distinct-geometry",
+          "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=1%3D1&outFields=idlote&returnDistinctValues=true&returnGeometry=true&resultRecordCount=100&orderByFields=idlote&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.041%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.042%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=31982",
+          "method": "GET",
+          "status": 200,
+          "contentType": "application/geo+json;charset=UTF-8",
+          "bytes": 88,
+          "bodySha256": "18b356c4d6f0192a347b267306f5c34e117fd63cf1a48921524059c68d58b400",
+          "isEsriError": true,
+          "error": {
+            "code": 400,
+            "message": "Geometry is not supported with DISTINCT."
+          }
+        },
+        "summary": {
+          "httpStatus": 200,
+          "returnedFeatureCount": 0,
+          "uniqueIdCount": 0,
+          "duplicateIds": [],
+          "nativeIds": [],
+          "geometryRequested": true,
+          "geometryHashesById": {},
+          "hasGeometry": true,
+          "exceededTransferLimit": null,
+          "esriError": {
+            "code": 400,
+            "message": "Geometry is not supported with DISTINCT."
+          },
+          "returnDistinctValues": true,
+          "contentType": "application/geo+json;charset=UTF-8",
+          "responseBytes": 88,
+          "responseSha256": "18b356c4d6f0192a347b267306f5c34e117fd63cf1a48921524059c68d58b400"
+        }
+      },
+      "comparison": {
+        "distinctAttributeIdsMatchRawUniqueIds": true,
+        "distinctGeometryIdsAndHashesMatchRawUniqueIdPolygons": false
+      }
+    }
+  ],
+  "repeatIdTest": {
+    "nativeId": "605270",
+    "cell": 4,
+    "where": "idlote = 605270",
+    "whySelected": "Most repeated id in held native-geometry cell 4 (10 identical polygon rows in prior response).",
+    "rawAttributes": {
+      "request": {
+        "stage": "repeat-id-605270-raw-attributes",
+        "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=idlote+%3D+605270&outFields=idlote&returnDistinctValues=false&returnGeometry=false&resultRecordCount=100&orderByFields=idlote",
+        "method": "GET",
+        "status": 200,
+        "contentType": "application/geo+json;charset=UTF-8",
+        "bytes": 877,
+        "bodySha256": "c25bd2f21de7a4f947f57168ec0e8ad6876866903f03a278aafc5527b6eb87eb",
+        "isEsriError": false
+      },
+      "summary": {
+        "httpStatus": 200,
+        "returnedFeatureCount": 10,
+        "uniqueIdCount": 1,
+        "duplicateIds": [
+          {
+            "id": "605270",
+            "rowCount": 10
+          }
+        ],
+        "nativeIds": [
+          "605270"
+        ],
+        "geometryRequested": false,
+        "exceededTransferLimit": null,
+        "esriError": null,
+        "returnDistinctValues": false,
+        "contentType": "application/geo+json;charset=UTF-8",
+        "responseBytes": 877,
+        "responseSha256": "c25bd2f21de7a4f947f57168ec0e8ad6876866903f03a278aafc5527b6eb87eb"
+      }
+    },
+    "distinctAttributes": {
+      "request": {
+        "stage": "repeat-id-605270-distinct-attributes",
+        "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=idlote+%3D+605270&outFields=idlote&returnDistinctValues=true&returnGeometry=false&resultRecordCount=100&orderByFields=idlote",
+        "method": "GET",
+        "status": 200,
+        "contentType": "application/geo+json;charset=UTF-8",
+        "bytes": 175,
+        "bodySha256": "de503c6e2129635c974a11c929016eaba74ab9ab85442e90a2436b10693a6830",
+        "isEsriError": false
+      },
+      "summary": {
+        "httpStatus": 200,
+        "returnedFeatureCount": 1,
+        "uniqueIdCount": 1,
+        "duplicateIds": [],
+        "nativeIds": [
+          "605270"
+        ],
+        "geometryRequested": false,
+        "exceededTransferLimit": null,
+        "esriError": null,
+        "returnDistinctValues": true,
+        "contentType": "application/geo+json;charset=UTF-8",
+        "responseBytes": 175,
+        "responseSha256": "de503c6e2129635c974a11c929016eaba74ab9ab85442e90a2436b10693a6830"
+      }
+    },
+    "rawGeometry": {
+      "request": {
+        "stage": "repeat-id-605270-raw-geometry",
+        "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=idlote+%3D+605270&outFields=idlote&returnDistinctValues=false&returnGeometry=true&resultRecordCount=100&orderByFields=idlote&outSR=31982",
+        "method": "GET",
+        "status": 200,
+        "contentType": "application/geo+json;charset=UTF-8",
+        "bytes": 3828,
+        "bodySha256": "239644b9ad3e938e44541736ecc242ce62fe1e9476d4cfb838207600beb3f8d5",
+        "isEsriError": false
+      },
+      "summary": {
+        "httpStatus": 200,
+        "returnedFeatureCount": 10,
+        "uniqueIdCount": 1,
+        "duplicateIds": [
+          {
+            "id": "605270",
+            "rowCount": 10
+          }
+        ],
+        "nativeIds": [
+          "605270"
+        ],
+        "geometryRequested": true,
+        "geometryHashesById": {
+          "605270": {
+            "rowCount": 10,
+            "distinctGeometryHashCount": 1,
+            "sha256": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+          }
+        },
+        "hasGeometry": true,
+        "exceededTransferLimit": null,
+        "esriError": null,
+        "returnDistinctValues": false,
+        "contentType": "application/geo+json;charset=UTF-8",
+        "responseBytes": 3828,
+        "responseSha256": "239644b9ad3e938e44541736ecc242ce62fe1e9476d4cfb838207600beb3f8d5"
+      }
+    },
+    "distinctGeometry": {
+      "request": {
+        "stage": "repeat-id-605270-distinct-geometry",
+        "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=idlote+%3D+605270&outFields=idlote&returnDistinctValues=true&returnGeometry=true&resultRecordCount=100&orderByFields=idlote&outSR=31982",
+        "method": "GET",
+        "status": 200,
+        "contentType": "application/geo+json;charset=UTF-8",
+        "bytes": 88,
+        "bodySha256": "18b356c4d6f0192a347b267306f5c34e117fd63cf1a48921524059c68d58b400",
+        "isEsriError": true,
+        "error": {
+          "code": 400,
+          "message": "Geometry is not supported with DISTINCT."
+        }
+      },
+      "summary": {
+        "httpStatus": 200,
+        "returnedFeatureCount": 0,
+        "uniqueIdCount": 0,
+        "duplicateIds": [],
+        "nativeIds": [],
+        "geometryRequested": true,
+        "geometryHashesById": {},
+        "hasGeometry": true,
+        "exceededTransferLimit": null,
+        "esriError": {
+          "code": 400,
+          "message": "Geometry is not supported with DISTINCT."
+        },
+        "returnDistinctValues": true,
+        "contentType": "application/geo+json;charset=UTF-8",
+        "responseBytes": 88,
+        "responseSha256": "18b356c4d6f0192a347b267306f5c34e117fd63cf1a48921524059c68d58b400"
+      }
+    },
+    "comparison": {
+      "distinctAttributeUniqueIdMatchesRaw": true,
+      "distinctGeometryMatchesRawFullPolygon": false
+    }
+  },
+  "limitations": {
+    "noOwnerAddressTaxAccountOrApplicantFieldsRequestedOrRetained": true,
+    "fullGeometryResponsesCachedOnlyInIgnoredTmp": true,
+    "durableFullPolygonsAdded": 0,
+    "adapterOrReaderCodeChanged": false,
+    "cityPointOrLocatorChanged": false
+  }
+}

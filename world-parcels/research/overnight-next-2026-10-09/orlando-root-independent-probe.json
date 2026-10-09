@@ -1,0 +1,163 @@
+{
+  "pointContained": true,
+  "proposalBinding": {
+    "coverage": "complete",
+    "parcels": [
+      {
+        "parcelId": "US-ORANGE-COUNTY-PARCEL-302216051000349",
+        "overlapM2": 850999.395,
+        "intrusionM": 882.7283
+      }
+    ],
+    "siteM2": 850999.4
+  },
+  "checkedAt": "2026-10-09T07:43:16.930Z",
+  "descriptor": {
+    "id": "orlando-ocpa-arcgis",
+    "name": "Orlando OCPA public parcel polygons",
+    "adapter": "arcgis",
+    "endpoint": "https://vgispublic.ocpafl.org/server/rest/services/Webmap/PARCEL/MapServer/4",
+    "idField": "PARCEL",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "idPrefix": "US-ORANGE-COUNTY-PARCEL-",
+    "outFields": [
+      "OBJECTID",
+      "PARCEL"
+    ],
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "pageSize": 25,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 25,
+    "boundsSrid": 2236,
+    "boundsProjection": "+proj=tmerc +lat_0=24.3333333333333 +lon_0=-81 +k=0.999941177 +x_0=200000.0001016 +y_0=0 +datum=NAD83 +units=us-ft +no_defs +type=crs",
+    "countryCode": "US",
+    "metricSrid": 26917,
+    "cityIds": [
+      "orlando"
+    ],
+    "maxConcurrentQueries": 1
+  },
+  "requests": [
+    {
+      "httpStatus": 200,
+      "outFields": null,
+      "objectIds": null,
+      "returnIdsOnly": null,
+      "returnCountOnly": "true"
+    },
+    {
+      "httpStatus": 200,
+      "outFields": null,
+      "objectIds": null,
+      "returnIdsOnly": "true",
+      "returnCountOnly": null
+    },
+    {
+      "httpStatus": 200,
+      "outFields": "OBJECTID,PARCEL",
+      "objectIds": "167983,167854,167862,167788,166926,166712",
+      "returnIdsOnly": null,
+      "returnCountOnly": null
+    },
+    {
+      "httpStatus": 200,
+      "outFields": null,
+      "objectIds": null,
+      "returnIdsOnly": null,
+      "returnCountOnly": "true"
+    },
+    {
+      "httpStatus": 200,
+      "outFields": null,
+      "objectIds": null,
+      "returnIdsOnly": "true",
+      "returnCountOnly": null
+    },
+    {
+      "httpStatus": 200,
+      "outFields": "OBJECTID,PARCEL",
+      "objectIds": "167862",
+      "returnIdsOnly": null,
+      "returnCountOnly": null
+    },
+    {
+      "httpStatus": 200,
+      "outFields": null,
+      "objectIds": null,
+      "returnIdsOnly": null,
+      "returnCountOnly": "true"
+    },
+    {
+      "httpStatus": 200,
+      "outFields": null,
+      "objectIds": null,
+      "returnIdsOnly": "true",
+      "returnCountOnly": null
+    },
+    {
+      "httpStatus": 200,
+      "outFields": "OBJECTID,PARCEL",
+      "objectIds": "163305,163308,163312,163316,163317,166489,166490,166561,166585,166604,166712,166718,166719,166720,166735,166772,166926,166927,167159,167243,167285,167429,167608,167769,167772",
+      "returnIdsOnly": null,
+      "returnCountOnly": null
+    },
+    {
+      "httpStatus": 200,
+      "outFields": "OBJECTID,PARCEL",
+      "objectIds": "167788,167789,167796,167797,167798,167841,167843,167846,167847,167848,167849,167854,167859,167862,167863,167864,167865,167866,167869,167871,167878,167879,167881,167882,167885",
+      "returnIdsOnly": null,
+      "returnCountOnly": null
+    },
+    {
+      "httpStatus": 200,
+      "outFields": "OBJECTID,PARCEL",
+      "objectIds": "167887,167888,167895,167900,167903,167904,167906,167909,167912,167917,167918,167920,167922,167926,167930,167931,167936,167937,167938,167939,167940,167941,167942,167944,167968",
+      "returnIdsOnly": null,
+      "returnCountOnly": null
+    },
+    {
+      "httpStatus": 200,
+      "outFields": "OBJECTID,PARCEL",
+      "objectIds": "167982,167983,168005,168007,168017,168018,168021,254336,254338,263305,263310,263349,263355,263362,280392,280398,280402,280404,280405,280406,280413,281447,281754,281764,306064",
+      "returnIdsOnly": null,
+      "returnCountOnly": null
+    },
+    {
+      "httpStatus": 200,
+      "outFields": "OBJECTID,PARCEL",
+      "objectIds": "306084,306086,306087,306088,306090,306098,306099,306927,326365,326367,326370,326371,326372,326373,326376,326386,329208,329210,329215,353136,353466,353498,353546,353551,353552",
+      "returnIdsOnly": null,
+      "returnCountOnly": null
+    },
+    {
+      "httpStatus": 200,
+      "outFields": "OBJECTID,PARCEL",
+      "objectIds": "353566,412284,417680,417681,417687,477027,479185,479186,479187,479188,479189,479190,479194,485561",
+      "returnIdsOnly": null,
+      "returnCountOnly": null
+    }
+  ],
+  "independentExactRead": {
+    "complete": true,
+    "requestedExisting": 6,
+    "returned": 6,
+    "allGeometryHashesMatch": true,
+    "explicitAbsent": [
+      "US-ORANGE-COUNTY-PARCEL-QUALIFICATION-ABSENT-20261009"
+    ]
+  },
+  "pointCell": {
+    "bbox": [
+      -81.323,
+      28.571,
+      -81.322,
+      28.572
+    ],
+    "complete": true,
+    "featureCount": 1,
+    "parcelId": "US-ORANGE-COUNTY-PARCEL-302216051000349"
+  },
+  "sourceGeometryWgs84Sha256": "5c812259141734c2f8b2e87660c7e38c1e7a3d1f68bb8823fedcdf6c3d0256bb"
+}

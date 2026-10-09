@@ -1,0 +1,176 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2928-macapa.json",
+  "purpose": "Document separate English/local-language research, local land-registry custody scope, anonymous request outcomes and safe geometry limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "runtimeHeldCells": [
+      0,
+      1,
+      4,
+      9
+    ],
+    "runtimeCompletedCells": 9,
+    "adapterHoldReason": "Duplicate idlote manifests; no unique row identity in public layer metadata.",
+    "exactPointMissIsGate": false,
+    "hmlHostnameIsGate": false,
+    "noRootReviewStamp": true
+  },
+  "assessment": "The official Macapá SIT config exposes nearby physical-lot polygon geometry. The repository ArcGIS adapter passes all tested completeness, fresh-ID, forced-page, absence, nearby-binding and topology checks for 9/13 bounded cells (161 distinct IDs), but strictly holds four cells because returnIdsOnly repeats the layer’s sole OID idlote. Full geometries for all repeated ID groups are identical, yet no alternate row identity is exposed. This duplicate-manifest semantics is the runtime hold. The exact WUP-point miss and hml hostname are informational observations, not gates.",
+  "registryAssessment": "Local or jurisdictionally local land/cadastral custodian supported at the limited scope stated; public geometry and runtime readiness remain separate.",
+  "officialPrimarySources": [
+    {
+      "url": "https://mapa.macapa.ap.gov.br/",
+      "operator": "Macapá Municipality public SIT",
+      "scope": "Official municipal territorial information system; online help describes public lot search and map-highlighted lot geometry."
+    },
+    {
+      "url": "https://mapa.macapa.ap.gov.br/macapacliente/sit/AjudaOnline/Documents/lote.htm",
+      "operator": "Macapá SIT help — lote",
+      "scope": "Defines urban lot as cadastral unit and public map search; help also documents owner/CPF search fields, which were not used."
+    },
+    {
+      "url": "https://mapa.macapa.ap.gov.br/macapacliente/sit/Analise/ServicosMapa/ListarParametrosSistema",
+      "operator": "Macapá Municipality public SIT runtime configuration",
+      "scope": "Anonymous configuration maps “Identificar Lote Físico” to ArcGIS MapServer/27 with CampoChave=idlote."
+    },
+    {
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27?f=pjson",
+      "operator": "ArcGIS layer configured by Macapá SIT",
+      "scope": "Layer metadata confirms polygon geometry and EPSG:31982; only idlote and geometry were requested for the bounded sample."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Macapá official cadastral parcels city GIS cadastre Brazil parcel map English",
+      "result": "Separate English-language search followed by first-party source review; listed official sources are the evidence retained.",
+      "actualResultUrls": [
+        "https://mapa.macapa.ap.gov.br/",
+        "https://mapa.macapa.ap.gov.br/macapacliente/sit/AjudaOnline/Documents/lote.htm"
+      ],
+      "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+    },
+    {
+      "language": "Portuguese",
+      "query": "Macapá cadastro territorial urbano mapa parcelas prefeitura GIS oficial cartografia",
+      "result": "Municipal SIT help confirms public lot map/highlight behavior; no safe feature-service route verified.",
+      "actualResultUrls": [
+        "https://mapa.macapa.ap.gov.br/",
+        "https://mapa.macapa.ap.gov.br/macapacliente/sit/AjudaOnline/Documents/lote.htm"
+      ],
+      "method": "Separate Portuguese-language discovery followed by first-party source review.",
+      "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry; no owner, address, tax, account or applicant values submitted."
+    }
+  ],
+  "geometryDecision": {
+    "verified": true,
+    "sourceId": "macapa-egl-sit-physical-lot-layer-27",
+    "sampleCount": 3,
+    "sampleFile": "macapa-parcel-samples-native.geojson",
+    "nativeId": null,
+    "nativeIdField": "idlote",
+    "exactWupPointTest": "The unchanged WUP point-intersects query returned HTTP 200 with 0 features; this is an informational locator miss, not a source/runtime gate. Nearby verified public lot geometry remains positive evidence.",
+    "requestEvidence": [
+      {
+        "url": "https://mapa.macapa.ap.gov.br/macapacliente/sit/Analise/ServicosMapa/ListarParametrosSistema",
+        "method": "POST",
+        "requestBody": "empty",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "bytesRead": 6125,
+        "sha256": "bb6f999127deb5e581b66c74bf9382b4fa6dc1ba8583bc7e374b0ea62e6cd031",
+        "assessment": "Anonymous official SIT runtime configuration maps NomeParametro “Identificar Lote Físico” to UrlParametro https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27 and CampoChave idlote. No fiscal or owner lookup was used."
+      },
+      {
+        "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27?f=pjson",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/plain;charset=UTF-8",
+        "bytesRead": 2924,
+        "sha256": "151e0c3835dc618168c24f89d87609170076d97ff85957a378cb51048e080d68",
+        "assessment": "Layer 27 metadata identifies polygon layer sit_macapa.vw.vw_info_fisico in native EPSG:31982. Query requested only idlote plus geometry."
+      },
+      {
+        "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8",
+        "bytesRead": 245,
+        "sha256": "0f3a1f2c2878623361f3e3f7601a501604ff79ce6b13c6adc52bf6b91e6fb71f",
+        "requestFilter": "Anonymous point-intersects query at unchanged WUP point [lon=-51.0688251135422,lat=0.0431561083287672], inSR=4326, outSR=31982, outFields=idlote, returnGeometry=true.",
+        "returnedFeatureCount": 0,
+        "assessment": "No polygon contains/intersects the exact unchanged WUP point in this service response; this does not establish parcel absence around the locator."
+      },
+      {
+        "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8",
+        "bytesRead": 1790,
+        "sha256": "66265b4c142292878ef1a0ec3d5eb5447faa312700d710b0ea15a2eb7b830788",
+        "requestFilter": "Anonymous bounded envelope centered on unchanged WUP point: lon [-51.0693251135422,-51.068325113542194], lat [0.0426561083287672,0.0436561083287672] (0.001° each side), geometryType=Envelope, inSR=4326, outSR=31982, spatialRel=Intersects, outFields=idlote, returnGeometry=true, resultRecordCount=3, orderByFields=idlote ASC.",
+        "returnedFeatureCount": 3,
+        "featureIds": [
+          502134,
+          502135,
+          502136
+        ],
+        "exceededTransferLimit": true,
+        "assessment": "Three nearby full Polygon geometries returned in native EPSG:31982; transfer-limit flag means the capped response is only a bounded sample, not a complete cell inventory."
+      }
+    ],
+    "runtimeQualificationFile": "macapa-runtime-qualification.json",
+    "duplicateManifestReviewFile": "macapa-duplicate-id-manifest-review.json",
+    "nativeIdsVerified": [
+      502134,
+      502135,
+      502136
+    ],
+    "adapterBoundedCellsComplete": 9,
+    "adapterBoundedCellsHeld": [
+      0,
+      1,
+      4,
+      9
+    ],
+    "adapterHoldReason": "Duplicate idlote OIDs in four returned manifests; alternate unique row identity absent from layer schema.",
+    "resultCategory": "verified_nearby_public_parcel_geometry_adapter_held_duplicate_oid_manifest"
+  },
+  "coverageAssessment": {
+    "claimedScope": "The municipal SIT exposes a configured physical-lot polygon layer.",
+    "verifiedOpenScope": "Three nearby full source-native polygons from a 0.001-degree bounded query; exact WUP point returned zero; query cap 3 exceededTransferLimit.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "attempts": [
+    "Anonymous official SIT runtime configuration maps NomeParametro “Identificar Lote Físico” to UrlParametro https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27 and CampoChave idlote. No fiscal or owner lookup was used.",
+    "Layer 27 metadata identifies polygon layer sit_macapa.vw.vw_info_fisico in native EPSG:31982. Query requested only idlote plus geometry.",
+    "No polygon contains/intersects the exact unchanged WUP point in this service response; this does not establish parcel absence around the locator.",
+    "Three nearby full Polygon geometries returned in native EPSG:31982; transfer-limit flag means the capped response is only a bounded sample, not a complete cell inventory.",
+    "Existing repository ArcGIS adapter qualification: 9 of 13 aligned bounded cells complete (161 distinct IDs); four cells hold when duplicate idlote values make their returnIdsOnly object-ID manifests invalid. Raw full native geometry responses checked 176 rows and 15 repeated-ID groups; each repeated ID had one distinct full-polygon hash. Layer metadata exposed idlote as the sole OID, no GlobalID/uniqueIdInfo/alternate unique row ID. Offset mode also rejects the duplicate object IDs. 64 live requests returned HTTP 200; only idlote was requested. Exact-ID re-reads, forced one-ID pages, synthetic absence, nearby full footprint, complete binding and corrected bounded topology checks are recorded in macapa-runtime-qualification.json."
+  ],
+  "remainingUncertainty": "The other nine bounded cells returned complete features (161 distinct idlote values); their exact-ID full-geometry re-reads, forced page-size-1 test, synthetic absence, nearby footprint read, proposal binding, and corrected topology checks passed. Four cells remain held solely on repeated OID manifests despite identical full polygon geometry for every repeated ID. The unchanged WUP-point query returned zero and a nearby lot is about 16 m from the point; that locator miss is informational, not a runtime gate. The official municipal SIT config directly names this layer, while its upstream hostname includes hml; host/production stability is also informational and unverified. Citywide completeness and title/ownership scope remain unknown.",
+  "nextStep": "Keep runtime disabled until the municipal service exposes a unique feature-row OID/ID or corrects the view so each idlote is unique per returned feature; then re-run the existing adapter qualification. Root may independently review the positive nearby geometry finding. The WUP-point miss and hml hostname do not gate the source.",
+  "runtimeAssessment": "not_enabled_adapter_duplicate_idlote_manifest_hold",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "runtimeTechnicalHold": "The existing adapter rejects four otherwise bounded full-geometry cell responses because returnIdsOnly repeats the layer’s sole OID field idlote. Raw geometry comparisons show one identical polygon hash per repeated ID; no alternate unique row ID or GlobalID appears in metadata. Offset paging also rejects the repeated ID. No adapter changes were made.",
+  "rootReviewedAt": "2026-10-09T09:20:30.305586+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T09:20:30.305586+00:00",
+    "decision": "Independent root metadata/native-ID polygon read confirms public geometry. Reviewed13-cell qualification; duplicate join-row idlote manifests prevent current adapter completeness. Runtime remains disabled while retaining positive geometry finding.",
+    "independentProbeFile": "macapa-root-public-geometry-review.json",
+    "pointMissIsNotEligibilityGate": true,
+    "hostNameIsNotEligibilityGate": true,
+    "citywideCoverageVerified": false
+  }
+}

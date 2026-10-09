@@ -4,7 +4,7 @@
   "cohort": "overnight-next-1101-1200",
   "status": "active",
   "createdAt": "2026-10-09T07:13:50.969183+00:00",
-  "updatedAt": "2026-10-09T07:25:03.115223+00:00",
+  "updatedAt": "2026-10-09T09:46:31.670998+00:00",
   "sourceRoster": "ranked-population.json",
   "sourceSha256": "196e3bfdd4735f178ff21388993b47809835e12507285d215b35b6c6792add8b",
   "sourceHashBasis": "immutable ranked-population roster JSON",
@@ -12,9 +12,9 @@
   "counts": {
     "total": 100,
     "priorAttemptSkipped": 5,
-    "pending": 37,
-    "rootReviewed": 58,
-    "integrated": 58,
+    "pending": 14,
+    "rootReviewed": 81,
+    "integrated": 81,
     "identityReviewHold": 0
   },
   "priorAttempts": [
@@ -978,7 +978,17 @@
         -111.714794014436
       ],
       "population2025Persons": 488429,
-      "status": "pending"
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-5621-provo.json",
+      "reviewedAt": "2026-10-09T07:54:05.936008+00:00",
+      "rootReviewedAt": "2026-10-09T07:54:05.936008+00:00",
+      "integratedAt": "2026-10-09T07:55:00.238655+00:00",
+      "registryFound": true,
+      "verifiedSample": true,
+      "publicParcelGeometryFound": true,
+      "registryGeometryFound": true,
+      "runtimeReadiness": "held_native_geometry_conflicts",
+      "sourceIds": []
     },
     {
       "cityCode": 5388,
@@ -1592,7 +1602,19 @@
         -81.3224429681126
       ],
       "population2025Persons": 477249,
-      "status": "pending"
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-7432-orlando.json",
+      "reviewedAt": "2026-10-09T07:44:11.133463+00:00",
+      "rootReviewedAt": "2026-10-09T07:44:11.133463+00:00",
+      "integratedAt": "2026-10-09T07:44:11.316234+00:00",
+      "registryFound": true,
+      "verifiedSample": true,
+      "publicParcelGeometryFound": true,
+      "registryGeometryFound": true,
+      "runtimeReadiness": "enabled",
+      "sourceIds": [
+        "orlando-ocpa-arcgis"
+      ]
     },
     {
       "cityCode": 9279,
@@ -1606,7 +1628,17 @@
         79.0233814920568
       ],
       "population2025Persons": 475213,
-      "status": "pending"
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-9279-etawah.json",
+      "reviewedAt": "2026-10-09T09:39:24.736128+00:00",
+      "rootReviewedAt": "2026-10-09T09:39:24.736128+00:00",
+      "integratedAt": "2026-10-09T09:39:24.896674+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
     },
     {
       "cityCode": 7148,
@@ -1620,7 +1652,17 @@
         6.67653836825649
       ],
       "population2025Persons": 475004,
-      "status": "pending"
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-7148-gusau.json",
+      "reviewedAt": "2026-10-09T09:46:31.498552+00:00",
+      "rootReviewedAt": "2026-10-09T09:46:31.498552+00:00",
+      "integratedAt": "2026-10-09T09:46:31.670998+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
     },
     {
       "cityCode": 5699,
@@ -1648,7 +1690,17 @@
         112.736514077553
       ],
       "population2025Persons": 473959,
-      "status": "pending"
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-8767-jinzhong.json",
+      "reviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "integratedAt": "2026-10-09T09:09:44.889046+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
     },
     {
       "cityCode": 4390,
@@ -1662,7 +1714,17 @@
         4.56628909899883
       ],
       "population2025Persons": 473929,
-      "status": "pending"
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-4390-osogbo.json",
+      "reviewedAt": "2026-10-09T09:46:31.498552+00:00",
+      "rootReviewedAt": "2026-10-09T09:46:31.498552+00:00",
+      "integratedAt": "2026-10-09T09:46:31.670998+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
     },
     {
       "cityCode": 10619,
@@ -1704,7 +1766,17 @@
         2.65959892235363
       ],
       "population2025Persons": 473499,
-      "status": "pending"
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-5191-palma-de-mallorca.json",
+      "reviewedAt": "2026-10-09T08:16:47.193300+00:00",
+      "rootReviewedAt": "2026-10-09T08:16:47.193300+00:00",
+      "integratedAt": "2026-10-09T08:16:47.360726+00:00",
+      "registryFound": true,
+      "verifiedSample": true,
+      "publicParcelGeometryFound": true,
+      "registryGeometryFound": true,
+      "runtimeReadiness": "held_protocol_and_native_precision_review",
+      "sourceIds": []
     },
     {
       "cityCode": 780,
@@ -1732,7 +1804,17 @@
         81.243838038826
       ],
       "population2025Persons": 472091,
-      "status": "pending"
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-9883-raebareli.json",
+      "reviewedAt": "2026-10-09T09:39:24.736128+00:00",
+      "rootReviewedAt": "2026-10-09T09:39:24.736128+00:00",
+      "integratedAt": "2026-10-09T09:39:24.896674+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
     },
     {
       "cityCode": 2928,
@@ -1746,7 +1828,19 @@
         -51.0688251135422
       ],
       "population2025Persons": 471922,
-      "status": "pending"
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-2928-macapa.json",
+      "reviewedAt": "2026-10-09T09:20:30.305586+00:00",
+      "rootReviewedAt": "2026-10-09T09:20:30.305586+00:00",
+      "integratedAt": "2026-10-09T09:20:40.965498+00:00",
+      "registryFound": true,
+      "verifiedSample": true,
+      "publicParcelGeometryFound": true,
+      "registryGeometryFound": true,
+      "runtimeReadiness": "not_enabled_adapter_duplicate_idlote_manifest_hold",
+      "sourceIds": [
+        "macapa-egl-sit-physical-lot-layer-27"
+      ]
     },
     {
       "cityCode": 495,
@@ -1760,7 +1854,17 @@
         -80.6384430749245
       ],
       "population2025Persons": 471521,
-      "status": "pending"
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-495-piura.json",
+      "reviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "integratedAt": "2026-10-09T09:09:44.889046+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
     },
     {
       "cityCode": 7454,
@@ -1774,7 +1878,17 @@
         101.551006942271
       ],
       "population2025Persons": 471251,
-      "status": "pending"
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-7454-chuxiong.json",
+      "reviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "integratedAt": "2026-10-09T09:09:44.889046+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
     },
     {
       "cityCode": 2732,
@@ -1788,7 +1902,17 @@
         -75.2170085204294
       ],
       "population2025Persons": 470685,
-      "status": "pending"
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-2732-huancayo.json",
+      "reviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "integratedAt": "2026-10-09T09:09:44.889046+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
     },
     {
       "cityCode": 7534,
@@ -1816,7 +1940,17 @@
         31.7910152915622
       ],
       "population2025Persons": 470110,
-      "status": "pending"
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-6924-faqous.json",
+      "reviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "integratedAt": "2026-10-09T09:09:44.889046+00:00",
+      "registryFound": null,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
     },
     {
       "cityCode": 7651,
@@ -1844,7 +1978,17 @@
         80.6900013205048
       ],
       "population2025Persons": 469750,
-      "status": "pending"
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-9595-sitapur.json",
+      "reviewedAt": "2026-10-09T09:39:24.736128+00:00",
+      "rootReviewedAt": "2026-10-09T09:39:24.736128+00:00",
+      "integratedAt": "2026-10-09T09:39:24.896674+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
     },
     {
       "cityCode": 7995,
@@ -1858,7 +2002,17 @@
         111.14629385973
       ],
       "population2025Persons": 469647,
-      "status": "pending"
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-7995-luliang.json",
+      "reviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "integratedAt": "2026-10-09T09:09:44.889046+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
     },
     {
       "cityCode": 4148,
@@ -1900,7 +2054,17 @@
         113.762855142875
       ],
       "population2025Persons": 468159,
-      "status": "pending"
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-9720-changge.json",
+      "reviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "integratedAt": "2026-10-09T09:09:44.889046+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
     },
     {
       "cityCode": 6034,
@@ -1928,7 +2092,17 @@
         121.831098805701
       ],
       "population2025Persons": 467912,
-      "status": "pending"
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-12016-beilun-district.json",
+      "reviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "integratedAt": "2026-10-09T09:09:44.889046+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
     },
     {
       "cityCode": 8942,
@@ -1942,7 +2116,17 @@
         113.536135376174
       ],
       "population2025Persons": 467148,
-      "status": "pending"
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-8942-yangquan.json",
+      "reviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "integratedAt": "2026-10-09T09:09:44.889046+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
     },
     {
       "cityCode": 4121,
@@ -1984,7 +2168,19 @@
         -46.8554383147568
       ],
       "population2025Persons": 465531,
-      "status": "pending"
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-7290-jundiai.json",
+      "reviewedAt": "2026-10-09T08:47:00.804712+00:00",
+      "rootReviewedAt": "2026-10-09T08:47:00.804712+00:00",
+      "integratedAt": "2026-10-09T08:47:00.968449+00:00",
+      "registryFound": true,
+      "verifiedSample": true,
+      "publicParcelGeometryFound": true,
+      "registryGeometryFound": true,
+      "runtimeReadiness": "enabled",
+      "sourceIds": [
+        "br-jundiai-geojundiai-lotes-jund-gid"
+      ]
     },
     {
       "cityCode": 11756,
@@ -1998,7 +2194,17 @@
         120.575851300139
       ],
       "population2025Persons": 465450,
-      "status": "pending"
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-11756-tongxiang.json",
+      "reviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "integratedAt": "2026-10-09T09:09:44.889046+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
     },
     {
       "cityCode": 11147,
@@ -2040,7 +2246,17 @@
         115.367998832657
       ],
       "population2025Persons": 464738,
-      "status": "pending"
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-11736-shanwei.json",
+      "reviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+      "integratedAt": "2026-10-09T09:09:44.889046+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
     },
     {
       "cityCode": 25,
@@ -2068,7 +2284,17 @@
         116.100671710308
       ],
       "population2025Persons": 464343,
-      "status": "pending"
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-11710-meizhou.json",
+      "reviewedAt": "2026-10-09T09:46:31.498552+00:00",
+      "rootReviewedAt": "2026-10-09T09:46:31.498552+00:00",
+      "integratedAt": "2026-10-09T09:46:31.670998+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
     },
     {
       "cityCode": 8914,
@@ -2082,7 +2308,17 @@
         105.287401120227
       ],
       "population2025Persons": 463837,
-      "status": "pending"
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-8914-bijie.json",
+      "reviewedAt": "2026-10-09T09:46:31.498552+00:00",
+      "rootReviewedAt": "2026-10-09T09:46:31.498552+00:00",
+      "integratedAt": "2026-10-09T09:46:31.670998+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
     }
   ],
   "sourceRosterSha256": "196e3bfdd4735f178ff21388993b47809835e12507285d215b35b6c6792add8b"

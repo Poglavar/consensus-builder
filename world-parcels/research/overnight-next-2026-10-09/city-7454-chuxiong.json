@@ -1,0 +1,183 @@
+{
+  "name": "Chuxiong",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 1178,
+  "point": [
+    25.03991885835,
+    101.551006942271
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Chuxiong official cadastral parcel map GIS 土地 宗地图 地籍图 楚雄市 自然资源局 English",
+        "result": "Separate English-language search followed by first-party source review; listed official sources are the evidence retained.",
+        "actualResultUrls": [
+          "https://www.cxs.gov.cn/info/11295/324238.htm",
+          "https://www.cxs.gov.cn/"
+        ],
+        "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+      },
+      {
+        "language": "Chinese",
+        "query": "楚雄市 地籍图 宗地地图 官方 GIS 不动产登记 map plot parcel",
+        "result": "Official local registration-service guide found; it requires proof of identity/legal interest for record queries.",
+        "actualResultUrls": [
+          "https://www.cxs.gov.cn/info/11295/324238.htm",
+          "https://www.cxs.gov.cn/"
+        ],
+        "method": "Separate Chinese-language discovery followed by first-party source review.",
+        "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry; no owner, address, tax, account or applicant values submitted."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://www.cxs.gov.cn/info/11295/324238.htm",
+        "operator": "Chuxiong City Natural Resources Bureau / Real Estate Registration Service",
+        "scope": "Official city guidance identifies registration service and says record inquiries require owner ID or legal-interest documentation; no such data was submitted."
+      },
+      {
+        "url": "https://www.cxs.gov.cn/",
+        "operator": "Chuxiong Municipal Government",
+        "scope": "Official city government domain."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.cxs.gov.cn/info/11295/324238.htm",
+        "method": "Official city registration guidance GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "bytesRead": 35258,
+        "assessment": "Guide states record searches require owner identity or legal-interest evidence; no such data was submitted."
+      }
+    ],
+    "historicalContext": [
+      "Preflight check on 2026-10-09: rank 1178 was not listed in prior attempted, identityReviewRequired, or resolvedIdentityDecisions entries; no prior city packet existed."
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "https://www.cxs.gov.cn/info/11295/324238.htm",
+    "url": "https://www.cxs.gov.cn/info/11295/324238.htm",
+    "operator": "Chuxiong City Natural Resources Bureau / Real Estate Registration Service",
+    "serviceType": "Official local registry, map or cadastral source reviewed; no safe full parcel geometry was returned.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See source review; custody, point coverage, parcel geometry and runtime readiness are separately assessed."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Chuxiong municipal registration guide identifies the city registration service. Conditions for personal record inquiries are publisher context, not evidence that anonymous parcel geometry is unavailable.",
+    "verifiedOpenScope": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+  "remainingUncertainty": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+  "nextStep": "Continue first-party viewer configuration, advertised service and API discovery; qualify complete geometry and retrieval semantics before enabling runtime.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 7454,
+  "cityId": "wup2025:7454",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    25.03991885835,
+    101.551006942271
+  ],
+  "population2025k": 471.251,
+  "populationUnit": "persons",
+  "queueRank": 1178,
+  "population2025": 471251,
+  "populationPlausibility2025": "High",
+  "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Chuxiong municipal registration guide identifies the city registration service. Conditions for personal record inquiries are publisher context, not evidence that anonymous parcel geometry is unavailable.",
+  "registryEvidenceUrls": [
+    "https://www.cxs.gov.cn/info/11295/324238.htm",
+    "https://www.cxs.gov.cn/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "priorCustodyAssessment": {
+    "registryFound": true,
+    "registryBasis": "Chuxiong City Natural Resources/registration service documentation supports local real-estate registry custody; public records require identity or legal-interest conditions.",
+    "registryEvidenceUrls": [
+      "https://www.cxs.gov.cn/info/11295/324238.htm",
+      "https://www.cxs.gov.cn/"
+    ]
+  },
+  "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 7454,
+      "url": "https://www.cxs.gov.cn/info/11295/324238.htm",
+      "checkedAt": "2026-10-09T08:58:45.774056+00:00",
+      "method": "Anonymous read-only GET; no property values or credentials submitted",
+      "executionContext": "Explicit require_escalated network execution",
+      "rawHtmlRetained": false,
+      "httpStatus": 200,
+      "finalUrl": "https://www.cxs.gov.cn/info/11295/324238.htm",
+      "contentType": "text/html",
+      "bytesRead": 35258,
+      "sha256": "38933756ca2021db4150e9b6bc38b638103c22f5faeff5f0f488a2d396abfc7f",
+      "complete": true,
+      "termPresence": {
+        "不动产": true,
+        "地籍": false,
+        "北仑": false,
+        "桐乡": false,
+        "晋中": false,
+        "登记": true,
+        "catastro": false,
+        "Piura": false,
+        "COFOPRI": false
+      },
+      "parcelProtocolStringsPresent": {
+        "FeatureServer": false,
+        "geoserver": false,
+        "GetFeature": false,
+        "MapServer": false,
+        "OpenLayers": false,
+        "WFS": false
+      }
+    }
+  ],
+  "rootReview": {
+    "checkedAt": "2026-10-09T09:09:33.635078+00:00",
+    "decision": "Reviewed paired discovery, exact WUP identity, primary custodial evidence and scoped endpoint outcomes. Public geometry remains unverified in this pass.",
+    "custodyScope": "Chuxiong municipal registration guide identifies the city registration service. Conditions for personal record inquiries are publisher context, not evidence that anonymous parcel geometry is unavailable.",
+    "transportFailuresDoNotProveAbsence": true,
+    "uiOrTermsAreNotGeometryGates": true,
+    "geometryClaimScope": "Investigation outcome only; no citywide absence asserted."
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.cxs.gov.cn/info/11295/324238.htm",
+      "observation": "Chuxiong municipal registration guide identifies the city registration service. Conditions for personal record inquiries are publisher context, not evidence that anonymous parcel geometry is unavailable.",
+      "method": "Root primary-page review plus scoped direct network checks"
+    }
+  ],
+  "integratedAt": "2026-10-09T09:09:44.889046+00:00"
+}

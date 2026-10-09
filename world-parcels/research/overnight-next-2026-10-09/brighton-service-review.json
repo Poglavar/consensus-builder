@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6034-brighton.json",
+  "purpose": "Document separate English/local-language source discovery, land-registry custody, anonymous request outcomes and safe geometry limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "HM Land Registry distributes monthly GML INSPIRE Index Polygons per local authority; the polygons are indicative extents of registered freehold property and a subset of all title index polygons. Brighton & Hove download was parsed in full; exact WUP point matched zero features. No title identifiers or owner attributes were retained.",
+  "registryAssessment": "Official national dataset with city-specific file, but the exact-point test is negative only within its registered-freehold subset; no comprehensive parcel coverage inferred.",
+  "officialPrimarySources": [
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+      "operator": "HM Land Registry / Brighton & Hove City Council (local authority context only)",
+      "scope": "HM Land Registry distributes monthly GML INSPIRE Index Polygons per local authority; the polygons are indicative extents of registered freehold property and a subset of all title index polygons. Brighton & Hove download was parsed in full; exact WUP point matched zero features. No title identifiers or owner attributes were retained."
+    },
+    {
+      "url": "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data",
+      "operator": "HM Land Registry / Brighton & Hove City Council (local authority context only)",
+      "scope": "HM Land Registry distributes monthly GML INSPIRE Index Polygons per local authority; the polygons are indicative extents of registered freehold property and a subset of all title index polygons. Brighton & Hove download was parsed in full; exact WUP point matched zero features. No title identifiers or owner attributes were retained."
+    },
+    {
+      "url": "https://www.brighton-hove.gov.uk/council-and-democracy/council-property-and-land/council-property-and-land",
+      "operator": "HM Land Registry / Brighton & Hove City Council (local authority context only)",
+      "scope": "HM Land Registry distributes monthly GML INSPIRE Index Polygons per local authority; the polygons are indicative extents of registered freehold property and a subset of all title index polygons. Brighton & Hove download was parsed in full; exact WUP point matched zero features. No title identifiers or owner attributes were retained."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Brighton official cadastral parcel map land registry GIS",
+      "result": "Separate English-language discovery followed by first-party source review; only the government sources listed are retained.",
+      "actualResultUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+        "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data",
+        "https://www.brighton-hove.gov.uk/council-and-democracy/council-property-and-land/council-property-and-land"
+      ],
+      "scope": "Identify local or jurisdictionally local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+    },
+    {
+      "language": "English",
+      "query": "Brighton official HM Land Registry INSPIRE index polygons Brighton Hove download",
+      "result": "HM Land Registry’s official 2026-10-04 Brighton and Hove download was fetched read-only (HTTP 200, ZIP 9,507,368 bytes; GML declares 79,041 matched/returned features, EPSG:27700). Exact unchanged WUP point transformed to BNG (524483.372, 105238.815) is contained by zero freehold-index polygons. The national dataset covers indicative registered freehold property only, so non-match does not establish no parcel or title.",
+      "actualResultUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+        "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data",
+        "https://www.brighton-hove.gov.uk/council-and-democracy/council-property-and-land/council-property-and-land"
+      ],
+      "method": "Separate English-language discovery followed by first-party source review.",
+      "scope": "Identify local or jurisdictionally local land/cadastral custody and public parcel geometry; no owner, address, tax, account, title, cadastral-number or applicant values submitted."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Downloaded and parsed the official Brighton & Hove GML file (79,041 features; EPSG:27700); zero freehold-index polygons contain the unchanged WUP point transformed to EPSG:27700. This does not establish absence beyond the dataset’s freehold subset.",
+    "requestEvidence": [
+      {
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/force-download",
+        "bytes": 9507368,
+        "publishedGmlTimestamp": "2026-10-04T01:29:42.538Z",
+        "featuresParsed": 79041,
+        "sourceCrs": "EPSG:27700",
+        "targetPointProjected": [
+          524483.372,
+          105238.815
+        ],
+        "containingPolygonCount": 0
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "HM Land Registry distributes monthly GML INSPIRE Index Polygons per local authority; the polygons are indicative extents of registered freehold property and a subset of all title index polygons. Brighton & Hove download was parsed in full; exact WUP point matched zero features. No title identifiers or owner attributes were retained.",
+    "verifiedOpenScope": "Full Brighton & Hove registered-freehold index file parsed; zero polygons contain the WUP point. Source excludes other property interests and is not a comprehensive cadastral fabric.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "HM Land Registry distributes monthly GML INSPIRE Index Polygons per local authority; the polygons are indicative extents of registered freehold property and a subset of all title index polygons. Brighton & Hove download was parsed in full; exact WUP point matched zero features. No title identifiers or owner attributes were retained. Exact WUP-point parcel geometry, legal/title meaning, coverage completeness and currentness remain unverified.",
+  "nextStep": "Keep runtime disabled until root review determines whether an official source and full native geometry meet adapter criteria.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

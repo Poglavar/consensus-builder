@@ -1,0 +1,123 @@
+{
+  "name": "Kemerovo",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "rank": 1180,
+  "point": [
+    55.3523295052853,
+    86.0912292541964
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kemerovo official cadastral parcel map cadastral register public map Росреестр кадастровая карта",
+        "result": "Separate English-language search followed by first-party source review; listed official sources are the evidence retained.",
+        "actualResultUrls": [
+          "https://www.rosreestr.gov.ru/",
+          "https://kemerovo.ru/"
+        ],
+        "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+      },
+      {
+        "language": "Russian",
+        "query": "Кемерово публичная кадастровая карта земельные участки официальный Росреестр карта кадастра",
+        "result": "Official city-specific geometry source not found; only national cadastral authority and city government context.",
+        "actualResultUrls": [
+          "https://www.rosreestr.gov.ru/",
+          "https://kemerovo.ru/"
+        ],
+        "method": "Separate Russian-language discovery followed by first-party source review.",
+        "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry; no owner, address, tax, account or applicant values submitted."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://www.rosreestr.gov.ru/",
+        "operator": "Federal Service for State Registration, Cadastre and Cartography (Rosreestr)",
+        "scope": "National cadastral authority; research did not establish an official Kemerovo city-specific public geometry route."
+      },
+      {
+        "url": "https://kemerovo.ru/",
+        "operator": "Kemerovo Municipal Administration",
+        "scope": "Official local government source; no cadastral parcel portal verified."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.rosreestr.gov.ru/",
+        "method": "Official public site check",
+        "httpStatus": null,
+        "contentType": null,
+        "bytesRead": null,
+        "assessment": "Network request timed out; no geometry query was made."
+      }
+    ],
+    "historicalContext": [
+      "Preflight check on 2026-10-09: rank 1180 was not listed in prior attempted, identityReviewRequired, or resolvedIdentityDecisions entries; no prior city packet existed."
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "https://www.rosreestr.gov.ru/",
+    "url": "https://www.rosreestr.gov.ru/",
+    "operator": "Federal Service for State Registration, Cadastre and Cartography (Rosreestr)",
+    "serviceType": "Official local registry, map or cadastral source reviewed; no safe full parcel geometry was returned.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See source review; custody, point coverage, parcel geometry and runtime readiness are separately assessed."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official national and municipal pages were not enough to establish Kemerovo-local cadastral custody.",
+    "verifiedOpenScope": "No source-native full parcel polygon at the exact unchanged WUP point was retained; this investigation does not establish parcel absence or citywide coverage.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": null,
+  "verifiedSample": false,
+  "resultCategory": "local_registry_custody_unconfirmed",
+  "technicalBlocker": "Searches surfaced third-party cadastral mirror sites, but those were not treated as official; no municipal parcel geometry source was verified.",
+  "remainingUncertainty": "Official national and municipal pages were not enough to establish Kemerovo-local cadastral custody. Exact-point public parcel geometry, legal/title scope, coverage completeness, and currentness remain unverified.",
+  "nextStep": "Keep runtime disabled until root review determines whether an official source and full native geometry meet adapter criteria.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 7534,
+  "cityId": "wup2025:7534",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    55.3523295052853,
+    86.0912292541964
+  ],
+  "population2025k": 470.175,
+  "populationUnit": "persons",
+  "queueRank": 1180,
+  "population2025": 470175,
+  "populationPlausibility2025": "High",
+  "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Official national and municipal pages were not enough to establish Kemerovo-local cadastral custody.",
+  "registryEvidenceUrls": [
+    "https://www.rosreestr.gov.ru/",
+    "https://kemerovo.ru/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No source-native full parcel polygon response at the exact unchanged WUP point was retained; runtime remains disabled."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

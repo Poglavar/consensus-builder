@@ -1,0 +1,181 @@
+{
+  "name": "Raebareli",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 1175,
+  "point": [
+    26.2276825649448,
+    81.243838038826
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Raebareli official cadastral parcel map GIS Uttar Pradesh Bhu Naksha रायबरेली",
+        "result": "Separate English-language search followed by first-party source review; listed official sources are the evidence retained.",
+        "actualResultUrls": [
+          "https://raebareli.nic.in/hi/service/%E0%A4%AD%E0%A5%81%E0%A4%B2%E0%A5%87%E0%A4%96/",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=158",
+          "https://upbhunaksha.gov.in/home/"
+        ],
+        "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+      },
+      {
+        "language": "Hindi",
+        "query": "रायबरेली भू नक्शा आधिकारिक पार्सल नक्शा उत्तर प्रदेश भूलेख",
+        "result": "Official state/district land map sources found; no city-name village selector matched.",
+        "actualResultUrls": [
+          "https://raebareli.nic.in/hi/service/%E0%A4%AD%E0%A5%81%E0%A4%B2%E0%A5%87%E0%A4%96/",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=158",
+          "https://upbhunaksha.gov.in/home/"
+        ],
+        "method": "Separate Hindi-language discovery followed by first-party source review.",
+        "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry; no owner, address, tax, account or applicant values submitted."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://raebareli.nic.in/hi/service/%E0%A4%AD%E0%A5%81%E0%A4%B2%E0%A5%87%E0%A4%96/",
+        "operator": "Rae Bareli District Administration, Government of Uttar Pradesh",
+        "scope": "Official district land-record service links state land maps and records."
+      },
+      {
+        "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=158",
+        "operator": "Uttar Pradesh Bhulekh",
+        "scope": "Official district map-digitization dashboard identifies Raebareli district."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/home/",
+        "operator": "Uttar Pradesh BhuNaksha",
+        "scope": "Official public map selectors; no city-matched village extent at the point was established."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+        "method": "POST level=2 codes=158",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "bytesRead": 935,
+        "assessment": "Returned six tehsils."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+        "method": "POST level=3 codes=158,00825",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "bytesRead": 58588,
+        "assessment": "Returned 358 villages; no city-name village candidate identified, so no extent or plot identify was requested."
+      }
+    ],
+    "historicalContext": [
+      "Preflight check on 2026-10-09: rank 1175 was not listed in prior attempted, identityReviewRequired, or resolvedIdentityDecisions entries; no prior city packet existed."
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "https://raebareli.nic.in/hi/service/%E0%A4%AD%E0%A5%81%E0%A4%B2%E0%A5%87%E0%A4%96/",
+    "url": "https://raebareli.nic.in/hi/service/%E0%A4%AD%E0%A5%81%E0%A4%B2%E0%A5%87%E0%A4%96/",
+    "operator": "Rae Bareli District Administration, Government of Uttar Pradesh",
+    "serviceType": "Official local registry, map or cadastral source reviewed; no safe full parcel geometry was returned.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See source review; custody, point coverage, parcel geometry and runtime readiness are separately assessed."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Rae Bareli district government provides its Land Records service through the state Bhulekh portal. This establishes jurisdictionally local land-record responsibility; parcel geometry remains unverified.",
+    "verifiedOpenScope": "Anonymous source-native full parcel polygons with stable IDs remain unverified within the checked source/selector scope. Empty results at the WUP point are not an eligibility gate and do not establish citywide parcel absence.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "Anonymous source-native full parcel polygons with stable IDs remain unverified within the checked source/selector scope. Empty results at the WUP point are not an eligibility gate and do not establish citywide parcel absence.",
+  "remainingUncertainty": "Anonymous source-native full parcel polygons with stable IDs remain unverified within the checked source/selector scope. Empty results at the WUP point are not an eligibility gate and do not establish citywide parcel absence.",
+  "nextStep": "Continue bounded geographic selector/extent discovery and actual native geometry readback, including nearby city coverage; qualify complete spatial and native-ID semantics before runtime admission.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 9883,
+  "cityId": "wup2025:9883",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    26.2276825649448,
+    81.243838038826
+  ],
+  "population2025k": 472.091,
+  "populationUnit": "persons",
+  "queueRank": 1175,
+  "population2025": 472091,
+  "populationPlausibility2025": "High",
+  "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Rae Bareli district government provides its Land Records service through the state Bhulekh portal. This establishes jurisdictionally local land-record responsibility; parcel geometry remains unverified.",
+  "registryEvidenceUrls": [
+    "https://raebareli.nic.in/service/land-records/",
+    "https://raebareli.nic.in/hi/service/%E0%A4%AD%E0%A5%81%E0%A4%B2%E0%A5%87%E0%A4%96/",
+    "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=158",
+    "https://upbhunaksha.gov.in/home/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Anonymous source-native full parcel polygons with stable IDs remain unverified within the checked source/selector scope. Empty results at the WUP point are not an eligibility gate and do not establish citywide parcel absence."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReviewedAt": "2026-10-09T09:39:24.736128+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T09:39:24.736128+00:00",
+    "decision": "Paired discovery and first-party local custody reviewed; anonymous geometry remains unverified.",
+    "primarySource": "https://raebareli.nic.in/service/land-records/",
+    "observation": "The prior village list has no city-name match and tehsil-depth point identify was empty. A fresh level-2 request returned an empty list, whereas the earlier request returned six tehsils. This readback difference is recorded without erasing prior evidence or inferring geographic absence.",
+    "nativePolygonEndpoint": "POST /v1/khasramap/plot; frontend reads wkbGeometry and kide; no live verified parcel-ID readback established.",
+    "endpointFollowthrough": "up-bhunaksha-public-api-followthrough.json",
+    "independentChecks": "root-up-api-recheck.json",
+    "uiLoginAndTermsAreNotGeometryGates": true,
+    "wupPointIsNotEligibilityGate": true,
+    "noCitywideAbsenceAsserted": true
+  },
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 9883,
+      "stage": "tehsils",
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+      "method": "POST",
+      "requestFields": {
+        "level": "2",
+        "codes": "158"
+      },
+      "httpStatus": 200,
+      "curlExit": 0,
+      "bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "checkedAt": "2026-10-09T09:38:25.556201+00:00",
+      "responseType": "list",
+      "rowCount": 0,
+      "rowKeys": []
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://raebareli.nic.in/service/land-records/",
+      "observation": "Rae Bareli district government provides its Land Records service through the state Bhulekh portal. This establishes jurisdictionally local land-record responsibility; parcel geometry remains unverified.",
+      "method": "Root review of indexed primary text and independent anonymous API requests"
+    }
+  ],
+  "integratedAt": "2026-10-09T09:39:24.896674+00:00"
+}

@@ -44,7 +44,7 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
         || (requestProperties !== undefined && typeof requestProperties !== 'boolean')
         || !Number.isSafeInteger(idBatchSize) || idBatchSize < 1 || idBatchSize > 80
         || (minRequestIntervalMs !== undefined && (!Number.isSafeInteger(minRequestIntervalMs) || minRequestIntervalMs < 100 || minRequestIntervalMs > 5000))
-        || !/^[A-Za-z0-9_.]+:[A-Za-z0-9_]+$/.test(featureType)
+        || !/^[A-Za-z_][A-Za-z0-9_.-]*:[A-Za-z_][A-Za-z0-9_.-]*$/.test(featureType)
         || !Array.isArray(outFields) || !outFields.includes(idField)
         || (requestProperties && (typeof descriptor.geometryField !== 'string' || !identifier.test(descriptor.geometryField)
             || outFields.some(field => typeof field !== 'string' || !identifier.test(field))))

@@ -1,0 +1,166 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:5646",
+  "wupCityCode": 5646,
+  "queueRank": 1202,
+  "rank": 1202,
+  "name": "West Valley City",
+  "country": "United States of America",
+  "countryCode": "US",
+  "point": [
+    40.6516355964175,
+    -111.987511764721
+  ],
+  "centerLatLon": [
+    40.6516355964175,
+    -111.987511764721
+  ],
+  "pointBasis": "Immutable pending-queue WUP 2025 City_Code 5646 coordinate, copied without adjustment.",
+  "population2025k": 463.325,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "status": "complete",
+  "resultCategory": "official_public_parcel_geometry_verified_at_wup_point",
+  "registryFound": true,
+  "registryBasis": "Utah UGRC documents the SGID parcel layers as public polygon data stewarded with local government. Salt Lake County basic-parcel geometry is available through the published FeatureServer. This confirms accessible cadastral-like polygon geometry and an identifier, not title status or ownership.",
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "not_enabled_scope_unqualified",
+  "blocker": null,
+  "source": {
+    "sourceId": null,
+    "name": "Utah SGID Salt Lake County basic parcels",
+    "url": "https://services1.arcgis.com/99lidPhWCzftIe9K/ArcGIS/rest/services/Parcels_SaltLake/FeatureServer/0",
+    "operator": "Utah Geospatial Resource Center (UGRC) and local-government data steward; hosted in Utah SGID ArcGIS Online",
+    "serviceType": "Public ArcGIS FeatureServer polygon layer",
+    "layer": "Layer 0: Salt Lake County basic parcels",
+    "geometryType": "esriGeometryPolygon",
+    "nativeIdField": "PARCEL_ID",
+    "directGeometryQueryVerified": true,
+    "directMetadataSchemaVerified": true,
+    "geometryStatus": "one anonymous native polygon verified at the unchanged WUP point; citywide extent and completeness unqualified",
+    "operatorNote": "The UGRC basic-parcels service is a geometry service; queried only OBJECTID and native PARCEL_ID. No owner, address, tax-roll, or other parcel attributes were requested or retained.",
+    "outputCrs": "EPSG:4326",
+    "nativeIdEvidence": "PARCEL_ID returned from the public layer with outFields=OBJECTID,PARCEL_ID; no additional attributes requested.",
+    "attributesRequested": [
+      "OBJECTID",
+      "PARCEL_ID"
+    ],
+    "sampleCount": 1,
+    "sampleFile": "west-valley-city-parcel-samples.geojson"
+  },
+  "sampleFile": "west-valley-city-parcel-samples.geojson",
+  "verifiedSample": true,
+  "verifiedParcelResponse": {
+    "featureCount": 1,
+    "queriedObjectIds": [
+      187133
+    ],
+    "nativeParcelId": "21182290100000",
+    "exactWupPointCoveredByReturnedGeometry": true,
+    "geometryType": "Polygon",
+    "vertexCount": 5,
+    "spatialReference": "EPSG:4326",
+    "responseBytes": 423,
+    "responseSha256": "d249fcc0a00557e7e9dcc133208d77485dc9efc081fe9f78ee466a2bb9dc30f9",
+    "requestUrl": "https://services1.arcgis.com/99lidPhWCzftIe9K/ArcGIS/rest/services/Parcels_SaltLake/FeatureServer/0/query?where=1%3D1&objectIds=187133&outFields=OBJECTID%2CPARCEL_ID&returnGeometry=true&outSR=4326&f=geojson",
+    "httpStatus": 200
+  },
+  "coverageAssessment": {
+    "claimedScope": "One exact WUP point in the published Salt Lake County basic-parcels FeatureServer, plus a point-only check of the city SimpleParcelsCityworks layer.",
+    "verifiedOpenScope": "One parcel polygon returned by an exact-point spatial query in the UGRC-hosted Salt Lake County service.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "technicalBlocker": "Citywide parcel completeness and behavior of the city-operated point query remain unqualified; only the Utah SGID polygon at the exact WUP point is verified.",
+  "remainingUncertainty": "No citywide completeness/freshness comparison was performed. The local city MapServer returned no object IDs at the exact point, while the county/state SGID service returned one containing polygon; the mismatch is unresolved.",
+  "registryEvidenceUrls": [
+    "https://gis.utah.gov/products/sgid/cadastre/parcels/",
+    "https://services1.arcgis.com/99lidPhWCzftIe9K/ArcGIS/rest/services/Parcels_SaltLake/FeatureServer/0",
+    "https://gisserver.wvc-ut.gov/server/rest/services/IT/SimpleParcelsCityworks/MapServer/0"
+  ],
+  "rootReview": null,
+  "rootReviewedAt": null,
+  "checkedAt": "2026-10-09",
+  "population2025": 463325,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "West Valley City Utah official parcel map GIS ArcGIS",
+        "result": "English-language discovery for municipal parcel GIS followed by first-party city MapServer metadata and query review.",
+        "actualResultUrls": [
+          "https://gisserver.wvc-ut.gov/server/rest/services/IT/SimpleParcelsCityworks/MapServer",
+          "https://gisserver.wvc-ut.gov/server/rest/services/IT/SimpleParcelsCityworks/MapServer/0"
+        ],
+        "scope": "Identify a city-operated parcel map and inspect exact-point coverage without requesting addresses or resident attributes."
+      },
+      {
+        "language": "English",
+        "query": "Salt Lake County Utah public cadastral parcel data FeatureServer UGRC",
+        "result": "Independent English-language discovery for the county/state cadastre followed by first-party UGRC documentation and hosted feature-service schema review.",
+        "actualResultUrls": [
+          "https://gis.utah.gov/products/sgid/cadastre/parcels/",
+          "https://services1.arcgis.com/99lidPhWCzftIe9K/ArcGIS/rest/services/Parcels_SaltLake/FeatureServer/0"
+        ],
+        "scope": "Identify official county-wide parcel boundary geometry and native parcel ID; preserve the WUP point unchanged and avoid owner, address, and tax-roll fields."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://gis.utah.gov/products/sgid/cadastre/parcels/",
+        "operator": "Utah Geospatial Resource Center (UGRC)",
+        "scope": "Official Utah Parcels data page says SGID contains parcel boundaries for all 29 counties, stewarded by UGRC and local government; the Big 5 including Salt Lake are aimed to be updated monthly. It identifies Salt Lake County basic parcel and feature services; page lists September 2026 update."
+      },
+      {
+        "url": "https://services1.arcgis.com/99lidPhWCzftIe9K/ArcGIS/rest/services/Parcels_SaltLake/FeatureServer/0",
+        "operator": "Utah SGID / UGRC and local-government steward",
+        "scope": "Anonymous ArcGIS FeatureServer layer metadata and exact-point geometry query succeeded. Requested only OBJECTID and PARCEL_ID attributes with polygon geometry."
+      },
+      {
+        "url": "https://gisserver.wvc-ut.gov/server/rest/services/IT/SimpleParcelsCityworks/MapServer/0",
+        "operator": "West Valley City",
+        "scope": "Official city MapServer identifies a West Valley City Parcels layer. A point-only returnIdsOnly query at the unchanged WUP coordinate returned no object IDs; this limited result is not evidence of citywide absence."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://services1.arcgis.com/99lidPhWCzftIe9K/ArcGIS/rest/services/Parcels_SaltLake/FeatureServer/0/query",
+        "method": "GET; anonymous; exact point; returnIdsOnly=true; no parcel attributes or geometry",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "bytesRead": 53,
+        "assessment": "Exact point spatial intersects query yielded OBJECTID 187133; response body was {\"objectIdFieldName\":\"OBJECTID\",\"objectIds\":[187133]}."
+      },
+      {
+        "url": "https://services1.arcgis.com/99lidPhWCzftIe9K/ArcGIS/rest/services/Parcels_SaltLake/FeatureServer/0/query?where=1%3D1&objectIds=187133&outFields=OBJECTID%2CPARCEL_ID&returnGeometry=true&outSR=4326&f=geojson",
+        "method": "GET; anonymous; selected one ID only; request OBJECTID and PARCEL_ID only",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "bytesRead": 423,
+        "assessment": "One polygon returned; exact WUP point is inside; only native parcel ID retained."
+      },
+      {
+        "url": "https://gisserver.wvc-ut.gov/server/rest/services/IT/SimpleParcelsCityworks/MapServer/0/query",
+        "method": "GET; anonymous; exact point; returnIdsOnly=true; no parcel attributes or geometry",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=UTF-8",
+        "bytesRead": 49,
+        "assessment": "No objectIds returned for the point-only query; the query alone does not establish a coverage gap."
+      }
+    ],
+    "historicalContext": [
+      "Preflight audit on 2026-10-09: WUP 2025 City_Code 5646 had not been previously attempted or integrated before this pass."
+    ]
+  },
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "sourceIds": [],
+  "nextStep": "Root review the one-feature source evidence. After the first ten cohort packets are normalized, compare through the existing us-ut-salt-lake-city-parcels adapter using its configured UtahStatewideParcels endpoint and unchanged source identity.",
+  "adapterReady": false,
+  "runtimeAssessment": {
+    "status": "not_enabled_scope_unqualified",
+    "reason": "One public parcel polygon is verified at the exact WUP point, but citywide coverage, fresh-ID consistency, paging, footprint behavior and runtime binding have not been qualified. A separate city MapServer ID-only query was empty; this is not evidence of local parcel absence."
+  }
+}

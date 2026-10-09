@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T08:42:05.525724+00:00",
+  "rootReviewedAt": "2026-10-09T08:42:05.525724+00:00",
+  "cityId": "wup2025:699",
+  "appCityId": "vilnius",
+  "city": "Vilnius",
+  "countryCode": "LT",
+  "wupCityCode": 699,
+  "pointLatLon": [
+    54.695435447302,
+    25.2704077979851
+  ],
+  "sourceId": "lt-inspire-cp-wfs",
+  "descriptor": {
+    "id": "lt-inspire-cp-wfs",
+    "endpoint": "https://www.inspire-geoportal.lt/geoserver/cp/ows",
+    "featureType": "cp:CP.CadastralParcel",
+    "nativeCrs": "urn:ogc:def:crs:EPSG::4258",
+    "nativeCrsAuthorityAxisOrder": [
+      "latitude",
+      "longitude"
+    ],
+    "previouslyObservedNativeGeoJsonCoordinates": [
+      "longitude",
+      "latitude"
+    ],
+    "adapter": "wfs",
+    "version": "2.0.0",
+    "idField": "nationalcadastralreference",
+    "idType": "integer",
+    "idPrefix": "LT-INSP-CADASTRAL-",
+    "geometryField": "geometry",
+    "outFields": [
+      "nationalcadastralreference"
+    ],
+    "requestProperties": true,
+    "srsName": "CRS:84",
+    "pageSize": 100,
+    "idBatchSize": 80,
+    "maxFeatures": 3000,
+    "minRequestIntervalMs": 150,
+    "propertyNameRequestValue": "geometry,nationalcadastralreference",
+    "countryCode": "LT",
+    "cityIds": [
+      "vilnius"
+    ],
+    "maxBboxKm2": 1,
+    "maxConcurrentQueries": 1,
+    "metricSrid": 32635,
+    "name": "Vilnius public cadastral parcel polygons",
+    "operator": "Lithuanian INSPIRE Geoportal / National Land Service",
+    "scope": "Public cadastral parcel geometry around the unchanged Vilnius WUP settlement locator. Thirteen aligned cells and 7 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:32635 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The WUP locator is covered by LT-INSP-CADASTRAL-440051231650. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness.",
+    "responseCrs": "CRS:84",
+    "parcelNumberField": "nationalcadastralreference",
+    "evidenceFile": "research/country-integration-audit-2026-10-09/vilnius-root-acceptance.json",
+    "catalogueUrl": "https://www.inspire-geoportal.lt/geoserver/cp/ows",
+    "attribution": "Lithuanian INSPIRE Geoportal / National Land Service · cadastral references · adapted",
+    "licenceNote": "Publisher conditions, legal effect and update schedule are informational. Public native parcel IDs and geometry only; ownership is not imported."
+  },
+  "scope": "Public cadastral parcel geometry around the unchanged Vilnius WUP settlement locator. Thirteen aligned cells and 7 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:32635 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The WUP locator is covered by LT-INSP-CADASTRAL-440051231650. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness.",
+  "qualityStatus": "approved_bounded_full_geometry",
+  "workerQualification": "Vilnius-runtime-qualification-adapter-fixed.json",
+  "rootIndependentProbe": "vilnius-root-independent-probe.json",
+  "rootIndependentQuality": "vilnius-root-quality.json",
+  "qualifiedUniqueParcels": 7,
+  "geometryChangedOrRepaired": false,
+  "registryFound": true,
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "enabled"
+}

@@ -1,0 +1,274 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "source": "National Land Survey of Finland INSPIRE CP WFS",
+  "endpoint": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs",
+  "featureType": "cp:CadastralParcel",
+  "crs": "EPSG:3067",
+  "boundedQuery": {
+    "kind": "GetFeature BBOX",
+    "countLimit": 3,
+    "numberMatched": 29,
+    "numberReturned": 3,
+    "httpStatus": 200,
+    "responseBytes": 6604,
+    "responseSha256": "04eab5b70606f6e2e418bb08485c5da6a60556a26a65d3be8ee1f4e316ca7e40"
+  },
+  "identitySemantics": {
+    "observedProperties": [
+      "gml:id",
+      "gml:identifier",
+      "cp:inspireId/base:localId",
+      "cp:inspireId/base:namespace",
+      "cp:nationalCadastralReference"
+    ],
+    "mapping": "gml:identifier equals the concatenated Inspire namespace + localId. The namespace + localId is a stable public component identifier; gml:id is a service feature identifier. nationalCadastralReference is not unique within this bounded response.",
+    "features": [
+      {
+        "gmlId": "FI_CP_CADASTRALPARCEL_158297269",
+        "inspireId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297269",
+        "localId": "158297269",
+        "nationalCadastralReference": "09143200010026",
+        "geometrySha256": "d564fd1cdab3bf785c5cad8972a9504140fc6ce8e73de70069b9a84e34377b4f"
+      },
+      {
+        "gmlId": "FI_CP_CADASTRALPARCEL_158297273",
+        "inspireId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297273",
+        "localId": "158297273",
+        "nationalCadastralReference": "09100499010000",
+        "geometrySha256": "23d68e96658850774bd9ec786262ce0134266da73dddd74aef606c9990f93325"
+      },
+      {
+        "gmlId": "FI_CP_CADASTRALPARCEL_158297274",
+        "inspireId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297274",
+        "localId": "158297274",
+        "nationalCadastralReference": "09100499010000",
+        "geometrySha256": "eb3629e542a54e6740bacacb069d2b5786b1439a84ef0f2f513c2efc8046ecc7"
+      }
+    ],
+    "repeatedNationalReference": {
+      "value": "09100499010000",
+      "featureCount": 2,
+      "uniqueGmlIds": 2,
+      "uniqueInspireIds": 2,
+      "uniqueGeometryHashes": 2,
+      "assessment": "The two returned records are distinct published components with different Inspire IDs, service IDs and disjoint geometries in this sample. This supports keeping them as two features; the response does not establish a multipart aggregation rule, so do not merge by nationalCadastralReference alone."
+    },
+    "assessment": "The three retained records are distinct published components with different INSPIRE identifiers, gml:ids and geometries; two share nationalCadastralReference. Treat the namespace+localId/gml:identifier URI as canonical component identity and use gml:id as the demonstrated ResourceID lookup token. The sample supports keeping the records as separate components but does not establish a multipart aggregation rule."
+  },
+  "geometryEquivalence": {
+    "method": "Canonical JSON SHA-256 of parsed EPSG:3067 geometry coordinates from repeated bounded WFS response compared with the three stored polygons.",
+    "existingPolygonCount": 3,
+    "identicalHashMultiset": true,
+    "geometrySha256ByInspireId": {
+      "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297269": "d564fd1cdab3bf785c5cad8972a9504140fc6ce8e73de70069b9a84e34377b4f",
+      "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297273": "23d68e96658850774bd9ec786262ce0134266da73dddd74aef606c9990f93325",
+      "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297274": "eb3629e542a54e6740bacacb069d2b5786b1439a84ef0f2f513c2efc8046ecc7"
+    }
+  },
+  "storedQueryFollowthrough": {
+    "advertisedId": "urn:ogc:def:query:OGC-WFS::GetFeatureById",
+    "advertisedParameter": "ID (xs:string)",
+    "realComponentIdAttempt": "FI_CP_CADASTRALPARCEL_158297269",
+    "syntheticNativeShapedIdAttempt": "FI_CP_CADASTRALPARCEL_9999999999999999",
+    "bothHttpStatus": 404,
+    "bothResponseBytes": 541,
+    "bothResponseSha256": "6b6eabc8dce2bd3fc8e88625679c7b6dbb1ca3e539439b2c1058140a857a6bf3",
+    "result": "Inconclusive: same 404 response for known and synthetic IDs; neither successful lookup nor explicit absence was established. A diagnostic re-fetch failed at DNS resolution, so no further source request was made at that stage. A later standard ResourceID recheck is recorded in currentProtocolRecheck."
+  },
+  "durableSample": {
+    "file": "FI-samples.json",
+    "completePolygonCount": 3,
+    "featureProperties": [
+      "id",
+      "geometry"
+    ],
+    "idField": "Inspire namespace + localId URI",
+    "geometryChanged": false
+  },
+  "currentProtocolRecheck": {
+    "checkedAt": "2026-10-09",
+    "publicAnonymousRequestOnly": true,
+    "sourceMetadata": {
+      "capabilities": {
+        "endpoint": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+        "httpStatus": 200,
+        "contentType": "application/xml",
+        "responseBytes": 176303,
+        "responseSha256": "ae2ebc69610b5951fc66f620ffc50d0bf7bb4c16b20ca425e98b0a6f5570abcc",
+        "acceptedVersions": [
+          "1.0.0",
+          "1.1.0",
+          "2.0.0"
+        ],
+        "getFeatureEndpoint": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs",
+        "getFeatureMethods": [
+          "GET",
+          "POST"
+        ]
+      },
+      "describeFeatureType": {
+        "endpoint": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=cp%3ACadastralParcel",
+        "httpStatus": 200,
+        "contentType": "text/xml; subtype=gml/3.2",
+        "responseBytes": 660,
+        "responseSha256": "4083d4c16cae0ee9dcb693785ba911e79d914213ceed2cb91fa732c9bd566765",
+        "responseFinding": "Wrapper imports the INSPIRE CadastralParcels XSD; it does not expose fields inline."
+      },
+      "importedSchema": {
+        "url": "https://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd",
+        "httpStatus": 200,
+        "contentType": "binary/octet-stream",
+        "responseBytes": 30133,
+        "responseSha256": "49285a50c5c4364d1e505b68dcce4f38443befe8739391a45b1a8c349107a677",
+        "identityProperty": "cp:inspireId (INSPIRE base Identifier; namespace + localId)",
+        "parcelReferenceProperty": "cp:nationalCadastralReference"
+      }
+    },
+    "candidateIdentity": {
+      "sourceComponentIdField": "gml:id",
+      "resourceIdShape": "FI_CP_CADASTRALPARCEL_<base:localId>",
+      "canonicalExternalIdentifier": "gml:identifier, equal in the observed component to INSPIRE namespace + base:localId URI",
+      "observedKnownId": "FI_CP_CADASTRALPARCEL_158297269",
+      "observedKnownIdentifierUri": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297269",
+      "nativeCrs": "EPSG:3067",
+      "geometryType": "Polygon",
+      "nationalCadastralReferenceAssessment": "Not a canonical component key: two of three Helsinki records share 09100499010000 while their gml:id, INSPIRE ID and geometries differ. Do not merge by this field without a separate documented aggregation rule."
+    },
+    "testedRequests": [
+      {
+        "kind": "wfs2-kvp-resourceId-known",
+        "method": "GET",
+        "endpoint": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs",
+        "requestParameters": {
+          "service": "WFS",
+          "version": "2.0.0",
+          "request": "GetFeature",
+          "typeNames": "cp:CadastralParcel",
+          "count": 1,
+          "resourceId": "FI_CP_CADASTRALPARCEL_158297269"
+        },
+        "httpStatus": 200,
+        "responseBytes": 2904,
+        "responseSha256": "2e43533bb2fd3c92e735f4adab487b34d1b3dd010ee250ae95fc17cb72b3441b",
+        "root": "wfs:FeatureCollection",
+        "numberMatched": 1,
+        "numberReturned": 1,
+        "memberCount": 1,
+        "returnedGmlId": "FI_CP_CADASTRALPARCEL_158297269",
+        "returnedInspireIdentifierMatches": true,
+        "geometryPresent": true,
+        "geometryType": "Polygon",
+        "geometryRingCount": 1,
+        "geometryVertexCount": 34,
+        "exactCoordinateSequenceMatchesExistingSample": true
+      },
+      {
+        "kind": "fes2-resourceId-known",
+        "method": "POST",
+        "endpoint": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs",
+        "filter": "fes:ResourceId/@rid = FI_CP_CADASTRALPARCEL_158297269",
+        "httpStatus": 200,
+        "responseBytes": 2904,
+        "responseSha256": "9e221ad1b6665a6fd0d22cf10eaeffdd64e74e2ebb3912624c6b853660c506bd",
+        "root": "wfs:FeatureCollection",
+        "numberMatched": 1,
+        "numberReturned": 1,
+        "memberCount": 1,
+        "returnedGmlId": "FI_CP_CADASTRALPARCEL_158297269",
+        "geometryPresent": true,
+        "geometryMatchesExistingSample": true
+      },
+      {
+        "kind": "wfs2-kvp-resourceId-nativeShapedAbsence",
+        "method": "GET",
+        "endpoint": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs",
+        "requestParameters": {
+          "service": "WFS",
+          "version": "2.0.0",
+          "request": "GetFeature",
+          "typeNames": "cp:CadastralParcel",
+          "count": 1,
+          "resourceId": "FI_CP_CADASTRALPARCEL_9999999999999999"
+        },
+        "httpStatus": 200,
+        "responseBytes": 866,
+        "responseSha256": "51dcdc014e1b50b8334d5841c73e7d59b1982e07ccb885bb412da1de7fa32e27",
+        "root": "wfs:FeatureCollection",
+        "numberMatched": 0,
+        "numberReturned": 0,
+        "memberCount": 0,
+        "interpretation": "Explicit absence for this single synthetic resourceId under the public endpoint and filter."
+      },
+      {
+        "kind": "fes2-resourceId-nativeShapedAbsence",
+        "method": "POST",
+        "endpoint": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs",
+        "filter": "fes:ResourceId/@rid = FI_CP_CADASTRALPARCEL_9999999999999999",
+        "httpStatus": 200,
+        "responseBytes": 866,
+        "responseSha256": "e8b8ace4cbfc2f5119f02c0717a32e008be3c4169969f26e9c3caae9c0518fc1",
+        "root": "wfs:FeatureCollection",
+        "numberMatched": 0,
+        "numberReturned": 0,
+        "memberCount": 0,
+        "interpretation": "Explicit absence for this single synthetic resourceId under the public endpoint and filter."
+      },
+      {
+        "kind": "fes2-property-equality-known",
+        "method": "POST",
+        "valueReference": "cp:inspireId/base:localId",
+        "literal": "158297269",
+        "httpStatus": 400,
+        "responseBytes": 829,
+        "responseSha256": "ce4ea0dc877af39a521843e0c4b138b328a624531e99e97a49b8a59a248f32a1",
+        "exceptionCode": "NoApplicableCode",
+        "exceptionFinding": "Server says the nested attribute path is not found; request error, not absence."
+      },
+      {
+        "kind": "fes2-property-equality-nativeShapedAbsent",
+        "method": "POST",
+        "valueReference": "cp:inspireId/base:localId",
+        "literal": "9999999999999999",
+        "httpStatus": 400,
+        "responseBytes": 829,
+        "responseSha256": "ce4ea0dc877af39a521843e0c4b138b328a624531e99e97a49b8a59a248f32a1",
+        "exceptionCode": "NoApplicableCode",
+        "exceptionFinding": "Same unsupported nested attribute path error; request error, not absence."
+      },
+      {
+        "kind": "fes2-composite-namespace-localId-known",
+        "method": "POST",
+        "valueReferences": [
+          "cp:inspireId/base:namespace",
+          "cp:inspireId/base:localId"
+        ],
+        "httpStatus": 400,
+        "responseBytes": 833,
+        "responseSha256": "eb21b0f85813ea59789424aa30a0b943c742a69bc9e55b2ebb15059aabcfcc98",
+        "exceptionCode": "NoApplicableCode",
+        "exceptionFinding": "Server reports the namespace path not found; request error, not absence."
+      },
+      {
+        "kind": "fes2-composite-namespace-localId-nativeShapedAbsent",
+        "method": "POST",
+        "valueReferences": [
+          "cp:inspireId/base:namespace",
+          "cp:inspireId/base:localId"
+        ],
+        "httpStatus": 400,
+        "responseBytes": 833,
+        "responseSha256": "eb21b0f85813ea59789424aa30a0b943c742a69bc9e55b2ebb15059aabcfcc98",
+        "exceptionCode": "NoApplicableCode",
+        "exceptionFinding": "Same unsupported nested attribute path error; request error, not absence."
+      }
+    ],
+    "assessment": "The public endpoint provides a reliable standard WFS ResourceID protocol through both WFS 2 KVP GET and FES 2 POST. A gml:id readback returns the known component and exactly reproduces the already retained 34-vertex EPSG:3067 polygon. Both ResourceID forms return a successful empty FeatureCollection for one synthetic native-shaped ID. Use the gml:id-shaped component key as the query locator and preserve the INSPIRE namespace+localId URI as the canonical external component identity. The generic FES property filter cannot address cp:inspireId/base:localId or namespace in this service. The earlier advertised GetFeatureById stored-query HTTP 404 for both IDs remains inconclusive and is not a geometry-absence result.",
+    "scopeLimitations": [
+      "Only one known component and one synthetic identifier were tested.",
+      "The existing three Helsinki component polygons remain the only durable Finland geometries; this recheck added no geometry.",
+      "A single absent ResourceID says nothing about spatial completeness.",
+      "No reader, catalog, registry, city configuration or global state was changed."
+    ]
+  }
+}

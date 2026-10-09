@@ -1,0 +1,4222 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09T08:38:40.828Z",
+  "purpose": "Independent bounded qualification of alternate GeoJundiai:lotes_jund feature type using native integer gid; preserve prior codlote findings.",
+  "scope": {
+    "city": "Jundiaí, Brazil",
+    "wupCityCode": 7290,
+    "pointLatLon": [
+      -23.1976446911945,
+      -46.8554383147568
+    ],
+    "nativeCrs": "EPSG:31983",
+    "adapterResponseCrs": "CRS:84",
+    "maxFeaturesPerOperation": 3000,
+    "operationsSequential": true,
+    "requestProperties": true,
+    "ownerOrAddressValuesRetained": false,
+    "durableGeometrySamplesAdded": 0
+  },
+  "source": {
+    "sourceId": "br-jundiai-geojundiai-lotes-jund-gid",
+    "endpoint": "https://geo.jundiai.sp.gov.br/geoserver/ows",
+    "featureType": "GeoJundiai:lotes_jund",
+    "nativeIdField": "gid",
+    "nativeIdType": "integer",
+    "idPrefix": "BR-JUNDIAI-LOTES-JUND-GID-",
+    "geometryField": "geom",
+    "outFields": [
+      "gid"
+    ],
+    "requestProperties": true,
+    "responseSrid": null,
+    "pageSize": 1000,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 1,
+    "minRequestIntervalMs": 500,
+    "credentialsOrTokensSent": false
+  },
+  "schema": {
+    "url": "https://geo.jundiai.sp.gov.br/geoserver/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=GeoJundiai%3Alotes_jund",
+    "httpStatus": 200,
+    "contentType": "application/gml+xml; version=3.2",
+    "bytes": 985,
+    "sha256": "6328e075db92a715f0f5f5799b59050e778e632472f6e6e71e67e4ae0e178bd1",
+    "fields": [
+      {
+        "name": "gid",
+        "type": "xsd:int"
+      },
+      {
+        "name": "geom",
+        "type": "gml:MultiSurfacePropertyType"
+      },
+      {
+        "name": "lotes_jund",
+        "type": "GeoJundiai:lotes_jundType"
+      }
+    ],
+    "hasIntegerGid": true,
+    "hasGeometry": true
+  },
+  "conflictingCodloteComparison": {
+    "sourceFeatureType": "GeoJundiai:lote",
+    "sourceCodlote": "210120002",
+    "sourceGeometrySha256": [
+      "60cee0cf98c3141dbaafebdaa4327aa2ca6a9fe45430e84dea431da94e4d4d3f",
+      "226a3bb2fbf9f35b688faa1ea9779dff4987fd4d2d9bda0b027e9c2d34be9b42"
+    ],
+    "alternateFeatureType": "GeoJundiai:lotes_jund",
+    "alternateQuery": {
+      "method": "GET",
+      "request": "WFS 2.0.0 GetFeature",
+      "bbox": "-46.857,-23.198,-46.856,-23.197,CRS:84",
+      "propertyName": "gid,geom",
+      "sortBy": "gid",
+      "count": 100,
+      "startIndex": 0,
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "numberMatched": 46,
+      "numberReturned": 46,
+      "distinctGidCount": 46,
+      "returnedPropertyFields": [
+        "gid"
+      ],
+      "responseCrs": "urn:ogc:def:crs:CRS::84",
+      "credentialsOrTokensSent": false
+    },
+    "geometryMatches": [
+      {
+        "sourceCodloteGeometrySha256": "60cee0cf98c3141dbaafebdaa4327aa2ca6a9fe45430e84dea431da94e4d4d3f",
+        "gid": 106314,
+        "freshGeometrySha256": "60cee0cf98c3141dbaafebdaa4327aa2ca6a9fe45430e84dea431da94e4d4d3f",
+        "freshReadMatched": true,
+        "geometryType": "MultiPolygon"
+      },
+      {
+        "sourceCodloteGeometrySha256": "226a3bb2fbf9f35b688faa1ea9779dff4987fd4d2d9bda0b027e9c2d34be9b42",
+        "gid": 106317,
+        "freshGeometrySha256": "226a3bb2fbf9f35b688faa1ea9779dff4987fd4d2d9bda0b027e9c2d34be9b42",
+        "freshReadMatched": true,
+        "geometryType": "MultiPolygon"
+      }
+    ],
+    "bothFullGeometriesPresent": true,
+    "oneDistinctGidPerGeometry": true,
+    "independentFreshIdReadsMatch": true,
+    "interpretation": "In this bounded query, the alternate layer assigns separate gid values to the two conflicting full geometries emitted under codlote 210120002. Fresh exact gid reads reproduce both geometries. This establishes query-stable alternate IDs for the observed snapshot; it does not establish long-term persistence or legal parcel identity."
+  },
+  "failedCellCrosswalk": {
+    "cell": "-46857_-23198",
+    "bbox": [
+      -46.857,
+      -23.198,
+      -46.856,
+      -23.197
+    ],
+    "sourceCodlote": "210120002",
+    "sourceGeometrySha256": [
+      "60cee0cf98c3141dbaafebdaa4327aa2ca6a9fe45430e84dea431da94e4d4d3f",
+      "226a3bb2fbf9f35b688faa1ea9779dff4987fd4d2d9bda0b027e9c2d34be9b42"
+    ],
+    "alternateFeatureType": "GeoJundiai:lotes_jund",
+    "gidByGeometrySha256": {
+      "60cee0cf98c3141dbaafebdaa4327aa2ca6a9fe45430e84dea431da94e4d4d3f": {
+        "gid": 106314,
+        "freshGeometrySha256": "60cee0cf98c3141dbaafebdaa4327aa2ca6a9fe45430e84dea431da94e4d4d3f",
+        "freshReadMatched": true,
+        "geometryType": "MultiPolygon"
+      },
+      "226a3bb2fbf9f35b688faa1ea9779dff4987fd4d2d9bda0b027e9c2d34be9b42": {
+        "gid": 106317,
+        "freshGeometrySha256": "226a3bb2fbf9f35b688faa1ea9779dff4987fd4d2d9bda0b027e9c2d34be9b42",
+        "freshReadMatched": true,
+        "geometryType": "MultiPolygon"
+      }
+    },
+    "distinctGidPerSourceGeometry": true,
+    "freshExactIdGeometryHashesMatch": true
+  },
+  "cells": [
+    {
+      "id": "-46856_-23198",
+      "bbox": [
+        -46.856,
+        -23.198,
+        -46.855,
+        -23.197
+      ]
+    },
+    {
+      "id": "-46857_-23199",
+      "bbox": [
+        -46.857,
+        -23.199,
+        -46.856,
+        -23.198
+      ]
+    },
+    {
+      "id": "-46856_-23199",
+      "bbox": [
+        -46.856,
+        -23.199,
+        -46.855,
+        -23.198
+      ]
+    },
+    {
+      "id": "-46855_-23199",
+      "bbox": [
+        -46.855,
+        -23.199,
+        -46.854,
+        -23.198
+      ]
+    },
+    {
+      "id": "-46857_-23198",
+      "bbox": [
+        -46.857,
+        -23.198,
+        -46.856,
+        -23.197
+      ]
+    },
+    {
+      "id": "-46855_-23198",
+      "bbox": [
+        -46.855,
+        -23.198,
+        -46.854,
+        -23.197
+      ]
+    },
+    {
+      "id": "-46857_-23197",
+      "bbox": [
+        -46.857,
+        -23.197,
+        -46.856,
+        -23.196
+      ]
+    },
+    {
+      "id": "-46856_-23197",
+      "bbox": [
+        -46.856,
+        -23.197,
+        -46.855,
+        -23.196
+      ]
+    },
+    {
+      "id": "-46855_-23197",
+      "bbox": [
+        -46.855,
+        -23.197,
+        -46.854,
+        -23.196
+      ]
+    },
+    {
+      "id": "-46856_-23200",
+      "bbox": [
+        -46.856,
+        -23.2,
+        -46.855,
+        -23.199
+      ]
+    },
+    {
+      "id": "-46854_-23198",
+      "bbox": [
+        -46.854,
+        -23.198,
+        -46.853,
+        -23.197
+      ]
+    },
+    {
+      "id": "-46856_-23196",
+      "bbox": [
+        -46.856,
+        -23.196,
+        -46.855,
+        -23.195
+      ]
+    },
+    {
+      "id": "-46858_-23198",
+      "bbox": [
+        -46.858,
+        -23.198,
+        -46.857,
+        -23.197
+      ]
+    }
+  ],
+  "preCounts": [
+    {
+      "cell": "-46856_-23198",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "numberMatched": 49,
+      "bytes": 834,
+      "sha256": "094eb85c74d46ba92503c6383f32dc668a6f8baa9cb19cbca0997fd88ed4bb17"
+    },
+    {
+      "cell": "-46857_-23199",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "numberMatched": 14,
+      "bytes": 834,
+      "sha256": "bab16f73a95e0b7c8c7f4baa79ac48d83c850aebff89c6ee406614a23975f2db"
+    },
+    {
+      "cell": "-46856_-23199",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "numberMatched": 14,
+      "bytes": 834,
+      "sha256": "b0278fb061e415dad6454efeebbbdbfa496af3f3c8bbbf33bd2d5c9e618a65ae"
+    },
+    {
+      "cell": "-46855_-23199",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "numberMatched": 1,
+      "bytes": 833,
+      "sha256": "1d76f6dc83f5c1130179113c629334abd765e707e9de47880abdfc312f807e90"
+    },
+    {
+      "cell": "-46857_-23198",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "numberMatched": 46,
+      "bytes": 834,
+      "sha256": "f570bae7dd6a78b774352e2b6fc7b20ee1b17d03754e3a4a9333d7979c07d863"
+    },
+    {
+      "cell": "-46855_-23198",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "numberMatched": 5,
+      "bytes": 833,
+      "sha256": "0bdb025c884137bf5704e383c429242407d9cdd3bfbd7e694eb33ed228816208"
+    },
+    {
+      "cell": "-46857_-23197",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "numberMatched": 42,
+      "bytes": 834,
+      "sha256": "ee4cf224dad18bb2b2e6d85c492452ceb75c919b4e6e661cbb647cebace09aa3"
+    },
+    {
+      "cell": "-46856_-23197",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "numberMatched": 50,
+      "bytes": 834,
+      "sha256": "258f3ac304fbef5ee18a8d09540d09120d3b5b6b4e4e219b14243a084d1e4fef"
+    },
+    {
+      "cell": "-46855_-23197",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "numberMatched": 23,
+      "bytes": 834,
+      "sha256": "074b686197a50bea665856826664832391dd0af149ce2b79432e416d348c2906"
+    },
+    {
+      "cell": "-46856_-23200",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "numberMatched": 2,
+      "bytes": 831,
+      "sha256": "ecb51fb426c1dce3f1ef2f89d38e3b88836bcec399ea6fa371cc3260170b4c13"
+    },
+    {
+      "cell": "-46854_-23198",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "numberMatched": 3,
+      "bytes": 833,
+      "sha256": "5197fc0baf0e921caf075f880f06433e8c36ab6418cfd5af94f8469d55dbaee1"
+    },
+    {
+      "cell": "-46856_-23196",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "numberMatched": 43,
+      "bytes": 834,
+      "sha256": "b59acbdd6cd6e6539a9f0bb666ba9d8bea8b2f33b38a8abf6debabe7580910f0"
+    },
+    {
+      "cell": "-46858_-23198",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "numberMatched": 12,
+      "bytes": 834,
+      "sha256": "fb34db04e582b7de0171d060efd186a706062fcb41a3f1a281756a3a77387cc8"
+    }
+  ],
+  "postCounts": [
+    {
+      "cell": "-46856_-23198",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "numberMatched": 49,
+      "bytes": 834,
+      "sha256": "765857f11e00a72505aff9227c6be0b4183a4c0b802611e7739502b9ba5c8c57"
+    },
+    {
+      "cell": "-46857_-23199",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "numberMatched": 14,
+      "bytes": 834,
+      "sha256": "841dd6973389370cb920dfc84f96a08d207347b12252dcc206ab23dbbe193411"
+    },
+    {
+      "cell": "-46856_-23199",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "numberMatched": 14,
+      "bytes": 834,
+      "sha256": "b4507608c208f902a1b49e497b62c99c57f125aaecb23bb0f30f5bca31b189bf"
+    },
+    {
+      "cell": "-46855_-23199",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "numberMatched": 1,
+      "bytes": 833,
+      "sha256": "628ddc8c4155ce4065d61dc9ace80b50dd52c27df6dee59df525e880e544923d"
+    },
+    {
+      "cell": "-46857_-23198",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "numberMatched": 46,
+      "bytes": 834,
+      "sha256": "7f20165e50511f1c59b113cfd243d8fece6cff87b11d226bc847e92557c138e3"
+    },
+    {
+      "cell": "-46855_-23198",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "numberMatched": 5,
+      "bytes": 833,
+      "sha256": "aef74f187ad0e9363eecdfb39ef11d76439f35ef27a0b605ab8ffc3274398230"
+    },
+    {
+      "cell": "-46857_-23197",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "numberMatched": 42,
+      "bytes": 834,
+      "sha256": "bb1bccd9c073b64d02c154c0ebb37e5d1ae3e44ff1f4087b74bfc56ef7f3644a"
+    },
+    {
+      "cell": "-46856_-23197",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "numberMatched": 50,
+      "bytes": 834,
+      "sha256": "2cc297535183b3b52a7094be1ea7c83549a78f58cee1a818916bb4140793983a"
+    },
+    {
+      "cell": "-46855_-23197",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "numberMatched": 23,
+      "bytes": 834,
+      "sha256": "07df0222027291b4dbc6bb6d2db02d2c37101d3d1cc4cc5ed04774117485a937"
+    },
+    {
+      "cell": "-46856_-23200",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "numberMatched": 2,
+      "bytes": 831,
+      "sha256": "2ac6a90238de4167f4b16eb8dc8f220463413f381c1fa3ccef1b9ae06e18299c"
+    },
+    {
+      "cell": "-46854_-23198",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "numberMatched": 3,
+      "bytes": 833,
+      "sha256": "5ce630b0060a39af4c9f66a840df9af15fa406dfbf5c386b55263815160e21e2"
+    },
+    {
+      "cell": "-46856_-23196",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "numberMatched": 43,
+      "bytes": 834,
+      "sha256": "c4f0a21ef9919e871179662667e1bad47284fbd6e633f54ce9e96b1b5d7fa290"
+    },
+    {
+      "cell": "-46858_-23198",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "numberMatched": 12,
+      "bytes": 834,
+      "sha256": "7b12672dd1690bb938fd1cf9c24359d12786c6014abee1efca69ffcf8f739119"
+    }
+  ],
+  "adapterCells": [
+    {
+      "cell": "-46856_-23198",
+      "bbox": [
+        -46.856,
+        -23.198,
+        -46.855,
+        -23.197
+      ],
+      "complete": true,
+      "featureCount": 49,
+      "features": [
+        {
+          "nativeId": "2011",
+          "geometrySha256": "bca764fa48af8a4e65344a269fca8cee7281c29de31b17d4e782c54ef9312436"
+        },
+        {
+          "nativeId": "45968",
+          "geometrySha256": "f7761308378101b06b56773c3aadcbc2ad587c387b10839e5ed6dae0f7bdb203"
+        },
+        {
+          "nativeId": "45969",
+          "geometrySha256": "9e0a74d885b27e8fd0b30d078a734b98bba74ed27945a3c93114f828701a6745"
+        },
+        {
+          "nativeId": "45970",
+          "geometrySha256": "4cd6d47bcafd942c4ff63b5c6c0644e4ba17faa37fe83745e33cd78fe4770393"
+        },
+        {
+          "nativeId": "45971",
+          "geometrySha256": "05d4b49385c44a236b41ab22abe14fe5143c153bdaf209723ea83f5487872cc2"
+        },
+        {
+          "nativeId": "45972",
+          "geometrySha256": "62a85d33820089fb894a29a1ed839c43a706b7b2326543e70764d8347dfb4ba3"
+        },
+        {
+          "nativeId": "45973",
+          "geometrySha256": "551ab3962ab0afe57f461e65bb9ff8875905da30b4df1febfe3b8ca499c637d6"
+        },
+        {
+          "nativeId": "45974",
+          "geometrySha256": "d56539647e69519b43bcc00ef06002c387815329ad85599c0d7c4a27ca29a41f"
+        },
+        {
+          "nativeId": "45990",
+          "geometrySha256": "9a1033ea74fb5a04aa7c8ed4af581d98e7810624a5709aba692b05de54c6a35d"
+        },
+        {
+          "nativeId": "45991",
+          "geometrySha256": "8665c83702702d77d41f8001b0c50654eca1f13c036c08292beadfaf5078f5bc"
+        },
+        {
+          "nativeId": "45992",
+          "geometrySha256": "9a5fc267d2f545c192e9dfc7b8bcd0f4d648e3d15d33935ed75c4048e2353a1c"
+        },
+        {
+          "nativeId": "45993",
+          "geometrySha256": "c2616efc77965b0d67f3738617dbeca322d89f8beb361e4ed48397e9db7a3333"
+        },
+        {
+          "nativeId": "45994",
+          "geometrySha256": "a679204f9d761434002589d98ddea93ae271dec97619170b097acd75d9367ece"
+        },
+        {
+          "nativeId": "45995",
+          "geometrySha256": "a81fd62f53d6e9c0a9394d4872cd3a1f63841f8ff5aabda590af96c392d01e0d"
+        },
+        {
+          "nativeId": "45996",
+          "geometrySha256": "dcacd6eaefa5175be6d613e82b900115a1229358aab9919e767ed24163b1bcc4"
+        },
+        {
+          "nativeId": "45997",
+          "geometrySha256": "babdc6a8a89e3fc7429e34aebc422b7afa16eddd88fec69ed069ff3932f8cf70"
+        },
+        {
+          "nativeId": "45998",
+          "geometrySha256": "9e937604bc0a96aa3f7ba72d92f96974397d6861ada2aefa2224c4dbef070f4e"
+        },
+        {
+          "nativeId": "45999",
+          "geometrySha256": "a7ac38e3797ac492bce104baadc94c77785e2ee90954dc0d073a6870bbb8744d"
+        },
+        {
+          "nativeId": "46000",
+          "geometrySha256": "f7f1a512bde4c3fa46bd69ade388f53407633dcd5446a2174e4d7f296e781ab4"
+        },
+        {
+          "nativeId": "46001",
+          "geometrySha256": "651869961f6ec00810eab410f78d945fba0b6bc2b00873268bbaa3138b4b43b1"
+        },
+        {
+          "nativeId": "46002",
+          "geometrySha256": "8eb416e000ab647284cfde6e352a44f492c22ccb98b78ffbf6db60ff069440d5"
+        },
+        {
+          "nativeId": "46003",
+          "geometrySha256": "0833e4a086d291ac33a954a927127905662768d952ee2cd009108c4f35618066"
+        },
+        {
+          "nativeId": "46004",
+          "geometrySha256": "1a6aeafc0c463fc757a2ffde6efceec804ba04b1ca7eba4021e6462b080d0208"
+        },
+        {
+          "nativeId": "46008",
+          "geometrySha256": "3bba8fd11dda6d62b6cbbb7351e8ea9a2cd54784a947310fa7ef5c83efc6323a"
+        },
+        {
+          "nativeId": "46009",
+          "geometrySha256": "6ff04181fdf81c1388cf3e19944dfce772d440281ace9af11601a0cdc7302162"
+        },
+        {
+          "nativeId": "46136",
+          "geometrySha256": "921816d490ee4600eee3f6fd3b10317456483bb009cc1024fa0dbe17cdad414d"
+        },
+        {
+          "nativeId": "46280",
+          "geometrySha256": "b161f9b1fd29b1226e061f70736d6a9a6a6a9e552a9b9f405cca1d570ef77d8a"
+        },
+        {
+          "nativeId": "46281",
+          "geometrySha256": "c09c0c68cb20af5ffbcbfecaa1f92dfe64c8e1ae17da6e010a3c12d65d68de8c"
+        },
+        {
+          "nativeId": "46282",
+          "geometrySha256": "c601f921de1e4653af94963a78c4fad865b4501bbb8c78b20a382c100eb1b6a5"
+        },
+        {
+          "nativeId": "46283",
+          "geometrySha256": "b09a49c7d91516ad50787116680e0199e434d3acde2ffeb7f2fe8244c3e9d6d9"
+        },
+        {
+          "nativeId": "46284",
+          "geometrySha256": "bc8cf22b01fada1c46f2ac52b682317e022f8c0695fa424e99401f42bc2e910e"
+        },
+        {
+          "nativeId": "46285",
+          "geometrySha256": "ce5786448e79e10c646e8c96cd5bc628a2a02580b1e6def273efe87b6c13b25d"
+        },
+        {
+          "nativeId": "46286",
+          "geometrySha256": "0cac478eb48bf6f08d19b507cc62bc1acc919c3aed9d45df8cdd4e96d1b1fb21"
+        },
+        {
+          "nativeId": "46287",
+          "geometrySha256": "2ddcffc615879aa2b20b5f1a04c9dbd2461a27d470d6a467603a6d5d01fde4be"
+        },
+        {
+          "nativeId": "46288",
+          "geometrySha256": "cf3314c59302b0529741b31739eda5b83f162864b2052b95e2fa23a33018d25d"
+        },
+        {
+          "nativeId": "46289",
+          "geometrySha256": "477608980c255d251f2890bd86759742998fe0859485f5904e85ba292390a47c"
+        },
+        {
+          "nativeId": "46290",
+          "geometrySha256": "94f3475140d4fa9fb77af28ef0d8a98b5e5c84db3597cbe34a62f995ff8aa244"
+        },
+        {
+          "nativeId": "46291",
+          "geometrySha256": "dc1b5d4c763d26cd89d88608bb876a24554c5b93c149d516343f6eff33e7cd20"
+        },
+        {
+          "nativeId": "46292",
+          "geometrySha256": "f7a55128798a088a0c388b2d09d3cbfe5e1b78e9ce54f91bf2a854ac9b613872"
+        },
+        {
+          "nativeId": "46293",
+          "geometrySha256": "0ceebcfa23403ade7bbd6fafb2fb27a8431706925288a8c1a8edb577b5264c3e"
+        },
+        {
+          "nativeId": "46294",
+          "geometrySha256": "b5f65c1c23398e4a51387f174bd211feed0d91af2de4e8bfbb955bdfc688eacd"
+        },
+        {
+          "nativeId": "46297",
+          "geometrySha256": "8c72b75fa1619d8d446b62475759ed2bde777c27e5ad5a2d935b2012ecea542e"
+        },
+        {
+          "nativeId": "46298",
+          "geometrySha256": "71a2a61ef141b0ecf1dc7d122663f47e98da99b1fc263a56d140156c0eda9ec1"
+        },
+        {
+          "nativeId": "46363",
+          "geometrySha256": "b5bf93dfd13700d84647eaedb1e8184834d6ea0aa801d146ee6e263c00e799a6"
+        },
+        {
+          "nativeId": "95068",
+          "geometrySha256": "b54dcb4b8123be6a4c67f3022869a26ae2a3ea9f4ee16508909e09e1dad7444d"
+        },
+        {
+          "nativeId": "102868",
+          "geometrySha256": "60924336d16ff73c5b0fb7f4547193df2f54356096016bc853ec4169de63c5b6"
+        },
+        {
+          "nativeId": "102871",
+          "geometrySha256": "2e92171a6079ae380d33a372854cb9b160ba376957c2079985778a7755581bb6"
+        },
+        {
+          "nativeId": "143691",
+          "geometrySha256": "5f3d6df0f0c9b751718e912a41aaa1eacdbac26d3caecdb64f2386a9fa368ffe"
+        },
+        {
+          "nativeId": "143734",
+          "geometrySha256": "75d27cd4dc372d62ca3ccb1c2a31ee34bfdf0b2d07595c35f97eb40de7e2179a"
+        }
+      ]
+    },
+    {
+      "cell": "-46857_-23199",
+      "bbox": [
+        -46.857,
+        -23.199,
+        -46.856,
+        -23.198
+      ],
+      "complete": true,
+      "featureCount": 14,
+      "features": [
+        {
+          "nativeId": "2011",
+          "geometrySha256": "bca764fa48af8a4e65344a269fca8cee7281c29de31b17d4e782c54ef9312436"
+        },
+        {
+          "nativeId": "45984",
+          "geometrySha256": "e2e6e605e78921199f377dbb9884cd42194dd947489baf9b497f937210d75c59"
+        },
+        {
+          "nativeId": "45985",
+          "geometrySha256": "0e357dd3faf0e86bd94aac32330f41d775f2561e34c9a1e2a46bbb4821169159"
+        },
+        {
+          "nativeId": "45986",
+          "geometrySha256": "ea4686d0d3691d94065299e8be20134327080851b10e9a489a172ab1a9f0946f"
+        },
+        {
+          "nativeId": "45987",
+          "geometrySha256": "b3e51fdfeaf589f3e580f1bbc23e26308ada6eca0ed8d12773de9cfd21177012"
+        },
+        {
+          "nativeId": "45988",
+          "geometrySha256": "4ebd425fab291015be32a4bbb7699df87105de64472e2202432c34ae5322ec03"
+        },
+        {
+          "nativeId": "45989",
+          "geometrySha256": "20833a5b4f71fe2a8e772f1d9513bea75e858da39afa0790e0e471b4ed898755"
+        },
+        {
+          "nativeId": "45990",
+          "geometrySha256": "9a1033ea74fb5a04aa7c8ed4af581d98e7810624a5709aba692b05de54c6a35d"
+        },
+        {
+          "nativeId": "45991",
+          "geometrySha256": "8665c83702702d77d41f8001b0c50654eca1f13c036c08292beadfaf5078f5bc"
+        },
+        {
+          "nativeId": "46007",
+          "geometrySha256": "dcbfdab1e585282bec7e6ae6bb08ad530ccfec796b49e869e191679a6339eddf"
+        },
+        {
+          "nativeId": "46136",
+          "geometrySha256": "921816d490ee4600eee3f6fd3b10317456483bb009cc1024fa0dbe17cdad414d"
+        },
+        {
+          "nativeId": "46303",
+          "geometrySha256": "837bfcc1b52a15448c7dec23773d96a9def75340bf7a0fbe92458cc99cbe9686"
+        },
+        {
+          "nativeId": "46304",
+          "geometrySha256": "ddc8473c058f8b9199d2ec83bfa006acff302db67b3075776296abbc21e6e060"
+        },
+        {
+          "nativeId": "141136",
+          "geometrySha256": "c11591b9b5f19dfa77807a17655faeffd5a926b5ba9fb4a3ee416881dde18d84"
+        }
+      ]
+    },
+    {
+      "cell": "-46856_-23199",
+      "bbox": [
+        -46.856,
+        -23.199,
+        -46.855,
+        -23.198
+      ],
+      "complete": true,
+      "featureCount": 14,
+      "features": [
+        {
+          "nativeId": "2011",
+          "geometrySha256": "bca764fa48af8a4e65344a269fca8cee7281c29de31b17d4e782c54ef9312436"
+        },
+        {
+          "nativeId": "45990",
+          "geometrySha256": "9a1033ea74fb5a04aa7c8ed4af581d98e7810624a5709aba692b05de54c6a35d"
+        },
+        {
+          "nativeId": "45991",
+          "geometrySha256": "8665c83702702d77d41f8001b0c50654eca1f13c036c08292beadfaf5078f5bc"
+        },
+        {
+          "nativeId": "46136",
+          "geometrySha256": "921816d490ee4600eee3f6fd3b10317456483bb009cc1024fa0dbe17cdad414d"
+        },
+        {
+          "nativeId": "46293",
+          "geometrySha256": "0ceebcfa23403ade7bbd6fafb2fb27a8431706925288a8c1a8edb577b5264c3e"
+        },
+        {
+          "nativeId": "46297",
+          "geometrySha256": "8c72b75fa1619d8d446b62475759ed2bde777c27e5ad5a2d935b2012ecea542e"
+        },
+        {
+          "nativeId": "46298",
+          "geometrySha256": "71a2a61ef141b0ecf1dc7d122663f47e98da99b1fc263a56d140156c0eda9ec1"
+        },
+        {
+          "nativeId": "46299",
+          "geometrySha256": "ff61f73a996b58a07bb5ae8c681a57401fd58a27aba45d9875a01c96212815f1"
+        },
+        {
+          "nativeId": "46300",
+          "geometrySha256": "8d65ab453acfb22ee1dd7f0c890d99ce352bfc14c13834947d54470de0e49f0f"
+        },
+        {
+          "nativeId": "46301",
+          "geometrySha256": "38cd3dc639b437fd55256d967a45ff5c8fbaa1ef8c5001e5ce2980e06e647b09"
+        },
+        {
+          "nativeId": "46302",
+          "geometrySha256": "de1539f3bdd737f81fd60ce63690703e9013f0baa5d72bfbea02e5016ee4be5e"
+        },
+        {
+          "nativeId": "46303",
+          "geometrySha256": "837bfcc1b52a15448c7dec23773d96a9def75340bf7a0fbe92458cc99cbe9686"
+        },
+        {
+          "nativeId": "46304",
+          "geometrySha256": "ddc8473c058f8b9199d2ec83bfa006acff302db67b3075776296abbc21e6e060"
+        },
+        {
+          "nativeId": "102871",
+          "geometrySha256": "2e92171a6079ae380d33a372854cb9b160ba376957c2079985778a7755581bb6"
+        }
+      ]
+    },
+    {
+      "cell": "-46855_-23199",
+      "bbox": [
+        -46.855,
+        -23.199,
+        -46.854,
+        -23.198
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "features": [
+        {
+          "nativeId": "2011",
+          "geometrySha256": "bca764fa48af8a4e65344a269fca8cee7281c29de31b17d4e782c54ef9312436"
+        }
+      ]
+    },
+    {
+      "cell": "-46857_-23198",
+      "bbox": [
+        -46.857,
+        -23.198,
+        -46.856,
+        -23.197
+      ],
+      "complete": true,
+      "featureCount": 46,
+      "features": [
+        {
+          "nativeId": "2011",
+          "geometrySha256": "bca764fa48af8a4e65344a269fca8cee7281c29de31b17d4e782c54ef9312436"
+        },
+        {
+          "nativeId": "45972",
+          "geometrySha256": "62a85d33820089fb894a29a1ed839c43a706b7b2326543e70764d8347dfb4ba3"
+        },
+        {
+          "nativeId": "45973",
+          "geometrySha256": "551ab3962ab0afe57f461e65bb9ff8875905da30b4df1febfe3b8ca499c637d6"
+        },
+        {
+          "nativeId": "45974",
+          "geometrySha256": "d56539647e69519b43bcc00ef06002c387815329ad85599c0d7c4a27ca29a41f"
+        },
+        {
+          "nativeId": "45975",
+          "geometrySha256": "1443070c61f1e45010a711a373390f919ac86a38b9824c2d8e695bfeba7df255"
+        },
+        {
+          "nativeId": "45976",
+          "geometrySha256": "a7321ab38e35f474e4b999a7585df65f155e1a215b4dfe3b41b811dc4adf037f"
+        },
+        {
+          "nativeId": "45977",
+          "geometrySha256": "8727c665000421d2135c4f84e74f29250cb2156765f8e2a912d5297574c997ae"
+        },
+        {
+          "nativeId": "45978",
+          "geometrySha256": "f126ce7349e9a3d6cd986d51f93350ae919e5bf1e3c656498c1bb9d8e174c890"
+        },
+        {
+          "nativeId": "45979",
+          "geometrySha256": "61039ccd3b1dbfa7b0c143948dfe0029b92728f64ba3f2e53ea79b61715667ff"
+        },
+        {
+          "nativeId": "45980",
+          "geometrySha256": "ad8dbaaa466e797abbab28e3a1be6b965fa487a5c174f3de6fd9b202b727c6b7"
+        },
+        {
+          "nativeId": "45981",
+          "geometrySha256": "e6490d481800493068219039fdc51eb60d9b528747a4b3af9fe7b44199e848ed"
+        },
+        {
+          "nativeId": "45982",
+          "geometrySha256": "63aec13607389d5c659a31da38ca4daf28f3634b15c42f52a25d473349c4faa6"
+        },
+        {
+          "nativeId": "45983",
+          "geometrySha256": "eabab93f848ff9ee366cdb86a749f0f3fb592e2b86b2bda991593ed163176901"
+        },
+        {
+          "nativeId": "45984",
+          "geometrySha256": "e2e6e605e78921199f377dbb9884cd42194dd947489baf9b497f937210d75c59"
+        },
+        {
+          "nativeId": "45987",
+          "geometrySha256": "b3e51fdfeaf589f3e580f1bbc23e26308ada6eca0ed8d12773de9cfd21177012"
+        },
+        {
+          "nativeId": "45989",
+          "geometrySha256": "20833a5b4f71fe2a8e772f1d9513bea75e858da39afa0790e0e471b4ed898755"
+        },
+        {
+          "nativeId": "45990",
+          "geometrySha256": "9a1033ea74fb5a04aa7c8ed4af581d98e7810624a5709aba692b05de54c6a35d"
+        },
+        {
+          "nativeId": "45991",
+          "geometrySha256": "8665c83702702d77d41f8001b0c50654eca1f13c036c08292beadfaf5078f5bc"
+        },
+        {
+          "nativeId": "45992",
+          "geometrySha256": "9a5fc267d2f545c192e9dfc7b8bcd0f4d648e3d15d33935ed75c4048e2353a1c"
+        },
+        {
+          "nativeId": "45993",
+          "geometrySha256": "c2616efc77965b0d67f3738617dbeca322d89f8beb361e4ed48397e9db7a3333"
+        },
+        {
+          "nativeId": "45994",
+          "geometrySha256": "a679204f9d761434002589d98ddea93ae271dec97619170b097acd75d9367ece"
+        },
+        {
+          "nativeId": "45995",
+          "geometrySha256": "a81fd62f53d6e9c0a9394d4872cd3a1f63841f8ff5aabda590af96c392d01e0d"
+        },
+        {
+          "nativeId": "45996",
+          "geometrySha256": "dcacd6eaefa5175be6d613e82b900115a1229358aab9919e767ed24163b1bcc4"
+        },
+        {
+          "nativeId": "45997",
+          "geometrySha256": "babdc6a8a89e3fc7429e34aebc422b7afa16eddd88fec69ed069ff3932f8cf70"
+        },
+        {
+          "nativeId": "46005",
+          "geometrySha256": "ec116f5bcda82adcf3330545618ee5477fb491e95dae45c35f3e0730f685b278"
+        },
+        {
+          "nativeId": "46006",
+          "geometrySha256": "54b3e6a7c4e36034083bbc94f3f742d02dfb31265f4fa24852f876d1263b0caf"
+        },
+        {
+          "nativeId": "46007",
+          "geometrySha256": "dcbfdab1e585282bec7e6ae6bb08ad530ccfec796b49e869e191679a6339eddf"
+        },
+        {
+          "nativeId": "46016",
+          "geometrySha256": "1bd5b4a955f871d79aec02cde1b3a5801ef6553494603c55ddc28d1ab803b0e1"
+        },
+        {
+          "nativeId": "46017",
+          "geometrySha256": "1f12e927300a61c4c81be75434c16b9ec08bf766b599c82e389892c38f02ba46"
+        },
+        {
+          "nativeId": "46019",
+          "geometrySha256": "1a11f7640b1b755c3d3cbaa943bd3ce02a091ba70702709e17a3ce23efc93350"
+        },
+        {
+          "nativeId": "46020",
+          "geometrySha256": "ff72dd48bb189ef563a4892b44bc6ea02de04b28a3b177354cc48bf51016003d"
+        },
+        {
+          "nativeId": "46021",
+          "geometrySha256": "71a0665c52fdc025c9c83248b99d34a4135aa113e7b1a9ccc0debc2f6ef14e54"
+        },
+        {
+          "nativeId": "46023",
+          "geometrySha256": "73b7afa164bdc88bed246cb48e668e09700b8979439d85fcc53f55e982274348"
+        },
+        {
+          "nativeId": "46026",
+          "geometrySha256": "62d5d89b37c6f7903a429fa9884d5ea238690eb082afc147ac114a3e3993c876"
+        },
+        {
+          "nativeId": "46028",
+          "geometrySha256": "a5b3efe218233ceb2723cc3126d5aa25bf3ed2f2f9ea27f4c182768481bb3501"
+        },
+        {
+          "nativeId": "46136",
+          "geometrySha256": "921816d490ee4600eee3f6fd3b10317456483bb009cc1024fa0dbe17cdad414d"
+        },
+        {
+          "nativeId": "46306",
+          "geometrySha256": "0c1c7ef5cf0b83487a9b8a1b2a76257596c7982f50ef8671e7fe81e22bf69fae"
+        },
+        {
+          "nativeId": "46307",
+          "geometrySha256": "2aa06c48dffcbc044d06517f6391577f5b183818e5f6d950c8214822a24e229c"
+        },
+        {
+          "nativeId": "106314",
+          "geometrySha256": "60cee0cf98c3141dbaafebdaa4327aa2ca6a9fe45430e84dea431da94e4d4d3f"
+        },
+        {
+          "nativeId": "106315",
+          "geometrySha256": "524d4b034185f377454dadf6c9ca5a5ec6736f0b29157eeaa219ffabccbe380e"
+        },
+        {
+          "nativeId": "106316",
+          "geometrySha256": "4c9bcdb59f46b92a3681ba6b193aa603ceb15ecf0a04719c0c762a5e6f86f688"
+        },
+        {
+          "nativeId": "106317",
+          "geometrySha256": "226a3bb2fbf9f35b688faa1ea9779dff4987fd4d2d9bda0b027e9c2d34be9b42"
+        },
+        {
+          "nativeId": "143690",
+          "geometrySha256": "30acd7acd5d0dd659d3a6d24cdfee20fd4d5b61938409be4765e104edac3de0e"
+        },
+        {
+          "nativeId": "143691",
+          "geometrySha256": "5f3d6df0f0c9b751718e912a41aaa1eacdbac26d3caecdb64f2386a9fa368ffe"
+        },
+        {
+          "nativeId": "143734",
+          "geometrySha256": "75d27cd4dc372d62ca3ccb1c2a31ee34bfdf0b2d07595c35f97eb40de7e2179a"
+        },
+        {
+          "nativeId": "145526",
+          "geometrySha256": "5607fb0237222c21a9907ea7090a88ec819617a14614693a71b9ca63cc335f0c"
+        }
+      ]
+    },
+    {
+      "cell": "-46855_-23198",
+      "bbox": [
+        -46.855,
+        -23.198,
+        -46.854,
+        -23.197
+      ],
+      "complete": true,
+      "featureCount": 5,
+      "features": [
+        {
+          "nativeId": "2011",
+          "geometrySha256": "bca764fa48af8a4e65344a269fca8cee7281c29de31b17d4e782c54ef9312436"
+        },
+        {
+          "nativeId": "2014",
+          "geometrySha256": "163dc6a7e2b1791af64ff4072e24bf33bd0d43744a8185d9e2f8147b2cdbfe06"
+        },
+        {
+          "nativeId": "46280",
+          "geometrySha256": "b161f9b1fd29b1226e061f70736d6a9a6a6a9e552a9b9f405cca1d570ef77d8a"
+        },
+        {
+          "nativeId": "46281",
+          "geometrySha256": "c09c0c68cb20af5ffbcbfecaa1f92dfe64c8e1ae17da6e010a3c12d65d68de8c"
+        },
+        {
+          "nativeId": "46282",
+          "geometrySha256": "c601f921de1e4653af94963a78c4fad865b4501bbb8c78b20a382c100eb1b6a5"
+        }
+      ]
+    },
+    {
+      "cell": "-46857_-23197",
+      "bbox": [
+        -46.857,
+        -23.197,
+        -46.856,
+        -23.196
+      ],
+      "complete": true,
+      "featureCount": 42,
+      "features": [
+        {
+          "nativeId": "2011",
+          "geometrySha256": "bca764fa48af8a4e65344a269fca8cee7281c29de31b17d4e782c54ef9312436"
+        },
+        {
+          "nativeId": "45307",
+          "geometrySha256": "9f26f0c2d35ff8a283fdf18b3ddf8aa8a10505357c2c56055751477e9fd358a3"
+        },
+        {
+          "nativeId": "45308",
+          "geometrySha256": "40b067ef84da6dfdc67e1abc02ba01824864add36f333c1dd6b7e47df0d29bba"
+        },
+        {
+          "nativeId": "45310",
+          "geometrySha256": "f45edc68ee332172cdac30ed145ff44a017c9ac86a3c286900ca907ba034d841"
+        },
+        {
+          "nativeId": "45311",
+          "geometrySha256": "f7f03dbbf3f9649ddeb0ac97957ee0a2def950653bfab97fe271817512f7484d"
+        },
+        {
+          "nativeId": "45312",
+          "geometrySha256": "2cf4a863cc29d8b92c55867bb9eb3b4093bfaba8c655116fde9044305a4c084c"
+        },
+        {
+          "nativeId": "45313",
+          "geometrySha256": "231a3d6d0f38b80043eae6d4a8e0572abb10d21ef93145ea36a356274012fab0"
+        },
+        {
+          "nativeId": "45318",
+          "geometrySha256": "491737a8ea87ce8b4085a98f3ed1165d17ab351c0304a30a4f1d20bbc0f12ff1"
+        },
+        {
+          "nativeId": "45319",
+          "geometrySha256": "edb412d991c2677ca9cb757300c0bd1a0cb95488eab120b1dc5c30bdf9f7ed7d"
+        },
+        {
+          "nativeId": "45320",
+          "geometrySha256": "6c698339bb86780b56b13fa65c9fdf5c146f5aaa189919679e019fb6567da37d"
+        },
+        {
+          "nativeId": "45321",
+          "geometrySha256": "118b5d7b43f980688549ffbd2fa4db53ced50bab2f1a0d65c2b1c1b5feb80d1c"
+        },
+        {
+          "nativeId": "45322",
+          "geometrySha256": "46d42b43574f775c95e0cf02ba3013c4a84a636edb670b02c0240af71016258e"
+        },
+        {
+          "nativeId": "45323",
+          "geometrySha256": "fec9c16515569cd251b6b08ec0acd7d78c24ffa78bdfcce5b73961dd6fc635df"
+        },
+        {
+          "nativeId": "45324",
+          "geometrySha256": "d0a3c1bdc3e1b3c0930caac4ce16d27fe00ec6aceb0836c1ad959eaa05ed9063"
+        },
+        {
+          "nativeId": "45325",
+          "geometrySha256": "1131c91bd74a29be88dbf96f9ca302f518de7ba82aa887722cadf034648bd905"
+        },
+        {
+          "nativeId": "45326",
+          "geometrySha256": "05ae4f43747423821b94ec7225a76f0c90e786b17b9ad14edc3857939406fc2b"
+        },
+        {
+          "nativeId": "45327",
+          "geometrySha256": "58e3f994114b8f14d8583597f795a7ab6366c4bce6fa376f3614f19b5cf119e0"
+        },
+        {
+          "nativeId": "45328",
+          "geometrySha256": "212015b4bc387339429e8776df3cfc7dc838457d204f24b5733712e420e52655"
+        },
+        {
+          "nativeId": "46014",
+          "geometrySha256": "7185016744673853c16d3b7263e6af59bfe0bac94482d3c77cc0f245e1fcbdd6"
+        },
+        {
+          "nativeId": "46015",
+          "geometrySha256": "56f98e36525040f316d663c95fe93eda78939a9d50b511bcad803d82d3e605ca"
+        },
+        {
+          "nativeId": "46016",
+          "geometrySha256": "1bd5b4a955f871d79aec02cde1b3a5801ef6553494603c55ddc28d1ab803b0e1"
+        },
+        {
+          "nativeId": "46017",
+          "geometrySha256": "1f12e927300a61c4c81be75434c16b9ec08bf766b599c82e389892c38f02ba46"
+        },
+        {
+          "nativeId": "46018",
+          "geometrySha256": "3332996fdbc084257e7b1e3f6951556a60b8b7dd8acda958715c2a7c6d8e6bda"
+        },
+        {
+          "nativeId": "46019",
+          "geometrySha256": "1a11f7640b1b755c3d3cbaa943bd3ce02a091ba70702709e17a3ce23efc93350"
+        },
+        {
+          "nativeId": "46020",
+          "geometrySha256": "ff72dd48bb189ef563a4892b44bc6ea02de04b28a3b177354cc48bf51016003d"
+        },
+        {
+          "nativeId": "46021",
+          "geometrySha256": "71a0665c52fdc025c9c83248b99d34a4135aa113e7b1a9ccc0debc2f6ef14e54"
+        },
+        {
+          "nativeId": "46022",
+          "geometrySha256": "08efd95ce5b3012590352940458c0e46268e542177ef6eab20302debb929bc67"
+        },
+        {
+          "nativeId": "46023",
+          "geometrySha256": "73b7afa164bdc88bed246cb48e668e09700b8979439d85fcc53f55e982274348"
+        },
+        {
+          "nativeId": "46024",
+          "geometrySha256": "da45c5299ffdf2e235c419e8dc28d7cf1ae237bdf5d39f029b227e20ae6d8993"
+        },
+        {
+          "nativeId": "46025",
+          "geometrySha256": "8afd832fa525400042dd620d1b6ecec7e121591ff01057a923e918fd31fb7207"
+        },
+        {
+          "nativeId": "46026",
+          "geometrySha256": "62d5d89b37c6f7903a429fa9884d5ea238690eb082afc147ac114a3e3993c876"
+        },
+        {
+          "nativeId": "46027",
+          "geometrySha256": "e1a071631eeb17aedbb5eddc769424cb48635393fdd805767fa37b9d842fe119"
+        },
+        {
+          "nativeId": "46028",
+          "geometrySha256": "a5b3efe218233ceb2723cc3126d5aa25bf3ed2f2f9ea27f4c182768481bb3501"
+        },
+        {
+          "nativeId": "46029",
+          "geometrySha256": "a8d2d66a65a2fa27a8930884ce73382e591eefe67bfa05b5e5b05114ebeb4fef"
+        },
+        {
+          "nativeId": "46044",
+          "geometrySha256": "9e5562149347732b84344e7dec3905afdad497228d58b6a0fd0b7fb10702e16e"
+        },
+        {
+          "nativeId": "46136",
+          "geometrySha256": "921816d490ee4600eee3f6fd3b10317456483bb009cc1024fa0dbe17cdad414d"
+        },
+        {
+          "nativeId": "46364",
+          "geometrySha256": "4077a3e0a394d7371472c3022830324ce7d6d8438e5ed4e1e4163094ee5c4d67"
+        },
+        {
+          "nativeId": "95069",
+          "geometrySha256": "18ea4e49349b1d326895c8e2f10ea80b5aaa4e5c89888e4a3d64843b06295d79"
+        },
+        {
+          "nativeId": "139878",
+          "geometrySha256": "1238962b9c174ff5c5885df72843bd5435264ead4aa10b970e1f6102af2c7571"
+        },
+        {
+          "nativeId": "143690",
+          "geometrySha256": "30acd7acd5d0dd659d3a6d24cdfee20fd4d5b61938409be4765e104edac3de0e"
+        },
+        {
+          "nativeId": "143691",
+          "geometrySha256": "5f3d6df0f0c9b751718e912a41aaa1eacdbac26d3caecdb64f2386a9fa368ffe"
+        },
+        {
+          "nativeId": "143734",
+          "geometrySha256": "75d27cd4dc372d62ca3ccb1c2a31ee34bfdf0b2d07595c35f97eb40de7e2179a"
+        }
+      ]
+    },
+    {
+      "cell": "-46856_-23197",
+      "bbox": [
+        -46.856,
+        -23.197,
+        -46.855,
+        -23.196
+      ],
+      "complete": true,
+      "featureCount": 50,
+      "features": [
+        {
+          "nativeId": "2011",
+          "geometrySha256": "bca764fa48af8a4e65344a269fca8cee7281c29de31b17d4e782c54ef9312436"
+        },
+        {
+          "nativeId": "46025",
+          "geometrySha256": "8afd832fa525400042dd620d1b6ecec7e121591ff01057a923e918fd31fb7207"
+        },
+        {
+          "nativeId": "46044",
+          "geometrySha256": "9e5562149347732b84344e7dec3905afdad497228d58b6a0fd0b7fb10702e16e"
+        },
+        {
+          "nativeId": "46136",
+          "geometrySha256": "921816d490ee4600eee3f6fd3b10317456483bb009cc1024fa0dbe17cdad414d"
+        },
+        {
+          "nativeId": "46275",
+          "geometrySha256": "6d7c9f76cbd955aca381a180f181dadfc345ca2490a19338387201d74d5c863f"
+        },
+        {
+          "nativeId": "46276",
+          "geometrySha256": "b5e6483877cf3142e3e843f3d0ee5380ae6da40f97f3f9201dc892906995628d"
+        },
+        {
+          "nativeId": "46277",
+          "geometrySha256": "40b4c27f5ed16353a133b18e214033247f627129e7999666b31ee515be5d1e83"
+        },
+        {
+          "nativeId": "46278",
+          "geometrySha256": "55444f25f79e5c682e3a92b03a9c1cba5c39c2c2da9cfc7a7a34b52e79e4eef5"
+        },
+        {
+          "nativeId": "46279",
+          "geometrySha256": "3f4613487b28ab68f2ecc2c327ffa1664150fa79cd3108181fa943dbf1e586a0"
+        },
+        {
+          "nativeId": "46280",
+          "geometrySha256": "b161f9b1fd29b1226e061f70736d6a9a6a6a9e552a9b9f405cca1d570ef77d8a"
+        },
+        {
+          "nativeId": "46281",
+          "geometrySha256": "c09c0c68cb20af5ffbcbfecaa1f92dfe64c8e1ae17da6e010a3c12d65d68de8c"
+        },
+        {
+          "nativeId": "46282",
+          "geometrySha256": "c601f921de1e4653af94963a78c4fad865b4501bbb8c78b20a382c100eb1b6a5"
+        },
+        {
+          "nativeId": "46283",
+          "geometrySha256": "b09a49c7d91516ad50787116680e0199e434d3acde2ffeb7f2fe8244c3e9d6d9"
+        },
+        {
+          "nativeId": "46308",
+          "geometrySha256": "2e8de7da7cfd7a51fafc5f749a8392e922e07406822c3ff56dea980e1a6c3d02"
+        },
+        {
+          "nativeId": "46318",
+          "geometrySha256": "832e06176854ab1791d612567fa5bc65be581b2a2a034a6e2069d00a29302164"
+        },
+        {
+          "nativeId": "46319",
+          "geometrySha256": "ebbd40b4d8b608fb537e0064d0759f45b0c9dffd4580aed7796f017370231075"
+        },
+        {
+          "nativeId": "46320",
+          "geometrySha256": "a861cf8648f6c4976b2b8314ee1d96827e47b43677472ffeb934e7a40f90bb9a"
+        },
+        {
+          "nativeId": "46321",
+          "geometrySha256": "3c998d3d378b935affd20663ecb7597390024cb96566ab18cc68158b5b33523a"
+        },
+        {
+          "nativeId": "46322",
+          "geometrySha256": "d2bd985119b7b33a363383e33dc6a25a99886d7ae510a85079c8ff69676a1327"
+        },
+        {
+          "nativeId": "46323",
+          "geometrySha256": "1cd3e18223fea29f5844110d6d46d0a717de039cab2e18bea6837fc2c9e5a701"
+        },
+        {
+          "nativeId": "46324",
+          "geometrySha256": "61f8c188570427895e7590a4c8d37ce83b6bc6443d336f5a1acb79927c28670c"
+        },
+        {
+          "nativeId": "46325",
+          "geometrySha256": "706250756d0a32690dd067102698009f90a32dcb63ece146940b53fe8960291f"
+        },
+        {
+          "nativeId": "46326",
+          "geometrySha256": "2607ad71b46931f0df25803b4826fa9eee1a67bb4615cd92153393418eac710d"
+        },
+        {
+          "nativeId": "46327",
+          "geometrySha256": "cf8cac69e82f1dfd3c06d4d0cd26a7af156bd60fdc3d78fbbd94415eb33fad78"
+        },
+        {
+          "nativeId": "46328",
+          "geometrySha256": "84e6aaec91fe808eba7efc932a470c0c4d062f7b8840776c7ef662fc7a7d7d0c"
+        },
+        {
+          "nativeId": "46345",
+          "geometrySha256": "f44a27caafb2eef028d02c8ea624f711ddfd1379dba8cc5ec320790be8ae495b"
+        },
+        {
+          "nativeId": "46347",
+          "geometrySha256": "85e03b732616e1b987a5cacd7938f67dfcb6854829bf815d1d696ce132502fd1"
+        },
+        {
+          "nativeId": "46348",
+          "geometrySha256": "cd0353e70ab185d726b8cbe635c9181f4fced8dcca2d0e6f6580825cfb3fbed3"
+        },
+        {
+          "nativeId": "46349",
+          "geometrySha256": "f9ea1e174e57a89af929b68c85c7e14ed642525ffd22dea2e9ae6218a3ca6eb7"
+        },
+        {
+          "nativeId": "46350",
+          "geometrySha256": "32f1e0583a8165b179e80fd0746acacfdf6a973072404b204eaf0943bfd2f5b2"
+        },
+        {
+          "nativeId": "46351",
+          "geometrySha256": "62313635d8258b45f346755583ad7252ebb29c493ed9d0eefe8efe9d216c4be4"
+        },
+        {
+          "nativeId": "46352",
+          "geometrySha256": "98bc4f387baff88c327bcd2a6bcbd6497ed09ac3c945786ba26c1d046b4d90e8"
+        },
+        {
+          "nativeId": "46353",
+          "geometrySha256": "8534dcbef1fcdd0a60607d4a4d7063b8d231e9ca63d6537226299eec88304169"
+        },
+        {
+          "nativeId": "46354",
+          "geometrySha256": "5111ca1cd71679be07b6e2f4190900f67b2797c408d34d04846fabff40d6f421"
+        },
+        {
+          "nativeId": "46355",
+          "geometrySha256": "1eb4b2935452bee6ad10f84a75892a272d5e18c1456f38d5d36d6a7cf922182c"
+        },
+        {
+          "nativeId": "46356",
+          "geometrySha256": "c956ee25e3cbaefe2e2d008357b112cc585414bd81a627ddc5c00887dd37a202"
+        },
+        {
+          "nativeId": "46357",
+          "geometrySha256": "840895ce0817e80e24371c43edc71db61b5ece2521e6e085721ff2900f81025f"
+        },
+        {
+          "nativeId": "46358",
+          "geometrySha256": "2cfdfc94471eef2825c636b4b5d3904b6c3e75fe7437baad04fd4487dba8e402"
+        },
+        {
+          "nativeId": "46359",
+          "geometrySha256": "f025c4893b28d25a3fcb8c50cc1fafef7abc3d7b9ca00ef51e0d2f8e65afdb6d"
+        },
+        {
+          "nativeId": "46360",
+          "geometrySha256": "e6e42b3fa1df253007fc1199df02ebff19796335c83778f0112160c15e5b14b2"
+        },
+        {
+          "nativeId": "46361",
+          "geometrySha256": "9b394f0c88620e732cf6026548cf5b125e93a3da41128f4870e66b3ba1a19d13"
+        },
+        {
+          "nativeId": "46362",
+          "geometrySha256": "003504896d97f4eaf96f4ec289edb09a8919f5498fb7191772018ede65054b09"
+        },
+        {
+          "nativeId": "46363",
+          "geometrySha256": "b5bf93dfd13700d84647eaedb1e8184834d6ea0aa801d146ee6e263c00e799a6"
+        },
+        {
+          "nativeId": "95068",
+          "geometrySha256": "b54dcb4b8123be6a4c67f3022869a26ae2a3ea9f4ee16508909e09e1dad7444d"
+        },
+        {
+          "nativeId": "95069",
+          "geometrySha256": "18ea4e49349b1d326895c8e2f10ea80b5aaa4e5c89888e4a3d64843b06295d79"
+        },
+        {
+          "nativeId": "107126",
+          "geometrySha256": "692c9f2fc2e671f45cc49806c09890c99a03b8a96e7b2e22c34d9d0061b80914"
+        },
+        {
+          "nativeId": "143691",
+          "geometrySha256": "5f3d6df0f0c9b751718e912a41aaa1eacdbac26d3caecdb64f2386a9fa368ffe"
+        },
+        {
+          "nativeId": "143734",
+          "geometrySha256": "75d27cd4dc372d62ca3ccb1c2a31ee34bfdf0b2d07595c35f97eb40de7e2179a"
+        },
+        {
+          "nativeId": "144470",
+          "geometrySha256": "11481203b9fc1dd7f52ed806cf98ad909116f4b8bc7baad09c1b9970dc2bac99"
+        },
+        {
+          "nativeId": "144471",
+          "geometrySha256": "b8c4a1345cd359b8bca3dd5c4482a050ca294623b4702c76a6c1ef8ffb117101"
+        }
+      ]
+    },
+    {
+      "cell": "-46855_-23197",
+      "bbox": [
+        -46.855,
+        -23.197,
+        -46.854,
+        -23.196
+      ],
+      "complete": true,
+      "featureCount": 23,
+      "features": [
+        {
+          "nativeId": "2011",
+          "geometrySha256": "bca764fa48af8a4e65344a269fca8cee7281c29de31b17d4e782c54ef9312436"
+        },
+        {
+          "nativeId": "2012",
+          "geometrySha256": "ade75624d5c8ce1a04b1501a2c74ecc8384e20b3eb0fb8067d52b403c7d3a481"
+        },
+        {
+          "nativeId": "2014",
+          "geometrySha256": "163dc6a7e2b1791af64ff4072e24bf33bd0d43744a8185d9e2f8147b2cdbfe06"
+        },
+        {
+          "nativeId": "46272",
+          "geometrySha256": "22f795511d7ad75a09f0b4efd48665f3c92cc4db6b822c5e2e129e2f37c86fa8"
+        },
+        {
+          "nativeId": "46274",
+          "geometrySha256": "7d224a511eeffe654f8e7d5f1ba60bd04b235a24c533b49693bdad6f50ecf6ba"
+        },
+        {
+          "nativeId": "46275",
+          "geometrySha256": "6d7c9f76cbd955aca381a180f181dadfc345ca2490a19338387201d74d5c863f"
+        },
+        {
+          "nativeId": "46276",
+          "geometrySha256": "b5e6483877cf3142e3e843f3d0ee5380ae6da40f97f3f9201dc892906995628d"
+        },
+        {
+          "nativeId": "46277",
+          "geometrySha256": "40b4c27f5ed16353a133b18e214033247f627129e7999666b31ee515be5d1e83"
+        },
+        {
+          "nativeId": "46278",
+          "geometrySha256": "55444f25f79e5c682e3a92b03a9c1cba5c39c2c2da9cfc7a7a34b52e79e4eef5"
+        },
+        {
+          "nativeId": "46279",
+          "geometrySha256": "3f4613487b28ab68f2ecc2c327ffa1664150fa79cd3108181fa943dbf1e586a0"
+        },
+        {
+          "nativeId": "46280",
+          "geometrySha256": "b161f9b1fd29b1226e061f70736d6a9a6a6a9e552a9b9f405cca1d570ef77d8a"
+        },
+        {
+          "nativeId": "46281",
+          "geometrySha256": "c09c0c68cb20af5ffbcbfecaa1f92dfe64c8e1ae17da6e010a3c12d65d68de8c"
+        },
+        {
+          "nativeId": "46282",
+          "geometrySha256": "c601f921de1e4653af94963a78c4fad865b4501bbb8c78b20a382c100eb1b6a5"
+        },
+        {
+          "nativeId": "46283",
+          "geometrySha256": "b09a49c7d91516ad50787116680e0199e434d3acde2ffeb7f2fe8244c3e9d6d9"
+        },
+        {
+          "nativeId": "46308",
+          "geometrySha256": "2e8de7da7cfd7a51fafc5f749a8392e922e07406822c3ff56dea980e1a6c3d02"
+        },
+        {
+          "nativeId": "46344",
+          "geometrySha256": "82869f1bf472e80204e718b92e775061c6aa8066409c90f510bd21356715d3c1"
+        },
+        {
+          "nativeId": "46345",
+          "geometrySha256": "f44a27caafb2eef028d02c8ea624f711ddfd1379dba8cc5ec320790be8ae495b"
+        },
+        {
+          "nativeId": "46347",
+          "geometrySha256": "85e03b732616e1b987a5cacd7938f67dfcb6854829bf815d1d696ce132502fd1"
+        },
+        {
+          "nativeId": "46348",
+          "geometrySha256": "cd0353e70ab185d726b8cbe635c9181f4fced8dcca2d0e6f6580825cfb3fbed3"
+        },
+        {
+          "nativeId": "46349",
+          "geometrySha256": "f9ea1e174e57a89af929b68c85c7e14ed642525ffd22dea2e9ae6218a3ca6eb7"
+        },
+        {
+          "nativeId": "46350",
+          "geometrySha256": "32f1e0583a8165b179e80fd0746acacfdf6a973072404b204eaf0943bfd2f5b2"
+        },
+        {
+          "nativeId": "46351",
+          "geometrySha256": "62313635d8258b45f346755583ad7252ebb29c493ed9d0eefe8efe9d216c4be4"
+        },
+        {
+          "nativeId": "46352",
+          "geometrySha256": "98bc4f387baff88c327bcd2a6bcbd6497ed09ac3c945786ba26c1d046b4d90e8"
+        }
+      ]
+    },
+    {
+      "cell": "-46856_-23200",
+      "bbox": [
+        -46.856,
+        -23.2,
+        -46.855,
+        -23.199
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "features": [
+        {
+          "nativeId": "2011",
+          "geometrySha256": "bca764fa48af8a4e65344a269fca8cee7281c29de31b17d4e782c54ef9312436"
+        },
+        {
+          "nativeId": "46136",
+          "geometrySha256": "921816d490ee4600eee3f6fd3b10317456483bb009cc1024fa0dbe17cdad414d"
+        }
+      ]
+    },
+    {
+      "cell": "-46854_-23198",
+      "bbox": [
+        -46.854,
+        -23.198,
+        -46.853,
+        -23.197
+      ],
+      "complete": true,
+      "featureCount": 3,
+      "features": [
+        {
+          "nativeId": "2010",
+          "geometrySha256": "c6e8c942cd52d8077218697180df2c451b84251026746a1dda45330575065d1b"
+        },
+        {
+          "nativeId": "2011",
+          "geometrySha256": "bca764fa48af8a4e65344a269fca8cee7281c29de31b17d4e782c54ef9312436"
+        },
+        {
+          "nativeId": "2014",
+          "geometrySha256": "163dc6a7e2b1791af64ff4072e24bf33bd0d43744a8185d9e2f8147b2cdbfe06"
+        }
+      ]
+    },
+    {
+      "cell": "-46856_-23196",
+      "bbox": [
+        -46.856,
+        -23.196,
+        -46.855,
+        -23.195
+      ],
+      "complete": true,
+      "featureCount": 43,
+      "features": [
+        {
+          "nativeId": "45918",
+          "geometrySha256": "7faa853d167aebdfcdbefb90b7389caedacff1d3cafec0d32de9a2587f912e91"
+        },
+        {
+          "nativeId": "45919",
+          "geometrySha256": "8e944c4d3aad3586deb7793f8b5888e6252b4ff01bf424f4be2ee2320a6e4443"
+        },
+        {
+          "nativeId": "45920",
+          "geometrySha256": "cf4e6644a7d7496ff5dab50ecb11846d7ea839fddd306d04a5d0a91584d00501"
+        },
+        {
+          "nativeId": "45921",
+          "geometrySha256": "46c4c8381d36f23d66f6154e9614023e3027cb91bf8ba62802972272981f482e"
+        },
+        {
+          "nativeId": "45922",
+          "geometrySha256": "4d5dafdf52679f1b125ca2d5fa8b213a499b1d6e76a8f08907fd538a4cd36caa"
+        },
+        {
+          "nativeId": "46030",
+          "geometrySha256": "f349343c42d4c17e7eee1d73b7b92af39bf7d1821963de23aa6d3e845aa8e219"
+        },
+        {
+          "nativeId": "46033",
+          "geometrySha256": "0d1ad422594e9ab76ee1ae7af131521d1b19e41908948b17d307507ea1eb6d3a"
+        },
+        {
+          "nativeId": "46035",
+          "geometrySha256": "b99a54aebca5688d865d29c2b29e926fe827992b4448c8c88007fad808f71b96"
+        },
+        {
+          "nativeId": "46036",
+          "geometrySha256": "db1118b17e5bad24c27cb736d64e1204f1a0a60a915f0d042aee5c8e684969f5"
+        },
+        {
+          "nativeId": "46037",
+          "geometrySha256": "acbeb392dc93bab6ee0e0536d8630f2c7de61372379a3e6567db352c454c5b45"
+        },
+        {
+          "nativeId": "46041",
+          "geometrySha256": "ded82825a5f79024381dd24c83e5cae0bf8820693928f008225d8748ca5a85a7"
+        },
+        {
+          "nativeId": "46044",
+          "geometrySha256": "9e5562149347732b84344e7dec3905afdad497228d58b6a0fd0b7fb10702e16e"
+        },
+        {
+          "nativeId": "46047",
+          "geometrySha256": "d28fbce5f19eec733e3aa7c1a32661ddfeed8b14d695a35e8b5745002d43f00c"
+        },
+        {
+          "nativeId": "46128",
+          "geometrySha256": "e008c708a26ad894fb3453508d82b62088fe47fb4c5441cbece7e92bb2f9a952"
+        },
+        {
+          "nativeId": "46136",
+          "geometrySha256": "921816d490ee4600eee3f6fd3b10317456483bb009cc1024fa0dbe17cdad414d"
+        },
+        {
+          "nativeId": "46309",
+          "geometrySha256": "7de59947e0c97e371a6a1eb3b449d96ea58cd658185fee705869b4de9d10d8b1"
+        },
+        {
+          "nativeId": "46310",
+          "geometrySha256": "7ce493b6e62078681e3281e5736e9e684c8f83dbe8fbdcb96d2c1492531453cb"
+        },
+        {
+          "nativeId": "46311",
+          "geometrySha256": "ea688e45d7331470ab1cda329ba0041dbeeb5d8c01e117f09befa6a7b3fd644f"
+        },
+        {
+          "nativeId": "46312",
+          "geometrySha256": "b21e84c1ba56bfad74981d09d2f6974ee224756321489442e26a531788a14440"
+        },
+        {
+          "nativeId": "46313",
+          "geometrySha256": "b3cce1943c9156d4cc2266db73d7ae94e995d1b2e81cc4c3f333cebace208ec2"
+        },
+        {
+          "nativeId": "46314",
+          "geometrySha256": "d1a9ff9616cd662c15fd2f34b10f6fec439471226e1318df61768f76fab1bca3"
+        },
+        {
+          "nativeId": "46315",
+          "geometrySha256": "25ee15468fa4429ef8a23695cd6f9ff2b37649bde79f9ea603828d6903dcbe43"
+        },
+        {
+          "nativeId": "46316",
+          "geometrySha256": "4236453e966dde5c154487851b578b4fccd147524284d3177649237b84d52d9c"
+        },
+        {
+          "nativeId": "46317",
+          "geometrySha256": "1f96c2258b8c5ae0580e6ee6e489b0b6ea0f95c7b89608aa6926534e4c5c2ea4"
+        },
+        {
+          "nativeId": "46318",
+          "geometrySha256": "832e06176854ab1791d612567fa5bc65be581b2a2a034a6e2069d00a29302164"
+        },
+        {
+          "nativeId": "46319",
+          "geometrySha256": "ebbd40b4d8b608fb537e0064d0759f45b0c9dffd4580aed7796f017370231075"
+        },
+        {
+          "nativeId": "46333",
+          "geometrySha256": "844373544d9f1e1de3c7c854f5b916e6036e06a01cf07d73d3a6b1f3e854302f"
+        },
+        {
+          "nativeId": "46334",
+          "geometrySha256": "2ce7d3931d57ffbc6d01ab4147915c32dd261e19e9c5d13d1478d5aac6f257bf"
+        },
+        {
+          "nativeId": "46335",
+          "geometrySha256": "2726f303cc674f22876752d0d26e8ac6e55b46a1124fc30cb75eb6ec76427ec3"
+        },
+        {
+          "nativeId": "46336",
+          "geometrySha256": "d438671aa7f2f75bf7c9f1e6b84e71a48288855249145d8a10500bf971e5d0fe"
+        },
+        {
+          "nativeId": "46337",
+          "geometrySha256": "b2f75fe27a25f6eeb8e9e9678a29f355986cb2d70e328da6b0f9506199d14a01"
+        },
+        {
+          "nativeId": "46338",
+          "geometrySha256": "7d3cc6baa0585dbabb92f08a62cee615924398d72ae88ccc4c239800b5461fe1"
+        },
+        {
+          "nativeId": "46339",
+          "geometrySha256": "f0b580bcd2f0dd0991e4af2910ecbaef8c317ff2c9fd1bc17057e036466168aa"
+        },
+        {
+          "nativeId": "46340",
+          "geometrySha256": "f2ecee408efa744875c448e8f1da8b63a0a247501cfbc4211d0c39bf41872730"
+        },
+        {
+          "nativeId": "46341",
+          "geometrySha256": "4aa529ee8fa2de80a81279c75fe2c4e86640a5257401720841659b02d2a1d384"
+        },
+        {
+          "nativeId": "46342",
+          "geometrySha256": "dc90ea57bc5f92ec0594479f173ac1aa4cbbdd76803e06f016e9da3b2f8a8ec1"
+        },
+        {
+          "nativeId": "46343",
+          "geometrySha256": "500a4d4d61bea56a14193d42a0a9879d548b7cd4e26e186f1931ffa8de4ed561"
+        },
+        {
+          "nativeId": "46344",
+          "geometrySha256": "82869f1bf472e80204e718b92e775061c6aa8066409c90f510bd21356715d3c1"
+        },
+        {
+          "nativeId": "46345",
+          "geometrySha256": "f44a27caafb2eef028d02c8ea624f711ddfd1379dba8cc5ec320790be8ae495b"
+        },
+        {
+          "nativeId": "46346",
+          "geometrySha256": "78fb4cd7b005983498e97770593258bb5b8a2dfa64e6595689b3aea116b72f56"
+        },
+        {
+          "nativeId": "46350",
+          "geometrySha256": "32f1e0583a8165b179e80fd0746acacfdf6a973072404b204eaf0943bfd2f5b2"
+        },
+        {
+          "nativeId": "98248",
+          "geometrySha256": "cb1ae012bee1ab546c9d55bd91f2bcd877d006d0d17d51d3f040e69438213c42"
+        },
+        {
+          "nativeId": "145631",
+          "geometrySha256": "66ba24dfe62c66c013683bf1bb7464045f2dbb5c3f583fbf1bc1c1b1f60af161"
+        }
+      ]
+    },
+    {
+      "cell": "-46858_-23198",
+      "bbox": [
+        -46.858,
+        -23.198,
+        -46.857,
+        -23.197
+      ],
+      "complete": true,
+      "featureCount": 12,
+      "features": [
+        {
+          "nativeId": "46016",
+          "geometrySha256": "1bd5b4a955f871d79aec02cde1b3a5801ef6553494603c55ddc28d1ab803b0e1"
+        },
+        {
+          "nativeId": "46017",
+          "geometrySha256": "1f12e927300a61c4c81be75434c16b9ec08bf766b599c82e389892c38f02ba46"
+        },
+        {
+          "nativeId": "46021",
+          "geometrySha256": "71a0665c52fdc025c9c83248b99d34a4135aa113e7b1a9ccc0debc2f6ef14e54"
+        },
+        {
+          "nativeId": "46069",
+          "geometrySha256": "4b5b57f9df1c19b8b04e2c941d9fc09f1d497225009789a5e32a4389ee6f269f"
+        },
+        {
+          "nativeId": "46136",
+          "geometrySha256": "921816d490ee4600eee3f6fd3b10317456483bb009cc1024fa0dbe17cdad414d"
+        },
+        {
+          "nativeId": "46432",
+          "geometrySha256": "c233d3ef498d0daa8dfcf6e34ce3560914a9642e2a24db310fc49205bd7b7fee"
+        },
+        {
+          "nativeId": "46433",
+          "geometrySha256": "0e46b5f5bd138453bf7bce2150f675917b4a9a2e26d12832785a644e1df797e1"
+        },
+        {
+          "nativeId": "46434",
+          "geometrySha256": "fa994e221fb8915aec689271ab2be030dec629777afa8e1a01edc24c6c3f567f"
+        },
+        {
+          "nativeId": "46435",
+          "geometrySha256": "070834f31213bcd1b133cd5daff0024869b87ecde6ec6d5c88e68f7c9d36ca3b"
+        },
+        {
+          "nativeId": "46436",
+          "geometrySha256": "87d57d1c5842b4a1e67906bbb2621c44bd2cd86a0dcf347fd8840aa681407bcd"
+        },
+        {
+          "nativeId": "96125",
+          "geometrySha256": "1f19aa63edba7541afe0020df8ca4e2b1c58db5c64c7e16e0e90c136b4124f4a"
+        },
+        {
+          "nativeId": "106316",
+          "geometrySha256": "4c9bcdb59f46b92a3681ba6b193aa603ceb15ecf0a04719c0c762a5e6f86f688"
+        }
+      ]
+    }
+  ],
+  "freshIdBatches": [
+    {
+      "requestedCount": 80,
+      "complete": true,
+      "returnedCount": 80,
+      "allFullGeometryHashesMatch": true,
+      "features": [
+        {
+          "nativeId": "2010",
+          "baselineGeometrySha256": "c6e8c942cd52d8077218697180df2c451b84251026746a1dda45330575065d1b",
+          "freshGeometrySha256": "c6e8c942cd52d8077218697180df2c451b84251026746a1dda45330575065d1b",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "2011",
+          "baselineGeometrySha256": "bca764fa48af8a4e65344a269fca8cee7281c29de31b17d4e782c54ef9312436",
+          "freshGeometrySha256": "bca764fa48af8a4e65344a269fca8cee7281c29de31b17d4e782c54ef9312436",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "2012",
+          "baselineGeometrySha256": "ade75624d5c8ce1a04b1501a2c74ecc8384e20b3eb0fb8067d52b403c7d3a481",
+          "freshGeometrySha256": "ade75624d5c8ce1a04b1501a2c74ecc8384e20b3eb0fb8067d52b403c7d3a481",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "2014",
+          "baselineGeometrySha256": "163dc6a7e2b1791af64ff4072e24bf33bd0d43744a8185d9e2f8147b2cdbfe06",
+          "freshGeometrySha256": "163dc6a7e2b1791af64ff4072e24bf33bd0d43744a8185d9e2f8147b2cdbfe06",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45307",
+          "baselineGeometrySha256": "9f26f0c2d35ff8a283fdf18b3ddf8aa8a10505357c2c56055751477e9fd358a3",
+          "freshGeometrySha256": "9f26f0c2d35ff8a283fdf18b3ddf8aa8a10505357c2c56055751477e9fd358a3",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45308",
+          "baselineGeometrySha256": "40b067ef84da6dfdc67e1abc02ba01824864add36f333c1dd6b7e47df0d29bba",
+          "freshGeometrySha256": "40b067ef84da6dfdc67e1abc02ba01824864add36f333c1dd6b7e47df0d29bba",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45310",
+          "baselineGeometrySha256": "f45edc68ee332172cdac30ed145ff44a017c9ac86a3c286900ca907ba034d841",
+          "freshGeometrySha256": "f45edc68ee332172cdac30ed145ff44a017c9ac86a3c286900ca907ba034d841",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45311",
+          "baselineGeometrySha256": "f7f03dbbf3f9649ddeb0ac97957ee0a2def950653bfab97fe271817512f7484d",
+          "freshGeometrySha256": "f7f03dbbf3f9649ddeb0ac97957ee0a2def950653bfab97fe271817512f7484d",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45312",
+          "baselineGeometrySha256": "2cf4a863cc29d8b92c55867bb9eb3b4093bfaba8c655116fde9044305a4c084c",
+          "freshGeometrySha256": "2cf4a863cc29d8b92c55867bb9eb3b4093bfaba8c655116fde9044305a4c084c",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45313",
+          "baselineGeometrySha256": "231a3d6d0f38b80043eae6d4a8e0572abb10d21ef93145ea36a356274012fab0",
+          "freshGeometrySha256": "231a3d6d0f38b80043eae6d4a8e0572abb10d21ef93145ea36a356274012fab0",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45318",
+          "baselineGeometrySha256": "491737a8ea87ce8b4085a98f3ed1165d17ab351c0304a30a4f1d20bbc0f12ff1",
+          "freshGeometrySha256": "491737a8ea87ce8b4085a98f3ed1165d17ab351c0304a30a4f1d20bbc0f12ff1",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45319",
+          "baselineGeometrySha256": "edb412d991c2677ca9cb757300c0bd1a0cb95488eab120b1dc5c30bdf9f7ed7d",
+          "freshGeometrySha256": "edb412d991c2677ca9cb757300c0bd1a0cb95488eab120b1dc5c30bdf9f7ed7d",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45320",
+          "baselineGeometrySha256": "6c698339bb86780b56b13fa65c9fdf5c146f5aaa189919679e019fb6567da37d",
+          "freshGeometrySha256": "6c698339bb86780b56b13fa65c9fdf5c146f5aaa189919679e019fb6567da37d",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45321",
+          "baselineGeometrySha256": "118b5d7b43f980688549ffbd2fa4db53ced50bab2f1a0d65c2b1c1b5feb80d1c",
+          "freshGeometrySha256": "118b5d7b43f980688549ffbd2fa4db53ced50bab2f1a0d65c2b1c1b5feb80d1c",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45322",
+          "baselineGeometrySha256": "46d42b43574f775c95e0cf02ba3013c4a84a636edb670b02c0240af71016258e",
+          "freshGeometrySha256": "46d42b43574f775c95e0cf02ba3013c4a84a636edb670b02c0240af71016258e",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45323",
+          "baselineGeometrySha256": "fec9c16515569cd251b6b08ec0acd7d78c24ffa78bdfcce5b73961dd6fc635df",
+          "freshGeometrySha256": "fec9c16515569cd251b6b08ec0acd7d78c24ffa78bdfcce5b73961dd6fc635df",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45324",
+          "baselineGeometrySha256": "d0a3c1bdc3e1b3c0930caac4ce16d27fe00ec6aceb0836c1ad959eaa05ed9063",
+          "freshGeometrySha256": "d0a3c1bdc3e1b3c0930caac4ce16d27fe00ec6aceb0836c1ad959eaa05ed9063",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45325",
+          "baselineGeometrySha256": "1131c91bd74a29be88dbf96f9ca302f518de7ba82aa887722cadf034648bd905",
+          "freshGeometrySha256": "1131c91bd74a29be88dbf96f9ca302f518de7ba82aa887722cadf034648bd905",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45326",
+          "baselineGeometrySha256": "05ae4f43747423821b94ec7225a76f0c90e786b17b9ad14edc3857939406fc2b",
+          "freshGeometrySha256": "05ae4f43747423821b94ec7225a76f0c90e786b17b9ad14edc3857939406fc2b",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45327",
+          "baselineGeometrySha256": "58e3f994114b8f14d8583597f795a7ab6366c4bce6fa376f3614f19b5cf119e0",
+          "freshGeometrySha256": "58e3f994114b8f14d8583597f795a7ab6366c4bce6fa376f3614f19b5cf119e0",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45328",
+          "baselineGeometrySha256": "212015b4bc387339429e8776df3cfc7dc838457d204f24b5733712e420e52655",
+          "freshGeometrySha256": "212015b4bc387339429e8776df3cfc7dc838457d204f24b5733712e420e52655",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45918",
+          "baselineGeometrySha256": "7faa853d167aebdfcdbefb90b7389caedacff1d3cafec0d32de9a2587f912e91",
+          "freshGeometrySha256": "7faa853d167aebdfcdbefb90b7389caedacff1d3cafec0d32de9a2587f912e91",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45919",
+          "baselineGeometrySha256": "8e944c4d3aad3586deb7793f8b5888e6252b4ff01bf424f4be2ee2320a6e4443",
+          "freshGeometrySha256": "8e944c4d3aad3586deb7793f8b5888e6252b4ff01bf424f4be2ee2320a6e4443",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45920",
+          "baselineGeometrySha256": "cf4e6644a7d7496ff5dab50ecb11846d7ea839fddd306d04a5d0a91584d00501",
+          "freshGeometrySha256": "cf4e6644a7d7496ff5dab50ecb11846d7ea839fddd306d04a5d0a91584d00501",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45921",
+          "baselineGeometrySha256": "46c4c8381d36f23d66f6154e9614023e3027cb91bf8ba62802972272981f482e",
+          "freshGeometrySha256": "46c4c8381d36f23d66f6154e9614023e3027cb91bf8ba62802972272981f482e",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45922",
+          "baselineGeometrySha256": "4d5dafdf52679f1b125ca2d5fa8b213a499b1d6e76a8f08907fd538a4cd36caa",
+          "freshGeometrySha256": "4d5dafdf52679f1b125ca2d5fa8b213a499b1d6e76a8f08907fd538a4cd36caa",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45968",
+          "baselineGeometrySha256": "f7761308378101b06b56773c3aadcbc2ad587c387b10839e5ed6dae0f7bdb203",
+          "freshGeometrySha256": "f7761308378101b06b56773c3aadcbc2ad587c387b10839e5ed6dae0f7bdb203",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45969",
+          "baselineGeometrySha256": "9e0a74d885b27e8fd0b30d078a734b98bba74ed27945a3c93114f828701a6745",
+          "freshGeometrySha256": "9e0a74d885b27e8fd0b30d078a734b98bba74ed27945a3c93114f828701a6745",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45970",
+          "baselineGeometrySha256": "4cd6d47bcafd942c4ff63b5c6c0644e4ba17faa37fe83745e33cd78fe4770393",
+          "freshGeometrySha256": "4cd6d47bcafd942c4ff63b5c6c0644e4ba17faa37fe83745e33cd78fe4770393",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45971",
+          "baselineGeometrySha256": "05d4b49385c44a236b41ab22abe14fe5143c153bdaf209723ea83f5487872cc2",
+          "freshGeometrySha256": "05d4b49385c44a236b41ab22abe14fe5143c153bdaf209723ea83f5487872cc2",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45972",
+          "baselineGeometrySha256": "62a85d33820089fb894a29a1ed839c43a706b7b2326543e70764d8347dfb4ba3",
+          "freshGeometrySha256": "62a85d33820089fb894a29a1ed839c43a706b7b2326543e70764d8347dfb4ba3",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45973",
+          "baselineGeometrySha256": "551ab3962ab0afe57f461e65bb9ff8875905da30b4df1febfe3b8ca499c637d6",
+          "freshGeometrySha256": "551ab3962ab0afe57f461e65bb9ff8875905da30b4df1febfe3b8ca499c637d6",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45974",
+          "baselineGeometrySha256": "d56539647e69519b43bcc00ef06002c387815329ad85599c0d7c4a27ca29a41f",
+          "freshGeometrySha256": "d56539647e69519b43bcc00ef06002c387815329ad85599c0d7c4a27ca29a41f",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45975",
+          "baselineGeometrySha256": "1443070c61f1e45010a711a373390f919ac86a38b9824c2d8e695bfeba7df255",
+          "freshGeometrySha256": "1443070c61f1e45010a711a373390f919ac86a38b9824c2d8e695bfeba7df255",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45976",
+          "baselineGeometrySha256": "a7321ab38e35f474e4b999a7585df65f155e1a215b4dfe3b41b811dc4adf037f",
+          "freshGeometrySha256": "a7321ab38e35f474e4b999a7585df65f155e1a215b4dfe3b41b811dc4adf037f",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45977",
+          "baselineGeometrySha256": "8727c665000421d2135c4f84e74f29250cb2156765f8e2a912d5297574c997ae",
+          "freshGeometrySha256": "8727c665000421d2135c4f84e74f29250cb2156765f8e2a912d5297574c997ae",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45978",
+          "baselineGeometrySha256": "f126ce7349e9a3d6cd986d51f93350ae919e5bf1e3c656498c1bb9d8e174c890",
+          "freshGeometrySha256": "f126ce7349e9a3d6cd986d51f93350ae919e5bf1e3c656498c1bb9d8e174c890",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45979",
+          "baselineGeometrySha256": "61039ccd3b1dbfa7b0c143948dfe0029b92728f64ba3f2e53ea79b61715667ff",
+          "freshGeometrySha256": "61039ccd3b1dbfa7b0c143948dfe0029b92728f64ba3f2e53ea79b61715667ff",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45980",
+          "baselineGeometrySha256": "ad8dbaaa466e797abbab28e3a1be6b965fa487a5c174f3de6fd9b202b727c6b7",
+          "freshGeometrySha256": "ad8dbaaa466e797abbab28e3a1be6b965fa487a5c174f3de6fd9b202b727c6b7",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45981",
+          "baselineGeometrySha256": "e6490d481800493068219039fdc51eb60d9b528747a4b3af9fe7b44199e848ed",
+          "freshGeometrySha256": "e6490d481800493068219039fdc51eb60d9b528747a4b3af9fe7b44199e848ed",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45982",
+          "baselineGeometrySha256": "63aec13607389d5c659a31da38ca4daf28f3634b15c42f52a25d473349c4faa6",
+          "freshGeometrySha256": "63aec13607389d5c659a31da38ca4daf28f3634b15c42f52a25d473349c4faa6",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45983",
+          "baselineGeometrySha256": "eabab93f848ff9ee366cdb86a749f0f3fb592e2b86b2bda991593ed163176901",
+          "freshGeometrySha256": "eabab93f848ff9ee366cdb86a749f0f3fb592e2b86b2bda991593ed163176901",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45984",
+          "baselineGeometrySha256": "e2e6e605e78921199f377dbb9884cd42194dd947489baf9b497f937210d75c59",
+          "freshGeometrySha256": "e2e6e605e78921199f377dbb9884cd42194dd947489baf9b497f937210d75c59",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45985",
+          "baselineGeometrySha256": "0e357dd3faf0e86bd94aac32330f41d775f2561e34c9a1e2a46bbb4821169159",
+          "freshGeometrySha256": "0e357dd3faf0e86bd94aac32330f41d775f2561e34c9a1e2a46bbb4821169159",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45986",
+          "baselineGeometrySha256": "ea4686d0d3691d94065299e8be20134327080851b10e9a489a172ab1a9f0946f",
+          "freshGeometrySha256": "ea4686d0d3691d94065299e8be20134327080851b10e9a489a172ab1a9f0946f",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45987",
+          "baselineGeometrySha256": "b3e51fdfeaf589f3e580f1bbc23e26308ada6eca0ed8d12773de9cfd21177012",
+          "freshGeometrySha256": "b3e51fdfeaf589f3e580f1bbc23e26308ada6eca0ed8d12773de9cfd21177012",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45988",
+          "baselineGeometrySha256": "4ebd425fab291015be32a4bbb7699df87105de64472e2202432c34ae5322ec03",
+          "freshGeometrySha256": "4ebd425fab291015be32a4bbb7699df87105de64472e2202432c34ae5322ec03",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45989",
+          "baselineGeometrySha256": "20833a5b4f71fe2a8e772f1d9513bea75e858da39afa0790e0e471b4ed898755",
+          "freshGeometrySha256": "20833a5b4f71fe2a8e772f1d9513bea75e858da39afa0790e0e471b4ed898755",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45990",
+          "baselineGeometrySha256": "9a1033ea74fb5a04aa7c8ed4af581d98e7810624a5709aba692b05de54c6a35d",
+          "freshGeometrySha256": "9a1033ea74fb5a04aa7c8ed4af581d98e7810624a5709aba692b05de54c6a35d",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45991",
+          "baselineGeometrySha256": "8665c83702702d77d41f8001b0c50654eca1f13c036c08292beadfaf5078f5bc",
+          "freshGeometrySha256": "8665c83702702d77d41f8001b0c50654eca1f13c036c08292beadfaf5078f5bc",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45992",
+          "baselineGeometrySha256": "9a5fc267d2f545c192e9dfc7b8bcd0f4d648e3d15d33935ed75c4048e2353a1c",
+          "freshGeometrySha256": "9a5fc267d2f545c192e9dfc7b8bcd0f4d648e3d15d33935ed75c4048e2353a1c",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45993",
+          "baselineGeometrySha256": "c2616efc77965b0d67f3738617dbeca322d89f8beb361e4ed48397e9db7a3333",
+          "freshGeometrySha256": "c2616efc77965b0d67f3738617dbeca322d89f8beb361e4ed48397e9db7a3333",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45994",
+          "baselineGeometrySha256": "a679204f9d761434002589d98ddea93ae271dec97619170b097acd75d9367ece",
+          "freshGeometrySha256": "a679204f9d761434002589d98ddea93ae271dec97619170b097acd75d9367ece",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45995",
+          "baselineGeometrySha256": "a81fd62f53d6e9c0a9394d4872cd3a1f63841f8ff5aabda590af96c392d01e0d",
+          "freshGeometrySha256": "a81fd62f53d6e9c0a9394d4872cd3a1f63841f8ff5aabda590af96c392d01e0d",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45996",
+          "baselineGeometrySha256": "dcacd6eaefa5175be6d613e82b900115a1229358aab9919e767ed24163b1bcc4",
+          "freshGeometrySha256": "dcacd6eaefa5175be6d613e82b900115a1229358aab9919e767ed24163b1bcc4",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45997",
+          "baselineGeometrySha256": "babdc6a8a89e3fc7429e34aebc422b7afa16eddd88fec69ed069ff3932f8cf70",
+          "freshGeometrySha256": "babdc6a8a89e3fc7429e34aebc422b7afa16eddd88fec69ed069ff3932f8cf70",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45998",
+          "baselineGeometrySha256": "9e937604bc0a96aa3f7ba72d92f96974397d6861ada2aefa2224c4dbef070f4e",
+          "freshGeometrySha256": "9e937604bc0a96aa3f7ba72d92f96974397d6861ada2aefa2224c4dbef070f4e",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "45999",
+          "baselineGeometrySha256": "a7ac38e3797ac492bce104baadc94c77785e2ee90954dc0d073a6870bbb8744d",
+          "freshGeometrySha256": "a7ac38e3797ac492bce104baadc94c77785e2ee90954dc0d073a6870bbb8744d",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46000",
+          "baselineGeometrySha256": "f7f1a512bde4c3fa46bd69ade388f53407633dcd5446a2174e4d7f296e781ab4",
+          "freshGeometrySha256": "f7f1a512bde4c3fa46bd69ade388f53407633dcd5446a2174e4d7f296e781ab4",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46001",
+          "baselineGeometrySha256": "651869961f6ec00810eab410f78d945fba0b6bc2b00873268bbaa3138b4b43b1",
+          "freshGeometrySha256": "651869961f6ec00810eab410f78d945fba0b6bc2b00873268bbaa3138b4b43b1",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46002",
+          "baselineGeometrySha256": "8eb416e000ab647284cfde6e352a44f492c22ccb98b78ffbf6db60ff069440d5",
+          "freshGeometrySha256": "8eb416e000ab647284cfde6e352a44f492c22ccb98b78ffbf6db60ff069440d5",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46003",
+          "baselineGeometrySha256": "0833e4a086d291ac33a954a927127905662768d952ee2cd009108c4f35618066",
+          "freshGeometrySha256": "0833e4a086d291ac33a954a927127905662768d952ee2cd009108c4f35618066",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46004",
+          "baselineGeometrySha256": "1a6aeafc0c463fc757a2ffde6efceec804ba04b1ca7eba4021e6462b080d0208",
+          "freshGeometrySha256": "1a6aeafc0c463fc757a2ffde6efceec804ba04b1ca7eba4021e6462b080d0208",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46005",
+          "baselineGeometrySha256": "ec116f5bcda82adcf3330545618ee5477fb491e95dae45c35f3e0730f685b278",
+          "freshGeometrySha256": "ec116f5bcda82adcf3330545618ee5477fb491e95dae45c35f3e0730f685b278",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "102868",
+          "baselineGeometrySha256": "60924336d16ff73c5b0fb7f4547193df2f54356096016bc853ec4169de63c5b6",
+          "freshGeometrySha256": "60924336d16ff73c5b0fb7f4547193df2f54356096016bc853ec4169de63c5b6",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "102871",
+          "baselineGeometrySha256": "2e92171a6079ae380d33a372854cb9b160ba376957c2079985778a7755581bb6",
+          "freshGeometrySha256": "2e92171a6079ae380d33a372854cb9b160ba376957c2079985778a7755581bb6",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "106314",
+          "baselineGeometrySha256": "60cee0cf98c3141dbaafebdaa4327aa2ca6a9fe45430e84dea431da94e4d4d3f",
+          "freshGeometrySha256": "60cee0cf98c3141dbaafebdaa4327aa2ca6a9fe45430e84dea431da94e4d4d3f",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "106315",
+          "baselineGeometrySha256": "524d4b034185f377454dadf6c9ca5a5ec6736f0b29157eeaa219ffabccbe380e",
+          "freshGeometrySha256": "524d4b034185f377454dadf6c9ca5a5ec6736f0b29157eeaa219ffabccbe380e",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "106316",
+          "baselineGeometrySha256": "4c9bcdb59f46b92a3681ba6b193aa603ceb15ecf0a04719c0c762a5e6f86f688",
+          "freshGeometrySha256": "4c9bcdb59f46b92a3681ba6b193aa603ceb15ecf0a04719c0c762a5e6f86f688",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "106317",
+          "baselineGeometrySha256": "226a3bb2fbf9f35b688faa1ea9779dff4987fd4d2d9bda0b027e9c2d34be9b42",
+          "freshGeometrySha256": "226a3bb2fbf9f35b688faa1ea9779dff4987fd4d2d9bda0b027e9c2d34be9b42",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "107126",
+          "baselineGeometrySha256": "692c9f2fc2e671f45cc49806c09890c99a03b8a96e7b2e22c34d9d0061b80914",
+          "freshGeometrySha256": "692c9f2fc2e671f45cc49806c09890c99a03b8a96e7b2e22c34d9d0061b80914",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "139878",
+          "baselineGeometrySha256": "1238962b9c174ff5c5885df72843bd5435264ead4aa10b970e1f6102af2c7571",
+          "freshGeometrySha256": "1238962b9c174ff5c5885df72843bd5435264ead4aa10b970e1f6102af2c7571",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "141136",
+          "baselineGeometrySha256": "c11591b9b5f19dfa77807a17655faeffd5a926b5ba9fb4a3ee416881dde18d84",
+          "freshGeometrySha256": "c11591b9b5f19dfa77807a17655faeffd5a926b5ba9fb4a3ee416881dde18d84",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "143690",
+          "baselineGeometrySha256": "30acd7acd5d0dd659d3a6d24cdfee20fd4d5b61938409be4765e104edac3de0e",
+          "freshGeometrySha256": "30acd7acd5d0dd659d3a6d24cdfee20fd4d5b61938409be4765e104edac3de0e",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "143691",
+          "baselineGeometrySha256": "5f3d6df0f0c9b751718e912a41aaa1eacdbac26d3caecdb64f2386a9fa368ffe",
+          "freshGeometrySha256": "5f3d6df0f0c9b751718e912a41aaa1eacdbac26d3caecdb64f2386a9fa368ffe",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "143734",
+          "baselineGeometrySha256": "75d27cd4dc372d62ca3ccb1c2a31ee34bfdf0b2d07595c35f97eb40de7e2179a",
+          "freshGeometrySha256": "75d27cd4dc372d62ca3ccb1c2a31ee34bfdf0b2d07595c35f97eb40de7e2179a",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "144470",
+          "baselineGeometrySha256": "11481203b9fc1dd7f52ed806cf98ad909116f4b8bc7baad09c1b9970dc2bac99",
+          "freshGeometrySha256": "11481203b9fc1dd7f52ed806cf98ad909116f4b8bc7baad09c1b9970dc2bac99",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "144471",
+          "baselineGeometrySha256": "b8c4a1345cd359b8bca3dd5c4482a050ca294623b4702c76a6c1ef8ffb117101",
+          "freshGeometrySha256": "b8c4a1345cd359b8bca3dd5c4482a050ca294623b4702c76a6c1ef8ffb117101",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "145526",
+          "baselineGeometrySha256": "5607fb0237222c21a9907ea7090a88ec819617a14614693a71b9ca63cc335f0c",
+          "freshGeometrySha256": "5607fb0237222c21a9907ea7090a88ec819617a14614693a71b9ca63cc335f0c",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "145631",
+          "baselineGeometrySha256": "66ba24dfe62c66c013683bf1bb7464045f2dbb5c3f583fbf1bc1c1b1f60af161",
+          "freshGeometrySha256": "66ba24dfe62c66c013683bf1bb7464045f2dbb5c3f583fbf1bc1c1b1f60af161",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        }
+      ],
+      "absentIds": []
+    },
+    {
+      "requestedCount": 80,
+      "complete": true,
+      "returnedCount": 80,
+      "allFullGeometryHashesMatch": true,
+      "features": [
+        {
+          "nativeId": "46006",
+          "baselineGeometrySha256": "54b3e6a7c4e36034083bbc94f3f742d02dfb31265f4fa24852f876d1263b0caf",
+          "freshGeometrySha256": "54b3e6a7c4e36034083bbc94f3f742d02dfb31265f4fa24852f876d1263b0caf",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46007",
+          "baselineGeometrySha256": "dcbfdab1e585282bec7e6ae6bb08ad530ccfec796b49e869e191679a6339eddf",
+          "freshGeometrySha256": "dcbfdab1e585282bec7e6ae6bb08ad530ccfec796b49e869e191679a6339eddf",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46008",
+          "baselineGeometrySha256": "3bba8fd11dda6d62b6cbbb7351e8ea9a2cd54784a947310fa7ef5c83efc6323a",
+          "freshGeometrySha256": "3bba8fd11dda6d62b6cbbb7351e8ea9a2cd54784a947310fa7ef5c83efc6323a",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46009",
+          "baselineGeometrySha256": "6ff04181fdf81c1388cf3e19944dfce772d440281ace9af11601a0cdc7302162",
+          "freshGeometrySha256": "6ff04181fdf81c1388cf3e19944dfce772d440281ace9af11601a0cdc7302162",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46014",
+          "baselineGeometrySha256": "7185016744673853c16d3b7263e6af59bfe0bac94482d3c77cc0f245e1fcbdd6",
+          "freshGeometrySha256": "7185016744673853c16d3b7263e6af59bfe0bac94482d3c77cc0f245e1fcbdd6",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46015",
+          "baselineGeometrySha256": "56f98e36525040f316d663c95fe93eda78939a9d50b511bcad803d82d3e605ca",
+          "freshGeometrySha256": "56f98e36525040f316d663c95fe93eda78939a9d50b511bcad803d82d3e605ca",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46016",
+          "baselineGeometrySha256": "1bd5b4a955f871d79aec02cde1b3a5801ef6553494603c55ddc28d1ab803b0e1",
+          "freshGeometrySha256": "1bd5b4a955f871d79aec02cde1b3a5801ef6553494603c55ddc28d1ab803b0e1",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46017",
+          "baselineGeometrySha256": "1f12e927300a61c4c81be75434c16b9ec08bf766b599c82e389892c38f02ba46",
+          "freshGeometrySha256": "1f12e927300a61c4c81be75434c16b9ec08bf766b599c82e389892c38f02ba46",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46018",
+          "baselineGeometrySha256": "3332996fdbc084257e7b1e3f6951556a60b8b7dd8acda958715c2a7c6d8e6bda",
+          "freshGeometrySha256": "3332996fdbc084257e7b1e3f6951556a60b8b7dd8acda958715c2a7c6d8e6bda",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46019",
+          "baselineGeometrySha256": "1a11f7640b1b755c3d3cbaa943bd3ce02a091ba70702709e17a3ce23efc93350",
+          "freshGeometrySha256": "1a11f7640b1b755c3d3cbaa943bd3ce02a091ba70702709e17a3ce23efc93350",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46020",
+          "baselineGeometrySha256": "ff72dd48bb189ef563a4892b44bc6ea02de04b28a3b177354cc48bf51016003d",
+          "freshGeometrySha256": "ff72dd48bb189ef563a4892b44bc6ea02de04b28a3b177354cc48bf51016003d",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46021",
+          "baselineGeometrySha256": "71a0665c52fdc025c9c83248b99d34a4135aa113e7b1a9ccc0debc2f6ef14e54",
+          "freshGeometrySha256": "71a0665c52fdc025c9c83248b99d34a4135aa113e7b1a9ccc0debc2f6ef14e54",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46022",
+          "baselineGeometrySha256": "08efd95ce5b3012590352940458c0e46268e542177ef6eab20302debb929bc67",
+          "freshGeometrySha256": "08efd95ce5b3012590352940458c0e46268e542177ef6eab20302debb929bc67",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46023",
+          "baselineGeometrySha256": "73b7afa164bdc88bed246cb48e668e09700b8979439d85fcc53f55e982274348",
+          "freshGeometrySha256": "73b7afa164bdc88bed246cb48e668e09700b8979439d85fcc53f55e982274348",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46024",
+          "baselineGeometrySha256": "da45c5299ffdf2e235c419e8dc28d7cf1ae237bdf5d39f029b227e20ae6d8993",
+          "freshGeometrySha256": "da45c5299ffdf2e235c419e8dc28d7cf1ae237bdf5d39f029b227e20ae6d8993",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46025",
+          "baselineGeometrySha256": "8afd832fa525400042dd620d1b6ecec7e121591ff01057a923e918fd31fb7207",
+          "freshGeometrySha256": "8afd832fa525400042dd620d1b6ecec7e121591ff01057a923e918fd31fb7207",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46026",
+          "baselineGeometrySha256": "62d5d89b37c6f7903a429fa9884d5ea238690eb082afc147ac114a3e3993c876",
+          "freshGeometrySha256": "62d5d89b37c6f7903a429fa9884d5ea238690eb082afc147ac114a3e3993c876",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46027",
+          "baselineGeometrySha256": "e1a071631eeb17aedbb5eddc769424cb48635393fdd805767fa37b9d842fe119",
+          "freshGeometrySha256": "e1a071631eeb17aedbb5eddc769424cb48635393fdd805767fa37b9d842fe119",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46028",
+          "baselineGeometrySha256": "a5b3efe218233ceb2723cc3126d5aa25bf3ed2f2f9ea27f4c182768481bb3501",
+          "freshGeometrySha256": "a5b3efe218233ceb2723cc3126d5aa25bf3ed2f2f9ea27f4c182768481bb3501",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46029",
+          "baselineGeometrySha256": "a8d2d66a65a2fa27a8930884ce73382e591eefe67bfa05b5e5b05114ebeb4fef",
+          "freshGeometrySha256": "a8d2d66a65a2fa27a8930884ce73382e591eefe67bfa05b5e5b05114ebeb4fef",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46030",
+          "baselineGeometrySha256": "f349343c42d4c17e7eee1d73b7b92af39bf7d1821963de23aa6d3e845aa8e219",
+          "freshGeometrySha256": "f349343c42d4c17e7eee1d73b7b92af39bf7d1821963de23aa6d3e845aa8e219",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46033",
+          "baselineGeometrySha256": "0d1ad422594e9ab76ee1ae7af131521d1b19e41908948b17d307507ea1eb6d3a",
+          "freshGeometrySha256": "0d1ad422594e9ab76ee1ae7af131521d1b19e41908948b17d307507ea1eb6d3a",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46035",
+          "baselineGeometrySha256": "b99a54aebca5688d865d29c2b29e926fe827992b4448c8c88007fad808f71b96",
+          "freshGeometrySha256": "b99a54aebca5688d865d29c2b29e926fe827992b4448c8c88007fad808f71b96",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46036",
+          "baselineGeometrySha256": "db1118b17e5bad24c27cb736d64e1204f1a0a60a915f0d042aee5c8e684969f5",
+          "freshGeometrySha256": "db1118b17e5bad24c27cb736d64e1204f1a0a60a915f0d042aee5c8e684969f5",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46037",
+          "baselineGeometrySha256": "acbeb392dc93bab6ee0e0536d8630f2c7de61372379a3e6567db352c454c5b45",
+          "freshGeometrySha256": "acbeb392dc93bab6ee0e0536d8630f2c7de61372379a3e6567db352c454c5b45",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46041",
+          "baselineGeometrySha256": "ded82825a5f79024381dd24c83e5cae0bf8820693928f008225d8748ca5a85a7",
+          "freshGeometrySha256": "ded82825a5f79024381dd24c83e5cae0bf8820693928f008225d8748ca5a85a7",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46044",
+          "baselineGeometrySha256": "9e5562149347732b84344e7dec3905afdad497228d58b6a0fd0b7fb10702e16e",
+          "freshGeometrySha256": "9e5562149347732b84344e7dec3905afdad497228d58b6a0fd0b7fb10702e16e",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46047",
+          "baselineGeometrySha256": "d28fbce5f19eec733e3aa7c1a32661ddfeed8b14d695a35e8b5745002d43f00c",
+          "freshGeometrySha256": "d28fbce5f19eec733e3aa7c1a32661ddfeed8b14d695a35e8b5745002d43f00c",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46069",
+          "baselineGeometrySha256": "4b5b57f9df1c19b8b04e2c941d9fc09f1d497225009789a5e32a4389ee6f269f",
+          "freshGeometrySha256": "4b5b57f9df1c19b8b04e2c941d9fc09f1d497225009789a5e32a4389ee6f269f",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46128",
+          "baselineGeometrySha256": "e008c708a26ad894fb3453508d82b62088fe47fb4c5441cbece7e92bb2f9a952",
+          "freshGeometrySha256": "e008c708a26ad894fb3453508d82b62088fe47fb4c5441cbece7e92bb2f9a952",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46136",
+          "baselineGeometrySha256": "921816d490ee4600eee3f6fd3b10317456483bb009cc1024fa0dbe17cdad414d",
+          "freshGeometrySha256": "921816d490ee4600eee3f6fd3b10317456483bb009cc1024fa0dbe17cdad414d",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46272",
+          "baselineGeometrySha256": "22f795511d7ad75a09f0b4efd48665f3c92cc4db6b822c5e2e129e2f37c86fa8",
+          "freshGeometrySha256": "22f795511d7ad75a09f0b4efd48665f3c92cc4db6b822c5e2e129e2f37c86fa8",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46274",
+          "baselineGeometrySha256": "7d224a511eeffe654f8e7d5f1ba60bd04b235a24c533b49693bdad6f50ecf6ba",
+          "freshGeometrySha256": "7d224a511eeffe654f8e7d5f1ba60bd04b235a24c533b49693bdad6f50ecf6ba",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46275",
+          "baselineGeometrySha256": "6d7c9f76cbd955aca381a180f181dadfc345ca2490a19338387201d74d5c863f",
+          "freshGeometrySha256": "6d7c9f76cbd955aca381a180f181dadfc345ca2490a19338387201d74d5c863f",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46276",
+          "baselineGeometrySha256": "b5e6483877cf3142e3e843f3d0ee5380ae6da40f97f3f9201dc892906995628d",
+          "freshGeometrySha256": "b5e6483877cf3142e3e843f3d0ee5380ae6da40f97f3f9201dc892906995628d",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46277",
+          "baselineGeometrySha256": "40b4c27f5ed16353a133b18e214033247f627129e7999666b31ee515be5d1e83",
+          "freshGeometrySha256": "40b4c27f5ed16353a133b18e214033247f627129e7999666b31ee515be5d1e83",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46278",
+          "baselineGeometrySha256": "55444f25f79e5c682e3a92b03a9c1cba5c39c2c2da9cfc7a7a34b52e79e4eef5",
+          "freshGeometrySha256": "55444f25f79e5c682e3a92b03a9c1cba5c39c2c2da9cfc7a7a34b52e79e4eef5",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46279",
+          "baselineGeometrySha256": "3f4613487b28ab68f2ecc2c327ffa1664150fa79cd3108181fa943dbf1e586a0",
+          "freshGeometrySha256": "3f4613487b28ab68f2ecc2c327ffa1664150fa79cd3108181fa943dbf1e586a0",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46280",
+          "baselineGeometrySha256": "b161f9b1fd29b1226e061f70736d6a9a6a6a9e552a9b9f405cca1d570ef77d8a",
+          "freshGeometrySha256": "b161f9b1fd29b1226e061f70736d6a9a6a6a9e552a9b9f405cca1d570ef77d8a",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46281",
+          "baselineGeometrySha256": "c09c0c68cb20af5ffbcbfecaa1f92dfe64c8e1ae17da6e010a3c12d65d68de8c",
+          "freshGeometrySha256": "c09c0c68cb20af5ffbcbfecaa1f92dfe64c8e1ae17da6e010a3c12d65d68de8c",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46282",
+          "baselineGeometrySha256": "c601f921de1e4653af94963a78c4fad865b4501bbb8c78b20a382c100eb1b6a5",
+          "freshGeometrySha256": "c601f921de1e4653af94963a78c4fad865b4501bbb8c78b20a382c100eb1b6a5",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46283",
+          "baselineGeometrySha256": "b09a49c7d91516ad50787116680e0199e434d3acde2ffeb7f2fe8244c3e9d6d9",
+          "freshGeometrySha256": "b09a49c7d91516ad50787116680e0199e434d3acde2ffeb7f2fe8244c3e9d6d9",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46284",
+          "baselineGeometrySha256": "bc8cf22b01fada1c46f2ac52b682317e022f8c0695fa424e99401f42bc2e910e",
+          "freshGeometrySha256": "bc8cf22b01fada1c46f2ac52b682317e022f8c0695fa424e99401f42bc2e910e",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46285",
+          "baselineGeometrySha256": "ce5786448e79e10c646e8c96cd5bc628a2a02580b1e6def273efe87b6c13b25d",
+          "freshGeometrySha256": "ce5786448e79e10c646e8c96cd5bc628a2a02580b1e6def273efe87b6c13b25d",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46286",
+          "baselineGeometrySha256": "0cac478eb48bf6f08d19b507cc62bc1acc919c3aed9d45df8cdd4e96d1b1fb21",
+          "freshGeometrySha256": "0cac478eb48bf6f08d19b507cc62bc1acc919c3aed9d45df8cdd4e96d1b1fb21",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46287",
+          "baselineGeometrySha256": "2ddcffc615879aa2b20b5f1a04c9dbd2461a27d470d6a467603a6d5d01fde4be",
+          "freshGeometrySha256": "2ddcffc615879aa2b20b5f1a04c9dbd2461a27d470d6a467603a6d5d01fde4be",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46288",
+          "baselineGeometrySha256": "cf3314c59302b0529741b31739eda5b83f162864b2052b95e2fa23a33018d25d",
+          "freshGeometrySha256": "cf3314c59302b0529741b31739eda5b83f162864b2052b95e2fa23a33018d25d",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46289",
+          "baselineGeometrySha256": "477608980c255d251f2890bd86759742998fe0859485f5904e85ba292390a47c",
+          "freshGeometrySha256": "477608980c255d251f2890bd86759742998fe0859485f5904e85ba292390a47c",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46290",
+          "baselineGeometrySha256": "94f3475140d4fa9fb77af28ef0d8a98b5e5c84db3597cbe34a62f995ff8aa244",
+          "freshGeometrySha256": "94f3475140d4fa9fb77af28ef0d8a98b5e5c84db3597cbe34a62f995ff8aa244",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46291",
+          "baselineGeometrySha256": "dc1b5d4c763d26cd89d88608bb876a24554c5b93c149d516343f6eff33e7cd20",
+          "freshGeometrySha256": "dc1b5d4c763d26cd89d88608bb876a24554c5b93c149d516343f6eff33e7cd20",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46292",
+          "baselineGeometrySha256": "f7a55128798a088a0c388b2d09d3cbfe5e1b78e9ce54f91bf2a854ac9b613872",
+          "freshGeometrySha256": "f7a55128798a088a0c388b2d09d3cbfe5e1b78e9ce54f91bf2a854ac9b613872",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46293",
+          "baselineGeometrySha256": "0ceebcfa23403ade7bbd6fafb2fb27a8431706925288a8c1a8edb577b5264c3e",
+          "freshGeometrySha256": "0ceebcfa23403ade7bbd6fafb2fb27a8431706925288a8c1a8edb577b5264c3e",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46294",
+          "baselineGeometrySha256": "b5f65c1c23398e4a51387f174bd211feed0d91af2de4e8bfbb955bdfc688eacd",
+          "freshGeometrySha256": "b5f65c1c23398e4a51387f174bd211feed0d91af2de4e8bfbb955bdfc688eacd",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46297",
+          "baselineGeometrySha256": "8c72b75fa1619d8d446b62475759ed2bde777c27e5ad5a2d935b2012ecea542e",
+          "freshGeometrySha256": "8c72b75fa1619d8d446b62475759ed2bde777c27e5ad5a2d935b2012ecea542e",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46298",
+          "baselineGeometrySha256": "71a2a61ef141b0ecf1dc7d122663f47e98da99b1fc263a56d140156c0eda9ec1",
+          "freshGeometrySha256": "71a2a61ef141b0ecf1dc7d122663f47e98da99b1fc263a56d140156c0eda9ec1",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46299",
+          "baselineGeometrySha256": "ff61f73a996b58a07bb5ae8c681a57401fd58a27aba45d9875a01c96212815f1",
+          "freshGeometrySha256": "ff61f73a996b58a07bb5ae8c681a57401fd58a27aba45d9875a01c96212815f1",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46300",
+          "baselineGeometrySha256": "8d65ab453acfb22ee1dd7f0c890d99ce352bfc14c13834947d54470de0e49f0f",
+          "freshGeometrySha256": "8d65ab453acfb22ee1dd7f0c890d99ce352bfc14c13834947d54470de0e49f0f",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46301",
+          "baselineGeometrySha256": "38cd3dc639b437fd55256d967a45ff5c8fbaa1ef8c5001e5ce2980e06e647b09",
+          "freshGeometrySha256": "38cd3dc639b437fd55256d967a45ff5c8fbaa1ef8c5001e5ce2980e06e647b09",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46302",
+          "baselineGeometrySha256": "de1539f3bdd737f81fd60ce63690703e9013f0baa5d72bfbea02e5016ee4be5e",
+          "freshGeometrySha256": "de1539f3bdd737f81fd60ce63690703e9013f0baa5d72bfbea02e5016ee4be5e",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46303",
+          "baselineGeometrySha256": "837bfcc1b52a15448c7dec23773d96a9def75340bf7a0fbe92458cc99cbe9686",
+          "freshGeometrySha256": "837bfcc1b52a15448c7dec23773d96a9def75340bf7a0fbe92458cc99cbe9686",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46304",
+          "baselineGeometrySha256": "ddc8473c058f8b9199d2ec83bfa006acff302db67b3075776296abbc21e6e060",
+          "freshGeometrySha256": "ddc8473c058f8b9199d2ec83bfa006acff302db67b3075776296abbc21e6e060",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46306",
+          "baselineGeometrySha256": "0c1c7ef5cf0b83487a9b8a1b2a76257596c7982f50ef8671e7fe81e22bf69fae",
+          "freshGeometrySha256": "0c1c7ef5cf0b83487a9b8a1b2a76257596c7982f50ef8671e7fe81e22bf69fae",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46307",
+          "baselineGeometrySha256": "2aa06c48dffcbc044d06517f6391577f5b183818e5f6d950c8214822a24e229c",
+          "freshGeometrySha256": "2aa06c48dffcbc044d06517f6391577f5b183818e5f6d950c8214822a24e229c",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46308",
+          "baselineGeometrySha256": "2e8de7da7cfd7a51fafc5f749a8392e922e07406822c3ff56dea980e1a6c3d02",
+          "freshGeometrySha256": "2e8de7da7cfd7a51fafc5f749a8392e922e07406822c3ff56dea980e1a6c3d02",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46309",
+          "baselineGeometrySha256": "7de59947e0c97e371a6a1eb3b449d96ea58cd658185fee705869b4de9d10d8b1",
+          "freshGeometrySha256": "7de59947e0c97e371a6a1eb3b449d96ea58cd658185fee705869b4de9d10d8b1",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46310",
+          "baselineGeometrySha256": "7ce493b6e62078681e3281e5736e9e684c8f83dbe8fbdcb96d2c1492531453cb",
+          "freshGeometrySha256": "7ce493b6e62078681e3281e5736e9e684c8f83dbe8fbdcb96d2c1492531453cb",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46311",
+          "baselineGeometrySha256": "ea688e45d7331470ab1cda329ba0041dbeeb5d8c01e117f09befa6a7b3fd644f",
+          "freshGeometrySha256": "ea688e45d7331470ab1cda329ba0041dbeeb5d8c01e117f09befa6a7b3fd644f",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46312",
+          "baselineGeometrySha256": "b21e84c1ba56bfad74981d09d2f6974ee224756321489442e26a531788a14440",
+          "freshGeometrySha256": "b21e84c1ba56bfad74981d09d2f6974ee224756321489442e26a531788a14440",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46313",
+          "baselineGeometrySha256": "b3cce1943c9156d4cc2266db73d7ae94e995d1b2e81cc4c3f333cebace208ec2",
+          "freshGeometrySha256": "b3cce1943c9156d4cc2266db73d7ae94e995d1b2e81cc4c3f333cebace208ec2",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46314",
+          "baselineGeometrySha256": "d1a9ff9616cd662c15fd2f34b10f6fec439471226e1318df61768f76fab1bca3",
+          "freshGeometrySha256": "d1a9ff9616cd662c15fd2f34b10f6fec439471226e1318df61768f76fab1bca3",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46315",
+          "baselineGeometrySha256": "25ee15468fa4429ef8a23695cd6f9ff2b37649bde79f9ea603828d6903dcbe43",
+          "freshGeometrySha256": "25ee15468fa4429ef8a23695cd6f9ff2b37649bde79f9ea603828d6903dcbe43",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46316",
+          "baselineGeometrySha256": "4236453e966dde5c154487851b578b4fccd147524284d3177649237b84d52d9c",
+          "freshGeometrySha256": "4236453e966dde5c154487851b578b4fccd147524284d3177649237b84d52d9c",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46317",
+          "baselineGeometrySha256": "1f96c2258b8c5ae0580e6ee6e489b0b6ea0f95c7b89608aa6926534e4c5c2ea4",
+          "freshGeometrySha256": "1f96c2258b8c5ae0580e6ee6e489b0b6ea0f95c7b89608aa6926534e4c5c2ea4",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46318",
+          "baselineGeometrySha256": "832e06176854ab1791d612567fa5bc65be581b2a2a034a6e2069d00a29302164",
+          "freshGeometrySha256": "832e06176854ab1791d612567fa5bc65be581b2a2a034a6e2069d00a29302164",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46319",
+          "baselineGeometrySha256": "ebbd40b4d8b608fb537e0064d0759f45b0c9dffd4580aed7796f017370231075",
+          "freshGeometrySha256": "ebbd40b4d8b608fb537e0064d0759f45b0c9dffd4580aed7796f017370231075",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46320",
+          "baselineGeometrySha256": "a861cf8648f6c4976b2b8314ee1d96827e47b43677472ffeb934e7a40f90bb9a",
+          "freshGeometrySha256": "a861cf8648f6c4976b2b8314ee1d96827e47b43677472ffeb934e7a40f90bb9a",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46321",
+          "baselineGeometrySha256": "3c998d3d378b935affd20663ecb7597390024cb96566ab18cc68158b5b33523a",
+          "freshGeometrySha256": "3c998d3d378b935affd20663ecb7597390024cb96566ab18cc68158b5b33523a",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46322",
+          "baselineGeometrySha256": "d2bd985119b7b33a363383e33dc6a25a99886d7ae510a85079c8ff69676a1327",
+          "freshGeometrySha256": "d2bd985119b7b33a363383e33dc6a25a99886d7ae510a85079c8ff69676a1327",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46323",
+          "baselineGeometrySha256": "1cd3e18223fea29f5844110d6d46d0a717de039cab2e18bea6837fc2c9e5a701",
+          "freshGeometrySha256": "1cd3e18223fea29f5844110d6d46d0a717de039cab2e18bea6837fc2c9e5a701",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46324",
+          "baselineGeometrySha256": "61f8c188570427895e7590a4c8d37ce83b6bc6443d336f5a1acb79927c28670c",
+          "freshGeometrySha256": "61f8c188570427895e7590a4c8d37ce83b6bc6443d336f5a1acb79927c28670c",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        }
+      ],
+      "absentIds": []
+    },
+    {
+      "requestedCount": 45,
+      "complete": true,
+      "returnedCount": 45,
+      "allFullGeometryHashesMatch": true,
+      "features": [
+        {
+          "nativeId": "46325",
+          "baselineGeometrySha256": "706250756d0a32690dd067102698009f90a32dcb63ece146940b53fe8960291f",
+          "freshGeometrySha256": "706250756d0a32690dd067102698009f90a32dcb63ece146940b53fe8960291f",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46326",
+          "baselineGeometrySha256": "2607ad71b46931f0df25803b4826fa9eee1a67bb4615cd92153393418eac710d",
+          "freshGeometrySha256": "2607ad71b46931f0df25803b4826fa9eee1a67bb4615cd92153393418eac710d",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46327",
+          "baselineGeometrySha256": "cf8cac69e82f1dfd3c06d4d0cd26a7af156bd60fdc3d78fbbd94415eb33fad78",
+          "freshGeometrySha256": "cf8cac69e82f1dfd3c06d4d0cd26a7af156bd60fdc3d78fbbd94415eb33fad78",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46328",
+          "baselineGeometrySha256": "84e6aaec91fe808eba7efc932a470c0c4d062f7b8840776c7ef662fc7a7d7d0c",
+          "freshGeometrySha256": "84e6aaec91fe808eba7efc932a470c0c4d062f7b8840776c7ef662fc7a7d7d0c",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46333",
+          "baselineGeometrySha256": "844373544d9f1e1de3c7c854f5b916e6036e06a01cf07d73d3a6b1f3e854302f",
+          "freshGeometrySha256": "844373544d9f1e1de3c7c854f5b916e6036e06a01cf07d73d3a6b1f3e854302f",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46334",
+          "baselineGeometrySha256": "2ce7d3931d57ffbc6d01ab4147915c32dd261e19e9c5d13d1478d5aac6f257bf",
+          "freshGeometrySha256": "2ce7d3931d57ffbc6d01ab4147915c32dd261e19e9c5d13d1478d5aac6f257bf",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46335",
+          "baselineGeometrySha256": "2726f303cc674f22876752d0d26e8ac6e55b46a1124fc30cb75eb6ec76427ec3",
+          "freshGeometrySha256": "2726f303cc674f22876752d0d26e8ac6e55b46a1124fc30cb75eb6ec76427ec3",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46336",
+          "baselineGeometrySha256": "d438671aa7f2f75bf7c9f1e6b84e71a48288855249145d8a10500bf971e5d0fe",
+          "freshGeometrySha256": "d438671aa7f2f75bf7c9f1e6b84e71a48288855249145d8a10500bf971e5d0fe",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46337",
+          "baselineGeometrySha256": "b2f75fe27a25f6eeb8e9e9678a29f355986cb2d70e328da6b0f9506199d14a01",
+          "freshGeometrySha256": "b2f75fe27a25f6eeb8e9e9678a29f355986cb2d70e328da6b0f9506199d14a01",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46338",
+          "baselineGeometrySha256": "7d3cc6baa0585dbabb92f08a62cee615924398d72ae88ccc4c239800b5461fe1",
+          "freshGeometrySha256": "7d3cc6baa0585dbabb92f08a62cee615924398d72ae88ccc4c239800b5461fe1",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46339",
+          "baselineGeometrySha256": "f0b580bcd2f0dd0991e4af2910ecbaef8c317ff2c9fd1bc17057e036466168aa",
+          "freshGeometrySha256": "f0b580bcd2f0dd0991e4af2910ecbaef8c317ff2c9fd1bc17057e036466168aa",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46340",
+          "baselineGeometrySha256": "f2ecee408efa744875c448e8f1da8b63a0a247501cfbc4211d0c39bf41872730",
+          "freshGeometrySha256": "f2ecee408efa744875c448e8f1da8b63a0a247501cfbc4211d0c39bf41872730",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46341",
+          "baselineGeometrySha256": "4aa529ee8fa2de80a81279c75fe2c4e86640a5257401720841659b02d2a1d384",
+          "freshGeometrySha256": "4aa529ee8fa2de80a81279c75fe2c4e86640a5257401720841659b02d2a1d384",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46342",
+          "baselineGeometrySha256": "dc90ea57bc5f92ec0594479f173ac1aa4cbbdd76803e06f016e9da3b2f8a8ec1",
+          "freshGeometrySha256": "dc90ea57bc5f92ec0594479f173ac1aa4cbbdd76803e06f016e9da3b2f8a8ec1",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46343",
+          "baselineGeometrySha256": "500a4d4d61bea56a14193d42a0a9879d548b7cd4e26e186f1931ffa8de4ed561",
+          "freshGeometrySha256": "500a4d4d61bea56a14193d42a0a9879d548b7cd4e26e186f1931ffa8de4ed561",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46344",
+          "baselineGeometrySha256": "82869f1bf472e80204e718b92e775061c6aa8066409c90f510bd21356715d3c1",
+          "freshGeometrySha256": "82869f1bf472e80204e718b92e775061c6aa8066409c90f510bd21356715d3c1",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46345",
+          "baselineGeometrySha256": "f44a27caafb2eef028d02c8ea624f711ddfd1379dba8cc5ec320790be8ae495b",
+          "freshGeometrySha256": "f44a27caafb2eef028d02c8ea624f711ddfd1379dba8cc5ec320790be8ae495b",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46346",
+          "baselineGeometrySha256": "78fb4cd7b005983498e97770593258bb5b8a2dfa64e6595689b3aea116b72f56",
+          "freshGeometrySha256": "78fb4cd7b005983498e97770593258bb5b8a2dfa64e6595689b3aea116b72f56",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46347",
+          "baselineGeometrySha256": "85e03b732616e1b987a5cacd7938f67dfcb6854829bf815d1d696ce132502fd1",
+          "freshGeometrySha256": "85e03b732616e1b987a5cacd7938f67dfcb6854829bf815d1d696ce132502fd1",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46348",
+          "baselineGeometrySha256": "cd0353e70ab185d726b8cbe635c9181f4fced8dcca2d0e6f6580825cfb3fbed3",
+          "freshGeometrySha256": "cd0353e70ab185d726b8cbe635c9181f4fced8dcca2d0e6f6580825cfb3fbed3",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46349",
+          "baselineGeometrySha256": "f9ea1e174e57a89af929b68c85c7e14ed642525ffd22dea2e9ae6218a3ca6eb7",
+          "freshGeometrySha256": "f9ea1e174e57a89af929b68c85c7e14ed642525ffd22dea2e9ae6218a3ca6eb7",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46350",
+          "baselineGeometrySha256": "32f1e0583a8165b179e80fd0746acacfdf6a973072404b204eaf0943bfd2f5b2",
+          "freshGeometrySha256": "32f1e0583a8165b179e80fd0746acacfdf6a973072404b204eaf0943bfd2f5b2",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46351",
+          "baselineGeometrySha256": "62313635d8258b45f346755583ad7252ebb29c493ed9d0eefe8efe9d216c4be4",
+          "freshGeometrySha256": "62313635d8258b45f346755583ad7252ebb29c493ed9d0eefe8efe9d216c4be4",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46352",
+          "baselineGeometrySha256": "98bc4f387baff88c327bcd2a6bcbd6497ed09ac3c945786ba26c1d046b4d90e8",
+          "freshGeometrySha256": "98bc4f387baff88c327bcd2a6bcbd6497ed09ac3c945786ba26c1d046b4d90e8",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46353",
+          "baselineGeometrySha256": "8534dcbef1fcdd0a60607d4a4d7063b8d231e9ca63d6537226299eec88304169",
+          "freshGeometrySha256": "8534dcbef1fcdd0a60607d4a4d7063b8d231e9ca63d6537226299eec88304169",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46354",
+          "baselineGeometrySha256": "5111ca1cd71679be07b6e2f4190900f67b2797c408d34d04846fabff40d6f421",
+          "freshGeometrySha256": "5111ca1cd71679be07b6e2f4190900f67b2797c408d34d04846fabff40d6f421",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46355",
+          "baselineGeometrySha256": "1eb4b2935452bee6ad10f84a75892a272d5e18c1456f38d5d36d6a7cf922182c",
+          "freshGeometrySha256": "1eb4b2935452bee6ad10f84a75892a272d5e18c1456f38d5d36d6a7cf922182c",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46356",
+          "baselineGeometrySha256": "c956ee25e3cbaefe2e2d008357b112cc585414bd81a627ddc5c00887dd37a202",
+          "freshGeometrySha256": "c956ee25e3cbaefe2e2d008357b112cc585414bd81a627ddc5c00887dd37a202",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46357",
+          "baselineGeometrySha256": "840895ce0817e80e24371c43edc71db61b5ece2521e6e085721ff2900f81025f",
+          "freshGeometrySha256": "840895ce0817e80e24371c43edc71db61b5ece2521e6e085721ff2900f81025f",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46358",
+          "baselineGeometrySha256": "2cfdfc94471eef2825c636b4b5d3904b6c3e75fe7437baad04fd4487dba8e402",
+          "freshGeometrySha256": "2cfdfc94471eef2825c636b4b5d3904b6c3e75fe7437baad04fd4487dba8e402",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46359",
+          "baselineGeometrySha256": "f025c4893b28d25a3fcb8c50cc1fafef7abc3d7b9ca00ef51e0d2f8e65afdb6d",
+          "freshGeometrySha256": "f025c4893b28d25a3fcb8c50cc1fafef7abc3d7b9ca00ef51e0d2f8e65afdb6d",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46360",
+          "baselineGeometrySha256": "e6e42b3fa1df253007fc1199df02ebff19796335c83778f0112160c15e5b14b2",
+          "freshGeometrySha256": "e6e42b3fa1df253007fc1199df02ebff19796335c83778f0112160c15e5b14b2",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46361",
+          "baselineGeometrySha256": "9b394f0c88620e732cf6026548cf5b125e93a3da41128f4870e66b3ba1a19d13",
+          "freshGeometrySha256": "9b394f0c88620e732cf6026548cf5b125e93a3da41128f4870e66b3ba1a19d13",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46362",
+          "baselineGeometrySha256": "003504896d97f4eaf96f4ec289edb09a8919f5498fb7191772018ede65054b09",
+          "freshGeometrySha256": "003504896d97f4eaf96f4ec289edb09a8919f5498fb7191772018ede65054b09",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46363",
+          "baselineGeometrySha256": "b5bf93dfd13700d84647eaedb1e8184834d6ea0aa801d146ee6e263c00e799a6",
+          "freshGeometrySha256": "b5bf93dfd13700d84647eaedb1e8184834d6ea0aa801d146ee6e263c00e799a6",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46364",
+          "baselineGeometrySha256": "4077a3e0a394d7371472c3022830324ce7d6d8438e5ed4e1e4163094ee5c4d67",
+          "freshGeometrySha256": "4077a3e0a394d7371472c3022830324ce7d6d8438e5ed4e1e4163094ee5c4d67",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46432",
+          "baselineGeometrySha256": "c233d3ef498d0daa8dfcf6e34ce3560914a9642e2a24db310fc49205bd7b7fee",
+          "freshGeometrySha256": "c233d3ef498d0daa8dfcf6e34ce3560914a9642e2a24db310fc49205bd7b7fee",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46433",
+          "baselineGeometrySha256": "0e46b5f5bd138453bf7bce2150f675917b4a9a2e26d12832785a644e1df797e1",
+          "freshGeometrySha256": "0e46b5f5bd138453bf7bce2150f675917b4a9a2e26d12832785a644e1df797e1",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46434",
+          "baselineGeometrySha256": "fa994e221fb8915aec689271ab2be030dec629777afa8e1a01edc24c6c3f567f",
+          "freshGeometrySha256": "fa994e221fb8915aec689271ab2be030dec629777afa8e1a01edc24c6c3f567f",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46435",
+          "baselineGeometrySha256": "070834f31213bcd1b133cd5daff0024869b87ecde6ec6d5c88e68f7c9d36ca3b",
+          "freshGeometrySha256": "070834f31213bcd1b133cd5daff0024869b87ecde6ec6d5c88e68f7c9d36ca3b",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "46436",
+          "baselineGeometrySha256": "87d57d1c5842b4a1e67906bbb2621c44bd2cd86a0dcf347fd8840aa681407bcd",
+          "freshGeometrySha256": "87d57d1c5842b4a1e67906bbb2621c44bd2cd86a0dcf347fd8840aa681407bcd",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "95068",
+          "baselineGeometrySha256": "b54dcb4b8123be6a4c67f3022869a26ae2a3ea9f4ee16508909e09e1dad7444d",
+          "freshGeometrySha256": "b54dcb4b8123be6a4c67f3022869a26ae2a3ea9f4ee16508909e09e1dad7444d",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "95069",
+          "baselineGeometrySha256": "18ea4e49349b1d326895c8e2f10ea80b5aaa4e5c89888e4a3d64843b06295d79",
+          "freshGeometrySha256": "18ea4e49349b1d326895c8e2f10ea80b5aaa4e5c89888e4a3d64843b06295d79",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "96125",
+          "baselineGeometrySha256": "1f19aa63edba7541afe0020df8ca4e2b1c58db5c64c7e16e0e90c136b4124f4a",
+          "freshGeometrySha256": "1f19aa63edba7541afe0020df8ca4e2b1c58db5c64c7e16e0e90c136b4124f4a",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "nativeId": "98248",
+          "baselineGeometrySha256": "cb1ae012bee1ab546c9d55bd91f2bcd877d006d0d17d51d3f040e69438213c42",
+          "freshGeometrySha256": "cb1ae012bee1ab546c9d55bd91f2bcd877d006d0d17d51d3f040e69438213c42",
+          "fullGeometryHashMatches": true,
+          "geometryType": "MultiPolygon"
+        }
+      ],
+      "absentIds": []
+    }
+  ],
+  "pagingProbe": {
+    "cell": "-46856_-23198",
+    "featureCount": 49,
+    "complete": true,
+    "pageCount": 49,
+    "pages": [
+      {
+        "startIndex": "0",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "1",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "2",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "3",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "4",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "5",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "6",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "7",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "8",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "9",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "10",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "11",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "12",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "13",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "14",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "15",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "16",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "17",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "18",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "19",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "20",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "21",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "22",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "23",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "24",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "25",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "26",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "27",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "28",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "29",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "30",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "31",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "32",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "33",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "34",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "35",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "36",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "37",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "38",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "39",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "40",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "41",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "42",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "43",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "44",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "45",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "46",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "47",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      },
+      {
+        "startIndex": "48",
+        "count": "1",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 1,
+        "featureCount": 1
+      }
+    ],
+    "matchedCountStable": true
+  },
+  "explicitAbsence": {
+    "syntheticNativeId": "999999999",
+    "nativeIdType": "integer",
+    "complete": true,
+    "featureCount": 0,
+    "absentIds": [
+      "BR-JUNDIAI-LOTES-JUND-GID-999999999"
+    ],
+    "verified": true
+  },
+  "pointContainment": {
+    "pointLatLon": [
+      -23.1976446911945,
+      -46.8554383147568
+    ],
+    "testedWupCellFeatureCount": 49,
+    "coveringNativeGids": [],
+    "pointZeroNotTreatedAsAbsence": true
+  },
+  "errors": [],
+  "capabilities": {
+    "url": "https://geo.jundiai.sp.gov.br/geoserver/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+    "httpStatus": 200,
+    "contentType": "application/xml",
+    "bytes": 148075,
+    "sha256": "2cbd516545c0e66e44935f8f9dc5881a97a085c9ff1d4cb4c96330f48e3e220b",
+    "featureTypeAdvertised": true,
+    "nativeCrsAdvertised": true
+  },
+  "countsSummary": {
+    "alignedCellCount": 13,
+    "cellSizeDegrees": 0.001,
+    "preMatchedCounts": [
+      49,
+      14,
+      14,
+      1,
+      46,
+      5,
+      42,
+      50,
+      23,
+      2,
+      3,
+      43,
+      12
+    ],
+    "postMatchedCounts": [
+      49,
+      14,
+      14,
+      1,
+      46,
+      5,
+      42,
+      50,
+      23,
+      2,
+      3,
+      43,
+      12
+    ],
+    "allHitRequestsHttp200": true,
+    "stablePrePostMatchedCounts": true,
+    "adapterObservedFirstPageMatchedCounts": [
+      49,
+      14,
+      14,
+      1,
+      46,
+      5,
+      42,
+      50,
+      23,
+      2,
+      3,
+      43,
+      12
+    ],
+    "adapterCountsMatchPreHits": true,
+    "adapterCompletedCellCount": 13,
+    "adapterFailedCellCount": 0,
+    "maximumObservedMatchedPerCell": 50,
+    "maxFeaturesPerOperation": 3000
+  },
+  "pagingProbeSummary": {
+    "forcedPageSize": 1,
+    "cell": "-46856_-23198",
+    "matchedCount": 49,
+    "pageCount": 49,
+    "firstStartIndex": "0",
+    "lastStartIndex": "48",
+    "matchedCountStableAcrossPages": true,
+    "oneFeaturePerPage": true,
+    "adapterCompletedAllPages": true
+  },
+  "freshIdSummary": {
+    "uniqueGidsFromCompleteCells": 205,
+    "freshIdCount": 205,
+    "allUniqueGidsRequeried": true,
+    "allFullGeometryHashesMatch": true,
+    "matchedCount": 205
+  },
+  "protocol": {
+    "adapterUnchanged": true,
+    "requests": [
+      {
+        "srsName": "CRS:84",
+        "bbox": "-46.856,-23.198,-46.855,-23.197,CRS:84",
+        "count": "1000",
+        "startIndex": "0",
+        "propertyName": "geom,gid",
+        "sortBy": "gid",
+        "httpStatus": 200,
+        "numberMatched": 49,
+        "numberReturned": 49,
+        "featureCount": 49,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        },
+        "returnedFieldNames": [
+          "gid"
+        ]
+      },
+      {
+        "srsName": "CRS:84",
+        "bbox": "-46.857,-23.199,-46.856,-23.198,CRS:84",
+        "count": "1000",
+        "startIndex": "0",
+        "propertyName": "geom,gid",
+        "sortBy": "gid",
+        "httpStatus": 200,
+        "numberMatched": 14,
+        "numberReturned": 14,
+        "featureCount": 14,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        },
+        "returnedFieldNames": [
+          "gid"
+        ]
+      },
+      {
+        "srsName": "CRS:84",
+        "bbox": "-46.856,-23.199,-46.855,-23.198,CRS:84",
+        "count": "1000",
+        "startIndex": "0",
+        "propertyName": "geom,gid",
+        "sortBy": "gid",
+        "httpStatus": 200,
+        "numberMatched": 14,
+        "numberReturned": 14,
+        "featureCount": 14,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        },
+        "returnedFieldNames": [
+          "gid"
+        ]
+      },
+      {
+        "srsName": "CRS:84",
+        "bbox": "-46.855,-23.199,-46.854,-23.198,CRS:84",
+        "count": "1000",
+        "startIndex": "0",
+        "propertyName": "geom,gid",
+        "sortBy": "gid",
+        "httpStatus": 200,
+        "numberMatched": 1,
+        "numberReturned": 1,
+        "featureCount": 1,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        },
+        "returnedFieldNames": [
+          "gid"
+        ]
+      },
+      {
+        "srsName": "CRS:84",
+        "bbox": "-46.857,-23.198,-46.856,-23.197,CRS:84",
+        "count": "1000",
+        "startIndex": "0",
+        "propertyName": "geom,gid",
+        "sortBy": "gid",
+        "httpStatus": 200,
+        "numberMatched": 46,
+        "numberReturned": 46,
+        "featureCount": 46,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        },
+        "returnedFieldNames": [
+          "gid"
+        ]
+      },
+      {
+        "srsName": "CRS:84",
+        "bbox": "-46.855,-23.198,-46.854,-23.197,CRS:84",
+        "count": "1000",
+        "startIndex": "0",
+        "propertyName": "geom,gid",
+        "sortBy": "gid",
+        "httpStatus": 200,
+        "numberMatched": 5,
+        "numberReturned": 5,
+        "featureCount": 5,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        },
+        "returnedFieldNames": [
+          "gid"
+        ]
+      },
+      {
+        "srsName": "CRS:84",
+        "bbox": "-46.857,-23.197,-46.856,-23.196,CRS:84",
+        "count": "1000",
+        "startIndex": "0",
+        "propertyName": "geom,gid",
+        "sortBy": "gid",
+        "httpStatus": 200,
+        "numberMatched": 42,
+        "numberReturned": 42,
+        "featureCount": 42,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        },
+        "returnedFieldNames": [
+          "gid"
+        ]
+      },
+      {
+        "srsName": "CRS:84",
+        "bbox": "-46.856,-23.197,-46.855,-23.196,CRS:84",
+        "count": "1000",
+        "startIndex": "0",
+        "propertyName": "geom,gid",
+        "sortBy": "gid",
+        "httpStatus": 200,
+        "numberMatched": 50,
+        "numberReturned": 50,
+        "featureCount": 50,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        },
+        "returnedFieldNames": [
+          "gid"
+        ]
+      },
+      {
+        "srsName": "CRS:84",
+        "bbox": "-46.855,-23.197,-46.854,-23.196,CRS:84",
+        "count": "1000",
+        "startIndex": "0",
+        "propertyName": "geom,gid",
+        "sortBy": "gid",
+        "httpStatus": 200,
+        "numberMatched": 23,
+        "numberReturned": 23,
+        "featureCount": 23,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        },
+        "returnedFieldNames": [
+          "gid"
+        ]
+      },
+      {
+        "srsName": "CRS:84",
+        "bbox": "-46.856,-23.2,-46.855,-23.199,CRS:84",
+        "count": "1000",
+        "startIndex": "0",
+        "propertyName": "geom,gid",
+        "sortBy": "gid",
+        "httpStatus": 200,
+        "numberMatched": 2,
+        "numberReturned": 2,
+        "featureCount": 2,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        },
+        "returnedFieldNames": [
+          "gid"
+        ]
+      },
+      {
+        "srsName": "CRS:84",
+        "bbox": "-46.854,-23.198,-46.853,-23.197,CRS:84",
+        "count": "1000",
+        "startIndex": "0",
+        "propertyName": "geom,gid",
+        "sortBy": "gid",
+        "httpStatus": 200,
+        "numberMatched": 3,
+        "numberReturned": 3,
+        "featureCount": 3,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        },
+        "returnedFieldNames": [
+          "gid"
+        ]
+      },
+      {
+        "srsName": "CRS:84",
+        "bbox": "-46.856,-23.196,-46.855,-23.195,CRS:84",
+        "count": "1000",
+        "startIndex": "0",
+        "propertyName": "geom,gid",
+        "sortBy": "gid",
+        "httpStatus": 200,
+        "numberMatched": 43,
+        "numberReturned": 43,
+        "featureCount": 43,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        },
+        "returnedFieldNames": [
+          "gid"
+        ]
+      },
+      {
+        "srsName": "CRS:84",
+        "bbox": "-46.858,-23.198,-46.857,-23.197,CRS:84",
+        "count": "1000",
+        "startIndex": "0",
+        "propertyName": "geom,gid",
+        "sortBy": "gid",
+        "httpStatus": 200,
+        "numberMatched": 12,
+        "numberReturned": 12,
+        "featureCount": 12,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        },
+        "returnedFieldNames": [
+          "gid"
+        ]
+      },
+      {
+        "srsName": "CRS:84",
+        "bbox": null,
+        "count": "1000",
+        "startIndex": "0",
+        "propertyName": "geom,gid",
+        "sortBy": "gid",
+        "httpStatus": 200,
+        "numberMatched": 80,
+        "numberReturned": 80,
+        "featureCount": 80,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        },
+        "returnedFieldNames": [
+          "gid"
+        ]
+      },
+      {
+        "srsName": "CRS:84",
+        "bbox": null,
+        "count": "1000",
+        "startIndex": "0",
+        "propertyName": "geom,gid",
+        "sortBy": "gid",
+        "httpStatus": 200,
+        "numberMatched": 80,
+        "numberReturned": 80,
+        "featureCount": 80,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        },
+        "returnedFieldNames": [
+          "gid"
+        ]
+      },
+      {
+        "srsName": "CRS:84",
+        "bbox": null,
+        "count": "1000",
+        "startIndex": "0",
+        "propertyName": "geom,gid",
+        "sortBy": "gid",
+        "httpStatus": 200,
+        "numberMatched": 45,
+        "numberReturned": 45,
+        "featureCount": 45,
+        "crs": {
+          "type": "name",
+          "properties": {
+            "name": "urn:ogc:def:crs:CRS::84"
+          }
+        },
+        "returnedFieldNames": [
+          "gid"
+        ]
+      },
+      {
+        "srsName": "CRS:84",
+        "bbox": null,
+        "count": "1000",
+        "startIndex": "0",
+        "propertyName": "geom,gid",
+        "sortBy": "gid",
+        "httpStatus": 200,
+        "numberMatched": 0,
+        "numberReturned": 0,
+        "featureCount": 0,
+        "crs": null,
+        "returnedFieldNames": []
+      }
+    ],
+    "requestedOutputSrsName": [
+      "CRS:84"
+    ],
+    "successfulResponseCrs": [
+      "urn:ogc:def:crs:CRS::84"
+    ],
+    "requestedPropertyName": [
+      "geom,gid"
+    ],
+    "observedReturnedProperties": [
+      "gid"
+    ],
+    "onlyGidAndGeometryPersisted": true
+  },
+  "stabilityAssessment": {
+    "snapshotDistinctIdAcrossFeatures": true,
+    "allBoundedIdRequeriesHashMatch": true,
+    "scope": "Query-stable across this bounded run; long-term persistence across data revisions or semantic/legal parcel identity of gid is not independently established."
+  },
+  "durableGeometrySamplesAdded": 0,
+  "scopeNote": "Same unchanged WUP point and its 13 aligned 0.001-degree cells were tested. All full geometries remained in ignored temporary caches; no new durable parcel polygons were added. In the failed cell, the two conflicting codlote 210120002 geometries map to separate gids 106314 and 106317, and both fresh ID reads reproduce the full geometry hashes. The prior codlote-layer packet remains unchanged.",
+  "bindingQualification": {
+    "method": "Unchanged computeSourceBinding with unchanged createWfsParcelSource against a complete alternate-layer parcel polygon.",
+    "sourceId": "br-jundiai-geojundiai-lotes-jund-gid",
+    "nativeGid": 46298,
+    "siteGeometrySha256": "71a2a61ef141b0ecf1dc7d122663f47e98da99b1fc263a56d140156c0eda9ec1",
+    "bindingFromActualAdapter": true,
+    "coverage": "complete",
+    "parcelCount": 1,
+    "parcels": [
+      {
+        "parcelId": "BR-JUNDIAI-LOTES-JUND-GID-46298",
+        "overlapM2": 251.805,
+        "intrusionM": 6.0031
+      }
+    ],
+    "siteM2": 251.81,
+    "unsurveyedM2": 0,
+    "unknownM2": 0,
+    "toleranceM": 0
+  }
+}

@@ -48,6 +48,11 @@ describe('namespace-aware parcel GML reader',()=>{
   const f=result.features[0];expect(f.id).toBe('123');expect(f.properties).toEqual({INSPIREID:'123'});expect(f.geometry.type).toBe('Polygon');
   expect(f.geometry.coordinates[0][0][0]).toBeCloseTo(-.116,2);expect(f.geometry.coordinates[0][0][1]).toBeCloseTo(51.506,2);expect(f.geometry.coordinates[0][0]).toEqual(f.geometry.coordinates[0].at(-1));expect(result.extent).toEqual(f.bbox);
  });
+ it('preserves leading zeroes in HMLR INSPIREID values',async()=>{
+  const result=await parseGmlParcels(xml(feature('001')));
+  expect(result.features[0].id).toBe('001');
+  expect(result.features[0].properties).toEqual({INSPIREID:'001'});
+ });
  it('handles namespace prefixes independently and accepts chunked UTF8 bytes',async()=>{
   const renamed=xml().replaceAll('lr:','other:').replace('xmlns:lr=','xmlns:other=');expect((await parseGmlParcels(new TextEncoder().encode(renamed))).features[0].id).toBe('123');
  });

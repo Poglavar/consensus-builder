@@ -1,0 +1,410 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T08:00:51Z",
+  "purpose": "Fresh anonymous source recheck of existing country-level evidence for Ireland, Finland, Norway and Estonia; this is not a new city discovery or a runtime qualification.",
+  "scope": {
+    "countries": [
+      "IE",
+      "FI",
+      "NO",
+      "EE"
+    ],
+    "previousPublishedSampleLocations": [
+      "Dublin",
+      "Helsinki",
+      "Oslo",
+      "Tallinn"
+    ],
+    "anonymousRequestsOnly": true,
+    "maxFeaturesRequestedPerGetFeature": 3,
+    "savedFeatureFields": "Only the source public identifier and full source geometry are retained. No owner/address/property attributes are present in the saved samples.",
+    "crsPolicy": "Use each source-native geometry CRS; do not transform or repair source geometry.",
+    "scratchPath": "/tmp/country-integration-audit-2026-10-09/"
+  },
+  "integrationFinding": {
+    "registryCountryProbes": "All four country probes remain national_online_cadastre_verified_sample, accessModel=open, checkedAt=2026-09-29.",
+    "legacyCountryCoverage": "All four retain verified_countrywide / two_region_test entries with reviewed=false. These are historical two-region sample labels, not a reviewed nationwide-scope determination.",
+    "scopeReviewsPresent": false,
+    "registryCityRecords": 0,
+    "registryExecutableSourceRecords": 0,
+    "sourceCatalogProvidersForCountries": 0,
+    "configuredLiveCities": 0,
+    "globeCountryValues": {
+      "IE": {
+        "coverage": "partial",
+        "tier": "source"
+      },
+      "FI": {
+        "coverage": "partial",
+        "tier": "source"
+      },
+      "NO": {
+        "coverage": "partial",
+        "tier": "source"
+      },
+      "EE": {
+        "coverage": "partial",
+        "tier": "source"
+      }
+    },
+    "globeExplanation": "The globe colors country land from coverage, and partial is #ffc24b (yellow, “Some open data”). Live app cities use a separate liveCities collection and separate city markers. The source tier means data was found but is not loaded in the app. The existing country probes do not provide a cityId, executable adapter, source-catalog cityIds, or city runtime config.",
+    "codeEvidence": [
+      {
+        "file": "scripts/build-world-coverage.mjs",
+        "lines": "6-29,54-55,64-99,224-274",
+        "claim": "Country fill is a separate coverage axis; partial comes from positive samples when no qualifying full-scope review exists; live is an app-configured city (HR alone is declared a live whole-country source)."
+      },
+      {
+        "file": "frontend/js/world/globe.js",
+        "lines": "40-44,117-160,294-298",
+        "claim": "partial uses yellow #ffc24b; country fill paints from coverage; live app city markers are built separately from liveCities."
+      },
+      {
+        "file": "backend/parcels/source-catalog.json",
+        "lines": "2-4",
+        "claim": "Executable providers require catalog entries with cityIds; these four countries have no provider records."
+      },
+      {
+        "file": "world-parcels/registry.json",
+        "claim": "Each country has a country probe and two-region legacy coverage record, but no city or executable source record."
+      }
+    ]
+  },
+  "countries": [
+    {
+      "countryCode": "IE",
+      "country": "Ireland",
+      "historicalEvidence": {
+        "file": "world-parcels/research/countries/IE.json",
+        "checkedAt": "2026-09-29",
+        "source": "Tailte Éireann High Value Dataset, ArcGIS FeatureServer layer 12, Cadastral Parcels Freehold",
+        "previousRegions": [
+          "Dublin",
+          "Cork"
+        ],
+        "historicalSampleCount": 3,
+        "nativeIdField": "SP_ID"
+      },
+      "currentMetadata": {
+        "endpoint": "https://services-eu1.arcgis.com/FH5XCsx8rYXqnjF5/arcgis/rest/services/Cadastral_Parcels_Freehold/FeatureServer/12?f=json",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "responseBytes": 8797,
+        "responseSha256": "0e23d71fc3628e4bd7648b36da6771202733d23e276a9fe686c09169a97df789",
+        "geometryType": "esriGeometryPolygon",
+        "nativeCrs": "EPSG:2157",
+        "objectIdField": "OBJECTID",
+        "fieldsRequestedForFeatureQuery": [
+          "SP_ID"
+        ],
+        "nativeCrsMeaning": "Layer metadata spatialReference/extent is EPSG:2157."
+      },
+      "freshSampleQuery": {
+        "endpoint": "https://services-eu1.arcgis.com/FH5XCsx8rYXqnjF5/arcgis/rest/services/Cadastral_Parcels_Freehold/FeatureServer/12/query",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "featureCount": 3,
+        "resultRecordCount": 3,
+        "exceededTransferLimit": true,
+        "nativeCrs": "EPSG:4326",
+        "idField": "SP_ID",
+        "responseSha256": "5ce6a639a9964f46ec97fccd3b6f9395bf9d33367a87b7f2d105099c56686e1c",
+        "sampleFile": "IE-samples.json",
+        "queryFields": [
+          "SP_ID",
+          "geometry"
+        ],
+        "sourceNativeCrs": "EPSG:2157",
+        "requestGeometryCrs": "EPSG:4326",
+        "outputCrs": "EPSG:4326 (explicit outSR)",
+        "retainedSampleSha256": "d0cadd7b58ddc5cdfc898bc52aaa6eb999502be0fad7d6b0b5b32de13b33e88e"
+      }
+    },
+    {
+      "countryCode": "FI",
+      "country": "Finland",
+      "historicalEvidence": {
+        "file": "world-parcels/research/countries/FI.json",
+        "checkedAt": "2026-09-29",
+        "source": "National Land Survey of Finland INSPIRE Cadastral Parcels WFS 2.0",
+        "previousRegions": [
+          "Helsinki",
+          "Rovaniemi"
+        ],
+        "historicalSampleCount": 2,
+        "nativeIdField": "gml:id (FI_CP_CADASTRALPARCEL_*)"
+      },
+      "currentMetadata": {
+        "capabilitiesEndpoint": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+        "capabilitiesHttpStatus": 200,
+        "capabilitiesContentType": "application/xml",
+        "capabilitiesBytes": 176338,
+        "capabilitiesSha256": "e6092d1388393d9f02339891003d7dbd938307b37d7c87a568c9570426a877c3",
+        "schemaEndpoint": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=cp:CadastralParcel",
+        "schemaHttpStatus": 200,
+        "schemaContentType": "text/xml; subtype=gml/3.2",
+        "schemaBytes": 660,
+        "schemaSha256": "4083d4c16cae0ee9dcb693785ba911e79d914213ceed2cb91fa732c9bd566765",
+        "featureType": "cp:CadastralParcel",
+        "nativeCrs": "EPSG:3067",
+        "advertisedGetFeatureEndpoint": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs",
+        "defaultCrs": "EPSG:3067",
+        "getFeatureMethods": [
+          "GET",
+          "POST"
+        ],
+        "getFeatureAdvertisedFormats": [
+          "application/gml+xml; version=3.2",
+          "GML2",
+          "KML",
+          "SHAPE-ZIP",
+          "application/json",
+          "KML XML",
+          "CSV",
+          "GML3",
+          "GML32",
+          "text/csv",
+          "GML 2.1.2",
+          "GML 3.1.1",
+          "GML 3.2"
+        ],
+        "describeFeatureTypeDirectResponse": "A 660-byte wrapper with target namespace http://inspire.ec.europa.eu/schemas/cp/4.0 and an xsd:include; it does not enumerate parcel fields.",
+        "describeFeatureTypeImportUrl": "https://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd",
+        "importedSchemaHttpStatus": 200,
+        "importedSchemaContentType": "binary/octet-stream",
+        "importedSchemaBytes": 30133,
+        "importedSchemaSha256": "49285a50c5c4364d1e505b68dcce4f38443befe8739391a45b1a8c349107a677",
+        "importedCadastralParcelProperties": [
+          "areaValue",
+          "beginLifespanVersion",
+          "endLifespanVersion",
+          "geometry",
+          "inspireId",
+          "label",
+          "nationalCadastralReference",
+          "referencePoint",
+          "validFrom",
+          "validTo",
+          "basicPropertyUnit",
+          "administrativeUnit",
+          "zoning"
+        ],
+        "storedQueriesEndpoint": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=ListStoredQueries",
+        "storedQueriesHttpStatus": 200,
+        "storedQueryIds": [
+          "urn:ogc:def:query:OGC-WFS::GetFeatureById"
+        ],
+        "storedQueryDescription": "GetFeatureById declares one ID (xs:string) parameter; its private query expression is not exposed."
+      },
+      "freshSampleQuery": {
+        "endpoint": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs",
+        "httpStatus": 200,
+        "contentType": "text/xml; subtype=gml/3.2",
+        "method": "WFS 2.0 bounded BBOX GET without PropertyName after projection failed",
+        "requestedCount": 3,
+        "bbox": "385000,6672000,385400,6672300,EPSG:3067",
+        "srsName": "EPSG:3067",
+        "featureCount": 3,
+        "serverNumberMatched": "29",
+        "serverNumberReturned": "3",
+        "nativeCrs": "EPSG:3067",
+        "idField": "cp:nationalCadastralReference",
+        "responseBytes": 6604,
+        "responseSha256": "39f8c949a4a661e415c73e010dace7c67653cab4feb3d59cec84ae2954006759",
+        "responsePropertiesObserved": [
+          "basicPropertyUnit",
+          "beginLifespanVersion",
+          "geometry",
+          "identifier",
+          "inspireId",
+          "label",
+          "nationalCadastralReference",
+          "referencePoint"
+        ],
+        "noOwnerHolderOrAddressPropertiesObserved": true,
+        "retainedFields": [
+          "cp:nationalCadastralReference",
+          "cp:geometry"
+        ],
+        "duplicatePublicIds": [
+          "09100499010000"
+        ],
+        "sampleFile": "FI-samples.json",
+        "interpretation": "The WFS projection parameters fail even with the schema-correct namespace; the default INSPIRE CP response contained standard parcel fields only. Extra values were discarded in memory and only public national cadastral references and unmodified EPSG:3067 geometry were retained.",
+        "retainedSampleSha256": "89d87aeef98654032f638ebcdb3464ff36ac67c7a94447dbc7c1d42f5a908f87"
+      },
+      "restrictedProjectionAttempts": [
+        {
+          "method": "GET",
+          "endpoint": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/ows",
+          "propertyName": "cp:geometry",
+          "httpStatus": 400,
+          "error": "Requested property: geometry is not available for cp:CadastralParcel.",
+          "responseBytes": 603,
+          "responseSha256": "e5d8e40b6304c756055659810c466ee760e54d10109ff38ceb10aad93fbaba8d"
+        },
+        {
+          "method": "GET",
+          "endpoint": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs",
+          "propertyName": [
+            "cp:nationalCadastralReference",
+            "cp:geometry"
+          ],
+          "namespaceBinding": "xmlns(cp,http://inspire.ec.europa.eu/schemas/cp/4.0)",
+          "httpStatus": 400,
+          "error": "Requested property: nationalCadastralReference is not available for cp:CadastralParcel.",
+          "responseBytes": 603,
+          "responseSha256": "e5d8e40b6304c756055659810c466ee760e54d10109ff38ceb10aad93fbaba8d"
+        },
+        {
+          "method": "POST",
+          "endpoint": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs",
+          "propertyName": [
+            "cp:nationalCadastralReference",
+            "cp:geometry"
+          ],
+          "namespaceBinding": "xmlns(cp,http://inspire.ec.europa.eu/schemas/cp/4.0)",
+          "httpStatus": 400,
+          "error": "Requested property: nationalCadastralReference is not available for cp:CadastralParcel.",
+          "responseBytes": 603,
+          "responseSha256": "e5d8e40b6304c756055659810c466ee760e54d10109ff38ceb10aad93fbaba8d"
+        }
+      ]
+    },
+    {
+      "countryCode": "NO",
+      "country": "Norway",
+      "historicalEvidence": {
+        "file": "world-parcels/research/countries/NO.json",
+        "checkedAt": "2026-09-29",
+        "source": "Kartverket Matrikkelen Eiendomskart Teig WFS 2.0, feature app:Teig",
+        "previousRegions": [
+          "Oslo",
+          "Tromsø"
+        ],
+        "historicalSampleCount": 3,
+        "nativeIdField": "app:teigId (also gml:id teig.N)"
+      },
+      "currentMetadata": {
+        "capabilitiesEndpoint": "https://wfs.geonorge.no/skwms1/wfs.matrikkelen-eiendomskart-teig?service=WFS&version=2.0.0&request=GetCapabilities",
+        "capabilitiesHttpStatus": 200,
+        "contentType": "text/xml;charset=UTF-8",
+        "capabilitiesBytes": 32246,
+        "capabilitiesSha256": "7f21559857679ce9c25980be9822445cd59c7d3b4ca5f76cd128a6b6ecf2a8a1",
+        "schemaEndpoint": "https://wfs.geonorge.no/skwms1/wfs.matrikkelen-eiendomskart-teig?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=app:Teig",
+        "schemaHttpStatus": 200,
+        "schemaContentType": "text/xml; subtype=gml/3.2.1;charset=UTF-8",
+        "schemaBytes": 180974,
+        "schemaSha256": "122c772d2ffea90bb408253f899af5b55228021ff2c3105e98aa03849ede54ac",
+        "featureType": "app:Teig",
+        "schemaProperties": [
+          "app:område (geometry)",
+          "app:identTeig/app:teigId (public ID)"
+        ],
+        "nativeCrs": "EPSG:25833"
+      },
+      "freshSampleQuery": {
+        "endpoint": "https://wfs.geonorge.no/skwms1/wfs.matrikkelen-eiendomskart-teig",
+        "httpStatus": 200,
+        "contentType": "text/xml; subtype=gml/3.2.1;charset=UTF-8",
+        "requestedCount": 3,
+        "bbox": "261600,6649100,261900,6649400,urn:ogc:def:crs:EPSG::25833",
+        "propertyName": "app:område",
+        "featureCount": 3,
+        "serverNumberReturned": "0",
+        "serverNumberMatched": "unknown",
+        "nativeCrs": "EPSG:25833",
+        "idField": "gml:id (teig.N)",
+        "responseBytes": 11668,
+        "responseSha256": "bfeef363447806668dc69dc96602c1c05e56da043dee1c635533634455258847",
+        "providerReturnedAdditionalAttributes": true,
+        "retainedFields": [
+          "gml:id",
+          "polygon geometry"
+        ],
+        "sampleFile": "NO-samples.json",
+        "note": "The GML response contained additional attributes despite propertyName=app:område. They were discarded immediately; only the public feature ID and unmodified source geometry were retained. The server count attributes conflict with the three parsed wfs:member elements.",
+        "retainedSampleSha256": "6cdfe299b38e604d83a8b8f5a6c9fc2c58d42094111ed32c5eaf2154dba511aa"
+      },
+      "failedVariant": {
+        "requestedFormat": "application/gml+xml; version=3.2.1",
+        "httpStatus": 400,
+        "note": "Removing the outputFormat parameter and using the default GML response resolved the request."
+      }
+    },
+    {
+      "countryCode": "EE",
+      "country": "Estonia",
+      "historicalEvidence": {
+        "file": "world-parcels/research/countries/EE.json",
+        "checkedAt": "2026-09-29",
+        "source": "Maa- ja Ruumiamet public GeoServer WFS 2.0, kataster:ky_kehtiv",
+        "previousRegions": [
+          "Tallinn",
+          "Tartu"
+        ],
+        "historicalSampleCount": 3,
+        "nativeIdField": "tunnus"
+      },
+      "currentMetadata": {
+        "capabilitiesEndpoint": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+        "capabilitiesHttpStatus": 200,
+        "contentType": "application/xml",
+        "capabilitiesBytes": 120056,
+        "capabilitiesSha256": "e946229ec4f14e985499cd2b731ee127a54e325471de5c8224800a5b517a5c12",
+        "schemaEndpoint": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=kataster%3Aky_kehtiv",
+        "schemaHttpStatus": 200,
+        "schemaContentType": "application/gml+xml; version=3.2",
+        "schemaBytes": 3943,
+        "schemaSha256": "3581674be848d260efb6e88e97751ab4d6ea2ccec22576508365421cfc31ca68",
+        "featureType": "kataster:ky_kehtiv",
+        "schemaProperties": [
+          "geom (geometry)",
+          "tunnus (public cadastral ID)"
+        ],
+        "nativeCrs": "EPSG:3301",
+        "nativeBboxAxisOrder": "Northing,Easting (EPSG authority axes); GeoJSON geometry coordinates retained as Easting,Northing"
+      },
+      "freshSampleQuery": {
+        "endpoint": "https://gsavalik.envir.ee/geoserver/kataster/wfs",
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8",
+        "requestedCount": 3,
+        "bbox": "6588800,542200,6589200,542600,urn:ogc:def:crs:EPSG::3301",
+        "propertyName": [
+          "kataster:geom",
+          "kataster:tunnus"
+        ],
+        "srsName": "urn:ogc:def:crs:EPSG::3301",
+        "featureCount": 3,
+        "serverTotalFeatures": 234,
+        "nativeCrs": "EPSG:3301",
+        "idField": "tunnus",
+        "responseBytes": 2496,
+        "responseSha256": "783173f0e239fba5d05dbfd63aa2d1ca5b18a96c20e11a46d5abd95da5249850",
+        "sampleFile": "EE-samples.json",
+        "retainedSampleSha256": "3f697de4916ca47cc5ccb12369090747f511abaa02a61c1635ea04d12406a367"
+      }
+    }
+  ],
+  "limitations": [
+    "These are small source rechecks near existing published city samples, not city completeness, countrywide completeness, boundary legality, positional accuracy, freshness, license or reuse determinations.",
+    "A failed property-selection query or server-side count inconsistency is recorded as such, not as evidence that parcels are absent.",
+    "The source files contain only IDs and geometry for retained samples; response hashes do not preserve raw response bodies.",
+    "Finland WFS rejects field projection in GET and POST, so a bounded default GML response returned standard INSPIRE CP fields. The transient response was filtered in memory; the durable feature file contains only public national cadastral reference plus unmodified geometry."
+  ],
+  "corrections": [
+    {
+      "field": "countries[IE].currentMetadata.responseSha256",
+      "correction": "Recomputed directly from the 8,797-byte IE layer metadata body; corrected value is 0e23d71fc3628e4bd7648b36da6771202733d23e276a9fe686c09169a97df789. The earlier value accidentally reused the FI 660-byte DescribeFeatureType wrapper hash."
+    },
+    {
+      "field": "countries[IE].currentMetadata.nativeCrs",
+      "correction": "Changed to EPSG:2157 from current layer spatialReference/extent. The fresh Dublin query explicitly returned EPSG:4326 via outSR; that is recorded separately."
+    },
+    {
+      "field": "countries[FI].currentMetadata.importedCadastralParcelProperties",
+      "correction": "The 660-byte WFS DescribeFeatureType response imports the external INSPIRE CP XSD and does not list fields itself. Field names and the external XSD hash are now attributed to that imported schema."
+    }
+  ]
+}

@@ -1,0 +1,1203 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09T08:14:15.687Z",
+  "purpose": "Anonymous recheck of documented Estonia, Latvia, and Lithuania WFS parcel sources; bounded endpoint, schema, CRS axis, paging, independent native-ID, and shaped-absence checks. Not a new city investigation or a completeness/legal/licence decision.",
+  "scope": {
+    "maxDistinctFullPolygonsPerCountry": 3,
+    "fullGeometryCaches": "/private/tmp/country-integration-audit-2026-10-09/baltic-*-safe-cache.geojson (ignored temp)",
+    "durableFullGeometryCopies": 0,
+    "retainedFields": "Only documented public native ID and full source geometry in ignored caches; no owner/address/source-only attributes retained in durable report.",
+    "ownerAddressValuesSaved": false,
+    "fieldProjectionCaveat": "Feature requests named only public native ID plus geometry. Estonia returned only its native ID property. Latvia/Lithuania also returned service-generated IDs and/or extra source fields despite propertyName; those values were discarded immediately and are absent from durable output and ignored caches."
+  },
+  "countries": {
+    "EE": {
+      "country": "Estonia",
+      "sourceId": "ee-maaamet-kataster-wfs",
+      "endpoint": "https://gsavalik.envir.ee/geoserver/kataster/wfs",
+      "featureType": "kataster:ky_kehtiv",
+      "anonymous": {
+        "capabilitiesHttpStatus": 200,
+        "schemaHttpStatus": 200,
+        "noAuthorizationSent": true
+      },
+      "capabilities": {
+        "httpStatus": 200,
+        "contentType": "application/xml",
+        "bytes": 120056,
+        "sha256": "1001e46c61fa94514dd0c34ba8eee5343499ac28dbd6054802fdac41c6ad84ca",
+        "serviceTitle": null,
+        "provider": null,
+        "pagingSupported": true,
+        "advertisedCrs": [
+          "urn:ogc:def:crs:EPSG::3301",
+          "urn:ogc:def:crs:EPSG::3857",
+          "urn:ogc:def:crs:EPSG::4326"
+        ],
+        "accessConstraints": null,
+        "featureTypeName": "kataster:ky_kehtiv",
+        "pagingTransactionSafe": false
+      },
+      "schema": {
+        "httpStatus": 200,
+        "contentType": "application/gml+xml; version=3.2",
+        "bytes": 3943,
+        "sha256": "3581674be848d260efb6e88e97751ab4d6ea2ccec22576508365421cfc31ca68",
+        "properties": [
+          {
+            "name": "geom",
+            "type": "gml:GeometryPropertyType"
+          },
+          {
+            "name": "tunnus",
+            "type": "xsd:string"
+          },
+          {
+            "name": "hkood",
+            "type": "xsd:string"
+          },
+          {
+            "name": "mk_nimi",
+            "type": "xsd:string"
+          },
+          {
+            "name": "ov_nimi",
+            "type": "xsd:string"
+          },
+          {
+            "name": "ay_nimi",
+            "type": "xsd:string"
+          },
+          {
+            "name": "l_aadress",
+            "type": "xsd:string"
+          },
+          {
+            "name": "registr",
+            "type": "xsd:date"
+          },
+          {
+            "name": "muudet",
+            "type": "xsd:date"
+          },
+          {
+            "name": "maks_hind",
+            "type": "xsd:double"
+          },
+          {
+            "name": "siht1",
+            "type": "xsd:string"
+          },
+          {
+            "name": "siht2",
+            "type": "xsd:string"
+          },
+          {
+            "name": "siht3",
+            "type": "xsd:string"
+          },
+          {
+            "name": "so_prts1",
+            "type": "xsd:int"
+          },
+          {
+            "name": "so_prts2",
+            "type": "xsd:int"
+          },
+          {
+            "name": "so_prts3",
+            "type": "xsd:int"
+          },
+          {
+            "name": "pindala",
+            "type": "xsd:double"
+          },
+          {
+            "name": "haritav",
+            "type": "xsd:double"
+          },
+          {
+            "name": "rohumaa",
+            "type": "xsd:double"
+          },
+          {
+            "name": "mets",
+            "type": "xsd:double"
+          },
+          {
+            "name": "ouemaa",
+            "type": "xsd:double"
+          },
+          {
+            "name": "muumaa",
+            "type": "xsd:double"
+          },
+          {
+            "name": "kinnistu",
+            "type": "xsd:string"
+          },
+          {
+            "name": "muutpohjus",
+            "type": "xsd:string"
+          },
+          {
+            "name": "oiguslik_alus",
+            "type": "xsd:string"
+          },
+          {
+            "name": "omvorm",
+            "type": "xsd:string"
+          },
+          {
+            "name": "marked",
+            "type": "xsd:string"
+          },
+          {
+            "name": "ads_oid",
+            "type": "xsd:string"
+          },
+          {
+            "name": "adob_id",
+            "type": "xsd:int"
+          },
+          {
+            "name": "kolvik_muudet",
+            "type": "xsd:dateTime"
+          },
+          {
+            "name": "geom_muudet",
+            "type": "xsd:date"
+          },
+          {
+            "name": "ky_kehtiv",
+            "type": "kataster:ky_kehtivType"
+          }
+        ],
+        "nativeIdField": "tunnus",
+        "geometryField": "geom"
+      },
+      "bbox": {
+        "bbox": "6588800,542200,6589200,542600,urn:ogc:def:crs:EPSG::3301",
+        "bboxCrs": "EPSG:3301",
+        "requestedOutputCrs": "EPSG:3301",
+        "axisOrder": {
+          "bboxInput": "northing,easting",
+          "outputCoordinates": "easting,northing",
+          "confirmedFrom": "EPSG:3301 authority axes and prior returned GeoJSON sample; rechecked request/response",
+          "authorityAxes": [
+            "northing (X)",
+            "easting (Y)"
+          ],
+          "observedFirstFeatureCoordinateSummary": {
+            "first": [
+              542576.47,
+              6589027.47
+            ],
+            "min": [
+              542573.37,
+              6589006
+            ],
+            "max": [
+              542600.58,
+              6589027.47
+            ]
+          },
+          "axisOrderConfirmed": true
+        },
+        "hitRequest": {
+          "httpStatus": 200,
+          "contentType": "text/xml",
+          "numberMatched": "234",
+          "responseSha256": "c11faefa128c23961001537a424eb4f6d383e94b38047331294efeb0e7861c01"
+        },
+        "postHitRequest": {
+          "httpStatus": 200,
+          "numberMatched": "234",
+          "responseSha256": "984984a6de0641e84a42e35eab9adab2fcd0bd780bd53d0320f4f500f33ee15a"
+        },
+        "stableMatchedCount": true,
+        "pages": [
+          {
+            "request": {
+              "count": 2,
+              "startIndex": 0,
+              "propertyName": [
+                "kataster:tunnus",
+                "kataster:geom"
+              ]
+            },
+            "httpStatus": 200,
+            "contentType": "application/json;charset=UTF-8",
+            "responseSha256": "490150c76048e97de24112b36a114dbbcad6a473b5c01e9da3c44697db5a1842",
+            "featureCount": 2,
+            "numberMatched": 234,
+            "numberReturned": 2,
+            "crs": "urn:ogc:def:crs:EPSG::3301",
+            "features": [
+              {
+                "featureId": "ky_kehtiv.572390",
+                "nativeId": "78401:101:0002",
+                "geometryType": "Polygon",
+                "geometrySha256": "00049e0b6e3e6eddfd7dfaccaccf6f65c021347b8d0c0ac755261b93b15da85b",
+                "coordinateSummary": {
+                  "first": [
+                    542576.47,
+                    6589027.47
+                  ],
+                  "min": [
+                    542573.37,
+                    6589006
+                  ],
+                  "max": [
+                    542600.58,
+                    6589027.47
+                  ]
+                },
+                "returnedPropertyNames": [
+                  "tunnus"
+                ]
+              },
+              {
+                "featureId": "ky_kehtiv.572391",
+                "nativeId": "78401:101:0003",
+                "geometryType": "Polygon",
+                "geometrySha256": "0f62d187f1f42b48b54b51044c50083f77d0993d28372a2f849f050cf19d374e",
+                "coordinateSummary": {
+                  "first": [
+                    542256.04,
+                    6589021.3
+                  ],
+                  "min": [
+                    542173.73,
+                    6588964.07
+                  ],
+                  "max": [
+                    542256.04,
+                    6589021.3
+                  ]
+                },
+                "returnedPropertyNames": [
+                  "tunnus"
+                ]
+              }
+            ],
+            "error": null
+          },
+          {
+            "request": {
+              "count": 1,
+              "startIndex": 2,
+              "propertyName": [
+                "kataster:tunnus",
+                "kataster:geom"
+              ]
+            },
+            "httpStatus": 200,
+            "contentType": "application/json;charset=UTF-8",
+            "responseSha256": "8aef407d72a941d9ea6b7689441cd721a44ffc5926291fa86c17ac33e091237c",
+            "featureCount": 1,
+            "numberMatched": 234,
+            "numberReturned": 1,
+            "crs": "urn:ogc:def:crs:EPSG::3301",
+            "features": [
+              {
+                "featureId": "ky_kehtiv.572397",
+                "nativeId": "78401:101:0008",
+                "geometryType": "Polygon",
+                "geometrySha256": "c37b6ef186459e64ad8180c1b6d3cd4abd4655b5121bb618c6f9473e9a6ad455",
+                "coordinateSummary": {
+                  "first": [
+                    542251.24,
+                    6589041.45
+                  ],
+                  "min": [
+                    542133.08,
+                    6588995.69
+                  ],
+                  "max": [
+                    542256.21,
+                    6589041.45
+                  ]
+                },
+                "returnedPropertyNames": [
+                  "tunnus"
+                ]
+              }
+            ],
+            "error": null
+          }
+        ],
+        "featureIdManifest": [
+          {
+            "nativeId": "78401:101:0002",
+            "featureId": "ky_kehtiv.572390",
+            "geometryType": "Polygon"
+          },
+          {
+            "nativeId": "78401:101:0003",
+            "featureId": "ky_kehtiv.572391",
+            "geometryType": "Polygon"
+          },
+          {
+            "nativeId": "78401:101:0008",
+            "featureId": "ky_kehtiv.572397",
+            "geometryType": "Polygon"
+          }
+        ],
+        "distinctNativeIdCount": 3,
+        "duplicateNativeIds": [],
+        "featurePagesComplete": true,
+        "pagingTransactionSafe": false
+      },
+      "nativeIdReads": {
+        "route": "WFS 2.0 FES PropertyIsEqualTo on native public identifier field, independent new GET per ID, with only ID+geometry requested",
+        "count": 3,
+        "exactReads": [
+          {
+            "nativeId": "78401:101:0002",
+            "httpStatus": 200,
+            "contentType": "application/json;charset=UTF-8",
+            "featureCount": 1,
+            "numberMatched": 1,
+            "returnedFeatureId": "ky_kehtiv.572390",
+            "returnedNativeId": "78401:101:0002",
+            "geometryType": "Polygon",
+            "geometrySha256": "00049e0b6e3e6eddfd7dfaccaccf6f65c021347b8d0c0ac755261b93b15da85b",
+            "sameGeometryHash": true,
+            "returnedPropertyNames": [
+              "tunnus"
+            ],
+            "responseSha256": "c0d29c945dc367fb588b44632e2b935897c67f69821d04f4d3487bca40ce6eb3",
+            "error": null
+          },
+          {
+            "nativeId": "78401:101:0003",
+            "httpStatus": 200,
+            "contentType": "application/json;charset=UTF-8",
+            "featureCount": 1,
+            "numberMatched": 1,
+            "returnedFeatureId": "ky_kehtiv.572391",
+            "returnedNativeId": "78401:101:0003",
+            "geometryType": "Polygon",
+            "geometrySha256": "0f62d187f1f42b48b54b51044c50083f77d0993d28372a2f849f050cf19d374e",
+            "sameGeometryHash": true,
+            "returnedPropertyNames": [
+              "tunnus"
+            ],
+            "responseSha256": "76ece3371ab74b6b7dcfb401de03e139dbdf6a46fd798b54e3041a3483906426",
+            "error": null
+          },
+          {
+            "nativeId": "78401:101:0008",
+            "httpStatus": 200,
+            "contentType": "application/json;charset=UTF-8",
+            "featureCount": 1,
+            "numberMatched": 1,
+            "returnedFeatureId": "ky_kehtiv.572397",
+            "returnedNativeId": "78401:101:0008",
+            "geometryType": "Polygon",
+            "geometrySha256": "c37b6ef186459e64ad8180c1b6d3cd4abd4655b5121bb618c6f9473e9a6ad455",
+            "sameGeometryHash": true,
+            "returnedPropertyNames": [
+              "tunnus"
+            ],
+            "responseSha256": "db709766eced0be2987c383ceeb3f78ede75474feccfb038967d50d7ee6d1920",
+            "error": null
+          }
+        ],
+        "allMatchedAndGeometryHashesEqual": true
+      },
+      "explicitAbsence": {
+        "nativeId": "78401:101:9999",
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8",
+        "numberMatched": 0,
+        "featureCount": 0,
+        "absent": true,
+        "responseSha256": "a2a30d7eb1c2206cf974d4be36a2e2375b7d367e2eccd795d1338fd26c101d35",
+        "error": null
+      },
+      "requestedFields": [
+        "kataster:tunnus",
+        "kataster:geom"
+      ],
+      "returnedPropertiesUnion": [
+        "tunnus"
+      ],
+      "featuresWithGeometryOnlyCache": 3,
+      "cacheGeometryTypes": [
+        "Polygon"
+      ],
+      "recheckStatus": "passed",
+      "technicalNotes": {
+        "termsOrCurrentnessUsedAsEligibilityGate": false,
+        "point0UsedAsAbsenceGate": false,
+        "noWupCenterChanges": true
+      }
+    },
+    "LV": {
+      "country": "Latvia",
+      "sourceId": "lv-vzd-geolatvija-vraa-wfs",
+      "endpoint": "https://geolatvija.lv/geoserver/vraa/wfs",
+      "featureType": "parcel",
+      "anonymous": {
+        "capabilitiesHttpStatus": 200,
+        "schemaHttpStatus": 200,
+        "noAuthorizationSent": true
+      },
+      "capabilities": {
+        "httpStatus": 200,
+        "contentType": "application/xml",
+        "bytes": 120477,
+        "sha256": "efe4004ee82584d9850f4ffd2d424112b642763c3b9ca3be114dcebc9dc5233e",
+        "serviceTitle": "GeoServer Web Feature Service",
+        "provider": "VRAA",
+        "pagingSupported": true,
+        "advertisedCrs": [
+          "urn:ogc:def:crs:EPSG::3059"
+        ],
+        "accessConstraints": "NONE",
+        "featureTypeName": "vraa:parcel",
+        "pagingTransactionSafe": false
+      },
+      "schema": {
+        "httpStatus": 200,
+        "contentType": "application/gml+xml; version=3.2",
+        "bytes": 2566,
+        "sha256": "95f19b653c090f77ae3d5a0713f951b938c87a8b94dbc65a414fb10a32c2f52f",
+        "properties": [
+          {
+            "name": "id",
+            "type": "xsd:int"
+          },
+          {
+            "name": "geom",
+            "type": "gml:MultiSurfacePropertyType"
+          },
+          {
+            "name": "code",
+            "type": "xsd:string"
+          },
+          {
+            "name": "geom_act_d",
+            "type": "xsd:date"
+          },
+          {
+            "name": "objectcode",
+            "type": "xsd:string"
+          },
+          {
+            "name": "area_scale",
+            "type": "xsd:double"
+          },
+          {
+            "name": "group_code",
+            "type": "xsd:string"
+          },
+          {
+            "name": "folder_name",
+            "type": "xsd:string"
+          },
+          {
+            "name": "address",
+            "type": "xsd:string"
+          },
+          {
+            "name": "purpose_use",
+            "type": "xsd:string"
+          },
+          {
+            "name": "area",
+            "type": "xsd:int"
+          },
+          {
+            "name": "owner",
+            "type": "xsd:string"
+          },
+          {
+            "name": "owned_by_municipality",
+            "type": "xsd:boolean"
+          },
+          {
+            "name": "public_water",
+            "type": "xsd:boolean"
+          },
+          {
+            "name": "score",
+            "type": "xsd:int"
+          },
+          {
+            "name": "property_code",
+            "type": "xsd:string"
+          },
+          {
+            "name": "parcel_status_kind_name",
+            "type": "xsd:string"
+          },
+          {
+            "name": "parcel",
+            "type": "vraa:parcelType"
+          }
+        ],
+        "nativeIdField": "code",
+        "geometryField": "geom"
+      },
+      "bbox": {
+        "bbox": "56.9490,24.1050,56.9500,24.1065,urn:ogc:def:crs:EPSG::4326",
+        "bboxCrs": "EPSG:4326",
+        "requestedOutputCrs": "EPSG:3059",
+        "axisOrder": {
+          "bboxInput": "latitude,longitude (bbox CRS EPSG:4326)",
+          "outputCoordinates": "easting,northing",
+          "confirmedFrom": "EPSG:4326 authority axes; EPSG:3059 authority axes; prior returned GeoJSON sample",
+          "authorityAxes": [
+            "northing (X)",
+            "easting (Y)"
+          ],
+          "observedFirstFeatureCoordinateSummary": {
+            "first": [
+              506420.785,
+              311828.738
+            ],
+            "min": [
+              506420.785,
+              311808.205
+            ],
+            "max": [
+              506447.374,
+              311837.195
+            ]
+          },
+          "axisOrderConfirmed": true
+        },
+        "hitRequest": {
+          "httpStatus": 200,
+          "contentType": "text/xml",
+          "numberMatched": "18",
+          "responseSha256": "906d8489869b6b925aa63987b40b40b90c35544c8c155dfa3a5ede747f6a753f"
+        },
+        "postHitRequest": {
+          "httpStatus": 200,
+          "numberMatched": "18",
+          "responseSha256": "da568f39b7ef3621c99374a1908cbbc41835b55fefffc6ec41b811617b8e1042"
+        },
+        "stableMatchedCount": true,
+        "pages": [
+          {
+            "request": {
+              "count": 2,
+              "startIndex": 0,
+              "propertyName": [
+                "code",
+                "geom"
+              ]
+            },
+            "httpStatus": 200,
+            "contentType": "application/json;charset=UTF-8",
+            "responseSha256": "5ca16c18fa2796b1b6770ebd6603140a2328d3ba5728ca336c9991954cc42e78",
+            "featureCount": 2,
+            "numberMatched": 18,
+            "numberReturned": 2,
+            "crs": "urn:ogc:def:crs:EPSG::3059",
+            "features": [
+              {
+                "featureId": "parcel.498868888",
+                "nativeId": "01000060026",
+                "geometryType": "MultiPolygon",
+                "geometrySha256": "c0fff316d594a7f94a89a977ae1d4629c7e84b5683fbc9f5e52fd77e612dad28",
+                "coordinateSummary": {
+                  "first": [
+                    506420.785,
+                    311828.738
+                  ],
+                  "min": [
+                    506420.785,
+                    311808.205
+                  ],
+                  "max": [
+                    506447.374,
+                    311837.195
+                  ]
+                },
+                "returnedPropertyNames": [
+                  "code",
+                  "id",
+                  "owned_by_municipality",
+                  "public_water"
+                ]
+              },
+              {
+                "featureId": "parcel.498868948",
+                "nativeId": "01000069004",
+                "geometryType": "MultiPolygon",
+                "geometrySha256": "23348969a0c3b1b2e7ed093f9accb082589f074224e7c826176408b6cbec165f",
+                "coordinateSummary": {
+                  "first": [
+                    506471.72,
+                    311780.34
+                  ],
+                  "min": [
+                    506471.72,
+                    311774.372
+                  ],
+                  "max": [
+                    506582.36,
+                    311837.245
+                  ]
+                },
+                "returnedPropertyNames": [
+                  "code",
+                  "id",
+                  "owned_by_municipality",
+                  "public_water"
+                ]
+              }
+            ],
+            "error": null
+          },
+          {
+            "request": {
+              "count": 1,
+              "startIndex": 2,
+              "propertyName": [
+                "code",
+                "geom"
+              ]
+            },
+            "httpStatus": 200,
+            "contentType": "application/json;charset=UTF-8",
+            "responseSha256": "dae5eba0db70e7ace55106f5ea5ddcd1f91d982021d66143ac7a8bc348e00aed",
+            "featureCount": 1,
+            "numberMatched": 18,
+            "numberReturned": 1,
+            "crs": "urn:ogc:def:crs:EPSG::3059",
+            "features": [
+              {
+                "featureId": "parcel.498868950",
+                "nativeId": "01000060029",
+                "geometryType": "MultiPolygon",
+                "geometrySha256": "3ee3984f92f60c645d8c455ee2dfa21b8ec5a855064ca2ae6a0fe98a1a491d2e",
+                "coordinateSummary": {
+                  "first": [
+                    506421.764,
+                    311808.205
+                  ],
+                  "min": [
+                    506421.764,
+                    311784.9
+                  ],
+                  "max": [
+                    506486.102,
+                    311829.555
+                  ]
+                },
+                "returnedPropertyNames": [
+                  "code",
+                  "id",
+                  "owned_by_municipality",
+                  "public_water"
+                ]
+              }
+            ],
+            "error": null
+          }
+        ],
+        "featureIdManifest": [
+          {
+            "nativeId": "01000060026",
+            "featureId": "parcel.498868888",
+            "geometryType": "MultiPolygon"
+          },
+          {
+            "nativeId": "01000069004",
+            "featureId": "parcel.498868948",
+            "geometryType": "MultiPolygon"
+          },
+          {
+            "nativeId": "01000060029",
+            "featureId": "parcel.498868950",
+            "geometryType": "MultiPolygon"
+          }
+        ],
+        "distinctNativeIdCount": 3,
+        "duplicateNativeIds": [],
+        "featurePagesComplete": true,
+        "pagingTransactionSafe": false
+      },
+      "nativeIdReads": {
+        "route": "WFS 2.0 FES PropertyIsEqualTo on native public identifier field, independent new GET per ID, with only ID+geometry requested",
+        "count": 3,
+        "exactReads": [
+          {
+            "nativeId": "01000060026",
+            "httpStatus": 200,
+            "contentType": "application/json;charset=UTF-8",
+            "featureCount": 1,
+            "numberMatched": 1,
+            "returnedFeatureId": "parcel.498868888",
+            "returnedNativeId": "01000060026",
+            "geometryType": "MultiPolygon",
+            "geometrySha256": "c0fff316d594a7f94a89a977ae1d4629c7e84b5683fbc9f5e52fd77e612dad28",
+            "sameGeometryHash": true,
+            "returnedPropertyNames": [
+              "code",
+              "id",
+              "owned_by_municipality",
+              "public_water"
+            ],
+            "responseSha256": "04f8207bf7d3e6e6a3de32a6165a362c728e5e1478e78422351e6be220fb4ac2",
+            "error": null
+          },
+          {
+            "nativeId": "01000069004",
+            "httpStatus": 200,
+            "contentType": "application/json;charset=UTF-8",
+            "featureCount": 1,
+            "numberMatched": 1,
+            "returnedFeatureId": "parcel.498868948",
+            "returnedNativeId": "01000069004",
+            "geometryType": "MultiPolygon",
+            "geometrySha256": "23348969a0c3b1b2e7ed093f9accb082589f074224e7c826176408b6cbec165f",
+            "sameGeometryHash": true,
+            "returnedPropertyNames": [
+              "code",
+              "id",
+              "owned_by_municipality",
+              "public_water"
+            ],
+            "responseSha256": "7da20bdd28b50407694ae29622b2ea77a44b4a8ad563dbbb7479adf3ad1e0183",
+            "error": null
+          },
+          {
+            "nativeId": "01000060029",
+            "httpStatus": 200,
+            "contentType": "application/json;charset=UTF-8",
+            "featureCount": 1,
+            "numberMatched": 1,
+            "returnedFeatureId": "parcel.498868950",
+            "returnedNativeId": "01000060029",
+            "geometryType": "MultiPolygon",
+            "geometrySha256": "3ee3984f92f60c645d8c455ee2dfa21b8ec5a855064ca2ae6a0fe98a1a491d2e",
+            "sameGeometryHash": true,
+            "returnedPropertyNames": [
+              "code",
+              "id",
+              "owned_by_municipality",
+              "public_water"
+            ],
+            "responseSha256": "77aba889d221d38276093bc23fef78efc2aa6ed21d2bcf4396e6837c67787694",
+            "error": null
+          }
+        ],
+        "allMatchedAndGeometryHashesEqual": true
+      },
+      "explicitAbsence": {
+        "nativeId": "99999999999",
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8",
+        "numberMatched": 0,
+        "featureCount": 0,
+        "absent": true,
+        "responseSha256": "d70423e1b224fe18e6f8f9f50db9fc1fae705621282afa70aa391c151bed060e",
+        "error": null
+      },
+      "requestedFields": [
+        "code",
+        "geom"
+      ],
+      "returnedPropertiesUnion": [
+        "code",
+        "id",
+        "owned_by_municipality",
+        "public_water"
+      ],
+      "featuresWithGeometryOnlyCache": 3,
+      "cacheGeometryTypes": [
+        "MultiPolygon"
+      ],
+      "recheckStatus": "passed",
+      "technicalNotes": {
+        "termsOrCurrentnessUsedAsEligibilityGate": false,
+        "point0UsedAsAbsenceGate": false,
+        "noWupCenterChanges": true
+      }
+    },
+    "LT": {
+      "country": "Lithuania",
+      "sourceId": "lt-inspire-cp-wfs",
+      "endpoint": "https://www.inspire-geoportal.lt/geoserver/cp/ows",
+      "featureType": "cp:CP.CadastralParcel",
+      "anonymous": {
+        "capabilitiesHttpStatus": 200,
+        "schemaHttpStatus": 200,
+        "noAuthorizationSent": true
+      },
+      "capabilities": {
+        "httpStatus": 200,
+        "contentType": "application/xml;charset=utf-8",
+        "bytes": 97927,
+        "sha256": "1cb5ba4cdeab62ffb554dc318c2ce7dbef0a8c8234b51a9aa939a8d2002b4bc7",
+        "serviceTitle": "GeoServer Web Feature Service",
+        "provider": "Construction Sector Development Agency",
+        "pagingSupported": true,
+        "advertisedCrs": [
+          "urn:ogc:def:crs:EPSG::4258"
+        ],
+        "accessConstraints": "NONE",
+        "featureTypeName": "cp:CP.CadastralParcel",
+        "pagingTransactionSafe": false
+      },
+      "schema": {
+        "httpStatus": 200,
+        "contentType": "application/gml+xml; version=3.2;charset=utf-8",
+        "bytes": 2388,
+        "sha256": "518e5a0179becefd3b649be5ec99313eae9ece7abfc63a4bdbad4fa27522831e",
+        "properties": [
+          {
+            "name": "ogc_fid",
+            "type": "xsd:int"
+          },
+          {
+            "name": "gml_id",
+            "type": "xsd:string"
+          },
+          {
+            "name": "areavalue",
+            "type": "xsd:double"
+          },
+          {
+            "name": "areavalue_uom",
+            "type": "xsd:string"
+          },
+          {
+            "name": "beginlifespanversion",
+            "type": "xsd:dateTime"
+          },
+          {
+            "name": "localid",
+            "type": "xsd:long"
+          },
+          {
+            "name": "namespace",
+            "type": "xsd:string"
+          },
+          {
+            "name": "versionid",
+            "type": "xsd:string"
+          },
+          {
+            "name": "label",
+            "type": "xsd:string"
+          },
+          {
+            "name": "nationalcadastralreference",
+            "type": "xsd:long"
+          },
+          {
+            "name": "pos",
+            "type": "xsd:string"
+          },
+          {
+            "name": "validfrom",
+            "type": "xsd:dateTime"
+          },
+          {
+            "name": "administrativeunit_href",
+            "type": "xsd:string"
+          },
+          {
+            "name": "geometry",
+            "type": "gml:SurfacePropertyType"
+          },
+          {
+            "name": "CP.CadastralParcel",
+            "type": "cp:CP.CadastralParcelType"
+          }
+        ],
+        "nativeIdField": "nationalcadastralreference",
+        "geometryField": "geometry"
+      },
+      "bbox": {
+        "bbox": "54.687,25.279,54.690,25.284,urn:ogc:def:crs:EPSG::4258",
+        "bboxCrs": "EPSG:4258",
+        "requestedOutputCrs": "EPSG:4258",
+        "axisOrder": {
+          "bboxInput": "latitude,longitude",
+          "outputCoordinates": "longitude,latitude",
+          "confirmedFrom": "EPSG:4258 authority axes and prior returned GeoJSON sample",
+          "authorityAxes": [
+            "geodetic latitude (Lat)",
+            "geodetic longitude (Lon)"
+          ],
+          "observedFirstFeatureCoordinateSummary": {
+            "first": [
+              25.2838511,
+              54.68781922
+            ],
+            "min": [
+              25.28326915,
+              54.68753172
+            ],
+            "max": [
+              25.2838511,
+              54.68783883
+            ]
+          },
+          "axisOrderConfirmed": true
+        },
+        "hitRequest": {
+          "httpStatus": 200,
+          "contentType": "text/xml;charset=utf-8",
+          "numberMatched": "27",
+          "responseSha256": "b68b9919224604e2e4a5627c723d2f5c5b18076366461ccdf340484f4d04517b"
+        },
+        "postHitRequest": {
+          "httpStatus": 200,
+          "numberMatched": "27",
+          "responseSha256": "4a93bdb259477db9ac09a9d107f3b007d6d2e1a65389b3bd9578144bc41ca1ca"
+        },
+        "stableMatchedCount": true,
+        "pages": [
+          {
+            "request": {
+              "count": 2,
+              "startIndex": 0,
+              "propertyName": [
+                "cp:nationalcadastralreference",
+                "cp:geometry"
+              ]
+            },
+            "httpStatus": 200,
+            "contentType": "application/json;charset=UTF-8",
+            "responseSha256": "076a120de9e27b66dd8fd2b0374d45f6a1901b74df140637334a123c5c903bdb",
+            "featureCount": 2,
+            "numberMatched": 27,
+            "numberReturned": 2,
+            "crs": "urn:ogc:def:crs:EPSG::4258",
+            "features": [
+              {
+                "featureId": "CP.CadastralParcel.CadastralParcel_id_00a0a7e7-1dd9-4da7-a957-27bad0f10059",
+                "nativeId": 440059604767,
+                "geometryType": "Polygon",
+                "geometrySha256": "f7f14b758fc25b51488ede4a4299701565597854104a0893d9170be404c4667e",
+                "coordinateSummary": {
+                  "first": [
+                    25.2838511,
+                    54.68781922
+                  ],
+                  "min": [
+                    25.28326915,
+                    54.68753172
+                  ],
+                  "max": [
+                    25.2838511,
+                    54.68783883
+                  ]
+                },
+                "returnedPropertyNames": [
+                  "gml_id",
+                  "nationalcadastralreference",
+                  "ogc_fid"
+                ]
+              },
+              {
+                "featureId": "CP.CadastralParcel.CadastralParcel_id_020d7fa5-1d1c-4866-8edd-2eef0e2c29de",
+                "nativeId": 10100410067,
+                "geometryType": "Polygon",
+                "geometrySha256": "9f7350e05315c2afcac1ccc99336822b4fbd567c55926a07a78cb2672052348e",
+                "coordinateSummary": {
+                  "first": [
+                    25.28155514,
+                    54.6878561
+                  ],
+                  "min": [
+                    25.28109927,
+                    54.68683142
+                  ],
+                  "max": [
+                    25.28276939,
+                    54.68785641
+                  ]
+                },
+                "returnedPropertyNames": [
+                  "gml_id",
+                  "nationalcadastralreference",
+                  "ogc_fid"
+                ]
+              }
+            ],
+            "error": null
+          },
+          {
+            "request": {
+              "count": 1,
+              "startIndex": 2,
+              "propertyName": [
+                "cp:nationalcadastralreference",
+                "cp:geometry"
+              ]
+            },
+            "httpStatus": 200,
+            "contentType": "application/json;charset=UTF-8",
+            "responseSha256": "81516d2469b3d5047c412f3befab8d341397892a1793faffa2314f357204ad13",
+            "featureCount": 1,
+            "numberMatched": 27,
+            "numberReturned": 1,
+            "crs": "urn:ogc:def:crs:EPSG::4258",
+            "features": [
+              {
+                "featureId": "CP.CadastralParcel.CadastralParcel_id_0795f42f-9dbd-4040-b1ec-c21c9eb1f5a3",
+                "nativeId": 10100410097,
+                "geometryType": "Polygon",
+                "geometrySha256": "c26077bb553c75a6f0d6a710c1c4bc6d98fd3618a59607acd08bf7fcf347d343",
+                "coordinateSummary": {
+                  "first": [
+                    25.28209549,
+                    54.69007411
+                  ],
+                  "min": [
+                    25.28155698,
+                    54.68927504
+                  ],
+                  "max": [
+                    25.28269875,
+                    54.69016728
+                  ]
+                },
+                "returnedPropertyNames": [
+                  "gml_id",
+                  "nationalcadastralreference",
+                  "ogc_fid"
+                ]
+              }
+            ],
+            "error": null
+          }
+        ],
+        "featureIdManifest": [
+          {
+            "nativeId": 440059604767,
+            "featureId": "CP.CadastralParcel.CadastralParcel_id_00a0a7e7-1dd9-4da7-a957-27bad0f10059",
+            "geometryType": "Polygon"
+          },
+          {
+            "nativeId": 10100410067,
+            "featureId": "CP.CadastralParcel.CadastralParcel_id_020d7fa5-1d1c-4866-8edd-2eef0e2c29de",
+            "geometryType": "Polygon"
+          },
+          {
+            "nativeId": 10100410097,
+            "featureId": "CP.CadastralParcel.CadastralParcel_id_0795f42f-9dbd-4040-b1ec-c21c9eb1f5a3",
+            "geometryType": "Polygon"
+          }
+        ],
+        "distinctNativeIdCount": 3,
+        "duplicateNativeIds": [],
+        "featurePagesComplete": true,
+        "pagingTransactionSafe": false
+      },
+      "nativeIdReads": {
+        "route": "WFS 2.0 FES PropertyIsEqualTo on native public identifier field, independent new GET per ID, with only ID+geometry requested",
+        "count": 3,
+        "exactReads": [
+          {
+            "nativeId": "440059604767",
+            "httpStatus": 200,
+            "contentType": "application/json;charset=UTF-8",
+            "featureCount": 1,
+            "numberMatched": 1,
+            "returnedFeatureId": "CP.CadastralParcel.CadastralParcel_id_00a0a7e7-1dd9-4da7-a957-27bad0f10059",
+            "returnedNativeId": "440059604767",
+            "geometryType": "Polygon",
+            "geometrySha256": "f7f14b758fc25b51488ede4a4299701565597854104a0893d9170be404c4667e",
+            "sameGeometryHash": true,
+            "returnedPropertyNames": [
+              "gml_id",
+              "nationalcadastralreference",
+              "ogc_fid"
+            ],
+            "responseSha256": "069bc0c0d0dba2a8fd180aae08756e9d4d55c5fbfa74a151df53ed4503717e9c",
+            "error": null
+          },
+          {
+            "nativeId": "10100410067",
+            "httpStatus": 200,
+            "contentType": "application/json;charset=UTF-8",
+            "featureCount": 1,
+            "numberMatched": 1,
+            "returnedFeatureId": "CP.CadastralParcel.CadastralParcel_id_020d7fa5-1d1c-4866-8edd-2eef0e2c29de",
+            "returnedNativeId": "10100410067",
+            "geometryType": "Polygon",
+            "geometrySha256": "9f7350e05315c2afcac1ccc99336822b4fbd567c55926a07a78cb2672052348e",
+            "sameGeometryHash": true,
+            "returnedPropertyNames": [
+              "gml_id",
+              "nationalcadastralreference",
+              "ogc_fid"
+            ],
+            "responseSha256": "48540f9d43da7385cf9eb863805636b7fffe162826c9fd57ff0f3421b93491f1",
+            "error": null
+          },
+          {
+            "nativeId": "10100410097",
+            "httpStatus": 200,
+            "contentType": "application/json;charset=UTF-8",
+            "featureCount": 1,
+            "numberMatched": 1,
+            "returnedFeatureId": "CP.CadastralParcel.CadastralParcel_id_0795f42f-9dbd-4040-b1ec-c21c9eb1f5a3",
+            "returnedNativeId": "10100410097",
+            "geometryType": "Polygon",
+            "geometrySha256": "c26077bb553c75a6f0d6a710c1c4bc6d98fd3618a59607acd08bf7fcf347d343",
+            "sameGeometryHash": true,
+            "returnedPropertyNames": [
+              "gml_id",
+              "nationalcadastralreference",
+              "ogc_fid"
+            ],
+            "responseSha256": "1e0e07440aaac80bba400509388fc9a7c14756f80f53d453d334fca6f7885e63",
+            "error": null
+          }
+        ],
+        "allMatchedAndGeometryHashesEqual": true
+      },
+      "explicitAbsence": {
+        "nativeId": "999999999999",
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8",
+        "numberMatched": 0,
+        "featureCount": 0,
+        "absent": true,
+        "responseSha256": "f73ce4f6a6b4b583b903261ae26e41644e3b965eff973d0a8f9feda451cb8895",
+        "error": null
+      },
+      "requestedFields": [
+        "cp:nationalcadastralreference",
+        "cp:geometry"
+      ],
+      "returnedPropertiesUnion": [
+        "gml_id",
+        "nationalcadastralreference",
+        "ogc_fid"
+      ],
+      "featuresWithGeometryOnlyCache": 3,
+      "cacheGeometryTypes": [
+        "Polygon"
+      ],
+      "recheckStatus": "passed",
+      "technicalNotes": {
+        "termsOrCurrentnessUsedAsEligibilityGate": false,
+        "point0UsedAsAbsenceGate": false,
+        "noWupCenterChanges": true
+      }
+    }
+  },
+  "overall": {
+    "allCapabilityAndSchemaRequestsReturned200": true,
+    "allBoundedPagesComplete": true,
+    "allNativeIdReadsMatched": true,
+    "absenceChecksPassed": true,
+    "noEligibilityDecisionFromTermsOrCurrentness": true,
+    "nextTechnicalStep": "Interpret source compatibility and city-specific runtime adapter integration separately; do not infer whole-country or point absence from these bounded queries.",
+    "pagingCaveat": "All three servers advertise result paging, but PagingIsTransactionSafe is FALSE; the bounded pages were stable within this recheck (hit counts matched before/after) and returned distinct native IDs."
+  }
+}

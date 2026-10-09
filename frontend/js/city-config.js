@@ -5192,6 +5192,156 @@
         // Not a city: the generic place-without-parcels view (see EXPLORE_CITY_ID above). Left out
         // of getAvailableCities/findNearestCity, the search box city list, the stored-city pointer and
         // scripts/build-world-coverage.mjs (which skips `explore: true`).
+        orlando: {
+            id: 'orlando',
+            label: translateCityText('city.labels.orlando', 'Orlando'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [28.5718526010057, -81.3224429681126], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:26917',
+                metricDefinition: '+proj=utm +zone=17 +datum=NAD83 +units=m +no_defs +type=crs',
+                fallbackLatLng: [28.5718526010057, -81.3224429681126], fallbackDataset: [-81.3224429681126, 28.5718526010057]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'orlando-ocpa-arcgis', idPrefix: 'US-ORANGE-COUNTY-PARCEL-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://webmap.ocpafl.org/search">Orange County Property Appraiser assessment parcel polygons</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        dublin: {
+            id: 'dublin',
+            label: translateCityText('city.labels.dublin', 'Dublin'),
+            currency: { locale: 'en-IE', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [53.330243126706, -6.27332800239088], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:2157',
+                metricDefinition: '+proj=tmerc +lat_0=53.5 +lon_0=-8 +k=0.99982 +x_0=600000 +y_0=750000 +ellps=GRS80 +units=m +no_defs',
+                fallbackLatLng: [53.330243126706, -6.27332800239088], fallbackDataset: [-6.27332800239088, 53.330243126706]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'ie-tailte-hvd-freehold', idPrefix: 'IE-SP-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://data.gov.ie/dataset/high-value-dataset-cadastral-parcels-freehold1">© Tailte Éireann freehold title boundaries only</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        riga: {
+            id: 'riga',
+            label: translateCityText('city.labels.riga', 'Riga'),
+            currency: { locale: 'lv-LV', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [56.9551247864813, 24.1200225203638], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:3059',
+                metricDefinition: '+proj=tmerc +lat_0=0 +lon_0=24 +k=0.9996 +x_0=500000 +y_0=-6000000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs',
+                fallbackLatLng: [56.9551247864813, 24.1200225203638], fallbackDataset: [24.1200225203638, 56.9551247864813]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'lv-vzd-geolatvija-vraa-wfs', idPrefix: 'LV-VZD-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://geolatvija.lv/">State Land Service of Latvia / Geolatvija cadastral parcels</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        tallinn: {
+            id: 'tallinn',
+            label: translateCityText('city.labels.tallinn', 'Tallinn'),
+            currency: { locale: 'et-EE', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [59.4231329005097, 24.7413568470487], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:3301',
+                metricDefinition: '+proj=lcc +lat_0=57.5175539305556 +lon_0=24 +lat_1=59.3333333333333 +lat_2=58 +x_0=500000 +y_0=6375000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs',
+                fallbackLatLng: [59.4231329005097, 24.7413568470487], fallbackDataset: [24.7413568470487, 59.4231329005097]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'ee-maaamet-kataster-wfs', idPrefix: 'EE-KATASTER-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://gsavalik.envir.ee/geoserver/kataster/wfs">Estonian Land and Spatial Development Board / public cadastral WFS cadastral parcels</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        vilnius: {
+            id: 'vilnius',
+            label: translateCityText('city.labels.vilnius', 'Vilnius'),
+            currency: { locale: 'lt-LT', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [54.695435447302, 25.2704077979851], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32635',
+                metricDefinition: '+proj=utm +zone=35 +datum=WGS84 +units=m +no_defs',
+                fallbackLatLng: [54.695435447302, 25.2704077979851], fallbackDataset: [25.2704077979851, 54.695435447302]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'lt-inspire-cp-wfs', idPrefix: 'LT-INSP-CADASTRAL-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.inspire-geoportal.lt/geoserver/cp/ows">Lithuanian INSPIRE Geoportal / National Land Service cadastral parcels</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        jundiai: {
+            id: 'jundiai',
+            label: translateCityText('city.labels.jundiai', 'Jundiaí'),
+            currency: { locale: 'pt-BR', code: 'BRL' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-23.1976446911945, -46.8554383147568], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:31983',
+                metricDefinition: '+proj=utm +zone=23 +south +ellps=GRS80 +units=m +no_defs',
+                fallbackLatLng: [-23.1976446911945, -46.8554383147568], fallbackDataset: [-46.8554383147568, -23.1976446911945]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'br-jundiai-geojundiai-lotes-jund-gid', idPrefix: 'BR-JUNDIAI-LOTES-JUND-GID-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://geo.jundiai.sp.gov.br/geojundiai/">Município de Jundiaí / GeoJundiaí cadastral parcels</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
         explore: {
             id: 'explore',
             explore: true,
