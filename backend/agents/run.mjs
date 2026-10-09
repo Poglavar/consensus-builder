@@ -325,7 +325,7 @@ async function main() {
         await sendTelegram(text);
         process.exit(1);
     }
-    await sendTelegram(headline);
+    // A clean run is not news: Telegram carries only failures; the outcome is on the bots dashboard.
 }
 
 main().catch(async (err) => {
