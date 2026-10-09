@@ -654,7 +654,7 @@ async function main() {
     // This exact line is the external monitor's success sentinel. It is emitted only after every
     // persona has reached a non-failing terminal path, including the valid zero-pick outcome.
     log(`AGENT DAILY RUN — status=completed day=${day} personas=${personas.length}`);
-    await sendTelegram(headline);
+    // A clean run is not news: Telegram carries only failures; the outcome is on the bots dashboard.
 }
 
 main().catch(async (err) => {
