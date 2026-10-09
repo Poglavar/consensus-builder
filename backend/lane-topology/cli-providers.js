@@ -1,11 +1,24 @@
-import { spawn, spawnSync } from 'node:child_process';
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { spawnSync } from 'node:child_process';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { createRequire } from 'node:module';
+import Anthropic from '@anthropic-ai/sdk';
 import { normalizeImageryObservations } from './imagery-observations.js';
 
 export const TOPOLOGY_PROMPT_VERSION = 'lane-topology-v14';
+// Who answers a junction. `anthropic` is the metered Claude API through the shared LLM layer
+// (agents/lib/llm-cost/llm.cjs) and the default; `claude` and `codex` are the subscription CLIs
+// (cli.cjs), still selectable by name when the plan should pay instead.
+export const TOPOLOGY_PROVIDERS = Object.freeze(['anthropic', 'claude', 'codex']);
+export const DEFAULT_TOPOLOGY_PROVIDER = 'anthropic';
+
+export function assertTopologyProvider(provider) {
+    if (!TOPOLOGY_PROVIDERS.includes(provider)) {
+        throw new Error(`Unknown topology provider "${provider}" (known: ${TOPOLOGY_PROVIDERS.join(', ')}).`);
+    }
+    return provider;
+}
 // The same question about the same crop, but not at the same speed, so not the same ceiling.
 //
 // 15 minutes came from codex, whose runs average 222 s and whose slowest measured junction was
@@ -19,7 +32,11 @@ export const TOPOLOGY_PROMPT_VERSION = 'lane-topology-v14';
 // stays a backstop against a hung CLI rather than a limit ordinary work can reach.
 export const PROVIDER_TIMEOUT_MS = Object.freeze({
     codex: 15 * 60 * 1000,
-    claude: 25 * 60 * 1000
+    claude: 25 * 60 * 1000,
+    // The same model as the claude CLI answering the same question, without the CLI's tool round
+    // trips; until the API has its own measured spread it inherits Opus's ceiling. Applied as the
+    // SDK client's request timeout.
+    anthropic: 25 * 60 * 1000
 });
 export const TOPOLOGY_OUTPUT_SCHEMA = {
     type: 'object',
@@ -33,8 +50,6 @@ export const TOPOLOGY_OUTPUT_SCHEMA = {
         }
     }
 };
-
-const MAX_OUTPUT_CHARS = 500_000;
 
 // What is known about a model that a run cannot discover for itself. Absent from this table means
 // no known limitation: an unlisted model takes imagery and is free to run.
@@ -168,45 +183,16 @@ export function recognitionTargets(graph) {
         })));
 }
 
+// The executable behind each provider. Only the availability probe spawns it here; the recognition
+// run itself goes through the shared CLI layer (agents/lib/llm-cost/cli.cjs), which owns the
+// arguments, the model, key stripping, the schema, usage parsing, the kill at the ceiling and the
+// ledger row.
+const PROVIDER_COMMANDS = Object.freeze({ codex: 'codex', claude: 'claude' });
+
 export function providerCommand(provider) {
-    if (provider === 'codex') {
-        return {
-            command: 'codex',
-            args: ({ jobDir, schemaPath, outputPath, imagePath, model, reasoningEffort }) => [
-                'exec',
-                // Events as JSONL, which is the only place Codex states its token usage. The answer
-                // still comes from --output-last-message, so stdout is free to carry the accounting.
-                '--json',
-                ...(model ? ['--model', model] : []),
-                '--config', `model_reasoning_effort="${reasoningEffort || 'medium'}"`,
-                '--skip-git-repo-check',
-                '--ephemeral',
-                '--sandbox', 'read-only',
-                '--cd', jobDir,
-                '--output-schema', schemaPath,
-                '--output-last-message', outputPath,
-                ...(imagePath ? ['--image', imagePath] : []),
-                '-'
-            ]
-        };
-    }
-    if (provider === 'claude') {
-        return {
-            command: 'claude',
-            args: ({ jobDir, imagePath, model } = {}) => [
-                '--print',
-                '--safe-mode',
-                '--no-session-persistence',
-                '--no-chrome',
-                '--tools', imagePath ? 'Read' : '',
-                ...(imagePath ? ['--add-dir', jobDir] : []),
-                ...(model ? ['--model', model] : []),
-                '--output-format', 'json',
-                '--json-schema', JSON.stringify(TOPOLOGY_OUTPUT_SCHEMA)
-            ]
-        };
-    }
-    throw new Error(`Unknown topology provider "${provider}".`);
+    const command = PROVIDER_COMMANDS[provider];
+    if (!command) throw new Error(`Unknown topology provider "${provider}".`);
+    return { command };
 }
 
 // Probing spawns a real process, and every /process call used to re-probe with a 2.5 s ceiling. On a
@@ -221,7 +207,18 @@ export function clearProviderAvailabilityCache() {
     availabilityCache.clear();
 }
 
-export function providerAvailability(provider, spawnSyncImpl = spawnSync) {
+export function providerAvailability(provider, spawnSyncImpl = spawnSync, env = process.env) {
+    // The API has no executable to probe; what it needs is a key, and without one the first job
+    // would fail on its first request.
+    if (provider === 'anthropic') {
+        const available = !!env.ANTHROPIC_API_KEY;
+        return {
+            available,
+            version: available ? 'Claude API (metered)' : null,
+            indeterminate: false,
+            ...(available ? {} : { reason: 'ANTHROPIC_API_KEY is not set' })
+        };
+    }
     // Injected spawns belong to tests and must never see or fill the shared cache.
     const cacheable = spawnSyncImpl === spawnSync;
     if (cacheable) {
@@ -329,111 +326,35 @@ export function buildRecognitionPrompt(input) {
     ].join('\n');
 }
 
-function boundedAppend(existing, addition) {
-    const combined = existing + String(addition || '');
-    return combined.length <= MAX_OUTPUT_CHARS ? combined : combined.slice(combined.length - MAX_OUTPUT_CHARS);
+// The shared subscription-CLI layer, loaded on first use rather than imported. It is a sibling
+// checkout, not a dependency of this one, and it is not deployed — a hard import would take the
+// whole backend down on a server where agents/ does not exist, while a recognition run there fails
+// on its own, loudly, with the reason.
+let cliLayerApi = null;
+function cliLayer() {
+    if (!cliLayerApi) cliLayerApi = createRequire(import.meta.url)('../../../agents/lib/llm-cost/cli.cjs');
+    return cliLayerApi;
 }
 
-function cliFailureDetail(stdout, stderr) {
-    const output = [stderr, stdout].filter(Boolean).join('\n');
-    // Only stderr, and deliberately not stdout: a CLI echoes the prompt, so the evidence package's
-    // own problem messages are `"message": "..."` matches too — and being last, they won. A Codex
-    // quota refusal was reported as "4 road arms meet here", which also defeated the runner's
-    // quota check and would have turned one stop into a whole batch of identical failures.
-    const apiMessages = [...String(stderr || '').matchAll(/"message"\s*:\s*"([^"]+)"/g)]
-        .map(match => match[1].replaceAll('\\"', '"'));
-    if (apiMessages.length) return apiMessages.at(-1);
-    const errorLine = [...String(stderr || '').matchAll(/^\s*ERROR:\s*(.+)$/gm)]
-        .map(match => match[1].trim())
-        .filter(line => line && !line.startsWith('{'));
-    if (errorLine.length) return errorLine.at(-1).slice(-1800);
-    for (const source of [stderr, stdout]) {
-        if (!String(source || '').trim()) continue;
-        try {
-            const parsed = JSON.parse(source);
-            const candidates = [
-                parsed?.error?.message,
-                typeof parsed?.error === 'string' ? parsed.error : null,
-                parsed?.message,
-                typeof parsed?.result === 'string' ? parsed.result : null
-            ].filter(value => typeof value === 'string' && value.trim());
-            if (candidates.length) return candidates.at(-1).slice(-1800);
-        } catch (_) {
-            // Fall through to the bounded plain-text tail.
-        }
-    }
-    const fallback = output
-        .split('\n')
-        .map(line => line.trim())
-        .filter(Boolean)
-        .slice(-8)
-        .join(' ')
-        .slice(-1800);
-    return fallback || 'No error details were emitted.';
+// Its metered-API sibling, loaded the same way and for the same reason.
+let llmLayerApi = null;
+function llmLayer() {
+    if (!llmLayerApi) llmLayerApi = createRequire(import.meta.url)('../../../agents/lib/llm-cost/llm.cjs');
+    return llmLayerApi;
 }
 
-function cliFailure(message, stdout, stderr) {
-    const error = new Error(message);
-    error.outputTail = `${stdout}\n${stderr}`.slice(-8000);
-    return error;
+// The model a provider runs when the caller names none: the shared layer's default, so a resume
+// can recognise solutions stored under the model that answered (the route records the resolved id,
+// never null). The CLIs follow their provider's default (defaults.json → cli.<engine>.provider).
+export function defaultModelFor(provider) {
+    assertTopologyProvider(provider);
+    const llm = llmLayer();
+    const layerProvider = provider === 'anthropic' ? 'anthropic' : llm.DEFAULTS.cli?.[provider]?.provider;
+    return layerProvider ? llm.resolveCall(layerProvider).model : null;
 }
 
-function runSpawn(command, args, prompt, options = {}) {
-    const spawnImpl = options.spawnImpl || spawn;
-    const timeoutMs = Number(options.timeoutMs) || 10 * 60 * 1000;
-    return new Promise((resolve, reject) => {
-        const child = spawnImpl(command, args, {
-            cwd: options.cwd,
-            env: options.env || process.env,
-            stdio: ['pipe', 'pipe', 'pipe']
-        });
-        let stdout = '';
-        let stderr = '';
-        let settled = false;
-        const timer = setTimeout(() => {
-            if (settled) return;
-            settled = true;
-            child.kill('SIGTERM');
-            reject(cliFailure(
-                `${command} topology recognition timed out after ${timeoutMs} ms.`,
-                stdout,
-                stderr
-            ));
-        }, timeoutMs);
-        child.stdout?.on('data', chunk => { stdout = boundedAppend(stdout, chunk); });
-        child.stderr?.on('data', chunk => { stderr = boundedAppend(stderr, chunk); });
-        child.on('error', error => {
-            if (settled) return;
-            settled = true;
-            clearTimeout(timer);
-            reject(cliFailure(error.message || String(error), stdout, stderr));
-        });
-        child.on('close', (code, signal) => {
-            if (settled) return;
-            settled = true;
-            clearTimeout(timer);
-            if (code !== 0) {
-                if (code === null && signal) {
-                    reject(cliFailure(`${command} was terminated by ${signal}.`, stdout, stderr));
-                    return;
-                }
-                reject(cliFailure(
-                    `${command} exited ${code}: ${cliFailureDetail(stdout, stderr)}`,
-                    stdout,
-                    stderr
-                ));
-                return;
-            }
-            resolve({ stdout, stderr });
-        });
-        child.stdin?.end(prompt);
-    });
-}
-
-// The CLI reports its token usage in the envelope, ahead of the answer. Reading it here is the only
-// reliable place: by the time the run is a stored output tail, a large patch has pushed the counts
-// out of the tail entirely. Subscription-billed runs still need the counts — they are what says
-// whether a prompt change doubled the cost.
+// The job record's usage, filled from the layer's result. Persisting it per job is what says
+// whether a prompt change doubled what a junction takes, even though the plan pays.
 const count = value => (typeof value === 'number' && Number.isFinite(value) ? value : null);
 
 // One shape for every provider, because the comparison between them is the point. Fields a CLI
@@ -441,8 +362,8 @@ const count = value => (typeof value === 'number' && Number.isFinite(value) ? va
 // nothing must not look alike.
 function normalizeUsage(fields) {
     const usage = {
-        // What the CLI actually ran, not the alias we asked for. `opus` moves between releases, so
-        // a ledger keyed on it cannot be read back in a year; the CLI names the resolved id.
+        // What the CLI actually ran, not an alias. A ledger keyed on an alias cannot be read back
+        // in a year; the CLI names the resolved id.
         resolvedModel: null,
         inputTokens: null,
         outputTokens: null,
@@ -450,6 +371,8 @@ function normalizeUsage(fields) {
         cacheCreationTokens: null,
         // What the same run would have cost on the metered API; the CLI itself bills a subscription.
         equivalentUsd: null,
+        // What the run was actually charged: the metered API's price, 0 for a plan-billed CLI run.
+        costUsd: null,
         durationMs: null,
         numTurns: null,
         ...fields
@@ -476,145 +399,33 @@ export function dominantModel(modelUsage) {
     return entries.reduce((best, entry) => (weight(entry) > weight(best) ? entry : best))[0] || null;
 }
 
-// Claude prints one JSON envelope carrying its own usage and a costed equivalent.
-function claudeUsage(envelope) {
-    const usage = envelope?.usage;
-    const cost = Number(envelope?.total_cost_usd);
-    if (!usage && !Number.isFinite(cost)) return null;
+// The layer's result → the job's usage record. `raw` is claude's envelope (modelUsage, duration,
+// turns); codex states none of those, and the layer names the model it passed explicitly. An API
+// result's `raw` is the Messages response: no modelUsage or turns, `model` is the one that
+// answered, `costUsd` is metered and there is no equivalent (it IS the price).
+export function usageFromResult(result) {
+    const usage = result?.usage;
+    const envelope = result?.raw && typeof result.raw === 'object' ? result.raw : null;
     return normalizeUsage({
-        // modelUsage is keyed by the resolved model id.
-        resolvedModel: dominantModel(envelope?.modelUsage),
+        resolvedModel: dominantModel(envelope?.modelUsage) || result?.model || null,
         inputTokens: count(usage?.input_tokens),
         outputTokens: count(usage?.output_tokens),
         cacheReadTokens: count(usage?.cache_read_input_tokens),
         cacheCreationTokens: count(usage?.cache_creation_input_tokens),
-        equivalentUsd: Number.isFinite(cost) ? cost : null,
-        durationMs: count(envelope?.duration_ms),
+        equivalentUsd: count(result?.equivalentUsd),
+        costUsd: count(result?.costUsd),
+        durationMs: count(envelope?.duration_ms) ?? count(result?.ms),
         numTurns: count(envelope?.num_turns)
     });
 }
 
-// Codex streams JSONL events and reports usage on turn.completed — one per exec run, covering the
-// whole run including its tool calls, so these sum rather than supersede. It states no cost, and
-// inventing one from a price table would be a guess dressed as a measurement, so it stays null.
-function codexUsage(stdout) {
-    const totals = { input: 0, cached: 0, cacheWrite: 0, output: 0, turns: 0 };
-    String(stdout || '').split('\n').forEach(line => {
-        const trimmed = line.trim();
-        if (!trimmed.startsWith('{')) return;
-        let event;
-        try {
-            event = JSON.parse(trimmed);
-        } catch (_) {
-            return;
-        }
-        if (event?.type !== 'turn.completed' || !event.usage) return;
-        totals.turns += 1;
-        // OpenAI counts input_tokens INCLUSIVE of the cached ones, where Anthropic reports the two
-        // disjoint. The shared rate table assumes Anthropic's convention, so charging this verbatim
-        // would bill the cached tokens twice — at full rate and again at the cache rate. On a real
-        // junction that is 262,503 billed instead of 92,007, a threefold overstatement.
-        totals.input += Number(event.usage.input_tokens) || 0;
-        totals.cached += Number(event.usage.cached_input_tokens) || 0;
-        totals.cacheWrite += Number(event.usage.cache_write_input_tokens) || 0;
-        totals.output += Number(event.usage.output_tokens) || 0;
-        // Reasoning tokens are billed as output and are invisible otherwise.
-        totals.output += Number(event.usage.reasoning_output_tokens) || 0;
-    });
-    if (!totals.turns) return null;
-    return normalizeUsage({
-        inputTokens: Math.max(0, totals.input - totals.cached),
-        outputTokens: totals.output,
-        cacheReadTokens: totals.cached,
-        cacheCreationTokens: totals.cacheWrite,
-        numTurns: totals.turns
-    });
-}
-
-export function providerUsage(provider, stdout, envelope) {
-    return provider === 'codex' ? codexUsage(stdout) : claudeUsage(envelope);
-}
-
-// The shared ledger in agents/lib/llm-cost, which answers "what has the machine spent on
-// models" across every repo. It is a sibling checkout, not a dependency of this one, and it is
-// not deployed — so this is a soft link that says when it is missing rather than a hard import
-// that would take the backend down on a server where agents/ does not exist.
-let ledgerApi;
-function costLedger() {
-    if (ledgerApi !== undefined) return ledgerApi;
-    try {
-        ledgerApi = createRequire(import.meta.url)('../../../agents/lib/llm-cost/index.cjs');
-    } catch (error) {
-        console.warn('[lane-topology] shared cost ledger unavailable, recording usage locally only:',
-            error.message);
-        ledgerApi = null;
+// The answer is { summary, patch_json }: the patch travels as a string so the output schema stays
+// flat enough for both CLIs' structured-output grammars, and is decoded here.
+function parseRecognitionAnswer(data) {
+    if (typeof data?.patch_json === 'string') {
+        return { ...data, patch: JSON.parse(data.patch_json) };
     }
-    return ledgerApi;
-}
-
-// What the same tokens would have cost on the metered API, when the shared table knows the model.
-// computeCost throws on an unpriced model by design — that refusal is the feature, so it is caught
-// here and turned into "unknown" rather than allowed to fail the run or invent a number.
-function meteredEquivalent(ledger, model, usage) {
-    try {
-        return ledger.computeCost(model, {
-            input_tokens: usage.inputTokens ?? 0,
-            output_tokens: usage.outputTokens ?? 0,
-            cache_read_input_tokens: usage.cacheReadTokens ?? 0,
-            cache_creation_input_tokens: usage.cacheCreationTokens ?? 0
-        });
-    } catch (_) {
-        return null;
-    }
-}
-
-// Recognition is billed to a Max or ChatGPT subscription, so it costs no money at the margin.
-// The tokens still matter — they are what says whether a prompt change doubled what a junction
-// takes — and Claude's own costed equivalent rides along without ever counting as spend.
-export function ledgerRecognitionRun({ provider, model, usage, meta = {} }) {
-    const ledger = costLedger();
-    if (!ledger || !usage) return null;
-    // The CLI names the model it resolved to when it can; when it cannot, the model we ASKED for is
-    // still known — we passed it on the command line. Falling back to the provider name was giving
-    // up information we had.
-    const billed = usage.resolvedModel || model || provider;
-    try {
-        return ledger.recordSubscriptionRun({
-            repo: 'consensus-builder',
-            script: 'lane-topology-recognition',
-            model: billed,
-            usage,
-            // A CLI that states its own cost is preferred; otherwise price it from the shared rate
-            // table, which is why the table is shared. An unpriced model yields null rather than a
-            // guess, and adding its rate later starts pricing these runs with no code change.
-            equivalentUsd: Number.isFinite(usage.equivalentUsd)
-                ? usage.equivalentUsd
-                : meteredEquivalent(ledger, billed, usage),
-            meta: { provider, promptVersion: TOPOLOGY_PROMPT_VERSION, ...meta }
-        });
-    } catch (error) {
-        // Accounting must never take down the work it is accounting for.
-        console.warn('[lane-topology] cost ledger write failed:', error.message);
-        return null;
-    }
-}
-
-function parseProviderOutput(provider, stdout, outputFileText) {
-    let parsed;
-    let usage = null;
-    if (provider === 'codex') {
-        parsed = JSON.parse(outputFileText);
-        usage = providerUsage('codex', stdout);
-    } else {
-        const envelope = JSON.parse(stdout);
-        usage = providerUsage(provider, stdout, envelope);
-        const candidate = envelope.structured_output ?? envelope.result ?? envelope;
-        parsed = typeof candidate === 'string' ? JSON.parse(candidate) : candidate;
-    }
-    if (typeof parsed?.patch_json === 'string') {
-        return { ...parsed, usage, patch: JSON.parse(parsed.patch_json) };
-    }
-    return { ...parsed, usage };
+    return { ...(data || {}) };
 }
 
 export function validateCandidateGraph(candidate, deterministicGraph) {
@@ -956,62 +767,83 @@ export function applyRecognitionPatch(patch, deterministicGraph, provider = 'mod
     }, deterministicGraph);
 }
 
-export async function runCliTopologyProvider(provider, input, options = {}) {
-    const definition = providerCommand(provider);
+// One junction through one provider: the metered API (`anthropic`, llm.cjs) or a subscription CLI
+// (`claude` | `codex`, cli.cjs). The request — crop by path, prompt, schema, no model id — is the
+// same for all three; only the transport and who pays differ.
+export async function runTopologyProvider(provider, input, options = {}) {
+    assertTopologyProvider(provider);
     if (options.imageBuffer && !modelAcceptsImagery(options.model)) {
         throw new Error(`Model ${options.model} takes text only; run it with imagery disabled `
             + 'rather than letting it answer from the tags while a crop goes unread.');
     }
     const jobDir = await mkdtemp(join(tmpdir(), `lane-topology-${provider}-`));
-    const schemaPath = join(jobDir, 'output-schema.json');
-    const outputPath = join(jobDir, 'output.json');
     const imagePath = options.imageBuffer ? join(jobDir, 'orthophoto.jpg') : null;
     try {
-        await writeFile(schemaPath, JSON.stringify(TOPOLOGY_OUTPUT_SCHEMA), 'utf8');
         if (imagePath) await writeFile(imagePath, options.imageBuffer);
-        const prompt = buildRecognitionPrompt(input);
-        const args = definition.args({
-            jobDir,
-            schemaPath,
-            outputPath,
-            imagePath,
-            model: options.model,
-            reasoningEffort: options.reasoningEffort
-                || process.env.LANE_TOPOLOGY_CODEX_REASONING_EFFORT
-                || 'medium'
-        });
-        const result = await runSpawn(definition.command, args, prompt, {
-            ...options,
-            timeoutMs: options.timeoutMs
-                || PROVIDER_TIMEOUT_MS[provider]
-                || PROVIDER_TIMEOUT_MS.codex,
-            cwd: jobDir
-        });
-        // Injectable for the same reason the spawn is: a test must be able to exercise the parsing
-        // without a real CLI writing a real file.
-        const readFileImpl = options.readFileImpl || (path => readFile(path, 'utf8'));
-        const outputFileText = provider === 'codex' ? await readFileImpl(outputPath) : '';
-        const parsed = parseProviderOutput(provider, result.stdout, outputFileText);
-        // Ledger the run before the patch is applied: a patch this run cannot validate is still a
-        // run whose tokens were spent, and an accounting that only counts successes understates.
-        // An injected spawn means no CLI ran and no tokens were spent, so there is nothing to
-        // account for. Without this the test suite wrote its fixtures into the shared ledger —
-        // seven rows of invented usage sitting beside real spend, which is worse than none.
-        if (options.ledger !== false && !options.spawnImpl) {
-            ledgerRecognitionRun({
+        // Injectable so a test exercises everything around the model call without a CLI, and
+        // without writing invented usage into the shared ledger: only the real layer ledgers.
+        const ledger = {
+            repo: 'consensus-builder',
+            script: 'lane-topology-recognition',
+            // jobId on the ledger row is what keeps ledger-backfill.js from writing the run twice.
+            meta: {
                 provider,
-                model: options.model,
-                usage: parsed.usage,
+                promptVersion: TOPOLOGY_PROMPT_VERSION,
+                ...(options.jobId !== undefined && options.jobId !== null ? { jobId: options.jobId } : {})
+            }
+        };
+        const timeoutMs = options.timeoutMs || PROVIDER_TIMEOUT_MS[provider];
+        const createLlm = options.createLlm || (config => llmLayer().createLlm(config));
+        const createCliLlm = options.createCliLlm || (config => cliLayer().createCliLlm(config));
+        const complete = options.complete || (provider === 'anthropic'
+            // A raw client: the layer ledgers every call itself. Its timeout is the provider ceiling.
+            ? request => createLlm({ ...ledger, client: new Anthropic({ timeout: timeoutMs }) }).complete(request)
+            : request => createCliLlm({
+                ...ledger,
+                engine: provider,
+                // The job directory holds the crop, so claude's Read tool may open it from here.
+                cwd: jobDir,
+                timeoutMs
+            }).complete(request));
+        const startedAt = Date.now();
+        let result;
+        try {
+            result = await complete({
+                content: [
+                    ...(imagePath ? [{ type: 'image', path: imagePath }] : []),
+                    buildRecognitionPrompt(input)
+                ],
+                schema: TOPOLOGY_OUTPUT_SCHEMA,
+                // No model unless the caller overrides one: the layer's default is the model.
+                ...(options.model ? { model: options.model } : {}),
+                // Codex has run this task at medium effort since it was measured; claude and the API take
+                // the layer's default (the default model, not a cheap tier: a junction is a judgment call).
+                ...(provider === 'codex'
+                    ? { effort: options.reasoningEffort || process.env.LANE_TOPOLOGY_CODEX_REASONING_EFFORT || 'medium' }
+                    : (options.reasoningEffort ? { effort: options.reasoningEffort } : {})),
                 meta: {
                     city: input.selection?.city ?? null,
                     bbox: input.selection?.bbox ?? null,
                     imagery: input.imagery?.source ?? null
                 }
             });
+        } catch (error) {
+            // The job record keeps `error.outputTail` in preference to the stack; the layer's
+            // message carries the CLI's own reason (a quota refusal included), and the envelope
+            // whatever the model did say.
+            if (!error.outputTail) {
+                error.outputTail = [error.message, error.raw ? JSON.stringify(error.raw) : '']
+                    .filter(Boolean).join('\n').slice(-8000);
+            }
+            throw error;
         }
-        const outputTail = `${result.stdout}\n${result.stderr}`.slice(-8000);
+        // The CLI layer times its own run; an API result does not, so the wall clock stands in.
+        const usage = usageFromResult({ ...result, ms: result.ms ?? Date.now() - startedAt });
+        const outputTail = String(result.data ? JSON.stringify(result.data) : (result.text ?? '')).slice(-8000);
+        let parsed;
         let graph;
         try {
+            parsed = parseRecognitionAnswer(result.data);
             graph = applyRecognitionPatch(parsed.patch, input.deterministicGraph, provider, {
                 imagery: input.imagery,
                 restrictions: input.restrictions,
@@ -1029,7 +861,7 @@ export async function runCliTopologyProvider(provider, input, options = {}) {
         return {
             summary: String(parsed.summary || ''),
             graph,
-            usage: parsed.usage || null,
+            usage,
             outputTail
         };
     } finally {

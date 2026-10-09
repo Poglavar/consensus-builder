@@ -1,12 +1,15 @@
-// Dedicated lane-topology manager API: raw OSM evidence, deterministic graph versions, CLI model
-// recognition jobs, immutable solution history and canonical promotion.
+// Dedicated lane-topology manager API: raw OSM evidence, deterministic graph versions, model
+// recognition jobs (Claude API by default, or a subscription CLI), immutable solution history and
+// canonical promotion.
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import {
+    DEFAULT_TOPOLOGY_PROVIDER,
     TOPOLOGY_PROMPT_VERSION,
+    TOPOLOGY_PROVIDERS,
     providerAvailability,
-    runCliTopologyProvider
+    runTopologyProvider
 } from '../lane-topology/cli-providers.js';
 import {
     LANE_IMAGERY_SOURCES,
@@ -545,7 +548,7 @@ async function updateJobFailure(pool, jobId, error) {
 }
 
 async function executeRecognitionJob(pool, job, evidence, deterministicSolution, options) {
-    const runProvider = options.runProvider || runCliTopologyProvider;
+    const runProvider = options.runProvider || runTopologyProvider;
     try {
         await pool.query(
             `UPDATE public.lane_topology_job SET status='running', started_at=now(), updated_at=now() WHERE id=$1`,
@@ -577,6 +580,7 @@ async function executeRecognitionJob(pool, job, evidence, deterministicSolution,
         }, {
             ...(options.providerOptions || {}),
             model: job.model || options.providerOptions?.model || null,
+            jobId: job.id,
             imageBuffer: imagery?.buffer || null
         });
         // The provider's junction connections are the whole point of the run, and the only thing
@@ -600,7 +604,9 @@ async function executeRecognitionJob(pool, job, evidence, deterministicSolution,
             bbox: job.bbox,
             sourceKind: job.provider,
             provider: job.provider,
-            model: job.model,
+            // The model that answered, so a resumed run on the layer's default (job.model null)
+            // recognises its own earlier solutions instead of re-solving every junction.
+            model: result.usage?.resolvedModel || job.model,
             promptVersion: TOPOLOGY_PROMPT_VERSION,
             snapshotAt: evidence.snapshotAt,
             snapshotId: evidence.snapshot?.id ?? null,
@@ -631,16 +637,15 @@ export function setupLaneTopologyRoute(app, pool, options = {}) {
         : env.NODE_ENV !== 'production' && env.LANE_TOPOLOGY_CLI_ENABLED !== 'false';
 
     app.get('/lane-topology/providers', (_req, res) => {
-        const availability = cliEnabled
-            ? {
-                codex: providerAvailability('codex', options.spawnSyncImpl),
-                claude: providerAvailability('claude', options.spawnSyncImpl)
-            }
-            : {
-                codex: { available: false, version: null },
-                claude: { available: false, version: null }
-            };
-        res.json({ enabled: cliEnabled, providers: availability, promptVersion: TOPOLOGY_PROMPT_VERSION });
+        const availability = Object.fromEntries(TOPOLOGY_PROVIDERS.map(provider => [provider, cliEnabled
+            ? providerAvailability(provider, options.spawnSyncImpl, env)
+            : { available: false, version: null }]));
+        res.json({
+            enabled: cliEnabled,
+            providers: availability,
+            defaultProvider: DEFAULT_TOPOLOGY_PROVIDER,
+            promptVersion: TOPOLOGY_PROMPT_VERSION
+        });
     });
 
     app.get('/lane-topology/imagery/sources', (_req, res) => {
@@ -1101,15 +1106,18 @@ export function setupLaneTopologyRoute(app, pool, options = {}) {
 
     app.post('/lane-topology/process', async (req, res) => {
         if (!cliEnabled) return res.status(503).json({ error: 'CLI topology recognition is disabled.' });
-        const provider = String(req.body?.provider || '');
-        if (!['codex', 'claude'].includes(provider)) {
-            return res.status(400).json({ error: 'Provider must be "codex" or "claude".' });
+        // A request that names no provider gets the metered Claude API; the CLIs are chosen by name.
+        const provider = String(req.body?.provider || DEFAULT_TOPOLOGY_PROVIDER);
+        if (!TOPOLOGY_PROVIDERS.includes(provider)) {
+            return res.status(400).json({ error: `Provider must be one of ${TOPOLOGY_PROVIDERS.join(', ')}.` });
         }
-        const availability = providerAvailability(provider, options.spawnSyncImpl);
+        const availability = providerAvailability(provider, options.spawnSyncImpl, env);
         // Refuse only on a definite answer. An indeterminate probe (it timed out under load) must
         // not block a run the CLI can perfectly well do; the run itself reports a real failure.
         if (!availability.available && !availability.indeterminate) {
-            return res.status(503).json({ error: `${provider} CLI is not available.` });
+            return res.status(503).json({
+                error: `${provider} is not available${availability.reason ? ` (${availability.reason})` : ''}.`
+            });
         }
         const bbox = parseTopologyBbox(req.body?.bbox);
         if (!bbox) {

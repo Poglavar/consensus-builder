@@ -1750,7 +1750,8 @@
         try {
             const body = await api('/lane-topology/providers');
             state.providerInfo = body;
-            ['codex', 'claude'].forEach(provider => {
+            // Same order as the buttons: the metered Claude API first, then the two subscription CLIs.
+            ['anthropic', 'codex', 'claude'].forEach(provider => {
                 const available = body.enabled && body.providers?.[provider]?.available;
                 element(`run-${provider}`).disabled = !available;
                 element(`${provider}-status`).textContent = available
@@ -1758,7 +1759,7 @@
                     : 'CLI unavailable';
             });
         } catch (error) {
-            ['codex', 'claude'].forEach(provider => {
+            ['anthropic', 'codex', 'claude'].forEach(provider => {
                 element(`${provider}-status`).textContent = 'backend unavailable';
             });
         }
@@ -1777,6 +1778,7 @@
     });
     element('reload-viewport').addEventListener('click', () => loadViewport({ force: true }));
     element('build-deterministic').addEventListener('click', buildDeterministic);
+    element('run-anthropic').addEventListener('click', () => openRunDialog('anthropic'));
     element('run-codex').addEventListener('click', () => openRunDialog('codex'));
     element('run-claude').addEventListener('click', () => openRunDialog('claude'));
     element('run-dialog-cancel').addEventListener('click', closeRunDialog);

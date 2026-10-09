@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-// Batch-solves lane-topology junctions with the Claude/Codex CLI, one junction at a time.
+// Batch-solves lane-topology junctions with a model (the Claude API by default, or the Claude/Codex
+// CLI), one junction at a time.
 //
 // The manager UI solves whatever is in the viewport, one press at a time. This is the same work
-// unattended: enumerate every unsolved junction in an area, then run the CLI over each with its own
+// unattended: enumerate every unsolved junction in an area, then run the model over each with its own
 // tight bbox and orthophoto crop. A junction is the unit the model actually solves (see
 // frontend/js/lane-topology-junctions.js), so it is also the unit of progress, resume and cost here.
 //
@@ -32,8 +33,10 @@ const CliProviders = await import('../lane-topology/cli-providers.js');
 const DEFAULTS = {
     api: 'http://localhost:4913',
     city: 'zagreb',
-    provider: 'claude',
-    model: 'opus',
+    // The metered Claude API; --provider claude|codex runs a subscription CLI instead.
+    provider: CliProviders.DEFAULT_TOPOLOGY_PROVIDER,
+    // No model: the shared LLM layer's default for the provider is the model. --model overrides it.
+    model: null,
     imagery: 'zagreb_cdof_2022',
     padM: 70,
     minSpanM: 140,
@@ -65,12 +68,12 @@ const BBOX_EPSILON = 1e-6;
 // so a run carried on past the first refusal and burned 27 further junctions into the same error in
 // 79 seconds — four tiles marked failed that had never been tried. Phrases, not a bare /limit/:
 // "Orthophoto image exceeds the … byte safety limit" is an ordinary per-junction error and must not
-// stop a run.
+// stop a run. The metered API's "credit balance is too low" is the same kind of stop.
 export const QUOTA_PATTERN =
-    /session limit|usage limit|rate.?limit|limit reached|quota|too many requests|overloaded/i;
+    /session limit|usage limit|rate.?limit|limit reached|quota|too many requests|overloaded|credit balance/i;
 
 const USAGE = `
-Solve lane-topology junctions in bulk with a CLI model.
+Solve lane-topology junctions in bulk with a model.
 
   --bbox W,S,E,N          Area to enumerate junctions in (WGS84).
   --center LAT,LNG        Alternative to --bbox, with --radius.
@@ -78,8 +81,11 @@ Solve lane-topology junctions in bulk with a CLI model.
 
   --api URL               Lane-topology API base (default ${DEFAULTS.api}).
   --city NAME             City key (default ${DEFAULTS.city}).
-  --provider claude|codex Recognition CLI (default ${DEFAULTS.provider}).
-  --model NAME            Model passed to the CLI (default ${DEFAULTS.model}).
+  --provider anthropic|claude|codex
+                          Recognition provider (default ${DEFAULTS.provider}: the metered Claude
+                          API; claude/codex are the subscription CLIs).
+  --model NAME            Override the model (default: the shared LLM layer's default for the
+                          provider, agents/lib/llm-cost/defaults.json).
   --imagery KEY|none      Orthophoto source (default ${DEFAULTS.imagery}).
 
   --pad M                 Padding around a junction's nodes (default ${DEFAULTS.padM} m).
@@ -99,9 +105,11 @@ Solve lane-topology junctions in bulk with a CLI model.
   --log FILE              Append one JSON line per junction here.
   --dry-run               Enumerate and report; run nothing.
 
-Billing: the claude CLI is billed to the Max subscription and the codex CLI to the ChatGPT
-subscription — neither spends API credit. Token counts are still recorded per junction, because
-that is what tells you whether a prompt change doubled the cost.
+Billing: the default (anthropic) is the metered Claude API — every junction is charged and
+ledgered (agents/lib/llm-cost); a --dry-run first is cheap. The claude CLI is billed to the Max
+subscription and the codex CLI to the ChatGPT subscription — neither spends API credit. Token
+counts are recorded per junction either way, because that is what tells you whether a prompt
+change doubled the cost.
 `;
 
 function parseArgs(argv) {
@@ -306,7 +314,7 @@ async function existingSolution(base, args, bbox) {
         + `&bbox=${bbox.join(',')}&limit=100`);
     return (body.solutions || []).find(solution => solution.sourceKind === args.provider
         && sameBbox(solution.bbox, bbox)
-        && (solution.model || null) === (args.model || null)) || null;
+        && (solution.model || null) === (args.model || args.defaultModel || null)) || null;
 }
 
 // The crop is attached per junction, so a fused junction too wide for the GSD budget loses its
@@ -425,14 +433,22 @@ function summariseUsage(records) {
             accumulator.usd += record.usage.equivalentUsd;
             accumulator.costed += 1;
         }
+        // A metered API run states what it was charged instead; a CLI run's charge is 0.
+        if (record.usage.costUsd > 0) {
+            accumulator.charged += record.usage.costUsd;
+            accumulator.metered += 1;
+        }
         return accumulator;
-    }, { input: 0, output: 0, cached: 0, usd: 0, counted: 0, costed: 0 });
+    }, { input: 0, output: 0, cached: 0, usd: 0, counted: 0, costed: 0, charged: 0, metered: 0 });
     if (!totals.counted) return 'usage not reported';
-    const money = totals.costed === totals.counted
-        ? ` · $${totals.usd.toFixed(2)} equivalent (subscription-billed, not charged)`
-        : (totals.costed
-            ? ` · $${totals.usd.toFixed(2)} equivalent over ${totals.costed}/${totals.counted} runs`
-            : ' · no costed equivalent reported by this CLI');
+    const money = totals.metered
+        ? ` · $${totals.charged.toFixed(2)} charged (metered API) over ${totals.metered}/${totals.counted} runs`
+            + (totals.costed ? ` · $${totals.usd.toFixed(2)} equivalent over ${totals.costed}` : '')
+        : (totals.costed === totals.counted
+            ? ` · $${totals.usd.toFixed(2)} equivalent (subscription-billed, not charged)`
+            : (totals.costed
+                ? ` · $${totals.usd.toFixed(2)} equivalent over ${totals.costed}/${totals.counted} runs`
+                : ' · no costed equivalent reported by this CLI'));
     return `${totals.input.toLocaleString()} in (${totals.cached.toLocaleString()} cached)`
         + ` / ${totals.output.toLocaleString()} out tokens${money}`;
 }
@@ -498,6 +514,9 @@ async function main() {
         console.log(USAGE);
         return 0;
     }
+    CliProviders.assertTopologyProvider(args.provider);
+    // The route stores the model that answered, so a run on the layer default resumes against it.
+    args.defaultModel = args.model ? null : CliProviders.defaultModelFor(args.provider);
     if (!args.jobTimeoutMs) {
         args.jobTimeoutMs = jobTimeoutFor(args.provider, CliProviders.PROVIDER_TIMEOUT_MS);
     }
@@ -509,10 +528,11 @@ async function main() {
     const base = args.api;
 
     const providers = await api(base, '/lane-topology/providers');
-    if (!providers.enabled) throw new Error('CLI topology recognition is disabled on this backend.');
+    if (!providers.enabled) throw new Error('Model topology recognition is disabled on this backend.');
     const availability = providers.providers?.[args.provider];
     if (availability && availability.available === false && !availability.indeterminate) {
-        throw new Error(`The ${args.provider} CLI is not available to the backend.`);
+        throw new Error(`${args.provider} is not available to the backend`
+            + `${availability.reason ? ` (${availability.reason})` : ''}.`);
     }
     // A text-only model with imagery configured would fail on its first job and every one after it.
     // Say so before the enumeration, not two thousand junctions in.
@@ -526,7 +546,7 @@ async function main() {
         throw new Error(`Model ${args.model} is disabled for this task (`
             + `${CliProviders.modelNote(args.model)}). Pass --allow-disabled-model to run it anyway.`);
     }
-    log(`provider ${args.provider} (${availability?.version || 'version unknown'}), model ${args.model}, `
+    log(`provider ${args.provider} (${availability?.version || 'version unknown'}), model ${args.model || `${args.defaultModel} (layer default)`}, `
         + `prompt ${providers.promptVersion}`
         + (args.imagery ? `, imagery ${args.imagery}` : ', NO IMAGERY — tags and geometry only'));
     log(`area ${args.bbox.join(',')}`);
@@ -600,7 +620,7 @@ async function main() {
     // answer from this provider and model which did NOT settle it. It is skipped — rerunning the same
     // model would reproduce the same non-answer — but it is not done, and calling it done sent me
     // looking for stale snapshots when six tiles of a batch reported nothing to run.
-    log(`${queue.length} to run, ${alreadyDone} attempted by ${args.provider}/${args.model} `
+    log(`${queue.length} to run, ${alreadyDone} attempted by ${args.provider}/${args.model || args.defaultModel} `
         + 'and STILL UNRESOLVED (skipped; needs a different model, a split, or a person)'
         + (args.order === 'finish' ? `; they finish ${completedTiles} tile${completedTiles === 1 ? '' : 's'}` : ''));
 
@@ -664,7 +684,7 @@ async function main() {
                 + `${record.armCount} arms · ${record.name} · ${record.durationS ?? '?'}s · ${detail} · `
                 + `ETA ${Math.floor(etaS / 60)}m${String(etaS % 60).padStart(2, '0')}s`);
             if (record.status !== 'completed' && QUOTA_PATTERN.test(String(record.error || ''))) {
-                stopped = `The ${args.provider} CLI reported a limit: ${record.error}`;
+                stopped = `${args.provider} reported a limit: ${record.error}`;
                 return;
             }
         }

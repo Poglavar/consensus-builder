@@ -13,7 +13,8 @@
 // 99% to done in 23 seconds.
 //
 //   node backend/scripts/finish-tiles.js --dry-run
-//   node backend/scripts/finish-tiles.js --provider codex --model gpt-5.6-sol --max-open 3
+//   node backend/scripts/finish-tiles.js --max-open 3                     # metered Claude API
+//   node backend/scripts/finish-tiles.js --provider codex --max-open 3    # subscription CLI
 //
 // Resume is by artifact, twice over: the solver skips junctions it has already solved, and a tile
 // whose junctions are all solved simply reports nothing to do. Re-running after a kill is safe and
@@ -22,14 +23,17 @@ import { spawn } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
+import { DEFAULT_TOPOLOGY_PROVIDER } from '../lane-topology/cli-providers.js';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 
 const DEFAULTS = {
     coverage: path.join(HERE, '../../frontend/topology/coverage.json'),
     solver: path.join(HERE, 'solve-junctions.js'),
-    provider: 'codex',
-    model: 'gpt-5.6-sol',
+    // The metered Claude API, as in solve-junctions.js; --provider claude|codex runs a CLI instead.
+    provider: DEFAULT_TOPOLOGY_PROVIDER,
+    // No model: the shared LLM layer's default for the provider is the model. --model overrides it.
+    model: null,
     city: 'zagreb',
     // A tile with fewer junctions than this is a field with a driveway in it; "100% done" there
     // means nothing, and it is not worth a model run to say so.
@@ -59,8 +63,10 @@ Close the coverage tiles that are within a few junctions of finished.
   --concurrency N     Junctions in flight at once, per tile (default ${DEFAULTS.concurrency}).
   --max-lanes N       Skip junctions with more lanes than this; they are named, never dropped
                       quietly. Nothing above ~50 lanes has ever been solved in one pass.
-  --provider claude|codex   Recognition CLI (default ${DEFAULTS.provider}).
-  --model NAME        Model passed to the CLI (default ${DEFAULTS.model}).
+  --provider anthropic|claude|codex
+                      Recognition provider (default ${DEFAULTS.provider}: the metered Claude
+                      API; claude/codex are the subscription CLIs).
+  --model NAME        Override the model (default: the shared LLM layer's default).
   --city NAME         City key (default ${DEFAULTS.city}).
   --log FILE          Passed through to the solver, one JSON line per junction.
   --dry-run           List the tiles and what they would cost; run nothing.
@@ -148,7 +154,7 @@ function solveTile(args, tile) {
             '--bbox', tile.core.join(','),
             '--city', args.city,
             '--provider', args.provider,
-            '--model', args.model,
+            ...(args.model ? ['--model', args.model] : []),
             '--order', 'finish',
             ...(args.concurrency > 1 ? ['--concurrency', String(args.concurrency)] : []),
             ...(args.maxLanes ? ['--max-lanes', String(args.maxLanes)] : []),

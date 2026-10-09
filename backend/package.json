@@ -13,6 +13,7 @@
         "smoke:prod:parcels": "node scripts/smoke-production-bbox.mjs"
     },
     "dependencies": {
+        "@anthropic-ai/sdk": "^0.126.0",
         "@turf/turf": "^7.3.5",
         "canvas": "^3.2.3",
         "cors": "^2.8.5",

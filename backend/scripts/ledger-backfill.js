@@ -90,7 +90,8 @@ async function main() {
     );
     await pool.end();
 
-    const pending = rows.filter(row => !seen.has(Number(row.id)));
+    // A metered API job was ledgered by the shared layer when it ran, and is not a subscription run.
+    const pending = rows.filter(row => row.provider !== 'anthropic' && !seen.has(Number(row.id)));
     console.log(`${rows.length} jobs with recorded usage · ${rows.length - pending.length} already `
         + `in the ledger · ${pending.length} to write`);
     if (!pending.length) return 0;

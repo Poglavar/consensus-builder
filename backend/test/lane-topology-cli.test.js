@@ -1,16 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { EventEmitter } from 'node:events';
-import { PassThrough } from 'node:stream';
+import { existsSync } from 'node:fs';
 import {
     applyRecognitionPatch,
     buildRecognitionPrompt,
     dominantModel,
     modelAcceptsImagery,
+    DEFAULT_TOPOLOGY_PROVIDER,
     PROVIDER_TIMEOUT_MS,
+    TOPOLOGY_PROVIDERS,
     providerAvailability,
     providerCommand,
     recognitionTargets,
-    runCliTopologyProvider,
+    runTopologyProvider,
     TOPOLOGY_OUTPUT_SCHEMA,
     validateCandidateGraph
 } from '../lane-topology/cli-providers.js';
@@ -446,43 +447,152 @@ describe('lane-topology CLI provider boundary', () => {
 
         // The CLI would drop the image and answer from the tags, and the run would look identical
         // to one that read the orthophoto. Refusing is the only way that stays visible.
-        await expect(runCliTopologyProvider('codex', { deterministicGraph: fanInGraph() }, {
+        await expect(runTopologyProvider('codex', { deterministicGraph: fanInGraph() }, {
             model: 'gpt-5.3-codex-spark',
             imageBuffer: Buffer.from('not really a jpeg'),
-            spawnImpl: () => { throw new Error('the provider must not spawn at all'); }
+            complete: () => { throw new Error('the provider must not run at all'); }
         })).rejects.toThrow(/text only/i);
     });
 
-    it('runs Codex ephemerally in a read-only sandbox with structured output', () => {
-        const args = providerCommand('codex').args({
-            jobDir: '/tmp/topology-job',
-            schemaPath: '/tmp/topology-job/schema.json',
-            outputPath: '/tmp/topology-job/output.json',
-            imagePath: '/tmp/topology-job/orthophoto.jpg'
+    // The spawn, arguments, key stripping, schema conversion and usage parsing belong to the shared
+    // layer (agents/lib/llm-cost/cli.cjs, with its own tests). What this boundary still owns is the
+    // request it hands over and what it makes of the answer.
+    function layerFake(answer = { summary: 'ok', patch_json: JSON.stringify({ connections: [], problems: [] }) }) {
+        const calls = [];
+        return {
+            calls,
+            createCliLlm(config) {
+                return {
+                    async complete(request) {
+                        const image = request.content.find(part => part?.type === 'image');
+                        calls.push({ config, request, imageOnDisk: image ? existsSync(image.path) : null });
+                        return { data: answer, model: 'layer-default-model', usage: null, equivalentUsd: null, raw: null };
+                    }
+                };
+            }
+        };
+    }
+
+    it('hands Codex the crop by path, the output schema, its measured effort and no model id', async () => {
+        const fake = layerFake();
+        await runTopologyProvider('codex', { deterministicGraph: fanInGraph() }, {
+            imageBuffer: Buffer.from('jpeg bytes'),
+            createCliLlm: fake.createCliLlm
         });
-        expect(args).toContain('--ephemeral');
-        expect(args).toContain('read-only');
-        expect(args).toContain('--output-schema');
-        expect(args.slice(args.indexOf('--image'), args.indexOf('--image') + 2))
-            .toEqual(['--image', '/tmp/topology-job/orthophoto.jpg']);
-        expect(args).toContain('model_reasoning_effort="medium"');
-        expect(args).not.toContain('--dangerously-bypass-approvals-and-sandbox');
+        const [{ config, request, imageOnDisk }] = fake.calls;
+        expect(config).toMatchObject({ engine: 'codex', repo: 'consensus-builder', script: 'lane-topology-recognition' });
+        expect(config.timeoutMs).toBe(PROVIDER_TIMEOUT_MS.codex);
+        const image = request.content.find(part => part?.type === 'image');
+        expect(image.path).toMatch(/orthophoto\.jpg$/);
+        expect(config.cwd).toBe(image.path.replace(/\/orthophoto\.jpg$/, ''));
+        expect(imageOnDisk).toBe(true);
+        expect(request.content.some(part => typeof part === 'string' && part.includes('patch_json'))).toBe(true);
+        expect(request.schema).toBe(TOPOLOGY_OUTPUT_SCHEMA);
+        expect(request.effort).toBe('medium');
+        // The layer's default is the model; a call site that names one has pinned it.
+        expect('model' in request).toBe(false);
         expect(TOPOLOGY_OUTPUT_SCHEMA.additionalProperties).toBe(false);
         expect(TOPOLOGY_OUTPUT_SCHEMA.required).toEqual(['summary', 'patch_json']);
         expect(TOPOLOGY_OUTPUT_SCHEMA.properties.patch_json.type).toBe('string');
     });
 
-    it('runs Claude without tools and with JSON schema validation', () => {
-        const args = providerCommand('claude').args({ model: 'sonnet' });
-        expect(args).toContain('--safe-mode');
-        expect(args).toContain('--no-session-persistence');
-        expect(args).toContain('--no-chrome');
-        expect(args).not.toContain('--bare');
-        expect(args).toContain('--tools');
-        expect(args[args.indexOf('--tools') + 1]).toBe('');
-        expect(args.slice(args.indexOf('--model'), args.indexOf('--model') + 2)).toEqual(['--model', 'sonnet']);
-        expect(args).toContain('--json-schema');
-        expect(args).not.toContain('--dangerously-skip-permissions');
+    it('gives Claude its own ceiling, no image when there is no crop, and a model only as an override', async () => {
+        const fake = layerFake();
+        await runTopologyProvider('claude', { deterministicGraph: fanInGraph() }, { createCliLlm: fake.createCliLlm });
+        await runTopologyProvider('claude', { deterministicGraph: fanInGraph() }, {
+            createCliLlm: fake.createCliLlm, model: 'sonnet'
+        });
+        const [plain, overridden] = fake.calls;
+        expect(plain.config.engine).toBe('claude');
+        expect(plain.config.timeoutMs).toBe(PROVIDER_TIMEOUT_MS.claude);
+        expect(plain.request.content.some(part => part?.type === 'image')).toBe(false);
+        expect('model' in plain.request).toBe(false);
+        expect('effort' in plain.request).toBe(false);
+        expect(overridden.request.model).toBe('sonnet');
+    });
+
+    // The default provider: the metered Claude API through the shared layer (llm.cjs), with the
+    // same request the CLIs get. The layer owns the model, the vendor body and the ledger row.
+    function apiFake(answer = { summary: 'ok', patch_json: JSON.stringify({ connections: [], problems: [] }) }) {
+        const calls = [];
+        return {
+            calls,
+            createLlm(config) {
+                return {
+                    async complete(request) {
+                        const image = request.content.find(part => part?.type === 'image');
+                        calls.push({ config, request, imageOnDisk: image ? existsSync(image.path) : null });
+                        return {
+                            data: answer,
+                            model: 'claude-opus-5-5',
+                            usage: { input_tokens: 9000, output_tokens: 1200, cache_read_input_tokens: 0, cache_creation_input_tokens: 0 },
+                            costUsd: 0.075,
+                            raw: { id: 'msg_1', model: 'claude-opus-5-5', stop_reason: 'end_turn' }
+                        };
+                    }
+                };
+            }
+        };
+    }
+
+    it('defaults to the Claude API and keeps both CLIs selectable', () => {
+        expect(DEFAULT_TOPOLOGY_PROVIDER).toBe('anthropic');
+        expect(TOPOLOGY_PROVIDERS).toEqual(['anthropic', 'claude', 'codex']);
+        expect(PROVIDER_TIMEOUT_MS.anthropic).toBeGreaterThan(0);
+    });
+
+    it('hands the API the crop by path, the output schema, a raw SDK client and no model id', async () => {
+        const fake = apiFake();
+        const result = await runTopologyProvider('anthropic', { deterministicGraph: fanInGraph() }, {
+            imageBuffer: Buffer.from('jpeg bytes'),
+            createLlm: fake.createLlm,
+            createCliLlm: () => { throw new Error('the API provider must not reach a CLI'); },
+            jobId: 42
+        });
+        const [{ config, request, imageOnDisk }] = fake.calls;
+        expect(config).toMatchObject({
+            repo: 'consensus-builder',
+            script: 'lane-topology-recognition',
+            meta: { provider: 'anthropic', jobId: 42 }
+        });
+        // A raw client the layer can stream through, not a track()-wrapped one or a CLI engine.
+        expect(typeof config.client?.messages?.create).toBe('function');
+        expect('engine' in config).toBe(false);
+        const image = request.content.find(part => part?.type === 'image');
+        expect(image.path).toMatch(/orthophoto\.jpg$/);
+        expect(imageOnDisk).toBe(true);
+        expect(request.content.some(part => typeof part === 'string' && part.includes('patch_json'))).toBe(true);
+        expect(request.schema).toBe(TOPOLOGY_OUTPUT_SCHEMA);
+        // Neither a model nor an effort: the layer's default model at its default effort, not a tier.
+        expect('model' in request).toBe(false);
+        expect('effort' in request).toBe(false);
+        expect('tier' in request).toBe(false);
+        // Metered: the charge is the price and there is no subscription equivalent.
+        expect(result.usage).toMatchObject({
+            resolvedModel: 'claude-opus-5-5',
+            inputTokens: 9000,
+            outputTokens: 1200,
+            costUsd: 0.075,
+            equivalentUsd: null,
+            numTurns: null
+        });
+        expect(Number.isFinite(result.usage.durationMs)).toBe(true);
+        expect(result.summary).toBe('ok');
+    });
+
+    it('reports the API available only when a key is configured, without spawning anything', () => {
+        const noSpawn = () => { throw new Error('the API has no executable to probe'); };
+        expect(providerAvailability('anthropic', noSpawn, { ANTHROPIC_API_KEY: 'sk-test' }))
+            .toMatchObject({ available: true, indeterminate: false });
+        expect(providerAvailability('anthropic', noSpawn, {}))
+            .toMatchObject({ available: false, indeterminate: false, reason: expect.stringMatching(/ANTHROPIC_API_KEY/) });
+    });
+
+    it('refuses an unknown provider before running anything', async () => {
+        await expect(runTopologyProvider('gemini', { deterministicGraph: fanInGraph() }, {
+            complete: () => { throw new Error('must not run'); }
+        })).rejects.toThrow(/Unknown topology provider/);
+        expect(providerCommand('codex').command).toBe('codex');
     });
 
     // This used to require both providers to share one ceiling, on the reasoning that a provider cut
@@ -510,17 +620,6 @@ describe('lane-topology CLI provider boundary', () => {
                 expect(ceiling).toBeLessThanOrEqual(30 * 60 * 1000);
             });
         });
-    });
-
-    it('gives Claude read-only access to an attached orthophoto in the isolated job directory', () => {
-        const args = providerCommand('claude').args({
-            jobDir: '/tmp/topology-job',
-            imagePath: '/tmp/topology-job/orthophoto.jpg'
-        });
-        expect(args.slice(args.indexOf('--tools'), args.indexOf('--tools') + 2))
-            .toEqual(['--tools', 'Read']);
-        expect(args.slice(args.indexOf('--add-dir'), args.indexOf('--add-dir') + 2))
-            .toEqual(['--add-dir', '/tmp/topology-job']);
     });
 
     it('requires binary ordinary merge and split events in the recognition prompt', () => {
@@ -610,126 +709,54 @@ describe('lane-topology CLI provider boundary', () => {
         });
     });
 
-    it('retains a failed provider stdout tail when stderr is empty', async () => {
-        function failingSpawn() {
-            const child = new EventEmitter();
-            child.stdout = new PassThrough();
-            child.stderr = new PassThrough();
-            child.kill = () => {};
-            child.stdin = {
-                end() {
-                    queueMicrotask(() => {
-                        child.stdout.end('{"error":{"message":"subscription authentication failed"}}');
-                        child.emit('close', 1, null);
-                    });
-                }
-            };
-            return child;
-        }
-
+    // The layer's error carries the CLI's own reason; the runner's quota stop reads it from the job's
+    // error, so it must survive into both the message and the stored tail.
+    it('keeps the CLI refusal in the error and its output tail', async () => {
         let failure;
         try {
-            await runCliTopologyProvider('claude', {
-                selection: {},
-                osmWays: [],
-                deterministicGraph: fanInGraph()
-            }, {
-                spawnImpl: failingSpawn,
-                timeoutMs: 1000
-            });
-        } catch (error) {
-            failure = error;
-        }
-        expect(failure?.message).toContain('subscription authentication failed');
-        expect(failure?.outputTail).toContain('subscription authentication failed');
-    });
-
-    // A CLI echoes the prompt to stdout, so the evidence package's own problem messages look exactly
-    // like API error messages — and being last, they used to win. A real Codex quota refusal was
-    // reported as "4 road arms meet here", which also hid the word the runner watches for to stop a
-    // batch, turning one refusal into a queue of identical failures.
-    it('reports the CLI refusal, not a problem message echoed back from the prompt', async () => {
-        function refusingSpawn() {
-            const child = new EventEmitter();
-            child.stdout = new PassThrough();
-            child.stderr = new PassThrough();
-            child.kill = () => {};
-            child.stdin = {
-                end() {
-                    queueMicrotask(() => {
-                        child.stdout.end('prompt echo … {"message":"4 road arms meet here; '
-                            + 'lane-to-lane movements have not been inferred yet."}');
-                        child.stderr.end("ERROR: You've hit your usage limit. Try again later.");
-                        child.emit('close', 1, null);
+            await runTopologyProvider('codex', { deterministicGraph: fanInGraph() }, {
+                complete: async () => {
+                    throw Object.assign(new Error("llm-cost/cli: codex exit 1: ERROR: You've hit your usage limit."), {
+                        reason: 'errored', raw: { threadId: 't-1' }
                     });
                 }
-            };
-            return child;
-        }
-
-        let failure;
-        try {
-            await runCliTopologyProvider('codex', { deterministicGraph: fanInGraph() }, {
-                spawnImpl: refusingSpawn,
-                timeoutMs: 1000
             });
         } catch (error) {
             failure = error;
         }
         expect(failure?.message).toMatch(/usage limit/i);
-        expect(failure?.message).not.toMatch(/road arms meet here/);
+        expect(failure?.outputTail).toMatch(/usage limit/i);
+        expect(failure?.outputTail).toContain('t-1');
     });
 
-    // Codex states its usage nowhere but the JSONL event stream, so a run that never asked for
-    // events reported nothing — ten solved junctions with no token count at all. Both providers
-    // must land in the same shape or the comparison between them cannot be made.
-    it('reads Codex token usage out of its event stream', async () => {
-        function codexSpawn() {
-            const child = new EventEmitter();
-            child.stdout = new PassThrough();
-            child.stderr = new PassThrough();
-            child.kill = () => {};
-            child.stdin = {
-                end() {
-                    queueMicrotask(() => {
-                        child.stdout.end([
-                            '{"type":"turn.started"}',
-                            '{"type":"item.completed","item":{"type":"agent_message","text":"done"}}',
-                            '{"type":"turn.completed","usage":{"input_tokens":67471,'
-                                + '"cached_input_tokens":52480,"cache_write_input_tokens":11,'
-                                + '"output_tokens":159,"reasoning_output_tokens":40}}'
-                        ].join('\n'));
-                        child.emit('close', 0, null);
-                    });
-                }
-            };
-            return child;
-        }
-
-        const result = await runCliTopologyProvider('codex', {
-            deterministicGraph: fanInGraph()
-        }, {
-            spawnImpl: codexSpawn,
-            timeoutMs: 1000,
-            readFileImpl: async () => JSON.stringify({
-                summary: 'ok',
-                patch_json: JSON.stringify({ connections: [], problems: [] })
+    // Codex states no resolved model and no turn count; the layer names the model it passed and
+    // prices the equivalent from the shared rate table. Both providers land in the same shape, or
+    // the comparison between them cannot be made.
+    it('records Codex token usage from the layer result in the job usage shape', async () => {
+        const result = await runTopologyProvider('codex', { deterministicGraph: fanInGraph() }, {
+            complete: async () => ({
+                data: { summary: 'ok', patch_json: JSON.stringify({ connections: [], problems: [] }) },
+                model: 'gpt-6.1-sol',
+                usage: { input_tokens: 14991, output_tokens: 199, cache_read_input_tokens: 52480, cache_creation_input_tokens: 11 },
+                equivalentUsd: 0.0421,
+                costUsd: 0,
+                raw: { threadId: 't-2' },
+                ms: 222000
             })
         });
 
         expect(result.usage).toEqual({
-            resolvedModel: null,      // codex does not name the model it resolved to
-            // 67,471 reported minus the 52,480 of it that were cached. OpenAI counts input
-            // INCLUSIVE of cached tokens where Anthropic reports them disjoint, and the shared
-            // rate table assumes the latter — billing this verbatim charges the cache twice.
+            resolvedModel: 'gpt-6.1-sol',
             inputTokens: 14991,
-            outputTokens: 199,           // output plus reasoning, which is billed as output
+            outputTokens: 199,
             cacheReadTokens: 52480,
             cacheCreationTokens: 11,
-            equivalentUsd: null,          // Codex states no cost; inventing one would be a guess
-            durationMs: null,
-            numTurns: 1
+            equivalentUsd: 0.0421,
+            costUsd: 0,
+            durationMs: 222000,
+            numTurns: null
         });
+        expect(result.summary).toBe('ok');
     });
 
     // A real Opus probe came back attributed to Haiku: the CLI farms background chores out to a
@@ -774,62 +801,70 @@ describe('lane-topology CLI provider boundary', () => {
         });
     });
 
-    it('asks Codex for the event stream that carries its usage', () => {
-        expect(providerCommand('codex').args({ jobDir: '/tmp/j', schemaPath: '/tmp/s', outputPath: '/tmp/o' }))
-            .toContain('--json');
-    });
-
-    // The envelope carries usage BEFORE the answer, so a large patch pushes the counts out of the
-    // 8000-char output tail entirely — a real run reported "usage not reported" for exactly that
-    // reason. The counts have to be read from the parsed envelope, not scraped back off the tail.
+    // A large patch must not push the usage out of anything: the counts come from the layer's
+    // result, never scraped back off the 8000-char tail, and the claude envelope's own modelUsage
+    // decides which model did the work (the chore model is listed first here, as it really is).
     it('reports the token usage of a run whose patch is far larger than the output tail', async () => {
         const patch = {
             connections: [{ fromLaneId: 'in1', toLaneId: 'out', type: 'continue', confidence: 0.9 }],
             problems: [{ type: 'padding', severity: 'info', message: 'x'.repeat(20000) }]
         };
-        const envelope = JSON.stringify({
+        const envelope = {
             type: 'result',
             usage: { input_tokens: 1234, output_tokens: 567, cache_read_input_tokens: 89 },
-            // Keyed by the resolved id, which is how the alias we asked for becomes recordable.
-            modelUsage: { 'claude-opus-5': { inputTokens: 1234 } },
+            modelUsage: {
+                'claude-haiku-4-5-20251001': { outputTokens: 13, costUSD: 0.000971 },
+                'claude-opus-5': { outputTokens: 554, costUSD: 1.249 }
+            },
             total_cost_usd: 1.25,
             duration_ms: 42000,
-            structured_output: { summary: 'ok', patch_json: JSON.stringify(patch) }
-        });
+            num_turns: 3
+        };
 
-        function spawnImpl() {
-            const child = new EventEmitter();
-            child.stdout = new PassThrough();
-            child.stderr = new PassThrough();
-            child.kill = () => {};
-            child.stdin = {
-                end() {
-                    queueMicrotask(() => {
-                        child.stdout.end(envelope);
-                        child.emit('close', 0, null);
-                    });
-                }
-            };
-            return child;
-        }
-
-        const result = await runCliTopologyProvider('claude', {
+        const result = await runTopologyProvider('claude', {
             selection: {},
             osmWays: [],
             deterministicGraph: fanInGraph()
-        }, { spawnImpl, timeoutMs: 1000 });
+        }, {
+            complete: async () => ({
+                data: { summary: 'ok', patch_json: JSON.stringify(patch) },
+                model: 'claude-haiku-4-5-20251001',
+                usage: { input_tokens: 1234, output_tokens: 567, cache_read_input_tokens: 89, cache_creation_input_tokens: 0 },
+                equivalentUsd: 1.25,
+                costUsd: 0,
+                raw: envelope,
+                ms: 43000
+            })
+        });
 
+        expect(result.outputTail.length).toBeLessThanOrEqual(8000);
         expect(result.outputTail).not.toContain('input_tokens');
         expect(result.usage).toEqual({
             resolvedModel: 'claude-opus-5',
             inputTokens: 1234,
             outputTokens: 567,
             cacheReadTokens: 89,
-            cacheCreationTokens: null,
+            cacheCreationTokens: 0,
             equivalentUsd: 1.25,
+            costUsd: 0,
             durationMs: 42000,
-            numTurns: null
+            numTurns: 3
         });
+        expect(result.graph.connections.some(connection => connection.source === 'claude')).toBe(true);
+    });
+
+    it('keeps what the model returned when its patch is rejected', async () => {
+        let failure;
+        try {
+            await runTopologyProvider('codex', { deterministicGraph: fanInGraph() }, {
+                complete: async () => ({ data: { summary: 'no patch here' }, model: 'm', usage: null, raw: null })
+            });
+        } catch (error) {
+            failure = error;
+        }
+        expect(failure?.message).toMatch(/incomplete topology decision patch/);
+        expect(failure?.outputTail).toContain('PATCH REJECTED');
+        expect(failure?.outputTail).toContain('no patch here');
     });
 
     it('applies a compact decision patch while preserving graph geometry and entities', () => {

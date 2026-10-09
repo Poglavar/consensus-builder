@@ -101,6 +101,50 @@ describe('lane-topology manager API', () => {
         expect(response.body.providers.claude.available).toBe(true);
     });
 
+    // The metered Claude API is what a request that names no provider gets; it needs a key, not
+    // an executable.
+    describe('the default provider', () => {
+        const appWithEnv = env => createRouteApp(setupLaneTopologyRoute, pool, {
+            cliEnabled: true,
+            env,
+            roadsFetchImpl: fakeRoadsApi(),
+            spawnSyncImpl: () => ({ status: 0, stdout: 'test-cli 1.0', stderr: '' })
+        });
+        const unnamed = {
+            city: 'zagreb',
+            bbox: [15.961, 45.797, 15.963, 45.799],
+            imagerySource: 'google-satellite'
+        };
+
+        it('advertises the API beside the CLIs and names it the default', async () => {
+            const response = await request(appWithEnv({ ANTHROPIC_API_KEY: 'sk-test' }))
+                .get('/lane-topology/providers').expect(200);
+            expect(response.body.defaultProvider).toBe('anthropic');
+            expect(response.body.providers.anthropic.available).toBe(true);
+            expect(response.body.providers.codex.available).toBe(true);
+        });
+
+        it('runs an unnamed request on the API when a key is configured', async () => {
+            // Past the provider and availability checks to the request's own validation.
+            const response = await request(appWithEnv({ ANTHROPIC_API_KEY: 'sk-test' }))
+                .post('/lane-topology/process').send(unnamed).expect(400);
+            expect(response.body.error).toBe('Unknown orthophoto source.');
+        });
+
+        it('refuses an unnamed request without a key, naming the API and the missing key', async () => {
+            const response = await request(appWithEnv({}))
+                .post('/lane-topology/process').send(unnamed).expect(503);
+            expect(response.body.error).toMatch(/^anthropic is not available \(ANTHROPIC_API_KEY/);
+            expect(pool.calls).toHaveLength(0);
+        });
+
+        it('still rejects a provider it does not know', async () => {
+            const response = await request(appWithEnv({ ANTHROPIC_API_KEY: 'sk-test' }))
+                .post('/lane-topology/process').send({ ...unnamed, provider: 'gemini' }).expect(400);
+            expect(response.body.error).toContain('anthropic, claude, codex');
+        });
+    });
+
     it('advertises the Zagreb CDOF source and describes a bounded Savska crop', async () => {
         const sources = await request(app).get('/lane-topology/imagery/sources').expect(200);
         expect(sources.body.sources).toContainEqual(expect.objectContaining({
