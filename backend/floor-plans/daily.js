@@ -12,16 +12,20 @@ import { processAssets } from './process-assets.js';
 import { matchBuildingCandidates } from './building-links.js';
 import { seedReviewedBindings,resolveBuildingLinks } from './building-resolution.js';
 import { enqueuePlanTasks,interpretPlans } from './interpret-plans.js';
-import { DEFAULT_MODEL,PROCESSOR } from './plan-reading.js';
+import { PROCESSOR } from './plan-reading.js';
 import { computeCost } from '../../../agents/lib/llm-cost/index.mjs';
+import { resolveCall } from '../../../agents/lib/llm-cost/llm.mjs';
+
+// The model the shared layer will run (defaults.json); read here only to check its pricing and record it.
+const layerModel=()=>resolveCall('anthropic').model;
 
 const exec=promisify(execFile);
 const REQUIRED_TABLES=['agency','site','target','blob','observation','listing','extraction','model_revision',
  'building_binding','plan_task','ai_batch','processed_plan','pipeline_run'];
 
-export async function productionPreflight(db,{env=process.env,python=env.FLOOR_PLAN_PYTHON || 'python3',model=DEFAULT_MODEL,price=computeCost,
+export async function productionPreflight(db,{env=process.env,python=env.FLOOR_PLAN_PYTHON || 'python3',price=computeCost,
  runtimeCheck=async()=>exec(python,[fileURLToPath(new URL('../scripts/floor-plan-runtime-check.py',import.meta.url))],{timeout:20000})}={}) {
- const checks={schema:false,sites:false,sourceTargets:false,python:false,apiKey:false,pricing:false};
+ const checks={schema:false,sites:false,sourceTargets:false,python:false,apiKey:false,pricing:false},model=layerModel();
  const errors=[];
  const relationNames=[...REQUIRED_TABLES.map(name=>`floor_plan.${name}`),'consensus.building_floor_model'];
  const relations=(await db.query(`SELECT name,to_regclass(name) AS relation FROM unnest($1::text[]) AS q(name)`,[relationNames])).rows;
@@ -92,7 +96,7 @@ async function verifiedOutcome(db) {
 
 export async function daily(db,options={}) {
  const maxMinutes=options.maxMinutes ?? 180,maxPages=options.maxPages ?? 10000,maxAssets=options.maxAssets ?? 100;
- const budgetUsd=options.dailyBudgetUsd ?? 5,chunkSize=options.chunkSize ?? 1,model=options.model || DEFAULT_MODEL;
+ const budgetUsd=options.dailyBudgetUsd ?? 5,chunkSize=options.chunkSize ?? 1,model=layerModel();
  if(!Number.isFinite(maxMinutes)||maxMinutes<=0||!Number.isInteger(maxPages)||maxPages<1
   ||!Number.isInteger(maxAssets)||maxAssets<1||!Number.isFinite(budgetUsd)||budgetUsd<0
   ||!Number.isInteger(chunkSize)||chunkSize<1||chunkSize>20) throw new Error('Invalid daily floor-plan limits.');
@@ -144,7 +148,7 @@ export async function daily(db,options={}) {
   await stage('extraction',()=>deps.processAssets(db,{maxAssets,maxMinutes:Math.min(remainingMs()/60000,maxMinutes*0.2),matchedOnly:true,deadline}));
   await stage('enqueuePlanTasks',()=>deps.enqueuePlanTasks(db,{limit:options.enqueueLimit||1000,deadline}));
   const interpretation=await stage('interpretPlans',()=>deps.interpretPlans(db,{dailyBudgetUsd:budgetUsd,
-   chunkSize,model,submit:!options.noAI,deadline}));
+   chunkSize,submit:!options.noAI,deadline}));
   await stage('publishProcessedPlans',async()=>{
    const publish=options.dependencies?.publishProcessedPlans || (await import('./publish-plans.js')).publishProcessedPlans;
    return publish(db,{limit:options.publishLimit||100,deadline});

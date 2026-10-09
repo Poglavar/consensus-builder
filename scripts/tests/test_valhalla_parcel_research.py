@@ -184,6 +184,45 @@ class ResumeAndReceiptTests(unittest.TestCase):
             self.assertEqual(set(answer["reviewedIds"]), set(tasks))
             self.assertEqual(len(calls), 2)
 
+    def _queue_builder_runner(self, root):
+        args = SimpleNamespace(repo_root=root, state_dir=Path("state"), queue=Path("queue.json"),
+                               source=Path("source.csv.gz"), job_name="test", codex="codex",
+                               timeout_seconds=60)
+        return runner.Runner(args)
+
+    def test_prebuilt_queue_reused_after_date_rollover(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            folder = root / "world-parcels" / "research" / "overnight-next-1301-1400-2026-10-08"
+            folder.mkdir(parents=True)
+            queue = folder / "pending-queue.json"
+            queue.write_text("{}")
+            instance = self._queue_builder_runner(root)
+            self.assertEqual(instance._write_queue_builder(1301, 1400), queue.resolve())
+
+    def test_ambiguous_prebuilt_cohorts_are_rejected(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            for date in ("2026-10-08", "2026-10-09"):
+                folder = root / "world-parcels" / "research" / f"overnight-next-1301-1400-{date}"
+                folder.mkdir(parents=True)
+                (folder / "pending-queue.json").write_text("{}")
+            instance = self._queue_builder_runner(root)
+            with self.assertRaisesRegex(RuntimeError, "multiple prebuilt cohort folders"):
+                instance._write_queue_builder(1301, 1400)
+
+    def test_prebuilt_folder_without_queue_is_rejected(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            folder = root / "world-parcels" / "research" / "overnight-next-1301-1400-2026-10-08"
+            folder.mkdir(parents=True)
+            marker = folder / "ranked-population.json"
+            marker.write_text("{}")
+            instance = self._queue_builder_runner(root)
+            with self.assertRaisesRegex(RuntimeError, "without pending queue"):
+                instance._write_queue_builder(1301, 1400)
+            self.assertTrue(marker.exists())
+
 
 class FailureClassificationAndPromptTests(unittest.TestCase):
     def test_provider_403_in_tool_output_is_not_codex_systemic_failure(self):

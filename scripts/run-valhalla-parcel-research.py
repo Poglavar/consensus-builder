@@ -30,8 +30,13 @@ DEFAULT_QUEUE = Path("world-parcels/research/overnight-next-1201-1300-2026-10-09
 DEFAULT_SOURCE = Path("tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz")
 HANDOFF = Path("world-parcels/research/valhalla-handoff-2026-10-09.md")
 DEFAULT_STATE = Path("tmp/valhalla-parcel-research")
-RESEARCH_MODEL = "gpt-5.6-luna"
-REVIEW_MODEL = "gpt-6-sol"
+# No model ids here: the shared LLM layer (agents/lib/llm-cost, defaults.json "cli" → codex) names
+# the model, so switching it is one edit for every repo. --research-model / --review-model override.
+RESEARCH_EFFORT = "low"
+REVIEW_EFFORT = "high"
+LLM_COST_DIR = DEFAULT_ROOT.parent / "agents" / "lib" / "llm-cost"
+LEDGER_REPO = "consensus-builder"
+LEDGER_SCRIPT = "valhalla-parcel-research"
 MAX_RETRIES = 3
 MAX_WORKERS = 3
 TURN_TIMEOUT_SECONDS = 90 * 60
@@ -211,6 +216,41 @@ def validate_sample_file(path: Path) -> tuple[int, list[str]]:
     return len(polygons), errors
 
 
+def llm_cost_module():
+    """The shared LLM layer, imported on first use so --status/--stop work without it."""
+    if str(LLM_COST_DIR) not in sys.path:
+        sys.path.insert(0, str(LLM_COST_DIR))
+    import llm_cost  # noqa: E402 -- sibling checkout, not a package dependency
+    return llm_cost
+
+
+def codex_usage(stdout_text: str) -> dict[str, int] | None:
+    """Token usage from a `codex exec --json` stream, in the ledger's (Anthropic-style) shape.
+
+    Codex states usage only on turn.completed. Its input_tokens INCLUDE the cached ones and its
+    output_tokens already include reasoning, so cached input is split out and nothing is added."""
+    totals = {"input_tokens": 0, "output_tokens": 0, "cache_read_input_tokens": 0, "cache_creation_input_tokens": 0}
+    seen = False
+    for line in stdout_text.splitlines():
+        line = line.strip()
+        if not line.startswith("{"):
+            continue
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        usage = event.get("usage") if isinstance(event, dict) and event.get("type") == "turn.completed" else None
+        if not isinstance(usage, dict):
+            continue
+        seen = True
+        cached = int(usage.get("cached_input_tokens") or 0)
+        totals["input_tokens"] += max(0, int(usage.get("input_tokens") or 0) - cached)
+        totals["cache_read_input_tokens"] += cached
+        totals["cache_creation_input_tokens"] += int(usage.get("cache_write_input_tokens") or 0)
+        totals["output_tokens"] += int(usage.get("output_tokens") or 0)
+    return totals if seen else None
+
+
 def systemic_codex_failure(returncode: int | None, stdout_text: str, stderr_text: str) -> bool:
     """Detect Codex authentication/usage failures, not source-server HTTP failures."""
     if not returncode:
@@ -369,6 +409,7 @@ class Runner:
         self.active_processes: dict[int, dict[str, Any]] = {}
         self.codex = args.codex or "codex"
         self.state: dict[str, Any] = {}
+        self._models: dict[str, str] = {}
 
     def log(self, message: str, **fields: Any) -> None:
         event = {"at": utc_now(), "message": message, **fields}
@@ -454,6 +495,39 @@ class Runner:
                 "-m", call["model"], "-c", f'model_reasoning_effort="{call["effort"]}"',
                 "--json", "--output-schema", str(schema_path), "--output-last-message", str(answer_path), "-"]
 
+    def _model_for(self, role: str) -> str:
+        """The override for this role, else the shared layer's codex model (resolved once per run)."""
+        override = getattr(self.args, "review_model" if role == "reviewer" else "research_model", None)
+        if override:
+            return override
+        if "default" not in self._models:
+            self._models["default"] = llm_cost_module().create_cli_llm(
+                "codex", repo=LEDGER_REPO, script=LEDGER_SCRIPT, cwd=self.root).model
+        return self._models["default"]
+
+    def _ledger_call(self, call: dict[str, Any], stdout_text: str, returncode: int | None) -> None:
+        """One subscription row per Codex turn that consumed tokens, failed turns included.
+
+        The runner spawns Codex itself (workspace-write sandbox, web search, network, owned process
+        groups) — capabilities the layer's read-only codex engine does not offer — so the layer
+        ledgers it through record_subscription_run rather than complete()."""
+        usage = codex_usage(stdout_text)
+        if not usage:
+            return
+        try:
+            llm_cost = llm_cost_module()
+            try:
+                equivalent = llm_cost.compute_cost(call["model"], usage)
+            except Exception:
+                equivalent = None  # unpriced model: the tokens are still recorded
+            llm_cost.record_subscription_run(LEDGER_REPO, LEDGER_SCRIPT, call["model"], usage,
+                                             equivalent_usd=equivalent, engine="codex", role=call["role"],
+                                             taskId=call.get("taskId"), callId=call.get("callId"),
+                                             effort=call["effort"], exitCode=returncode)
+        except Exception as exc:
+            # Accounting must not take down the research it accounts for; say so loudly instead.
+            self.log("llm-cost ledger write failed", error=str(exc), taskId=call.get("taskId"))
+
     def _start_call(self, call: dict[str, Any]) -> dict[str, Any]:
         call_id = f"{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S')}-{uuid.uuid4().hex[:8]}"
         call["callId"] = call_id
@@ -494,6 +568,7 @@ class Runner:
                 if self.stop_requested:
                     break
                 try:
+                    call["model"] = self._model_for(call["role"])
                     item = self._start_call(call)
                     launched.append(item)
                     self.active_processes[item["process"].pid] = item
@@ -551,6 +626,9 @@ class Runner:
                 stderr_text = item.get("stderrPath").read_text(errors="replace") if item.get("stderrPath") and item["stderrPath"].exists() else item.get("error", "")
                 stdout_text = item.get("stdoutPath").read_text(errors="replace") if item.get("stdoutPath") and item["stdoutPath"].exists() else ""
                 systemic = systemic_codex_failure(returncode, stdout_text, stderr_text)
+                # An injected popen ran no CLI and spent no tokens; only a real run is ledgered.
+                if proc and self.popen_factory is subprocess.Popen:
+                    self._ledger_call(item["call"], stdout_text, returncode)
                 result = {"call": item["call"], "returncode": returncode, "answer": answer,
                           "stdoutPath": str(item.get("stdoutPath", "")), "stderrPath": str(item.get("stderrPath", "")),
                           "answerPath": str(item.get("answerPath", "")), "timedOut": item.get("timedOut", False),
@@ -647,8 +725,9 @@ Review acceptance metrics from original first-party response/cache artifacts, no
 
 Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds` (only task IDs fully reviewed), `heldIds` (reviewed items that remain held), `summary`, and `systemicFailure`. The allowed IDs are exactly the IDs listed above. Do not claim a review task completed if you did not inspect and record it."""
 
-    def _call(self, role: str, task_id: str, prompt: str, model: str, effort: str) -> dict[str, Any]:
-        return {"role": role, "taskId": task_id, "prompt": prompt, "model": model, "effort": effort}
+    def _call(self, role: str, task_id: str, prompt: str, effort: str) -> dict[str, Any]:
+        # The model is resolved at launch (see _model_for), not here.
+        return {"role": role, "taskId": task_id, "prompt": prompt, "effort": effort}
 
     def _queue_path(self) -> Path:
         if self.state_path.exists():
@@ -729,7 +808,7 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
     def _review_call(self, city_items: list[dict[str, Any]], root_task_ids: list[str], identities: list[dict[str, Any]] | None = None) -> dict[str, Any]:
         task_id = "review:" + ",".join([f"city:{item['cityCode']}" for item in city_items]
                                         + root_task_ids + [f"identity:{item['cityCode']}" for item in (identities or [])])
-        return self._call("reviewer", task_id, self._build_review_prompt(city_items, root_task_ids, identities), REVIEW_MODEL, "high")
+        return self._call("reviewer", task_id, self._build_review_prompt(city_items, root_task_ids, identities), REVIEW_EFFORT)
 
     def _record_city_attempts(self, cities: list[dict[str, Any]], cohort_dir: Path,
                               parallel_reviewer: dict[str, Any] | None = None) -> tuple[list[dict[str, Any]], dict[str, Any] | None, bool]:
@@ -750,7 +829,7 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                 calls.append(self._call("research", f"city:{code}",
                                         self._build_research_prompt(city, cohort_dir, entry["attempts"],
                                                                     entry.get("lastValidationErrors")),
-                                        RESEARCH_MODEL, "low"))
+                                        RESEARCH_EFFORT))
             if parallel_reviewer is not None and attempt_round == 0:
                 calls.append(parallel_reviewer)
             self.save_state()
@@ -942,13 +1021,22 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
         return receipt
 
     def _write_queue_builder(self, start_rank: int, end_rank: int) -> Path:
-        output = self.root / "world-parcels" / "research" / f"overnight-next-{start_rank}-{end_rank}-{datetime.now(timezone.utc).date().isoformat()}"
-        queue_path = output / "pending-queue.json"
-        if output.exists():
-            if not queue_path.exists():
-                raise RuntimeError(f"refusing to overwrite existing range folder without pending queue: {output}")
-            self.log("reusing existing range queue; no artifacts are cleared", output=str(output))
+        research_root = self.root / "world-parcels" / "research"
+        output = research_root / f"overnight-next-{start_rank}-{end_rank}-{datetime.now(timezone.utc).date().isoformat()}"
+        matches = sorted(research_root.glob(f"overnight-next-{start_rank}-{end_rank}-*"))
+        if len(matches) > 1:
+            raise RuntimeError(f"multiple prebuilt cohort folders match ranks {start_rank}-{end_rank}; refusing ambiguous reuse: {matches}")
+        if matches:
+            existing = matches[0]
+            if not existing.is_dir():
+                raise RuntimeError(f"matching prebuilt cohort path is not a directory: {existing}")
+            queue_path = existing / "pending-queue.json"
+            if not queue_path.is_file():
+                raise RuntimeError(f"refusing to overwrite existing range folder without pending queue: {existing}")
+            self.log("reusing prebuilt range queue independent of cohort date; no artifacts are cleared", output=str(existing))
             return queue_path
+        if output.exists():
+            raise RuntimeError(f"refusing to overwrite existing range folder without pending queue: {output}")
         source = self.root / self.args.source
         if not source.exists():
             raise FileNotFoundError(f"cannot advance ranks without the WUP source file: {source}")
@@ -1220,6 +1308,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE, help="official local WUP 2025 gzip source for later ranges")
     parser.add_argument("--state-dir", type=Path, default=DEFAULT_STATE)
     parser.add_argument("--codex", help="Codex CLI executable (default: codex from PATH)")
+    parser.add_argument("--research-model", help="override the research model (default: the shared LLM layer's codex model)")
+    parser.add_argument("--review-model", help="override the review model (default: the shared LLM layer's codex model)")
     parser.add_argument("--max-turn-minutes", type=int, default=90, help="per Codex turn timeout, capped at 90 minutes")
     parser.add_argument("--max-retries", type=int, default=3, help="per-city/per-review retry cap (maximum 3)")
     parser.add_argument("--range-size", type=int, default=100, help="rank range generated after the first fixed queue")

@@ -21,7 +21,8 @@
 //      AGENT_LIFECYCLE_LENS_SERVICE_URL + AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN (optional expiry verdicts),
 //      AGENT_DAILY_USDC_CAP (0.35), AGENT_API_BASE (default http://localhost:$API_PORT),
 //      SOLANA_RPC_URL, TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID (optional, one summary per run).
-//      ANTHROPIC_API_KEY/AGENT_LLM_* are read only with explicit --controller llm.
+//      ANTHROPIC_API_KEY/AGENT_LLM_DAILY_CAP_USD are read only with explicit --controller llm; the model
+//      is the shared LLM layer's default (agents/lib/llm-cost/defaults.json), never set here.
 
 import 'dotenv/config';
 import fs from 'node:fs';
@@ -36,7 +37,7 @@ import { fetchCandidateParcels } from './parcel-source.js';
 import { planCandidates } from './planner.js';
 import { buildProposalRecord } from './record-builder.js';
 import { selectAlgorithmicPicks } from './algorithmic-picker.js';
-import { buildPickRequests, parsePicks, estimateBatchCostUsd, runPickBatch, pickCustomId, DEFAULT_MODEL } from './llm-picker.js';
+import { buildPickRequests, parsePicks, estimateBatchCostUsd, runPickBatch, pickCustomId, createAgentLlm } from './llm-picker.js';
 import { createPaidClient, paymentIdForProposal, postAgentProposal } from './x402-client.js';
 import { mintProposal } from './minter.js';
 import { resolveLens, describeLensChoice } from './lens-directory-client.js';
@@ -277,7 +278,14 @@ async function main() {
     const args = parseArgs(process.argv.slice(2));
     const day = args.day || todayUtc();
     const controller = args.controller;
-    const model = controller === 'llm' ? (process.env.AGENT_LLM_MODEL || DEFAULT_MODEL) : null;
+    // The shared layer picks the model. Constructing the client sends nothing, so a dry run with
+    // --controller llm still builds (and prices) the exact batch lines without an API key.
+    let llm = null;
+    if (controller === 'llm') {
+        const { default: Anthropic } = await import('@anthropic-ai/sdk');
+        llm = createAgentLlm({ client: new Anthropic(), meta: { runId: day } });
+    }
+    const model = llm ? llm.model : null;
     const apiBase = (args.api || process.env.AGENT_API_BASE || `http://localhost:${process.env.API_PORT || 3000}`).replace(/\/$/, '');
     const rpcUrl = process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com';
     const personas = loadPersonas(args.persona);
@@ -286,7 +294,7 @@ async function main() {
         password: process.env.PGPASSWORD, database: process.env.PGDATABASE
     });
     const mode = args.dryRun ? 'dry-run' : 'live';
-    log(`${mode} · day ${day} · ${personas.length} persona(s) · controller ${controller}${model ? ` (${model})` : ' ($0 model spend)'} · api ${apiBase}`);
+    log(`${mode} · day ${day} · ${personas.length} persona(s) · controller ${controller}${llm ? ` (${llm.model}, effort ${llm.effort})` : ' ($0 model spend)'} · api ${apiBase}`);
 
     const failures = [];
     const report = [];
@@ -378,9 +386,9 @@ async function main() {
             }
         } else {
             const needPicks = needDecision.filter((entry) => entry.candidates.length);
-            const requests = buildPickRequests({ runId: `${day}`, day, entries: needPicks, model });
+            const requests = buildPickRequests({ llm, runId: `${day}`, day, entries: needPicks });
             const requestsByPersona = new Map(needPicks.map((entry, index) => [entry.persona.name, requests[index]]));
-            const estimate = estimateBatchCostUsd(requests, model);
+            const estimate = estimateBatchCostUsd(requests);
             const spent = args.live ? await dailySpendUsd(pool, day) : 0;
             const cap = dailyCapUsd(process.env);
             log(`batch: ${requests.length} request(s) · estimated ≤ $${estimate.toFixed(4)} · spent today $${spent.toFixed(4)} · cap $${cap}`);
@@ -412,15 +420,13 @@ async function main() {
                             model: request.params.model,
                             maxTokens: request.params.max_tokens,
                             systemPrompt: request.params.system,
-                            userPrompt: request.params.messages?.[0]?.content ?? null
+                            userPrompt: request.params.messages?.[0]?.content?.[0]?.text ?? null
                         }
                     } });
                 }
                 const existingBatchId = needPicks.find((e) => e.run?.summary?.batchId)?.run.summary.batchId ?? null;
-                const { default: Anthropic } = await import('@anthropic-ai/sdk');
-                const client = new Anthropic();
                 const batch = await runPickBatch({
-                    client, requests, model, runId: day, existingBatchId,
+                    llm, requests, existingBatchId,
                     onProgress: (p) => log(`batch ${p.batchId ?? ''}: ${p.status ?? ''} ${p.succeeded ?? 0} ok / ${p.errored ?? 0} err / ${p.processing ?? 0} processing`)
                 });
                 for (const e of needPicks) {
@@ -432,15 +438,16 @@ async function main() {
                 }
                 for (const e of needPicks) {
                     const result = batch.results.find((r) => r.customId === pickCustomId(day, e.persona.name));
+                    // A refused or truncated item was still paid for: its cost reaches the daily cap either way.
+                    if (result && typeof result.costUsd === 'number') {
+                        await recordCosts(pool, e.runId, [{ item: result.customId, provider: 'anthropic', model: result.model || model, batchId: batch.batchId, usage: result.usage, usd: result.costUsd }]);
+                    }
                     if (!result || result.error) {
                         failures.push(`${e.persona.name}: batch item ${result?.error ?? 'missing'}`);
                         await updateRun(pool, e.runId, { status: 'failed', summaryPatch: {
                             outcome: 'failed', error: result?.error ?? 'batch item missing'
                         } });
                         continue;
-                    }
-                    if (typeof result.costUsd === 'number') {
-                        await recordCosts(pool, e.runId, [{ item: result.customId, provider: 'anthropic', model, batchId: batch.batchId, usage: result.usage, usd: result.costUsd }]);
                     }
                     const { picks, rejected } = parsePicks(result.text, e.candidates, e.persona.dailyProposals);
                     const withIds = picks.map((pick, index) => ({ ...pick, proposalId: proposalIdFor(e.persona, day, index) }));
@@ -450,7 +457,7 @@ async function main() {
                         picks: withIds,
                         rejectedPicks: rejected,
                         pickCostUsd: result.costUsd ?? null,
-                        decisionResult: { controller: 'llm', model, batchId: batch.batchId, usage: result.usage ?? null, costUsd: result.costUsd ?? null },
+                        decisionResult: { controller: 'llm', model: result.model || model, batchId: batch.batchId, usage: result.usage ?? null, costUsd: result.costUsd ?? null },
                         ...(completion.outcome ? { outcome: completion.outcome } : {})
                     } });
                     log(`${e.persona.name} chosen: ${withIds.length} pick(s) (${rejected.length} rejected) · $${(result.costUsd ?? 0).toFixed(4)}`);
