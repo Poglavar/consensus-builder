@@ -7,15 +7,17 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Anthropic from '@anthropic-ai/sdk';
-import { computeCost,record } from '../../../agents/lib/llm-cost/index.mjs';
-import { submitBatch,pollBatch } from '../../../agents/lib/llm-cost/batch.mjs';
+import { computeCost } from '../../../agents/lib/llm-cost/index.mjs';
+import { createLlm } from '../../../agents/lib/llm-cost/llm.mjs';
 import { fingerprint } from '../buildings/floor-models.js';
-import { buildReadingRequest,parseReading,PROCESSOR,DEFAULT_MODEL,MAX_OUTPUT_TOKENS } from './plan-reading.js';
+import { buildReadingRequest,parseReading,PROCESSOR,MAX_OUTPUT_TOKENS } from './plan-reading.js';
+import { READING_SCHEMA } from './reading-schema.js';
 import { verifyRasterEvidence } from './raster-evidence.js';
 import { sourceGeometry } from './source-geometry.js';
 
 const exec=promisify(execFile);
-const PROVIDER='anthropic';
+// Where this spend lands in the shared ledger (`llm-cost --repo consensus-builder --by script`).
+const LEDGER={repo:'consensus-builder',script:'floor-plan-vision'};
 export function taskContext(row) {
     return {building:{city:row.building_city,source:row.building_source,ownerId:row.building_owner_id||'',
         buildingId:row.building_id,name:row.building_evidence?.name||row.building_id,footprint:row.building_evidence?.footprint||null},
@@ -131,8 +133,10 @@ export async function storeReading(db,task,reading,{associationCurrent=true}={})
     return {ready,needsReview,notPlan:reading.notPlan?1:0};
 }
 
-export async function interpretPlans(db,{dailyBudgetUsd=0,chunkSize=1,model=DEFAULT_MODEL,submit=true,
-    maxOutputTokens=MAX_OUTPUT_TOKENS,client,price=computeCost,ledger=record,render=renderTask,verifyRaster=verifyRasterEvidence,log=console.log,deadline=Infinity}={}) {
+// The shared layer chooses the model, builds the requests, and prices and ledgers every collected
+// item at the model that answered. `price` only sizes the pre-submission budget reservation.
+export async function interpretPlans(db,{dailyBudgetUsd=0,chunkSize=1,submit=true,
+    maxOutputTokens=MAX_OUTPUT_TOKENS,client,price=computeCost,render=renderTask,verifyRaster=verifyRasterEvidence,log=console.log,deadline=Infinity}={}) {
     if(!Number.isFinite(dailyBudgetUsd)||dailyBudgetUsd<0||!Number.isInteger(chunkSize)||chunkSize<1||chunkSize>20) throw new Error('Invalid AI budget or chunk size (1..20).');
     if(!Number.isInteger(maxOutputTokens)||maxOutputTokens<256||maxOutputTokens>MAX_OUTPUT_TOKENS)throw new Error('Invalid output token allowance.');
     const locked=(await db.query(`SELECT pg_try_advisory_lock(hashtext('floor-plan-ai')) AS locked`)).rows[0].locked;
@@ -145,69 +149,75 @@ export async function interpretPlans(db,{dailyBudgetUsd=0,chunkSize=1,model=DEFA
         if(pending.length || (submit&&dailyBudgetUsd>0)) client ||= new Anthropic({maxRetries:0,timeout:60000});
         const timeout=()=>Math.max(1,Math.min(60000,deadline-Date.now()));
         const timedClient=()=>client.withOptions?client.withOptions({timeout:timeout(),maxRetries:0}):client;
+        // A fresh layer per provider call so each call gets the timeout left before the deadline.
+        const llm=()=>createLlm({client:timedClient(),...LEDGER});
         for(const batch of pending) {
             if(Date.now()>=deadline) {result.awaitingBatch++;break;}
-            const state=await pollBatch({client:timedClient(),provider:PROVIDER,batchId:batch.provider_id});
+            const state=await llm().pollBatch(batch.provider_id);
             if(!state.done) {
                 result.awaitingBatch++;
                 if(Date.now()-new Date(batch.created_at).getTime()>26*3600000) result.failed++;
                 continue;
             }
             let collectionDeferred=false;
-            for await(const entry of await timedClient().messages.batches.results(batch.provider_id)) {
-                if(Date.now()>=deadline) {collectionDeferred=true;break;}
-                const task=(await db.query('SELECT * FROM floor_plan.plan_task WHERE id=$1 AND batch_id=$2',[entry.custom_id,batch.id])).rows[0];
+            // collectBatch ledgers each item BEFORE yielding it, so the deadline is checked after an
+            // item is stored, never between ledgering and storing it. Re-reading a partly collected
+            // batch still re-ledgers its earlier items (the layer has no skip hook); the ledger
+            // rows carry batchId+customId, so such duplicates can be told apart.
+            for await(const item of llm().collectBatch(batch.provider_id,{schema:READING_SCHEMA})) {
+                const task=(await db.query('SELECT * FROM floor_plan.plan_task WHERE id=$1 AND batch_id=$2',[item.customId,batch.id])).rows[0];
                 if(!task) throw new Error('Batch returned an unknown task.');
                 if(task.status!=='submitted') continue;
-                if(entry.result?.type!=='succeeded') {
-                    await db.query(`UPDATE floor_plan.plan_task SET status='error',error=$2,updated_at=now() WHERE id=$1`,[task.id,JSON.stringify(entry.result)]);
-                    result.failed++;continue;
-                }
-                const message=entry.result.message,cost=price(message.model||batch.model,message.usage,{batch:true});
-                if(!Number.isFinite(cost)||cost<0) throw new Error('Unpriced paid response; cannot continue without cost accounting.');
-                const firstReceipt=task.cost_usd===null;
-                await db.query(`UPDATE floor_plan.plan_task SET usage=$2,cost_usd=$3,result=result||$4::jsonb,updated_at=now() WHERE id=$1`,
-                    [task.id,JSON.stringify(message.usage),cost,JSON.stringify({message})]);
-                if(firstReceipt) ledger({repo:'consensus-builder',script:'floor-plan-vision',model:message.model||batch.model,
-                    usage:message.usage,cost_usd:cost,batch:true,meta:{taskId:task.id,batchId:batch.provider_id,sourceSha256:task.source_sha256,page:task.page}});
-                result.costUsd+=cost;
-                try {
-                    if(message.stop_reason!=='tool_use') throw new Error(`Incomplete structured response: ${message.stop_reason}`);
-                    const calls=message.content.filter(p=>p.type==='tool_use'&&p.name==='record_floor_plan');
-                    if(calls.length!==1) throw new Error('Expected exactly one structured floor-plan reading.');
-                    const reading=parseReading(JSON.stringify(calls[0].input),task,{...task.result.image,model:message.model||batch.model});
-                    if(reading.plans.length) {
-                        try {
-                            const cleanImage=await render(db,task,{deadline,includeEvidence:false});
-                            await verifyRaster(reading,cleanImage,{deadline});
-                        } catch(error) {
-                            for(const plan of reading.plans) plan.quality.issues.push(`Source-raster verification unavailable: ${error.message}`);
+                if(item.reason==='errored') {
+                    await db.query(`UPDATE floor_plan.plan_task SET status='error',error=$2,updated_at=now() WHERE id=$1`,[task.id,item.error]);
+                    result.failed++;
+                } else {
+                    const cost=item.costUsd;
+                    if(!Number.isFinite(cost)||cost<0) throw new Error('Unpriced paid response; cannot continue without cost accounting.');
+                    const response={model:item.model,stopReason:item.stopReason??null,error:item.error??null,text:item.text??null};
+                    await db.query(`UPDATE floor_plan.plan_task SET usage=$2,cost_usd=$3,result=result||$4::jsonb,updated_at=now() WHERE id=$1`,
+                        [task.id,JSON.stringify(item.usage),cost,JSON.stringify({response})]);
+                    result.costUsd+=cost;
+                    try {
+                        // A refusal, a truncated answer or invalid JSON was paid for but holds no reading.
+                        if(item.error) throw new Error(`Incomplete structured response: ${item.error}`);
+                        const reading=parseReading(JSON.stringify(item.data),task,{...task.result.image,model:item.model});
+                        if(reading.plans.length) {
+                            try {
+                                const cleanImage=await render(db,task,{deadline,includeEvidence:false});
+                                await verifyRaster(reading,cleanImage,{deadline});
+                            } catch(error) {
+                                for(const plan of reading.plans) plan.quality.issues.push(`Source-raster verification unavailable: ${error.message}`);
+                            }
                         }
+                        const saved=await storeReading(db,task,reading,{associationCurrent:await currentTaskContext(db,task)});
+                        for(const key of ['ready','needsReview','notPlan']) result[key]+=saved[key];
+                    } catch(error) {
+                        await db.query(`UPDATE floor_plan.plan_task SET status='error',error=$2,updated_at=now() WHERE id=$1`,[task.id,error.message]);result.failed++;
                     }
-                    const saved=await storeReading(db,task,reading,{associationCurrent:await currentTaskContext(db,task)});
-                    for(const key of ['ready','needsReview','notPlan']) result[key]+=saved[key];
-                } catch(error) {
-                    await db.query(`UPDATE floor_plan.plan_task SET status='error',error=$2,updated_at=now() WHERE id=$1`,[task.id,error.message]);result.failed++;
+                    result.collected++;log(JSON.stringify({at:new Date().toISOString(),stage:'vision-result',task:task.id,page:task.page,model:item.model,costUsd:cost,...result}));
                 }
-                result.collected++;log(JSON.stringify({at:new Date().toISOString(),stage:'vision-result',task:task.id,page:task.page,costUsd:cost,...result}));
+                if(Date.now()>=deadline) {collectionDeferred=true;break;}
             }
             const incomplete=Number((await db.query(`SELECT count(*) AS n FROM floor_plan.plan_task WHERE batch_id=$1 AND status='submitted'`,[batch.id])).rows[0].n);
-            if(collectionDeferred) {result.awaitingBatch++;break;}
+            if(incomplete&&collectionDeferred) {result.awaitingBatch++;break;}
             if(incomplete) throw new Error(`Completed batch omitted ${incomplete} task results.`);
             await db.query(`UPDATE floor_plan.ai_batch SET status='complete',updated_at=now() WHERE id=$1`,[batch.id]);
+            if(collectionDeferred) break;
         }
         const unresolved=Number((await db.query(`SELECT count(*) AS n FROM floor_plan.ai_batch WHERE status IN ('submitted','unknown')`)).rows[0].n);
         if(submit&&dailyBudgetUsd>0&&!unresolved&&Date.now()<deadline) {
             const tasks=(await db.query(`SELECT * FROM floor_plan.plan_task WHERE status='queued' AND processor=$2 ORDER BY created_at,id LIMIT $1`,[chunkSize,PROCESSOR])).rows;
             const requests=[],accepted=[];let reserve=0,used=await budgetUsed(db);
+            const reader=createLlm({client,...LEDGER});
             for(const task of tasks) {
                 if(Date.now()>=deadline) break;
                 try {
                     if(!await currentTaskContext(db,task)) throw new Error('Source or building association changed before processing.');
-                    const image=await render(db,task,{deadline}),request=buildReadingRequest(task,image,model,{maxOutputTokens});
+                    const image=await render(db,task,{deadline}),request=buildReadingRequest(reader,task,image,{maxOutputTokens});
                     if(Date.now()>=deadline) break;
-                    const tokens=await client.messages.countTokens({model,system:request.params.system,messages:request.params.messages,
-                        tools:request.params.tools,tool_choice:request.params.tool_choice},{timeout:timeout()});
+                    const {model,system,messages,output_config}=request.params;
+                    const tokens=await client.messages.countTokens({model,system,messages,output_config},{timeout:timeout()});
                     const maximum=reservationUsd(model,tokens.input_tokens,price,request.params.max_tokens);
                     if(used+reserve+maximum>dailyBudgetUsd) {result.budgetDeferred++;break;}
                     await db.query(`UPDATE floor_plan.plan_task SET result=$2,updated_at=now() WHERE id=$1`,[task.id,JSON.stringify({image:{width:image.width,height:image.height,evidence:image.evidence},reservedUsd:maximum})]);
@@ -220,15 +230,15 @@ export async function interpretPlans(db,{dailyBudgetUsd=0,chunkSize=1,model=DEFA
                 const id=randomUUID();
                 await db.query('BEGIN');
                 try {
-                    await db.query(`INSERT INTO floor_plan.ai_batch(id,model,status,reserved_usd) VALUES($1,$2,'submitting',$3)`,[id,model,reserve]);
+                    await db.query(`INSERT INTO floor_plan.ai_batch(id,model,status,reserved_usd) VALUES($1,$2,'submitting',$3)`,[id,requests[0].params.model,reserve]);
                     await db.query(`UPDATE floor_plan.plan_task SET batch_id=$1,status='submitted',updated_at=now() WHERE id=ANY($2::text[])`,[id,accepted.map(task=>task.id)]);
                     await db.query('COMMIT');
                 } catch(error) {await db.query('ROLLBACK');throw error;}
                 try {
-                    const providerId=await submitBatch({client:timedClient(),provider:PROVIDER,requests});
+                    const providerId=await llm().submitBatch(requests);
                     await db.query(`UPDATE floor_plan.ai_batch SET provider_id=$2,status='submitted',updated_at=now() WHERE id=$1`,[id,providerId]);
                     result.submitted=requests.length;result.awaitingBatch++;result.reservedUsd=reserve;
-                    log(JSON.stringify({at:new Date().toISOString(),stage:'vision-submitted',batchId:providerId,items:requests.length,reservedUsd:reserve}));
+                    log(JSON.stringify({at:new Date().toISOString(),stage:'vision-submitted',batchId:providerId,model:requests[0].params.model,effort:requests[0].params.output_config?.effort??null,items:requests.length,reservedUsd:reserve}));
                 } catch(error) {
                     await db.query(`UPDATE floor_plan.ai_batch SET status='unknown',error=$2,updated_at=now() WHERE id=$1`,[id,error.message]);
                     throw error;

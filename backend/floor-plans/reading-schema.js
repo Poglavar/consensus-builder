@@ -1,4 +1,4 @@
-// Forced tool-call shape; structure, metric constraints and topology are validated independently.
+// Structured-output shape for the reading (the shared layer sends it as Claude output grammar); structure, metric constraints and topology are validated independently.
 const number={type:'number'},string={type:'string'},nullableNumber={type:['number','null']};
 const array=items=>({type:'array',items});
 const point=array(number);

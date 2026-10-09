@@ -3,6 +3,12 @@ import {describe,it,expect,vi} from 'vitest';
 import {parseReading,buildReadingRequest,MAX_OUTPUT_TOKENS} from '../floor-plans/plan-reading.js';
 import {addressKey,chooseBinding,chooseAddressedBuilding,prepareBinding} from '../floor-plans/building-resolution.js';
 import {taskId,reservationUsd,storeReading} from '../floor-plans/interpret-plans.js';
+import {createLlm,DEFAULTS} from '../../../agents/lib/llm-cost/llm.mjs';
+
+// The real shared layer over a client that must never be called: building a request is offline.
+const never=vi.fn(async()=>{throw new Error('building a request makes no API call');});
+const llm=createLlm({client:{messages:{create:never,batches:{create:never}}},repo:'consensus-builder',script:'floor-plan-vision-test'});
+const LAYER_MODEL=DEFAULTS.providers.anthropic.model;
 
 const context={building:{city:'test-city',source:'survey',ownerId:'',buildingId:'42',name:'Test building'},facts:{floor:'1',sourceId:'7'}};
 const task={id:'a'.repeat(64),source_sha256:'b'.repeat(64),source_url:'https://agency.test/plan.png',page:1,context};
@@ -23,7 +29,7 @@ function drawing() {return {schema:'floor-plan-reading.v3',notPlan:false,issues:
     openings:[{candidateId:'G1',kind:'window',hinge:null,swing:null},{candidateId:'G2',kind:'door',hinge:'a',swing:'counterclockwise'}],
     rooms:[{name:'Living room',areaM2:null}],wallHeightM:null,heightEvidence:'',elevationM:null,elevationEvidence:'',northPx:null,northEvidence:'',issues:[]
 }]};}
-const parse=raw=>parseReading(JSON.stringify(raw),task,{width:200,height:200,evidence});
+const parse=raw=>parseReading(JSON.stringify(raw),task,{width:200,height:200,evidence,model:'answering-model'});
 
 describe('source reading to vector architecture',()=>{
     it('selects measured geometry, derives its frame, and retains unknown vertical facts',()=>{
@@ -65,12 +71,16 @@ describe('source reading to vector architecture',()=>{
         const read=parse(raw);expect(read.plans).toHaveLength(2);
         expect(read.plans[1].quality.issues).toContain('Drawing and listing floor numbers conflict.');
     });
+    it('records the answering model as provenance and refuses a reading without one',()=>{
+        expect(parse(drawing()).plans[0].quality.model).toBe('answering-model');
+        expect(()=>parseReading(JSON.stringify(drawing()),task,{width:200,height:200,evidence})).toThrow(/answering model/);
+    });
     it('never accepts an empty successful response or non-plan with geometry',()=>{
         expect(()=>parse({schema:'floor-plan-reading.v3',notPlan:false,issues:[],plans:[]})).toThrow();
         const raw=drawing();raw.notPlan=true;expect(()=>parse(raw)).toThrow();
     });
     it('passes measured evidence and image dimensions without requesting building IDs',()=>{
-        const request=buildReadingRequest(task,{data:Buffer.from('png'),annotation:Buffer.from('annotated'),scaleAnnotation:Buffer.from('scales'),width:200,height:200,evidence});
+        const request=buildReadingRequest(llm,task,{data:Buffer.from('png'),annotation:Buffer.from('annotated'),scaleAnnotation:Buffer.from('scales'),width:200,height:200,evidence});
         expect(request.custom_id).toBe(task.id);
         const message=request.params.messages[0].content.find(part=>part.type==='text');
         const payload=JSON.parse(message.text);
@@ -79,14 +89,20 @@ describe('source reading to vector architecture',()=>{
         expect(request.params.system).toContain('untrusted source data');
         expect(payload).not.toHaveProperty('building');
         expect(payload.listing).not.toHaveProperty('coordinates');
-        expect(request.params.tool_choice).toEqual({type:'tool',name:'record_floor_plan'});
-        expect(request.params.tools[0]).toMatchObject({input_schema:{additionalProperties:false}});
-        expect(request.params.messages[0].content.filter(part=>part.type==='image')).toHaveLength(3);
+        // Model and effort come from the shared default; Opus 5.5 rejects forced tools and sampling knobs.
+        expect(request.params.model).toBe(LAYER_MODEL);
+        expect(request.params.output_config).toMatchObject({effort:DEFAULTS.providers.anthropic.effort,
+            format:{type:'json_schema',schema:{additionalProperties:false}}});
+        for(const rejected of ['tool_choice','tools','temperature','top_p','thinking']) expect(request.params).not.toHaveProperty(rejected);
+        const images=request.params.messages[0].content.filter(part=>part.type==='image');
+        expect(images).toHaveLength(3);
+        expect(images[0].source).toEqual({type:'base64',media_type:'image/png',data:Buffer.from('png').toString('base64')});
+        expect(never).not.toHaveBeenCalled();
     });
     it('uses the explicitly bounded output allowance for a small pilot',()=>{
         const image={data:Buffer.from('png'),width:200,height:200,evidence};
-        expect(buildReadingRequest(task,image,'test-model',{maxOutputTokens:2800}).params.max_tokens).toBe(2800);
-        expect(()=>buildReadingRequest(task,image,'test-model',{maxOutputTokens:0})).toThrow(/token allowance/);
+        expect(buildReadingRequest(llm,task,image,{maxOutputTokens:2800}).params.max_tokens).toBe(2800);
+        expect(()=>buildReadingRequest(llm,task,image,{maxOutputTokens:0})).toThrow(/token allowance/);
     });
 });
 

@@ -21,7 +21,7 @@ import { ensurePledgeBookAndSet } from './pledger.js';
 import { ensureMarketAndStake, usdcToAtomic } from './bettor.js';
 import { revokePledge } from './lifecycle-actions.js';
 import { assertUnderCap, dailyCapUsd, dailySpendUsd, getRun, listPersonaRuns, recordCosts, startRun, updateRun } from './ledger.js';
-import { DEFAULT_MODEL, estimateBatchCostUsd, runPickBatch } from './llm-picker.js';
+import { createAgentLlm, estimateBatchCostUsd, runPickBatch } from './llm-picker.js';
 import { buildChoiceRequest, optionId, parseChoice } from './society-llm.js';
 import { sendAndConfirmPolling } from './solana-send.js';
 import { sendTelegram } from './telegram.js';
@@ -196,9 +196,11 @@ function activityMessage(persona, action) {
 async function llmChoose({ pool, persona, turn, decision, budget, day, dryRun, existing }) {
     const options = decision.options.filter(option => fitsBudget(option.action, budget));
     if (!options.length) return { action: null, decisionResult: { controller: 'llm', costUsd: 0, rationale: decision.reason }, skipped: true };
-    const model = process.env.AGENT_LLM_MODEL || DEFAULT_MODEL;
-    const request = buildChoiceRequest({ runId: turn.runId, persona, role: persona.role, seed: turn.seed, options, model });
-    const estimate = estimateBatchCostUsd([request], model);
+    const { default: Anthropic } = await import('@anthropic-ai/sdk');
+    const llm = createAgentLlm({ client: new Anthropic(), meta: { runId: turn.runId } });
+    const request = buildChoiceRequest({ llm, runId: turn.runId, persona, role: persona.role, seed: turn.seed, options });
+    const model = request.params.model;
+    const estimate = estimateBatchCostUsd([request]);
     if (dryRun) {
         log(`${persona.name}: dry run would ask ${model} to choose among ${options.length} option(s) (≤ $${estimate.toFixed(4)}): ${options.map(optionId).join(', ')}`);
         return { action: null, decisionResult: { controller: 'llm', costUsd: 0, rationale: 'dry run: model not called' }, skipped: true };
@@ -207,23 +209,23 @@ async function llmChoose({ pool, persona, turn, decision, budget, day, dryRun, e
     if (!existingBatchId) assertUnderCap({ spentUsd: await dailySpendUsd(pool, day), estimateUsd: estimate, capUsd: dailyCapUsd(process.env) });
     await updateRun(pool, turn.runId, { summaryPatch: { decisionInput: {
         controller: 'llm', customId: request.custom_id, model, maxTokens: request.params.max_tokens,
-        systemPrompt: request.params.system, userPrompt: request.params.messages[0].content
+        systemPrompt: request.params.system, userPrompt: request.params.messages[0].content[0].text
     } } });
-    const { default: Anthropic } = await import('@anthropic-ai/sdk');
-    const batch = await runPickBatch({ client: new Anthropic(), requests: [request], model, runId: turn.runId, existingBatchId });
+    const batch = await runPickBatch({ llm, requests: [request], existingBatchId });
     await updateRun(pool, turn.runId, { summaryPatch: { llm: { batchId: batch.batchId } } });
     if (!batch.done) return { pending: batch.batchId };
     const result = batch.results.find(item => item.customId === request.custom_id);
-    if (!result || result.error) throw new Error(`batch ${batch.batchId} item ${result?.error ?? 'missing'}`);
-    if (typeof result.costUsd === 'number') {
-        await recordCosts(pool, turn.runId, [{ item: result.customId, provider: 'anthropic', model, batchId: batch.batchId, usage: result.usage, usd: result.costUsd }]);
+    // A refused or truncated item was still paid for: its cost reaches the daily cap either way.
+    if (result && typeof result.costUsd === 'number') {
+        await recordCosts(pool, turn.runId, [{ item: result.customId, provider: 'anthropic', model: result.model || model, batchId: batch.batchId, usage: result.usage, usd: result.costUsd }]);
     }
+    if (!result || result.error) throw new Error(`batch ${batch.batchId} item ${result?.error ?? 'missing'}`);
     const choice = parseChoice(result.text, options);
     const action = choice.option ? { ...choice.option.action, policyRationale: choice.option.action.rationale, rationale: choice.rationale } : null;
     return {
         action,
         decisionResult: {
-            controller: 'llm', model, batchId: batch.batchId, usage: result.usage ?? null, costUsd: result.costUsd ?? null,
+            controller: 'llm', model: result.model || model, batchId: batch.batchId, usage: result.usage ?? null, costUsd: result.costUsd ?? null,
             rationale: choice.rationale || decision.reason, rejected: choice.rejected
         }
     };

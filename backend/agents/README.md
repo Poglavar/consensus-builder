@@ -226,14 +226,17 @@ which is what `frontend/js/proposals/chain.js` reads to show a proposal as minte
 ## Optional LLM cost
 
 The default and scheduled algorithmic controller makes no model calls and costs `$0`. When
-`--controller llm` is explicitly selected, every call goes through the shared harness
-(`agents/lib/llm-cost`), in **batch only** — half
+`--controller llm` is explicitly selected, every call goes through the shared LLM layer
+(`agents/lib/llm-cost/llm.mjs`, via `createAgentLlm()` in `llm-picker.js`), in **batch only** — half
 price, ledgered per item as it arrives, so a killed run still accounts for what it spent. Read it
 back with `llm-cost --repo consensus-builder --by script`.
 
 `estimateBatchCostUsd()` is an **upper bound**, not a prediction: input tokens are estimated at 4
 characters each and every request is billed as if the model wrote its full `max_tokens`. One
-persona with 8 candidates estimates at ~$0.05 on `claude-opus-5`; the real item cost is far lower.
+persona with 8 candidates estimates at ~$0.04 on the layer default (`claude-opus-5-5`, effort `high`,
+2026-10-09); the real item cost is far lower. The model is never set in this repo: it is the layer's
+default (`agents/lib/llm-cost/defaults.json`), and the run header logs which one ran. A refused or
+truncated item (`max_tokens`) is a failed pick, and its cost still goes into `consensus.agent_cost`.
 
 A batch that has not finished inside `awaitMs` is not an error — `runPickBatch` returns
 `{ batchId, done: false, results: [] }` so the caller can checkpoint the id and resume with
@@ -244,7 +247,6 @@ A batch that has not finished inside `awaitMs` is not an error — `runPickBatch
 | variable | used by | meaning |
 |---|---|---|
 | `ANTHROPIC_API_KEY` | explicit `--controller llm` only | the optional Batches API key; not needed by the scheduled agent |
-| `AGENT_LLM_MODEL` | the orchestrator, passed into `buildPickRequests`/`runPickBatch` | overrides `DEFAULT_MODEL` (`claude-opus-5`); must be priced in `agents/lib/llm-cost/rates.json` or the cost call throws |
 | `AGENT_LLM_DAILY_CAP_USD` | `ledger.js` | hard metered-model ceiling; safe default 0.25 |
 | `AGENT_DAILY_ACTION_CAP` | `run-policy.js` | maximum signed mint/x402/market-create/stake actions; safe default 4 |
 | `AGENT_DAILY_USDC_CAP` | `run-policy.js` | maximum x402 plus stake spend; safe default 0.35 USDC |

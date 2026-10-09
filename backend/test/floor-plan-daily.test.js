@@ -1,6 +1,9 @@
 // Verify daily phase sequencing, deadline behavior, and the read-only deploy preflight.
 import { describe,expect,it,vi } from 'vitest';
 import { daily,productionPreflight } from '../floor-plans/daily.js';
+import { DEFAULTS } from '../../../agents/lib/llm-cost/llm.mjs';
+
+const LAYER_MODEL=DEFAULTS.providers.anthropic.model;
 
 function fakeDb({missing=[]}={}) {
  return {query:vi.fn(async(sql,args=[])=>{
@@ -23,7 +26,7 @@ function deps(order,{afterDiscovery}={}) {
   matchBuildingCandidates:async()=>{order.push('spatial');return {candidates:1,unresolved:0};},
   processAssets:async(_db,options)=>{order.push('extract');expect(options.matchedOnly).toBe(true);return {status:'complete',processed:1,needsReview:1,pending:0};},
   enqueuePlanTasks:async()=>{order.push('enqueue');return {enqueued:1};},
-  interpretPlans:async(_db,options)=>{order.push('interpret');expect(options.dailyBudgetUsd).toBe(5);expect(options.chunkSize).toBe(1);return {status:'complete',ready:1,submitted:0,awaitingBatch:0};},
+  interpretPlans:async(_db,options)=>{order.push('interpret');expect(options.dailyBudgetUsd).toBe(5);expect(options.chunkSize).toBe(1);expect(options).not.toHaveProperty('model');return {status:'complete',ready:1,submitted:0,awaitingBatch:0};},
   publishProcessedPlans:async()=>{order.push('publish');return {published:1};},
   coverage:async()=>({targets:[]})
  };
@@ -61,9 +64,10 @@ describe('floor-plan daily pipeline',()=>{
 describe('floor-plan production preflight',()=>{
  it('checks schema, seeded sources, runtime, secret presence and shared pricing without outputting secrets',async()=>{
   const db=fakeDb(),runtimeCheck=vi.fn(async()=>{}),price=vi.fn(()=>0.00001);
-  const result=await productionPreflight(db,{env:{ANTHROPIC_API_KEY:'private-value'},runtimeCheck,price,model:'model-test'});
-  expect(result).toMatchObject({status:'ready',model:'model-test',checks:{schema:true,sites:true,sourceTargets:true,python:true,apiKey:true,pricing:true}});
-  expect(runtimeCheck).toHaveBeenCalledOnce();expect(price).toHaveBeenCalledWith('model-test',{input_tokens:1,output_tokens:1});
+  const result=await productionPreflight(db,{env:{ANTHROPIC_API_KEY:'private-value'},runtimeCheck,price});
+  // Pricing is checked for the model the shared layer will actually run.
+  expect(result).toMatchObject({status:'ready',model:LAYER_MODEL,checks:{schema:true,sites:true,sourceTargets:true,python:true,apiKey:true,pricing:true}});
+  expect(runtimeCheck).toHaveBeenCalledOnce();expect(price).toHaveBeenCalledWith(LAYER_MODEL,{input_tokens:1,output_tokens:1});
   expect(JSON.stringify(result)).not.toContain('private-value');
  });
 

@@ -15,7 +15,6 @@ import { matchBuildingCandidates } from '../floor-plans/building-links.js';
 import { importSites,importWebsiteCandidates,verifyArchivedSites } from '../floor-plans/agency-sites.js';
 import { importBuildingBindings,seedReviewedBindings,resolveBuildingLinks } from '../floor-plans/building-resolution.js';
 import { enqueuePlanTasks,interpretPlans } from '../floor-plans/interpret-plans.js';
-import { DEFAULT_MODEL } from '../floor-plans/plan-reading.js';
 
 dotenv.config({path:fileURLToPath(new URL('../.env',import.meta.url)),quiet:true});
 
@@ -33,18 +32,20 @@ const HELP=`Usage: node scripts/floor-plan-archive.mjs <command> [options]
  models --file FILE           Import reviewed unit geometry against archived source hashes
  extract [--max-assets 100] [--max-minutes 45] [--matched-only]
  enqueue-plans [--limit 1000]
- interpret [--budget-usd 5] [--chunk-size 1] [--model MODEL]
+ interpret [--budget-usd 5] [--chunk-size 1]
  publish [--limit 100] [--max-minutes 10]
  match                        Suggest building candidates from property coordinates
  reparse                      Rebuild current listing associations from archived HTML
  daily [--max-pages 10000] [--max-minutes 180] [--max-assets 100] [--ai-budget-usd 5] [--ai-chunk-size 1] [--run-stats FILE] [--no-ai]
  status                       Print coverage and recent run
  Environment: backend/.env, PGHOST override or DATABASE_URL. Public sources only.
+ The model is the shared default (agents/lib/llm-cost/defaults.json); there is no --model.
  Incomplete, blocked, or deferred work returns status partial and exit code 2.`;
 
 export async function runCli(argv=process.argv.slice(2),{clientFactory=options=>new pg.Client(options),output=value=>console.log(JSON.stringify(value,null,2))}={}) {
  const args=argv,action=args[0],has=name=>args.includes(name),option=name=>args[args.indexOf(name)+1];
  if(!action||has('--help')) {console.log(HELP);return 0;}
+ if(has('--model')) throw new Error('--model was removed: the model is the shared default in agents/lib/llm-cost/defaults.json.');
  const connectionString=process.env.DATABASE_URL;
  const client=clientFactory(connectionString?{connectionString,...(process.env.PGHOST?{host:process.env.PGHOST}:{})}:undefined);
  await client.connect();
@@ -54,7 +55,7 @@ export async function runCli(argv=process.argv.slice(2),{clientFactory=options=>
   if(action==='init') {await client.query(await readFile(new URL('../db/floor-plan-archive.sql',import.meta.url),'utf8'));result={initialized:true};}
   else if(action==='check') {
    if(!has('--production')) throw new Error('Use check --production to run the deployment readiness preflight.');
-   result=await productionPreflight(client,{model:has('--model')?option('--model'):DEFAULT_MODEL});
+   result=await productionPreflight(client);
    output(result);
    if(result.status!=='ready') return 1;
    return 0;
@@ -68,7 +69,7 @@ export async function runCli(argv=process.argv.slice(2),{clientFactory=options=>
   else if(action==='enqueue') result={enqueued:await enqueue(client,option('--url'),{agencyId:has('--agency')?Number(option('--agency')):null,kind:has('--kind')?option('--kind'):'page',priority:100})};
   else if(action==='resolve-bindings') result={reviewed:await seedReviewedBindings(client),resolved:await resolveBuildingLinks(client),spatialCandidates:await matchBuildingCandidates(client)};
   else if(action==='enqueue-plans') result=await enqueuePlanTasks(client,{limit:number('--limit',1000)});
-  else if(action==='interpret') result=await interpretPlans(client,{dailyBudgetUsd:number('--ai-budget-usd',number('--budget-usd',5)),chunkSize:number('--ai-chunk-size',number('--chunk-size',1)),model:has('--model')?option('--model'):DEFAULT_MODEL,submit:!has('--no-ai')});
+  else if(action==='interpret') result=await interpretPlans(client,{dailyBudgetUsd:number('--ai-budget-usd',number('--budget-usd',5)),chunkSize:number('--ai-chunk-size',number('--chunk-size',1)),submit:!has('--no-ai')});
   else if(action==='publish') {
    const {publishProcessedPlans}=await import('../floor-plans/publish-plans.js');
    result=await publishProcessedPlans(client,{limit:number('--limit',100),deadline:Date.now()+number('--max-minutes',10)*60000});
@@ -83,7 +84,7 @@ export async function runCli(argv=process.argv.slice(2),{clientFactory=options=>
    try {
     result=await daily(client,{maxPages:number('--max-pages',10000),maxMinutes:number('--max-minutes',180),maxAssets:number('--max-assets',100),
      dailyBudgetUsd:number('--ai-budget-usd',number('--budget-usd',5)),chunkSize:number('--ai-chunk-size',number('--chunk-size',1)),
-     model:has('--model')?option('--model'):DEFAULT_MODEL,noAI:has('--no-ai')});
+     noAI:has('--no-ai')});
    } catch(error) {failure=error;throw error;}
    finally {if(statsFile) await writeDailyStats(statsFile,{startedAt,endedAt:new Date().toISOString(),result,error:failure});}
   }

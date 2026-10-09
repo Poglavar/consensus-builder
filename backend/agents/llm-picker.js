@@ -2,20 +2,17 @@
 // model choosing which planned candidates to post and writing each rationale. Batch is half price
 // and is the only mode used here — bulk work never goes through single calls.
 //
-// Submitting, waiting, collecting and cost accounting are the shared harness's job
-// (agents/lib/llm-cost); what goes in the prompt and what comes back out is this repo's, so the
-// request builder and the parser below are pure and tested, and the harness is injectable so no
-// test touches the network.
+// The shared LLM layer (agents/lib/llm-cost/llm.mjs) owns the model, the request shape, submitting,
+// waiting, collecting and cost accounting; what goes in the prompt and what comes back out is this
+// repo's, so the request builder and the parser below are pure and tested, and the layer instance
+// is passed in so no test touches the network.
 
 import { computeCost } from '../../../agents/lib/llm-cost/index.mjs';
-import * as batchHarness from '../../../agents/lib/llm-cost/batch.mjs';
-
-export const DEFAULT_MODEL = 'claude-opus-5';
+import { createLlm } from '../../../agents/lib/llm-cost/llm.mjs';
 
 // Where the batch spend lands in the shared ledger (`llm-cost --repo consensus-builder`).
 const LEDGER_REPO = 'consensus-builder';
 const LEDGER_SCRIPT = 'agent-runner';
-const PROVIDER = 'anthropic';
 
 // A name longer than this is a paragraph pretending to be a title; it is cut, not rejected.
 const MAX_NAME_CHARS = 60;
@@ -43,6 +40,18 @@ export const PICK_SCHEMA = {
         }
     }
 };
+
+/**
+ * The shared-layer instance every agent LLM call goes through. It picks the model (the layer's
+ * default — callers pass none), builds each batch line, and prices and ledgers every item.
+ *
+ * @param {Object} args
+ * @param {Object} args.client  a raw Anthropic SDK client (not track()-wrapped)
+ * @param {Object} [args.meta]  ledger meta, e.g. { runId }
+ */
+export function createAgentLlm({ client, meta = {} }) {
+    return createLlm({ client, repo: LEDGER_REPO, script: LEDGER_SCRIPT, meta });
+}
 
 function round(value, digits = 0) {
     if (typeof value !== 'number' || !Number.isFinite(value)) return null;
@@ -112,14 +121,15 @@ function candidateDigest(candidate) {
 }
 
 /**
- * One Anthropic batch request per persona. Pure.
+ * One Anthropic batch request per persona. Pure: the layer only shapes the line and resolves the
+ * default model (no network).
  *
  * @param {Object} args
+ * @param {Object} args.llm      from createAgentLlm
  * @param {string} args.runId
  * @param {string} args.day      the run's day, as the caller states it (never invented here)
  * @param {Array}  args.entries  [{ persona, candidates }]
- * @param {string} [args.model]
- * @param {number} [args.maxTokens]
+ * @param {number} [args.maxTokens]  a cap only; billing is by tokens produced
  */
 // Anthropic constrains custom_id to ^[a-zA-Z0-9_-]{1,64}$ — no colons, no timestamps with "T…Z"
 // punctuation. Run id and persona are joined with an underscore and anything else is squashed.
@@ -128,25 +138,15 @@ export function pickCustomId(runId, personaName) {
     return `${clean(runId)}_${clean(personaName)}`.slice(0, 64);
 }
 
-export function buildPickRequests({ runId, day, entries, model = DEFAULT_MODEL, maxTokens = 4000 }) {
+export function buildPickRequests({ llm, runId, day, entries, maxTokens = 4000 }) {
     const list = Array.isArray(entries) ? entries : [];
     return list
         .filter(entry => entry && entry.persona && entry.persona.name && Array.isArray(entry.candidates) && entry.candidates.length)
-        .map(({ persona, candidates }) => ({
-            custom_id: pickCustomId(runId, persona.name),
-            params: {
-                model,
-                max_tokens: maxTokens,
-                system: systemPromptFor(persona, day),
-                messages: [{
-                    role: 'user',
-                    content: JSON.stringify({ day, persona: persona.name, candidates: candidates.map(candidateDigest) })
-                }],
-                output_config: {
-                    effort: 'medium',
-                    format: { type: 'json_schema', schema: PICK_SCHEMA }
-                }
-            }
+        .map(({ persona, candidates }) => llm.batchRequest(pickCustomId(runId, persona.name), {
+            system: systemPromptFor(persona, day),
+            content: JSON.stringify({ day, persona: persona.name, candidates: candidates.map(candidateDigest) }),
+            schema: PICK_SCHEMA,
+            maxTokens
         }));
 }
 
@@ -210,10 +210,10 @@ export function parsePicks(text, candidates, maxPicks) {
  *
  * An UPPER BOUND, not a prediction: input tokens are estimated at 4 characters each (a rule of
  * thumb, not a tokenizer) and every request is billed as if the model wrote its full max_tokens,
- * which no pick answer does. The real spend is what the harness ledgers per item as it arrives.
+ * which no pick answer does. The real spend is what the shared layer ledgers per item as it arrives.
  * Batch is priced at half the online rate by the shared table.
  */
-export function estimateBatchCostUsd(requests, model = DEFAULT_MODEL) {
+export function estimateBatchCostUsd(requests) {
     const list = Array.isArray(requests) ? requests : [];
     let total = 0;
     for (const request of list) {
@@ -224,7 +224,8 @@ export function estimateBatchCostUsd(requests, model = DEFAULT_MODEL) {
             input_tokens: Math.ceil(chars / CHARS_PER_TOKEN),
             output_tokens: Number(params.max_tokens) || 0
         };
-        total += computeCost(model || params.model || DEFAULT_MODEL, usage, { batch: true });
+        // Priced at the model the layer put on the line — the one that will actually run.
+        total += computeCost(params.model, usage, { batch: true });
     }
     return total;
 }
@@ -237,40 +238,31 @@ export function estimateBatchCostUsd(requests, model = DEFAULT_MODEL) {
  * `existingBatchId` — a batch already paid for must never be resubmitted.
  *
  * @param {Object} args
- * @param {Object} args.client            an Anthropic client
+ * @param {Object} args.llm               from createAgentLlm (tests pass one over a fake client)
  * @param {Array}  args.requests          from buildPickRequests
- * @param {string} args.model
- * @param {string} args.runId
  * @param {string} [args.existingBatchId] resume instead of submitting
  * @param {number} [args.awaitMs]         ceiling on waiting, not on the batch
  * @param {Function} [args.onProgress]
- * @param {Object} [args.harness]         injected for tests; defaults to the shared batch harness
  */
 export async function runPickBatch({
-    client,
+    llm,
     requests,
-    model = DEFAULT_MODEL,
-    runId,
     existingBatchId = null,
     awaitMs = 10 * 60 * 1000,
-    onProgress,
-    harness = batchHarness
+    onProgress
 }) {
-    const batchId = existingBatchId
-        || await harness.submitBatch({ client, provider: PROVIDER, requests });
+    const batchId = existingBatchId || await llm.submitBatch(requests);
 
     let status = null;
     try {
-        status = await harness.awaitBatch({
-            client, provider: PROVIDER, batchId, timeoutMs: awaitMs, onProgress
-        });
+        status = await llm.awaitBatch(batchId, { timeoutMs: awaitMs, onProgress });
     } catch (error) {
         // awaitBatch throws when it hits its own ceiling. "Still running" and "the API is broken"
         // both arrive as a throw, so ask the batch itself which it was rather than guessing from
         // the message; only a batch that is genuinely still running becomes a checkpoint.
         let poll = null;
         try {
-            poll = await harness.pollBatch({ client, provider: PROVIDER, batchId });
+            poll = await llm.pollBatch(batchId);
         } catch (_) {
             throw error;
         }
@@ -280,22 +272,17 @@ export async function runPickBatch({
 
     if (!status || !status.done) return { batchId, done: false, results: [] };
 
+    // A refusal or a max_tokens cut-off arrives as an error that still carries its cost: the item
+    // was paid for, so the caller records costUsd whether or not the item succeeded.
     const results = [];
-    for await (const item of harness.collectBatch({
-        client,
-        provider: PROVIDER,
-        batchId,
-        model,
-        repo: LEDGER_REPO,
-        script: LEDGER_SCRIPT,
-        meta: { runId }
-    })) {
+    for await (const item of llm.collectBatch(batchId)) {
         results.push({
             customId: item.customId ?? null,
             text: item.text ?? null,
+            model: item.model ?? null,
             usage: item.usage ?? null,
             costUsd: item.costUsd ?? null,
-            error: item.error ?? null
+            error: item.error ? [item.reason, item.error].filter(Boolean).join(': ') : null
         });
     }
     return { batchId, done: true, results };
