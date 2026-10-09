@@ -14,7 +14,10 @@ module.exports = {
   apps: [{
     name: 'consensus-builder-agents',
     script: 'agents/run.mjs',
-    args: '--live --controller algorithm --persona densifier-01 --candidates 4 --api https://api.urbangametheory.xyz',
+    // The lens is named explicitly: the attester directory on this host is empty until the two lens
+    // member services (notary-01, lifecycle-01) run here and register, and an empty directory refuses
+    // to mint. These are those two personas' keys (personas.json); their SAS credentials exist on devnet.
+    args: '--live --controller algorithm --persona densifier-01 --candidates 4 --api https://api.urbangametheory.xyz --lens 5x8hiYo9V6kWpG8eVoyXZf4BHXnKSoCP3r7r3PyMBg4z,m8gLfyPspP6ABSNA4ZMFYCzzRGjNLBmrKKwKrGqbUfR',
     cwd: '/root/code/consensus-builder/backend',
     exec_mode: 'fork',
     instances: 1,
@@ -28,7 +31,8 @@ module.exports = {
       AGENT_DAILY_ACTION_CAP: '13',
       AGENT_DAILY_USDC_CAP: '0.35',
       AGENT_PROPOSAL_FEE_USDC: '0.05',
-      AGENT_LIFECYCLE_LENS_SERVICE_URL: 'http://127.0.0.1:3096',
+      // AGENT_LIFECYCLE_LENS_SERVICE_URL goes back in when the lifecycle member runs on this host
+      // with AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN in .env: a URL without the token makes the run refuse.
       AGENT_API_BASE: 'https://api.urbangametheory.xyz'
     },
     error_file: '/root/code/consensus-builder/backend/logs/agents-error.log',
