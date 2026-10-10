@@ -1,0 +1,2099 @@
+{
+  "schemaVersion": 1,
+  "sourceRoster": "ranked-population.json",
+  "selectionMethod": "WUP 2025 population descending; remove confirmed prior attempts and hold identity-review candidates for manual resolution.",
+  "cityCount": 91,
+  "cities": [
+    {
+      "rank": 1301,
+      "cityCode": 6886,
+      "name": "Chandpur",
+      "country": "Bangladesh",
+      "iso2": "BD",
+      "iso3": "BGD",
+      "locId": 50,
+      "capital": false,
+      "pop2025k": 430.144,
+      "plausibility": "Low",
+      "point": [
+        23.2297301387967,
+        90.6627468877809
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "chandpur"
+      ]
+    },
+    {
+      "rank": 1303,
+      "cityCode": 2377,
+      "name": "Santiago de Cuba",
+      "country": "Cuba",
+      "iso2": "CU",
+      "iso3": "CUB",
+      "locId": 192,
+      "capital": false,
+      "pop2025k": 429.537,
+      "plausibility": "Moderate",
+      "point": [
+        20.0261346415971,
+        -75.8230188819196
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "santiago de cuba"
+      ]
+    },
+    {
+      "rank": 1304,
+      "cityCode": 1721,
+      "name": "Cheonan-si",
+      "country": "Republic of Korea",
+      "iso2": "KR",
+      "iso3": "KOR",
+      "locId": 410,
+      "capital": false,
+      "pop2025k": 428.378,
+      "plausibility": "High",
+      "point": [
+        36.815486546904,
+        127.135999932899
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "cheonan si"
+      ]
+    },
+    {
+      "rank": 1305,
+      "cityCode": 11610,
+      "name": "Huidong",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 428.137,
+      "plausibility": "Moderate",
+      "point": [
+        22.9867611901251,
+        114.710849277287
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "huidong"
+      ]
+    },
+    {
+      "rank": 1307,
+      "cityCode": 1620,
+      "name": "Khansahib",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 428.041,
+      "plausibility": "Low",
+      "point": [
+        33.9561470392247,
+        74.6014209746197
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "khansahib"
+      ]
+    },
+    {
+      "rank": 1308,
+      "cityCode": 4647,
+      "name": "Coventry",
+      "country": "United Kingdom",
+      "iso2": "GB",
+      "iso3": "GBR",
+      "locId": 826,
+      "capital": false,
+      "pop2025k": 427.678,
+      "plausibility": "High",
+      "point": [
+        52.4197855108422,
+        -1.50597012431852
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "21",
+      "aliases": [
+        "coventry"
+      ]
+    },
+    {
+      "rank": 1309,
+      "cityCode": 2998,
+      "name": "Wiesbaden",
+      "country": "Germany",
+      "iso2": "DE",
+      "iso3": "DEU",
+      "locId": 276,
+      "capital": false,
+      "pop2025k": 427.27,
+      "plausibility": "High",
+      "point": [
+        50.0324160875229,
+        8.24497585586087
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "wiesbaden"
+      ]
+    },
+    {
+      "rank": 1310,
+      "cityCode": 3139,
+      "name": "Burao",
+      "country": "Somalia",
+      "iso2": "SO",
+      "iso3": "SOM",
+      "locId": 706,
+      "capital": false,
+      "pop2025k": 427.013,
+      "plausibility": "Low",
+      "point": [
+        9.51899209198386,
+        45.5378988168787
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "burao"
+      ]
+    },
+    {
+      "rank": 1311,
+      "cityCode": 10388,
+      "name": "Hanchuan",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 426.922,
+      "plausibility": "High",
+      "point": [
+        30.6505972534677,
+        113.840623778221
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "hanchuan"
+      ]
+    },
+    {
+      "rank": 1312,
+      "cityCode": 7113,
+      "name": "Orenburg",
+      "country": "Russian Federation",
+      "iso2": "RU",
+      "iso3": "RUS",
+      "locId": 643,
+      "capital": false,
+      "pop2025k": 426.263,
+      "plausibility": "High",
+      "point": [
+        51.795436024663,
+        55.1172994900619
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "orenburg"
+      ]
+    },
+    {
+      "rank": 1313,
+      "cityCode": 7782,
+      "name": "Gresik",
+      "country": "Indonesia",
+      "iso2": "ID",
+      "iso3": "IDN",
+      "locId": 360,
+      "capital": false,
+      "pop2025k": 426.246,
+      "plausibility": "High",
+      "point": [
+        -7.16160214503704,
+        112.632593965037
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "gresik"
+      ]
+    },
+    {
+      "rank": 1314,
+      "cityCode": 7062,
+      "name": "Longquanyi",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 426.144,
+      "plausibility": "Moderate",
+      "point": [
+        30.5598071435662,
+        104.225527283514
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "longquanyi"
+      ]
+    },
+    {
+      "rank": 1315,
+      "cityCode": 7722,
+      "name": "Dere",
+      "country": "Nigeria",
+      "iso2": "NG",
+      "iso3": "NGA",
+      "locId": 566,
+      "capital": false,
+      "pop2025k": 425.674,
+      "plausibility": "Moderate",
+      "point": [
+        4.66044329966891,
+        7.29427515774573
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "dere"
+      ]
+    },
+    {
+      "rank": 1317,
+      "cityCode": 9116,
+      "name": "Ranghulu",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 424.46,
+      "plausibility": "Moderate",
+      "point": [
+        46.6119097522878,
+        124.856110545558
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "ranghulu"
+      ]
+    },
+    {
+      "rank": 1318,
+      "cityCode": 7582,
+      "name": "Ziyang",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 424.328,
+      "plausibility": "Low",
+      "point": [
+        30.1238674926562,
+        104.643237753168
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "ziyang"
+      ]
+    },
+    {
+      "rank": 1319,
+      "cityCode": 9407,
+      "name": "Shivamogga",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 423.88,
+      "plausibility": "High",
+      "point": [
+        13.9367090537284,
+        75.5664297271675
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "shivamogga"
+      ]
+    },
+    {
+      "rank": 1320,
+      "cityCode": 11461,
+      "name": "Deoghar",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 423.674,
+      "plausibility": "High",
+      "point": [
+        24.4946438388827,
+        86.6979613009286
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "deoghar"
+      ]
+    },
+    {
+      "rank": 1321,
+      "cityCode": 11384,
+      "name": "Jingdezhen",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 423.386,
+      "plausibility": "Moderate",
+      "point": [
+        29.2989078251208,
+        117.192681771754
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "jingdezhen"
+      ]
+    },
+    {
+      "rank": 1322,
+      "cityCode": 506,
+      "name": "Porto Velho",
+      "country": "Brazil",
+      "iso2": "BR",
+      "iso3": "BRA",
+      "locId": 76,
+      "capital": false,
+      "pop2025k": 422.943,
+      "plausibility": "Moderate",
+      "point": [
+        -8.76833176347014,
+        -63.8675122499988
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "porto velho"
+      ]
+    },
+    {
+      "rank": 1323,
+      "cityCode": 2116,
+      "name": "Sumgayit",
+      "country": "Azerbaijan",
+      "iso2": "AZ",
+      "iso3": "AZE",
+      "locId": 31,
+      "capital": false,
+      "pop2025k": 422.836,
+      "plausibility": "Moderate",
+      "point": [
+        40.5791845695678,
+        49.6512940887851
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "10",
+      "aliases": [
+        "sumgayit"
+      ]
+    },
+    {
+      "rank": 1324,
+      "cityCode": 11216,
+      "name": "Shaoguan",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 422.509,
+      "plausibility": "High",
+      "point": [
+        24.8090217997116,
+        113.573161240625
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "shaoguan"
+      ]
+    },
+    {
+      "rank": 1325,
+      "cityCode": 3231,
+      "name": "Bremen",
+      "country": "Germany",
+      "iso2": "DE",
+      "iso3": "DEU",
+      "locId": 276,
+      "capital": false,
+      "pop2025k": 422.414,
+      "plausibility": "High",
+      "point": [
+        53.0806090875204,
+        8.83227373169138
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "bremen"
+      ]
+    },
+    {
+      "rank": 1326,
+      "cityCode": 4995,
+      "name": "Niigata",
+      "country": "Japan",
+      "iso2": "JP",
+      "iso3": "JPN",
+      "locId": 392,
+      "capital": false,
+      "pop2025k": 422.238,
+      "plausibility": "Moderate",
+      "point": [
+        37.9036901987003,
+        139.048139919901
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "niigata"
+      ]
+    },
+    {
+      "rank": 1327,
+      "cityCode": 7759,
+      "name": "Jijiga",
+      "country": "Ethiopia",
+      "iso2": "ET",
+      "iso3": "ETH",
+      "locId": 231,
+      "capital": false,
+      "pop2025k": 422.225,
+      "plausibility": "High",
+      "point": [
+        9.3557236983248,
+        42.7953343409497
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "jijiga"
+      ]
+    },
+    {
+      "rank": 1328,
+      "cityCode": 11790,
+      "name": "Longyan",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 422.165,
+      "plausibility": "High",
+      "point": [
+        25.0997041427901,
+        117.024047113305
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "longyan"
+      ]
+    },
+    {
+      "rank": 1329,
+      "cityCode": 5063,
+      "name": "Tucson",
+      "country": "United States of America",
+      "iso2": "US",
+      "iso3": "USA",
+      "locId": 840,
+      "capital": false,
+      "pop2025k": 422.107,
+      "plausibility": "Low",
+      "point": [
+        32.2341331710701,
+        -110.899238325088
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "32",
+      "aliases": [
+        "tucson"
+      ]
+    },
+    {
+      "rank": 1331,
+      "cityCode": 5845,
+      "name": "Bathinda",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 421.753,
+      "plausibility": "Moderate",
+      "point": [
+        30.2120777898521,
+        74.9443981502469
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "bathinda"
+      ]
+    },
+    {
+      "rank": 1332,
+      "cityCode": 6528,
+      "name": "Bida",
+      "country": "Nigeria",
+      "iso2": "NG",
+      "iso3": "NGA",
+      "locId": 566,
+      "capital": false,
+      "pop2025k": 421.605,
+      "plausibility": "High",
+      "point": [
+        9.0806551084161,
+        6.00587274996127
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "bida"
+      ]
+    },
+    {
+      "rank": 1333,
+      "cityCode": 8280,
+      "name": "Raiwind",
+      "country": "Pakistan",
+      "iso2": "PK",
+      "iso3": "PAK",
+      "locId": 586,
+      "capital": false,
+      "pop2025k": 421.524,
+      "plausibility": "High",
+      "point": [
+        31.2594354858197,
+        74.191445772588
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "raiwind"
+      ]
+    },
+    {
+      "rank": 1335,
+      "cityCode": 8154,
+      "name": "Kamoke",
+      "country": "Pakistan",
+      "iso2": "PK",
+      "iso3": "PAK",
+      "locId": 586,
+      "capital": false,
+      "pop2025k": 421.152,
+      "plausibility": "Moderate",
+      "point": [
+        31.976363675421,
+        74.2232766931292
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "kamoke"
+      ]
+    },
+    {
+      "rank": 1336,
+      "cityCode": 7610,
+      "name": "Navsari",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 421.121,
+      "plausibility": "Moderate",
+      "point": [
+        20.9438336006543,
+        72.9317661585922
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "navsari"
+      ]
+    },
+    {
+      "rank": 1337,
+      "cityCode": 11407,
+      "name": "Giridih",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 420.525,
+      "plausibility": "High",
+      "point": [
+        24.1787822217264,
+        86.3067976525148
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "giridih"
+      ]
+    },
+    {
+      "rank": 1338,
+      "cityCode": 7854,
+      "name": "Probolinggo",
+      "country": "Indonesia",
+      "iso2": "ID",
+      "iso3": "IDN",
+      "locId": 360,
+      "capital": false,
+      "pop2025k": 420.356,
+      "plausibility": "High",
+      "point": [
+        -7.77816373910349,
+        113.209754178279
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "probolinggo"
+      ]
+    },
+    {
+      "rank": 1339,
+      "cityCode": 1877,
+      "name": "Baidoa",
+      "country": "Somalia",
+      "iso2": "SO",
+      "iso3": "SOM",
+      "locId": 706,
+      "capital": false,
+      "pop2025k": 420.281,
+      "plausibility": "Low",
+      "point": [
+        3.11860589568362,
+        43.6544179372767
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "baidoa"
+      ]
+    },
+    {
+      "rank": 1340,
+      "cityCode": 10071,
+      "name": "Hosur",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 420.017,
+      "plausibility": "Moderate",
+      "point": [
+        12.7430006442616,
+        77.8176054992941
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "hosur"
+      ]
+    },
+    {
+      "rank": 1341,
+      "cityCode": 11889,
+      "name": "Basirhat",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 419.703,
+      "plausibility": "Moderate",
+      "point": [
+        22.6808297239835,
+        88.8431725176141
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "basirhat"
+      ]
+    },
+    {
+      "rank": 1342,
+      "cityCode": 3183,
+      "name": "Mykolaiv",
+      "country": "Ukraine",
+      "iso2": "UA",
+      "iso3": "UKR",
+      "locId": 804,
+      "capital": false,
+      "pop2025k": 419.484,
+      "plausibility": "Moderate",
+      "point": [
+        46.9596870954058,
+        32.0172558160937
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "15",
+      "aliases": [
+        "mykolaiv"
+      ]
+    },
+    {
+      "rank": 1344,
+      "cityCode": 8103,
+      "name": "Petrolina",
+      "country": "Brazil",
+      "iso2": "BR",
+      "iso3": "BRA",
+      "locId": 76,
+      "capital": false,
+      "pop2025k": 418.619,
+      "plausibility": "Moderate",
+      "point": [
+        -9.39892391278909,
+        -40.5095220912627
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "petrolina"
+      ]
+    },
+    {
+      "rank": 1345,
+      "cityCode": 4796,
+      "name": "Nice",
+      "country": "France",
+      "iso2": "FR",
+      "iso3": "FRA",
+      "locId": 250,
+      "capital": false,
+      "pop2025k": 418.294,
+      "plausibility": "High",
+      "point": [
+        43.6987107905202,
+        7.23303214314509
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "26",
+      "aliases": [
+        "nice"
+      ]
+    },
+    {
+      "rank": 1346,
+      "cityCode": 1302,
+      "name": "Eldoret",
+      "country": "Kenya",
+      "iso2": "KE",
+      "iso3": "KEN",
+      "locId": 404,
+      "capital": false,
+      "pop2025k": 418.175,
+      "plausibility": "Moderate",
+      "point": [
+        0.524205333339166,
+        35.2660146100744
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "eldoret"
+      ]
+    },
+    {
+      "rank": 1347,
+      "cityCode": 9997,
+      "name": "Chandrapur",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 416.903,
+      "plausibility": "High",
+      "point": [
+        19.9651134278361,
+        79.3002216660293
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "chandrapur"
+      ]
+    },
+    {
+      "rank": 1348,
+      "cityCode": 11480,
+      "name": "Taixing",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 416.677,
+      "plausibility": "High",
+      "point": [
+        32.1735422462984,
+        120.022678423414
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "taixing"
+      ]
+    },
+    {
+      "rank": 1349,
+      "cityCode": 7279,
+      "name": "Uvira",
+      "country": "Democratic Republic of the Congo",
+      "iso2": "CD",
+      "iso3": "COD",
+      "locId": 180,
+      "capital": false,
+      "pop2025k": 416.523,
+      "plausibility": "Moderate",
+      "point": [
+        -3.38572977318456,
+        29.1429622424188
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "uvira"
+      ]
+    },
+    {
+      "rank": 1350,
+      "cityCode": 11906,
+      "name": "Lishui",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 416.469,
+      "plausibility": "Moderate",
+      "point": [
+        28.4584496684552,
+        119.924925938316
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "lishui"
+      ]
+    },
+    {
+      "rank": 1351,
+      "cityCode": 735,
+      "name": "Aktobe",
+      "country": "Kazakhstan",
+      "iso2": "KZ",
+      "iso3": "KAZ",
+      "locId": 398,
+      "capital": false,
+      "pop2025k": 416.455,
+      "plausibility": "Moderate",
+      "point": [
+        50.2941407239697,
+        57.1878832784277
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "aktobe"
+      ]
+    },
+    {
+      "rank": 1352,
+      "cityCode": 11548,
+      "name": "Yixing",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 415.587,
+      "plausibility": "High",
+      "point": [
+        31.3799088831296,
+        119.82408263063
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "yixing"
+      ]
+    },
+    {
+      "rank": 1353,
+      "cityCode": 2630,
+      "name": "Kafr Al Sheikh",
+      "country": "Egypt",
+      "iso2": "EG",
+      "iso3": "EGY",
+      "locId": 818,
+      "capital": false,
+      "pop2025k": 415.494,
+      "plausibility": "High",
+      "point": [
+        31.0916615432164,
+        30.9366826585025
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "kafr al sheikh"
+      ]
+    },
+    {
+      "rank": 1354,
+      "cityCode": 11726,
+      "name": "Fuyang",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 415.492,
+      "plausibility": "High",
+      "point": [
+        30.0487792622136,
+        119.946255782194
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "fuyang"
+      ]
+    },
+    {
+      "rank": 1355,
+      "cityCode": 243,
+      "name": "Moçâmedes",
+      "country": "Angola",
+      "iso2": "AO",
+      "iso3": "AGO",
+      "locId": 24,
+      "capital": false,
+      "pop2025k": 415.361,
+      "plausibility": "Moderate",
+      "point": [
+        -15.2064827640758,
+        12.1564980141967
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "mocamedes"
+      ]
+    },
+    {
+      "rank": 1356,
+      "cityCode": 3039,
+      "name": "Escondido",
+      "country": "United States of America",
+      "iso2": "US",
+      "iso3": "USA",
+      "locId": 840,
+      "capital": false,
+      "pop2025k": 415.167,
+      "plausibility": "Moderate",
+      "point": [
+        33.1691791253299,
+        -117.195352456462
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "32",
+      "aliases": [
+        "escondido"
+      ]
+    },
+    {
+      "rank": 1357,
+      "cityCode": 3588,
+      "name": "Batangas City",
+      "country": "Philippines",
+      "iso2": "PH",
+      "iso3": "PHL",
+      "locId": 608,
+      "capital": false,
+      "pop2025k": 415.103,
+      "plausibility": "Moderate",
+      "point": [
+        13.7711568084999,
+        121.034906155156
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "batangas city"
+      ]
+    },
+    {
+      "rank": 1358,
+      "cityCode": 5468,
+      "name": "São José do Rio Preto",
+      "country": "Brazil",
+      "iso2": "BR",
+      "iso3": "BRA",
+      "locId": 76,
+      "capital": false,
+      "pop2025k": 414.406,
+      "plausibility": "Moderate",
+      "point": [
+        -20.7978477139893,
+        -49.3860523836787
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "sao jose do rio preto"
+      ]
+    },
+    {
+      "rank": 1359,
+      "cityCode": 2836,
+      "name": "Sareyn",
+      "country": "Iran (Islamic Republic of)",
+      "iso2": "IR",
+      "iso3": "IRN",
+      "locId": 364,
+      "capital": false,
+      "pop2025k": 413.772,
+      "plausibility": "Moderate",
+      "point": [
+        38.1505150822643,
+        48.0736615214238
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "sareyn"
+      ]
+    },
+    {
+      "rank": 1360,
+      "cityCode": 5177,
+      "name": "Charsadda",
+      "country": "Pakistan",
+      "iso2": "PK",
+      "iso3": "PAK",
+      "locId": 586,
+      "capital": false,
+      "pop2025k": 413.686,
+      "plausibility": "High",
+      "point": [
+        34.1578724462379,
+        71.752396405707
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "charsadda"
+      ]
+    },
+    {
+      "rank": 1362,
+      "cityCode": 8963,
+      "name": "Hathras",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 413.122,
+      "plausibility": "Moderate",
+      "point": [
+        27.5960398715243,
+        78.0517222203948
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "hathras"
+      ]
+    },
+    {
+      "rank": 1363,
+      "cityCode": 1024,
+      "name": "Ciudad del Este",
+      "country": "Paraguay",
+      "iso2": "PY",
+      "iso3": "PRY",
+      "locId": 600,
+      "capital": false,
+      "pop2025k": 412.725,
+      "plausibility": "Moderate",
+      "point": [
+        -25.5167593870259,
+        -54.6481030416405
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "ciudad del este"
+      ]
+    },
+    {
+      "rank": 1364,
+      "cityCode": 3243,
+      "name": "Sanhur",
+      "country": "Egypt",
+      "iso2": "EG",
+      "iso3": "EGY",
+      "locId": 818,
+      "capital": false,
+      "pop2025k": 412.618,
+      "plausibility": "High",
+      "point": [
+        29.3587646999166,
+        30.7141082780011
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "sanhur"
+      ]
+    },
+    {
+      "rank": 1365,
+      "cityCode": 1650,
+      "name": "Kaolack",
+      "country": "Senegal",
+      "iso2": "SN",
+      "iso3": "SEN",
+      "locId": 686,
+      "capital": false,
+      "pop2025k": 412.347,
+      "plausibility": "High",
+      "point": [
+        14.1552214925657,
+        -16.0736772019438
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "kaolack"
+      ]
+    },
+    {
+      "rank": 1366,
+      "cityCode": 10790,
+      "name": "Jixi",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 412.341,
+      "plausibility": "Moderate",
+      "point": [
+        45.3069435829134,
+        130.966231335848
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "jixi"
+      ]
+    },
+    {
+      "rank": 1367,
+      "cityCode": 4783,
+      "name": "Hamhung",
+      "country": "Dem. People's Republic of Korea",
+      "iso2": "KP",
+      "iso3": "PRK",
+      "locId": 408,
+      "capital": false,
+      "pop2025k": 412.277,
+      "plausibility": "Moderate",
+      "point": [
+        39.9161642846767,
+        127.539957279009
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "hamhung"
+      ]
+    },
+    {
+      "rank": 1368,
+      "cityCode": 7066,
+      "name": "Americana",
+      "country": "Brazil",
+      "iso2": "BR",
+      "iso3": "BRA",
+      "locId": 76,
+      "capital": false,
+      "pop2025k": 412.133,
+      "plausibility": "Moderate",
+      "point": [
+        -22.7403656033961,
+        -47.3575438232552
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "americana"
+      ]
+    },
+    {
+      "rank": 1369,
+      "cityCode": 6483,
+      "name": "Elazığ",
+      "country": "Türkiye",
+      "iso2": "TR",
+      "iso3": "TUR",
+      "locId": 792,
+      "capital": false,
+      "pop2025k": 411.268,
+      "plausibility": "High",
+      "point": [
+        38.6719567712365,
+        39.2095480589786
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "elaz g"
+      ]
+    },
+    {
+      "rank": 1370,
+      "cityCode": 989,
+      "name": "塔什科瑞克乡",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 411.163,
+      "plausibility": "Moderate",
+      "point": [
+        43.9288592045439,
+        81.3166262556781
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": []
+    },
+    {
+      "rank": 1371,
+      "cityCode": 7428,
+      "name": "Bharuch",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 411.095,
+      "plausibility": "High",
+      "point": [
+        21.7116033025565,
+        72.9969026348176
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "bharuch"
+      ]
+    },
+    {
+      "rank": 1372,
+      "cityCode": 5323,
+      "name": "Belkuchi",
+      "country": "Bangladesh",
+      "iso2": "BD",
+      "iso3": "BGD",
+      "locId": 50,
+      "capital": false,
+      "pop2025k": 410.861,
+      "plausibility": "High",
+      "point": [
+        24.1558909100762,
+        89.6088819200885
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "belkuchi"
+      ]
+    },
+    {
+      "rank": 1373,
+      "cityCode": 5743,
+      "name": "Albuquerque",
+      "country": "United States of America",
+      "iso2": "US",
+      "iso3": "USA",
+      "locId": 840,
+      "capital": false,
+      "pop2025k": 410.81,
+      "plausibility": "Low",
+      "point": [
+        35.1087162408547,
+        -106.564811229385
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "32",
+      "aliases": [
+        "albuquerque"
+      ]
+    },
+    {
+      "rank": 1374,
+      "cityCode": 4484,
+      "name": "Kushtia",
+      "country": "Bangladesh",
+      "iso2": "BD",
+      "iso3": "BGD",
+      "locId": 50,
+      "capital": false,
+      "pop2025k": 410.514,
+      "plausibility": "High",
+      "point": [
+        23.9047181101836,
+        89.1257862359532
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "kushtia"
+      ]
+    },
+    {
+      "rank": 1375,
+      "cityCode": 6529,
+      "name": "Kongolo",
+      "country": "Democratic Republic of the Congo",
+      "iso2": "CD",
+      "iso3": "COD",
+      "locId": 180,
+      "capital": false,
+      "pop2025k": 410.371,
+      "plausibility": "Low",
+      "point": [
+        -5.37850227970108,
+        26.9999262774553
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "kongolo"
+      ]
+    },
+    {
+      "rank": 1376,
+      "cityCode": 12070,
+      "name": "Huangyan District",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 410.213,
+      "plausibility": "Moderate",
+      "point": [
+        28.6509454083006,
+        121.254074108205
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "huangyan district"
+      ]
+    },
+    {
+      "rank": 1378,
+      "cityCode": 7539,
+      "name": "Nganjuk",
+      "country": "Indonesia",
+      "iso2": "ID",
+      "iso3": "IDN",
+      "locId": 360,
+      "capital": false,
+      "pop2025k": 409.447,
+      "plausibility": "High",
+      "point": [
+        -7.63022516432905,
+        111.903552010308
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "nganjuk"
+      ]
+    },
+    {
+      "rank": 1379,
+      "cityCode": 2447,
+      "name": "Mazatlán",
+      "country": "Mexico",
+      "iso2": "MX",
+      "iso3": "MEX",
+      "locId": 484,
+      "capital": false,
+      "pop2025k": 409.143,
+      "plausibility": "Moderate",
+      "point": [
+        23.2431324447942,
+        -106.405496504792
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "mazatlan"
+      ]
+    },
+    {
+      "rank": 1380,
+      "cityCode": 11448,
+      "name": "Dongtai",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 409.015,
+      "plausibility": "High",
+      "point": [
+        32.8479794794377,
+        120.316910289902
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "dongtai"
+      ]
+    },
+    {
+      "rank": 1381,
+      "cityCode": 3179,
+      "name": "Uíge",
+      "country": "Angola",
+      "iso2": "AO",
+      "iso3": "AGO",
+      "locId": 24,
+      "capital": false,
+      "pop2025k": 408.927,
+      "plausibility": "High",
+      "point": [
+        -7.60700348087086,
+        15.0520154227901
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "uige"
+      ]
+    },
+    {
+      "rank": 1382,
+      "cityCode": 8519,
+      "name": "Makurdi",
+      "country": "Nigeria",
+      "iso2": "NG",
+      "iso3": "NGA",
+      "locId": 566,
+      "capital": false,
+      "pop2025k": 408.753,
+      "plausibility": "Low",
+      "point": [
+        7.71679050070715,
+        8.53831284036563
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "makurdi"
+      ]
+    },
+    {
+      "rank": 1383,
+      "cityCode": 8492,
+      "name": "Kendari",
+      "country": "Indonesia",
+      "iso2": "ID",
+      "iso3": "IDN",
+      "locId": 360,
+      "capital": false,
+      "pop2025k": 408.731,
+      "plausibility": "High",
+      "point": [
+        -3.99122776823972,
+        122.520273611264
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "kendari"
+      ]
+    },
+    {
+      "rank": 1384,
+      "cityCode": 5059,
+      "name": "Huế",
+      "country": "Viet Nam",
+      "iso2": "VN",
+      "iso3": "VNM",
+      "locId": 704,
+      "capital": false,
+      "pop2025k": 408.692,
+      "plausibility": "Moderate",
+      "point": [
+        16.4679885698981,
+        107.585287192002
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "hue"
+      ]
+    },
+    {
+      "rank": 1385,
+      "cityCode": 10513,
+      "name": "Waidhan",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 408.489,
+      "plausibility": "Moderate",
+      "point": [
+        24.0974572961998,
+        82.6585636978737
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "waidhan"
+      ]
+    },
+    {
+      "rank": 1386,
+      "cityCode": 9526,
+      "name": "Zhaodong",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 407.507,
+      "plausibility": "Moderate",
+      "point": [
+        46.0642595927575,
+        125.987077593533
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "zhaodong"
+      ]
+    },
+    {
+      "rank": 1387,
+      "cityCode": 3528,
+      "name": "Hat Yai",
+      "country": "Thailand",
+      "iso2": "TH",
+      "iso3": "THA",
+      "locId": 764,
+      "capital": false,
+      "pop2025k": 407.059,
+      "plausibility": "High",
+      "point": [
+        7.00808972990678,
+        100.473261275137
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "hat yai"
+      ]
+    },
+    {
+      "rank": 1388,
+      "cityCode": 9119,
+      "name": "Jalna",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 406.973,
+      "plausibility": "High",
+      "point": [
+        19.8438902798699,
+        75.8830612617864
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "jalna"
+      ]
+    },
+    {
+      "rank": 1389,
+      "cityCode": 4914,
+      "name": "Dhamar",
+      "country": "Yemen",
+      "iso2": "YE",
+      "iso3": "YEM",
+      "locId": 887,
+      "capital": false,
+      "pop2025k": 406.929,
+      "plausibility": "Moderate",
+      "point": [
+        14.5407208032909,
+        44.4025288778041
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "dhamar"
+      ]
+    },
+    {
+      "rank": 1390,
+      "cityCode": 9249,
+      "name": "Bhind",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 406.712,
+      "plausibility": "Moderate",
+      "point": [
+        26.561747327975,
+        78.7878870365716
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "bhind"
+      ]
+    },
+    {
+      "rank": 1392,
+      "cityCode": 8335,
+      "name": "Abakaliki",
+      "country": "Nigeria",
+      "iso2": "NG",
+      "iso3": "NGA",
+      "locId": 566,
+      "capital": false,
+      "pop2025k": 406.105,
+      "plausibility": "Moderate",
+      "point": [
+        6.31906373315647,
+        8.10148669470949
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "abakaliki"
+      ]
+    },
+    {
+      "rank": 1393,
+      "cityCode": 10653,
+      "name": "Kumbakonam",
+      "country": "India",
+      "iso2": "IN",
+      "iso3": "IND",
+      "locId": 356,
+      "capital": false,
+      "pop2025k": 405.885,
+      "plausibility": "High",
+      "point": [
+        10.964569185515,
+        79.3852902968803
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "kumbakonam"
+      ]
+    },
+    {
+      "rank": 1394,
+      "cityCode": 9184,
+      "name": "Daqing",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 405.48,
+      "plausibility": "Moderate",
+      "point": [
+        46.5752337536166,
+        125.128483425807
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "daqing"
+      ]
+    },
+    {
+      "rank": 1395,
+      "cityCode": 11778,
+      "name": "Jiashan",
+      "country": "China",
+      "iso2": "CN",
+      "iso3": "CHN",
+      "locId": 156,
+      "capital": false,
+      "pop2025k": 405.454,
+      "plausibility": "Moderate",
+      "point": [
+        30.8508959324406,
+        120.924624299604
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "5",
+      "aliases": [
+        "jiashan"
+      ]
+    },
+    {
+      "rank": 1396,
+      "cityCode": 962,
+      "name": "Hebron",
+      "country": "State of Palestine",
+      "iso2": "PS",
+      "iso3": "PSE",
+      "locId": 275,
+      "capital": false,
+      "pop2025k": 405.079,
+      "plausibility": "Moderate",
+      "point": [
+        31.5314285857518,
+        35.0895746163314
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "13",
+      "aliases": [
+        "hebron"
+      ]
+    },
+    {
+      "rank": 1397,
+      "cityCode": 6363,
+      "name": "North Richland Hills",
+      "country": "United States of America",
+      "iso2": "US",
+      "iso3": "USA",
+      "locId": 840,
+      "capital": false,
+      "pop2025k": 404.68,
+      "plausibility": "Moderate",
+      "point": [
+        32.8621940092415,
+        -97.1985157079356
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "32",
+      "aliases": [
+        "north richland hills"
+      ]
+    },
+    {
+      "rank": 1398,
+      "cityCode": 4489,
+      "name": "Sariwon",
+      "country": "Dem. People's Republic of Korea",
+      "iso2": "KP",
+      "iso3": "PRK",
+      "locId": 408,
+      "capital": false,
+      "pop2025k": 404.672,
+      "plausibility": "Low",
+      "point": [
+        38.5104736623283,
+        125.755403558968
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "sariwon"
+      ]
+    },
+    {
+      "rank": 1399,
+      "cityCode": 1336,
+      "name": "Point Cook",
+      "country": "Australia",
+      "iso2": "AU",
+      "iso3": "AUS",
+      "locId": 36,
+      "capital": false,
+      "pop2025k": 404.501,
+      "plausibility": "High",
+      "point": [
+        -37.8751576905159,
+        144.700997109625
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": "33",
+      "aliases": [
+        "point cook"
+      ]
+    },
+    {
+      "rank": 1400,
+      "cityCode": 4876,
+      "name": "Wad Madanī",
+      "country": "Sudan",
+      "iso2": "SD",
+      "iso3": "SDN",
+      "locId": 729,
+      "capital": false,
+      "pop2025k": 403.988,
+      "plausibility": "High",
+      "point": [
+        14.3818920091121,
+        33.5314635606539
+      ],
+      "year": 2025,
+      "timeMid": 2025.5,
+      "populationUnit": "thousands",
+      "notes": null,
+      "aliases": [
+        "wad madani"
+      ]
+    }
+  ]
+}

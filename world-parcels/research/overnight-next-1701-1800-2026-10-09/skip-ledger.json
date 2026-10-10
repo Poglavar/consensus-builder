@@ -1,0 +1,297 @@
+{
+  "schemaVersion": 1,
+  "attempted": [
+    {
+      "rank": 1704,
+      "cityCode": 3617,
+      "name": "Garawan",
+      "country": "Egypt",
+      "iso2": "EG",
+      "pop2025k": 335.801,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/africa-ne-city-garawan.json",
+          "cityId": "wup2025:3617",
+          "cityName": "Garawan",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-city-garawan.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1710,
+      "cityCode": 2412,
+      "name": "Mansa",
+      "country": "Zambia",
+      "iso2": "ZM",
+      "pop2025k": 335.503,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-followup-2026-10-08/mansa-assessment.json",
+          "cityId": "wup2025:2412",
+          "cityName": "Mansa",
+          "parcelStatus": "verified_sample_partial_coverage",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ws-city-2412.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-followup-2026-10-08/africa-ws-city-2412-parcel-response.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-followup-2026-10-08/africa-ws-city-2412.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-followup-2026-10-08/africa-ws-followup-index.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-followup-2026-10-08/mansa-assessment.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1714,
+      "cityCode": 2250,
+      "name": "M'banza Congo",
+      "country": "Angola",
+      "iso2": "AO",
+      "pop2025k": 334.203,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-followup-2026-10-08/africa-ws-city-2250.json",
+          "cityId": "wup2025:2250",
+          "cityName": "M'banza Congo",
+          "parcelStatus": "no_verified_sample_candidate_extent_excludes_target",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ws-city-2250.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-followup-2026-10-08/africa-ws-city-2250.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1720,
+      "cityCode": 3135,
+      "name": "Garissa",
+      "country": "Kenya",
+      "iso2": "KE",
+      "pop2025k": 333.505,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/africa-ne-city-garissa.json",
+          "cityId": "wup2025:3135",
+          "cityName": "Garissa",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-city-garissa.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-followup-services.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1722,
+      "cityCode": 1046,
+      "name": "Basel",
+      "country": "Switzerland",
+      "iso2": "CH",
+      "pop2025k": 333.021,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/subnational/CH/BS.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1723,
+      "cityCode": 434,
+      "name": "Lefkosia (Nicosia)",
+      "country": "Cyprus",
+      "iso2": "CY",
+      "pop2025k": 333.008,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "previous-capital-city-name-coordinate-candidate",
+          "source": "world-capitals prior-check roster",
+          "evidenceFile": "research/retry/countries/CY.json",
+          "cityId": "capital:CY:nicosia",
+          "cityName": "Nicosia",
+          "researchStatus": "previously_checked",
+          "manualCityEvidence": [
+            {
+              "path": "research/retry/countries/CY.json",
+              "note": "Explicit Nicosia city-region bbox and parcel response."
+            }
+          ],
+          "identityConfidence": "review-required",
+          "distanceKm": 2.16
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": {
+        "decision": "confirmed_attempt",
+        "decisionFile": "root-identity-decision-overlay.json",
+        "reviewedAt": "2026-10-10T13:12:47.803109Z"
+      }
+    },
+    {
+      "rank": 1740,
+      "cityCode": 2109,
+      "name": "Riwoto",
+      "country": "South Sudan",
+      "iso2": "SS",
+      "pop2025k": 330.053,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/africa-ne-city-riwoto.json",
+          "cityId": "wup2025:2109",
+          "cityName": "Riwoto",
+          "parcelStatus": "temporarily_unavailable",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/growth-top20-2026-10-07/city-2109.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-city-riwoto.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-followup-services.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1746,
+      "cityCode": 5578,
+      "name": "شبلنجة",
+      "country": "Egypt",
+      "iso2": "EG",
+      "pop2025k": 328.82,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/africa-ne-city-city.json",
+          "cityId": "wup2025:5578",
+          "cityName": "شبلنجة",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1763,
+      "cityCode": 11771,
+      "name": "Khanakul",
+      "country": "India",
+      "iso2": "IN",
+      "pop2025k": 325.882,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/india-city-11771.json",
+          "cityId": "wup2025:11771",
+          "cityName": "Khanakul",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    }
+  ],
+  "identityReviewRequired": []
+}

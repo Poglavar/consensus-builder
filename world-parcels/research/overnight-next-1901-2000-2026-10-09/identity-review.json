@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "cityCount": 0,
+  "cities": [],
+  "resolvedDecisions": [
+    {
+      "cityCode": 11209,
+      "rank": 1999,
+      "decision": "different_settlement",
+      "decisionFile": "root-identity-decision-overlay.json",
+      "reviewedAt": "2026-10-10T18:08:43.559411Z"
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "cityCount": 2,
+  "cities": [
+    {
+      "rank": 2129,
+      "cityCode": 2061,
+      "name": "Concord",
+      "country": "United States of America",
+      "iso2": "US",
+      "point": [
+        37.9523383146985,
+        -122.042026648317
+      ],
+      "pop2025k": 273.051,
+      "plausibility": "Moderate",
+      "possiblePriorMatches": [
+        {
+          "kind": "same-country-name-distance-review",
+          "evidenceFile": "research/us-capitals-2026-10-06/nh.json",
+          "cityId": "us-capital:NH",
+          "cityName": "Concord",
+          "parcelStatus": "verified_sample_capital_scope",
+          "checked": null,
+          "distanceKm": 4305.06,
+          "identityConfidence": "ambiguous",
+          "source": "registry"
+        },
+        {
+          "kind": "runtime-city-config-with-parcel-source",
+          "source": "frontend/js/city-config.js",
+          "cityId": "concord",
+          "label": "Concord, United States",
+          "identityConfidence": "review-required"
+        }
+      ]
+    },
+    {
+      "rank": 2200,
+      "cityCode": 7034,
+      "name": "Jining",
+      "country": "China",
+      "iso2": "CN",
+      "point": [
+        41.0251329176748,
+        113.116647318686
+      ],
+      "pop2025k": 265.293,
+      "plausibility": "High",
+      "possiblePriorMatches": [
+        {
+          "kind": "same-country-name-distance-review",
+          "evidenceFile": "research/overnight-cities-2026-10-08/city-10092-jining.json",
+          "cityId": "wup2025:10092",
+          "cityName": "Jining",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": true,
+          "distanceKm": 694.08,
+          "identityConfidence": "ambiguous",
+          "source": "registry"
+        },
+        {
+          "evidenceFile": "world-parcels/research/overnight-cities-2026-10-08/city-10092-jining.json",
+          "matchedName": "Jining",
+          "field": "name",
+          "identityConfidence": "review-required",
+          "kind": "structured-city-name-candidate",
+          "source": "research-file"
+        }
+      ]
+    }
+  ]
+}

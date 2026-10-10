@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T13:01:03.406067+00:00",
+  "sourceSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+  "independentlyParsedSourceRows": 12138,
+  "rankedCities": 1000,
+  "descendingPopulationVerified": true,
+  "immutableUnIdentityAndPointVerified": true,
+  "noDuplicateCityCodes": true,
+  "noOverlapWithCurrentCohort": true,
+  "disjointQueueHoldSkipPartitions": true,
+  "cohorts": [
+    {
+      "startRank": 1301,
+      "endRank": 1400,
+      "rankedRows": 100,
+      "pending": 89,
+      "identityHolds": 2,
+      "priorSkips": 9,
+      "dateIndependentReuseVerified": true
+    },
+    {
+      "startRank": 1401,
+      "endRank": 1500,
+      "rankedRows": 100,
+      "pending": 97,
+      "identityHolds": 0,
+      "priorSkips": 3,
+      "dateIndependentReuseVerified": true
+    },
+    {
+      "startRank": 1501,
+      "endRank": 1600,
+      "rankedRows": 100,
+      "pending": 95,
+      "identityHolds": 4,
+      "priorSkips": 1,
+      "dateIndependentReuseVerified": true
+    },
+    {
+      "startRank": 1601,
+      "endRank": 1700,
+      "rankedRows": 100,
+      "pending": 91,
+      "identityHolds": 1,
+      "priorSkips": 8,
+      "dateIndependentReuseVerified": true
+    },
+    {
+      "startRank": 1701,
+      "endRank": 1800,
+      "rankedRows": 100,
+      "pending": 91,
+      "identityHolds": 1,
+      "priorSkips": 8,
+      "dateIndependentReuseVerified": true
+    },
+    {
+      "startRank": 1801,
+      "endRank": 1900,
+      "rankedRows": 100,
+      "pending": 98,
+      "identityHolds": 0,
+      "priorSkips": 2,
+      "dateIndependentReuseVerified": true
+    },
+    {
+      "startRank": 1901,
+      "endRank": 2000,
+      "rankedRows": 100,
+      "pending": 95,
+      "identityHolds": 1,
+      "priorSkips": 4,
+      "dateIndependentReuseVerified": true
+    },
+    {
+      "startRank": 2001,
+      "endRank": 2100,
+      "rankedRows": 100,
+      "pending": 95,
+      "identityHolds": 0,
+      "priorSkips": 5,
+      "dateIndependentReuseVerified": true
+    },
+    {
+      "startRank": 2101,
+      "endRank": 2200,
+      "rankedRows": 100,
+      "pending": 92,
+      "identityHolds": 2,
+      "priorSkips": 6,
+      "dateIndependentReuseVerified": true
+    },
+    {
+      "startRank": 2201,
+      "endRank": 2300,
+      "rankedRows": 100,
+      "pending": 93,
+      "identityHolds": 1,
+      "priorSkips": 6,
+      "dateIndependentReuseVerified": true
+    }
+  ],
+  "totalPending": 936,
+  "totalIdentityHolds": 12,
+  "totalPriorSkips": 52,
+  "restartVerification": {
+    "checkedAt": "2026-10-09T13:03:25.576947+00:00",
+    "status": "running",
+    "runnerPidIdentityVerified": true,
+    "heartbeat": "2026-10-09T13:03:25+00:00",
+    "currentRankStart": 1201,
+    "currentRankEnd": 1300,
+    "activeQueueUnchanged": true,
+    "allPriorCompletedResearchPreserved": true,
+    "allPriorReviewReceiptsPreserved": true,
+    "activeProcesses": [
+      {
+        "role": "research",
+        "taskId": "city:8987",
+        "model": null,
+        "live": false
+      },
+      {
+        "role": "research",
+        "taskId": "city:10978",
+        "model": null,
+        "live": false
+      },
+      {
+        "role": "research",
+        "taskId": "city:2134",
+        "model": "gpt-5.6-luna",
+        "live": true
+      },
+      {
+        "role": "reviewer",
+        "taskId": "review:city:4669,city:8039,packet:1152,packet:966,packet:5072",
+        "model": "gpt-6-sol",
+        "live": true
+      }
+    ],
+    "recentTurnEvents": [
+      {
+        "turn": "20261009T130127-3620a8f5",
+        "eventTypes": {
+          "thread.started": 1,
+          "turn.started": 1,
+          "item.completed": 9,
+          "item.started": 6,
+          "turn.completed": 1
+        }
+      },
+      {
+        "turn": "20261009T130127-5dceb634",
+        "eventTypes": {
+          "thread.started": 1,
+          "turn.started": 1,
+          "item.completed": 12,
+          "item.started": 10
+        }
+      },
+      {
+        "turn": "20261009T130127-89bf0f56",
+        "eventTypes": {
+          "thread.started": 1,
+          "turn.started": 1,
+          "item.completed": 14,
+          "item.started": 11,
+          "turn.completed": 1
+        }
+      },
+      {
+        "turn": "20261009T130127-f54f8deb",
+        "eventTypes": {
+          "thread.started": 1,
+          "turn.started": 1,
+          "item.completed": 30,
+          "item.started": 26
+        }
+      }
+    ]
+  }
+}

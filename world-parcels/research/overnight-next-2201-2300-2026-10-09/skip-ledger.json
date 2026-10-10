@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 1,
+  "attempted": [
+    {
+      "rank": 2228,
+      "cityCode": 11959,
+      "name": "Moirabari",
+      "country": "India",
+      "iso2": "IN",
+      "pop2025k": 261.593,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/india-city-11959.json",
+          "cityId": "wup2025:11959",
+          "cityName": "Moirabari",
+          "parcelStatus": "no_verified_sample_candidate_citywide",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2234,
+      "cityCode": 10829,
+      "name": "Areraj",
+      "country": "India",
+      "iso2": "IN",
+      "pop2025k": 261.142,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/india-city-10829.json",
+          "cityId": "wup2025:10829",
+          "cityName": "Areraj",
+          "parcelStatus": "no_verified_sample_candidate_citywide",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2253,
+      "cityCode": 11285,
+      "name": "Nawada",
+      "country": "India",
+      "iso2": "IN",
+      "pop2025k": 259.262,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/india-city-11285.json",
+          "cityId": "wup2025:11285",
+          "cityName": "Nawada",
+          "parcelStatus": "no_verified_sample_candidate_citywide",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2278,
+      "cityCode": 7666,
+      "name": "Ogu",
+      "country": "Nigeria",
+      "iso2": "NG",
+      "pop2025k": 256.345,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/africa-ws-city-7666.json",
+          "cityId": "wup2025:7666",
+          "cityName": "Ogu",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ws-city-7666.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2279,
+      "cityCode": 6878,
+      "name": "Kilwa",
+      "country": "Democratic Republic of the Congo",
+      "iso2": "CD",
+      "pop2025k": 256.165,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/africa-ws-city-6878.json",
+          "cityId": "wup2025:6878",
+          "cityName": "Kilwa",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ws-city-6878.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2293,
+      "cityCode": 428,
+      "name": "Gaborone",
+      "country": "Botswana",
+      "iso2": "BW",
+      "pop2025k": 254.517,
+      "plausibility": "Low",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/africa-capitals-2026-10-08/central-south-index.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/africa-capitals-2026-10-08/city-gaborone.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    }
+  ],
+  "identityReviewRequired": [
+    {
+      "rank": 2295,
+      "cityCode": 409,
+      "name": "Sarajevo",
+      "country": "Bosnia and Herzegovina",
+      "iso2": "BA",
+      "pop2025k": 253.857,
+      "plausibility": "Moderate",
+      "possiblePriorMatches": [
+        {
+          "kind": "same-country-name-coordinate-candidate",
+          "evidenceFile": "research/coverage-recheck-2026-10-08.json",
+          "cityId": "geonames:3191281",
+          "cityName": "Sarajevo",
+          "parcelStatus": "temporarily_unavailable",
+          "checked": null,
+          "distanceKm": 1.68,
+          "identityConfidence": "probable-review-required",
+          "source": "registry"
+        },
+        {
+          "kind": "previous-capital-city-name-coordinate-candidate",
+          "source": "world-capitals prior-check roster",
+          "evidenceFile": "research/coverage-recheck-2026-10-08.json",
+          "cityId": "capital:BA:sarajevo",
+          "cityName": "Sarajevo",
+          "researchStatus": "previously_checked",
+          "manualCityEvidence": [],
+          "identityConfidence": "review-required",
+          "distanceKm": 3.63
+        }
+      ]
+    }
+  ]
+}

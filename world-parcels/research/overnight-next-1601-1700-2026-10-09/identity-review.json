@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "cityCount": 0,
+  "cities": [],
+  "resolvedDecisions": [
+    {
+      "cityCode": 1027,
+      "rank": 1654,
+      "decision": "different_country",
+      "effectiveAttemptState": "pending",
+      "source": "world-parcels/research/overnight-next-1601-1700-2026-10-09/root-identity-decision-overlay.json"
+    }
+  ],
+  "identityDecisionOverlay": "world-parcels/research/overnight-next-1601-1700-2026-10-09/root-identity-decision-overlay.json",
+  "identityDecisionOverlaySha256": "201c6e515eb09bc0e187dd8728d4da89f1b1a2261892e3ef9618c27aab37fd1a"
+}

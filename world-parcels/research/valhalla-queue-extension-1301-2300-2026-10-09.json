@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-10-09T13:00:28.879514+00:00",
+  "source": {
+    "organization": "United Nations, Department of Economic and Social Affairs, Population Division",
+    "publication": "World Urbanization Prospects: The 2025 Revision, Online Edition",
+    "downloadPage": "https://population.un.org/wup/downloads?tab=Cities",
+    "bulkFile": "WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "downloadUrl": "https://population.un.org/wup/assets/Download/Cities/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "localSourceSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "retrievedAt": "2026-10-09",
+    "populationField": "Pop for Year=2025; units are thousands; ranking does not remove low-plausibility rows.",
+    "identity": "City_Code is the WUP settlement identity; coordinates use the Year=2025 PWCent fields and are settlement points, not municipal boundaries or cadastral coverage claims. Some older normalized queue coordinates differ; e.g. Dighwara old point 25.969189,84.824243 vs this source point 25.9220863,84.8502742.",
+    "downloadRequest": {
+      "method": "GET",
+      "requestedUrl": "https://population.un.org/wup/assets/Download/Cities/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+      "responseStatus": 200,
+      "responseDate": "Fri, 09 Oct 2026 06:46:20 GMT",
+      "capturedMetadata": "source-download.json",
+      "localArchivePath": "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz (ignored repository temp)",
+      "localArchiveBytes": 58726569,
+      "sha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114"
+    }
+  },
+  "startRank": 1301,
+  "endRank": 2300,
+  "rankedCityCount": 1000,
+  "selectionMethod": "UN WUP 2025 population descending; numeric City_Code breaks ties; preserve prior-attempt exclusions and identity-review holds.",
+  "cohorts": [
+    {
+      "startRank": 1301,
+      "endRank": 1400,
+      "queuePath": "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+      "rosterPath": "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+      "rosterSha256": "22652e0f1772bc6b11eeba4dc05e8073b02da43864f93410f994154424a17381",
+      "pending": 89,
+      "identityReviewRequired": 2,
+      "previouslyAttempted": 9
+    },
+    {
+      "startRank": 1401,
+      "endRank": 1500,
+      "queuePath": "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+      "rosterPath": "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+      "rosterSha256": "f8308ee8d4af3e31365a128de261bce859d94dc2cec74feaee0ff350ab0c769a",
+      "pending": 97,
+      "identityReviewRequired": 0,
+      "previouslyAttempted": 3
+    },
+    {
+      "startRank": 1501,
+      "endRank": 1600,
+      "queuePath": "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+      "rosterPath": "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+      "rosterSha256": "165be112db6f4b658129928f1401932ed74c19d5079b59365f625d0c63276193",
+      "pending": 95,
+      "identityReviewRequired": 4,
+      "previouslyAttempted": 1
+    },
+    {
+      "startRank": 1601,
+      "endRank": 1700,
+      "queuePath": "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+      "rosterPath": "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+      "rosterSha256": "be9f7bdc0e757dad210e3a4e416c3635ba8a7cea5d1985b43efa93831c61ce9f",
+      "pending": 91,
+      "identityReviewRequired": 1,
+      "previouslyAttempted": 8
+    },
+    {
+      "startRank": 1701,
+      "endRank": 1800,
+      "queuePath": "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+      "rosterPath": "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+      "rosterSha256": "cc76e4068c5596e62da40f90900da7ff6532b20436e98a3a11ad40591eb52091",
+      "pending": 91,
+      "identityReviewRequired": 1,
+      "previouslyAttempted": 8
+    },
+    {
+      "startRank": 1801,
+      "endRank": 1900,
+      "queuePath": "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+      "rosterPath": "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+      "rosterSha256": "15e1c0890bfe6b4e9e4182e47749cb7efffd777f04527c0e8f0d2b64eaa112e8",
+      "pending": 98,
+      "identityReviewRequired": 0,
+      "previouslyAttempted": 2
+    },
+    {
+      "startRank": 1901,
+      "endRank": 2000,
+      "queuePath": "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+      "rosterPath": "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+      "rosterSha256": "653935f78b535b5999829ce1848e3376ce4a8d226e9d3646e647fa4566519d97",
+      "pending": 95,
+      "identityReviewRequired": 1,
+      "previouslyAttempted": 4
+    },
+    {
+      "startRank": 2001,
+      "endRank": 2100,
+      "queuePath": "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json",
+      "rosterPath": "world-parcels/research/overnight-next-2001-2100-2026-10-09/ranked-population.json",
+      "rosterSha256": "d6875e6ddc60307aae61e083f41fec4a001150185bb0badb498cfbf8f3566039",
+      "pending": 95,
+      "identityReviewRequired": 0,
+      "previouslyAttempted": 5
+    },
+    {
+      "startRank": 2101,
+      "endRank": 2200,
+      "queuePath": "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+      "rosterPath": "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+      "rosterSha256": "7f23d599f78272b29f3315e3acde76ce21e35f8c72ac11a020d9d019bce0d20d",
+      "pending": 92,
+      "identityReviewRequired": 2,
+      "previouslyAttempted": 6
+    },
+    {
+      "startRank": 2201,
+      "endRank": 2300,
+      "queuePath": "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+      "rosterPath": "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+      "rosterSha256": "888657bf3c5bc9e841ef3c8f267a1f9e2daf196bcc8e341ca00b96f5cd7f2a92",
+      "pending": 93,
+      "identityReviewRequired": 1,
+      "previouslyAttempted": 6
+    }
+  ],
+  "totalPending": 936,
+  "totalIdentityReviewRequired": 12,
+  "totalPreviouslyAttempted": 52
+}

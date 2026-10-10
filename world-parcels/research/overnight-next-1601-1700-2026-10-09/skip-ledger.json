@@ -1,0 +1,229 @@
+{
+  "schemaVersion": 1,
+  "attempted": [
+    {
+      "rank": 1607,
+      "cityCode": 6393,
+      "name": "Nandail",
+      "country": "Bangladesh",
+      "iso2": "BD",
+      "pop2025k": 354.872,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/growth-top20-integration-2026-10-07/bangladesh.json",
+          "cityId": "wup2025:6393",
+          "cityName": "Nandail",
+          "parcelStatus": "no_verified_sample_candidate_citywide",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/growth-top20-2026-10-07/city-6393.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1624,
+      "cityCode": 266,
+      "name": "Skopje",
+      "country": "North Macedonia",
+      "iso2": "MK",
+      "pop2025k": 352.624,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/world-capitals-2026-10-08/city-skopje.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/world-capitals-2026-10-08/europe-index.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1657,
+      "cityCode": 2633,
+      "name": "Bukalasi",
+      "country": "Uganda",
+      "iso2": "UG",
+      "pop2025k": 345.288,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/africa-ne-city-bukalasi.json",
+          "cityId": "wup2025:2633",
+          "cityName": "Bukalasi",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/growth-top20-2026-10-07/city-2633.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-city-bukalasi.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-followup-services.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1660,
+      "cityCode": 172,
+      "name": "Dili",
+      "country": "Timor-Leste",
+      "iso2": "TL",
+      "pop2025k": 345.038,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/world-capitals-2026-10-08/city-dili.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1663,
+      "cityCode": 6935,
+      "name": "Kansas City",
+      "country": "United States of America",
+      "iso2": "US",
+      "pop2025k": 344.125,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/subnational/US/MO.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1665,
+      "cityCode": 159,
+      "name": "Banda Aceh",
+      "country": "Indonesia",
+      "iso2": "ID",
+      "pop2025k": 343.382,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/subnational/ID/AC.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1691,
+      "cityCode": 112,
+      "name": "Rubavu",
+      "country": "Rwanda",
+      "iso2": "RW",
+      "pop2025k": 337.963,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/subnational/RW/Rubavu.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1693,
+      "cityCode": 699,
+      "name": "Vilnius",
+      "country": "Lithuania",
+      "iso2": "LT",
+      "pop2025k": 337.871,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/country-integration-audit-2026-10-09/vilnius-root-acceptance.json",
+          "cityId": "wup2025:699",
+          "cityName": "Vilnius",
+          "parcelStatus": "verified_sample_partial_coverage",
+          "checked": true,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/country-integration-audit-2026-10-09/Vilnius-runtime-qualification-adapter-fixed.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/country-integration-audit-2026-10-09/Vilnius-runtime-qualification.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/country-integration-audit-2026-10-09/vilnius-root-acceptance.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    }
+  ],
+  "identityReviewRequired": [],
+  "resolvedIdentityDecisions": [
+    {
+      "cityCode": 1027,
+      "rank": 1654,
+      "decision": "different_country",
+      "effectiveAttemptState": "pending",
+      "source": "world-parcels/research/overnight-next-1601-1700-2026-10-09/root-identity-decision-overlay.json"
+    }
+  ],
+  "identityDecisionOverlay": "world-parcels/research/overnight-next-1601-1700-2026-10-09/root-identity-decision-overlay.json",
+  "identityDecisionOverlaySha256": "201c6e515eb09bc0e187dd8728d4da89f1b1a2261892e3ef9618c27aab37fd1a"
+}

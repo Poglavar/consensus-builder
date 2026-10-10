@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "cityCount": 1,
+  "cities": [
+    {
+      "rank": 2295,
+      "cityCode": 409,
+      "name": "Sarajevo",
+      "country": "Bosnia and Herzegovina",
+      "iso2": "BA",
+      "point": [
+        43.8576941297522,
+        18.3731462143768
+      ],
+      "pop2025k": 253.857,
+      "plausibility": "Moderate",
+      "possiblePriorMatches": [
+        {
+          "kind": "same-country-name-coordinate-candidate",
+          "evidenceFile": "research/coverage-recheck-2026-10-08.json",
+          "cityId": "geonames:3191281",
+          "cityName": "Sarajevo",
+          "parcelStatus": "temporarily_unavailable",
+          "checked": null,
+          "distanceKm": 1.68,
+          "identityConfidence": "probable-review-required",
+          "source": "registry"
+        },
+        {
+          "kind": "previous-capital-city-name-coordinate-candidate",
+          "source": "world-capitals prior-check roster",
+          "evidenceFile": "research/coverage-recheck-2026-10-08.json",
+          "cityId": "capital:BA:sarajevo",
+          "cityName": "Sarajevo",
+          "researchStatus": "previously_checked",
+          "manualCityEvidence": [],
+          "identityConfidence": "review-required",
+          "distanceKm": 3.63
+        }
+      ]
+    }
+  ]
+}

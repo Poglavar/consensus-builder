@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "attempted": [
+    {
+      "rank": 2020,
+      "cityCode": 80,
+      "name": "Bratislava",
+      "country": "Slovakia",
+      "iso2": "SK",
+      "pop2025k": 288.533,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/world-capitals-2026-10-08/city-bratislava.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/world-capitals-2026-10-08/europe-index.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2029,
+      "cityCode": 107,
+      "name": "Maseru",
+      "country": "Lesotho",
+      "iso2": "LS",
+      "pop2025k": 286.843,
+      "plausibility": "Low",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/africa-capitals-2026-10-08/city-maseru.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2030,
+      "cityCode": 1021,
+      "name": "Sucre",
+      "country": "Bolivia (Plurinational State of)",
+      "iso2": "BO",
+      "pop2025k": 286.383,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/world-capitals-2026-10-08/city-sucre.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2033,
+      "cityCode": 10427,
+      "name": "Jianpur",
+      "country": "India",
+      "iso2": "IN",
+      "pop2025k": 286.148,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/india-city-10427.json",
+          "cityId": "wup2025:10427",
+          "cityName": "Jianpur",
+          "parcelStatus": "no_verified_sample_candidate_citywide",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2071,
+      "cityCode": 10605,
+      "name": "Shankarpur",
+      "country": "India",
+      "iso2": "IN",
+      "pop2025k": 280.248,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/india-city-10605.json",
+          "cityId": "wup2025:10605",
+          "cityName": "Shankarpur",
+          "parcelStatus": "no_verified_sample_candidate_citywide",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/growth-top20-2026-10-07/city-10605.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    }
+  ],
+  "identityReviewRequired": []
+}
