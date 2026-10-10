@@ -19,6 +19,7 @@ import { announceLensMember } from '../oracle/lens-registration.js';
 import { createLensPricing, describePricing } from './pricing.js';
 import { createLensMemberApp } from './server.js';
 import { lensLog } from './errors.js';
+import { retryWithBackoff } from './retry.js';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const CLUSTERS = {
@@ -27,6 +28,8 @@ const CLUSTERS = {
     localhost: 'http://127.0.0.1:8899'
 };
 const DEFAULT_PORT = 3095;
+// Startup steps that need Solana RPC or Postgres wait this long for them (e.g. after a reboot), then fail loudly.
+const STARTUP_RETRY = { giveUpAfterMs: 30 * 60 * 1000 };
 
 function usage(code = 0) {
     console.log([
@@ -124,7 +127,8 @@ async function main() {
     const authority = keypair ? keypair.publicKey.toBase58() : Keypair.generate().publicKey.toBase58();
     const issuer = dryRun
         ? createFakeIssuer({ authority, clock })
-        : await loadSasIssuer({ keypair, rpcUrl: values.rpc || process.env.SOLANA_RPC_URL || CLUSTERS[values.cluster] });
+        : await retryWithBackoff('loading the SAS issuer failed',
+            () => loadSasIssuer({ keypair, rpcUrl: values.rpc || process.env.SOLANA_RPC_URL || CLUSTERS[values.cluster] }), STARTUP_RETRY);
 
     let identity;
     if (values.identity === 'certilia') {
@@ -154,7 +158,7 @@ async function main() {
     const operatorToken = process.env.LENS_OPERATOR_TOKEN?.trim() || null;
     const app = createLensMemberApp({ member, pricing, operatorToken });
 
-    const status = await member.status();
+    const status = await retryWithBackoff('reading the member status failed', () => member.status(), STARTUP_RETRY);
     lensLog(`${dryRun ? 'DRY RUN' : 'LIVE'} lens member ${status.key}${status.ephemeralKey ? ' (ephemeral key)' : ''}, kind ${status.kind}`);
     lensLog(`credential ${status.credential} (${status.credentialName}); schemas ownership ${status.schemas.ownership}, verdict ${status.schemas.verdict}`);
     lensLog(`identity ${identity.kind}${values.owners ? ` from ${values.owners}` : ''}; issuer ${issuer.kind}; store ${dryRun ? 'memory' : values.store ? `file ${values.store}` : 'postgres'}`);
@@ -163,8 +167,10 @@ async function main() {
     const server = app.listen(port, values.host, () => {
         lensLog(`listening on http://${values.host}:${port}/lens/status`);
         if (!values.announce) return;
-        // The directory probes --public-url/lens/status, so this runs only once the server listens.
-        announceLensMember({
+        // The directory probes --public-url/lens/status, so this runs only once the server listens. The directory
+        // (the consensus-builder API) may not be up yet, e.g. right after a reboot: keep retrying while serving,
+        // signing each attempt afresh.
+        retryWithBackoff('ANNOUNCE FAILED, still serving but not listed', () => announceLensMember({
             directoryUrl: values.announce,
             publicUrl: values['public-url'],
             keypair,
@@ -172,10 +178,7 @@ async function main() {
             name: values.name,
             description: values.description,
             nowSeconds: clock.nowSeconds()
-        }).then(
-            listed => lensLog(`listed in ${values.announce} as ${listed.key} (${listed.kind}) at ${listed.serviceUrl}`),
-            error => console.error(`[${new Date().toISOString()}] [lens-member] ANNOUNCE FAILED, still serving but not listed: ${error.message}`)
-        );
+        })).then(listed => lensLog(`listed in ${values.announce} as ${listed.key} (${listed.kind}) at ${listed.serviceUrl}`));
     });
     const stop = signal => {
         lensLog(`${signal}: shutting down`);
