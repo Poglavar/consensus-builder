@@ -341,3 +341,4 @@
   by its account discriminator. `GET /proposals` needs `parcel_id`; filtered lists are `/proposals/summary`.
   `routes/urban-rules.js` returns no variables for the 2025 GUP (NULL `short_name`; join on `title`).
 
+- 2026-09-28: **Oracle voting** (`oracle-voting` worktree): proposal-selected owner/vote oracle contracts fix an approved electorate at mint, keep mutable on-chain votes until close, and settle escrow only after unanimous approval; Certilia stays disabled until its IDP app and authorized OIB ownership source exist.
