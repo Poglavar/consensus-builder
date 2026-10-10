@@ -4482,6 +4482,10 @@
                 "fulfillPledge": "Compromiso cumplido",
                 "claim": "Ganancias reclamadas"
             },
+            "bet": {
+                "yes": "Apuesta de {{amount}} a sí",
+                "no": "Apuesta de {{amount}} a no"
+            },
             "openError": "No se pudo abrir la propuesta. Inténtalo de nuevo.",
             "location": {
                 "near": "cerca de {{place}}",

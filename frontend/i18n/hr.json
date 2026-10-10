@@ -4468,6 +4468,10 @@
                 "fulfillPledge": "Obećanje ispunjeno",
                 "claim": "Dobitak preuzet"
             },
+            "bet": {
+                "yes": "Oklada {{amount}} na da",
+                "no": "Oklada {{amount}} na ne"
+            },
             "openError": "Prijedlog nije moguće otvoriti. Pokušajte ponovno.",
             "location": {
                 "near": "Okolica: {{place}}",

@@ -13,7 +13,9 @@ function setup(proposal) {
         WorldHandoff: { store: vi.fn(), proposalReady: vi.fn() },
         openProposalFromList: vi.fn(() => true), applyProposalToMap: vi.fn(),
         setProposalDetailsPanelMinimized: vi.fn(),
+        whenAppBooted: vi.fn(async () => {}), openBetDialog: vi.fn(async () => ({})),
     };
+    win.location.assign = vi.fn();
     vm.runInNewContext(source, { window: win, URL, URLSearchParams });
     return win;
 }
@@ -65,5 +67,38 @@ describe('opening a globe event on the map', () => {
         win.importServerProposal.mockRejectedValue(new Error('offline'));
         await expect(win.WorldProposalEntry.open(event, { fromUrl: true })).rejects.toThrow('offline');
         expect(win.WorldHandoff.proposalReady).toHaveBeenCalledTimes(2);
+    });
+});
+
+describe('opening a globe bet', () => {
+    const account = 'E323eSpdyobhdFKPCi2wcMj12ryFcJjhjKfZjpH8pxBh';
+    const bet = { proposalId: 'park-1', proposalAccount: account, cityId: 'zagreb', subject: 'Infill', href: `/bets/${account}?city=zagreb` };
+    it('opens the bet dialog over this city, not the proposal', async () => {
+        const win = setup(null);
+        await win.WorldProposalEntry.openBet(bet);
+        expect(win.WorldView.close).toHaveBeenCalledOnce();
+        expect(win.WorldEntry.finishNavigation).toHaveBeenCalledOnce();
+        expect(win.openBetDialog).toHaveBeenCalledWith({ proposalAccount: account, title: 'Infill' });
+        expect(win.history.pushState).toHaveBeenCalledWith(null, '', `/bets/${account}?city=zagreb&lang=hr&backend=http%3A%2F%2Flocalhost%3A3037`);
+        expect(win.history.pushState.mock.invocationCallOrder[0]).toBeLessThan(win.WorldEntry.finishNavigation.mock.invocationCallOrder[0]);
+        expect(win.openProposalFromList).not.toHaveBeenCalled();
+        expect(win.location.assign).not.toHaveBeenCalled();
+        expect(win.WorldProposalEntry.isOpening()).toBe(false);
+    });
+    it("loads another city's bet on its bet link, keeping language and local backend routing", async () => {
+        const win = setup(null);
+        await win.WorldProposalEntry.openBet({ ...bet, cityId: 'new_york', href: `/bets/${account}?city=new_york` });
+        const route = new URL(win.location.assign.mock.calls[0][0], win.location.origin);
+        expect(route.pathname).toBe(`/bets/${account}`);
+        expect(route.searchParams.get('city')).toBe('new_york');
+        expect(route.searchParams.get('lang')).toBe('hr');
+        expect(route.searchParams.get('backend')).toBe('http://localhost:3037');
+        expect(win.WorldView.close).not.toHaveBeenCalled();
+        expect(win.openBetDialog).not.toHaveBeenCalled();
+    });
+    it('reports a dialog that could not open and releases the opening guard', async () => {
+        const win = setup(null); win.openBetDialog.mockResolvedValue(null);
+        await expect(win.WorldProposalEntry.openBet(bet)).rejects.toThrow('Bet dialog could not open');
+        expect(win.WorldProposalEntry.isOpening()).toBe(false);
     });
 });

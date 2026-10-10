@@ -26,8 +26,11 @@ const CHAIN_ACTIONS = Object.freeze({
 });
 const ACTIVITY_PROGRAMS = new Set(['proposal_nft', 'proposal_market', 'proposal_pledge']);
 const RECENT_CHAIN_ACTIONS = new Set([
-    'createMarket', 'accept', 'cancel', 'donate', 'pledge', 'fulfillPledge', 'claim', 'resolve'
+    'createMarket', 'stake', 'accept', 'cancel', 'donate', 'pledge', 'fulfillPledge', 'claim', 'resolve'
 ]);
+// The bet's own actions; the landing feed keeps room for them and links them to the bet.
+const BET_ACTIONS = new Set(['createMarket', 'stake', 'resolve', 'claim']);
+const MARKET_PROGRAM_ID = 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB';
 
 function readPersonas() {
     try {
@@ -131,7 +134,7 @@ export function proposalAccountIndex(rows = []) {
         try {
             const market = PublicKey.findProgramAddressSync(
                 [Buffer.from('market'), new PublicKey(account).toBuffer()],
-                new PublicKey('GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB')
+                new PublicKey(MARKET_PROGRAM_ID)
             )[0].toBase58();
             index.set(market, String(row.proposal_id));
         } catch { /* invalid legacy account: keep the public proposal usable */ }
@@ -397,6 +400,22 @@ function executedProposalEvents(rows = [], proposalIdsByAccount = new Map(), pro
 // in JS, so filtering happens after projection; a filtered request scans a wider, still bounded,
 // window per source and reports it, so a client can tell "none in the window" from "none at all".
 export const ACTIVITY_SCAN_WINDOW = 1000;
+
+/**
+ * The newest `limit` events, newest first, keeping up to half the places for bets: a burst of new
+ * proposals (a whole plan imported at once) must not push every bet off the landing feed. Places
+ * the bets do not use go to the other events, and the other way round.
+ */
+export function recentWithBets(events = [], limit = 12) {
+    const sorted = events.slice().sort((a, b) => (Date.parse(b.occurredAt || b.recordedAt || 0) || 0)
+        - (Date.parse(a.occurredAt || a.recordedAt || 0) || 0));
+    const isBet = event => BET_ACTIONS.has(event.action?.type);
+    const bets = sorted.filter(isBet);
+    const rest = sorted.filter(event => !isBet(event));
+    const betCount = Math.min(bets.length, Math.max(Math.ceil(limit / 2), limit - rest.length));
+    const chosen = new Set([...bets.slice(0, betCount), ...rest.slice(0, limit - betCount)]);
+    return sorted.filter(event => chosen.has(event));
+}
 const ACTIVITY_FILTER_FIELDS = ['actor', 'source', 'action', 'proposal', 'run'];
 
 export function activityFilters(query = {}) {
@@ -489,7 +508,7 @@ export function setupAgentActivityRoute(app, pool, {
         try {
             const requested = Number(req.query.limit);
             const limit = Number.isInteger(requested) && requested > 0 ? Math.min(requested, 30) : 12;
-            const [proposals, proposalAccounts, lifecycle, transactions] = await Promise.all([
+            const [proposals, proposalAccounts, lifecycle, transactions, marketTransactions] = await Promise.all([
                 pool.query(
                     `SELECT proposal_id, city, proposal_data, bounds,
                             ST_AsGeoJSON(site)::json AS site_geometry,
@@ -524,13 +543,24 @@ export function setupAgentActivityRoute(app, pool, {
                       WHERE cluster = 'devnet'
                       ORDER BY block_time DESC NULLS LAST, slot DESC
                       LIMIT $1`, [limit * 4]
+                ),
+                // The market program's own recent transactions, so bets reach the feed even when
+                // a burst of mints fills the general window above.
+                pool.query(
+                    `SELECT signature, slot, block_time, raw, created_at
+                       FROM consensus.solana_transaction
+                      WHERE cluster = 'devnet' AND touched_addresses @> ARRAY[$1]::text[]
+                      ORDER BY block_time DESC NULLS LAST, slot DESC
+                      LIMIT $2`, [MARKET_PROGRAM_ID, limit * 2]
                 )
             ]);
             const byId = new Map(proposalAccounts.rows.map(row => [String(row.proposal_id), row]));
             const accountIds = proposalAccountIndex(proposalAccounts.rows);
             const dbProposalEvents = publicProposalEvents(proposals.rows);
             const executedEvents = executedProposalEvents(lifecycle.rows, accountIds, byId);
-            const confirmedChainEvents = chainEvents(transactions.rows, {
+            const transactionRows = [...new Map([...transactions.rows, ...marketTransactions.rows]
+                .map(row => [row.signature, row])).values()];
+            const confirmedChainEvents = chainEvents(transactionRows, {
                 book, idls, proposalIdsByAccount: accountIds, decode
             }).filter(event => event.ok === true
                 && RECENT_CHAIN_ACTIONS.has(event.action?.type)
@@ -540,13 +570,12 @@ export function setupAgentActivityRoute(app, pool, {
                     return withProposalLocation({ ...event,
                         proposalType: proposal.proposal_data?.goal || null,
                         proposalPrimaryType: proposal.proposal_data?.primaryType || null,
-                        proposalName: proposal.display_name || null, cityId: proposal.city || null
+                        proposalName: proposal.display_name || null, cityId: proposal.city || null,
+                        ...(BET_ACTIONS.has(event.action.type) && proposal.proposal_account
+                            ? { proposalAccount: proposal.proposal_account } : {})
                     }, proposal);
                 });
-            const events = mergeEvents(dbProposalEvents, executedEvents, confirmedChainEvents)
-                .sort((a, b) => (Date.parse(b.occurredAt || b.recordedAt || 0) || 0)
-                    - (Date.parse(a.occurredAt || a.recordedAt || 0) || 0))
-                .slice(0, limit);
+            const events = recentWithBets(mergeEvents(dbProposalEvents, executedEvents, confirmedChainEvents), limit);
             return res.json({ events, source: 'live' });
         } catch (error) {
             console.error('GET /activity/recent failed', error);

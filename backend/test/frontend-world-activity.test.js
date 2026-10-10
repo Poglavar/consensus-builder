@@ -66,14 +66,14 @@ class FakeElement {
     }
 }
 
-function mountActivity({ events, mobile = true, reducedMotion = false, transform = 'matrix(1, 0, 0, 1, 0, 0)', coverage = null }) {
+function mountActivity({ events, mobile = true, reducedMotion = false, transform = 'matrix(1, 0, 0, 1, 0, 0)', coverage = null, entry = {} }) {
     const root = new FakeElement('main');
     const mediaListeners = new Set();
     const media = { matches: mobile, addEventListener: (_type, listener) => mediaListeners.add(listener),
         removeEventListener: (_type, listener) => mediaListeners.delete(listener), change: () => mediaListeners.forEach(listener => listener()) };
     const window = {
         WorldActivityModel: require('../../frontend/js/world/activity-model.js'),
-        WorldProposalEntry: { href: row => row.href, open: async () => {} },
+        WorldProposalEntry: { href: row => row.href, open: async () => {}, openBet: async () => {}, ...entry },
         CityConfigManager: { getCityConfig: id => id === 'tbilisi' ? { label: 'Tbilisi' } : null, getCityCenter: () => [41.7, 44.8] },
         getBackendBase: () => 'https://api.example.test', matchMedia: () => media,
         getComputedStyle: () => ({ transform }),
@@ -88,10 +88,11 @@ function mountActivity({ events, mobile = true, reducedMotion = false, transform
     const document = { hidden: false, activeElement: null, createElement: tagName => new FakeElement(tagName) };
     const fetch = async () => ({ ok: true, json: async () => ({ events }) });
     const context = vm.createContext({ window, document, fetch, AbortController, AbortSignal, DOMMatrixReadOnly: window.DOMMatrixReadOnly,
-        Intl, Date, URLSearchParams, console: { warn() {} }, CbFormat: { formatDateTime: () => 'now' } });
+        Intl, Date, URLSearchParams, console: { warn() {} }, CbFormat: { formatDateTime: () => 'now', formatMoney: (amount, code) => `${amount.toFixed(2)} ${code}` } });
     vm.runInContext(activitySource, context);
     const mounted = window.WorldActivity.mount(root, {
-        t: (key, fallback) => key.startsWith('modal.roadWidth.proposalList.goalLabels.') ? `label:${key.split('.').at(-1)}` : (fallback || key),
+        t: (key, fallback, params = {}) => key.startsWith('modal.roadWidth.proposalList.goalLabels.') ? `label:${key.split('.').at(-1)}`
+            : String(fallback || key).replace(/\{\{(\w+)\}\}/g, (_, name) => params[name] ?? ''),
         reducedMotion, coverage
     });
     return new Promise(resolve => setTimeout(() => resolve({ root, panel: root.firstElementChild, media, mounted }), 0));
@@ -144,6 +145,34 @@ describe('world recent activity', () => {
     it('links every supported milestone including execution and market resolution', () => {
         for (const type of TYPES) expect(prepare([event(type, type)])[0]).toMatchObject({ type, proposalId: 'proposal-42' });
         expect(prepare([event('entity', 'claim', undefined, { action: { type: 'claim' }, entity: { type: 'proposal', id: 'entity-1' } })])[0].href).toContain('entity-1');
+    });
+    it('links a bet to the bet itself, with its side and amount, and keeps proposal links for the rest', () => {
+        const account = 'E323eSpdyobhdFKPCi2wcMj12ryFcJjhjKfZjpH8pxBh';
+        const [stake] = prepare([event('s', 'stake', undefined, { action: { type: 'stake', proposalId: 'p1', side: 'yes', amount: '0.25' }, proposalAccount: account, cityId: 'zagreb' })]);
+        expect(stake).toMatchObject({ type: 'stake', proposalAccount: account, side: 'yes', amount: '0.25', href: `/bets/${account}?city=zagreb` });
+        const [claim] = prepare([event('c', 'claim', undefined, { proposalAccount: account })]);
+        expect(claim.href).toBe(`/bets/${account}?`);
+        // A proposal action never becomes a bet link, and a malformed account is not linked.
+        expect(prepare([event('a', 'accept', undefined, { proposalAccount: account })])[0]).toMatchObject({ proposalAccount: null, href: '/?focusProposal=proposal-42' });
+        expect(prepare([event('x', 'stake', undefined, { proposalAccount: '../../evil' })])[0]).toMatchObject({ proposalAccount: null, side: null, amount: null });
+    });
+    it('words a bet with its amount and side, and opens the bet rather than the proposal', async () => {
+        const account = 'E323eSpdyobhdFKPCi2wcMj12ryFcJjhjKfZjpH8pxBh';
+        const events = [event('s', 'stake', '2026-10-02T12:00:00Z', { action: { type: 'stake', proposalId: 'p1', side: 'no', amount: '1' }, proposalAccount: account, cityId: 'tbilisi' }),
+            event('c', 'create', '2026-10-01T12:00:00Z', { cityId: 'tbilisi', proposalType: 'park' })];
+        const opened = [];
+        const { panel, mounted } = await mountActivity({ events, mobile: false, entry: {
+            openBet: async row => opened.push(['bet', row.proposalAccount]), open: async row => opened.push(['proposal', row.proposalId])
+        } });
+        const [bet, create] = panel.querySelectorAll('a');
+        expect(bet.dataset.eventType).toBe('stake');
+        expect(bet.querySelector('.world-activity__action').textContent).toBe('Bet 1.00 USDC on no');
+        expect(bet.querySelector('.world-activity__compact-type').textContent).toBe('Bet 1.00 USDC on no');
+        expect(create.querySelector('.world-activity__action').textContent).toBe('create');
+        await bet.listeners.get('click')[0]({ button: 0, preventDefault() {} });
+        await create.listeners.get('click')[0]({ button: 0, preventDefault() {} });
+        expect(opened).toEqual([['bet', account], ['proposal', 'proposal-42']]);
+        mounted.destroy();
     });
     it('shows compact city and proposal type, with one accessible link per event', async () => {
         const { panel, mounted } = await mountActivity({ events: activityEvents(2) });

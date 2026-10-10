@@ -4431,6 +4431,10 @@
                 "fulfillPledge": "Pledge fulfilled",
                 "claim": "Winnings claimed"
             },
+            "bet": {
+                "yes": "Bet {{amount}} on yes",
+                "no": "Bet {{amount}} on no"
+            },
             "openError": "Could not open this proposal. Please try again.",
             "location": {
                 "near": "near {{place}}",

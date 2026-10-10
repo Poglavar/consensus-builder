@@ -3,7 +3,7 @@ import request from 'supertest';
 import { describe, expect, it } from 'vitest';
 import {
     ACTIVITY_SCAN_WINDOW, activityFilters, chainEvents, controllerOf, matchesActivityFilters, proposalAccountIndex,
-    proposalEvents, runDetail, runEvents, setupAgentActivityRoute
+    proposalEvents, recentWithBets, runDetail, runEvents, setupAgentActivityRoute
 } from '../routes/agent-activity.js';
 
 const row = {
@@ -19,6 +19,52 @@ const row = {
 };
 
 describe('agent activity', () => {
+    it('keeps up to half the landing feed for bets when a burst of new proposals is newer', () => {
+        const at = minute => `2026-10-10T10:${String(minute).padStart(2, '0')}:00Z`;
+        const creates = Array.from({ length: 20 }, (_, i) => ({ id: `c${i}`, action: { type: 'create' }, occurredAt: at(30 + i) }));
+        const bets = Array.from({ length: 8 }, (_, i) => ({ id: `b${i}`, action: { type: i % 2 ? 'stake' : 'claim' }, occurredAt: at(i) }));
+
+        const feed = recentWithBets([...bets, ...creates], 12);
+
+        expect(feed).toHaveLength(12);
+        expect(feed.filter(event => event.id.startsWith('b')).map(event => event.id)).toEqual(['b7', 'b6', 'b5', 'b4', 'b3', 'b2']);
+        expect(feed.slice(0, 6).map(event => event.id)).toEqual(['c19', 'c18', 'c17', 'c16', 'c15', 'c14']);
+        // Places nobody else needs go to whoever has events left, either way round.
+        expect(recentWithBets(bets, 12)).toHaveLength(8);
+        expect(recentWithBets([...creates, bets[0]], 12).filter(event => event.action.type === 'create')).toHaveLength(11);
+        expect(recentWithBets(bets.concat(creates.slice(0, 2)), 6).map(event => event.id)).toEqual(['c1', 'c0', 'b7', 'b6', 'b5', 'b4']);
+    });
+
+    it('carries bets into the landing feed with their side, amount and proposal account, from the market program window', async () => {
+        const proposalAccount = 'E323eSpdyobhdFKPCi2wcMj12ryFcJjhjKfZjpH8pxBh';
+        const calls = [];
+        const pool = { query: async (sql, params = []) => {
+            calls.push({ sql, params });
+            if (sql.includes('proposal_account')) return { rows: [{ proposal_id: 'p1', proposal_account: proposalAccount, city: 'zagreb', display_name: 'Infill', proposal_data: { goal: 'building' } }] };
+            if (sql.includes('FROM proposal')) return { rows: [] };
+            if (sql.includes('consensus.land_event')) return { rows: [] };
+            if (sql.includes('touched_addresses')) return { rows: [{ raw: { signature: 'stake-tx' }, signature: 'stake-tx' }] };
+            return { rows: [{ raw: { signature: 'accept-tx' }, signature: 'accept-tx' }] };
+        } };
+        const decode = raw => ({ signature: raw.signature, status: 'success', time: raw.signature === 'stake-tx' ? '2026-10-09T09:00:00Z' : '2026-10-10T09:00:00Z',
+            instructions: [raw.signature === 'stake-tx'
+                ? { inner: false, program: { name: 'proposal_market' }, action: 'stake', args: { side: 1, amount: '1000000' },
+                    accounts: [{ role: 'proposal', address: proposalAccount }] }
+                : { inner: false, program: { name: 'proposal_nft' }, action: 'accept_proposal', accounts: [{ role: 'proposal', address: proposalAccount }] }] });
+        const app = express();
+        setupAgentActivityRoute(app, pool, { book: {}, idls: {}, decode });
+
+        const response = await request(app).get('/activity/recent?limit=4');
+
+        expect(response.status).toBe(200);
+        expect(response.body.events.map(event => event.action.type)).toEqual(['accept', 'stake']);
+        expect(response.body.events[1]).toMatchObject({ action: { type: 'stake', proposalId: 'p1', side: 'yes', amount: '1' },
+            proposalAccount, proposalName: 'Infill', cityId: 'zagreb' });
+        expect(response.body.events[0]).not.toHaveProperty('proposalAccount');
+        const marketWindow = calls.find(call => call.sql.includes('touched_addresses'));
+        expect(marketWindow.params).toEqual(['GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB', 8]);
+    });
+
     it('serves only public, confirmed recent events in newest-first order with real proposal links', async () => {
         const proposalAccount = '11111111111111111111111111111111';
         const proposalRows = [

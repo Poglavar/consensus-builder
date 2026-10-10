@@ -22,6 +22,15 @@
             const fallback = key === 'other' ? 'Other' : key.replace(/-/g, ' ');
             return t(`modal.roadWidth.proposalList.goalLabels.${key}`, fallback);
         }
+        // A bet reads as what it was: "Bet 1.00 USDC on yes".
+        function actionLabel(event) {
+            if (event.type === 'stake' && event.side && event.amount !== null) {
+                const amount = CbFormat.formatMoney(Number(event.amount), 'USDC');
+                return t('world.activity.bet.' + event.side, event.side === 'yes' ? 'Bet {{amount}} on yes' : 'Bet {{amount}} on no', { amount });
+            }
+            if (event.type === 'stake') return t('panel.proposal.market.placedTitle', 'Bet placed');
+            return t('world.activity.actions.' + event.type, event.type);
+        }
         function enableManualScroll() {
             if (userScrolling) return;
             const style = global.getComputedStyle(track);
@@ -99,7 +108,10 @@
                         if (click.button !== 0 || click.metaKey || click.ctrlKey || click.shiftKey || click.altKey) return;
                         click.preventDefault();
                         panel.setAttribute('aria-busy', 'true');
-                        try { await global.WorldProposalEntry.open(event, { arrive: 'pick' }); }
+                        try {
+                            if (event.proposalAccount) await global.WorldProposalEntry.openBet(event);
+                            else await global.WorldProposalEntry.open(event, { arrive: 'pick' });
+                        }
                         catch (error) {
                             status.textContent = t('world.activity.openError', 'Could not open this proposal. Please try again.');
                             status.hidden = false;
@@ -108,7 +120,7 @@
                     });
                     if (copy) link.tabIndex = -1;
                     const action = document.createElement('span'); action.className = 'world-activity__action';
-                    action.textContent = t('world.activity.actions.' + event.type, event.type);
+                    action.textContent = actionLabel(event);
                     const subject = document.createElement('span'); subject.className = 'world-activity__subject'; subject.textContent = event.subject;
                     const time = document.createElement('time'); time.dateTime = new Date(event.date).toISOString();
                     time.textContent = CbFormat.formatDateTime(event.date);
@@ -130,7 +142,7 @@
                     const compactCity = document.createElement('span'); compactCity.className = 'world-activity__compact-city';
                     compactCity.textContent = ['city', 'near'].includes(place.kind) ? place.name : location.textContent;
                     const compactType = document.createElement('span'); compactType.className = 'world-activity__compact-type';
-                    compactType.textContent = proposalTypeLabel(event);
+                    compactType.textContent = event.type === 'stake' ? actionLabel(event) : proposalTypeLabel(event);
                     compact.append(compactCity, compactType);
                     link.append(compact, action, subject, meta); li.append(link); list.append(li);
                 }

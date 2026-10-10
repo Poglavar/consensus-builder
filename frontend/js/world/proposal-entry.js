@@ -53,7 +53,31 @@
             opening = false;
         }
     }
-    global.WorldProposalEntry = { href, open, isOpening: () => opening };
+    // A bet in the feed opens that bet's own dialog over the map of its city; another city's bet
+    // loads that city on the bet link (/bets/<proposal account>), which opens the dialog on arrival.
+    async function openBet(event) {
+        if (opening) return;
+        opening = true;
+        try {
+            const target = href(event);
+            const city = new URL(target, global.location.origin).searchParams.get('city');
+            if (city !== global.CityConfigManager.getCurrentCityId()) {
+                global.location.assign(target);
+                return;
+            }
+            // The bet's address goes in first, as a proposal pick's does: landing reads it (the first-visit
+            // intro stands aside for a bet link), and the dialog keeps it while open.
+            global.history.pushState(null, '', target);
+            global.WorldView.close();
+            global.WorldEntry.finishNavigation();
+            await global.whenAppBooted();
+            const dialog = await global.openBetDialog({ proposalAccount: event.proposalAccount, title: event.subject });
+            if (!dialog) throw new Error('Bet dialog could not open');
+        } finally {
+            opening = false;
+        }
+    }
+    global.WorldProposalEntry = { href, open, openBet, isOpening: () => opening };
     async function fromUrl() {
         const params = new URLSearchParams(global.location.search);
         const id = params.get('focusProposal');
