@@ -2,7 +2,7 @@
   "name": "Agency Floor Plans",
   "active": false,
   "description": "Daily known-agency discovery, verified building matching and budgeted architectural plan interpretation. Vector geometry and source evidence are stored in geodata; meshes are derived on demand. A limited backfill, blocked sites or failed processing remain partial rather than claiming complete coverage.",
-  "machine": {"host":"67.205.138.129","user":"root","sshKey":"~/.ssh/id_ed25519","workDir":"~/code/consensus-builder"},
+  "machine": {"host":"46.224.128.67","user":"root","sshKey":"~/.ssh/id_ed25519","workDir":"~/code/consensus-builder"},
   "schedule": {"cron":"0 6 * * *","description":"Daily at 06:00 UTC; up to three hours of bounded work, checked after four hours.","checkDelayMinutes":240},
   "successCriteria": {
     "type":"run-stats","field":"verdict","equals":"success","timestampField":"endedAt",
