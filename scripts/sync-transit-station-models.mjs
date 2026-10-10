@@ -11,7 +11,6 @@ const destination = path.join(repositoryRoot, 'frontend/js/vendor/transit-statio
 const candidates = [
     process.env.ZAGREB_ISOCHRONE_ROOT,
     path.resolve(repositoryRoot, '../zagreb-isochrone-main'),
-    '/Users/simun/Code/zagreb-isochrone-main'
 ].filter(Boolean);
 
 let source = null;
