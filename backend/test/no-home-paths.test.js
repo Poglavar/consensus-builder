@@ -22,7 +22,9 @@ function trackedFilesMatching(pattern) {
 }
 
 describe('public repository hygiene', () => {
+    // git grep over every tracked file takes ~1 s on a quiet laptop but 4-5 s under load, past
+    // vitest's 5 s default, so this test carries its own timeout.
     it('has no personal home-directory paths in tracked files', () => {
         expect(trackedFilesMatching(HOME_PATH)).toEqual([]);
-    });
+    }, 30000);
 });
