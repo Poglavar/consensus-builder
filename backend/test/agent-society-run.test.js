@@ -1,10 +1,11 @@
-// The society runner's pure pieces: multi-turn run ids and seeds, invocation caps across turns,
-// persona loading, the optional LLM choice parser, and the lifecycle-01 lens member wiring.
+// The society runner's pure pieces: multi-turn and slotted run ids and seeds, invocation caps across
+// turns, persona loading, city discovery, YES/NO stake and claim execution wiring, the optional LLM
+// choice parser, and the lifecycle-01 lens member wiring.
 import { describe, expect, it } from 'vitest';
-import { MAX_SOCIETY_TURNS, societyBudget, societyPolicy, societyTurnSpent, societyTurns } from '../agents/run-policy.js';
+import { MAX_SOCIETY_TURNS, societyBudget, societyPolicy, societySlot, societyTurnSpent, societyTurns } from '../agents/run-policy.js';
 import { buildChoiceRequest, parseChoice } from '../agents/society-llm.js';
 import { createAgentLlm } from '../agents/llm-picker.js';
-import { loadSocietyPersona } from '../agents/society-run.mjs';
+import { activityMessage, discoveryCities, execute, loadSocietyPersona } from '../agents/society-run.mjs';
 import { lensMemberCommand, loadLensMemberPersona } from '../agents/lens-member-run.mjs';
 
 describe('society turns', () => {
@@ -25,6 +26,22 @@ describe('society turns', () => {
         expect(() => societyTurns({ day: 'today', personaName: 'x' })).toThrow(/YYYY-MM-DD/);
     });
 
+    it('slots a second run on the same day into its own run ids and seeds', () => {
+        expect(societyTurns({ day: '2026-10-11', personaName: 'backer-01', slot: 'h08' })).toEqual([
+            { turn: null, runId: '2026-10-11-h08-backer-01', seed: '2026-10-11:h08' }
+        ]);
+        expect(societyTurns({ day: '2026-10-11', personaName: 'backer-01', slot: 'h14', turns: 2 })).toEqual([
+            { turn: 1, runId: '2026-10-11-h14-backer-01-t1', seed: '2026-10-11:h14:t1' },
+            { turn: 2, runId: '2026-10-11-h14-backer-01-t2', seed: '2026-10-11:h14:t2' }
+        ]);
+        expect(societySlot('auto', new Date('2026-10-11T08:59:00Z'))).toBe('h08');
+        expect(societySlot('auto', new Date('2026-10-11T23:00:00Z'))).toBe('h23');
+        expect(societySlot('Evening')).toBe('evening');
+        expect(societySlot(null)).toBeNull();
+        expect(() => societySlot('a b')).toThrow(/--slot/);
+        expect(() => societyTurns({ day: '2026-10-11', personaName: 'x', slot: 'bad slot' })).toThrow(/slot/);
+    });
+
     it('bounds the whole invocation: spent turns shrink the budget of the next', () => {
         const policy = societyPolicy({ AGENT_SOCIETY_ACTION_CAP: '3', AGENT_SOCIETY_USDC_CAP: '0.02' });
         expect(societyPolicy({})).toEqual({ maxActions: 4, maxUsdc: 0.05 });
@@ -33,6 +50,8 @@ describe('society turns', () => {
         const used = societyTurnSpent(firstTurn);
         expect(used).toEqual({ actions: 2, usdc: 0.01 });
         expect(societyTurnSpent(replayed)).toEqual({ actions: 0, usdc: 0 });
+        const settledClaim = { society: { acted: true, action: { type: 'claim', side: 'no', usdc: 0 }, execution: { resolveSignature: 'r', signature: 'c' } } };
+        expect(societyTurnSpent(settledClaim)).toEqual({ actions: 2, usdc: 0 });
         expect(societyBudget(policy, used)).toEqual({ actionsLeft: 1, usdcLeft: 0.01 });
         expect(societyBudget(policy, { actions: 5, usdc: 1 })).toEqual({ actionsLeft: 0, usdcLeft: 0 });
     });
@@ -62,6 +81,61 @@ describe('society personas', () => {
         expect(dry.env).toEqual({ LENS_OPERATOR_TOKEN: 'secret' });
         expect(() => lensMemberCommand(persona, { live: true, sourceEnv: {} })).toThrow(/AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN/);
         expect(lensMemberCommand(persona, { sourceEnv: {} }).env).toEqual({});
+    });
+});
+
+describe('society cities', () => {
+    it('reads every city at once for *, an explicit list city by city, and Zagreb by default', () => {
+        expect(discoveryCities({ policy: { cities: ['*'] } })).toEqual([null]);
+        expect(discoveryCities({ policy: { cities: ['zagreb', '*'] } })).toEqual([null]);
+        expect(discoveryCities({ policy: { cities: ['zagreb', 'sibenik', 'zagreb'] } })).toEqual(['zagreb', 'sibenik']);
+        expect(discoveryCities({ policy: {} })).toEqual(['zagreb']);
+    });
+});
+
+describe('society execution wiring', () => {
+    const caps = { maxActions: 4, maxUsdc: 0.05 };
+    const keypair = { publicKey: 'Owner' };
+    function recorder() {
+        const calls = [];
+        const adapters = {
+            ensureMarketAndStake: async args => { calls.push(['stake', args]); return { stakeSignature: 's', replayed: false }; },
+            resolveProposalMarket: async args => { calls.push(['resolve', args]); return { signature: 'r', replayed: false, outcome: 'NO' }; },
+            claimProposalMarket: async args => { calls.push(['claim', args]); return { signature: 'c', replayed: false, claimed: true }; }
+        };
+        return { calls, adapters };
+    }
+
+    it('stakes YES on side 1 and NO on side 0, both as a target amount so a retry replays', async () => {
+        const { calls, adapters } = recorder();
+        await execute({ action: { type: 'stake', side: 'yes', amount: '0.02', usdc: 0.02, proposalAccount: 'PDA-a' }, keypair, caps, adapters });
+        await execute({ action: { type: 'stake', side: 'no', amount: '0.01', usdc: 0.01, proposalAccount: 'PDA-b' }, keypair, caps, adapters });
+        expect(calls.map(([, args]) => [args.proposalPda, args.side, args.amountAtomic, args.targetAmount])).toEqual([
+            ['PDA-a', 1, 20000n, true], ['PDA-b', 0, 10000n, true]
+        ]);
+        await expect(execute({ action: { type: 'stake', side: 'yes', amount: '0.06', usdc: 0.06 }, keypair, caps, adapters })).rejects.toThrow(/USDC_CAP/);
+    });
+
+    it('claims, resolving the market first only when the action says so', async () => {
+        const plain = recorder();
+        const result = await execute({ action: { type: 'claim', side: 'yes', usdc: 0, proposalAccount: 'PDA-w' }, keypair, caps, adapters: plain.adapters });
+        expect(plain.calls.map(([name, args]) => [name, args.proposalAccount, args.side])).toEqual([['claim', 'PDA-w', 'yes']]);
+        expect(result).toEqual({ resolveSignature: null, outcome: null, signature: 'c', replayed: false });
+        const first = recorder();
+        const settled = await execute({ action: { type: 'claim', side: 'no', resolveFirst: true, usdc: 0, proposalAccount: 'PDA-t' }, keypair, caps, adapters: first.adapters });
+        expect(first.calls.map(([name]) => name)).toEqual(['resolve', 'claim']);
+        expect(settled).toMatchObject({ resolveSignature: 'r', signature: 'c', outcome: 'NO', replayed: false });
+        const replay = recorder();
+        replay.adapters.claimProposalMarket = async () => ({ signature: null, replayed: true, claimed: true });
+        expect(await execute({ action: { type: 'claim', side: 'yes', usdc: 0, proposalAccount: 'PDA-w' }, keypair, caps, adapters: replay.adapters })).toMatchObject({ replayed: true });
+    });
+
+    it('words a YES bet as backing, a NO bet as opposition, and a claim as collecting', () => {
+        const persona = { name: 'backer-01' };
+        expect(activityMessage(persona, { type: 'stake', side: 'yes', amount: '0.02', proposalName: 'Pocket park' })).toBe('backer-01 bet YES 0.02 USDC on proposal Pocket park.');
+        expect(activityMessage(persona, { type: 'stake', side: 'no', amount: '0.01', proposalName: 'Tower' })).toBe('backer-01 bet NO 0.01 USDC against proposal Tower.');
+        expect(activityMessage(persona, { type: 'claim', side: 'no', payout: '0.0125', resolveFirst: true, proposalName: 'Tower' }))
+            .toBe('backer-01 collected 0.0125 USDC from its NO bet on proposal Tower after settling its market.');
     });
 });
 

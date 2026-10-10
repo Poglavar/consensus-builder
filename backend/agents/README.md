@@ -22,6 +22,12 @@ personas.json ──▶ parcel-source.js ──▶ planner.js ──▶ algorith
 | `algorithmic-picker.js` | explicit guardrails plus seeded variation among the near-best candidates | yes |
 | `llm-picker.js` | the Anthropic Batches step: request building, parsing, cost estimate, submit/await/collect | pure except `runPickBatch` |
 
+Several runs a day: `--slot auto|LABEL` (all three runners) puts the slot into the run id
+(`<day>-<slot>-<persona>`), the proposal ids and the seed, while `consensus.agent_run.day` stays the
+date; `auto` is `h` + the UTC hour. The PM2 schedules in `ecosystem.config.cjs` run every proposer and
+bettor every two or three hours with `--slot auto`; `consensus-builder-tx-sync` refreshes the
+transaction store every 20 minutes so the public activity feed shows each bet soon after it lands.
+
 `run.mjs` (the orchestrator) owns the sequencing, the checkpoints, the proposal ids, the daily
 spend cap, signed-action/USDC caps and the Telegram summary. The modules here hold no state and
 never decide to spend. `run-policy.js` refuses a live plan before it touches a wallet when it would
@@ -48,9 +54,18 @@ uses a soft pledge, so it produces real signed evidence without requiring a fund
 
 `society-run.mjs` runs any persona whose role has a pure policy module at `policies/<role>.js`
 (`decide(input)` → one action or none, plus `NEEDS` saying what to gather). Each turn it reads the
-active minted proposals, every proposal's market, and the persona's own history (its checkpointed
-turns, its on-chain positions/pledges, and in a dry run the earlier simulated turns), asks the policy,
-and executes the one action through `AgentActionEngine` with the same `consensus.agent_run` rows,
+proposals of the persona's `policy.cities` (every lifecycle; `["*"]` = every city in one unfiltered
+`/proposals/summary` read, an explicit list = one read per city, default `["zagreb"]`; up to 3000
+proposals, of which the newest 500 Solana-minted ones get their market and both own positions read in
+batched `getMultipleAccountsInfo` calls; EVM-minted rows are skipped), and the persona's own history
+(its checkpointed turns, its on-chain positions/pledges, and in a dry run the earlier simulated turns).
+First comes the shared **collect** step (`policies/collect.js`): if the persona holds an unclaimed
+position on a settled market it is owed money from (the winning side, or any side when nobody backed
+the winner, which refunds every stake — the Bets sheet's `claimSides` rule), the turn's action is a
+`claim` of it (no USDC, one signature). A market still open on a proposal that is already terminal
+on-chain (Executed → YES, Cancelled/Expired → NO) is settled first with `resolve`, which anyone may
+sign (two signatures). Only when nothing is owed does it ask the role's policy, and it executes the
+one action through `AgentActionEngine` with the same `consensus.agent_run` rows,
 activity envelope and Telegram summary as the supporter. `$0` by default; `--controller llm` lets a
 model (Batches, via `llm-picker.js` and `society-llm.js`) pick one of the policy's options that fit the
 caps, or none — never anything the policy did not offer. `support-run.mjs` is unchanged.
@@ -58,14 +73,15 @@ caps, or none — never anything the policy did not offer. `support-run.mjs` is 
 | persona | role | rule |
 |---|---|---|
 | `preservationist-01` | `contrarian` (`policies/contrarian.js`) | Among active minted proposals by other actors it has not already bet against (on-chain NO position or checkpointed stake) and whose market is unresolved, score density: proposed gross floor area = Σ footprint m² × floors from the record's `geometry.buildings` (floors from the feature, else `buildingProposal.parameters.floors`, else height / 3); without a massing, a text heuristic (floors mentioned × 100 + 50 per density word) ranked after every measured one. Score 0 (parks, squares) is never a target. Stake NO `policy.amountUsdc` (0.01) on the highest; ties by a `seed`-stable hash. A missing market costs a second signature. |
+| `backer-01` | `backer` (`policies/backer.js`) | The contrarian's mirror. Among active minted proposals by other actors it has not already backed (on-chain YES position or checkpointed YES stake) and whose market is unresolved, rank by the contrarian's `densityEvidence`: record-measured massings first (lowest proposed gross floor area first), then proposals with no density signal (parks, unmeasured summaries), then ones only the text calls dense; within a tier the underdog (market YES pool < NO pool) goes first; ties by a `seed`-stable hash. Stake YES `policy.amountUsdc` (0.02) on the first. A missing market costs a second signature. |
 | `speculator-01` | `speculator` (`policies/speculator.js`) | Implied YES = yesPool / (yesPool + noPool); no/empty/resolved market = no signal. First, revoke (`revoke_pledge`) an active own pledge on a still-Active proposal whose probability < `revokeBelowProbability` (0.5) or whose age (from its `createdAt`) > `maxAgeDays` (7), lowest probability first. Otherwise pledge `amountUsdc` (0.05) to the proposal with the highest probability ≥ `minPledgeProbability` (0.6) that is ≤ `pledgeWithinDays` (3) old and was never pledged to before (a revoked pledge is not re-made, so it cannot flap). |
 | `lifecycle-01` | `lens-member`, kind `lifecycle` | Runs the reference lens member through `lens-member-run.mjs` (port 3096). Its `service.operatorTokenEnv` maps `AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN` to the member's `LENS_OPERATOR_TOKEN`, so the proposer's retire phase and the member share one token; set `AGENT_LIFECYCLE_LENS_SERVICE_URL=http://127.0.0.1:3096` for the proposer to expire stale proposals by verdict. |
 
-All three have `wallet: null` until the operator generates `~/.config/solana/ugt-<name>.json`; a
+Society personas have `wallet: null` until the operator generates `~/.config/solana/ugt-<name>.json`; a
 `--live` society run refuses before reading anything until the key exists and `wallet` matches it.
 
 Caps bound one invocation: `AGENT_SOCIETY_ACTION_CAP` signed actions (default 4) and
-`AGENT_SOCIETY_USDC_CAP` (default 0.05; stakes and pledge commitments count, revokes are free). The
+`AGENT_SOCIETY_USDC_CAP` (default 0.05; stakes and pledge commitments count, revokes and claims are free). The
 policy sees the remaining budget, so a revoke can still happen after the USDC is spent; when options
 exist but none fits, the turn ends `cap-reached` and the invocation stops.
 
@@ -73,7 +89,11 @@ Game days: `--turns N` (1–10) plays N turns in one invocation. Turn k is check
 `<day>-<persona>-t<k>` with seed `<day>:t<k>` and re-reads the chain, so turn k sees what turn k−1
 signed; a rerun resumes at the first unfinished turn and counts the finished ones against the caps.
 Without `--turns` the run id is `<day>-<persona>` and the seed `<day>`. Proposal ages always use the
-real clock. Outcomes: `completed`, `no-action`, `replayed` (already on-chain), `cap-reached`, `failed`.
+real clock. `--slot LABEL` runs a persona again on the same UTC day: run ids `<day>-<LABEL>-<persona>`
+(`-t<k>` with `--turns`) and seeds `<day>:<LABEL>` (`:t<k>`); `--slot auto` is `h` + the UTC hour
+(`h08`), so an hourly or 3-hourly schedule gets a fresh run each time while a retry within the same
+hour resumes. The run row's `day` stays the UTC day. Each invocation has its own caps.
+`--personas FILE` reads another personas file (dry runs of a persona not yet configured). Outcomes: `completed`, `no-action`, `replayed` (already on-chain), `cap-reached`, `failed`.
 
 `/hackathon/operations.json` lists these roles under `optionalJobs` (not `jobs`, so the proof audit's
 four-job check is unchanged): no row = `not-configured`; the newest finished row older than 36 h =
@@ -111,16 +131,16 @@ closed Details disclosure preserves controller and source provenance for audits.
 | field | meaning |
 |---|---|
 | `name` | the persona's id; appears in `candidateId`, `custom_id`, the record's `agent.persona` and the building's `author` |
-| `role` | `proposer`, `supporter`, `lens-member`, or a society role with a `policies/<role>.js` module (`contrarian`, `speculator`); all but lens members share the controller, checkpoint and activity system |
+| `role` | `proposer`, `supporter`, `lens-member`, or a society role with a `policies/<role>.js` module (`contrarian`, `backer`, `speculator`); all but lens members share the controller, checkpoint and activity system |
 | `wallet` | public key, for labels; the record's `author` is bound by the paid route from the settlement, never from here |
 | `keypairPath` | where the signing key lives — **outside the repo** |
 | `weights` | `{ density, openSpace, valueUplift, heritage }`; drives the planner's score and is put into the prompt in words |
-| `areas` | `[{ city, bbox: [minLng, minLat, maxLng, maxLat] }]` |
+| `areas` | where the proposer looks; each run visits ONE of them (a stable rotation by run key, `agents/area-plan.js`) and a ~350 m window inside its bbox (`windowM` overrides), and never re-plans a parcel the persona already minted on. Three forms: `{ city, bbox }` — Croatian cadastre and the GUP urban rules in the database; `{ city, label, sourceId, bbox }` — any city with a live parcel source (`GET /parcel-sources/:sourceId?bbox=`), which carries no buildings or zoning, so the candidate uses the default envelope and says that existing buildings are not measured; `{ mode: 'contest', floorCap, withinDays }` — the parcels other proposers published on in the last `withinDays` days and did not retire, answered with a lower build-out (`floorCap`), so both proposals compete in one contest. `floorCap` on any area builds lower than the ceiling. |
 | `dailyProposals` | how many picks a controller may make for this persona in one run (the hackathon persona is capped at one) |
 | `stakeUsdc` | the bettor's stake size |
 | `support` | supporter cities, allowed action types and per-action USDC amount |
 | `service` | lens members only: `port`, `url`, `kind` (`owner-consent` or `lifecycle`), `priceUsdc` per ownership attestation, `credentialName`, `identity` adapter, optional `operatorTokenEnv` (the env var passed on as `LENS_OPERATOR_TOKEN`) |
-| `policy` | society roles only: `cities` plus the policy module's parameters (see the table above) |
+| `policy` | society roles only: `cities` (`["*"]` = every city with proposals) plus the policy module's parameters (see the table above) |
 
 `heritage` is declared and weighted but contributes **0**: there is no heritage dataset wired in
 yet, and a term faked from something else would look like a judgement nobody made.
@@ -279,6 +299,7 @@ PGHOST=localhost node agents/support-run.mjs --live --persona supporter-01 --api
 PGHOST=localhost npm run sync:land-events -- --dry-run
 node agents/society-run.mjs --persona preservationist-01 --turns 3 --api https://api.urbangametheory.xyz   # dry run (default)
 node agents/society-run.mjs --persona speculator-01 --api https://api.urbangametheory.xyz
+node agents/society-run.mjs --persona backer-01 --slot auto --api https://api.urbangametheory.xyz          # a second run today
 node agents/lens-member-run.mjs --persona lifecycle-01 --print
 ```
 

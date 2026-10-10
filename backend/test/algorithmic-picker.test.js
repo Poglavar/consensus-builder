@@ -45,13 +45,33 @@ describe('algorithmic proposal picker', () => {
         expect(result.policy.eligibleCandidateIds).toEqual(['densifier-01:eligible']);
     });
 
+    it('accepts the default envelope only where the parcel source has no buildings or zoning to read', () => {
+        const result = selectAlgorithmicPicks({
+            day: '2026-09-20', persona,
+            candidates: [candidate('world', 1, { rule: { source: 'default' }, builtKnown: false, builtGfaM2: 0, koName: 'San Francisco', parcelNumber: '3513080', allowedFloors: 5 })]
+        });
+        expect(result.picks[0]).toMatchObject({ candidateId: 'densifier-01:world', name: '5-storey infill on parcel 3513080, San Francisco' });
+        expect(result.picks[0].rationale).toContain("No zoning rule is mapped for parcel world, so the platform's default envelope applies (5 floors");
+        expect(result.picks[0].rationale).toContain('Existing buildings are not measured');
+    });
+
     it('writes its name and rationale only from candidate facts', () => {
         const result = selectAlgorithmicPicks({ day: '2026-09-20', persona, candidates: [candidate('2178', 1)] });
         expect(result.picks[0]).toMatchObject({
-            name: 'Plan-led infill in RUDEŠ',
+            name: '4-storey infill on parcel 2178, Rudeš',
             rationale: expect.stringContaining('from 200 m² to 500 m²')
         });
         expect(result.picks[0].rationale).toContain('€30,000');
+        expect(result.picks[0].rationale).toContain('The mapped urban rule allows 4 floors on parcel 2178.');
+    });
+
+    it('names a rival build-out as an alternative that answers the proposal on the same land', () => {
+        const result = selectAlgorithmicPicks({ day: '2026-09-20', persona, candidates: [candidate('HR-335614-1754/1', 1, {
+            plannedFloors: 2, rival: { proposalId: 'agent-densifier-01-2026-10-11-h02-1', persona: 'densifier-01', name: '4-storey infill on parcel 1754/1, Rudeš' }
+        })] });
+        expect(result.picks[0].name).toBe('2-storey alternative on parcel 1754/1, Rudeš');
+        expect(result.picks[0].rationale).toContain('allows 4 floors on parcel HR-335614-1754/1; this proposal builds 2.');
+        expect(result.picks[0].rationale).toContain('answers "4-storey infill on parcel 1754/1, Rudeš" by densifier-01 on the same land');
     });
 
     it('returns a valid no-pick result when every candidate fails the guardrails', () => {

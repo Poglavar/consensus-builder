@@ -7,7 +7,17 @@
       "wallet": "G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg",
       "keypairPath": "~/.config/solana/ugt-persona-01.json",
       "weights": { "density": 0.6, "openSpace": 0.1, "valueUplift": 0.3, "heritage": 0.0 },
-      "areas": [{ "city": "zagreb", "bbox": [15.93, 45.78, 16.02, 45.83] }],
+      "areas": [
+        { "city": "zagreb", "bbox": [15.975, 45.79, 16.06, 45.825], "windowM": 900 },
+        { "city": "new_york", "label": "New York", "sourceId": "us-nyc-dof-digital-tax-map", "bbox": [-74.014, 40.7068, -73.998, 40.7188] },
+        { "city": "paris", "label": "Paris", "sourceId": "fr-ign-parcellaire-express", "bbox": [2.3476, 48.8431, 2.3636, 48.8551] },
+        { "city": "london", "label": "London", "sourceId": "gb-hmlr-city-of-london", "bbox": [-0.098, 51.509, -0.082, 51.521] },
+        { "city": "sao_paulo", "label": "São Paulo", "sourceId": "br-sp-geosampa-lote-cidadao", "bbox": [-46.6413, -23.5565, -46.6253, -23.5445] },
+        { "city": "cape_town", "label": "Cape Town", "sourceId": "za-cct-land-parcels", "bbox": [18.4114, -33.9318, 18.4274, -33.9198] },
+        { "city": "toronto", "label": "Toronto", "sourceId": "ca-on-toronto-property-boundary", "bbox": [-79.3905, 43.6475, -79.3745, 43.6595] },
+        { "city": "lima", "label": "Lima", "sourceId": "pe-sedapal-publicaciones-lotes", "bbox": [-76.976, -12.021, -76.96, -12.009] },
+        { "city": "berlin", "label": "Berlin", "sourceId": "de-be-alkis-flurstuecke-wfs", "bbox": [13.397, 52.514, 13.413, 52.526] }
+      ],
       "dailyProposals": 1,
       "stakeUsdc": "0.25"
     },
@@ -17,8 +27,26 @@
       "wallet": "FoPmPhKE6bykLoumQSvygZCSJYLkxBfsqjE3ybMvSjYs",
       "keypairPath": "~/.config/solana/ugt-supporter-01.json",
       "support": {
-        "cities": ["zagreb"],
-        "actions": ["pledge"],
+        "cities": [
+          "zagreb",
+          "new_york",
+          "san_francisco",
+          "paris",
+          "berlin",
+          "amsterdam",
+          "london",
+          "madrid",
+          "sao_paulo",
+          "buenos_aires",
+          "cape_town",
+          "toronto",
+          "ljubljana",
+          "lima",
+          "nairobi",
+          "boston",
+          "austin"
+        ],
+        "actions": ["pledge", "donate", "stake"],
         "amountUsdc": "0.10"
       }
     },
@@ -43,7 +71,7 @@
       "wallet": "GLWL2hfT7T8yZ1juXjH8osioC2mzVHky8mMGvY5gcYUd",
       "keypairPath": "~/.config/solana/ugt-preservationist-01.json",
       "policy": {
-        "cities": ["zagreb"],
+        "cities": ["*"],
         "amountUsdc": "0.01"
       }
     },
@@ -53,7 +81,7 @@
       "wallet": "Fc2trFfYBGvBB315tkojuiqrm5sARjHtspA2tW4iEYqW",
       "keypairPath": "~/.config/solana/ugt-speculator-01.json",
       "policy": {
-        "cities": ["zagreb"],
+        "cities": ["*"],
         "amountUsdc": "0.05",
         "minPledgeProbability": 0.6,
         "revokeBelowProbability": 0.5,
@@ -74,6 +102,56 @@
         "credentialName": "LensMember",
         "identity": "devnet-registry",
         "operatorTokenEnv": "AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN"
+      }
+    },
+    {
+      "name": "builder-02",
+      "role": "proposer",
+      "wallet": "4EXtquCoNRBXvfVgDRfBSXSWzrBctcqLwwUau96Umeqk",
+      "keypairPath": "~/.config/solana/ugt-builder-02.json",
+      "weights": { "density": 0.4, "openSpace": 0.2, "valueUplift": 0.4, "heritage": 0.0 },
+      "areas": [
+        { "city": "san_francisco", "label": "San Francisco", "sourceId": "us-ca-sf-datasf-active-parcels", "bbox": [-122.4145, 37.7852, -122.3985, 37.7972] },
+        { "city": "amsterdam", "label": "Amsterdam", "sourceId": "nl-pdok-brk-kadastrale-kaart", "bbox": [4.892, 52.3665, 4.908, 52.3785] },
+        { "city": "madrid", "label": "Madrid", "sourceId": "es-dgc-inspire-cp-wfs", "bbox": [-3.7118, 40.4108, -3.6958, 40.4228] },
+        { "city": "buenos_aires", "label": "Buenos Aires", "sourceId": "ar-caba-idecaba-wfs-parcelas", "bbox": [-58.3804, -34.6149, -58.3644, -34.6029] },
+        { "city": "ljubljana", "label": "Ljubljana", "sourceId": "si-gurs-kn-parcele-wfs", "bbox": [14.498, 46.045, 14.514, 46.057] },
+        { "city": "nairobi", "label": "Nairobi", "sourceId": "ke-nairobi-maps-outlines", "bbox": [36.8372, -1.2719, 36.8532, -1.2599] },
+        { "city": "boston", "label": "Boston", "sourceId": "us-ma-boston-current-parcels", "bbox": [-71.0669, 42.3541, -71.0509, 42.3661] },
+        { "city": "austin", "label": "Austin", "sourceId": "us-tx-austin-parcels", "bbox": [-97.7511, 30.2612, -97.7351, 30.2732] },
+        { "city": "zagreb", "bbox": [15.975, 45.79, 16.06, 45.825], "windowM": 900, "floorCap": 4 }
+      ],
+      "dailyProposals": 1,
+      "stakeUsdc": "0.10"
+    },
+    {
+      "name": "gentle-01",
+      "role": "proposer",
+      "wallet": "5MQKHNHQu2hZU2nVKJqfNfuvAN7tNpCudLR1TFX8Azw7",
+      "keypairPath": "~/.config/solana/ugt-gentle-01.json",
+      "weights": { "density": 0.2, "openSpace": 0.5, "valueUplift": 0.3, "heritage": 0.0 },
+      "areas": [{ "mode": "contest", "floorCap": 3, "withinDays": 3 }],
+      "dailyProposals": 1,
+      "stakeUsdc": "0.10"
+    },
+    {
+      "name": "skeptic-02",
+      "role": "contrarian",
+      "wallet": "HCzR3jYRV9Ntefax55JNemVdRW1DBmWd7uFtUpXvefXk",
+      "keypairPath": "~/.config/solana/ugt-skeptic-02.json",
+      "policy": {
+        "cities": ["*"],
+        "amountUsdc": "0.02"
+      }
+    },
+    {
+      "name": "backer-01",
+      "role": "backer",
+      "wallet": "6qMnXuYMHL2z464J46WNzj6rLyPQ2qXSxuzTUgj3ykpQ",
+      "keypairPath": "~/.config/solana/ugt-backer-01.json",
+      "policy": {
+        "cities": ["*"],
+        "amountUsdc": "0.02"
       }
     }
   ]

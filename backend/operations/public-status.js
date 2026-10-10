@@ -74,8 +74,8 @@ function publicResolver(status, now) {
 // is unchanged. No row = not configured; a newest row older than its window = inactive (stopped, not
 // broken); only a recent run counts toward the overall status, where a failure is real attention.
 export const OPTIONAL_SOCIETY_ROLES = [
-    { role: 'contrarian', schedule: 'daily at 02:20 UTC', maxAgeHours: 36 },
-    { role: 'speculator', schedule: 'daily at 02:25 UTC', maxAgeHours: 36 }
+    { role: 'contrarian', schedule: 'every 2 hours at minute 20 UTC', maxAgeHours: 36 },
+    { role: 'speculator', schedule: 'every 3 hours at minute 40 UTC', maxAgeHours: 36 }
 ];
 const SOCIETY_OK_OUTCOMES = ['completed', 'no-action', 'replayed', 'cap-reached'];
 
@@ -115,8 +115,8 @@ export function buildPublicOperationsStatus({ runs = [], landOracle = null, pros
     const latestFinished = role => runs.find(row => row?.summary?.role === role && row.status !== 'running') || null;
     const optionalJobs = OPTIONAL_SOCIETY_ROLES.map(spec => publicSocietyRun(latestFinished(spec.role), { ...spec, now }));
     const jobs = [
-        publicAgentRun(latest('proposer'), { role: 'proposer', schedule: 'daily at 02:00 UTC', maxAgeHours: 36, now }),
-        publicAgentRun(latest('supporter'), { role: 'supporter', schedule: 'daily at 02:15 UTC', maxAgeHours: 36, now }),
+        publicAgentRun(latest('proposer'), { role: 'proposer', schedule: 'every 3 hours, three proposers staggered', maxAgeHours: 36, now }),
+        publicAgentRun(latest('supporter'), { role: 'supporter', schedule: 'every 3 hours at minute 45 UTC', maxAgeHours: 36, now }),
         publicLandOracle(landOracle, now),
         publicResolver(prospective, now)
     ];

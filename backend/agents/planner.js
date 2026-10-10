@@ -89,7 +89,11 @@ export function planCandidates(parcels, persona, {
 
         // A rule that states nothing takes the module's own defaults — never Number(null), which
         // would read a missing setback as "build to the boundary".
-        const maxFloors = num(sourceRule && sourceRule.maxFloors) ?? DEFAULT_MAX_FLOORS;
+        const allowedFloors = num(sourceRule && sourceRule.maxFloors) ?? DEFAULT_MAX_FLOORS;
+        // A parcel may ask to build lower than the ceiling (a rival's gentler answer, a low-rise
+        // persona); the ceiling itself stays on the candidate as allowedFloors.
+        const floorCap = num(parcel.floorCap);
+        const maxFloors = floorCap !== null && floorCap >= 1 ? Math.min(allowedFloors, Math.floor(floorCap)) : allowedFloors;
         const minSetbackM = num(sourceRule && sourceRule.minSetbackM) ?? DEFAULT_MIN_DISTANCE_M;
         const minPlotM2 = num(sourceRule && sourceRule.minPlotM2);
         const rule = normalizeParcelRule({
@@ -155,8 +159,12 @@ export function planCandidates(parcels, persona, {
             geometry: parcel.geometry,
             buildingCount: num(parcel.buildingCount) ?? 0,
             builtGfaM2,
-            rule: { maxFloors: rule.maxFloors, minSetbackM: rule.minDistance, source: ruleSourceOf(sourceRule) },
-            allowedFloors: rule.maxFloors,
+            rule: { maxFloors: allowedFloors, minSetbackM: rule.minDistance, source: ruleSourceOf(sourceRule) },
+            allowedFloors,
+            plannedFloors: rule.maxFloors,
+            parcelNumber: parcel.parcelNumber ?? null,
+            builtKnown: parcel.builtKnown !== false,
+            ...(parcel.rival ? { rival: parcel.rival } : {}),
             envelope: evaluated.envelope,
             massing,
             proposedGfaM2,

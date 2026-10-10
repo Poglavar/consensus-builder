@@ -107,8 +107,8 @@ describe('optional society roles in the public operations status', () => {
         expect(status.status).toBe('healthy');
         expect(status.jobs.map(job => job.role)).toEqual(['proposer', 'supporter', 'land-oracle', 'prospective-resolver']);
         expect(status.optionalJobs).toEqual([
-            expect.objectContaining({ role: 'contrarian', schedule: 'daily at 02:20 UTC', configured: false, status: 'not-configured', lastRun: null }),
-            expect.objectContaining({ role: 'speculator', schedule: 'daily at 02:25 UTC', configured: false, status: 'not-configured', lastRun: null })
+            expect.objectContaining({ role: 'contrarian', schedule: 'every 2 hours at minute 20 UTC', configured: false, status: 'not-configured', lastRun: null }),
+            expect.objectContaining({ role: 'speculator', schedule: 'every 3 hours at minute 40 UTC', configured: false, status: 'not-configured', lastRun: null })
         ]);
     });
 

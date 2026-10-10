@@ -20,6 +20,7 @@ import { ensureMarketAndStake, usdcToAtomic } from './bettor.js';
 import { getRun, startRun, updateRun } from './ledger.js';
 import { sendAndConfirmPolling } from './solana-send.js';
 import { sendTelegram } from './telegram.js';
+import { runKeyFor, slotLabel } from './area-plan.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -39,6 +40,7 @@ function usage(code) {
         '  --live               Checkpoint and submit one real devnet action',
         '  --persona NAME       One supporter persona (default: every role=supporter persona)',
         '  --day YYYY-MM-DD     UTC run day (default: today)',
+        '  --slot auto|LABEL    Several runs a day: run id <day>-<slot>-<persona>, choice seeded by it (auto = h + UTC hour)',
         '  --api URL            Backend base URL',
         '  --help               This text'
     ].join('\n'));
@@ -148,6 +150,7 @@ async function executeSupport({ decision, connection, keypair, runId }) {
 async function main() {
     const args = parseArgs(process.argv.slice(2));
     const day = args.day || new Date().toISOString().slice(0, 10);
+    const runKey = runKeyFor(day, slotLabel(args.slot));
     const apiBase = (args.api || process.env.AGENT_API_BASE || `http://localhost:${process.env.API_PORT || 3000}`).replace(/\/$/, '');
     const rpcUrl = process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com';
     const personas = loadPersonas(args.persona);
@@ -160,7 +163,7 @@ async function main() {
     const report = [];
     try {
         for (const persona of personas) {
-            const runId = `${day}-${persona.name}`;
+            const runId = `${runKey}-${persona.name}`;
             const existing = args.live ? await getRun(pool, runId) : null;
             if (existing?.status === 'done') {
                 report.push(`${persona.name}: resumed ${existing.summary?.outcome || 'completed'}`);
@@ -170,7 +173,7 @@ async function main() {
             const wallet = keypair?.publicKey.toBase58() || persona.wallet || null;
             const proposals = await discoverProposals(apiBase, persona);
             const excludeProposalIds = await alreadySupportedProposalIds({ connection, wallet, persona, proposals });
-            const choice = selectSupportAction({ day, persona, proposals, wallet, excludeProposalIds });
+            const choice = selectSupportAction({ day: runKey, persona, proposals, wallet, excludeProposalIds });
             console.log(`[${new Date().toISOString()}] ${persona.name}: ${choice.reason}`);
             if (args.dryRun) {
                 if (choice.selected) console.log(JSON.stringify(choice.selected, null, 2));

@@ -6,17 +6,19 @@ const require = createRequire(import.meta.url);
 const apps = require('../agents/ecosystem.config.cjs').apps;
 const app = apps[0];
 
-describe('daily algorithmic agent schedule', () => {
-    it('is one opt-in, non-restarting daily process with hard public limits', () => {
+describe('algorithmic agent schedule', () => {
+    it('is one opt-in, non-restarting process every three hours with hard public limits per run', () => {
         expect(app).toMatchObject({
             name: 'consensus-builder-agents',
             script: 'agents/run.mjs',
             instances: 1,
             autorestart: false,
-            cron_restart: '0 2 * * *',
+            cron_restart: '0 */3 * * *',
             merge_logs: true
         });
         expect(app.args).toContain('--persona densifier-01');
+        // Several runs a day: each is its own checkpoint, keyed by the UTC hour.
+        expect(app.args).toContain('--slot auto');
         expect(app.args).toContain('--candidates 4');
         expect(app.args).toContain('--controller algorithm');
         expect(app.env).toMatchObject({
@@ -39,11 +41,12 @@ describe('daily algorithmic agent schedule', () => {
             script: 'agents/support-run.mjs',
             instances: 1,
             autorestart: false,
-            cron_restart: '15 2 * * *',
+            cron_restart: '45 */3 * * *',
             merge_logs: true,
             env: { AGENT_SUPPORT_USDC_CAP: '0.25' }
         });
         expect(supporter.args).toContain('--persona supporter-01');
+        expect(supporter.args).toContain('--slot auto');
         const source = fs.readFileSync(new URL('../agents/support-run.mjs', import.meta.url), 'utf8');
         expect(source).toContain('AGENT SUPPORT RUN — status=completed');
         expect(source).toContain('AGENT_SUPPORT_USDC_CAP');
@@ -52,15 +55,19 @@ describe('daily algorithmic agent schedule', () => {
     it('schedules the society personas as opt-in, non-restarting runs of the generic society runner', () => {
         const personas = JSON.parse(fs.readFileSync(new URL('../agents/personas.json', import.meta.url), 'utf8')).personas;
         for (const [name, persona, cron, role] of [
-            ['consensus-builder-preservationist', 'preservationist-01', '20 2 * * *', 'contrarian'],
-            ['consensus-builder-speculator', 'speculator-01', '25 2 * * *', 'speculator']
+            ['consensus-builder-preservationist', 'preservationist-01', '20 */2 * * *', 'contrarian'],
+            ['consensus-builder-speculator', 'speculator-01', '40 */3 * * *', 'speculator'],
+            ['consensus-builder-skeptic', 'skeptic-02', '50 1-23/2 * * *', 'contrarian'],
+            ['consensus-builder-backer', 'backer-01', '10 1-23/2 * * *', 'backer']
         ]) {
             const entry = apps.find(item => item.name === name);
             expect(entry).toMatchObject({ script: 'agents/society-run.mjs', instances: 1, autorestart: false, cron_restart: cron, merge_logs: true });
             expect(entry.args).toContain(`--persona ${persona}`);
             expect(entry.args).toContain('--live');
+            expect(entry.args).toContain('--slot auto');
             expect(Number(entry.env.AGENT_SOCIETY_USDC_CAP)).toBeLessThanOrEqual(0.05);
-            expect(Number(entry.env.AGENT_SOCIETY_ACTION_CAP)).toBeLessThanOrEqual(2);
+            // A stake plus a possible market creation, or a claim that settles its market first.
+            expect(Number(entry.env.AGENT_SOCIETY_ACTION_CAP)).toBeLessThanOrEqual(3);
             expect(entry.env).not.toHaveProperty('AGENT_LLM_MODEL');
             // Opt-in until the key exists on the operator host; the persona names its wallet and keypair path.
             expect(personas.find(item => item.name === persona)).toMatchObject({ role, wallet: expect.stringMatching(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/), keypairPath: `~/.config/solana/ugt-${persona}.json` });
@@ -70,6 +77,28 @@ describe('daily algorithmic agent schedule', () => {
         expect(config).toMatch(/OPT-IN until keys exist[\s\S]*consensus-builder-speculator/);
         const source = fs.readFileSync(new URL('../agents/society-run.mjs', import.meta.url), 'utf8');
         expect(source).toContain('AGENT SOCIETY RUN — status=completed');
+    });
+
+    it('schedules the second proposer and the rival on the same bounded runner, between the first', () => {
+        const personas = JSON.parse(fs.readFileSync(new URL('../agents/personas.json', import.meta.url), 'utf8')).personas;
+        for (const [name, persona, cron] of [
+            ['consensus-builder-builder', 'builder-02', '30 1-22/3 * * *'],
+            ['consensus-builder-gentle', 'gentle-01', '15 2-23/3 * * *']
+        ]) {
+            const entry = apps.find(item => item.name === name);
+            expect(entry).toMatchObject({ script: 'agents/run.mjs', instances: 1, autorestart: false, cron_restart: cron,
+                env: { AGENT_DAILY_ACTION_CAP: '13', AGENT_DAILY_USDC_CAP: '0.35' } });
+            expect(entry.args).toContain(`--persona ${persona}`);
+            expect(entry.args).toContain('--controller algorithm');
+            expect(entry.args).toContain('--slot auto');
+            expect(personas.find(item => item.name === persona)).toMatchObject({ role: 'proposer', keypairPath: `~/.config/solana/ugt-${persona}.json` });
+        }
+        expect(personas.find(item => item.name === 'gentle-01').areas).toEqual([expect.objectContaining({ mode: 'contest' })]);
+    });
+
+    it('refreshes the transaction store the activity feed reads every 20 minutes', () => {
+        const sync = apps.find(item => item.name === 'consensus-builder-tx-sync');
+        expect(sync).toMatchObject({ script: 'scripts/sync-transactions.mjs', args: '--run', autorestart: false, cron_restart: '*/20 * * * *' });
     });
 
     it('declares lifecycle-01 as an inactive, unscheduled lens member', () => {

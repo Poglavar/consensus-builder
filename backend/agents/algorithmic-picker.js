@@ -34,16 +34,42 @@ function formatInteger(value) {
     return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(round(value));
 }
 
+// "Rudeš" from the cadastre's "RUDEŠ"; a city label from the persona's area is already cased.
+function placeName(value) {
+    const text = String(value || '').trim();
+    if (!text || text !== text.toUpperCase()) return text;
+    return text.toLowerCase().replace(/(^|[\s-])(\p{L})/gu, (_, gap, letter) => gap + letter.toUpperCase());
+}
+
+// The parcel number people know: "1754/1" from HR-335614-1754/1, "3513080" from US-CA-SF-3513080.
+function parcelNumberOf(candidate) {
+    if (candidate.parcelNumber) return String(candidate.parcelNumber);
+    const segments = String(candidate.parcelId || '').split('-');
+    const last = segments[segments.length - 1];
+    return segments.length >= 2 && /^\d/.test(last) ? last : String(candidate.parcelId || '');
+}
+
+// Distinct per parcel and per build-out, so a list of agent proposals never reads as one title
+// repeated: "4-storey infill on parcel 1754/1, Rudeš".
 function titleFor(candidate) {
-    const place = String(candidate.koName || candidate.parcelId || 'selected parcel').trim();
-    return `Plan-led infill in ${place}`.slice(0, MAX_NAME_CHARS);
+    const floors = round(candidate.plannedFloors ?? candidate.allowedFloors);
+    const kind = candidate.rival ? 'alternative' : 'infill';
+    const place = placeName(candidate.koName);
+    return `${floors}-storey ${kind} on parcel ${parcelNumberOf(candidate)}${place ? `, ${place}` : ''}`.slice(0, MAX_NAME_CHARS);
 }
 
 function rationaleFor(candidate) {
-    return [
-        `The mapped urban rule allows ${round(candidate.allowedFloors)} floors on parcel ${candidate.parcelId}.`,
-        `The measured build-out increases floor area from ${formatInteger(candidate.builtGfaM2)} m² to ${formatInteger(candidate.proposedGfaM2)} m², with a calculated owner offer of €${formatInteger(candidate.offerEur)}.`
-    ].join(' ');
+    const planned = round(candidate.plannedFloors ?? candidate.allowedFloors);
+    const allowed = round(candidate.allowedFloors);
+    const ceiling = candidate.rule?.source === 'urban-rule'
+        ? `The mapped urban rule allows ${allowed} floors on parcel ${candidate.parcelId}`
+        : `No zoning rule is mapped for parcel ${candidate.parcelId}, so the platform's default envelope applies (${allowed} floors, setbacks from every boundary)`;
+    const builds = planned < allowed ? `; this proposal builds ${planned}.` : '.';
+    const existing = candidate.builtKnown === false
+        ? `Existing buildings are not measured in this city's data, so the build-out of ${formatInteger(candidate.proposedGfaM2)} m² is counted against an empty plot, with a calculated owner offer of €${formatInteger(candidate.offerEur)}.`
+        : `The measured build-out increases floor area from ${formatInteger(candidate.builtGfaM2)} m² to ${formatInteger(candidate.proposedGfaM2)} m², with a calculated owner offer of €${formatInteger(candidate.offerEur)}.`;
+    const rival = candidate.rival ? ` It answers "${candidate.rival.name}" by ${candidate.rival.persona} on the same land, so the two compete in one contest.` : '';
+    return `${ceiling}${builds} ${existing}${rival}`;
 }
 
 function isEligible(candidate) {
@@ -52,8 +78,12 @@ function isEligible(candidate) {
     const built = finite(candidate?.builtGfaM2);
     const proposed = finite(candidate?.proposedGfaM2);
     const floors = finite(candidate?.allowedFloors);
+    // The default envelope is eligible only where no rule CAN be mapped (a live parcel source
+    // carries no zoning); where a rule layer exists, a parcel it misses is not a candidate.
+    const ruleOk = candidate?.rule?.source === 'urban-rule'
+        || (candidate?.rule?.source === 'default' && candidate?.builtKnown === false);
     return Boolean(candidate?.candidateId)
-        && candidate?.rule?.source === 'urban-rule'
+        && ruleOk
         && score !== null && score > 0
         && gain !== null && gain > 0
         && built !== null && proposed !== null && proposed > built
@@ -89,7 +119,7 @@ export function selectAlgorithmicPicks({ day, persona, candidates } = {}) {
         rejected: [],
         policy: {
             controller: 'algorithm',
-            eligibility: 'urban-rule + positive score + positive measured floor-area/value uplift',
+            eligibility: 'urban-rule (or the default envelope where the parcel source carries no zoning) + positive score + positive floor-area/value uplift',
             competitiveRatio: COMPETITIVE_RATIO,
             competitiveLimit: MAX_COMPETITIVE_CANDIDATES,
             seed: `${day || ''}:${personaName}`,

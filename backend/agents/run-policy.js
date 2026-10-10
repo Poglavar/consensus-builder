@@ -210,17 +210,35 @@ export function societyPolicy(env = {}) {
 }
 
 /**
+ * `--slot`: a label that lets one persona run several times on the same UTC day. `auto` is `h` plus
+ * the two-digit UTC hour of `now` (e.g. `h08`); anything else must be a short [a-z0-9-] label.
+ * Without a slot (null) the run ids stay exactly the daily ones.
+ */
+export function societySlot(value, now = new Date()) {
+    if (value === undefined || value === null) return null;
+    const text = String(value).trim().toLowerCase();
+    if (text === 'auto') return `h${String(now.getUTCHours()).padStart(2, '0')}`;
+    if (!/^[a-z0-9][a-z0-9-]{0,15}$/.test(text)) throw new Error(`--slot must be auto or a short label of a-z, 0-9 and -, got ${value}`);
+    return text;
+}
+
+/**
  * The turns of one invocation. Without `turns` it is the ordinary daily run: run id `<day>-<persona>`
  * and seed `<day>`. With `--turns N` turn k is its own game day: run id `<day>-<persona>-t<k>` and
  * seed `<day>:t<k>`, each checkpointed separately so a rerun resumes at the first unfinished turn.
+ * With `--slot S` the run id becomes `<day>-<S>-<persona>[-t<k>]` and the seed `<day>:<S>[:t<k>]`, so a
+ * second invocation on the same day is a new run instead of a replay; the run's `day` is unchanged.
  */
-export function societyTurns({ day, personaName, turns = null } = {}) {
+export function societyTurns({ day, personaName, turns = null, slot = null } = {}) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(String(day || ''))) throw new Error(`day must be YYYY-MM-DD, got ${day}`);
     if (!personaName) throw new Error('personaName is required');
-    if (turns === null || turns === undefined) return [{ turn: null, runId: `${day}-${personaName}`, seed: day }];
+    if (slot !== null && slot !== undefined && !/^[a-z0-9][a-z0-9-]{0,15}$/.test(String(slot))) throw new Error(`slot must be a short [a-z0-9-] label, got ${slot}`);
+    const runBase = slot ? `${day}-${slot}-${personaName}` : `${day}-${personaName}`;
+    const seedBase = slot ? `${day}:${slot}` : day;
+    if (turns === null || turns === undefined) return [{ turn: null, runId: runBase, seed: seedBase }];
     if (!Number.isInteger(turns) || turns < 1 || turns > MAX_SOCIETY_TURNS) throw new Error(`--turns must be an integer from 1 to ${MAX_SOCIETY_TURNS}`);
     return Array.from({ length: turns }, (_, index) => ({
-        turn: index + 1, runId: `${day}-${personaName}-t${index + 1}`, seed: `${day}:t${index + 1}`
+        turn: index + 1, runId: `${runBase}-t${index + 1}`, seed: `${seedBase}:t${index + 1}`
     }));
 }
 
@@ -228,7 +246,8 @@ export function societyTurns({ day, personaName, turns = null } = {}) {
 export function societyTurnSpent(summary = {}) {
     const society = summary?.society || {};
     const execution = society.execution || {};
-    const actions = [execution.createSignature, execution.stakeSignature, execution.signature].filter(Boolean).length;
+    // A claim that first settled its market signed the resolve as well.
+    const actions = [execution.createSignature, execution.stakeSignature, execution.resolveSignature, execution.signature].filter(Boolean).length;
     const usdc = society.acted ? Number(society.action?.usdc) || 0 : 0;
     return { actions, usdc };
 }

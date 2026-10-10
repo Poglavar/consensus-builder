@@ -15,16 +15,28 @@ export function proposalName(proposal = {}) {
     return proposal.name || proposal.title || proposalKey(proposal);
 }
 
-/** Active, minted and authored by somebody else (neither this wallet nor this persona). */
+/**
+ * Minted on Solana: an on-chain id whose record does not name another chain. Proposals minted on an
+ * EVM chain (`chainId: '0xaa36a7'` beside a numeric id) also fill onchain.proposalId but have no
+ * Solana market; Solana records say `solana-devnet` or, in older rows, nothing.
+ */
+export function isSolanaMinted(proposal) {
+    if (!proposalAccount(proposal)) return false;
+    const chainId = proposal.onchain?.chainId ?? proposal.onchainData?.chainId;
+    return chainId === undefined || chainId === null || /^solana/i.test(String(chainId));
+}
+
+/** Active, minted on Solana and authored by somebody else (neither this wallet nor this persona). */
 export function isOthersActiveMinted(proposal, { wallet = null, personaName = null } = {}) {
     if (String(proposal?.lifecycleStatus || '').toLowerCase() !== 'active') return false;
-    if (!proposalAccount(proposal)) return false;
+    if (!isSolanaMinted(proposal)) return false;
     if (wallet && String(proposal.author || '') === String(wallet)) return false;
     if (personaName && String(proposal.agent?.persona || '') === String(personaName)) return false;
     return true;
 }
 
-function atomic(value) {
+/** Atomic USDC units (bigint) from a bigint, safe integer or digit string; null when unreadable. */
+export function atomic(value) {
     if (typeof value === 'bigint') return value;
     if (typeof value === 'number' && Number.isFinite(value) && value >= 0) return BigInt(Math.floor(value));
     if (typeof value === 'string' && /^\d+$/.test(value)) return BigInt(value);

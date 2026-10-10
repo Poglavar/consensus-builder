@@ -1,4 +1,6 @@
-// Opt-in PM2 schedules for the autonomous hackathon actors, land-event materializer, the live
+// Opt-in PM2 schedules for the autonomous hackathon actors (several runs a day each since 2026-10-11:
+// every job passes --slot auto, so a run id is <day>-h<UTC hour>-<persona> and each run is its own
+// checkpoint; the proposers rotate through cities worldwide, see agents/area-plan.js), land-event materializer, the live
 // prospective-market resolver, the society personas (preservationist-01, speculator-01; opt-in until
 // their keys exist) and the (inactive) notary-01 and lifecycle-01 lens members. Secrets stay in backend/.env
 // or protected key files; deploy-backend.sh deliberately restarts only the API app, so operators
@@ -10,6 +12,61 @@ const lensEnv = {
   X402_PAY_TO: 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ'
 };
 
+const LOGS = {
+  error_file: '/root/code/consensus-builder/backend/logs/agents-error.log',
+  out_file: '/root/code/consensus-builder/backend/logs/agents.log',
+  merge_logs: true,
+  time: true
+};
+
+// A proposer persona on the same runner and caps as densifier-01 (one proposal a run: mint, pay,
+// market, stake; up to 3 retirements of its own stale proposals).
+function proposerJob(name, persona, cron) {
+  return {
+    name,
+    script: 'agents/run.mjs',
+    args: `--live --controller algorithm --persona ${persona} --candidates 4 --slot auto --api https://api.urbangametheory.xyz`,
+    cwd: '/root/code/consensus-builder/backend',
+    exec_mode: 'fork',
+    instances: 1,
+    autorestart: false,
+    cron_restart: cron,
+    kill_timeout: 900000,
+    env: {
+      NODE_ENV: 'production',
+      AGENT_DAILY_ACTION_CAP: '13',
+      AGENT_DAILY_USDC_CAP: '0.35',
+      AGENT_PROPOSAL_FEE_USDC: '0.05',
+      AGENT_RETIRE_AFTER_DAYS: '3',
+      AGENT_LIFECYCLE_LENS_SERVICE_URL: 'http://127.0.0.1:3096',
+      AGENT_API_BASE: 'https://api.urbangametheory.xyz'
+    },
+    ...LOGS
+  };
+}
+
+// A society persona (agents/policies/<role>.js) with its per-invocation caps.
+function societyJob(name, persona, cron, caps) {
+  return {
+    name,
+    script: 'agents/society-run.mjs',
+    args: `--live --persona ${persona} --slot auto --api https://api.urbangametheory.xyz`,
+    cwd: '/root/code/consensus-builder/backend',
+    exec_mode: 'fork',
+    instances: 1,
+    autorestart: false,
+    cron_restart: cron,
+    kill_timeout: 900000,
+    env: {
+      NODE_ENV: 'production',
+      AGENT_API_BASE: 'https://api.urbangametheory.xyz',
+      AGENT_SOCIETY_ACTION_CAP: caps.actions,
+      AGENT_SOCIETY_USDC_CAP: caps.usdc
+    },
+    ...LOGS
+  };
+}
+
 module.exports = {
   apps: [{
     name: 'consensus-builder-agents',
@@ -17,12 +74,12 @@ module.exports = {
     // The lens comes from the attester directory (GET /agent/lenses/members), which the two lens
     // member services below fill when they start; an empty directory refuses to mint, so if they are
     // down the daily run fails at the lens step rather than minting with the proposer as its own lens.
-    args: '--live --controller algorithm --persona densifier-01 --candidates 4 --api https://api.urbangametheory.xyz',
+    args: '--live --controller algorithm --persona densifier-01 --candidates 4 --slot auto --api https://api.urbangametheory.xyz',
     cwd: '/root/code/consensus-builder/backend',
     exec_mode: 'fork',
     instances: 1,
     autorestart: false,
-    cron_restart: '0 2 * * *',
+    cron_restart: '0 */3 * * *',
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
@@ -31,6 +88,7 @@ module.exports = {
       AGENT_DAILY_ACTION_CAP: '13',
       AGENT_DAILY_USDC_CAP: '0.35',
       AGENT_PROPOSAL_FEE_USDC: '0.05',
+      AGENT_RETIRE_AFTER_DAYS: '3',
       // The lifecycle member (consensus-builder-lifecycle-member) issues the retire phase's expiry
       // verdicts; AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN must be in backend/.env on the host, since a
       // URL without the token makes the run refuse before it reads anything.
@@ -44,12 +102,12 @@ module.exports = {
   }, {
     name: 'consensus-builder-supporter',
     script: 'agents/support-run.mjs',
-    args: '--live --persona supporter-01 --api https://api.urbangametheory.xyz',
+    args: '--live --persona supporter-01 --slot auto --api https://api.urbangametheory.xyz',
     cwd: '/root/code/consensus-builder/backend',
     exec_mode: 'fork',
     instances: 1,
     autorestart: false,
-    cron_restart: '15 2 * * *',
+    cron_restart: '45 */3 * * *',
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
@@ -68,18 +126,18 @@ module.exports = {
     // funded with devnet SOL + USDC; until then a live run refuses before reading anything.
     name: 'consensus-builder-preservationist',
     script: 'agents/society-run.mjs',
-    args: '--live --persona preservationist-01 --api https://api.urbangametheory.xyz',
+    args: '--live --persona preservationist-01 --slot auto --api https://api.urbangametheory.xyz',
     cwd: '/root/code/consensus-builder/backend',
     exec_mode: 'fork',
     instances: 1,
     autorestart: false,
-    cron_restart: '20 2 * * *',
+    cron_restart: '20 */2 * * *',
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
       AGENT_API_BASE: 'https://api.urbangametheory.xyz',
-      // One NO stake (0.01 USDC) plus a possible market creation per invocation.
-      AGENT_SOCIETY_ACTION_CAP: '2',
+      // One NO stake (0.01 USDC) plus a possible market creation, after collecting any winnings.
+      AGENT_SOCIETY_ACTION_CAP: '3',
       AGENT_SOCIETY_USDC_CAP: '0.01'
     },
     error_file: '/root/code/consensus-builder/backend/logs/agents-error.log',
@@ -93,22 +151,48 @@ module.exports = {
     // ~/.config/solana/ugt-speculator-01.json exists and its wallet is set in personas.json.
     name: 'consensus-builder-speculator',
     script: 'agents/society-run.mjs',
-    args: '--live --persona speculator-01 --api https://api.urbangametheory.xyz',
+    args: '--live --persona speculator-01 --slot auto --api https://api.urbangametheory.xyz',
     cwd: '/root/code/consensus-builder/backend',
     exec_mode: 'fork',
     instances: 1,
     autorestart: false,
-    cron_restart: '25 2 * * *',
+    cron_restart: '40 */3 * * *',
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
       AGENT_API_BASE: 'https://api.urbangametheory.xyz',
-      // One pledge or one revoke per invocation; a pledge is a soft 0.05 USDC commitment.
-      AGENT_SOCIETY_ACTION_CAP: '1',
+      // One pledge or one revoke per invocation (a pledge is a soft 0.05 USDC commitment), after
+      // collecting any winnings.
+      AGENT_SOCIETY_ACTION_CAP: '2',
       AGENT_SOCIETY_USDC_CAP: '0.05'
     },
     error_file: '/root/code/consensus-builder/backend/logs/agents-error.log',
     out_file: '/root/code/consensus-builder/backend/logs/agents.log',
+    merge_logs: true,
+    time: true
+  },
+  // Added 2026-10-11: a second proposer and a rival that answers other agents' proposals on the same
+  // land (contests), a second contrarian and a backer that bets YES on the underdog.
+  proposerJob('consensus-builder-builder', 'builder-02', '30 1-22/3 * * *'),
+  proposerJob('consensus-builder-gentle', 'gentle-01', '15 2-23/3 * * *'),
+  societyJob('consensus-builder-skeptic', 'skeptic-02', '50 1-23/2 * * *', { actions: '3', usdc: '0.02' }),
+  societyJob('consensus-builder-backer', 'backer-01', '10 1-23/2 * * *', { actions: '3', usdc: '0.02' }),
+  {
+    // Tops up consensus.solana_transaction (every persona wallet and program in the address book),
+    // which the public activity feed and the globe's carousel read; before 2026-10-11 only the daily
+    // land-oracle run and explorer page loads refreshed it, so a bet could take a day to appear.
+    name: 'consensus-builder-tx-sync',
+    script: 'scripts/sync-transactions.mjs',
+    args: '--run',
+    cwd: '/root/code/consensus-builder/backend',
+    exec_mode: 'fork',
+    instances: 1,
+    autorestart: false,
+    cron_restart: '*/20 * * * *',
+    kill_timeout: 600000,
+    env: { NODE_ENV: 'production' },
+    error_file: '/root/code/consensus-builder/backend/logs/tx-sync-error.log',
+    out_file: '/root/code/consensus-builder/backend/logs/tx-sync.log',
     merge_logs: true,
     time: true
   }, {

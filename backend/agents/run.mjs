@@ -12,7 +12,13 @@
 //
 // Usage:
 //   node agents/run.mjs --dry-run [--controller algorithm|llm] [--persona NAME] [--day YYYY-MM-DD]
-//   node agents/run.mjs --live    [--controller algorithm|llm] [--persona NAME] [--until STAGE] [--lens KEY,KEY]
+//   node agents/run.mjs --live    [--controller algorithm|llm] [--persona NAME] [--until STAGE] [--lens KEY,KEY] [--slot auto|LABEL]
+//   --slot lets a persona run several times a day: run ids and proposal ids become <day>-<slot>-…
+//   ("auto" = h + the UTC hour). Each run visits one of the persona's areas (a stable rotation) and a
+//   ~350 m window inside it, and never re-plans a parcel the persona already minted on. An area is
+//   { city, bbox } (Croatian cadastre in the database), { city, label, sourceId, bbox } (a live parcel
+//   source through GET /parcel-sources/:id), or { mode: 'contest' } (other agents' recent parcels,
+//   answered with a different build-out so both compete in one contest).
 //   The lens (whose attestations decide the proposal) is --lens or, when absent, chosen from the attester
 //   directory (GET /agent/lenses/members, agents/lens-directory-client.js); never the persona's own key.
 //   STAGE: planned | chosen | minted | posted | staked (default staked)
@@ -34,9 +40,10 @@ import pg from 'pg';
 import { Connection, Keypair } from '@solana/web3.js';
 import * as turf from '@turf/turf';
 import { fetchCandidateParcels } from './parcel-source.js';
+import { chooseArea, contestParcels, parcelsFromSource, pickedParcelIds, runKeyFor, seedFor, slotLabel, windowIn } from './area-plan.js';
 import { planCandidates } from './planner.js';
 import { buildProposalRecord } from './record-builder.js';
-import { selectAlgorithmicPicks } from './algorithmic-picker.js';
+import { hash32, selectAlgorithmicPicks } from './algorithmic-picker.js';
 import { buildPickRequests, parsePicks, estimateBatchCostUsd, runPickBatch, pickCustomId, createAgentLlm } from './llm-picker.js';
 import { createPaidClient, paymentIdForProposal, postAgentProposal } from './x402-client.js';
 import { mintProposal } from './minter.js';
@@ -274,9 +281,43 @@ async function retireStage({ pool, connection, entries, day, dryRun, controller,
     }
 }
 
+async function fetchSourceParcels(apiBase, sourceId, bbox) {
+    const url = `${apiBase}/parcel-sources/${encodeURIComponent(sourceId)}?bbox=${bbox.join(',')}`;
+    const response = await fetch(url, { headers: { accept: 'application/json' }, signal: AbortSignal.timeout(60_000) });
+    if (!response.ok) throw new Error(`${url} returned HTTP ${response.status}`);
+    return response.json();
+}
+
+// The parcels one run plans on, from the area this run visits; parcels the persona already minted
+// on are dropped, so no run proposes the same land twice.
+async function parcelsForArea({ pool, apiBase, area, persona, runKey, day, runs, limit }) {
+    if (!area) return { parcels: [], city: 'zagreb', where: 'no area' };
+    const mine = pickedParcelIds(runs, { persona: persona.name });
+    const fresh = parcels => parcels.filter(parcel => !mine.has(parcel.parcelId));
+    if (area.mode === 'contest') {
+        const all = contestParcels(runs, { persona: persona.name, runDay: day, withinDays: area.withinDays ?? 3, floorCap: area.floorCap ?? null });
+        const open = fresh(all);
+        // One city per run: the rival answers proposals where the rotation lands, not everywhere at once.
+        const cities = [...new Set(open.map(parcel => parcel.city).filter(Boolean))].sort();
+        const city = cities.length ? cities[hash32(`${runKey}:${persona.name}`) % cities.length] : 'zagreb';
+        return { parcels: open.filter(parcel => parcel.city === city).slice(0, limit), city, where: `contest (${city}, ${open.length} open parcels)` };
+    }
+    const window = windowIn(area.bbox, runKey, persona.name, area.windowM ?? 350);
+    if (area.sourceId) {
+        const collection = await fetchSourceParcels(apiBase, area.sourceId, window);
+        const parcels = fresh(parcelsFromSource(collection, { turf, place: area.label ?? null }))
+            .map(parcel => (area.floorCap ? { ...parcel, floorCap: area.floorCap } : parcel));
+        return { parcels: parcels.slice(0, limit), city: area.city, where: `${area.city} ${window.join(',')}` };
+    }
+    const rows = await fetchCandidateParcels(pool, { city: area.city, bbox: window, limit });
+    return { parcels: fresh(rows).map(parcel => (area.floorCap ? { ...parcel, floorCap: area.floorCap } : parcel)), city: area.city, where: `${area.city} ${window.join(',')}` };
+}
+
 async function main() {
     const args = parseArgs(process.argv.slice(2));
     const day = args.day || todayUtc();
+    const slot = slotLabel(args.slot);
+    const runKey = runKeyFor(day, slot);
     const controller = args.controller;
     // The shared layer picks the model. Constructing the client sends nothing, so a dry run with
     // --controller llm still builds (and prices) the exact batch lines without an API key.
@@ -294,42 +335,39 @@ async function main() {
         password: process.env.PGPASSWORD, database: process.env.PGDATABASE
     });
     const mode = args.dryRun ? 'dry-run' : 'live';
-    log(`${mode} · day ${day} · ${personas.length} persona(s) · controller ${controller}${llm ? ` (${llm.model}, effort ${llm.effort})` : ' ($0 model spend)'} · api ${apiBase}`);
+    log(`${mode} · day ${day}${slot ? ` · slot ${slot}` : ''} · ${personas.length} persona(s) · controller ${controller}${llm ? ` (${llm.model}, effort ${llm.effort})` : ' ($0 model spend)'} · api ${apiBase}`);
 
     const failures = [];
     const report = [];
     try {
         // ---- stage 1: plan (every persona) ----------------------------------------------------
         const entries = [];
+        const allRuns = await listRuns(pool);
         for (const [i, persona] of personas.entries()) {
-            const runId = `${day}-${persona.name}`;
+            const runId = `${runKey}-${persona.name}`;
             const existing = args.live ? await getRun(pool, runId) : null;
             if (existing && stageIndex(existing.stage) >= stageIndex('planned') && existing.summary?.candidates?.length) {
                 log(`${persona.name} ${i + 1}/${personas.length} planned: resumed ${existing.summary.candidates.length} candidates from ${runId}`);
                 entries.push({ persona, runId, run: existing, candidates: existing.summary.candidates });
                 continue;
             }
-            const parcels = [];
-            const seen = new Set();
-            for (const area of persona.areas || []) {
-                const rows = await fetchCandidateParcels(pool, { city: area.city, bbox: area.bbox, limit: args.candidates * 6 });
-                for (const row of rows) if (!seen.has(row.parcelId)) { seen.add(row.parcelId); parcels.push(row); }
-            }
-            const planned = planCandidates(parcels, persona, { turf, limit: args.candidates * 2, seed: Number(day.replace(/-/g, '')) });
+            const area = chooseArea(persona.areas, runKey, persona.name);
+            const { parcels, city, where } = await parcelsForArea({ pool, apiBase, area, persona, runKey, day, runs: allRuns, limit: args.candidates * 6 });
+            const planned = planCandidates(parcels, persona, { turf, limit: args.candidates * 2, seed: seedFor(runKey) });
             // The default envelope for a parcel without a stated rule (5 floors) is taller than anything
             // the 2025 GUP actually says in this bbox (3), so rule-backed candidates come first and the
             // default-rule ones are only used when nothing else is on offer.
             const ruleBacked = planned.filter((c) => c.rule?.source === 'urban-rule');
             const candidates = (ruleBacked.length ? ruleBacked : planned).slice(0, args.candidates);
-            log(`${persona.name} ${i + 1}/${personas.length} planned: ${parcels.length} parcels → ${candidates.length} candidates`);
+            log(`${persona.name} ${i + 1}/${personas.length} planned in ${where}: ${parcels.length} parcels → ${candidates.length} candidates`);
             for (const c of candidates) {
-                log(`   ${c.parcelId} ${c.koName ?? ''} ${Math.round(c.areaM2)} m² · built ${Math.round(c.builtGfaM2)} m² → ${Math.round(c.proposedGfaM2)} m² (${c.allowedFloors} fl) · gain €${Math.round(c.gainEur)} · offer €${c.offerEur} · score ${c.score.toFixed(3)}`);
+                log(`   ${c.parcelId} ${c.koName ?? ''} ${Math.round(c.areaM2)} m² · built ${c.builtKnown === false ? 'unknown' : `${Math.round(c.builtGfaM2)} m²`} → ${Math.round(c.proposedGfaM2)} m² (${c.plannedFloors ?? c.allowedFloors}/${c.allowedFloors} fl) · gain €${Math.round(c.gainEur)} · offer €${c.offerEur} · score ${c.score.toFixed(3)}`);
             }
             let run = null;
             if (args.live) {
                 await startRun(pool, { runId, persona: persona.name, day, mode });
                 run = await updateRun(pool, runId, { stage: 'planned', status: 'running', summaryPatch: {
-                    candidates, city: persona.areas?.[0]?.city ?? 'zagreb', wallet: persona.wallet,
+                    candidates, city, area: where, slot, wallet: persona.wallet,
                     controller, ...(model ? { model } : {})
                 } });
             }
@@ -341,7 +379,7 @@ async function main() {
         if (controller === 'algorithm') {
             const decisions = new Map(needDecision.map((entry) => [
                 entry.persona.name,
-                selectAlgorithmicPicks({ day, persona: entry.persona, candidates: entry.candidates })
+                selectAlgorithmicPicks({ day: runKey, persona: entry.persona, candidates: entry.candidates })
             ]));
             for (const e of needDecision) {
                 const decision = decisions.get(e.persona.name);
@@ -365,7 +403,7 @@ async function main() {
             for (const e of needDecision) {
                 const decision = decisions.get(e.persona.name);
                 const withIds = decision.picks.map((pick, index) => ({
-                    ...pick, proposalId: proposalIdFor(e.persona, day, index)
+                    ...pick, proposalId: proposalIdFor(e.persona, runKey, index)
                 }));
                 const completion = decisionCompletion(withIds);
                 e.run = await updateRun(pool, e.runId, { stage: 'chosen', status: completion.status, summaryPatch: {
@@ -450,7 +488,7 @@ async function main() {
                         continue;
                     }
                     const { picks, rejected } = parsePicks(result.text, e.candidates, e.persona.dailyProposals);
-                    const withIds = picks.map((pick, index) => ({ ...pick, proposalId: proposalIdFor(e.persona, day, index) }));
+                    const withIds = picks.map((pick, index) => ({ ...pick, proposalId: proposalIdFor(e.persona, runKey, index) }));
                     const completion = decisionCompletion(withIds);
                     e.run = await updateRun(pool, e.runId, { stage: 'chosen', status: completion.status, summaryPatch: {
                         controller: 'llm',
