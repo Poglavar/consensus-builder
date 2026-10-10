@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "./ParcelNFT.sol";
 
@@ -24,7 +25,11 @@ interface IEAS {
     function getAttestation(bytes32 uid) external view returns (Attestation memory);
 }
 
-contract ProposalNFT is ERC721Enumerable, Ownable {
+interface IProposalOwnerOracle {
+    function approvedElectorate(bytes32 commitment) external view returns (bool);
+}
+
+contract ProposalNFT is ERC721Enumerable, Ownable, ReentrancyGuard {
     enum ProposalStatus {
         Active,
         Executed,
@@ -74,6 +79,21 @@ contract ProposalNFT is ERC721Enumerable, Ownable {
         mapping(string => mapping(address => bool)) voted; // parcelId => voter => voted yes
     }
 
+    struct OracleVoteState {
+        // Oracle votes use opaque, proposal-specific owner IDs. No name or OIB is stored on chain.
+        bool usesOracles;
+        address ownerOracle;
+        address voteOracle;
+        address payoutRecipient;
+        address fundingOwner;
+        uint256 expectedOwners;
+        uint256 registeredOwners;
+        uint256 noVoteCount;
+        mapping(bytes32 => bool) registeredOwner;
+        mapping(bytes32 => uint8) oracleVote; // 0 abstain, 1 yes, 2 no
+        bool oracleFinalized;
+    }
+
     ParcelNFT public parcelNFT;
     IERC20 public cityToken;
     IERC20 public usdcToken;
@@ -83,6 +103,7 @@ contract ProposalNFT is ERC721Enumerable, Ownable {
     bytes32 public immutable ownerListSchemaUid;
     uint256 private constant FULL_SHARE_BPS = 10_000;
     mapping(uint256 => Proposal) public proposals;
+    mapping(uint256 => OracleVoteState) private oracleVotes;
     mapping(string => uint256[]) public parcelIdToProposals; // Reverse mapping: parcelId -> proposal IDs
     uint256 private _tokenIdCounter;
 
@@ -93,6 +114,17 @@ contract ProposalNFT is ERC721Enumerable, Ownable {
     event VoteProposalMinted(uint256 indexed proposalId, address to, uint256 expiryTimestamp);
     event VoteCast(uint256 indexed proposalId, string parcelId, address voter);
     event VoteRescinded(uint256 indexed proposalId, string parcelId, address voter);
+    event OracleVoteProposalMinted(uint256 indexed proposalId, address indexed ownerOracle, address indexed voteOracle, uint256 expectedOwners, uint256 expiryTimestamp);
+    event OracleOwnerAccepted(uint256 indexed proposalId, bytes32 indexed ownerId);
+    event OracleVoteReported(uint256 indexed proposalId, bytes32 indexed ownerId, uint8 choice, bytes32 evidenceHash);
+    event OracleVoteFinalized(uint256 indexed proposalId, bool unanimous, uint256 yesVotes, uint256 expectedOwners);
+    event OracleFundsWithdrawn(uint256 indexed proposalId, address indexed recipient, uint256 ethAmount, uint256 tokenAmount);
+
+    function oracleElectorateCommitment(
+        address author, string[] memory parcelIds, uint256 expectedOwners, uint256 expiryTimestamp
+    ) public view returns (bytes32) {
+        return keccak256(abi.encode(block.chainid, address(this), author, parcelIds, expectedOwners, expiryTimestamp));
+    }
 
     constructor(
         address _parcelNFTAddress,
@@ -220,6 +252,153 @@ contract ProposalNFT is ERC721Enumerable, Ownable {
     }
 
     /**
+     * @dev The author fixes both reporters and the electorate size when the proposal is minted.
+     *      Reporters are trusted for facts, but cannot change the deadline or payout recipient.
+     *      An owner ID must be an opaque, proposal-specific value, never an OIB or its plain hash.
+     */
+    function mintOracleVote(
+        address to,
+        string[] memory parcelIds,
+        string memory imageURI,
+        uint256 expiryTimestamp,
+        address ownerOracle,
+        address voteOracle,
+        uint256 expectedOwners,
+        address payoutRecipient,
+        uint256 tokenAmount
+    ) public payable nonReentrant returns (uint256) {
+        require(parcelIds.length > 0, "ProposalNFT: Must include at least one parcel");
+        require(expiryTimestamp > block.timestamp, "ProposalNFT: Vote expiry must be in the future");
+        require(ownerOracle != address(0) && voteOracle != address(0), "ProposalNFT: Missing oracle");
+        require(ownerOracle.code.length > 0 && voteOracle.code.length > 0, "ProposalNFT: Oracle must be a contract");
+        require(expectedOwners > 0 && expectedOwners <= 100_000, "ProposalNFT: Invalid electorate size");
+        require(payoutRecipient != address(0), "ProposalNFT: Missing payout recipient");
+        require(IProposalOwnerOracle(ownerOracle).approvedElectorate(
+            oracleElectorateCommitment(msg.sender, parcelIds, expectedOwners, expiryTimestamp)
+        ), "ProposalNFT: Electorate not approved");
+        if (tokenAmount > 0) {
+            require(cityToken.transferFrom(msg.sender, address(this), tokenAmount), "ProposalNFT: Token transfer failed");
+        }
+
+        uint256 tokenId = _tokenIdCounter++;
+        Proposal storage proposal = proposals[tokenId];
+        proposal.parcelIds = parcelIds;
+        proposal.imageURI = imageURI;
+        proposal.isVote = true;
+        proposal.status = ProposalStatus.Active;
+        proposal.expiryTimestamp = expiryTimestamp;
+        OracleVoteState storage oracle = oracleVotes[tokenId];
+        oracle.usesOracles = true;
+        oracle.ownerOracle = ownerOracle;
+        oracle.voteOracle = voteOracle;
+        oracle.expectedOwners = expectedOwners;
+        oracle.payoutRecipient = payoutRecipient;
+        oracle.fundingOwner = msg.sender;
+        proposal.ethBalance = msg.value;
+        proposal.tokenBalance = tokenAmount;
+        for (uint256 i = 0; i < parcelIds.length; i++) {
+            parcelIdToProposals[parcelIds[i]].push(tokenId);
+        }
+        _safeMint(to, tokenId);
+        emit OracleVoteProposalMinted(tokenId, ownerOracle, voteOracle, expectedOwners, expiryTimestamp);
+        return tokenId;
+    }
+
+    function reportOracleOwner(uint256 proposalId, bytes32 ownerId) external {
+        Proposal storage proposal = proposals[proposalId];
+        OracleVoteState storage oracle = oracleVotes[proposalId];
+        require(oracle.usesOracles && msg.sender == oracle.ownerOracle, "ProposalNFT: Wrong owner oracle");
+        require(proposal.status == ProposalStatus.Active && block.timestamp < proposal.expiryTimestamp, "ProposalNFT: Voting has concluded");
+        require(ownerId != bytes32(0) && !oracle.registeredOwner[ownerId], "ProposalNFT: Invalid owner ID");
+        require(oracle.registeredOwners < oracle.expectedOwners, "ProposalNFT: Electorate full");
+        oracle.registeredOwner[ownerId] = true;
+        oracle.registeredOwners++;
+        emit OracleOwnerAccepted(proposalId, ownerId);
+    }
+
+    /** @dev The selected vote oracle reports a verified owner's latest choice (0 abstain, 1 yes, 2 no). */
+    function reportOracleVote(uint256 proposalId, bytes32 ownerId, uint8 choice, bytes32 evidenceHash) external {
+        Proposal storage proposal = proposals[proposalId];
+        OracleVoteState storage oracle = oracleVotes[proposalId];
+        require(oracle.usesOracles && msg.sender == oracle.voteOracle, "ProposalNFT: Wrong vote oracle");
+        require(proposal.status == ProposalStatus.Active && block.timestamp < proposal.expiryTimestamp, "ProposalNFT: Voting has concluded");
+        require(oracle.registeredOwner[ownerId], "ProposalNFT: Owner not accepted");
+        require(choice <= 2, "ProposalNFT: Invalid vote");
+        uint8 previous = oracle.oracleVote[ownerId];
+        if (previous == 1) proposal.voteCount--;
+        if (previous == 2) oracle.noVoteCount--;
+        if (choice == 1) proposal.voteCount++;
+        if (choice == 2) oracle.noVoteCount++;
+        oracle.oracleVote[ownerId] = choice;
+        emit OracleVoteReported(proposalId, ownerId, choice, evidenceHash);
+    }
+
+    function contributeOracleFunds(uint256 proposalId, uint256 tokenAmount) external payable nonReentrant {
+        Proposal storage proposal = proposals[proposalId];
+        OracleVoteState storage oracle = oracleVotes[proposalId];
+        require(oracle.usesOracles && proposal.status == ProposalStatus.Active && block.timestamp < proposal.expiryTimestamp,
+            "ProposalNFT: Voting has concluded");
+        require(msg.sender == oracle.fundingOwner, "ProposalNFT: Only funder may contribute");
+        require(msg.value > 0 || tokenAmount > 0, "ProposalNFT: Empty contribution");
+        if (tokenAmount > 0) {
+            require(cityToken.transferFrom(msg.sender, address(this), tokenAmount), "ProposalNFT: Token transfer failed");
+            proposal.tokenBalance += tokenAmount;
+        }
+        proposal.ethBalance += msg.value;
+        if (msg.value > 0) emit FundsContributed(proposalId, address(0), msg.value);
+        if (tokenAmount > 0) emit FundsContributed(proposalId, address(cityToken), tokenAmount);
+    }
+
+    /** @dev Permissionless close. A keeper or any user must call this after the deadline. */
+    function finalizeOracleVote(uint256 proposalId) external {
+        Proposal storage proposal = proposals[proposalId];
+        OracleVoteState storage oracle = oracleVotes[proposalId];
+        require(oracle.usesOracles && proposal.status == ProposalStatus.Active, "ProposalNFT: Not an active oracle vote");
+        require(block.timestamp >= proposal.expiryTimestamp, "ProposalNFT: Voting is open");
+        bool unanimous = oracle.registeredOwners == oracle.expectedOwners && proposal.voteCount == oracle.expectedOwners;
+        oracle.oracleFinalized = true;
+        proposal.status = unanimous ? ProposalStatus.Executed : ProposalStatus.Expired;
+        emit OracleVoteFinalized(proposalId, unanimous, proposal.voteCount, oracle.expectedOwners);
+    }
+
+    /** @dev Anyone may release escrow to the fixed recipient on success, or funder on failure. */
+    function withdrawOracleFunds(uint256 proposalId) external nonReentrant {
+        Proposal storage proposal = proposals[proposalId];
+        OracleVoteState storage oracle = oracleVotes[proposalId];
+        require(oracle.usesOracles && oracle.oracleFinalized, "ProposalNFT: Oracle vote not finalized");
+        address recipient = proposal.status == ProposalStatus.Executed ? oracle.payoutRecipient : oracle.fundingOwner;
+        uint256 ethAmount = proposal.ethBalance;
+        uint256 tokenAmount = proposal.tokenBalance;
+        require(ethAmount > 0 || tokenAmount > 0, "ProposalNFT: No funds to withdraw");
+        proposal.ethBalance = 0;
+        proposal.tokenBalance = 0;
+        if (ethAmount > 0) {
+            (bool success,) = recipient.call{value: ethAmount}("");
+            require(success, "ProposalNFT: ETH transfer failed");
+        }
+        if (tokenAmount > 0) {
+            require(cityToken.transfer(recipient, tokenAmount), "ProposalNFT: Token transfer failed");
+        }
+        emit OracleFundsWithdrawn(proposalId, recipient, ethAmount, tokenAmount);
+    }
+
+    function getOracleVoteInfo(uint256 proposalId)
+        external view returns (bool usesOracles, address ownerOracle, address voteOracle, uint256 expectedOwners,
+            uint256 registeredOwners, uint256 yesVotes, uint256 noVotes, address payoutRecipient, bool finalized)
+    {
+        require(_ownerOf(proposalId) != address(0), "ProposalNFT: Proposal does not exist");
+        Proposal storage proposal = proposals[proposalId];
+        OracleVoteState storage oracle = oracleVotes[proposalId];
+        return (oracle.usesOracles, oracle.ownerOracle, oracle.voteOracle, oracle.expectedOwners,
+            oracle.registeredOwners, proposal.voteCount, oracle.noVoteCount, oracle.payoutRecipient, oracle.oracleFinalized);
+    }
+
+    function oracleVoteOf(uint256 proposalId, bytes32 ownerId) external view returns (uint8) {
+        require(_ownerOf(proposalId) != address(0), "ProposalNFT: Proposal does not exist");
+        return oracleVotes[proposalId].oracleVote[ownerId];
+    }
+
+    /**
      * @dev Cast a yes-vote on a vote proposal as an attested owner of `parcelId`.
      *      Reuses the same claim + lens-endorsement ownership proof as single-owner acceptance,
      *      so each distinct owner address of the parcel gets exactly one vote. No funds move.
@@ -228,6 +407,7 @@ contract ProposalNFT is ERC721Enumerable, Ownable {
         require(_ownerOf(proposalId) != address(0), "ProposalNFT: Proposal does not exist");
         Proposal storage proposal = proposals[proposalId];
         require(proposal.isVote, "ProposalNFT: Not a vote proposal");
+        require(!oracleVotes[proposalId].usesOracles, "ProposalNFT: Vote oracle required");
 
         // Conclude the vote if the deadline has passed
         if (proposal.expiryTimestamp > 0 && block.timestamp >= proposal.expiryTimestamp) {
@@ -255,6 +435,7 @@ contract ProposalNFT is ERC721Enumerable, Ownable {
         require(_ownerOf(proposalId) != address(0), "ProposalNFT: Proposal does not exist");
         Proposal storage proposal = proposals[proposalId];
         require(proposal.isVote, "ProposalNFT: Not a vote proposal");
+        require(!oracleVotes[proposalId].usesOracles, "ProposalNFT: Vote oracle required");
 
         if (proposal.expiryTimestamp > 0 && block.timestamp >= proposal.expiryTimestamp) {
             proposal.status = ProposalStatus.Expired;
@@ -457,6 +638,7 @@ contract ProposalNFT is ERC721Enumerable, Ownable {
         require(_ownerOf(proposalId) != address(0), "ProposalNFT: Proposal does not exist");
 
         Proposal storage proposal = proposals[proposalId];
+        require(!oracleVotes[proposalId].usesOracles, "ProposalNFT: Use oracle settlement");
         address proposalOwner = _ownerOf(proposalId);
         bool isOwner = msg.sender == proposalOwner;
 
