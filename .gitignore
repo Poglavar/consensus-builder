@@ -15,3 +15,6 @@ test-results/
 corridors/node_modules/
 corridors/data/
 corridors/out/
+
+# generated test coverage report
+backend/coverage/

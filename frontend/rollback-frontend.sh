@@ -7,13 +7,13 @@ set -e  # Exit on any error
 
 # Configuration
 #
-# 2026-08-20: retargeted from krpa (207.154.200.141) to do. krpa was decommissioned, and
+# 2026-08-20: retargeted from krpa to do. krpa was decommissioned, and
 # DigitalOcean releases a destroyed droplet's IP for reassignment — so that address now
 # belongs to somebody else. This script opened an SSH session to it and then ran `cp -r`,
 # `rm -rf` and `unzip` against $REMOTE_PATH, so leaving the old IP in place pointed a
 # destructive rollback at a stranger's machine. urbangametheory.xyz is served from do now
 # (/etc/nginx/sites-available/urbangametheory.xyz), which is where its backups live.
-SSH_HOST="${SSH_HOST:-root@46.224.128.67}"
+SSH_HOST="${SSH_HOST:-do}"   # ssh alias for the prod server; set SSH_HOST to override
 SSHKRPA="ssh $SSH_HOST -i ~/.ssh/id_ed25519"
 REMOTE_PATH='/var/www/urbangametheory.xyz'
 BACKUP_BASE='/var/www'
