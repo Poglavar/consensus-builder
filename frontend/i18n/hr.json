@@ -3788,7 +3788,13 @@
             "juiz_de_fora": "Juiz de Fora",
             "malaga": "Málaga",
             "bakersfield": "Bakersfield",
-            "poznan": "Poznań"
+            "poznan": "Poznań",
+            "orlando": "Orlando",
+            "dublin": "Dublin",
+            "riga": "Riga",
+            "tallinn": "Tallinn",
+            "vilnius": "Vilnius",
+            "jundiai": "Jundiaí"
         },
         "detect": {
             "confirm": "Dopustiti Consensus Builderu da koristi tvoju približnu lokaciju kako bi odabrao najbliži grad?",

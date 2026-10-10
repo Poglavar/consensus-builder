@@ -3802,7 +3802,13 @@
             "juiz_de_fora": "Juiz de Fora",
             "malaga": "Málaga",
             "bakersfield": "Bakersfield",
-            "poznan": "Poznań"
+            "poznan": "Poznań",
+            "orlando": "Orlando",
+            "dublin": "Dublin",
+            "riga": "Riga",
+            "tallinn": "Tallinn",
+            "vilnius": "Vilnius",
+            "jundiai": "Jundiaí"
         },
         "detect": {
             "confirm": "¿Permites que Consensus Builder use tu ubicación aproximada para elegir la ciudad más cercana?",
