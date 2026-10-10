@@ -13,7 +13,7 @@ set -e  # Exit on any error
 # `rm -rf` and `unzip` against $REMOTE_PATH, so leaving the old IP in place pointed a
 # destructive rollback at a stranger's machine. urbangametheory.xyz is served from do now
 # (/etc/nginx/sites-available/urbangametheory.xyz), which is where its backups live.
-SSH_HOST="${SSH_HOST:-root@67.205.138.129}"
+SSH_HOST="${SSH_HOST:-root@46.224.128.67}"
 SSHKRPA="ssh $SSH_HOST -i ~/.ssh/id_ed25519"
 REMOTE_PATH='/var/www/urbangametheory.xyz'
 BACKUP_BASE='/var/www'
