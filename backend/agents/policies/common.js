@@ -1,9 +1,9 @@
 // Shared pure helpers for the society policies (agents/policies/<role>.js): proposal identity,
 // eligibility, market-implied probability, age and the per-invocation budget check. No I/O here;
 // society-run.mjs gathers the inputs and executes whatever a policy returns.
-import { proposalAccount, stableNumber } from '../supporter-picker.js';
+import { isSolanaMinted, proposalAccount, stableNumber } from '../supporter-picker.js';
 
-export { proposalAccount, stableNumber };
+export { isSolanaMinted, proposalAccount, stableNumber };
 
 const DAY_MS = 86_400_000;
 
@@ -13,17 +13,6 @@ export function proposalKey(proposal = {}) {
 
 export function proposalName(proposal = {}) {
     return proposal.name || proposal.title || proposalKey(proposal);
-}
-
-/**
- * Minted on Solana: an on-chain id whose record does not name another chain. Proposals minted on an
- * EVM chain (`chainId: '0xaa36a7'` beside a numeric id) also fill onchain.proposalId but have no
- * Solana market; Solana records say `solana-devnet` or, in older rows, nothing.
- */
-export function isSolanaMinted(proposal) {
-    if (!proposalAccount(proposal)) return false;
-    const chainId = proposal.onchain?.chainId ?? proposal.onchainData?.chainId;
-    return chainId === undefined || chainId === null || /^solana/i.test(String(chainId));
 }
 
 /** Active, minted on Solana and authored by somebody else (neither this wallet nor this persona). */

@@ -25,11 +25,24 @@ function normalizedActions(persona = {}) {
     return allowed;
 }
 
+/**
+ * Minted on Solana: an on-chain id that is a Solana account and whose record does not name another
+ * chain. Proposals minted on an EVM chain (`chainId: '0xaa36a7'` beside a numeric or hex id) also
+ * fill onchain.proposalId but have no Solana market, and their id must never reach a PublicKey;
+ * Solana records say `solana-devnet` or, in older rows, nothing. Shared with policies/common.js.
+ */
+function isSolanaMinted(proposal) {
+    const account = proposalAccount(proposal);
+    if (!account || /^0x/i.test(String(account))) return false;
+    const chainId = proposal.onchain?.chainId ?? proposal.onchainData?.chainId;
+    return chainId === undefined || chainId === null || /^solana/i.test(String(chainId));
+}
+
 export function eligibleSupportProposals(proposals, { wallet = null, personaName = null, excludeProposalIds = [] } = {}) {
     const excluded = new Set((excludeProposalIds || []).map(String));
     return (proposals || []).filter(proposal => {
         if (String(proposal?.lifecycleStatus || '').toLowerCase() !== 'active') return false;
-        if (!proposalAccount(proposal)) return false;
+        if (!isSolanaMinted(proposal)) return false;
         if (wallet && String(proposal.author || '') === String(wallet)) return false;
         if (personaName && String(proposal.agent?.persona || '') === String(personaName)) return false;
         if (excluded.has(proposalKey(proposal))) return false;
@@ -85,4 +98,4 @@ export function classifySupportExecution(outcome) {
     return { acted, runOutcome: acted ? 'completed' : 'already-supported' };
 }
 
-export { proposalAccount, stableNumber };
+export { isSolanaMinted, proposalAccount, stableNumber };

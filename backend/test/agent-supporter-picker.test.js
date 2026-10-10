@@ -84,3 +84,15 @@ describe('supporter agent never re-supports the same proposal', () => {
         expect(classifySupportExecution(undefined)).toEqual({ acted: false, runOutcome: 'already-supported' });
     });
 });
+
+describe('supporter eligibility across chains', () => {
+    it('never offers a proposal minted on an EVM chain, whose id is no Solana account', async () => {
+        const { eligibleSupportProposals, isSolanaMinted } = await import('../agents/supporter-picker.js');
+        const solana = { proposalId: 's', lifecycleStatus: 'Active', onchain: { proposalId: 'E323eSpdyobhdFKPCi2wcMj12ryFcJjhjKfZjpH8pxBh', chainId: 'solana-devnet' } };
+        const legacy = { proposalId: 'l', lifecycleStatus: 'Active', onchain: { proposalId: 'H9bfbU89Th8U5b5UWaosfMnHem5CAtveK7V9q34oE7GF' } };
+        const sepolia = { proposalId: 'e', lifecycleStatus: 'Active', onchain: { proposalId: '0x5', chainId: '0xaa36a7' } };
+        const hex = { proposalId: 'h', lifecycleStatus: 'Active', onchain: { proposalId: '0x2a' } };
+        expect(eligibleSupportProposals([solana, legacy, sepolia, hex]).map(p => p.proposalId)).toEqual(['s', 'l']);
+        expect(isSolanaMinted(sepolia)).toBe(false);
+    });
+});
