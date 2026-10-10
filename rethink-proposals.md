@@ -669,7 +669,7 @@ It also redraws the taxonomy along a better line — **forming** (building, park
 reparcellization, boundary adjustment) versus **non-forming** (votes, designations, decide-later),
 rather than overlay-versus-fabric.
 
-**Open question only Simun can answer:** whether a park or square legally requires its own parcel in
+**Open question only the user can answer:** whether a park or square legally requires its own parcel in
 Croatia the way a building does. If not, parks are non-forming and the line moves.
 
 ---
@@ -807,7 +807,7 @@ The §3.8 remainder problem now applies uniformly — and bites hardest for road
 owner four disconnected fragments). Answering "does a formation owe the block reshaped remainders?"
 once answers it for every typology.
 
-**Ownership is ASSUMED WORKING for now** (Simun, 2026-07-23): design the declared-flow field, do not
+**Ownership is ASSUMED WORKING for now** (the user, 2026-07-23): design the declared-flow field, do not
 build redistribution/valuation machinery yet.
 
 Jurisdictions plug in at exactly three seams: who must accept a formation (unanimity vs qualified
@@ -873,7 +873,7 @@ stays political. The model is boring in the best way.
 
 ## 11. Three frames: official, effective, hypothetical
 
-Execution is **legal**, not registral (Simun, 2026-07-23): proposals live on-chain, and when all
+Execution is **legal**, not registral (the user, 2026-07-23): proposals live on-chain, and when all
 required acceptances arrive the proposal **auto-executes** — funds disburse, obligations bind. The
 official cadastre is a separate registry CB cannot write; it catches up on its own schedule. That
 gives a three-layer stack:
@@ -1134,7 +1134,7 @@ cached on change, not read at decision time).
 
 ---
 
-## 14. Decisions 2026-08-02 (Simun) — the open questions, answered
+## 14. Decisions 2026-08-02 (the user) — the open questions, answered
 
 1. **Parks/squares/lakes DO form their own parcel** (the A7 open question, leaning yes). The
    current structure typologies mean "form the parcel, transfer ownership to public" — hence
@@ -1162,7 +1162,7 @@ cached on change, not read at decision time).
 
 ---
 
-## 15. Decisions 2026-08-03 (Simun) — the flat record, and what a park is
+## 15. Decisions 2026-08-03 (the user) — the flat record, and what a park is
 
 Prompted by reading the Borovje UPU on clean fabric and finding overlaps nobody had flagged.
 Measured evidence for every claim here is in `formation-depth.js` + its scan of that plan.
@@ -1227,7 +1227,7 @@ Measured evidence for every claim here is in `formation-depth.js` + its scan of 
 
 ---
 
-## 15a. Decisions 2026-08-05 (Simun) — one readjustment deep, and edits are partition edits
+## 15a. Decisions 2026-08-05 (the user) — one readjustment deep, and edits are partition edits
 
 Prompted by the Tehnički muzej plan (97–104): hovering a sliver between a narrowed road and a park
 resolved to the base ancestor because the road's recut had minted a new slice generation while its
@@ -1297,7 +1297,7 @@ neighbours still referenced the old one.
    resolution to the stamped `baseParcelIds` (works today, stamps make it cheaper later); and
    re-anchoring existing stored records (the Tehnički muzej plan's ghosts predate this change —
    replay heals them via re-parenting; new edits stop making more of them).
-6. **Errors over healing (Simun, 2026-08-05, same day): the stored records were MIGRATED flat and
+6. **Errors over healing (the user, 2026-08-05, same day): the stored records were MIGRATED flat and
    the healing machinery removed.**
    - *Migration*: `backend/scripts/migrate-flat-records.js` (dry-run default) flattens every
      parent declaration to base ids — top-level `ancestor_parcel_ids` plus the lists inside
@@ -1342,7 +1342,7 @@ neighbours still referenced the old one.
      survives untouched.
    - *Refuse* — partial coverage of any parcel fails loudly naming the offenders and their
      covered share: "cut the ground first with a road or a land readjustment"
-     (`structure-partial-parcels`). The no-partial-cut rule is a hard validation, per Simun's
+     (`structure-partial-parcels`). The no-partial-cut rule is a hard validation, per the user's
      directive that structures are never drawn over parts of parcels.
    - *Station forms nothing* — content on its corridor/attachment, unchanged.
    - *Unapply reverses the formation*: adopted parcels get their ownership snapshot back;
@@ -1613,13 +1613,13 @@ neighbours still referenced the old one.
 
 ---
 
-## 15b. Decision 2026-08-06 (Simun) — one partition, latest wins: no time view
+## 15b. Decision 2026-08-06 (the user) — one partition, latest wins: no time view
 
 The 2026-08-05 marathon proved a structural point: most of that day's bugs — the presence
 witnesses, the blocked-children filter, the residual restores, the formed-body conflicts, the
 zombie-parcel veto, the drill ranking cap — exist to arbitrate between STALE AUTHORED CLAIMS and
 the live fabric. A record kept claiming ground a later formation had taken, and every subsystem
-needed logic to reconcile the two. Simun's call: stop preserving the competing claim at all.
+needed logic to reconcile the two. The user's call: stop preserving the competing claim at all.
 
 1. **The invariant: applied formations' plans TESSELLATE.** At every moment the applied fabric is
    ONE partition of the ground. No applied record claims ground another applied record holds.
@@ -1643,7 +1643,7 @@ needed logic to reconcile the two. Simun's call: stop preserving the competing c
    Every amendment is LOUD: one toast naming taker, taken and area ("Road X took 213 m² from
    Subdivide Y — plot 3 reduced"), and the amended record's details reflect the current plan.
 
-3. **Why amending someone else's proposal is fine (Simun, explicit):** local records are COPIES.
+3. **Why amending someone else's proposal is fine (the user, explicit):** local records are COPIES.
    Nothing edits a published record in place — any change becomes a NEW proposal on save/publish,
    and consent attaches to what was published. So the local plan IS the working plan, and
    amending it is bookkeeping, not consent violation. Share-import applies the published plan and
@@ -1753,7 +1753,7 @@ needed logic to reconcile the two. Simun's call: stop preserving the competing c
      Items 1–3 are closed; the four mechanisms stay in place, loud, until their telemetry
      goes quiet in real use.
 
-   **Identity carry-over ACROSS proposals (decision + build 2026-08-06, Simun: "2042 is
+   **Identity carry-over ACROSS proposals (decision + build 2026-08-06, the user: "2042 is
    amended, its children, those that remain, are its children and know nothing about 2045
    or any other readjustment").** The full-switchover piece: when a taker's cut partially
    consumes ANOTHER proposal's formed plot, the surviving remainder IS that plot — same
@@ -1784,7 +1784,7 @@ needed logic to reconcile the two. Simun's call: stop preserving the competing c
    - *Presence for amended-empty records* (`_recordClaimsNoGround`, execution.js): a record
      every plot of which was taken is legitimately childless — applied, standing, claiming
      nothing; `editSeq > 0` + empty plan = materialized, not "needs apply".
-   - *Government-plan roads* (Simun: "government plan comes as polygons"): they have no
+   - *Government-plan roads* (the user: "government plan comes as polygons"): they have no
      centerline, so the road trim couldn't touch them — they now amend like a readjustment:
      `clipPiecesByTaking` on the authored polygon claim AND the authored childFeatures.
    - *Tunnel ruling recorded*: a tunnelled stretch DOES take the surface parcel (current
@@ -1799,7 +1799,7 @@ needed logic to reconcile the two. Simun's call: stop preserving the competing c
      2042's carried pieces untouched; boot after the unapply keeps 97/97 (flag honored);
      re-apply over the freed ground succeeds; final reload NO-MODAL, all 8 standing.
      Suite 2060 (one parallel-run flake, area-monitors, passes isolated).
-   - *Road-edit regression caught by Simun's live extend (same day)*: the edit funnel's
+   - *Road-edit regression caught by the user's live extend (same day)*: the edit funnel's
      unapply→re-apply refused at 21–27% coverage over a fully covered corridor. Three
      places still treated the flagged base residuals as their FULL cadastral parcels:
      (1) the blocked-children filter dropped a restored residual BY ID because other
@@ -1814,7 +1814,7 @@ needed logic to reconcile the two. Simun's call: stop preserving the competing c
      `-1/-4/-5…` and mints extension pieces, presence true with every child
      registry+persisted → reload ×2 = Skipped 8, record byte-identical, 495 m intact,
      2042's carried children untouched. Suite 2061, zero failures.
-   - *Stale residual flags (Simun's sliver-merged-across-the-road)*: the flag asserts
+   - *Stale residual flags (the user's sliver-merged-across-the-road)*: the flag asserts
      "clipped around every live claim AT WRITE TIME" — when a later apply consumes flagged
      ground, a flag left behind makes ingest and the visibility predicate resurrect the
      pre-cut shape on every boot: a base parcel spanning both sides of the road that
@@ -1830,7 +1830,7 @@ needed logic to reconcile the two. Simun's call: stop preserving the competing c
 
 ## 15c. Drawing board (decision 2026-08-06): tessellation, never restoration
 
-Simun's four rules, verbatim intent:
+The user's four rules, verbatim intent:
 
 1. **Nothing is ever restored.** Cadastral parcels are the physical/ground FACT. The only
    thing that changes is the tessellation the land readjustments stamp over them. A change
@@ -1865,7 +1865,7 @@ or any surviving plot non-contiguous, the victim is DESTROYED (unapplied, cascad
 its dependents), and the rebuild replays the taker against the cadastre beneath — rule 2
 exactly. A taking that only reduces amends as today (§15b).
 
-Migration (rule 4): a ONE-TIME SCRIPT against the database (per Simun: "done once by a
+Migration (rule 4): a ONE-TIME SCRIPT against the database (per the user: "done once by a
 script, not live by fallback code") — it examines stored records, adjusts the data and
 geometry of any that violate the standing rules (non-contiguous subdivision polygons,
 stale derived fields), and writes them back; dry-run by default like every migration here.
@@ -1904,7 +1904,7 @@ cadastre (remaining bare points are genuinely unparceled street ground), reload 
 default) explodes non-contiguous stored subdivision slices; the local DB is already
 fully conforming (342 rows, 0 changes).
 
-**§15c follow-up (same day, Simun's hover screenshot):** hovering a sliver between the
+**§15c follow-up (same day, the user's hover screenshot):** hovering a sliver between the
 road and the square outlined ground UNDER the square — the hover was honest, the fabric
 was not: after a rebuild the structure/building formation guard saw its body layer
 standing (the apply's own earlier steps re-add it from stored data) and skipped the
@@ -1919,7 +1919,7 @@ parent's leftover becomes the structure's own §14.2 remainder). Verified: apply
 drag-sweep → all 8 applied, ZERO parcels under any body, reload ×2 Skipped 8 with the
 settled state clean. Suite 2068.
 
-## 15d. Decisions 2026-08-07 (Simun) — contiguity everywhere, crossroads, cadastre-anchored readjustments
+## 15d. Decisions 2026-08-07 (the user) — contiguity everywhere, crossroads, cadastre-anchored readjustments
 
 Four rulings, given while reviewing the §15c enumeration, that close the geometry model.
 
