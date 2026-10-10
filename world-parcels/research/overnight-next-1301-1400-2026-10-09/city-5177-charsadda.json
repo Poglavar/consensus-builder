@@ -1,0 +1,48 @@
+{
+  "cityCode": 5177,
+  "queueRank": 1360,
+  "name": "Charsadda",
+  "aliases": ["charsadda"],
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "point": [34.1578724462379, 71.752396405707],
+  "population2025": 413686,
+  "population2025k": 413.686,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": null,
+  "registryAssessment": "A local/provincial custodian is evidenced: the Khyber Pakhtunkhwa Board of Revenue CLRMIS/e-Fard service, and Charsadda was an earlier district pilot for digitized land records. The current public route requires registration and biometric verification for ownership search, and no anonymous parcel geometry or city-specific public map endpoint was established; registryFound remains null.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Charsadda Pakistan official cadastral parcel map land records GIS service",
+        "result": "Found the official Khyber Pakhtunkhwa Board of Revenue CLRMIS/e-Fard portal, the official Khyber Pakhtunkhwa settlement/digitization site, an official Charsadda city master plan, and UN-Habitat documentation of the Charsadda land-record digitization pilot. No anonymous public parcel-vector service was found.",
+        "actualResultUrls": ["https://efard.kplr.gkp.pk/", "https://sdlr.kp.gov.pk/", "https://urbanpolicyunit.gkp.pk/wp-content/uploads/2025/05/4.-Charsadda-City-Final-Master-Plan-2024-2042.pdf", "https://unhabitat.org.pk/digitization-of-land-records/"]
+      },
+      {
+        "language": "Urdu",
+        "query": "خیبر پختونخوا چارسدہ سرکاری اراضی ریکارڈ نقشہ کادستر پارسل",
+        "result": "The Urdu-language search surfaced the same official KP land-record and digitization services, including Urdu instructions on the CLRMIS portal, but no separate Urdu-facing Charsadda cadastral map or anonymous parcel API.",
+        "actualResultUrls": ["https://efard.kplr.gkp.pk/", "https://sdlr.kp.gov.pk/", "https://unhabitat.org.pk/digitization-of-land-records/"]
+      }
+    ]
+  },
+  "officialSources": [
+    {"url": "https://efard.kplr.gkp.pk/", "role": "Khyber Pakhtunkhwa Board of Revenue CLRMIS/e-Fard public service", "observation": "Current landing page says ownership search uses registered name, father's name, and CNIC; it requires account creation, biometric tracking/verification, and login. No public parcel map or anonymous geometry route was exposed."},
+    {"url": "https://urbanpolicyunit.gkp.pk/wp-content/uploads/2025/05/4.-Charsadda-City-Final-Master-Plan-2024-2042.pdf", "role": "Charsadda city planning document", "observation": "States that land-record management is supervised by the provincial land-record/revenue and estate department and Board of Revenue, with computerization underway; it is planning/administrative evidence, not a parcel API."},
+    {"url": "https://unhabitat.org.pk/digitization-of-land-records/", "role": "Charsadda-specific historical digitization evidence", "observation": "Documents a Board of Revenue pilot initially implemented in District Charsadda, including GIS labs and land/map layers; it does not publish a current anonymous parcel service."},
+    {"url": "https://sdlr.kp.gov.pk/", "role": "Khyber Pakhtunkhwa settlement and digitization project", "observation": "Describes GIS-based land management and digitization for merged districts; Charsadda city parcel coverage was not exposed."}
+  ],
+  "serviceReview": "charsadda-service-review.json",
+  "geometryDecision": {"verified": false, "sampleCount": 0, "sampleFile": null, "reason": "No safe anonymous native parcel ID plus geometry response was available from the current official public routes; no GeoJSON retained."},
+  "coverageAssessment": {"claimedScope": "Khyber Pakhtunkhwa Board of Revenue CLRMIS and official provincial/Charsadda land-record documentation.", "verifiedOpenScope": "Public service and Charsadda-specific digitization evidence only; no open parcel-vector coverage verified.", "exactWupPointParcelSample": false, "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "sourceFieldMapping": {"nativeIdentity": null, "nativeIdentityEvidence": "No parcel feature response obtained.", "geometryField": null, "sourceCrs": null, "compositeKey": null},
+  "safeFieldAllowlist": ["native parcel ID if publicly exposed", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

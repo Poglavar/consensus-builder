@@ -1,0 +1,12 @@
+{
+  "taskId": "city:1392",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-1392-vitsebsk.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/vitsebsk-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T10:21:00.533524Z",
+  "reason": "Official Belarus public cadastral map grounds national custody, but the cached viewer only advertises a WFS route; 403 capabilities and no safe native-ID polygon response leave adapter and headed details gates unproven."
+}

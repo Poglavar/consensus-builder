@@ -1,0 +1,26 @@
+{
+  "taskId": "city:10841",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-10841-sasaram.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/sasaram-service-review.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T13:47:45Z",
+  "reviewReason": "Bihar land-record custody and the Sasaram map hierarchy are supported. The preserved WUP point produced has_data=N in the original bounded response and WMS yielded PNG imagery; a zero at one point is not citywide absence. No safe native ID/full polygon or adapter qualification is evidenced.",
+  "firstPartyUrlsOpened": [
+    "https://dlrs.bihar.gov.in/services.html",
+    "https://bhunaksha.bihar.gov.in/index.jsp"
+  ],
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "samplePolygonCount": 0
+}

@@ -1,0 +1,128 @@
+{
+  "cityCode": 847,
+  "queueRank": 1502,
+  "country": "Lebanon",
+  "countryCode": "LB",
+  "point": [34.4394204360595, 35.8416069020689],
+  "population2025": 377937,
+  "population2025k": 377.937,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tripoli Lebanon official cadastral parcel map GIS cadastre viewer Ministry Finance",
+        "result": "First-party Directorate General of Land Registry and Cadastre material, the official title-register service, and an official ArcGIS cadastral-zone service were found. No anonymous first-party parcel-level feature service was verified.",
+        "actualResultUrls": [
+          "https://payment.lrc.gov.lb/main.aspx?lang=en",
+          "https://www.lrc.gov.lb/en/node/61",
+          "https://maps.moph.gov.lb/server/rest/services/Administrative_Zones/MapServer/4"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "طرابلس لبنان السجل العقاري خريطة عقارية مسح الأراضي GIS",
+        "result": "Official Arabic LRC pages document Tripoli registry and survey-office structure and cadastral-map procedures; no anonymous parcel-level geometry endpoint was found.",
+        "actualResultUrls": [
+          "https://www.lrc.gov.lb/ar/node/61",
+          "https://www.lrc.gov.lb/ar/content/أعمال-دوائر-المساحة",
+          "https://www.lrc.gov.lb/sites/default/files/RegOrgPDF/ar/tripoli_org.pdf",
+          "https://payment.lrc.gov.lb/main.aspx?lang=ar"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "The official Directorate General of Land Registry and Cadastre publishes a Tripoli registry/survey-office organizational document and describes cadastral-map and survey-office procedures. This evidences a local custodian, but not an open parcel geometry API.",
+  "sourceAssessment": {
+    "officialPrimarySources": [
+      {
+        "url": "https://www.lrc.gov.lb/sites/default/files/RegOrgPDF/ar/tripoli_org.pdf",
+        "operator": "Lebanon Directorate General of Land Registry and Cadastre",
+        "scope": "Tripoli land-registry and survey-office organizational structure."
+      },
+      {
+        "url": "https://www.lrc.gov.lb/ar/content/أعمال-دوائر-المساحة",
+        "operator": "Lebanon Directorate General of Land Registry and Cadastre",
+        "scope": "Official description of survey-office cadastral-map, measurement, and record duties."
+      },
+      {
+        "url": "https://payment.lrc.gov.lb/main.aspx?lang=en",
+        "operator": "Lebanon Directorate General of Land Registry and Cadastre",
+        "scope": "Public title-register lookup UI requiring province, caza, cadastral zone, and parcel number; not a parcel geometry API."
+      },
+      {
+        "url": "https://maps.moph.gov.lb/server/rest/services/Administrative_Zones/MapServer/4",
+        "operator": "Lebanon Ministry of Public Health ArcGIS service",
+        "scope": "Anonymous ArcGIS Cadaster polygon layer representing cadastral zones, not individual parcels."
+      }
+    ],
+    "nativeSchema": {
+      "inspected": true,
+      "crs": "Layer metadata: EPSG:102100/latestWkid 3857; bounded query requested output in EPSG:4326.",
+      "geometryType": "esriGeometryPolygon",
+      "nativeFieldMapping": {
+        "stableZoneIdentity": "ID (GUID), with OID and GlobalID also exposed",
+        "zoneName": "NAME / NAME_AR",
+        "zoneCode": "PCODE",
+        "status": "STATUS"
+      },
+      "compositeKeyProvenance": null
+    },
+    "safeFieldAllowlist": ["id", "geometry"]
+  },
+  "geometryEvidence": {
+    "verified": false,
+    "sourceId": "https://maps.moph.gov.lb/server/rest/services/Administrative_Zones/MapServer/4",
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Anonymous point query returned one cadastral-zone polygon, NAME=Trablous Et-Tell, PCODE=31121, OID=203, ID={F5A7198A-7EBB-495A-B36E-1CB20322A165}. This is zone-level geometry and was not treated as a parcel hit.",
+    "cityExtentTest": "Anonymous envelope query for 35.80–35.90 E, 34.40–34.48 N returned 27 cadastral-zone features; this is not a parcel count.",
+    "requestEvidence": [
+      {
+        "url": "https://maps.moph.gov.lb/server/rest/services/Administrative_Zones/MapServer/4?f=pjson",
+        "method": "GET; anonymous",
+        "httpStatus": 200,
+        "assessment": "Layer metadata returned polygon geometry, fields, and CRS; no parcel-level fields were present."
+      },
+      {
+        "url": "https://maps.moph.gov.lb/server/rest/services/Administrative_Zones/MapServer/4/query",
+        "method": "GET; anonymous point query with geometryType=esriGeometryPoint, inSR=4326, returnGeometry=true, outSR=4326",
+        "httpStatus": 200,
+        "assessment": "One full cadastral-zone polygon returned at the unchanged WUP point; not retained because it is not an individual parcel."
+      },
+      {
+        "url": "https://maps.moph.gov.lb/server/rest/services/Administrative_Zones/MapServer/4/query",
+        "method": "GET; anonymous envelope query with returnCountOnly=true",
+        "httpStatus": 200,
+        "assessment": "27 intersecting cadastral zones in a bounded Tripoli-area envelope."
+      },
+      {
+        "url": "https://payment.lrc.gov.lb/main.aspx?lang=en",
+        "method": "GET; anonymous",
+        "httpStatus": 200,
+        "assessment": "Official title-register UI loaded; province/caza/zone/parcel inputs are present, but the current HTML exposed no public parcel geometry endpoint."
+      },
+      {
+        "url": "https://payment.lrc.gov.lb/main.aspx?lang=ar",
+        "method": "GET; anonymous",
+        "httpStatus": 200,
+        "assessment": "Arabic official title-register UI loaded; no parcel geometry endpoint exposed."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Tripoli local registry/survey custody plus a Lebanon-wide official cadastral-zone ArcGIS layer.",
+    "verifiedOpenScope": "Cadastral zones only; no individual parcel feature scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "remainingUncertainty": "The official Tripoli registry may provide parcel maps or extracts through request-only or authenticated workflows. The public title-register UI, local office procedures, and zone-level ArcGIS service do not establish an anonymous parcel geometry adapter. No absence inference is made from the exact-point result or map extent.",
+  "attempt": 1,
+  "cohort": "overnight-next-1501-1600-2026-10-09"
+}

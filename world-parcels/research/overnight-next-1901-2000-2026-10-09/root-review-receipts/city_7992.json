@@ -1,0 +1,12 @@
+{
+  "taskId": "city:7992",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-7992-ado.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ado-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T18:23:43.056547Z",
+  "reason": "NAGIS first-party pages support state GIS and land-record custody, including an Ado service office. No anonymous parcel feature response, native ID, polygon, or adapter qualification is evidenced; no citywide absence is inferred."
+}

@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-9267-pilibhit.json",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "purpose": "Document first-party Pilibhit/Uttar Pradesh registry discovery, public route attempts, safe-field limits, and uncertainty.",
+  "assessment": "Official Pilibhit District Administration evidence identifies Uttar Pradesh Bhulekh as the district land-record service. The current public UP Bhunaksha application was inspected for configuration and anonymous endpoints; district 151, Pilibhit tehsil code 00790, and village metadata were returned. An exact-point lookup at [28.6241383152122, 79.8085612096802] returned {}, so no safe anonymous ID-plus-complete-polygon response was obtained.",
+  "registryAssessment": "registryFound=true is supported by the official Pilibhit District Administration land-record page and UP Revenue Board page. This is local service custody plus a state cadastral-map route; it is not source integration, ownership evidence, or proof of citywide parcel availability.",
+  "officialPrimarySources": [
+    {"url": "https://pilibhit.nic.in/service/land-records/", "observation": "Official Pilibhit district page says the UP Bhulekh portal computerizes land records and is implemented in all state tehsils; it links the state service."},
+    {"url": "https://bor.up.nic.in/?search_key=HOMECENTER", "observation": "Official UP Revenue Board page lists Bhulekh/Bhunaksha (भू-नक्शा / शजरा), including village maps and gata-boundary viewing."},
+    {"url": "https://upbhunaksha.gov.in/", "observation": "Official public Bhunaksha viewer loaded and its current JavaScript identified the API base https://upbhunaksha.gov.in/bhunakshaserver and anonymous map/metadata methods."},
+    {"url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=151", "observation": "Official UP dashboard reports Pilibhit district cadastral-map digitization, including a Pilibhit tehsil row with 262 scanned/verified/linked mapsheets and 230 georeferenced mapsheets."},
+    {"url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/CLR/tehsil-level/151", "observation": "Official Government of India DILRMP page reports Pilibhit district land-record computerization status, including Pilibhit tehsil totals; this is progress evidence, not a parcel feature endpoint."}
+  ],
+  "viewerConfiguration": {
+    "candidateRoutes": ["https://upbhunaksha.gov.in/", "https://upbhunaksha.gov.in/bhunakshaserver"],
+    "apiBaseObservedInCurrentJavascript": "https://upbhunaksha.gov.in/bhunakshaserver",
+    "anonymousMethodsObserved": ["GET /Levels/levelLabels", "POST /masterdata/levelvalue", "POST /MapInfo/getPlotAtXY", "POST /MapInfo/getVVVVExtentGeoref", "POST /mapModificationController/getGeoJSONLayerData"],
+    "metadataObserved": {"levelLabels": ["District", "Tehsil", "Village"], "districtCode": "151", "pilibhitTehsilCode": "00790"},
+    "schemaAndCrs": "Not verified from a successful parcel geometry response.",
+    "nativeFieldNames": "Not retained; no successful safe feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "geometry type", "source CRS", "source layer", "retrieval time"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://pilibhit.nic.in/service/land-records/", "method": "GET; anonymous public first-party page review", "normalTlsVerification": true, "result": "Official page available; district land-record custody and UP Bhulekh link verified; no parcel geometry response."},
+    {"url": "https://bor.up.nic.in/?search_key=HOMECENTER", "method": "GET; anonymous public first-party page review", "normalTlsVerification": true, "result": "Official Hindi/English Revenue Board service page available; Bhunaksha village-map and gata-boundary functions identified; no parcel geometry response."},
+    {"url": "https://upbhunaksha.gov.in/", "method": "GET; anonymous public read with normal TLS verification", "normalTlsVerification": true, "result": "Viewer HTML and current JavaScript loaded. Configuration exposed the public API base and method names; no credentials or private tokens used."},
+    {"url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/levelLabels", "method": "GET; anonymous public API read", "normalTlsVerification": true, "result": "Returned [\"District\",\"Tehsil\",\"Village\"]."},
+    {"url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue", "method": "POST form-encoded; level=1&codes=, then level=2&codes=151, then level=3&codes=151,00790", "normalTlsVerification": true, "result": "Returned district metadata, Pilibhit tehsil code 00790, and Pilibhit tehsil village metadata. Only public administrative metadata was requested."},
+    {"url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotAtXY", "method": "POST form-encoded; giscode=151,00790; x=79.8085612096802; y=28.6241383152122; plotno empty and plotno=0 variants", "normalTlsVerification": true, "result": "Both bounded requests returned {}. No parcel ID or geometry was returned; the exact WUP point was not shifted."},
+    {"url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref", "method": "GET without parameters; anonymous bounded probe", "normalTlsVerification": true, "result": "HTTP 500 because the required map-level request shape was not supplied; no retry with guessed parcel or unsafe fields. This failure is not treated as absence."},
+    {"url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=151", "method": "GET; anonymous public first-party page review", "normalTlsVerification": true, "result": "Returned Pilibhit district/tehsil cadastral-map digitization status; no parcel feature response."},
+    {"url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/CLR/tehsil-level/151", "method": "GET; anonymous public first-party page review", "normalTlsVerification": true, "result": "Returned official Pilibhit land-record computerization progress; no parcel feature response."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "exactWupPointTest": "Submitted unchanged longitude/latitude values as x=79.8085612096802 and y=28.6241383152122 to the public endpoint under Pilibhit district/tehsil context; response was {}.", "query": "POST MapInfo/getPlotAtXY with giscode=151,00790 and empty/0 plot-number variants; no polygon response."},
+  "coverageAssessment": {"claimedScope": "Pilibhit District Administration custody plus Uttar Pradesh Bhulekh/Bhunaksha, cadastral-map dashboard, and DILRMP reporting.", "verifiedOpenScope": "Anonymous hierarchy metadata and public endpoint configuration verified; no anonymous complete-polygon feature response verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "The exact WUP point was not shifted. The public viewer's village-level geometry request shape, returned native identity, CRS, urban coverage, and citywide completeness remain unverified. Empty exact-point output, a missing map-level parameter, or a UI/service limitation does not establish cadastral absence.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous ID-plus-complete-geometry response; this packet does not qualify an adapter or enable runtime."}
+}

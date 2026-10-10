@@ -1,0 +1,17 @@
+{
+  "taskId": "city:9116",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-9116-ranghulu.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranghulu-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-09T14:19:14.659543Z",
+  "reason": "Ranghulu portal and Heilongjiang government report support registration custody only. The packet’s provincial natural-resources URL is an unrelated Yichun article and cannot support its Daqing claim. No native-ID polygon response or adapter qualification.",
+  "firstPartyPagesChecked": [
+    "https://dqrhlq.zwfw.hlj.gov.cn/",
+    "https://www.hlj.gov.cn/hlj/c107856/202310/c00_31678223.shtml"
+  ],
+  "admissionGates": "No verified full parcel geometry or safe native ID; fresh ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are not evidenced."
+}

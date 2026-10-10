@@ -1,0 +1,117 @@
+{
+  "cityCode": 505,
+  "queueRank": 1643,
+  "name": "Oruro",
+  "country": "Bolivia (Plurinational State of)",
+  "countryCode": "BO",
+  "point": [-17.9662930323501, -67.1057597089078],
+  "population2025": 347830,
+  "population2025k": 347.83,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Oruro Bolivia official cadastral parcel map GIS land registry",
+        "result": "Found the official Gobierno Autónomo Municipal de Oruro (GAMO) manual identifying a Unidad de Catastro Urbano, the official GeoBolivia portal/GeoVisor, and an official OEP ArcGIS service for Oruro. No public local parcel layer or anonymous parcel API was verified.",
+        "actualResultUrls": [
+          "https://gamo.gob.bo/wp-content/uploads/2020/07/decreto_218_2.pdf",
+          "https://geobolivia.planificacion.gob.bo/",
+          "https://geonode.planificacion.gob.bo/",
+          "https://geoelectoral.oep.org.bo/oep/rest/services/GeografiaElectoral/ORURO/MapServer"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "Oruro Bolivia catastro urbano mapa parcelas visor geográfico oficial Gobierno Autónomo Municipal de Oruro",
+        "result": "La búsqueda en español encontró evidencia oficial de la Unidad de Catastro Urbano del GAMO y servicios cartográficos territoriales oficiales, pero no un visor público verificable ni un endpoint anónimo de parcelas urbanas de Oruro.",
+        "actualResultUrls": [
+          "https://gamo.gob.bo/wp-content/uploads/2020/07/decreto_218_2.pdf",
+          "https://geonode.planificacion.gob.bo/",
+          "https://geoelectoral.oep.org.bo/oep/rest/services/GeografiaElectoral/ORURO/MapServer"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryBasis": "GAMO first-party documentation evidences a Unidad de Catastro Urbano responsible for municipal cadastral administration, inventories, updates, certifications, and property-plan review. No public local registry viewer, parcel API, or safe parcel geometry response was verified.",
+  "officialSources": [
+    {
+      "url": "https://gamo.gob.bo/wp-content/uploads/2020/07/decreto_218_2.pdf",
+      "observation": "Official GAMO organizational manual states that the Unidad de Catastro Urbano administers municipal cadastral management and predial technical data; this is custodian/procedure evidence, not a public parcel endpoint."
+    },
+    {
+      "url": "https://geobolivia.planificacion.gob.bo/",
+      "observation": "Official GeoBolivia portal advertises open territorial data, maps, and a GeoVisor; no Oruro parcel layer was verified through the available public page/API attempts."
+    },
+    {
+      "url": "https://geoelectoral.oep.org.bo/oep/rest/services/GeografiaElectoral/ORURO/MapServer",
+      "observation": "Official OEP ArcGIS service for Oruro exposes electoral, road, lake, salar, and municipality/departamento layers in EPSG:4326; no cadastral parcel layer is listed."
+    },
+    {
+      "url": "https://www.gob.bo/tramites/emision-de-plano-catastral",
+      "observation": "Official government procedure page describes a presencial plano catastral service for COMIBOL regional Oruro; it is not an anonymous municipal parcel service."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://gamo.gob.bo/",
+      "method": "GET",
+      "outcome": "Request returned an empty response/curl error 52; the official GAMO PDF remained accessible through a search result."
+    },
+    {
+      "url": "https://gamo.gob.bo/wp-content/uploads/2020/07/decreto_218_2.pdf",
+      "method": "GET/search retrieval",
+      "outcome": "Official manual was found and inspected via first-party search result; it documents the municipal Unidad de Catastro Urbano but does not publish a parcel API."
+    },
+    {
+      "url": "https://geobolivia.planificacion.gob.bo/",
+      "method": "GET",
+      "outcome": "Official GeoBolivia landing page was reachable in web discovery and described open territorial data and GeoVisor access."
+    },
+    {
+      "url": "https://geonode.planificacion.gob.bo/",
+      "method": "GET",
+      "outcome": "Official GeoVisor page was discovered; direct fetch timed out, so no layer catalog or parcel schema was claimed."
+    },
+    {
+      "url": "https://geonode.planificacion.gob.bo/api/v2/layers/?search=catastro%20Oruro&page_size=100",
+      "method": "GET",
+      "outcome": "Returned HTTP 502 from the public endpoint; no result was treated as evidence of absence."
+    },
+    {
+      "url": "https://geonode.planificacion.gob.bo/api/v2/layers/?search=predio&page_size=100",
+      "method": "GET",
+      "outcome": "Returned HTTP 502 from the public endpoint; no result was treated as evidence of absence."
+    },
+    {
+      "url": "https://geoelectoral.oep.org.bo/oep/rest/services/GeografiaElectoral/ORURO/MapServer",
+      "method": "GET ArcGIS REST metadata",
+      "outcome": "Service metadata returned and was inspected. Listed layers are electoral/territorial, roads, water/salar, and municipality/departamento polygons; no parcel layer."
+    },
+    {
+      "url": "https://geoelectoral.oep.org.bo/oep/rest/services/GeografiaElectoral/ORURO/MapServer/21/query?where=1%3D1&outFields=OBJECTID&returnGeometry=false&f=geojson&resultRecordCount=3",
+      "method": "GET anonymous bounded query",
+      "outcome": "Direct curl attempt returned empty response/curl error 52; the layer metadata independently identifies layer 21 as ORURO_26570 administrative polygon data, not parcels. No sample retained."
+    },
+    {
+      "url": "https://www.gob.bo/tramites/emision-de-plano-catastral",
+      "method": "GET",
+      "outcome": "Official procedure page returned and identifies a presencial cadastral-plan service with a Regional Oruro address, but no anonymous parcel query."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "safeFieldAllowlist": ["OBJECTID", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "legal description", "value"],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Official GAMO, GeoBolivia/GeoNode, OEP ArcGIS, and gob.bo procedure channels investigated.",
+    "verifiedOpenScope": "Administrative/territorial service metadata and municipal custodian documentation only; no parcel geometry or parcel identity was verified.",
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_public_parcel_geometry",
+  "runtimeReadiness": "held_serial_review",
+  "remainingUncertainty": "A municipal cadastral custodian is evidenced, but public service publication and citywide coverage are unresolved. Exact-point hit/miss, map extent, timeout, and unavailable API responses are not evidence of citywide parcel absence. No claim is made about ownership, title, address, tax records, legal descriptions, or completeness of internal GAMO/GeoBolivia datasets. Packet completion is not source integration or admission."
+}

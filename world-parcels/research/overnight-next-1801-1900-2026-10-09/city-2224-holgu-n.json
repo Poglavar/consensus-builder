@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-10",
+  "wupCityCode": 2224,
+  "cityCode": 2224,
+  "queueRank": 1840,
+  "name": "Holguín",
+  "country": "Cuba",
+  "countryCode": "CU",
+  "iso3": "CUB",
+  "point": [20.885086766206, -76.2563497986009],
+  "population2025": 312173,
+  "population2025k": 312.173,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Holguín Cuba official cadastral map parcel registry GIS Ayuntamiento catastro",
+        "result": "No official Holguín parcel viewer or public parcel API was found. Results included Cuba tourism, general/legal cadastral material, and a third-party map listing a Holguín property registry office.",
+        "actualResultUrls": ["https://www.catastro.hacienda.gob.es/es-ES/CoordinacionCatastroRegistro.html", "https://mapcarta.com/es/N6261070585", "https://s3.amazonaws.com/rgi-documents/5a8b0986f9084db3f6f84f7e3d071e1f4591b7b0.pdf"]
+      },
+      {
+        "language": "Spanish (Cuban local/native)",
+        "query": "Holguín Cuba catastro mapa parcelas registro propiedad sitio oficial",
+        "result": "Search identified Cuba's Instituto de Planificación Física / current Instituto Nacional de Ordenamiento Territorial y Urbanismo framework and a 2021 report that Holguín municipal and provincial Planning Physics plus Geocuba were creating the city's urban cadastre; no public parcel geometry service was found.",
+        "actualResultUrls": ["https://www.cibercuba.com/s/gacetaoficial/resolucion-60-de-2020-de-instituto-de-planificacion-fisica", "https://ufdcimages.uflib.ufl.edu/UF/00/09/89/42/01054/04-10-2021.pdf", "https://www.cibercuba.com/s/gacetaoficial/organismo/instituto-nacional-de-ordenamiento-territorial-y-urbanismo"]
+      },
+      {
+        "language": "Spanish (Cuban local/native)",
+        "query": "Dirección Municipal de Planificación Física Holguín catastro",
+        "result": "A third-party directory/map result identified the municipal Planning Physics office in Holguín; no first-party endpoint or downloadable parcel layer was exposed.",
+        "actualResultUrls": ["https://cuba-streets.openalfa.com/holguin/services", "https://habitat.aq.upm.es/dubai/08/bp1977.html"]
+      }
+    ],
+    "interpretation": "Search results and legal/procedural material establish a national/local cadastral responsibility model, not open parcel data for the WUP city point."
+  },
+  "registryFound": null,
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.cibercuba.com/s/gacetaoficial/resolucion-60-de-2020-de-instituto-de-planificacion-fisica",
+      "operator": "Cuba national planning/cadastre framework (secondary reproduction of official Gaceta text)",
+      "observation": "Resolution 60/2020 describes urban cadastral certification and assigns the municipal Planning Physics cadastre department/section a role; it does not provide an open parcel API."
+    },
+    {
+      "url": "https://ufdcimages.uflib.ufl.edu/UF/00/09/89/42/01054/04-10-2021.pdf",
+      "operator": "Cuban provincial/local reporting; secondary archive",
+      "observation": "Reports that municipal and provincial Planning Physics and Geocuba Oriente Norte were conducting work to create the urban cadastre in Holguín city."
+    },
+    {
+      "url": "https://mapcarta.com/es/N6261070585",
+      "operator": "Third-party OpenStreetMap-derived directory",
+      "observation": "Maps a Registro de la propiedad office in Holguín; this is a location lead only, not evidence of an accessible cadastral parcel service."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.ipf.cu/es/catastro",
+      "method": "GET",
+      "outcome": "DNS resolution failed from the research host; no response body or endpoint schema."
+    },
+    {
+      "url": "https://www.holguin.gob.cu",
+      "method": "GET",
+      "outcome": "TLS connection reset by peer from the research host; no viewer/config/API could be inspected."
+    },
+    {
+      "url": "https://www.gacetaoficial.gob.cu/sites/default/files/go_x_37_2015.pdf",
+      "method": "GET",
+      "outcome": "HTTP 403 text/html; no PDF content was retrieved."
+    },
+    {
+      "url": "https://ufdcimages.uflib.ufl.edu/UF/00/09/89/42/01054/04-10-2021.pdf",
+      "method": "search/open",
+      "outcome": "Search-indexed secondary archive was readable and supplied the Holguín urban-cadastre project lead; no parcel geometry or service endpoint."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Cuba national cadastral framework and Holguín municipal/provincial Planning Physics / Geocuba urban-cadastre work.",
+    "verifiedOpenScope": "No open parcel service, schema, CRS, native parcel ID, or geometry response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "resultCategory": "official_cadastral_custodian_evidenced_but_open_parcel_service_unavailable",
+  "verifiedSample": false,
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate-reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not attempted against a parcel endpoint because no reachable public parcel service was identified; the exact WUP point was preserved and not shifted.",
+    "requestEvidence": []
+  },
+  "scopeLimits": [
+    "The exact WUP point [20.885086766206, -76.2563497986009] is retained in latitude/longitude order; no coordinate shift was made.",
+    "National legal/procedural material and reports of cadastral work do not establish completed or open citywide parcel coverage.",
+    "DNS failure, connection reset, HTTP 403, and absence of a discoverable public endpoint are service-access limitations, not evidence of citywide parcel absence.",
+    "No owner, address, titleholder, contact, personal, tax, account, or other unsafe fields were requested or retained.",
+    "Packet completion is not source integration/admission; runtime remains held pending serial review."
+  ],
+  "uncertainty": "It remains unknown whether Holguín's urban cadastre is complete, digitized, publicly viewable, or exposed through an unpublished/internal service. No stable native parcel identity, parcel schema, CRS, or polygon was verified.",
+  "retainedSample": null
+}

@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 6240,
+  "queueRank": 1818,
+  "cityId": "queue:1818",
+  "name": "Sapele",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "point": [5.87952425350026, 5.68865672791976],
+  "centerLatLon": [5.87952425350026, 5.68865672791976],
+  "population2025": 315614,
+  "population2025k": 315.614,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sapele Nigeria cadastral map parcel land registry official Delta State",
+        "result": "Results identified Delta State property-registration procedures, the Delta Ministry of Lands and Survey digitization/geo-referencing programme, the federal Surveyor-General, and historical Sapele cadastral references. No public Sapele parcel ID-plus-geometry endpoint was exposed.",
+        "actualResultUrls": [
+          "https://deltastate.gov.ng/sabzz1/",
+          "https://www.deltastate.gov.ng/wp-content/uploads/2024/12/Approved-Delta-State-BERAP-2025.pdf",
+          "https://osgof.gov.ng/",
+          "https://nigeriareposit.nln.gov.ng/bitstreams/68935051-8d19-4729-ae09-c6c1f8d5f384/download"
+        ]
+      },
+      {
+        "language": "native/local (Nigerian English / Pidgin-oriented)",
+        "query": "Sapele Nigeria land registry map parcel survey plan official Delta State",
+        "result": "Nigeria-local wording returned the same Delta State lands-registration and digitization sources plus a non-government Delta land-information explainer; no first-party public Sapele parcel geometry service was found. Nigeria has no single nationwide local language used for Delta land-registry service discovery, so Nigerian English was used for the local-language-equivalent query.",
+        "actualResultUrls": [
+          "https://deltastate.gov.ng/sabzz1/",
+          "https://www.deltastate.gov.ng/wp-content/uploads/2024/12/Approved-Delta-State-BERAP-2025.pdf",
+          "https://openlandregistry.com/land/delta"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Web discovery followed by TLS-verified bounded GETs with ordinary public requests; no credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS disablement used."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://deltastate.gov.ng/sabzz1/",
+      "observation": "Official Delta State MDA Services page identifies the Property Registration and Land Based Administration Process and links Ministry of Lands & Survey C-of-O and land-administration procedures. It establishes the state registry/procedure custodian but exposes no public parcel geometry API."
+    },
+    {
+      "url": "https://www.deltastate.gov.ng/wp-content/uploads/2024/12/Approved-Delta-State-BERAP-2025.pdf",
+      "observation": "Official Delta State reform-plan document names the Ministry of Lands & Survey and D'LARMS/technical team, describing digitization, a spatial map of land parcels, parcel geo-coordinates and geo-referenced boundaries. It describes the programme, not an accessible viewer or downloadable layer."
+    },
+    {
+      "url": "https://osgof.gov.ng/",
+      "observation": "Official federal Surveyor-General site offers requests for cadastral surveys, maps and coordinates, but no anonymous Sapele parcel layer was exposed."
+    },
+    {
+      "url": "https://nigeriareposit.nln.gov.ng/bitstreams/68935051-8d19-4729-ae09-c6c1f8d5f384/download",
+      "observation": "National Library repository copy of a 1967 Mid-Western Nigeria Gazette contains a historical Sapele cadastral-survey reference and parcel description; it is historical documentary evidence, not a current machine-readable public parcel service and no geometry was retained."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://deltastate.gov.ng/sabzz1/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "Official Delta State property-registration page returned HTML; no map viewer configuration or anonymous parcel feature endpoint identified."
+    },
+    {
+      "url": "https://www.deltastate.gov.ng/wp-content/uploads/2024/12/Approved-Delta-State-BERAP-2025.pdf",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/pdf",
+      "assessment": "Official reform-plan PDF returned successfully; inspected content supports D'LARMS/digitization and parcel-map programme claims but contains no public query endpoint or safe parcel feature response."
+    },
+    {
+      "url": "https://osgof.gov.ng/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "Official federal surveyor-general homepage returned HTML; no Sapele parcel service exposed."
+    },
+    {
+      "url": "https://deltamap.net/app/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Third-party Delta Web Map shell returned HTML and stated JavaScript was required; it is not established as a Delta State cadastral custodian and no parcel response was requested or retained."
+    },
+    {
+      "url": "https://openlandregistry.com/land/delta",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "Non-government Delta land-information page returned HTML and explicitly says an official Delta search cannot yet be ordered through it; no source geometry or native parcel ID was used."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Sapele city/local-government area in Delta State, Nigeria, under the Delta State Ministry of Lands & Survey / D'LARMS land-administration programme.",
+    "verifiedOpenScope": "State-level registry/procedure and digitization programme evidence only; no anonymous parcel geometry scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The current Delta State viewer/API route, access controls, parcel schema, CRS, stable native parcel identity, update currency and citywide coverage remain unresolved. The exact WUP point was preserved and never shifted; no exact-point hit/miss inference was made. Historical Sapele cadastral references do not establish current coverage.",
+  "nextStep": "A later attempt may inspect an officially exposed Delta State D'LARMS/map portal if one becomes discoverable and test only a bounded anonymous safe ID-plus-geometry query. Do not infer citywide absence from the unavailable viewer/API or unusable third-party map shell."
+}

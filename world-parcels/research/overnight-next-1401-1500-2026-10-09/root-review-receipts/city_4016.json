@@ -1,0 +1,18 @@
+{
+  "taskId": "city:4016",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-4016-guarenas.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/guarenas-service-review.json",
+    "tmp/valhalla-parcel-research/4016/alcaldia.html",
+    "tmp/valhalla-parcel-research/4016/sigat.html",
+    "tmp/valhalla-parcel-research/4016/wp-search.json"
+  ],
+  "checkedAt": "2026-10-09T16:22:17Z",
+  "reason": "Immutable WUP code/rank/country/point/399477 persons match the archive and queue. English and Spanish searches were executed. Municipal government and SATMAP pages establish administrative context; the original page cache and empty WordPress search provide no safe native parcel ID plus polygon. IGVSB route timeouts are unresolved access, not citywide absence. No independent adapter admission gates or headed Details check exist.",
+  "registryFoundReviewed": null,
+  "retainedFullPolygonCount": 0,
+  "admission": false
+}

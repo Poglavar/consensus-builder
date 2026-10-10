@@ -1,0 +1,67 @@
+{
+  "cityCode": 4723,
+  "queueRank": 1636,
+  "name": "Setif",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "iso3": "DZA",
+  "locId": 12,
+  "point": [36.1929104072835, 5.41714395416834],
+  "population2025": 349825,
+  "population2025k": 349.825,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Setif Algeria official cadastral map parcel viewer cadastre",
+        "result": "First-party discovery identified the Wilaya of Setif public qgis2web map, but the indexed description exposes wilaya/commune, roads, rail, industrial and tourism layers rather than cadastral parcels. It also identified ANFU, whose official mission page describes use of cadastre/conservation-fonciere data but does not publish a Setif parcel endpoint.",
+        "actualResultUrls": [
+          "https://www.wilayasetif.dz/CTOIC/Fr/SITE/index.html",
+          "https://www.anfu.dz/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "سطيف الجزائر خريطة عقارية رسمية مسح الأراضي قطع الأراضي",
+        "result": "Arabic discovery found an official university catalogue entry for a study about land surveying in Sétif, not a public parcel service. French discovery found the same Wilaya viewer and the official national cartography viewer; neither exposed a bounded public parcel response.",
+        "actualResultUrls": [
+          "https://biblio-iast.univ-setif.dz/opac_css/index.php?id=7060&lvl=notice_display",
+          "https://www.wilayasetif.dz/CTOIC/Fr/SITE/index.html",
+          "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryBasis": "No local cadastral registry, parcel map, or public parcel API was actually evidenced. General official cartography and agency descriptions are not treated as local parcel-service evidence.",
+  "officialSources": [
+    {
+      "url": "https://www.wilayasetif.dz/CTOIC/Fr/SITE/index.html",
+      "observation": "Official Wilaya de Sétif qgis2web map is described as containing agglomerations, industrial/tourism zones, airports, Wilaya/commune boundaries, roads, railways, OSM and satellite imagery; no parcel layer was evidenced. Fetch attempt returned HTTP 502 from the research environment."
+    },
+    {
+      "url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+      "observation": "Official ASGA InfoGéolAlgérie 1:200,000 viewer exposes broad cartographic layers (Wilaya, communes, roads/topographic context), not a demonstrated parcel layer. Fetch attempt timed out."
+    },
+    {
+      "url": "https://www.anfu.dz/",
+      "observation": "Official ANFU page describes national urban-land missions and says its inventories use cadastre and land-conservation data; it does not provide a public Setif parcel geometry/ID service in the reviewed page."
+    },
+    {
+      "url": "https://biblio-iast.univ-setif.dz/opac_css/index.php?id=7060&lvl=notice_display",
+      "observation": "University catalogue entry concerns a study evaluating land surveying in Wilaya de Sétif; it is research literature, not a parcel service."
+    }
+  ],
+  "runtimeReadiness": "held_no_verified_public_parcel_geometry",
+  "remainingUncertainty": "A zero exact-point hit, map extent miss, timeout, or unusable viewer is not evidence of citywide parcel absence. The research did not establish the local cadastre/conservation-fonciere custodian's public API or a safe native parcel identity. No coordinate shift was made.",
+  "scopeLimits": [
+    "Exact preserved WUP point [36.1929104072835, 5.41714395416834] was used in latitude/longitude order.",
+    "No parcel geometry, parcel ID, owner, address, titleholder, contact, tax/account, personal field, credential, or private token was requested or retained.",
+    "No login, CAPTCHA/Cloudflare bypass, or TLS-verification disable was used.",
+    "This packet records research only; it is not source integration or runtime admission."
+  ]
+}

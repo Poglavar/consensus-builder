@@ -1,0 +1,69 @@
+{
+  "cityCode": 10238,
+  "queueRank": 1480,
+  "name": "Haicheng",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [40.85009234432, 122.734223837526],
+  "population2025": 383983,
+  "population2025k": 383.983,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Haicheng China official cadastral parcel map GIS natural resources bureau public service",
+        "result": "Search found an official Anshan public-resources notice issued by Haicheng Natural Resources Bureau for a Haicheng land-use parcel procedure. No official public cadastral viewer, parcel API, schema, CRS, or safe anonymous geometry response was identified.",
+        "actualResultUrls": ["https://www.asggzyjy.cn/tdjy/016001/20260108/54313a36-cc13-439c-ba88-48e0112696ad.html"]
+      },
+      {
+        "language": "Chinese",
+        "query": "海城市 不动产登记 地籍图 自然资源局 官方 地图 服务",
+        "result": "搜索结果确认海城市自然资源局发布国有土地使用权挂牌出让公告，属于本地自然资源土地管理程序；未找到可匿名访问的官方地籍图/宗地图查看器或安全的地块编号加几何接口。",
+        "actualResultUrls": ["https://www.asggzyjy.cn/tdjy/016001/20260108/54313a36-cc13-439c-ba88-48e0112696ad.html"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidenceUrls": ["https://www.asggzyjy.cn/tdjy/016001/20260108/54313a36-cc13-439c-ba88-48e0112696ad.html"],
+  "registryBasis": "The official Anshan public-resources notice identifies 海城市自然资源局 (Haicheng Natural Resources Bureau) as the local issuer for a Haicheng land-use parcel procedure and publishes a native 宗地编号 (HC-WT-2025-M-20). This evidences local land-administration procedure custody, not open cadastral geometry access.",
+  "source": {
+    "sourceId": "CN-10238-HAICHENG-LAND-PROCEDURE-REVIEW",
+    "name": "Haicheng Natural Resources Bureau official land-use procedure notice",
+    "url": "https://www.asggzyjy.cn/tdjy/016001/20260108/54313a36-cc13-439c-ba88-48e0112696ad.html",
+    "operator": "海城市自然资源局 / Haicheng Natural Resources Bureau",
+    "serviceType": "Official local land-administration procedure notice; open cadastral parcel geometry not verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": "宗地编号",
+    "nativeIdEvidence": "The notice publishes 宗地编号 HC-WT-2025-M-20 for the advertised land parcel.",
+    "nativeFieldMapping": {"宗地编号": "stable native land-parcel identifier; no geometry response obtained"}
+  },
+  "coverageAssessment": {
+    "claimedScope": "The cited notice covers one advertised Haicheng land-use parcel procedure in 望台镇; it does not claim a citywide cadastral dataset.",
+    "verifiedOpenScope": "Only a single official procedure notice was verified. No public map extent, feature service, schema, CRS, or citywide parcel coverage was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_local_land_procedure_geometry_unverified",
+  "technicalBlocker": "The likely local government host https://www.haicheng.gov.cn timed out on two ordinary TLS GET attempts (20-second limit each). Search-visible official material provided no map/viewer/API link, and no login, credentials, private token, CAPTCHA bypass, or unsafe fields were used.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "registration-rights"],
+  "remainingUncertainty": "Haicheng may have an internal or authenticated cadastral system, and the local government host may expose services when reachable. No exact-point hit or absence inference is made from the timeout or lack of search results.",
+  "nextStep": "Hold runtime integration. A later researcher may qualify an anonymous first-party parcel endpoint only after independently verifying schema, CRS, stable native identity, and safe ID-plus-geometry output.",
+  "runtimeReadiness": "held_unqualified",
+  "adapterReady": false,
+  "centerLatLon": [40.85009234432, 122.734223837526],
+  "populationPlausibility2025": "High",
+  "pointBasis": "Exact immutable WUP 2025 population-weighted settlement point; not shifted to force a parcel hit.",
+  "sourceIds": [],
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "attempt": 1,
+  "priorCheck": {"attemptState": "pending", "attemptEvidence": [], "possiblePriorMatches": []},
+  "schemaVersion": "1.0"
+}

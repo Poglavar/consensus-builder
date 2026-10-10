@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-7394-francisco-morato.json",
+  "cityCode": 7394,
+  "queueRank": 1652,
+  "city": "Francisco Morato",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "A municipal fiscal-property-cadastre custodian is evidenced, but no anonymous public parcel response containing a safe native ID and polygon was verified. No sample GeoJSON is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Brazilian-Portuguese discovery queries are recorded in the city record. Results identified municipal cadastral custody, IBGE cartography, and the federal Sinter public consultation documentation.",
+  "requestOutcomes": "The municipal HTTPS endpoint failed local TLS verification and was not bypassed. The Sinter public shell and official documentation loaded, but no bounded Francisco Morato parcel feature response, schema, CRS, or stable native ID was obtained. No credentials, private tokens, CAPTCHA bypass, unsafe fields, or global TLS disable was used.",
+  "scopeLimits": [
+    "Exact WUP point [-23.3044557273644, -46.7343685031083] was preserved in latitude/longitude order; no exact-point hit or miss inference was made.",
+    "No city boundary or complete city coverage was established for an open parcel geometry service.",
+    "Municipal cadastral custody/procedure evidence is not treated as proof of an open vector parcel API.",
+    "A TLS failure, unavailable viewer, map extent miss, timeout, or absent public endpoint is not evidence of citywide cadastral absence.",
+    "IBGE municipal maps and general Sinter service documentation are not retained as parcel samples.",
+    "No owner, address, titleholder, contact, tax/account, or personal fields were requested or retained.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains pending."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable parcel geometry query was completed; exact point preserved and no hit/miss inference made.",
+    "requestEvidence": [
+      "Municipal GET: TLS verification failure; no exception used.",
+      "Sinter service shell GET: HTTP 200, no usable city-scoped feature response.",
+      "Official Sinter documentation GET: HTTP 200, generic public map consultation description only."
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Francisco Morato municipal fiscal-property cadastre and Brazil federal Sinter consultation service.",
+    "verifiedOpenScope": "Local institutional custody and generic service documentation only; anonymous parcel geometry not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current municipal map/API route, access controls, schema, CRS, stable native parcel identity, exact-point membership, and citywide coverage remain unresolved. No claim is made about parcel absence, legal title, ownership, tax records, or completeness of any Brazilian cadastral dataset.",
+  "retainedSample": null
+}

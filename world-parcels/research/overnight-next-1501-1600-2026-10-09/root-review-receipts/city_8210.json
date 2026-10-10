@@ -1,0 +1,15 @@
+{
+  "taskId": "city:8210",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-8210-muridke.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/muridke-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/muridke-parcel-samples.geojson",
+    "tmp/valhalla-parcel-research/muridke-sheikhupura-layer.json",
+    "tmp/valhalla-parcel-research/muridke-point.geojson"
+  ],
+  "checkedAt": "2026-10-10T09:18:08.171893Z",
+  "reason": "Original first-party cache confirms native OBJECTID 3070826 and a full polygon covering the WUP point; retained sample geometry matches exactly and contains only safe id. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS overlap and operation checks, source binding, and headed Details verification are not independently evidenced."
+}

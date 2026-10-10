@@ -1,0 +1,111 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6672-bishoftu.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Document Bishoftu local land-office evidence and bounded anonymous public cadastral/WFS checks without treating empty point-area responses as citywide absence.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Bishoftu City Administration website lists a city Land Office. The official e-Land viewer exposes WFS cadastral layers and a parcel-publish schema, but bounded anonymous requests around the exact WUP point returned empty FeatureCollections. No safe parcel identity or geometry was verified.",
+  "registryAssessment": "Local municipal land-office custody is evidenced. No open Bishoftu registry database, citywide parcel coverage, or public parcel feature response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Official Bishoftu city portal, e-Land viewer/configuration, Ethio-NSDI Bishoftu addressing publication, WFS capabilities/schema, and bounded WFS requests.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "officialPrimarySources": [
+    {
+      "url": "https://www.bishoftu.gov.et/landmark_type/environment",
+      "operator": "Bishoftu City Administration",
+      "observation": "Official city page lists Bishoftu city Land Office; no public parcel-vector route was exposed in the reviewed page."
+    },
+    {
+      "url": "https://eland.addiscadaster.gov.et/maps",
+      "operator": "Ethiopian Land Holding Registration and Information Agency e-Land",
+      "observation": "Official viewer shell; public WFS is reachable and exposes cadastral schemas, but the reviewed data extents/configuration are Addis-oriented and no Bishoftu feature was returned."
+    },
+    {
+      "url": "https://www.ethionsdi.gov.et/uploaded/documents/Bishoftu_AddressBook.pdf",
+      "operator": "Ethiopian National Spatial Data Infrastructure",
+      "observation": "Official Bishoftu digital-addressing context; not a parcel-vector endpoint."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Bishoftu Ethiopia official cadastral map parcel land registry GIS",
+      "method": "English discovery followed by first-party city, e-Land, Ethio-NSDI, and Oromia review.",
+      "actualResultUrls": [
+        "https://www.bishoftu.gov.et/landmark_type/environment",
+        "https://eland.addiscadaster.gov.et/maps",
+        "https://www.ethionsdi.gov.et/uploaded/documents/Bishoftu_AddressBook.pdf"
+      ],
+      "scope": "Find local registry/cadastral custody and safe anonymous parcel geometry; retain no owner, address, titleholder, contact, tax, or account fields."
+    },
+    {
+      "language": "Amharic",
+      "query": "ቢሾፍቱ ካዳስተር መሬት ምዝገባ ካርታ",
+      "method": "Separate Amharic discovery followed by first-party review.",
+      "actualResultUrls": [
+        "https://www.bishoftu.gov.et/landmark_type/environment",
+        "https://www.ethionsdi.gov.et/uploaded/documents/Bishoftu_AddressBook.pdf",
+        "https://eland.addiscadaster.gov.et/maps"
+      ],
+      "scope": "የመሬት ምዝገባ/ካዳስተር አገልግሎት እና ደህንነታማ የፓርሴል ጂኦሜትሪ ብቻ መፈለግ፤ የባለቤት፣ አድራሻ፣ የርዕስ ባለቤት፣ የግንኙነት፣ የግብር ወይም የመለያ መረጃ አለመያዝ።"
+    }
+  ],
+  "attempts": [
+    "Official Bishoftu city page was discovered and reviewed; it lists a local Land Office. Direct curl from this host failed DNS resolution for www.bishoftu.gov.et, while the search result supplied the first-party page; no bypass was attempted.",
+    "Official e-Land viewer and api.config.json were fetched anonymously; the configuration exposed the WFS endpoint and Addis-oriented client/API configuration.",
+    "Anonymous e-Land app-location request for cityCode OR-BIS returned HTTP 401; no login, credentials, or token was used.",
+    "Anonymous WFS GetCapabilities returned HTTP 200 and advertised v_1_registered_parcel, v_1_parcel_cadaster_publish, EPSG:20137, and other layers.",
+    "Anonymous DescribeFeatureType for v_1_parcel_cadaster_publish returned HTTP 200, identifying MultiPolygon geometry and candidate safe fields id and uniqueparcelid.",
+    "Bounded WFS GetFeature requests for both registered-parcel and parcel-publish layers around exact WUP point [8.75862197493687, 38.9583814728029] returned HTTP 200 empty FeatureCollections. No hit/miss or citywide-absence inference was made.",
+    "Official Ethio-NSDI Bishoftu addressing publication and Oromia Bishoftu planning material were reviewed as contextual sources; neither supplied a public parcel-vector response.",
+    "No login, private token, CAPTCHA/Cloudflare bypass, unsafe owner/address/titleholder field, or TLS-verification exception was used."
+  ],
+  "geometryEvidence": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": "uniqueparcelid is exposed by schema but no feature was returned",
+    "exactWupPointTest": "Two bounded WFS requests were attempted around exact WUP point [8.75862197493687, 38.9583814728029]; both returned empty FeatureCollections. The coordinate was preserved unchanged and no absence conclusion was made.",
+    "requestEvidence": [
+      {
+        "url": "https://elandapi.addiscadaster.gov.et/api/e-services/app-location?cityCode=OR-BIS",
+        "method": "GET; anonymous public read",
+        "httpStatus": 401,
+        "contentType": null,
+        "assessment": "Unauthorized; no parcel response."
+      },
+      {
+        "url": "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=ncrprs_cadaster:v_1_registered_parcel&outputFormat=application/json&srsname=EPSG:4326&bbox=38.9386,8.7386,38.9786,8.7786,EPSG:4326&maxFeatures=3",
+        "method": "GET; bounded anonymous WFS geometry attempt",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "assessment": "Empty FeatureCollection; no geometry or identity."
+      },
+      {
+        "url": "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=ncrprs_cadaster:v_1_parcel_cadaster_publish&outputFormat=application/json&srsname=EPSG:4326&bbox=38.9386,8.7386,38.9786,8.7786,EPSG:4326&maxFeatures=3",
+        "method": "GET; bounded anonymous WFS geometry attempt",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "assessment": "Empty FeatureCollection; no geometry or identity."
+      }
+    ]
+  },
+  "safeFieldAllowlist": ["id", "geometry", "geometryType", "spatialReference"],
+  "nextStep": "Hold for serial review. A real adapter requires independent verification of an anonymous Bishoftu cadastral parcel service, safe stable native ID, schema/CRS, and bounded geometry response.",
+  "remainingUncertainty": "A separate Oromia/Bishoftu registry or non-indexed municipal map service may exist outside the reviewed public routes; public accessibility and parcel schema are unknown.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

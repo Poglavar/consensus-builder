@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:3480",
+  "cityCode": 3480,
+  "wupCityCode": 3480,
+  "name": "Tawau",
+  "country": "Malaysia",
+  "countryCode": "MY",
+  "iso2": "MY",
+  "iso3": "MYS",
+  "rank": 1515,
+  "queueRank": 1515,
+  "point": [4.26727594258297, 117.896166304321],
+  "centerLatLon": [4.26727594258297, 117.896166304321],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 375573,
+  "population2025k": 375.573,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Sabah Lands and Surveys Department site identifies JTU as the state land-and-surveys authority, lists a Tawau district survey office, and advertises cadastral-related JTUWMA services. This establishes local cadastral custody and public survey-product channels, not anonymous citywide parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://www.jtu.sabah.gov.my/",
+    "https://www.jtu.sabah.gov.my/homepage3/index.cfm?action=jtu2&lang=bm&section=administration",
+    "https://eservice.hq.jtu.my/SLP/",
+    "https://www.sabah.gov.my/gazette/docs/003137.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The official JTU portal and portal.jtu.my timed out or reset during bounded direct retrieval. The official service catalog describes JTUWMA Pro as registered-user/internal cadastral access; no anonymous map/API configuration or safe ID-plus-complete-polygon response was obtained. Sabah GeoExplorer was reachable but its public configuration exposed general geospatial/facility APIs, not a cadastral parcel layer.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Sabah state Lands and Surveys Department custody, Tawau district survey-office presence, and official JTU survey/cadastral service channels.",
+    "verifiedOpenScope": "No anonymous complete-polygon parcel response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tawau Sabah official cadastral parcel map land registry GIS",
+        "scope": "Identify first-party local cadastral custody and the current public parcel-map or survey-information route.",
+        "result": "Search located the official Sabah Lands and Surveys Department site, its official service catalog, the registered-user JTUWMA Pro description, the official Tawau survey-office listing, and Sabah government gazette evidence naming Tawau survey lots. No anonymous parcel feature service was identified.",
+        "actualResultUrls": [
+          "https://www.jtu.sabah.gov.my/",
+          "https://eservice.hq.jtu.my/SLP/",
+          "https://www.jtu.sabah.gov.my/homepage3/index.cfm?action=jtu2&lang=bm&section=administration",
+          "https://www.sabah.gov.my/gazette/docs/003137.pdf"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "native/local",
+        "query": "Tawau Sabah tanah kadaster peta lot rasmi Jabatan Tanah dan Ukur Sabah",
+        "scope": "Independent Malay-language discovery of Tawau land/cadastral custody and public parcel geometry.",
+        "result": "Search located the official Jabatan Tanah dan Ukur Sabah site, its Malay administration page listing Pejabat Juruukur Daerah Tawau, and official Sabah gazette land-lot records. The official JTUWMA Pro description states that detailed cadastral information is shared internally/with registered users; no anonymous geometry response was obtained.",
+        "actualResultUrls": [
+          "https://www.jtu.sabah.gov.my/homepage3/index.cfm?action=jtu2&lang=bm&section=administration",
+          "https://www.jtu.sabah.gov.my/",
+          "https://www.sabah.gov.my/gazette/docs/003137.pdf",
+          "https://play.google.com/store/apps/details?hl=ms&id=jtusabah.jtuwmapro"
+        ],
+        "executionMethod": "Separate Malay-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "The exact JTUWMA service configuration, parcel layer/schema, CRS, native parcel identity, anonymous query shape, and Tawau city coverage remain unverified. A timeout, connection reset, registered-user wall, or non-parcel public map is not evidence of cadastral absence.",
+  "nextStep": "Serial reviewer may independently qualify a current JTU/Sabah parcel route or a geometry-only extract; do not enable runtime from this packet alone."
+}

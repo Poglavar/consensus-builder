@@ -1,0 +1,111 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:11339",
+  "wupCityCode": 11339,
+  "queueRank": 1218,
+  "rank": 1218,
+  "name": "Saharsa",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [25.8750955951988, 86.5896244596482],
+  "centerLatLon": [25.8750955951988, 86.5896244596482],
+  "pointBasis": "Immutable pending-queue WUP 2025 City_Code 11339 coordinate, copied without adjustment.",
+  "population2025": 456879,
+  "population2025k": 456.879,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "status": "complete",
+  "resultCategory": "official_local_registry_geometry_verified_but_not_exported",
+  "registryFound": true,
+  "registryBasis": "The official Saharsa district revenue pages link to Bihar land records, and the official Bihar Revenue and Land Reforms department links to Bhu-Naksha. The district-specific BhuNaksha service returned Saharsa administrative selections and a public cadastral map extent.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_pending_serial_review",
+  "blocker": "Bihar BhuNaksha exposes a public raster map/WMS viewer and safe parcel identifiers, but the inspected anonymous REST responses did not return GeoJSON or other full parcel polygon geometry. The exact WUP point was not submitted to the local projected-coordinate endpoint and was not shifted to force a hit.",
+  "source": {
+    "sourceId": null,
+    "name": "BhuNaksha Bihar / Directorate of Land Records & Survey, Government of Bihar",
+    "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+    "operator": "Directorate of Land Records & Survey, Government of Bihar; National Informatics Centre",
+    "serviceType": "Official public cadastral map viewer with REST metadata/selection endpoints and WMS map rendering",
+    "layer": "VILLAGE_MAP and PLOT_LIST WMS layers as named by the current public JavaScript; no vector parcel feature layer identified",
+    "geometryType": null,
+    "nativeIdField": "id",
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": true,
+    "geometryStatus": "identifier_and_extent_verified_polygon_not_returned",
+    "operatorNote": "Only non-personal public service metadata and the opaque parcel ID returned by getPlotAtXY are retained. No owner, address, titleholder, tax, account, or report fields were requested or retained.",
+    "outputCrs": "EPSG:32645",
+    "nativeIdEvidence": "getPlotAtXY returned id 7fQdC8zLSpuBMkiYlc8ZiQ and plot number 311 for a bounded local-map probe inside the Saharsa village sheet extent.",
+    "attributesRequested": ["id", "kide"],
+    "sampleCount": 0,
+    "sampleFile": null
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "verifiedParcelResponse": {
+    "safeId": "7fQdC8zLSpuBMkiYlc8ZiQ",
+    "plotNumber": "311",
+    "gisCode": "CS12010100191890601",
+    "geometry": null,
+    "note": "Anonymous bounded ID response only; no polygon geometry was returned. The plot number is retained as a public map identifier, not a landholder or title conclusion."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Bihar and Saharsa district land-record entry points, plus the live Bihar BhuNaksha public viewer configuration and one selected Saharsa cadastral sheet.",
+    "verifiedOpenScope": "The public viewer confirms a cadastral sheet extent and safe plot identifier in Saharsa village, with native CRS EPSG:32645. Full parcel geometry export and citywide completeness remain unverified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Saharsa Bihar official cadastral map Bhu Naksha land records GIS",
+        "result": "First-party Saharsa district, Bihar Revenue and Land Reforms, Directorate of Land Records & Survey, and Bihar BhuNaksha pages were found. The live BhuNaksha viewer exposes Saharsa selection and map services.",
+        "actualResultUrls": [
+          "https://saharsa.nic.in/revenue/",
+          "https://land.bihar.gov.in/landbihar/Default.aspx",
+          "https://dlrs.bihar.gov.in/services.html",
+          "https://bhunaksha.bihar.gov.in/index.jsp"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "सहरसा बिहार भू नक्शा भूलेख आधिकारिक भूमि रिकॉर्ड",
+        "result": "The official Hindi Saharsa land-record page links to Bihar land records; the Hindi/English Bihar department pages identify Bhu-Naksha as the public revenue-map service. Live BhuNaksha selection and map metadata were then checked anonymously.",
+        "actualResultUrls": [
+          "https://saharsa.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%85%E0%A4%AD%E0%A4%BF%E0%A4%B2%E0%A5%87%E0%A4%96/",
+          "https://land.bihar.gov.in/landbihar/Default.aspx",
+          "https://bhunaksha.bihar.gov.in/index.jsp"
+        ]
+      }
+    ],
+    "portals": [
+      {"url": "https://saharsa.nic.in/revenue/", "operator": "District Administration, Saharsa, Government of Bihar", "scope": "Official district revenue page links to land records, online mutation, and revenue services."},
+      {"url": "https://saharsa.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%85%E0%A4%AD%E0%A4%BF%E0%A4%B2%E0%A5%87%E0%A4%96/", "operator": "District Administration, Saharsa, Government of Bihar", "scope": "Official Hindi land-record page directs users to Bihar land records."},
+      {"url": "https://land.bihar.gov.in/landbihar/Default.aspx", "operator": "Department of Revenue and Land Reforms, Government of Bihar", "scope": "Official department page links Bhu-Naksha and the Directorate of Land Records & Survey."},
+      {"url": "https://bhunaksha.bihar.gov.in/index.jsp", "operator": "Directorate of Land Records & Survey, Government of Bihar / NIC", "scope": "Public cadastral map viewer with district, subdivision, circle, mauza, survey, map instance, and sheet selectors."}
+    ],
+    "requests": [
+      {"url": "https://bhunaksha.bihar.gov.in/index.jsp", "method": "GET; anonymous public viewer", "httpStatus": 200, "contentType": "text/html", "assessment": "Viewer loaded and referenced assets/misc/config.js and index.js."},
+      {"url": "https://bhunaksha.bihar.gov.in/rest/Levels/count", "method": "POST; state=10", "httpStatus": 200, "contentType": "application/json", "response": "7", "assessment": "Bihar viewer exposes seven location/map selection levels."},
+      {"url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel", "method": "POST; state=10; district code 12; bounded selection requests", "httpStatus": 200, "contentType": "application/json", "assessment": "Returned SAHARSA district, सहरसा subdivision, Kahara circle, and सहरसा mauza among public selections; no personal fields requested."},
+      {"url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref", "method": "POST; state=10; gisLevels=12,01,01,0019,CS,06,01; srs=0", "httpStatus": 200, "contentType": "application/json", "response": "EPSG:32645 extent xmin=458068.85151598934 ymin=2862579.443285105 xmax=459929.6412075115 ymax=2864298.125435107; gisCode=CS12010100191890601", "assessment": "Native map schema/CRS and bounded sheet extent verified."},
+      {"url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY", "method": "POST; anonymous; bounded local projected-coordinate probe at x=458999.246,y=2863438.784", "httpStatus": 200, "contentType": "application/json", "response": "safe id=7fQdC8zLSpuBMkiYlc8ZiQ; kide=311", "assessment": "Safe public parcel identifier returned; no geometry or personal attributes returned."},
+      {"url": "https://bhunaksha.bihar.gov.in/ScalarDatahandler?OP=4&state=10&levels=12%2C01%2C01%2C0019%2CCS%2C06%2C01&x=458999.246&y=2863438.784", "method": "GET; anonymous; bounded plot-info metadata probe", "httpStatus": 200, "contentType": "application/json", "response": "has_data=Y, plotNo=311, same safe id, sheet extent", "assessment": "Identifier/extent metadata only; no geometry or unsafe landholder fields retained."},
+      {"url": "https://bhunaksha.bihar.gov.in/WMS", "method": "Not issued as a geometry-download request; current JavaScript names VILLAGE_MAP and PLOT_LIST WMS layers", "httpStatus": null, "contentType": null, "assessment": "Raster map rendering route identified from first-party JavaScript, but no polygon response was retained."},
+      {"url": "http://lrc.bih.nic.in/", "method": "Not followed for account/record lookup", "httpStatus": null, "contentType": null, "assessment": "Official Saharsa pages link to Bihar land records; no owner, address, title, account, or tax lookup was attempted."}
+    ],
+    "schemaCrs": {"nativeCrs": "EPSG:32645", "geometryResponseSchema": "Not verified; inspected safe responses were JSON metadata/ID only", "viewerLayers": ["VILLAGE_MAP", "PLOT_LIST"]}
+  },
+  "remainingUncertainty": "Whether BhuNaksha offers a separate authenticated or undocumented vector export, how much of the Saharsa urban area is represented by the selected village/sheet, and whether the WUP point falls within any mapped sheet remain unknown. The exact WUP point was preserved and not used as evidence of absence.",
+  "registryEvidenceUrls": ["https://saharsa.nic.in/revenue/", "https://saharsa.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%85%E0%A4%AD%E0%A4%BF%E0%A4%B2%E0%A5%87%E0%A4%96/", "https://land.bihar.gov.in/landbihar/Default.aspx", "https://bhunaksha.bihar.gov.in/index.jsp"],
+  "checkedAt": "2026-10-09",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "sourceIds": [],
+  "adapterReady": false,
+  "nextStep": "Serial reviewer should independently qualify whether the public BhuNaksha map can supply safe native parcel geometry through an approved adapter. Do not infer citywide coverage from this sheet or from the WUP point.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

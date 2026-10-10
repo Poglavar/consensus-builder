@@ -1,0 +1,22 @@
+{
+  "taskId": "city:735",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-735-aktobe.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/aktobe-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-09T14:57:04.538866Z",
+  "reason": "Official Aktobe city land-relations publication and regional department support local parcel administration/custody (registryFound true). Official system registry describes the city duty map and cadastre integration, but its page timed out on independent fetch and the geoportal returned access failure. No anonymous safe native-ID/full-polygon response, source binding, adapter qualification, or headed Details check is evidenced; citywide absence is not inferred.",
+  "firstPartyPagesChecked": [
+    "https://www.gov.kz/memleket/entities/aktobe-akt/activities/7925",
+    "https://www.gov.kz/memleket/entities/aktobe-zher",
+    "https://www.govarch.kz/ru/infosys/info/2249"
+  ],
+  "admissionGates": "No verified full polygon/native ID; fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed Details-panel verification are unproved.",
+  "firstPartyCacheChecked": {
+    "path": "tmp/valhalla-parcel-research/aktobe/geoportal.headers",
+    "status": 403
+  }
+}

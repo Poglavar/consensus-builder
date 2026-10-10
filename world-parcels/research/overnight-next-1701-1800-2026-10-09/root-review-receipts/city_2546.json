@@ -1,0 +1,15 @@
+{
+  "taskId": "city:2546",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-2546-agadez.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/agadez-service-review.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "tmp/valhalla-parcel-research/runs/20261010T132917-c91c63ff/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-10T13:33:03Z",
+  "registryFound": true,
+  "reason": "Registry custody is supported by the Niger Ministry of Finance notice extending Tahoua land-registration office jurisdiction to Agadez. The packet has no parcel feature response, native ID, or full polygon. The packet ARSE URL has a TLS hostname mismatch; the same first-party Finance notice is available at https://www.demarches.gouv.ne/index.php/communiques-de-presse/657-communique-relatif-a-l-ouverture-de-bureaux-de-la-conservation-fonciere-et-des-hypotheques-a-maradi-tahoua-et-zinder. No absence finding.",
+  "admission": "Held: no verified public full parcel polygon or safe native ID; independent fresh adapter reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details-panel verification are absent. No runtime, catalog, configuration, or coverage admission."
+}

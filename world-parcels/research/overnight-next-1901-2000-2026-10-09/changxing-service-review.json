@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-11608-changxing.json",
+  "purpose": "Document first-party local registry context and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Changxing local registry activity is evidenced by first-party Huzhou/Changxing government material. Anonymous access to the official Changxing public host returned HTTP 403, and no parcel-vector response was verified.",
+  "registryAssessment": "Local registry/procedure evidenced: Changxing Natural Resources and Planning Bureau and Changxing Real Estate Registration Center. This is local procedure evidence, not source admission or runtime integration.",
+  "safeFieldAllowlist": ["safe public parcel/source ID if available", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "officialPrimarySources": [
+    {"url": "https://yssm.huzhou.gov.cn/zjlyssm/bdcqzs/20250515/i4016830.html", "observation": "First-party Huzhou government publication names Changxing Real Estate Registration Center as the announcing unit for a property-registration notice; no parcel geometry payload is exposed."},
+    {"url": "https://www.zjcx.gov.cn/", "observation": "Official Changxing county government host. Anonymous HTTPS GET returned HTTP 403 in this environment; no viewer/configuration could be inspected."},
+    {"url": "https://www.zjcx.gov.cn/col/col1229262298/index.html", "observation": "Official Changxing public-information page. Anonymous HTTPS GET returned HTTP 403 in this environment."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Changxing China official cadastral parcel map land registration natural resources bureau", "result": "Found first-party Changxing/Huzhou registry context; no verified anonymous parcel geometry route.", "resultUrls": ["https://www.zjcx.gov.cn/", "https://yssm.huzhou.gov.cn/zjlyssm/bdcqzs/20250515/i4016830.html"]},
+    {"language": "Chinese", "query": "长兴县 官方 不动产登记 地籍图 宗地图 自然资源和规划局", "result": "Found first-party local registry/procedure evidence; no verified anonymous parcel geometry route.", "resultUrls": ["https://yssm.huzhou.gov.cn/zjlyssm/bdcqzs/20250515/i4016830.html", "https://www.zjcx.gov.cn/col/col1229262298/index.html"]}
+  ],
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not performed against a verified cadastral parcel endpoint; exact point [31.005757314872, 119.914657780272] remains unchanged and no absence inference is made.", "requestEvidence": []},
+  "attempts": [
+    {"url": "https://yssm.huzhou.gov.cn/zjlyssm/bdcqzs/20250515/i4016830.html", "method": "GET via first-party search/open", "httpStatus": "web result available", "result": "Local registration-center notice read; procedure context only, no parcel geometry response."},
+    {"url": "https://www.zjcx.gov.cn/", "method": "GET", "httpStatus": 403, "result": "Official county host denied anonymous access; no viewer or API route could be inspected."},
+    {"url": "https://www.zjcx.gov.cn/col/col1229262298/index.html", "method": "GET", "httpStatus": 403, "result": "Official public-information page denied anonymous access; no parcel payload returned."}
+  ],
+  "coverageAssessment": {"claimedScope": "Official local Changxing registry/procedure evidence plus attempted official county public-information access.", "verifiedOpenScope": "Local registry/procedure only; parcel geometry access unverified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "An authenticated or separately published cadastral service may exist but was not accessed. Exact-point hit testing and citywide parcel completeness are unknown."
+}

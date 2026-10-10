@@ -1,0 +1,78 @@
+{
+  "cityCode": 10444,
+  "queueRank": 1709,
+  "name": "Changyi",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [36.8750851881148, 119.391874715732],
+  "population2025": 335538,
+  "population2025k": 335.538,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Changyi China official cadastral parcel map land registry GIS",
+        "result": "Search identified the official Shandong Geographic Information Public Service Platform and its API documentation, which describes basemaps, WMS, place search, geocoding, imagery metadata and routing. No anonymous Changyi parcel feature endpoint or safe parcel geometry response was exposed.",
+        "actualResultUrls": ["https://www.sdmap.gov.cn/", "https://www.sdmap.gov.cn/mapAPI.html"]
+      },
+      {
+        "language": "native/local",
+        "query": "昌邑市 不动产登记 地籍图 查询 官方",
+        "result": "Search identified a Shandong government report describing Changyi's property-registration one-stop platform and electronic property code, but it does not expose public parcel geometry, parcel IDs or an anonymous cadastral query.",
+        "actualResultUrls": ["https://bdb.shandong.gov.cn/art/2023/8/25/art_76148_10318076.html", "https://www.sdmap.gov.cn/map.html"]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryBasis": "Local Changyi property-registration custody is evidenced by a Shandong government report, but no public local cadastral viewer/API response with parcel identity and geometry was verified.",
+  "officialSources": [
+    {
+      "url": "https://bdb.shandong.gov.cn/art/2023/8/25/art_76148_10318076.html",
+      "observation": "Shandong government report describes Changyi's integrated housing transaction, tax and property-registration service and electronic property code; it does not publish an anonymous parcel geometry service or safe parcel identifier response."
+    },
+    {
+      "url": "https://www.sdmap.gov.cn/mapAPI.html",
+      "observation": "Official Shandong platform API page documents public map/WMS, place search, geocoding, imagery metadata and routing services, not a cadastral parcel feature service."
+    },
+    {
+      "url": "https://www.sdmap.gov.cn/map.html",
+      "observation": "Official map viewer was fetched and its current JavaScript/configuration inspected; the visible public map route exposed general map layers and no parcel schema or anonymous parcel query."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.sdmap.gov.cn/map.html",
+      "method": "GET",
+      "outcome": "HTTP page fetched; JavaScript bundles and Config_url.v002.js downloaded for route inspection; no parcel layer/endpoint identified."
+    },
+    {
+      "url": "https://www.sdmap.gov.cn/mapAPI.html",
+      "method": "GET via public web search/open",
+      "outcome": "Readable official API description; public services are general mapping/search/imagery/routing and no parcel feature schema or CRS response was available."
+    },
+    {
+      "url": "https://bdb.shandong.gov.cn/art/2023/8/25/art_76148_10318076.html",
+      "method": "GET via public web search/open",
+      "outcome": "Search result identified the official report; direct open returned a gateway error in this environment, so only the indexed public text was used and no private or unsafe route was attempted."
+    }
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Changyi municipal property-registration services and Shandong provincial public geographic-information platform.",
+    "verifiedOpenScope": "General public mapping/API documentation only; no parcel geometry scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": "Exact WUP point retained in latitude/longitude order. No exact-point hit/miss inference was made. A map extent miss, inaccessible viewer, gateway error or absent public endpoint is not evidence of citywide cadastral absence. No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields or global TLS-disable action was used. Packet completion is not source integration or runtime admission."
+}

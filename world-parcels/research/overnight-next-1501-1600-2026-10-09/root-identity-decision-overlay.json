@@ -1,0 +1,177 @@
+{
+  "schemaVersion": 1,
+  "kind": "root_identity_decision_overlay",
+  "cohort": "overnight-next-1501-1600",
+  "recordedAt": "2026-10-10T08:18:20.056343Z",
+  "decisions": [
+    {
+      "wupCityCode": 78,
+      "rank": 1526,
+      "countryCode": "MT",
+      "name": "Valletta",
+      "decision": "confirmed_attempt",
+      "effectiveAttemptState": "attempted",
+      "candidatePointLatLon": [
+        35.8884178953846,
+        14.4872715961767
+      ],
+      "populationPersons": 373474,
+      "priorCityId": "capital:MT:valletta",
+      "priorPointLatLon": [
+        35.88333333333333,
+        14.5
+      ],
+      "distanceKm": 1.28,
+      "reason": "The earlier Malta investigation explicitly queried the Valletta/Grand Harbour area and retained the original WFS parcel response. The prior capital roster names Valletta, Malta and places its city locator 1.28 km from the WUP settlement point. This is a prior investigation of the same city, so WUP78 is a confirmed prior attempt and remains out of the pending queue. The WUP rank, point and 373474-person population are unchanged; this decision does not qualify or enable a live adapter, and the registered-land sample does not prove citywide coverage.",
+      "evidence": [
+        {
+          "path": "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+          "observation": "Official WUP 2025 City_Code 78, rank 1526, Malta, 2025 population 373.474 thousand, point 35.8884178953846,14.4872715961767; locally verified against the original UN CSV SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114."
+        },
+        {
+          "path": "world-parcels/research/world-capitals-2026-10-08/roster.json",
+          "observation": "Prior checked Valletta capital city locator and explicit prior-check status."
+        },
+        {
+          "path": "world-parcels/research/europe/MT.json",
+          "observation": "Previous first-party Malta WFS GetFeature requested the Valletta/Grand Harbour bbox and recorded a successful parcel response."
+        },
+        {
+          "path": "world-parcels/research/europe/MT-parcel-response.json",
+          "observation": "Original retained first-party WFS response has two Valletta-area source polygons with native CP IDs; no new geometry was retained."
+        },
+        {
+          "url": "https://beltvallettalc.gov.mt/en/homepage/geography-and-history/",
+          "observation": "Official Valletta Local Council describes Valletta as Malta’s capital and part of the Grand Harbour area; page inspected through the web reader."
+        }
+      ]
+    },
+    {
+      "wupCityCode": 1122,
+      "rank": 1529,
+      "countryCode": "MX",
+      "name": "La Paz",
+      "decision": "different_settlement",
+      "effectiveAttemptState": "pending",
+      "candidatePointLatLon": [
+        24.1214845987258,
+        -110.31000709561
+      ],
+      "populationPersons": 372988,
+      "priorCityId": "capital:BO:la-paz",
+      "priorPointLatLon": [
+        -16.5,
+        -68.15
+      ],
+      "reason": "The named sample is from the municipal cadastre of La Paz, Bolivia: its source coordinates are near 16.5° S, 68.15° W and the prior packet explicitly identifies Bolivia. WUP1122 is La Paz, Mexico at 24.1214845987258° N, 110.31000709561° W. The La Paz municipal government in Baja California Sur independently identifies the Mexican city. The prior Bolivian sample is not an attempt on WUP1122. Keep its original rank, point and 372988-person population and move it to pending research; Mexican parcel custody, public geometry and runtime readiness remain unverified.",
+      "evidence": [
+        {
+          "path": "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+          "observation": "Official WUP 2025 City_Code 1122, rank 1529, Mexico, 2025 population 372.988 thousand and unchanged point; locally verified against the original UN CSV."
+        },
+        {
+          "path": "world-parcels/research/world-capitals-2026-10-08/city-la-paz.json",
+          "observation": "Prior investigation is explicitly Bolivia and its municipal first-party WFS source is sitservicios.lapaz.bo."
+        },
+        {
+          "path": "world-parcels/research/world-capitals-2026-10-08/la-paz-safe-sample.json",
+          "observation": "Original retained first-party WFS polygon sample lies around 16.5° S, 68.15° W in Bolivia, with safe idpredio attributes."
+        },
+        {
+          "path": "world-parcels/research/overnight-next-1501-1600-2026-10-09/identity-1122-official-geography-response.json",
+          "observation": "Direct HTTP 200 municipal La Paz tourism response, SHA-256 and extracted statement identifying the city as capital of Baja California Sur."
+        },
+        {
+          "url": "https://turismo.lapaz.gob.mx/delegacion/la-paz",
+          "observation": "Official La Paz municipal tourism page identifies La Paz as the capital of Baja California Sur, Mexico."
+        }
+      ]
+    },
+    {
+      "wupCityCode": 11424,
+      "rank": 1538,
+      "countryCode": "CN",
+      "name": "Taizhou",
+      "decision": "different_settlement",
+      "effectiveAttemptState": "pending",
+      "candidatePointLatLon": [
+        32.4835458969483,
+        119.923670465704
+      ],
+      "populationPersons": 371055,
+      "priorCityCode": 12098,
+      "priorCityName": "Taizhou",
+      "priorPointLatLon": [
+        28.5733123079214,
+        121.395147887368
+      ],
+      "distanceKm": 457.07,
+      "reason": "The WUP11424 point at 32.4835458969483° N, 119.923670465704° E is inside the official Jiangsu 泰州 coordinate envelope. The earlier WUP12098 packet is for 浙江台州 at 28.5733123079214° N, 121.395147887368° E, about 457 km away. Official Jiangsu and Zhejiang municipal pages distinguish 泰州 from 台州. WUP12098 is not an attempt on WUP11424. Keep the candidate’s original rank, point and 371055-person population and move it to pending research; its local parcel custody and public geometry remain unverified.",
+      "evidence": [
+        {
+          "path": "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+          "observation": "Official WUP 2025 City_Code 11424, rank 1538, China, 2025 population 371.055 thousand and unchanged point; locally verified against the original UN CSV."
+        },
+        {
+          "path": "world-parcels/research/overnight-cities-2026-10-08/city-12098-taizhou.json",
+          "observation": "Prior packet is explicitly Zhejiang 台州, City_Code 12098, at 28.5733123079214,121.395147887368."
+        },
+        {
+          "path": "world-parcels/research/overnight-next-1501-1600-2026-10-09/identity-11424-official-geography-response.json",
+          "observation": "Original HTTP 200 Jiangsu 泰州 municipal planning page and Zhejiang 台州 municipal page responses, with hashes and extracted geography text."
+        },
+        {
+          "url": "https://www.taizhou.gov.cn/zfxxgk/fdzdgknr/ghjh/qtlsghjh/art/2019/art_6827a3a0daba461d932a07ff6e796ef1.html",
+          "observation": "Official Jiangsu 泰州 plan gives 32°01′57″–33°10′59″ N and 119°38′24″–120°32′20″ E, containing the WUP11424 point."
+        },
+        {
+          "url": "https://www.zjtz.gov.cn/art/2023/6/28/art_1229423985_59077121.html",
+          "observation": "Official Zhejiang 台州 page identifies the earlier city as 浙江台州."
+        }
+      ]
+    },
+    {
+      "wupCityCode": 2303,
+      "rank": 1579,
+      "countryCode": "CA",
+      "name": "London",
+      "decision": "different_settlement",
+      "effectiveAttemptState": "pending",
+      "candidatePointLatLon": [
+        42.9854320723653,
+        -81.246421845116
+      ],
+      "populationPersons": 362006,
+      "priorCityId": "geonames:2643743",
+      "priorSourceScope": "City of Westminster, England, United Kingdom",
+      "reason": "The WUP 2025 original row identifies City_Code 2303 as London, Canada at 42.9854320723653 N, 81.246421845116 W with 362006 persons and rank 1579. The City of London municipal page independently identifies London, Ontario. Both name-matched earlier research files concern London, England: the original file records HM Land Registry coverage of England and Wales, and the retry obtained City_of_Westminster.zip with British National Grid polygon coordinates around Charing Cross. They are not a prior investigation of the Canadian settlement. Preserve the immutable WUP identity and move code 2303 to pending research. Ontario parcel custody, public geometry, and adapter qualification remain unverified; this decision does not enable the city or imply absence.",
+      "evidence": [
+        {
+          "path": "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+          "observation": "Immutable WUP 2025 roster: code 2303, rank 1579, Canada, point 42.9854320723653,-81.246421845116, 362006 persons; compared with SHA-256 verified original UN CSV."
+        },
+        {
+          "path": "world-parcels/research/overnight-next-1501-1600-2026-10-09/identity-2303-official-geography-response.json",
+          "observation": "Original UN row plus direct HTTP 200 City of London, Ontario municipal response, response hash and extracted identifying text."
+        },
+        {
+          "path": "world-parcels/research/london.json",
+          "observation": "Prior name-matched research concerns UK HM Land Registry and England and Wales, with no verified sample on its first pass."
+        },
+        {
+          "path": "world-parcels/research/retry/cities/london.json",
+          "observation": "Prior first-party response is HM Land Registry City_of_Westminster.zip, sampled around Charing Cross, London, England."
+        },
+        {
+          "path": "world-parcels/research/retry/cities/london-parcel-response.json",
+          "observation": "Retained extract from that original UK download has EPSG:27700 coordinates and native INSPIRE IDs; no new polygons retained."
+        },
+        {
+          "url": "https://london.ca/immigration/life-london/about-london-ontario",
+          "observation": "Official municipal page explicitly identifies London, Ontario."
+        }
+      ]
+    }
+  ],
+  "scope": "One same-city prior attempt and three distinct settlements resolved. Pending status means investigation eligibility only; no parcel admission, runtime enablement or citywide absence is inferred."
+}

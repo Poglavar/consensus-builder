@@ -1,0 +1,18 @@
+{
+  "taskId": "city:1496",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-1496-manisa.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/manisa-service-review.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/manisa-parcel-sample.geojson",
+    "tmp/valhalla-parcel-research/manisa/api.headers",
+    "tmp/valhalla-parcel-research/manisa/api.json"
+  ],
+  "checkedAt": "2026-10-09T16:22:17Z",
+  "reason": "Immutable WUP code/rank/country/point/399014 persons match the archive and queue. English and Turkish searches were executed. Original TKGM HTTP 200 response has one Manisa/Yunusemre/Yenimahalle feature; its composite ilId/ilceId/mahalleId/adaNo/parselNo ID is native, and the retained full polygon exactly matches the response with only id retained. This bounded positive discovery establishes registry custody, not citywide coverage or integration. Fresh exact-ID adapter reads, forced paging, 13 bounded cells, metric GEOS overlap and operation checks, source binding, and headed Details verification are not independently evidenced.",
+  "registryFoundReviewed": true,
+  "retainedFullPolygonCount": 1,
+  "admission": false
+}

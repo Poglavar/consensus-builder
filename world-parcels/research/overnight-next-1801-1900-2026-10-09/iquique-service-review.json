@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-195-iquique.json",
+  "cityCode": 195,
+  "queueRank": 1816,
+  "city": "Iquique",
+  "country": "Chile",
+  "countryCode": "CL",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": null,
+  "summary": "Official MINVU IDE/MINVU ArcGIS metadata and an anonymous exact-point query were successful, but the returned PRC_Iquique polygon is planning/zoning geometry rather than cadastral parcel geometry. No local registry/cadastre parcel service was confirmed, so no parcel GeoJSON was retained.",
+  "queryOutcomes": "Separate English and Spanish discovery queries are recorded in city-195-iquique.json. They found official MINVU planning data, IDE Chile catalog documentation, SII references, and CIREN rural-property product information, but no confirmed public parcel API for Iquique.",
+  "requestOutcomes": [
+    {"route":"https://geoide.minvu.cl/server/rest/services/IPT/PRC_Tarapaca/FeatureServer/5?f=pjson","method":"GET","status":200,"outcome":"Layer metadata retrieved; PRC_Iquique is an esriGeometryPolygon planning-regulation layer in EPSG:32719 with OBJECTID."},
+    {"route":"https://geoide.minvu.cl/server/rest/services/IPT/PRC_Tarapaca/FeatureServer/5/query","method":"GET","status":200,"outcome":"Exact WUP point queried with inSR=4326, outFields=OBJECTID, returnGeometry=true, outSR=4326; one PRC polygon OBJECTID 844 returned. This is not evidence of a parcel hit."},
+    {"route":"https://www.municipioiquique.cl/","method":"GET","status":403,"outcome":"Cloudflare challenge/login-wall-like response; no bypass, browser challenge, credentials, or private token used."},
+    {"route":"https://www.sii.cl/normativa_legislacion/resoluciones/2026/reso21.pdf","method":"GET/search discovery","status":200,"outcome":"Official SII documentation indicates detailed SII-Mapas interoperability access is restricted to authorized institutional users and that displayed parcel maps are referential; no restricted access was attempted."},
+    {"route":"https://www.ide.cl/images/documentos-tecnicos/catalogo_nacional_features.pdf","method":"GET/search discovery","status":200,"outcome":"Official IDE catalog documents MINVU responsibility for the Límites Prediales Urbanos feature category, but does not expose a confirmed Iquique public query endpoint in this attempt."}
+  ],
+  "requestCoordinates": {
+    "wupPointLatLon": [-20.2447816153401, -70.1246621608432],
+    "coordinateOrderNote": "WUP point preserved as latitude/longitude; ArcGIS query geometry was supplied as longitude/latitude per ArcGIS REST convention. No coordinate shift applied."
+  },
+  "safeFieldAllowlist": ["OBJECTID", "polygon geometry", "service/layer metadata", "CRS metadata"],
+  "nativeFieldMapping": {"OBJECTID":"stable native ArcGIS layer object identifier for the queried planning feature","geometry":"native polygon geometry returned as GeoJSON EPSG:4326"},
+  "compositeKeyProvenance": null,
+  "crs": {"source":"EPSG:32719", "retainedSample":null},
+  "geometryQuality": "One unchanged planning polygon was returned by the official public service, but it was not retained because it is not a cadastral parcel.",
+  "geometryDecision": {"verified":false,"sourceId":"OBJECTID=844 (planning polygon; not parcel)","sampleCount":0,"sampleFile":null,"exactWupPointTest":"Exact point query returned one non-parcel planning feature; zero parcel samples retained.","requestEvidence":"tmp/valhalla-parcel-research/iquique-prc-point-query.geojson"},
+  "coverageAssessment": {"claimedScope":"MINVU PRC Iquique planning-regulation layer, not cadastral coverage.","verifiedOpenScope":"Anonymous metadata and exact-point ID-plus-geometry access to the official planning service.","citywideVerified":false,"countrywideVerified":false},
+  "scopeLimits": [
+    "The planning layer cannot be used as a cadastral parcel source or proof of legal property boundaries.",
+    "No local Iquique registry/cadastre/map procedure with safe anonymous parcel geometry was confirmed.",
+    "SII-Mapas institutional interoperability and richer property attributes were not accessed because they require authorized users and may expose unsafe fields.",
+    "The municipality site was Cloudflare-challenged; this is not evidence of source absence.",
+    "No owner, address, titleholder, contact, tax/account, personal or unsafe fields were requested, logged or retained.",
+    "A zero parcel result, challenge, extent miss or unusable UI is not evidence of citywide absence.",
+    "Packet completion is research evidence only and does not admit a runtime adapter."
+  ],
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review remains required",
+  "uncertainty": "A public cadastral parcel endpoint may exist behind a different official viewer or controlled institutional service. Parcel completeness, legal status, update currency, and stable parcel identity remain unverified."
+}

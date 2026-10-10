@@ -1,0 +1,63 @@
+{
+  "cityCode": 8734,
+  "queueRank": 1738,
+  "name": "Xuanwei",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [26.2157791187812, 104.10413047853],
+  "population2025": 330467,
+  "population2025k": 330.467,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Xuanwei cadastral parcel map official service Qujing China natural resources",
+        "result": "Searches identified the official Xuanwei government portal and Qujing government information pages, but no first-party anonymous parcel viewer or parcel feature endpoint was exposed.",
+        "actualResultUrls": ["https://xw.gov.cn/", "https://www.qj.gov.cn/html/xsqhbmptlj/", "https://www.rerc.com.cn/"]
+      },
+      {
+        "language": "native/local",
+        "query": "宣威 不动产 登记 地籍 图 官方 宣威市 自然资源 规划 局",
+        "result": "The official Xuanwei portal search returned current Xuanwei real-estate registration notices naming the Xuanwei Natural Resources Bureau and its real-estate registration center, but no public parcel ID plus geometry service.",
+        "actualResultUrls": ["https://xw.gov.cn/search.html?keywords=%E4%B8%8D%E5%8A%A8%E4%BA%A7%E7%99%BB%E8%AE%B0", "https://xw.gov.cn/gov/pub/description/78072.html", "https://xw.gov.cn/suggest/collect/62.html"]
+      },
+      {
+        "language": "native/local",
+        "query": "宣威市 不动产登记中心 自然资源局 官网",
+        "result": "Official Xuanwei notices provide the local registration-center custodian and service-hall context. The linked Yunnan government-service portal was reachable anonymously, but its landing HTML did not expose a cadastral map layer, schema, CRS, or anonymous parcel geometry route.",
+        "actualResultUrls": ["https://xw.gov.cn/gov/pub/description/78072.html", "https://zwfw.yn.gov.cn/portal/#/home?regnCode=530381000000", "https://www.rerc.com.cn/"]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryBasis": "Local custody is evidenced by official Xuanwei government notices naming the Xuanwei Natural Resources Bureau and its real-estate registration center. No public local cadastral map/API response was verified, so registryFound remains null under the packet rule.",
+  "officialSources": [
+    {"url": "https://xw.gov.cn/", "observation": "Official Xuanwei City government portal; homepage exposes government navigation and links to the Yunnan government-service portal."},
+    {"url": "https://xw.gov.cn/gov/pub/description/78072.html", "observation": "Official Xuanwei real-estate registration notice; identifies the Xuanwei Natural Resources Bureau real-estate registration service hall and registration-center custody, but is not a parcel feature service."},
+    {"url": "https://xw.gov.cn/suggest/collect/62.html", "observation": "Official notice from the Xuanwei Natural Resources Bureau for the city's territorial spatial plan; confirms the local natural-resources custodian, not an open parcel service."},
+    {"url": "https://zwfw.yn.gov.cn/portal/#/home?regnCode=530381000000", "observation": "Linked official Yunnan government-service landing route; anonymous HTML was reachable but no cadastral layer, public API configuration, schema, CRS, or safe geometry response was exposed."},
+    {"url": "https://www.rerc.com.cn/", "observation": "National Real Estate Registration Center informational site; general institutional context only, not a Xuanwei parcel service."}
+  ],
+  "requests": [
+    {"url": "https://xw.gov.cn/", "method": "GET", "outcome": "HTTP 200; bounded homepage inspection found official links and navigation but no parcel viewer or feature endpoint."},
+    {"url": "https://xw.gov.cn/search.html?keywords=%E4%B8%8D%E5%8A%A8%E4%BA%A7%E7%99%BB%E8%AE%B0", "method": "GET", "outcome": "HTTP 200; official search results returned local registration notices and custodian details, but no parcel geometry/API route."},
+    {"url": "https://xw.gov.cn/suggest/collect/62.html", "method": "GET", "outcome": "HTTP 200; official Xuanwei Natural Resources Bureau planning notice, no parcel geometry or viewer configuration."},
+    {"url": "https://zwfw.yn.gov.cn/portal/#/home?regnCode=530381000000", "method": "GET", "outcome": "HTTP 200 and no-store; anonymous landing HTML only, no exposed cadastral layer/schema/CRS or parcel response."},
+    {"url": "https://www.qj.gov.cn/html/xsqhbmptlj/", "method": "GET via discovery result", "outcome": "Search result identified Qujing's government information page listing Xuanwei and real-estate-registration information categories; no parcel endpoint verified."},
+    {"url": "https://www.rerc.com.cn/", "method": "GET via discovery result", "outcome": "National informational site reachable; no Xuanwei-specific parcel service or geometry route verified."}
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {"claimedScope": "Xuanwei City government and local natural-resources/real-estate-registration administrative context.", "verifiedOpenScope": "Official government landing pages, notices, and a linked service landing page only; no open parcel geometry service.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": "Exact WUP point preserved in latitude/longitude order; no coordinate shift or exact-point hit/miss inference was made. A zero hit, inaccessible viewer, map extent miss, timeout, or absent public endpoint is not evidence of citywide cadastral absence. No credentials, private tokens, CAPTCHA bypass, unsafe owner/address/titleholder/contact/tax/account fields, or TLS bypass was used. Packet completion is not source integration or runtime admission; serial reviewer qualification remains required. No GeoJSON sample retained."
+}

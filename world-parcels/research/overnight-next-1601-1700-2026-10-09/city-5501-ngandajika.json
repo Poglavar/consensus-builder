@@ -1,0 +1,147 @@
+{
+  "cityCode": 5501,
+  "queueRank": 1653,
+  "name": "Ngandajika",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "iso3": "COD",
+  "locId": 180,
+  "point": [-6.73373791441923, 23.9508109467216],
+  "population2025": 345996,
+  "population2025k": 345.996,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ngandajika Democratic Republic of the Congo official cadastral map land registry cadastre",
+        "result": "First-party discovery reached the official DRC Ministry of Land Affairs site and its formal land-search procedure. No public Ngandajika parcel viewer, city-bounded parcel layer, anonymous parcel API, or downloadable parcel geometry was found.",
+        "actualResultUrls": [
+          "https://www.affairesfoncieres.gouv.cd/",
+          "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+          "https://servicepublic.gouv.cd/service/4671"
+        ]
+      },
+      {
+        "language": "French",
+        "query": "Ngandajika République démocratique du Congo carte cadastrale cadastre registre foncier",
+        "result": "La recherche officielle en français a trouvé le Ministère des Affaires Foncières, la procédure de demande de recherche foncière et le catalogue de services publics. Ces sources décrivent une consultation formelle des registres, mais aucune couche parcellaire anonyme, aucun identifiant parcellaire sûr et aucune API publique de géométrie pour Ngandajika n'ont été trouvés.",
+        "actualResultUrls": [
+          "https://www.affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+          "https://servicepublic.gouv.cd/service/4671",
+          "https://bic.cd/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/",
+      "observation": "Official Ministry homepage. It identifies the national land-affairs/cadastre authority and links to current cadastral documents and services; it did not expose a public Ngandajika parcel layer."
+    },
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+      "observation": "Official formal land-search workflow. It requests province, circumscription, locality and property-reference information plus applicant identity documents; it is not an anonymous parcel geometry API and was not submitted."
+    },
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "observation": "Official Ministry directory page rendered province/circumscription information including Lomami, but no Ngandajika parcel records, service configuration, schema, CRS or geometry endpoint."
+    },
+    {
+      "url": "https://servicepublic.gouv.cd/service/4671",
+      "observation": "Official public-service catalogue describing consultation of cadastral and land registers through the competent Conservateur or Chef de Division du Cadastre. It requires a formal request and may return unsafe titleholder information, which was not sought."
+    },
+    {
+      "url": "https://bic.cd/",
+      "observation": "Cadastral-information site reviewed only for public viewer/API discovery. Its current JavaScript points to a Supabase project, authenticated profile/service-access tables, and an aggregate home-counts function; no public parcel map, safe anonymous parcel endpoint, schema, CRS or geometry was exposed."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "outcome": "Fetched successfully. Official Ministry page and current document/service links were present; no public parcel viewer or downloadable Ngandajika geometry was present."
+    },
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "outcome": "Fetched successfully. The rendered directory exposed province/circumscription content including Lomami, but no parcel API, map configuration, schema, CRS or geometry response."
+    },
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "outcome": "Fetched successfully. The page exposed a multi-step formal request requiring applicant identity and property references. No form was submitted and no private or unsafe fields were requested."
+    },
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/api/documents?view=catalog",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Official document catalogue received. It exposed cadastral digitization/document metadata, not parcel features, safe parcel IDs, geometry or CRS."
+    },
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/api/circonscriptions",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 404,
+      "contentType": "text/html; charset=utf-8",
+      "outcome": "Guessed JSON circumscription route returned 404; no alternate public JSON parcel route was revealed by the official page."
+    },
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/robots.txt",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/plain",
+      "outcome": "Robots policy was read for route discovery; it exposed no cadastral viewer or parcel API route."
+    },
+    {
+      "url": "https://bic.cd/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "outcome": "Fetched successfully. The page is a JavaScript application; no parcel geometry was in the initial HTML."
+    },
+    {
+      "url": "https://bic.cd/assets/index-BrUTiL_J.js",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "application/javascript",
+      "outcome": "Current application bundle inspected. It referenced Supabase authentication/profile, cadastral-service-access/configuration tables and an aggregate home-bic-counts function, but no public parcel map/API, safe parcel identity response, schema, CRS or geometry endpoint. No authenticated request was attempted."
+    },
+    {
+      "url": "https://servicepublic.gouv.cd/service/4671",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "outcome": "Fetched successfully. Official service prose confirmed formal register consultation via competent cadastral/land officials; no public parcel dataset or geometry endpoint."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "Only national Ministry and public-service procedure evidence was verified. A direct Ngandajika local registry/cadastre map or local public parcel service was not evidenced, so registryFound remains null.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "operator": "Ministère des Affaires Foncières de la République démocratique du Congo; local Ngandajika custodian not publicly identified",
+    "viewerUrls": [],
+    "crs": null
+  },
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "resultCategory": "national_official_procedure_no_public_parcel_endpoint",
+  "coverageAssessment": {
+    "claimedScope": "National DRC land and cadastral administration and formal register-consultation procedure.",
+    "verifiedOpenScope": "No anonymous city-bounded Ngandajika parcel record, stable native parcel identity, schema, CRS or geometry was retrieved.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "A restricted, authenticated, formal-request or unpublished cadastral service may exist. The bounded absence of an anonymous public response is not evidence of citywide parcel absence. No exact-point hit/miss or coordinate shift was used, and no owner, address, titleholder, contact, tax or account fields were requested."
+}

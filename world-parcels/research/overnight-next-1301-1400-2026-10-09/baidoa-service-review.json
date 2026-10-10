@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1877-baidoa.json",
+  "purpose": "Document first-party local registry evidence and bounded anonymous parcel-service review for Baidoa.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Baidoa Municipality publicly identifies a Public Works, Housing, and Land Administration Department and a Land Registration service. The official FAO SWALIM Geoportal and its anonymous GeoServer WFS were inspected as a related Somali geospatial source. The WFS exposed building and settlement/environmental data, but no parcel/cadastral feature type. A bounded exact-point-area request returned buildings only; no parcel geometry was retained.",
+  "registryAssessment": "Local municipal land-registration custody is evidenced by the official Baidoa Municipality site. No open digital parcel registry or public cadastral geometry endpoint was verified.",
+  "officialPrimarySources": [
+    {"url": "https://baidoadistrict.sw.so/", "observation": "Official municipality page lists the Public Works, Housing, and Land Administration Department and Land Registration service."},
+    {"url": "https://baidoadistrict.sw.so/public-works-housing-and-land-administration-department/", "observation": "Official local department page was reachable anonymously; no parcel download or public map/API was exposed in the response."},
+    {"url": "https://spatial.faoswalim.org/", "observation": "Official FAO SWALIM Geoportal describes open Somalia spatial datasets, including land and settlements, but not a cadastral registry."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Baidoa Somalia official cadastral map land registry parcel GIS", "result": "Municipal land-registration custody found; no public parcel map/API found. SWALIM WFS/catalogue available but no parcel layer identified."},
+    {"language": "Somali", "query": "Baydhabo Soomaaliya khariidad cadastral diiwaanka dhulka GIS", "result": "No separate Somali-language official parcel viewer found; municipal land-administration evidence was confirmed through the official Baidoa site."}
+  ],
+  "attempts": [
+    {"url": "https://spatial.faoswalim.org/api/base/?page=1&page_size=1000", "httpStatus": 200, "result": "498-resource anonymous catalogue response; relevant building, settlement and land/environmental resources found, no parcel/cadastral resource identified."},
+    {"url": "https://spatial.faoswalim.org/geoserver/ows?service=WFS&request=GetCapabilities", "httpStatus": 200, "result": "Anonymous WFS capabilities returned; no named parcel, cadastral, plot, or parcel-boundary feature type identified."},
+    {"url": "https://spatial.faoswalim.org/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode%3Asom_buildings&outputFormat=application%2Fjson&maxFeatures=3&propertyName=geom&bbox=43.6543179%2C3.1185059%2C43.6545179%2C3.1187059%2CEPSG%3A4326", "httpStatus": 200, "result": "Returned three nearby building MultiPolygons from a bounded geometry-only request. Not parcel evidence; no feature retained."}
+  ],
+  "safeFieldAllowlist": ["geometry", "stable native feature id/gid", "source layer name", "CRS", "response counts"],
+  "nativeFieldMapping": {"buildings": {"nativeIdentity": "gid / GeoServer feature id", "geometry": "geom", "note": "building identity only; not a parcel identity"}},
+  "geometryDecision": "No GeoJSON parcel sample retained.",
+  "coverageAssessment": {"claimedScope": "Baidoa municipal land administration plus national SWALIM geospatial catalogue.", "verifiedOpenScope": "Non-cadastral SWALIM layers only; no parcel geometry endpoint verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "uncertainty": "The municipality may maintain offline, authenticated, or request-only parcel records. A missing public layer, zero exact-point parcel hit, or building-only response is not evidence of citywide absence.",
+  "runtimeEligible": false,
+  "runtimeHoldReason": "Serial reviewer must independently qualify a real parcel adapter; current evidence supports registry custody but no public parcel geometry/identity source."
+}

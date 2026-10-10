@@ -1,0 +1,14 @@
+{
+  "taskId": "city:5679",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-5679-kirov.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/kirov-service-review.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/kirov-parcel-samples.geojson",
+    "tmp/valhalla-parcel-research/5679/wfs.json",
+    "tmp/valhalla-parcel-research/5679/catalogs_agate_kirovcity.json"
+  ],
+  "reason": "Queue identity and English/Russian searches checked. Original WFS cache returned three full source polygons with matching native kn IDs in the retained safe sample; it reported 10927 matched and 3 returned. Metric sample comparison found about 194 m2 of overlap, and the WFS request returned 31 properties including address and cost fields into ignored scratch. No fresh exact-ID reads, forced paging, 13-cell qualification, source binding, or headed Details verification. Public discovery is held without runtime admission.",
+  "checkedAt": "2026-10-10T15:08:11.270104Z"
+}

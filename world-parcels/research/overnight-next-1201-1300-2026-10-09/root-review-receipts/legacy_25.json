@@ -1,0 +1,11 @@
+{
+  "taskId": "legacy:25",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2026-10-09/city-25-san-juan.json",
+    "world-parcels/research/overnight-next-2026-10-09/san-juan-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T10:25:41.209624Z",
+  "reason": "Provincial cadastre custody is recorded, but no first-party full native polygon or ID response; independent adapter qualification and headed Details verification are absent."
+}

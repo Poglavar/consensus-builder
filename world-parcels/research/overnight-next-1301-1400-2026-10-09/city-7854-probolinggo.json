@@ -1,0 +1,85 @@
+{
+  "cityCode": 7854,
+  "queueRank": 1338,
+  "name": "Probolinggo",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso3": "IDN",
+  "locId": 360,
+  "capital": false,
+  "point": [-7.77816373910349, 113.209754178279],
+  "population2025": 420356,
+  "population2025k": 420.356,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": true,
+  "registryAssessment": "A local cadastral custodian is evidenced by the official Kantor Pertanahan Kota Probolinggo ATR/BPN route and the national ATR/BPN BHUMI public land-map viewer. This establishes registry/viewer presence, not a verified open parcel-vector endpoint or citywide geometry coverage.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Probolinggo Indonesia official cadastral parcel map GIS land registry ATR BPN",
+        "result": "Found the official BHUMI ATR/BPN public viewer and official Kota Probolinggo ATR/BPN land-office material. No anonymous parcel-vector response with safe ID and geometry was verified.",
+        "actualResultUrls": [
+          "https://bhumi.atrbpn.go.id/",
+          "https://bhumi.atrbpn.go.id/bantuan/landing",
+          "https://kot-probolinggo.atrbpn.go.id/assets/04be9dba-921b-441e-906d-689a98d4a5a8"
+        ]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Probolinggo peta bidang tanah resmi ATR BPN Kantor Pertanahan Kota Probolinggo",
+        "result": "Found the official BHUMI documentation describing bidang tanah layers and the official Kota Probolinggo land-office route. The public shell and console were reachable, but no safe parcel feature response was exposed by the inspected current assets.",
+        "actualResultUrls": [
+          "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+          "https://bhumi.atrbpn.go.id/konsolbhumi.html",
+          "https://kot-probolinggo.atrbpn.go.id/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://bhumi.atrbpn.go.id/",
+      "role": "National ATR/BPN public land and spatial map viewer",
+      "observation": "Official shell returned HTTP 200 and delegates the interactive map to the current konsolbhumi.atrbpn.go.id console. BHUMI help documents land-parcel map elements and warns that displayed data is not guaranteed complete or fully current."
+    },
+    {
+      "url": "https://konsolbhumi.atrbpn.go.id/",
+      "role": "Current BHUMI interactive console",
+      "observation": "Current console HTML and JavaScript assets returned HTTP 200 with browser headers. Static asset inspection found no directly usable anonymous parcel feature endpoint or safe schema response; no token value was retained."
+    },
+    {
+      "url": "https://kot-probolinggo.atrbpn.go.id/",
+      "role": "Official Kantor Pertanahan Kota Probolinggo ATR/BPN route",
+      "observation": "Official local land-office host is evidenced by an ATR/BPN Kota Probolinggo document route; the discovered material concerns land-office transaction/map forms, not an open parcel API."
+    }
+  ],
+  "viewerRoute": {
+    "sourceId": "atrbpn-bhumi",
+    "shellUrl": "https://bhumi.atrbpn.go.id/",
+    "consoleUrl": "https://konsolbhumi.atrbpn.go.id/",
+    "mapLayerObservation": "Official help identifies bidang tanah (land parcels) as a map element and coordinate display, but the anonymous request review did not obtain a safe ID+geometry feature response.",
+    "nativeIdField": null,
+    "sourceFieldMapping": null,
+    "crs": null
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No bounded anonymous response containing a safe native parcel identity and full polygon was obtained. The exact WUP point was preserved and not shifted. No exact-point miss or viewer limitation is treated as citywide absence."
+  },
+  "coverageAssessment": {
+    "claimedScope": "National ATR/BPN BHUMI viewer with a local Kota Probolinggo land-office custodian route.",
+    "verifiedOpenScope": "Official viewer shell, current console, help/documentation, and local office route only; no parcel geometry, native ID schema, CRS, or citywide completeness was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

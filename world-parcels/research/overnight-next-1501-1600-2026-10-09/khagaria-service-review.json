@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-11351-khagaria.json",
+  "purpose": "Document first-party local cadastral/map custody and bounded anonymous service review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The Government of Bihar Department of Revenue and Land Reforms links BhuNaksha as its public revenue-map service. The official BhuNaksha Bihar application identifies the Directorate of Land Records & Survey and NIC, exposes a public seven-level cadastral selector, and returned Khagaria district/subdivision/circle metadata anonymously. No full parcel polygon was retained because the bounded pass did not resolve a verified mauza/sheet GIS context for the exact WUP coordinate.",
+  "registryAssessment": "Local/state cadastral custody is evidenced by the official Bihar Revenue and Land Reforms portal and the Directorate of Land Records & Survey BhuNaksha viewer. This is a Bihar state cadastral/map service with Khagaria selectors; no separate Khagaria municipal registry endpoint was evidenced.",
+  "officialPrimarySources": [
+    {"url": "https://land.bihar.gov.in/landbihar/Default.aspx", "observation": "Official Bihar Department of Revenue and Land Reforms portal links BhuNaksha and other land-record services."},
+    {"url": "https://bhunaksha.bihar.gov.in/10/index.jsp", "observation": "Official Bihar BhuNaksha viewer states it is cadastral mapping software for digitized cadastral maps and identifies the Directorate of Land Records & Survey, Government of Bihar, and NIC."},
+    {"url": "https://khagaria.nic.in/hi/%E0%A4%9C%E0%A4%BF%E0%A4%B2%E0%A5%87-%E0%A4%95%E0%A5%87-%E0%A4%AE%E0%A4%BE%E0%A4%A8%E0%A4%9A%E0%A4%BF%E0%A4%A4%E0%A5%8D%E0%A4%B0/", "observation": "Official Khagaria district site provides district/block maps; it is contextual administrative mapping, not parcel-vector evidence."}
+  ],
+  "safeFieldAllowlist": ["stable native plot identity if exposed", "parcel polygon geometry", "survey/mauza/map-sheet codes needed to qualify identity", "source CRS and service metadata"],
+  "excludedFields": ["owner names", "addresses", "contact details", "titleholder data", "tax/account data", "personal identifiers"],
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Not completed: the public route requires a resolved mauza/sheet GIS code first. No absence inference was made."},
+  "coverageAssessment": {"claimedScope": "Public Bihar cadastral viewer with Khagaria selector metadata.", "verifiedOpenScope": "Administrative selector access only; no parcel feature response, exact-point inclusion, or citywide geometry coverage.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "attempts": [
+    {"url": "https://bhunaksha.bihar.gov.in/10/index.jsp", "result": "HTTP 200; public viewer shell and current configuration loaded."},
+    {"url": "https://bhunaksha.bihar.gov.in/10/indexmain.jsp", "result": "HTTP 200 after public state=10 POST; current UI and JavaScript inspected."},
+    {"url": "https://bhunaksha.bihar.gov.in/ScalarDatahandler", "result": "HTTP 200 for anonymous OP=2 selector calls. Khagaria district code 21, subdivision 01, circle 01 selector metadata was returned; no geometry was returned by these calls."},
+    {"url": "https://bhunaksha.bihar.gov.in/10/rest/MapInfo/getPlotAtXY", "result": "Current JavaScript documents a point lookup route, but it requires resolved giscode. No fabricated giscode or plot request was made."}
+  ],
+  "remainingUncertainty": "The WUP point may lie in any of several revenue mauzas/sheets or survey products. Anonymous viewer accessibility does not establish stable native identity semantics, geometry availability for this point, or citywide completeness.",
+  "runtimeAssessment": "held; no adapter qualification"
+}

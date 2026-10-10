@@ -1,0 +1,33 @@
+{
+  "taskId": "city:6413",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-6413-arlington.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/arlington-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/arlington-parcel-samples.geojson",
+    "tmp/valhalla-parcel-research/6413/query-bounded.geojson",
+    "tmp/valhalla-parcel-research/6413/layer.json",
+    "tmp/valhalla-parcel-research/6413/query-exact.geojson"
+  ],
+  "checkedAt": "2026-10-10T16:41:38.942396Z",
+  "reason": "City Tax Parcel layer metadata and original bounded response support public native TaxParcelId geometry. The three retained full polygons match the raw response exactly; its transfer limit was exceeded. An exact-point miss is non-diagnostic. Fresh exact-ID adapter reads, stable complete manifests and forced paging, 13 bounded cells, independent metric GEOS validity/duplicates/overlap/operation checks, source binding, and headed Details-panel verification are not evidenced. No runtime admission.",
+  "identity": {
+    "city": "Arlington",
+    "cityCode": 6413,
+    "queueRank": 1843,
+    "country": "United States of America",
+    "point": [
+      32.7174112900959,
+      -97.0729125498606
+    ],
+    "populationPersons": 311130,
+    "verifiedAgainst": "2025 WUP archive and pending queue"
+  },
+  "searchLanguagesRecorded": [
+    "English",
+    "Spanish"
+  ],
+  "retainedFullPolygons": 3
+}

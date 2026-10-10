@@ -1,0 +1,85 @@
+{
+  "cityCode": 6601,
+  "queueRank": 1786,
+  "city": "Shariatpur",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "point": [23.2575135641073, 90.3753147890267],
+  "population2025": 321804,
+  "population2025k": 321.804,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Shariatpur Bangladesh official cadastral map parcel land registry GIS",
+        "result": "First-party discovery found the Bangladesh Department of Land Records and Surveys (DLRS), its public Settlement map services, and the Ministry of Land's Land Zoning map portal. The Land Zoning portal was then inspected as a live public map/API service.",
+        "actualResultUrls": ["https://dlrs.gov.bd/", "https://map.settlement.gov.bd/", "https://settlement.gov.bd/", "https://map.land.gov.bd/"]
+      },
+      {
+        "language": "Bengali",
+        "query": "শরীয়তপুর বাংলাদেশ মৌজা নকশা খতিয়ান ভূমি সেবা সরকারি মানচিত্র",
+        "result": "বাংলা অনুসন্ধানে সরকারি ভূমি নকশা, ডিএলআরএস অনলাইন ম্যাপ/জরিপ সেবা এবং শরীয়তপুর সদরকে Land Zoning map-এর প্রকাশিত সিলেক্টর তালিকায় পাওয়া গেছে।",
+        "actualResultUrls": ["https://map.land.gov.bd/", "https://dlrs.gov.bd/", "https://settlement.gov.bd/"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": "Bangladesh Department of Land Records and Surveys / Ministry of Land; the public map.land.gov.bd service exposes the Shariatpur district and Shariatpur Sadar administrative hierarchy.",
+  "registryEvidence": {
+    "officialPages": ["https://dlrs.gov.bd/", "https://settlement.gov.bd/", "https://map.land.gov.bd/"],
+    "custodySummary": "DLRS is the first-party land-record and survey authority. The Ministry of Land Land Zoning portal is a current public map service, not a private or third-party parcel source.",
+    "localityEvidence": "Public hierarchy calls returned Dhaka division code 30, Shariatpur district code 3086, Shariatpur Sadar upazila code 308669, and 104 Sadar mouzas."
+  },
+  "sourceReview": {
+    "service": "Ministry of Land Land Zoning map portal (SMART BHUMI NAKSHA), backed by gis.land.gov.bd configuration",
+    "baseUrls": ["https://map.land.gov.bd/", "https://gis.land.gov.bd/geoserver/"],
+    "officialAssetsInspected": ["https://map.land.gov.bd/", "https://map.land.gov.bd/assets/js/main.js"],
+    "nativeFieldMapping": "Bounded public response used fields gid, plot_no_en, label, m_code, jl_no_en, sht_no_en and geom (WKT). The viewer renders geom as EPSG:4326 and transforms it for display; no raw source attribute set was retained.",
+    "compositeKeyProvenance": "The response exposes m_code plus plot_no_en and sheet/jurisdiction fields; this was observed but not promoted to a retained identity because stable-identity semantics were not independently documented.",
+    "crs": "EPSG:4326 as declared in the official viewer's WKT read configuration; service CRS metadata was not separately verified."
+  },
+  "requestOutcomes": [
+    {"method":"GET","url":"https://dlrs.gov.bd/","outcome":"200/first-party DLRS landing page; official survey, map and khatian services identified."},
+    {"method":"GET","url":"https://settlement.gov.bd/","outcome":"200/first-party online land survey and record portal."},
+    {"method":"GET","url":"https://map.settlement.gov.bd/","outcome":"200/official DLRS Integrated Online Map Purchase System; survey-map service identified, no parcel vector request made there."},
+    {"method":"GET","url":"https://map.land.gov.bd/","outcome":"200/public official map viewer; current HTML and JavaScript inspected."},
+    {"method":"GET","url":"https://map.land.gov.bd/assets/js/main.js","outcome":"200; current configuration identified public POST hierarchy routes, /getGeomByCode, WKT geometry handling, EPSG:4326, and gis.land.gov.bd GeoServer WMS configuration."},
+    {"method":"POST","url":"https://map.land.gov.bd/getAdminByCode","outcome":"200; level=forDiv returned Dhaka code 30; level=forDist with division_code=30 returned Shariatpur code 3086; level=forThana returned Shariatpur Sadar code 308669; level=forMauza returned 104 mouzas including m_code DHA_SHA."},
+    {"method":"POST","url":"https://map.land.gov.bd/getGeomByCode","outcome":"200; level=forMauza, tableName=dha_sha, mauzaVal=308669287001 (001-Gazipur), plotOrLanduse=plot returned sheets=1, plots=1177 and WKT MULTIPOLYGON geometry with bounded native response fields. This was a bounded schema/geometry check, not a citywide extraction."},
+    {"method":"GET","url":"https://gis.land.gov.bd/geoserver/wsDMMS/ows?service=WFS&version=1.0.0&request=GetCapabilities","outcome":"503 Service Unavailable; no inference about source absence. The viewer's public WMS configuration was still recorded from main.js."},
+    {"method":"GET","url":"http://gis.land.gov.bd/geoserver/wsDMMS/ows?service=WFS&version=1.0.0&request=GetCapabilities","outcome":"503 Service Unavailable; no TLS exception or retry bypass used."}
+  ],
+  "geometryDecision": {
+    "verified": true,
+    "sourceId": "map.land.gov.bd:getGeomByCode:DHA_SHA:308669287001",
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed against the bounded single-mouza response; no hit/miss inference is made and the exact WUP point was not shifted.",
+    "requestEvidence": ["1177 WKT plot geometries were returned for one public Shariatpur Sadar mouza; no parcel polygon was retained because stable safe native identity was not independently established."]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Ministry of Land/DLRS Shariatpur Sadar mouza/plot map service.",
+    "verifiedOpenScope": "Administrative hierarchy and one bounded mouza response with plot geometry and source field schema; not citywide or countrywide coverage.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "public service, layer and schema metadata"],
+  "scopeLimits": [
+    "Exact WUP point [23.2575135641073, 90.3753147890267] was preserved in latitude/longitude order and not shifted.",
+    "A single mouza response is not evidence of citywide coverage or absence; no exact-point hit/miss conclusion is made.",
+    "No owner, address, titleholder, contact, title, tax/account, personal or other unsafe fields were requested or retained.",
+    "No raw source-specific attribute set and no GeoJSON sample were retained.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The public portal demonstrably returns plot WKT for one Shariatpur Sadar mouza, but the city boundary, complete city coverage, service CRS metadata, and stable native parcel identity semantics remain unresolved. The WFS capabilities route returned 503. This packet makes no legal-title, ownership, completeness or parcel-absence claim.",
+  "retainedSample": null
+}

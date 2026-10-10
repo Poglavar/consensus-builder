@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "wupCityCode": 9045,
+  "cityCode": 9045,
+  "cityId": "wup2025:9045",
+  "name": "Chandausi",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [28.4524308208314, 78.7816613884015],
+  "point": [28.4524308208314, 78.7816613884015],
+  "population2025": 331969,
+  "population2025k": 331.969,
+  "populationUnit": "persons",
+  "queuePriority": 1730,
+  "queueRank": 1730,
+  "cohorts": ["overnight-next-1701-1800-2026-10-09"],
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Chandausi cadastral map official Uttar Pradesh BhuNaksha Sambhal",
+        "result": "First-party results identified the official Sambhal district site, UP land-records map-digitization report, and UP BhuNaksha viewer. The official BhuNaksha SPA was fetched and its current JavaScript/configuration inspected.",
+        "actualResultUrls": [
+          "https://upbhunaksha.gov.in/home/",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=205&tehsilCode=00722",
+          "https://sambhal.nic.in/service/land-records/"
+        ]
+      },
+      {
+        "language": "Hindi (native/local)",
+        "query": "चन्दौसी भू नक्शा सम्भल उत्तर प्रदेश आधिकारिक",
+        "result": "First-party results again identified the official UP BhuNaksha viewer and the Sambhal district government site. The viewer's Hindi hierarchy resolved सम्भल / चन्दौसी / चन्दौसी.",
+        "actualResultUrls": [
+          "https://upbhunaksha.gov.in/home/",
+          "https://sambhal.nic.in/"
+        ]
+      }
+    ],
+    "officialViewer": "https://upbhunaksha.gov.in/home/",
+    "resolvedHierarchy": {
+      "state": "09 Uttar Pradesh",
+      "district": {"code": "205", "name": "सम्भल"},
+      "tehsil": {"code": "00722", "name": "चन्दौसी"},
+      "village": {"code": "220477", "name": "चन्दौसी", "hasData": true},
+      "gisCode": "20500722220477"
+    },
+    "requests": [
+      {"method": "GET", "url": "https://upbhunaksha.gov.in/home/", "status": 200, "outcome": "Official Angular SPA loaded."},
+      {"method": "GET", "url": "https://upbhunaksha.gov.in/main-76RVRF3Z.js", "status": 200, "outcome": "Current public JS inspected; endpoint and form schemas identified."},
+      {"method": "POST", "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue", "payload": {"level": "1", "codes": "09,"}, "status": 200, "outcome": "District list returned; district 205 सम्भल found."},
+      {"method": "POST", "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue", "payload": {"level": "2", "codes": "205"}, "status": 200, "outcome": "Tehsil list returned; 00722 चन्दौसी found."},
+      {"method": "POST", "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue", "payload": {"level": "3", "codes": "205,00722"}, "status": 200, "outcome": "Village list returned; 220477 चन्दौसी found with hasData=true."},
+      {"method": "POST", "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref", "payload": {"gisLevels": "205,00722,220477"}, "status": 200, "outcome": "Village extent returned in EPSG:32644: xmin 281024.95076230617, ymin 3147166.611775656, xmax 284577.41859351506, ymax 3150155.3405564087."},
+      {"method": "POST", "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotAtXY", "payload": {"giscode": "20500722220477", "x": 282801.18, "y": 3148660.98, "plotno": ""}, "status": 200, "outcome": "Bounded anonymous hit-test returned safe native id BAxh6KpETF6Gzb1Ay3y_lQ, plot key 150@1434, and bbox only."},
+      {"method": "POST", "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotByPlotNo", "payload": {"giscode": "20500722220477", "plotno": "150@1434"}, "status": 200, "outcome": "Repeated the same native id and bbox; no polygon geometry."},
+      {"method": "POST", "url": "https://upbhunaksha.gov.in/bhunakshaserver/v1/khasramap/plot?bhucode=20500722220477&id=BAxh6KpETF6Gzb1Ay3y_lQ", "status": 401, "outcome": "Authorization required; no bypass attempted."},
+      {"method": "POST", "url": "https://upbhunaksha.gov.in/bhunakshaserver/mapModificationController/getGeoJSONLayerData", "status": "not attempted", "outcome": "Current bundle exposed the protected full-geometry route in prior UP research; no unsafe or authorization-bypass request made in this attempt."}
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Official UP BhuNaksha resolves the Chandausi district/tehsil/village cadastral hierarchy and serves a public map extent and anonymous parcel hit-test. The official Sambhal district land-records page identifies UP Bhulekh as the government land-record portal.",
+  "verifiedParcelResponse": {"nativeId": "BAxh6KpETF6Gzb1Ay3y_lQ", "nativePlotKey": "150@1434", "geometry": null, "bboxOnly": true},
+  "statusDetail": "no_verified_open_polygon_geometry",
+  "coverageAssessment": {"claimedScope": "Public BhuNaksha map data for the selected Chandausi revenue village in Sambhal district.", "verifiedOpenScope": "One village extent and one anonymous hit-test response; citywide or municipal coverage not established.", "citywideVerified": false, "countrywideVerified": false},
+  "resultCategory": "public_cadastral_extent_and_hit_test_no_open_vector_geometry",
+  "sourceIds": ["BAxh6KpETF6Gzb1Ay3y_lQ"],
+  "technicalBlocker": "The current full plot route returned HTTP 401. Public endpoints exposed only a native ID, plot key, and bounding box; no full polygon was available for safe retention.",
+  "remainingUncertainty": "The WUP point was preserved and not used as a forced parcel query. The hit-test used a bounded point inside the returned village extent, not the WUP point; no exact-point hit/miss inference is made. Urban municipal coverage, current update currency, legal boundary status, and any authenticated parcel geometry remain unresolved.",
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification required",
+  "sampleGeojson": null
+}

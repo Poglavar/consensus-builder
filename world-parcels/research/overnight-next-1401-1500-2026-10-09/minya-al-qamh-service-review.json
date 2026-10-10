@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5838-minya-al-qamh.json",
+  "purpose": "Document first-party Egyptian cadastral/map custodian discovery and bounded anonymous parcel-service review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Egyptian General Survey Authority establishes a national cadastral/cartographic custodian and a digital-map procurement workflow. Its reviewed public pages do not expose a Minya Al-Qamh parcel viewer, public map/API configuration, parcel schema, CRS, or anonymous ID-plus-geometry response. This is not evidence of citywide absence.",
+  "registryAssessment": "Registry/custodian evidenced at national ESA level, with a separately discovered local Minya Al-Qamh real-estate registration office listing. Local open parcel-service integration is not evidenced.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "observation": "Official ESA page describes property maps/books and surveying functions; no open parcel endpoint."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "observation": "Official page describes paid/requested digital map products and required projection/layer specification; no public query service."
+    },
+    {
+      "url": "https://www.esa.gov.eg/testmap.aspx",
+      "observation": "Official directorate page is a static map/image navigation page, not a parcel viewer."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Minya Al-Qamh Egypt cadastral parcel map official GIS هيئة المساحة المنيا القمح",
+      "result": "Official ESA custodian and digital-map workflow found; no public city parcel viewer/API.",
+      "method": "Separate English-language web search followed by first-party ESA page inspection.",
+      "scope": "Identify local custodian and safe anonymous parcel geometry."
+    },
+    {
+      "language": "Arabic (local/native)",
+      "query": "الشهر العقاري منيا القمح السجل العيني الشرقية الموقع الرسمي",
+      "result": "Local office listing and official ESA material found; no first-party Arabic parcel viewer/API.",
+      "method": "Separate Arabic-language web search followed by official ESA inspection and local-office lead review.",
+      "scope": "Cross-check local-language discovery for a city-specific land registry/map service."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official ESA home page loaded; no parcel API advertised."
+    },
+    {
+      "url": "https://www.esa.gov.eg/testmap.aspx",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Static Egypt directorate image-map page inspected; no JavaScript map configuration, service URL, layer schema, or CRS."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Digital-map request workflow inspected; requires customer request and quotation, with no anonymous parcel response."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingMapRoom.aspx",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Paper-map sales/directorate workflow inspected; no parcel geometry endpoint."
+    },
+    {
+      "url": "https://dalil140.com/company/ar/273707-real-estate-registration-office-minya-el-qamh",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Local registration-office listing reviewed as a custodian lead only; no parcel request made."
+    }
+  ],
+  "safeFieldAllowlist": ["native parcel/survey identity", "geometry", "source CRS", "layer/service name"],
+  "nativeFieldMapping": null,
+  "geometryDecision": "No sample GeoJSON written; no qualifying official anonymous geometry response.",
+  "coverageAssessment": {
+    "claimedScope": "Official ESA cadastral/map custodian and Minya Al-Qamh local-office discovery.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeDecision": "held",
+  "remainingUncertainty": "A public parcel map/API may exist outside the pages reviewed or behind an ordinary official request. No login, CAPTCHA bypass, credentials, private token, unsafe field request, or TLS exception was used."
+}

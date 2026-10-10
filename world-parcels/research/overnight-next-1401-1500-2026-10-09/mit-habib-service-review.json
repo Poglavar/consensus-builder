@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6332-mit-habib.json",
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "purpose": "Review first-party Egyptian cadastral/map channels for anonymous parcel geometry with safe native identifiers.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false, "wupPointPreserved": [30.4651743589646, 31.460163902665]},
+  "assessment": "Official ESA pages were reachable and establish the national survey authority's mapping/cadastral role, but the current public digital-map workflow is request/quotation based and exposes no anonymous parcel feature API. The CAPMAS Egy-GeoInfo lead timed out. No parcel geometry or native ID was verified.",
+  "registryAssessment": "Local Mit Habib registry/cadastre custody is not sufficiently evidenced. ESA is national authority evidence, not a local registry custodian; no local Samanoud/Gharbia registry service with a public parcel layer was found.",
+  "coverageAssessment": {"claimedScope": "Official ESA national mapping/cadastral responsibilities plus CAPMAS geospatial portal lead.", "verifiedOpenScope": "No anonymous full parcel geometry or stable safe native parcel ID verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "officialPrimarySources": [
+    {"url": "https://www.esa.gov.eg/main.aspx", "operator": "Egyptian General Authority for Survey", "scope": "Official agency history, projects and services; describes cadastral/property-map responsibilities but no parcel API."},
+    {"url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx", "operator": "Egyptian General Authority for Survey", "scope": "Official digital-map page; maps/layers are requested, assessed, quoted and supplied by the Authority."},
+    {"url": "https://geoportal.capmas.gov.eg/", "operator": "CAPMAS", "scope": "Historical official geospatial portal lead; anonymous request timed out in this attempt."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Egypt official cadastral map parcel viewer Mit Habib Egyptian Survey Authority", "result": "ESA official pages found; no public parcel endpoint.", "actualResultUrls": ["https://www.esa.gov.eg/main.aspx", "https://www.esa.gov.eg/sellingmaproomdigital.aspx"]},
+    {"language": "Arabic", "query": "خريطة كادسترية رسمية ميت حبيب هيئة المساحة المصرية قطع الأراضي", "result": "Arabic ESA pages found; no anonymous parcel endpoint.", "actualResultUrls": ["https://www.esa.gov.eg/main.aspx", "https://www.esa.gov.eg/sellingmaproomdigital.aspx"]}
+  ],
+  "attempts": [
+    "Fetched ESA homepage anonymously with Chrome User-Agent, Accept and Arabic/English Accept-Language headers; HTTP 200.",
+    "Fetched ESA official digital-map page with the same browser headers; HTTP 200; inspected the current HTML/link structure and found no FeatureServer, MapServer, WFS or parcel API.",
+    "Fetched CAPMAS Egy-GeoInfo lead with browser headers and cookie jar; request timed out within the bounded attempt. Retried separately with an 8-second bound; no HTTP response.",
+    "Fetched a general IDSC LivedHere MapServer root discovered during search; HTTP 200, but it was not identified as cadastral parcels, so no geometry query was attempted.",
+    "No exact WUP-point or city-extent parcel request was run because no documented anonymous parcel endpoint was found. The unchanged point [30.4651743589646, 31.460163902665] is preserved and no absence inference is made.",
+    "Safe field allowlist for any future public query: stable native parcel ID and geometry only. Owner, address, titleholder, contact, tax/account, certificate and personal fields were neither requested nor retained."
+  ],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Not run: no documented anonymous parcel geometry endpoint was found; zero-hit/absence inference prohibited.", "requestEvidence": [{"url": "https://geoportal.capmas.gov.eg/", "method": "GET; anonymous", "httpStatus": null, "assessment": "Timeout; temporarily unavailable from this client."}]},
+  "nativeSchema": {"inspected": false, "crs": null, "nativeFieldMapping": null, "compositeKeyProvenance": null},
+  "nextStep": "Retry CAPMAS from another network path or independently qualify a documented local/national public parcel endpoint; keep runtime readiness held until a real adapter is independently qualified.",
+  "remainingUncertainty": "Post-request ESA holdings, CAPMAS portal contents, and any non-indexed local service remain unknown. General national mapping pages cannot establish parcel coverage for Mit Habib.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

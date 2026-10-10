@@ -1,0 +1,17 @@
+{
+  "taskId": "city:366",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-366-santa-cruz-de-tenerife.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/santa-cruz-de-tenerife-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/santa-cruz-de-tenerife-parcel-sample.geojson",
+    "tmp/valhalla-parcel-research/city-366/atom-38.xml",
+    "tmp/valhalla-parcel-research/city-366/38900.zip",
+    "tmp/valhalla-parcel-research/city-366/wfs-cap.headers",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T10:33:36.899799Z",
+  "reason": "WUP 2025 city code 366, rank 1592, Spain, exact point and 357753 persons match the original source and queue. Packet records separate English and Spanish searches. Cached first-party Atom index and 38900 GML show 44304 declared parcel features in EPSG:32628; three retained full polygon IDs and coordinates match source after CRS transformation, with only id properties. Public geometry is a discovery, not admission: bounded WFS capability probes returned HTTP 400 and no fresh runtime native-ID reads, forced paging, 13 bounded cells, full metric GEOS validity/overlap checks, source binding, or headed Details-panel verification are evidenced.",
+  "sourceAdmission": "not_admitted"
+}

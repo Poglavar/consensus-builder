@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:2362",
+  "cityCode": 2362,
+  "wupCityCode": 2362,
+  "queueRank": 1500,
+  "name": "Lop Buri",
+  "country": "Thailand",
+  "countryCode": "TH",
+  "iso3": "THA",
+  "centerLatLon": [14.8115111082598, 100.644267089142],
+  "point": [14.8115111082598, 100.644267089142],
+  "population2025": 378160,
+  "population2025k": 378.16,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Department of Lands (DOL) Lop Buri Provincial Land Office page identifies the provincial land-office custodian and links Landsmap land-parcel search. The official DOL Land Map Center page identifies the national land-parcel map center. No open city parcel response was verified.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Lop Buri Thailand official cadastral parcel map land registry GIS",
+        "result": "Found the official Department of Lands Lop Buri Provincial Land Office, the DOL Land Map Center, and the official LandsMaps viewer URL. The provincial office and center evidence land-map custody, but the anonymous LandsMaps viewer timed out and no safe parcel ID-plus-geometry response was verified.",
+        "actualResultUrls": [
+          "https://www.dol.go.th/lopburi/home",
+          "https://www.dol.go.th/landmap/home/",
+          "https://landsmaps.dol.go.th/"
+        ]
+      },
+      {
+        "language": "Thai",
+        "query": "ลพบุรี แผนที่รูปแปลงที่ดิน кадастр กรมที่ดิน ระบบสารสนเทศภูมิศาสตร์",
+        "result": "พบเว็บไซต์ทางการของสำนักงานที่ดินจังหวัดลพบุรี ศูนย์ข้อมูลแผนที่รูปแปลงที่ดิน กรมที่ดิน และลิงก์ Landsmap สำหรับค้นหารูปแปลงที่ดิน แต่การเข้าถึง LandsMaps แบบไม่ระบุตัวตนหมดเวลา และยังไม่ยืนยันการตอบกลับรูปแปลงพร้อมรหัสแปลงที่ปลอดภัย.",
+        "actualResultUrls": [
+          "https://www.dol.go.th/lopburi/home/",
+          "https://www.dol.go.th/landmap/home/",
+          "https://landsmaps.dol.go.th/"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.dol.go.th/lopburi/home",
+      "operator": "Department of Lands, Lop Buri Provincial Land Office",
+      "observation": "Official provincial land-office page loaded and lists Landsmap land-parcel search among online services.",
+      "coverage": "Lop Buri provincial land-office custody; page does not establish open citywide geometry access."
+    },
+    {
+      "url": "https://www.dol.go.th/landmap/home/",
+      "operator": "Department of Lands, Land Map Information Center",
+      "observation": "Official center page loaded and identifies national land-map services and the center's contact/institutional scope.",
+      "coverage": "Thailand national land-map center; no parcel feature response was exposed on the inspected page."
+    },
+    {
+      "url": "https://landsmaps.dol.go.th/",
+      "operator": "Department of Lands LandsMaps viewer",
+      "observation": "Official viewer URL is linked by DOL, but repeated anonymous requests timed out before HTML/configuration or service schema could be inspected.",
+      "coverage": "Intended national viewer scope; actual Lop Buri coverage and API access remain unverified."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.dol.go.th/lopburi/home",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "result": "Official Lop Buri provincial land-office page loaded. Its online-services section names Landsmap land-parcel search. No parcel geometry or native ID response was returned by this page."
+    },
+    {
+      "url": "https://www.dol.go.th/landmap/home/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "result": "Official DOL Land Map Center page loaded. HTML inspection exposed institutional/service links but no anonymous parcel feature response, schema, CRS, or safe native parcel identity."
+    },
+    {
+      "url": "https://landsmaps.dol.go.th/",
+      "method": "GET",
+      "httpStatus": "timeout",
+      "contentType": null,
+      "result": "Anonymous HTTPS request timed out after 30 seconds; no login, credentials, CAPTCHA bypass, private token, or TLS exception was used."
+    },
+    {
+      "url": "http://landsmaps.dol.go.th/",
+      "method": "HEAD",
+      "httpStatus": "timeout",
+      "contentType": null,
+      "result": "Anonymous HTTP fallback also timed out; no downgrade was treated as successful service access."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Department of Lands provincial custody in Lop Buri and national DOL land-map services with an official LandsMaps viewer link.",
+    "verifiedOpenScope": "Official Lop Buri office and national land-map-center custody were verified. No open city-bounded parcel geometry and stable native identity response was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "registryExistenceScope": "Provincial and national land-map custody evidenced; local city registry accessibility and parcel-layer completeness remain unestablished."
+  },
+  "geometry": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not attempted as a parcel-hit test; exact WUP point [14.8115111082598, 100.644267089142] was preserved and not shifted.",
+    "crs": null
+  },
+  "verifiedSample": false,
+  "sourceIds": [],
+  "qualityAssessment": {
+    "geometryQuality": "no parcel geometry sampled",
+    "identityReadiness": "not ready; no safe native parcel identity response retained",
+    "attributesRequested": ["non-personal service/schema metadata only"],
+    "unsafeFieldsRequested": false
+  },
+  "runtimeReadiness": {
+    "status": "held",
+    "reason": "No current anonymous safe-ID parcel geometry service, schema/CRS, or independently qualified adapter was verified. This packet records source discovery only and does not imply source integration or admission.",
+    "adapterAdmission": false
+  },
+  "remainingUncertainty": "The LandsMaps viewer may have intermittent availability, browser-only configuration, or service routes not reachable from this anonymous request environment. These attempts do not establish citywide cadastral absence.",
+  "nextStep": "A serial reviewer should independently retry the official LandsMaps viewer and inspect its current public configuration/API, retaining at most three full polygons only if a stable native parcel identity and safe geometry response are exposed."
+}

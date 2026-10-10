@@ -1,0 +1,16 @@
+{
+  "taskId": "city:10196",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-10196-tianmen.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/tianmen-service-review.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "tmp/valhalla-parcel-research/runs/20261010T132917-ad44b6f3/stdout.jsonl",
+    "tmp/valhalla-parcel-research/tianmen/viewer.html"
+  ],
+  "checkedAt": "2026-10-10T13:33:03Z",
+  "registryFound": true,
+  "reason": "The Tianmen government bureau page confirms real-estate registration and record-query custody. The cached first-party map HTML shows a Baidu general-place map, with no parcel layer or feature response. No native ID or full polygon was retrieved; no absence finding.",
+  "admission": "Held: no verified public full parcel polygon or safe native ID; independent fresh adapter reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details-panel verification are absent. No runtime, catalog, configuration, or coverage admission."
+}

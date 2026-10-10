@@ -1,0 +1,14 @@
+{
+  "taskId": "legacy:4121",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-2026-10-09/city-4121-ryazan.json",
+    "world-parcels/research/overnight-next-2026-10-09/ryazan-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T10:31:00.094830Z",
+  "reason": "Official Ryazan material documents a public cadastral-map route, but the packet has no original full-polygon response, native ID, or live adapter qualification; NSPD was unavailable on root recheck. Geometry presence and citywide coverage remain unknown.",
+  "firstPartySourceReviewed": "https://admshack.ryazan.gov.ru/documents/otsenka_reguliruyushchego_vozdeystviya/ekspertiza_npa/"
+}

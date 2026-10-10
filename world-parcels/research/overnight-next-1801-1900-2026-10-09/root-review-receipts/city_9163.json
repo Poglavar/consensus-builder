@@ -1,0 +1,18 @@
+{
+  "taskId": "city:9163",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-9163-beed.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/beed-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T16:58:44Z",
+  "firstPartyUrlsChecked": [
+    "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=25",
+    "https://beed.gov.in/en/service/land-records/"
+  ],
+  "reviewNote": "Official Beed land-record custody is supported. Worker reports BhuNaksha timeout, with no preserved feature response; no polygon/native ID was independently verified.",
+  "identityCheck": "City code, rank, country, point, and 2025 population persons match immutable queue and official WUP archive; English and local-language queries are recorded and were independently re-searched.",
+  "sampleCount": 0,
+  "admissionGates": "Not qualified: no fresh native-ID feature reads, forced paging, 13 bounded cells, metric GEOS geometry/overlap checks, source binding, or headed Details-panel verification."
+}

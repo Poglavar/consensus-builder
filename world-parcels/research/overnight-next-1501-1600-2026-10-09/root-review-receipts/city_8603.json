@@ -1,0 +1,16 @@
+{
+  "taskId": "city:8603",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-8603-gboko.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/gboko-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T09:43:22Z",
+  "reason": "Queue code, rank, country, point and 367407-person population match. English and Tiv/local executed searches are recorded. BENGIS and the Benue Ministry establish cadastral and land-record custody, but the bounded direct requests timed out and no safe native-ID plus full-polygon response or adapter qualification exists. This is unresolved public geometry, not cadastral absence.",
+  "independentFirstPartySources": [
+    "https://bengis.benuestate.gov.ng/scope-of-operations/",
+    "https://bengis.benuestate.gov.ng/",
+    "https://lands.benuestate.gov.ng/service/registration-of-legal-documents/"
+  ]
+}

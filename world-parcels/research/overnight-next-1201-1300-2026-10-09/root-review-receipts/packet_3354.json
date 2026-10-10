@@ -1,0 +1,14 @@
+{
+  "taskId": "packet:3354",
+  "decision": "held",
+  "reason": "Morogoro identity and English/Swahili searches match the immutable queue. First-party e-Ardhi WFS capabilities/schema evidence supports official spatial-unit custody, but the spatial_units advertised bbox excludes the WUP point and bounded GetFeature attempts timed out. No native ID or geometry response is verified; public geometry stays unresolved, never false absence. No adapter qualification.",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-3354-morogoro.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/morogoro-service-review.json",
+    "tmp/valhalla-parcel-research/morogoro-3354/wfs-capabilities.xml",
+    "tmp/valhalla-parcel-research/morogoro-3354/spatial_units-schema.json"
+  ],
+  "checkedAt": "2026-10-09T11:44:40.360853Z"
+}

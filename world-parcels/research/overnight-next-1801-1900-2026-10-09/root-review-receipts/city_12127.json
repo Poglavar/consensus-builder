@@ -1,0 +1,23 @@
+{
+  "taskId": "city:12127",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-12127-yuanlin-city.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/yuanlin-city-service-review.json",
+    "tmp/valhalla-parcel-research/12127/cap.xml",
+    "tmp/valhalla-parcel-research/12127/schema.xml",
+    "tmp/valhalla-parcel-research/12127/getfeature.json",
+    "tmp/valhalla-parcel-research/12127/getfeature.headers",
+    "tmp/valhalla-parcel-research/12127/tile.json",
+    "tmp/valhalla-parcel-research/12127/tile.headers"
+  ],
+  "checkedAt": "2026-10-10T16:58:44Z",
+  "firstPartyUrlsChecked": [
+    "https://landoffice.chcg.gov.tw/yuanlin/01intro/intro03.aspx"
+  ],
+  "reviewNote": "Official Yuanlin custody is supported. Original NLSC cache has CADAS_MERGE schema but bounded GetFeature says Permission Denied and point lookup has no land number; no polygon/native ID was obtained.",
+  "identityCheck": "City code, rank, country, point, and 2025 population persons match immutable queue and official WUP archive; English and local-language queries are recorded and were independently re-searched.",
+  "sampleCount": 0,
+  "admissionGates": "Not qualified: no fresh native-ID feature reads, forced paging, 13 bounded cells, metric GEOS geometry/overlap checks, source binding, or headed Details-panel verification."
+}

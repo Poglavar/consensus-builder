@@ -1,0 +1,22 @@
+{
+  "taskId": "city:5293",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-5293-takht-bhai.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/takht-bhai-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T17:13:37Z",
+  "firstPartyUrlsChecked": [
+    "https://revenue.kp.gov.pk/sdcs/"
+  ],
+  "reason": "Local SDC custody confirmed. No native-ID polygon response or independent adapter qualification; public geometry remains unknown.",
+  "checks": {
+    "queueIdentity": "matched rank, code, country, point, population in persons against pending queue and ranked roster",
+    "bilingualSearches": "English and local-language executed searches documented in packet and paired review",
+    "fullPolygonsRetained": 0,
+    "runtimeAdmission": "not qualified; fresh exact ID reads, forced paging, 13 cells, metric GEOS checks, source binding and headed Details proof absent"
+  }
+}

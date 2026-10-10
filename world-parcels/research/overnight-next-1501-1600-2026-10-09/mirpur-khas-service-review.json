@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-6809-mirpur-khas.json",
+  "purpose": "Document first-party registry/map discovery, current portal routes, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Official Board of Revenue Sindh material establishes Sindh Zameen as the provincial public land-record service and lists a Mirpurkhas district service centre. No anonymous safe ID-plus-complete-polygon response was obtained.",
+  "registryAssessment": "Local/provincial registry custody found through the official Sindh Zameen portal and its official active-centres page, which names Mirpurkhas. This is not treated as proof of citywide geometry availability.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.sindhzameen.gos.pk/Default.aspx",
+      "observation": "Official Board of Revenue Sindh portal advertises public land-record search, Maps/Deh Maps, property registers and related revenue services."
+    },
+    {
+      "url": "https://www.sindhzameen.gos.pk/Centers.aspx",
+      "observation": "Official active-centres page lists Mirpurkhas as a district service centre and identifies its district manager. Contact details were not retained."
+    },
+    {
+      "url": "https://www.sindhzameen.gos.pk/FAQs.aspx",
+      "observation": "Official FAQ says data for all Sindh districts and most dehs is available, describes Village Forms II, VII-A and VII-B, and directs users to service centres for certified copies."
+    },
+    {
+      "url": "https://www.sindhzameen.gos.pk/map/SindhMaps.aspx",
+      "observation": "Official map index includes a District Mirpur Khas base-map entry; this is a general map reference, not verified parcel geometry."
+    }
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "http://sindhzameen.gos.pk/Default.aspx",
+    "advertisedMapRoute": "http://map.sindhzameen.gos.pk/",
+    "observedPortalRoutes": ["SearchName.aspx", "maps.aspx", "Centers.aspx", "map/SindhMaps.aspx"],
+    "observedServiceTypes": ["land-record name search", "Deh Maps", "district base maps", "revenue service centre"],
+    "schemaAndCrs": "Not verified from a successful parcel feature response.",
+    "nativeFieldNames": "Not retained; no successful feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {
+      "url": "https://www.sindhzameen.gos.pk/Default.aspx",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "TLS hostname verification failed (`no alternative certificate subject name matches target host name`); no certificate exception used."
+    },
+    {
+      "url": "http://sindhzameen.gos.pk/Default.aspx",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 200 HTML portal retrieved. Links/configuration exposed SearchName.aspx, maps.aspx, the official map index, and advertised map.sindhzameen.gos.pk."
+    },
+    {
+      "url": "http://sindhzameen.gos.pk/Centers.aspx",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 200 HTML; Mirpurkhas district service centre row present. No parcel geometry."
+    },
+    {
+      "url": "http://sindhzameen.gos.pk/SearchName.aspx",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 200 HTML; district selector includes Mirpurkhas, but the public form requires CAPTCHA and a personal-name search. No CAPTCHA was solved or bypassed and no unsafe field was requested."
+    },
+    {
+      "url": "http://map.sindhzameen.gos.pk/",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "DNS resolution failed from this environment; no map HTML, configuration, schema, CRS or feature response obtained."
+    }
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {
+    "sampleFile": null,
+    "featureCount": 0,
+    "query": "No WUP-point parcel query submitted because the advertised map host did not resolve and the alternate record-search route required CAPTCHA/personal-name input."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Sindh Zameen is a provincial public land-record service with advertised Deh Maps; Mirpurkhas has an official district service-centre listing.",
+    "verifiedOpenScope": "Official portal/service-centre and general map-index evidence verified; no anonymous complete-polygon feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "remainingUncertainty": "HTTP portal access, HTTPS certificate mismatch, map-host DNS failure and CAPTCHA are route/access findings only, not evidence of cadastral absence. CRS, schema, native identity, parcel coverage and citywide completeness remain unverified.",
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."
+  }
+}

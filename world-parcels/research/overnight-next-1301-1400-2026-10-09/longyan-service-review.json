@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11790-longyan.json",
+  "cityCode": 11790,
+  "purpose": "Document first-party discovery, current public service routes, bounded anonymous access review, and evidence limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Longyan first-party sources establish local real-estate registration and cadastral-survey custody. The public multi-survey platform is reachable anonymously and exposes frontend CRS/configuration, but its public map routes concern land-project publicity and no safe anonymous cadastral parcel ID+geometry response was verified. No parcel sample is retained.",
+  "registryAssessment": "registryFound is true because the Longyan Municipal Natural Resources Bureau explicitly assigns unified real-estate registration, cadastral surveying, and registration-platform responsibilities to its Natural Resources Survey and Registration division. This does not establish an open public parcel-vector service or adapter readiness.",
+  "queries": [
+    {
+      "language": "English",
+      "query": "Longyan China official cadastral map parcel GIS land registration natural resources",
+      "outcome": "Official Longyan sources identified local registry/cadastral custody and the multi-survey platform; no anonymous public parcel endpoint was found.",
+      "actualResultUrls": ["https://zrzyj.longyan.gov.cn/jggk/jgsz/", "https://zrzyj.longyan.gov.cn/zwgk/zcwj/202410/t20241009_2159207.htm", "https://www.lytdt.com:9002/longyan-portal/"]
+    },
+    {
+      "language": "native/local",
+      "script": "Simplified Chinese",
+      "query": "龙岩市 不动产登记 地籍图 地图 自然资源局",
+      "outcome": "官方中文结果确认自然资源调查与登记科（不动产登记局）及其统一登记、权籍调查、不动产测绘、地籍测绘职责；匿名前端未提供安全宗地编号和几何。",
+      "actualResultUrls": ["https://zrzyj.longyan.gov.cn/jggk/jgsz/", "https://zrzyj.longyan.gov.cn/zwgk/zcwj/202410/t20241009_2159207.htm", "https://www.lytdt.com:9002/longyan-portal/"]
+    }
+  ],
+  "attempts": [
+    {"url": "https://zrzyj.longyan.gov.cn/jggk/jgsz/", "method": "GET via first-party search/open", "httpStatus": 200, "result": "Official organization page confirmed local registration/cadastral custody and the responsible division; no parcel response."},
+    {"url": "https://zrzyj.longyan.gov.cn/zwgk/zcwj/202410/t20241009_2159207.htm", "method": "GET", "httpStatus": 200, "result": "Official notice confirmed the municipal multi-survey platform, cadastral-data sharing, and submission to the bureau; no open parcel API or geometry."},
+    {"url": "https://www.lytdt.com:9002/longyan-portal/", "method": "GET", "httpStatus": 200, "result": "Public frontend reachable anonymously; inspected url.config.js and found baseUrl, basemap WKID 3857, and area-data WKID 4548. Public routes are land-project publicity routes; no parcel feature response."},
+    {"url": "https://www.lytdt.com:9002/longyan-dchy-web/", "method": "GET", "httpStatus": 404, "result": "Base API root without a route returned JSON error code 3006; no schema or parcel response."},
+    {"url": "https://www.lytdt.com:9002/longyan-dchy-web/api", "method": "GET", "httpStatus": 404, "result": "Anonymous API-root probe returned JSON error code 3006; no parcel layer or schema was exposed."},
+    {"url": "https://www.lytdt.com:9002/longyan-portal/#/publicityhome/ProjectMap", "method": "GET", "httpStatus": 200, "result": "SPA shell returned; fragment route is client-side and did not itself return a parcel feature collection."}
+  ],
+  "configurationEvidence": {
+    "url": "https://www.lytdt.com:9002/longyan-portal/url.config.js",
+    "httpStatus": 200,
+    "safeFields": {"baseUrl": "https://www.lytdt.com:9002/longyan-dchy-web", "baseMapSpatialReference": {"wkid": 3857}, "areaSpatialReference": {"wkid": 4548}},
+    "note": "Configuration was retained in ignored scratch only; no token or credential values were used or retained. The area CRS is metadata for the platform and is not proof of a cadastral parcel layer."
+  },
+  "geometryEvidence": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "nativeIdField": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "No exact-point parcel containment test was completed. The WUP point [25.0997041427901, 117.024047113305] was preserved exactly and not shifted; protected or absent public parcel responses are not evidence of citywide absence."
+  },
+  "safeFieldAllowlist": ["safe parcel identifier only if publicly exposed and non-personal", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "remainingUncertainty": "The current authenticated viewer configuration, cadastral parcel layer endpoint, native parcel identity, exact-point parcel, and open citywide coverage remain unverified. No credentials, private token values, CAPTCHA/Cloudflare bypass, owner/address/contact/titleholder data, or other unsafe fields were used or retained.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter"
+}

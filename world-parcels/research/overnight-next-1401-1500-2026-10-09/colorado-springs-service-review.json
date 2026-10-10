@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "kind": "parcel_service_review",
+  "checkedAt": "2026-10-09",
+  "cityCode": 6013,
+  "cityRecord": "city-6013-colorado-springs.json",
+  "queueRank": 1436,
+  "city": "Colorado Springs",
+  "country": "United States of America",
+  "countryCode": "US",
+  "source": {
+    "service": "Colorado Public Parcel Composite ArcGIS FeatureServer",
+    "layerUrl": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0",
+    "layerName": "Colorado_Public_Parcel_Composite",
+    "sourceAttribution": "Colorado public GIS parcel service; sample county attribution is El Paso",
+    "nativeFields": {
+      "parcel_id": "public parcel identifier; canonical identity selected",
+      "countyName": "county attribution; requested for locality verification only",
+      "OBJECTID": "service object identifier; not selected as identity"
+    },
+    "sourceCrs": "EPSG:4326",
+    "responseCrs": "EPSG:4326"
+  },
+  "queryAndRequestOutcomes": [
+    {
+      "request": "layer metadata",
+      "method": "GET",
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0?f=pjson",
+      "outcome": "HTTP 200; statewide polygon layer, schema, extent, EPSG:4326 and GeoJSON support verified."
+    },
+    {
+      "request": "exact WUP point intersection",
+      "method": "GET",
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query",
+      "parameters": {
+        "geometry": [-104.758837050009, 38.8771089520909],
+        "geometryType": "esriGeometryPoint",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "outFields": ["parcel_id", "countyName"],
+        "returnGeometry": true,
+        "outSR": 4326,
+        "resultRecordCount": 3
+      },
+      "outcome": "HTTP 200 GeoJSON; one MultiPolygon returned, parcel_id 6334100000 and countyName El Paso."
+    },
+    {
+      "request": "official City planning/GIS discovery",
+      "method": "GET/search",
+      "url": "https://coloradosprings.gov/lurdre",
+      "outcome": "Official City page lists SpringsView and El Paso County Parcel Search as planning tools; City guide separately documents both parcel-search routes."
+    },
+    {
+      "request": "El Paso County parcel layer metadata and bounded point/envelope checks",
+      "method": "GET",
+      "url": "https://services6.arcgis.com/BdgJMGQ8tO6sUTY0/ArcGIS/rest/services/PLSD_GIS/FeatureServer/43",
+      "outcome": "HTTP 200 metadata; exact point and small surrounding envelope returned zero because this layer’s published extent is north of the WUP point. Treated as extent miss, not absence."
+    },
+    {
+      "request": "City SpringsView viewer",
+      "method": "GET",
+      "url": "https://gis.coloradosprings.gov/Html5Viewer/?viewer=springsview",
+      "outcome": "Bounded request timed out; no login, CAPTCHA/Cloudflare bypass, credentials or private token used."
+    }
+  ],
+  "scopeLimits": [
+    "Only one bounded exact-point intersection was queried on the retained service; no citywide completeness claim is made.",
+    "The WUP settlement point is not a municipal boundary and the statewide layer’s county attribution is not proof of city-limit coverage.",
+    "The retained sample is a public GIS geometry, not a legal survey, title record, owner record or tax/account record.",
+    "The El Paso County-specific layer was observed but not used for the sample because its published extent missed the WUP point."
+  ],
+  "safeFieldAllowlist": ["parcel_id", "countyName", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax", "account", "assessment details", "legal description"],
+  "sample": {
+    "file": "colorado-springs-parcel-sample.geojson",
+    "featureCount": 1,
+    "propertiesPolicy": "exactly one canonical native identity only: id=6334100000",
+    "nativeIdentityProvenance": "parcel_id returned by the public Colorado parcel composite; OBJECTID was not used."
+  },
+  "registryFound": true,
+  "verifiedSample": true,
+  "runtimeReadiness": "held",
+  "uncertainty": "A successful exact-point hit and official City/Colorado GIS custody establish a relevant public source, but independent serial review is still required for adapter qualification, municipal coverage, update behavior and legal accuracy."
+}

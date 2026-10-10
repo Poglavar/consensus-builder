@@ -1,0 +1,14 @@
+{
+  "taskId": "city:11593",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-11593-bankura.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/bankura-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/bankura/banglarbhumi.headers"
+  ],
+  "checkedAt": "2026-10-10T17:33:02Z",
+  "reason": "Official land-record custody and mouza-level layer metadata do not establish a Bankura parcel response. Banglarbhumi timed out; no full polygon with safe native ID, fresh adapter qualification, or headed Details verification exists."
+}

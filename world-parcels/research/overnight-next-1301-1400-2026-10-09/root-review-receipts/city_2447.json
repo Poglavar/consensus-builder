@@ -1,0 +1,18 @@
+{
+  "taskId": "city:2447",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-2447-mazatl-n.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/mazatl-n-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-09T15:32:41.602476Z",
+  "reason": "ICES custody and its Mazatlán viewer wrapper are evidenced. The saved viewer backend response is HTTP 522; the separate portal requests a cadastral key and billing details. No anonymous full polygon or safe native-ID feed, adapter qualification, or headed Details evidence exists. Backend failure is not citywide absence.",
+  "custodyDecision": true,
+  "sourceObservation": {
+    "url": "https://www.ices.gob.mx/sistema/visor/manzanero/mazatlan/",
+    "observation": "Original cached wrapper embeds ices-oblix; cached backend header records HTTP 522.",
+    "cacheSha256": "1b6d48697f2da53f0b82c6d62e3175c153a0ed73c12ed0cbc29c958938839ef5"
+  }
+}

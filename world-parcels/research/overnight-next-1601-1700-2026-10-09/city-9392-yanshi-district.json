@@ -1,0 +1,124 @@
+{
+  "cityCode": 9392,
+  "queueRank": 1670,
+  "name": "Yanshi District",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "point": [34.7169941393041, 112.765519949619],
+  "population2025": 342565,
+  "population2025k": 342.565,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Yanshi District Luoyang China official cadastral parcel map land registry GIS",
+        "result": "First-party discovery identified the Henan government service portal for Luoyang Yanshi District, the Luoyang/Yanshi natural-resources planning custodian, and the national Ministry of Natural Resources Real Estate Registration Center directory. No public anonymous parcel geometry viewer or API was identified in the bounded search.",
+        "actualResultUrls": [
+          "https://www.hnzwfw.gov.cn/410381000000/?enterprise_zt=15&region=410381000000&webId=55",
+          "https://oss.ly.gov.cn/upload-file/files/20260423/dc34e6b861a74b6ea0799bc00d23ca11.pdf",
+          "https://rerc.com.cn/"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "偃师区 洛阳市 官方 不动产登记 地籍图 宗地图 自然资源和规划局",
+        "result": "First-party Chinese discovery identified 偃师区政务服务网厅, the Luoyang Natural Resources and Planning Bureau Yanshi branch, and an official Yanshi government service document describing cadastral-survey-table review. The results evidence the local custodian and registration/survey procedures, but did not expose a public anonymous parcel geometry service.",
+        "actualResultUrls": [
+          "https://www.hnzwfw.gov.cn/410381000000/?enterprise_zt=15&region=410381000000&webId=55",
+          "https://yanshi.gov.cn/upload/content/file/20251103/1762163276292493.pdf",
+          "https://www.yanshi.gov.cn/ueditor/php/upload/file/20230111/1673401531818385.pdf"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.hnzwfw.gov.cn/410381000000/?enterprise_zt=15&region=410381000000&webId=55",
+      "observation": "Official Henan government service page for 洛阳市偃师区. It lists the district government service hall and 区自然资源和规划局 among local departments; no parcel geometry endpoint was exposed in bounded inspection."
+    },
+    {
+      "url": "https://oss.ly.gov.cn/upload-file/files/20260423/dc34e6b861a74b6ea0799bc00d23ca11.pdf",
+      "observation": "Official Luoyang budget document identifies 洛阳市偃师区不动产登记中心 and the Yanshi branch's 确权登记科 within the natural-resources/planning organization."
+    },
+    {
+      "url": "https://yanshi.gov.cn/upload/content/file/20251103/1762163276292493.pdf",
+      "observation": "Official Yanshi government document identifies the Yanshi branch as responsible for reviewing cadastral survey forms, including boundaries, spatial limits, area, and clarity of cadastral results. This is procedure/custodian evidence, not a parcel feature feed."
+    },
+    {
+      "url": "https://rerc.com.cn/",
+      "observation": "National Ministry of Natural Resources Real Estate Registration Center site and local-site directory; general national agency context only, not city-specific geometry."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.hnzwfw.gov.cn/410381000000/?enterprise_zt=15&region=410381000000&webId=55",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Loaded official Henan/Yanshi service directory. It exposed department and service-directory context but no public parcel map/API route in bounded HTML inspection. The request received 163642 bytes before completing at the 12-second bound."
+    },
+    {
+      "url": "https://www.yanshi.gov.cn/",
+      "method": "GET",
+      "httpStatus": "timeout",
+      "outcome": "TLS-verified bounded request failed to connect within 6 seconds. No retry with disabled TLS, credentials, CAPTCHA/Cloudflare bypass, or unsafe lookup was attempted."
+    },
+    {
+      "url": "https://www.ly.gov.cn/",
+      "method": "GET",
+      "httpStatus": "timeout",
+      "outcome": "TLS-verified bounded request timed out during DNS resolution after 6 seconds. No inference about parcel absence was made."
+    },
+    {
+      "url": "https://rerc.com.cn/",
+      "method": "GET",
+      "httpStatus": "DNS failure",
+      "outcome": "Bounded request could not resolve the host. Search results still identified the official national registry-center site, but it was not used as city geometry evidence."
+    },
+    {
+      "url": "https://oss.ly.gov.cn/upload-file/files/20260423/dc34e6b861a74b6ea0799bc00d23ca11.pdf",
+      "method": "GET via first-party search result",
+      "httpStatus": 200,
+      "outcome": "Official PDF was indexed and readable through first-party search; it established the Yanshi registration-center/custodian relationship. No parcel geometry was requested or retained."
+    },
+    {
+      "url": "https://yanshi.gov.cn/upload/content/file/20251103/1762163276292493.pdf",
+      "method": "GET via first-party search result",
+      "httpStatus": 200,
+      "outcome": "Official PDF was indexed and readable through first-party search; it established cadastral-survey review responsibilities. No parcel geometry was requested or retained."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Local/state custodian evidence is present: official Henan service directory, Luoyang/Yanshi natural-resources branch budget material, and Yanshi government cadastral-survey procedure material. This does not establish an open city-bounded parcel geometry feed.",
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel feature response retrieved",
+  "geometryQuality": "not evaluated; no parcel geometry retrieved",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": "luoyang-yanshi-natural-resources-real-estate-registration",
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Official Yanshi/Luoyang real-estate registration and cadastral-survey custodians and government service directory.",
+    "cityCoverage": "Yanshi District custodian and service context were evidenced, but no public parcel layer, schema, CRS, stable native parcel ID, or citywide coverage was verified.",
+    "exactPointChecked": false,
+    "note": "The exact WUP point [34.7169941393041, 112.765519949619] was preserved in latitude/longitude order and was not shifted. No exact-point presence/absence inference was made."
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "retainedSample": null,
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "A restricted, account-gated, formal-request, or not-yet-published cadastral service may exist. Public anonymous parcel availability, schema, CRS, native identity, geometry, and runtime access remain unresolved. This packet is research evidence only and is not source integration or adapter admission."
+}

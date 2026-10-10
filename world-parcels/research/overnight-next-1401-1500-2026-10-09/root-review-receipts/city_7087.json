@@ -1,0 +1,19 @@
+{
+  "taskId": "city:7087",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-7087-joharabad.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/joharabad-service-review.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/joharabad-gpc-sample.geojson",
+    "tmp/valhalla-parcel-research/7087/pulse.html",
+    "tmp/valhalla-parcel-research/7087/gpc-0.json",
+    "tmp/valhalla-parcel-research/7087/exact.geojson",
+    "tmp/valhalla-parcel-research/7087/extent.geojson",
+    "tmp/valhalla-parcel-research/runs/20261009T155933-59b9bca2/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-09T16:04:43Z",
+  "finding": "WUP identity and English/Urdu executed searches checked. Original GPC response has three polygons with native GPCParcelId; saved safe-ID sample geometry matches exactly and its three metric polygons are valid and nonoverlapping. Exact-point zero is bounded only. Fresh exact-ID reads, forced paging, 13 cells, complete metric operations, source binding and headed Details check are not evidenced; city held."
+}

@@ -1,0 +1,14 @@
+{
+  "taskId": "city:10780",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-10780-liuyang.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/liuyang-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T09:13:02.972980Z",
+  "reason": "Immutable WUP identity and separate English/Chinese queries checked. Government bureau and Hunan map portal are indications only; direct route timeout/TLS failure does not establish absence. No first-party parcel response, adapter qualification, or admission.",
+  "sourceAdmission": "not_admitted"
+}

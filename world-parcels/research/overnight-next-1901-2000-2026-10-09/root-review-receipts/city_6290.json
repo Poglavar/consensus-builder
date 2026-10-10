@@ -1,0 +1,12 @@
+{
+  "taskId": "city:6290",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-6290-orizaba.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/orizaba-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T18:30:33.704583Z",
+  "reason": "WUP roster and queue match code 6290, rank 1913, Mexico, point, and 300041 persons; English and Spanish searches were executed. The municipal Catastro custodian is corroborated by a live first-party page. No safe native-ID-plus-polygon response, bounded retrieval, paging, 13 cells, metric geometry checks, source binding, or headed Details proof exists. Custody true; public geometry and runtime admission remain unverified."
+}

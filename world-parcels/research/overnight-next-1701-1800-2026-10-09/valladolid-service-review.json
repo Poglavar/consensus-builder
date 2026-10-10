@@ -1,0 +1,76 @@
+{
+  "cityRecord": "city-3109-valladolid.json",
+  "cityCode": 3109,
+  "queueRank": 1778,
+  "city": "Valladolid",
+  "country": "Spain",
+  "countryCode": "ES",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "custodianAssessment": {
+    "local": "Ayuntamiento de Valladolid GIS portal is evidenced as a public municipal cartography portal, but its historical portal URL was unreachable during this attempt.",
+    "national": "The Dirección General del Catastro is the evidenced authoritative national cadastral custodian and supplied the current municipal INSPIRE parcel dataset."
+  },
+  "requests": [
+    {
+      "method": "GET",
+      "url": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/ES.SDGC.CP.atom.xml",
+      "outcome": "200; downloaded national ATOM index and found territorial office 47 Valladolid and municipality 47900-VALLADOLID."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/47/ES.SDGC.CP.atom_47.xml",
+      "outcome": "200; downloaded provincial ATOM index and found the official Valladolid municipal ZIP URL."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/47/47900-VALLADOLID/A.ES.SDGC.CP.47900.zip",
+      "outcome": "200; downloaded the official 2026-08-21 parcel GML dataset, containing 22,876 cadastral parcels and native nationalCadastralReference values."
+    },
+    {
+      "method": "GET",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&request=GetCapabilities",
+      "outcome": "Connection reset by peer from the public legacy WFS host; no schema or feature response retained from this route."
+    },
+    {
+      "method": "GET",
+      "url": "https://ovc.catastro.meh.es/Cartografia/INSPIRE/spadgcwms.aspx?SERVICE=WMS&REQUEST=GetCapabilities",
+      "outcome": "Connection reset by peer from the public legacy WMS host; no map response retained from this route."
+    },
+    {
+      "method": "GET",
+      "url": "http://www10.ava.es/cartografia/",
+      "outcome": "Connection refused/unreachable; municipal GIS portal could not be inspected directly."
+    }
+  ],
+  "boundedQualification": {
+    "wupPoint": [41.6383171910057, -4.72828357608669],
+    "queryCrs": "EPSG:25830",
+    "queryBboxMeters": [356052, 4611058, 356062, 4611068],
+    "resultCount": 1,
+    "nativeId": "6415809UM5161E",
+    "geometryRetained": true,
+    "sampleOutput": "valladolid-parcel-sample.geojson",
+    "interpretation": "A parcel intersects the small query envelope around the WUP point. This is bounded evidence only and does not establish citywide coverage beyond the downloaded municipal dataset."
+  },
+  "schemaAndMapping": {
+    "sourceFieldsObserved": ["gml:id", "cp:nationalCadastralReference", "gml:posList"],
+    "mapping": {"id": "cp:nationalCadastralReference", "geometry": "gml:surfaceProperty/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList"},
+    "compositeKeyProvenance": "None; nationalCadastralReference is the stable native cadastral identity.",
+    "safeFieldAllowlist": ["id", "geometry"],
+    "excludedFields": ["areaValue", "validFrom", "validTo", "label", "beginLifespanVersion", "administrativeUnit", "areaValue", "any owner/address/titleholder/tax fields"]
+  },
+  "uncertaintyAndLimits": [
+    "The municipal GIS portal route was not reachable, and the legacy national WFS/WMS hosts reset connections; those failures are not evidence of source absence.",
+    "The ATOM download is a bulk municipal parcel dataset and was used only to retain one safe parcel geometry; no raw source attribute set was retained in the cohort artifact.",
+    "Exact-point/bounded hit is not a citywide completeness test.",
+    "runtimeReadiness remains held pending independent serial adapter qualification; this packet is not source integration or admission."
+  ],
+  "evidenceUrls": [
+    "https://www.catastro.hacienda.gob.es/webinspire/",
+    "https://www.catastro.hacienda.gob.es/webinspire/documentos/inspire-cp-WFS_en.pdf",
+    "https://www.catastro.hacienda.gob.es/es-ES/wms.html",
+    "https://www.valladolid.es/en/ciudad/urbanismo-vivienda/utilidad/noticias/nace-portal-gis-valladolid"
+  ]
+}

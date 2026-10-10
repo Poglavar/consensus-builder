@@ -1,0 +1,41 @@
+{
+  "taskId": "city:8159",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-8159-campos-dos-goytacazes.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/campos-dos-goytacazes-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T16:55:08Z",
+  "identityCheck": {
+    "rank": 1851,
+    "country": "Brazil",
+    "pointLatLon": [
+      -21.7523065609658,
+      -41.3194155481189
+    ],
+    "populationPersons": 310590,
+    "source": "WUP 2025 compressed archive; SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114"
+  },
+  "bilingualSearches": "English and local-language queries with outcomes/URLs are recorded in the packet and were independently repeated during review.",
+  "registryFound": true,
+  "firstPartyUrlsChecked": [
+    "https://geo.campos.rj.gov.br/",
+    "https://geo.campos.rj.gov.br/index.php/mapas/",
+    "https://geo.campos.rj.gov.br/index.php/dados/",
+    "https://fazenda.campos.rj.gov.br/"
+  ],
+  "reason": "Municipal Geo and Finance pages substantiate geoprocessing and real-estate tax/cadastral custody. Public catalogs and the planning Parcelamento map do not supply safe native parcel IDs with full polygons.",
+  "parcelSampleCount": 0,
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "admitted": false,
+  "absenceFinding": null
+}

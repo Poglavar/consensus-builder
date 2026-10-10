@@ -1,0 +1,14 @@
+{
+  "taskId": "city:6217",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-6217-numazu.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/numazu-service-review.json",
+    "tmp/valhalla-parcel-research/numazu/package.json",
+    "tmp/valhalla-parcel-research/numazu/numazu-2026.geojson"
+  ],
+  "checkedAt": "2026-10-10T08:48:27.609396Z",
+  "reviewNote": "Paired packet records English and Japanese executed queries. Original CKAN cache lists the 2026 municipality resource; cached source GeoJSON has 31,430 polygons, CRS84, and zero exact-WUP-point intersections. Its ID field is unsafe as a standalone parcel key: only 2,507 distinct IDs and repeated IDs map to different geometries. No durable full-polygon sample or independently qualified adapter, paging, 13 cells, metric GEOS checks, binding, or headed Details verification exists; zero point hits do not prove citywide absence."
+}

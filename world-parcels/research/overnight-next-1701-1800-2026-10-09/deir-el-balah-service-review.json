@@ -1,0 +1,31 @@
+{
+  "cityRecord": "city-284-deir-el-balah.json",
+  "cityCode": 284,
+  "queueRank": 1799,
+  "city": "Deir el-Balah",
+  "country": "State of Palestine",
+  "countryCode": "PS",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "runtimeReadiness": "held",
+  "summary": "The Palestinian Land Authority is evidenced as the cadastral/land-registration custodian for Gaza. Its public citizen-services page links to a public ArcGIS parcel-location viewer whose Web Map contains EPSG:3857 polygon layers; a bounded comparison found two candidate TYPE3GAZA8 polygons near the exact preserved Deir el-Balah WUP point. No sample GeoJSON was retained.",
+  "queryOutcomes": "Separate English and Arabic discovery queries are recorded verbatim in city-284-deir-el-balah.json under freshResearch. English discovery found the first-party Gaza Land Authority and public viewer; Arabic discovery found the land-registration, العقارية system, parcel-location service, and Deir el-Balah settlement announcement.",
+  "requestOutcomes": "The public app configuration, Web Map metadata, Web Map data, official land-registration page, official Gaza settlement announcement, and public parcel-location service were read. The Web Map data was inspected only in ignored scratch evidence. No login, CAPTCHA bypass, credentials, private token, unsafe fields, or TLS exception was used.",
+  "scopeLimits": [
+    "The public Web Map is a static May 2022 snapshot, not proof of current live coverage.",
+    "A bounded point-envelope comparison is not a citywide parcel inventory and is not a live feature-service query.",
+    "The exact point and [latitude, longitude] order were preserved; no coordinate was shifted.",
+    "No owner, address, titleholder, contact, tax/account, registration-detail, personal, or other unsafe fields were requested or retained.",
+    "Completion records executed research only; runtime integration remains held pending independent serial qualification."
+  ],
+  "safeFieldAllowlist": ["native parcel identifier", "geometry", "source layer name", "CRS", "public service metadata"],
+  "nativeFieldMapping": "TYPE3GAZA8 exposes FID and OBJECTID plus Arabic parcel/block, classification, and area fields. OBJECTID was selected as the canonical identity for bounded evidence; source attributes were not retained.",
+  "compositeKeyProvenance": "The source has block/parcel component fields and a display value, but no composite key was constructed.",
+  "geometryRetention": {"sampleGeoJSON": null, "featureCount": 0, "reason": "Two candidate polygon geometries were verified in ignored Web Map scratch evidence, but no retained sample was written."},
+  "uncertainty": "Current live endpoint availability, complete city coverage, and independent adapter semantics remain unverified.",
+  "qualificationDecision": "hold",
+  "completionSummary": {"recordWritten": true, "serviceReviewWritten": true, "sampleGeoJSONWritten": false, "openParcelEndpointVerified": false, "adapterQualified": false}
+}

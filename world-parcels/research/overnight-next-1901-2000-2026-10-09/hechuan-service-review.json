@@ -1,0 +1,43 @@
+{
+  "cityRecord": "city-8692-hechuan.json",
+  "schemaVersion": "1.0",
+  "cityCode": 8692,
+  "queueRank": 1966,
+  "city": "Hechuan",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Hechuan district sources establish a local planning/natural-resources and real-estate-registration custodian, including cadastral investigation and surveying responsibilities. Public discovery and bounded GET inspection found no anonymous safe parcel identity plus full polygon geometry service, so no sample GeoJSON is retained and runtime remains held.",
+  "queryOutcomes": "Separate English and Chinese discovery queries, exact text, outcomes and actual result URLs are recorded in city-8692-hechuan.json.",
+  "requestOutcomes": "Official bureau, district-government report, map page and registration-procedure sources were inspected. One direct bureau fetch timed out and one registration-guide fetch intermittently timed out; indexed official content remained available. No public JavaScript/configuration or parcel feature response was obtained.",
+  "attemptedRoutes": [
+    {"route": "Hechuan District Planning and Natural Resources Bureau", "url": "https://ghzrzyj.cq.gov.cn/zz/hcq/", "outcome": "Official local agency route identified; direct 25-second curl timed out; no parcel viewer found."},
+    {"route": "Hechuan bureau institutional functions", "url": "https://ghzrzyj.cq.gov.cn/zz/hcq/zwgk/fdzdgknr/jgzn/?lm=%E8%B4%9F%E8%B4%A3%E4%BA%BA%E4%BF%A1%E6%81%AF", "outcome": "Official indexed content confirms cadastral, registration, surveying and GIS-public-service custody; no anonymous parcel geometry."},
+    {"route": "Hechuan registration guide", "url": "https://ghzrzyj.cq.gov.cn/zz/hcq/zwgk/jczwgk/qqdj/202401/t20240105_12793067.html", "outcome": "Official registration procedure identified; no public parcel API or geometry response."},
+    {"route": "Hechuan government cadastral-platform report", "url": "https://www.hc.gov.cn/bmxx/hmxx/202410/t20241030_13752927.html", "outcome": "HTTP 200; confirms rural cadastral survey mobile platform and integration with registration/one-map systems; no public service endpoint."},
+    {"route": "Hechuan official map page", "url": "https://www.hc.gov.cn/zjhc/hcgk/dt/", "outcome": "HTTP 200; static map/image page; no cadastral layer, schema, CRS or feature request."},
+    {"route": "Hechuan registration-center budget document", "url": "https://ghzrzyj.cq.gov.cn/zwgk_186/fdzdgknr/czyjs/202603/P020260302354990732524.pdf", "outcome": "Official document confirms local registration-center scope; no public geometry route."}
+  ],
+  "scopeLimits": [
+    "Exact WUP point [29.9872370045603, 106.260533311066] was preserved; no exact-point hit/miss inference was made.",
+    "Local registry custody and existence of an internal/mobile cadastral platform do not establish an open vector parcel service or citywide public coverage.",
+    "No stable native parcel identity plus full polygon geometry was retrieved or retained; native field mapping and CRS remain unverified.",
+    "Timeouts and the absence of a public viewer/API are not evidence of cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, personal or other unsafe fields were requested or retained."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No usable city-bounded public geometry response reached; no hit/miss inference.", "requestEvidence": []},
+  "coverageAssessment": {"claimedScope": "Hechuan District official registry and planning/natural-resources sources.", "verifiedOpenScope": "Local custodian and procedure/platform evidence only; no open parcel geometry scope.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Current public parcel viewer/API availability, parcel identity semantics, geometry delivery, CRS, city-boundary relationship and citywide coverage remain unresolved. No claim is made about parcel absence, legal title, ownership or completeness.",
+  "retainedSample": null
+}

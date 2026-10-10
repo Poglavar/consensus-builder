@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-2358-shihezi.json",
+  "purpose": "Document first-party registry/map discovery, current viewer-route outcomes, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "First-party Xinjiang/Bingtuan sources establish the Eighth Division Shihezi Real Estate Registration Center and general cadastral-map inquiry context. No current anonymous safe ID-plus-complete-polygon response was obtained.",
+  "registryAssessment": "Local registry custody found through the official Bingtuan Natural Resources Bureau report naming the Eighth Division Shihezi Real Estate Registration Center and describing its registration operations. The Xinjiang Natural Resources Department guidance is general service context, not proof of a current public Shihezi parcel layer.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zrzy.xjbt.gov.cn/c/2022-01-14/8189887.shtml",
+      "observation": "Official Bingtuan Natural Resources Bureau report says the Eighth Division Shihezi Real Estate Registration Center was established on 2016-06-29 and describes the local registration hall and integrated registration operations."
+    },
+    {
+      "url": "https://zrzyt.xinjiang.gov.cn/xjgtzy/c114961/202405/7c6c2647f8a24055aa8c0f00836d07c9.shtml",
+      "observation": "Official Xinjiang Natural Resources Department guidance describes real-estate registration and cadastral-map inquiry practice, including parcel and building-plan map concepts; it does not publish a Shihezi parcel API."
+    }
+  ],
+  "viewerConfiguration": {
+    "documentedHomeUrl": null,
+    "observedServiceTypes": ["local real-estate registration center", "general cadastral-map inquiry guidance"],
+    "schemaAndCrs": "Not verified from a successful parcel feature response.",
+    "nativeFieldNames": "Not retained; no successful feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {
+      "url": "https://zrzy.xjbt.gov.cn/c/2022-01-14/8189887.shtml",
+      "method": "GET/web search result and public GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 200; official report opened successfully and identified the local Shihezi registration center. No parcel geometry or service configuration."
+    },
+    {
+      "url": "https://zrzyt.xinjiang.gov.cn/xjgtzy/c114961/202405/7c6c2647f8a24055aa8c0f00836d07c9.shtml",
+      "method": "GET/web search result and public GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 200; official guidance opened successfully and described cadastral-map inquiry generally. No Shihezi parcel endpoint, schema, CRS or geometry."
+    },
+    {
+      "url": "https://shz.gov.cn/",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 200 for the official Shihezi government homepage; no parcel viewer/API route was identified during bounded inspection."
+    },
+    {
+      "url": "https://shz.gov.cn/map; https://shz.gov.cn/dt",
+      "method": "GET guessed route probes",
+      "normalTlsVerification": true,
+      "result": "The /map probe returned HTTP 404; the bounded request sequence did not produce a parcel service. Guessed routes were not treated as official parcel evidence."
+    }
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {
+    "sampleFile": null,
+    "featureCount": 0,
+    "query": "No WUP-point parcel query submitted because no current official anonymous parcel endpoint was identified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Bingtuan evidence covers local registration custody; official Xinjiang guidance covers general cadastral-map inquiry practice.",
+    "verifiedOpenScope": "Official local custodian and general cadastral-map context verified; no current anonymous complete-polygon feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "remainingUncertainty": "Discovery and route limitations are not evidence of cadastral absence. Current Shihezi viewer/API URL, schema, CRS, native identity, geometry availability and citywide completeness remain unverified.",
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."
+  }
+}

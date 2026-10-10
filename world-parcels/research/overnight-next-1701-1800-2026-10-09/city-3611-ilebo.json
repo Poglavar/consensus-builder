@@ -1,0 +1,144 @@
+{
+  "cityCode": 3611,
+  "queueRank": 1791,
+  "city": "Ilebo",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "point": [-4.3311216762079, 20.5935225564304],
+  "population2025": 321392,
+  "population2025k": 321.392,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ilebo Democratic Republic of the Congo official cadastral land registry parcel map cadastre",
+        "result": "First-party discovery located the official Ministry of Land Affairs website and its public land-research service. The results document the national cadastre/land registry custodian and a request procedure, but no anonymous Ilebo parcel map or downloadable parcel vector layer.",
+        "actualResultUrls": [
+          "https://www.affairesfoncieres.gouv.cd/",
+          "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+          "https://servicepublic.gouv.cd/service/4671"
+        ]
+      },
+      {
+        "language": "French (local/official language)",
+        "query": "Ilebo RDC cadastre parcelles carte foncière officiel",
+        "result": "La recherche en français a confirmé le Ministère des Affaires Foncières comme custodian national et a trouvé la procédure officielle de recherche foncière. Aucun visualiseur public de parcelles d'Ilebo ni service anonyme de géométrie n'a été identifié.",
+        "actualResultUrls": [
+          "https://www.affairesfoncieres.gouv.cd/",
+          "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+          "https://servicepublic.gouv.cd/service/4671"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": "Ministère des Affaires Foncières de la République démocratique du Congo; local custodians are the relevant Conservateur des Titres Immobiliers and Chef de Division du Cadastre, but an Ilebo-specific office/layer was not verified.",
+  "registryEvidence": {
+    "officialSite": "https://www.affairesfoncieres.gouv.cd/",
+    "publicProcedureUrl": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+    "serviceCatalogueUrl": "https://servicepublic.gouv.cd/service/4671",
+    "evidence": "The Ministry site describes land affairs and cadastre services. The official request form asks for province, land registry district, commune/territory and parcel/reference fields. The public-service catalogue describes consultation of cadastral and real-estate registers through the Conservateur des Titres Immobiliers or Chef de Division du Cadastre.",
+    "ileboSpecificCustodian": null
+  },
+  "sourceReview": {
+    "service": "Official RDC Ministry of Land Affairs public website and land-research request workflow",
+    "baseUrl": "https://www.affairesfoncieres.gouv.cd/",
+    "officialAssetsInspected": [
+      "/",
+      "/services-fonciers/demandes",
+      "/robots.txt",
+      "/sitemap.xml",
+      "/api/demandes-foncieres"
+    ],
+    "configurationFindings": "Current page JavaScript was inspected. The form submits multipart data to /api/demandes-foncieres. No public parcel-map, WMS, WFS, GeoJSON, vector-tile, or anonymous ID+geometry route was exposed in the inspected page assets.",
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "crs": null,
+    "safeFieldAllowlist": [
+      "stable native parcel identifier only, if independently confirmed",
+      "full parcel polygon geometry",
+      "geometry CRS / coordinate reference metadata",
+      "public service and layer metadata"
+    ]
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://www.affairesfoncieres.gouv.cd/",
+      "outcome": "200; official Ministry landing page readable over verified TLS; national cadastre/land-affairs role evidenced; no login used."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+      "outcome": "200; official French-language land-research form readable. It requires personal identity, contact, identification documents and property references; no form was submitted."
+    },
+    {
+      "method": "GET",
+      "url": "https://servicepublic.gouv.cd/service/4671",
+      "outcome": "200; official public-service catalogue describes cadastral/register consultation and directs requests to the Conservateur des Titres Immobiliers or Chef de Division du Cadastre. It is procedural prose, not a parcel geometry service."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.affairesfoncieres.gouv.cd/robots.txt",
+      "outcome": "200; no parcel-service route identified."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.affairesfoncieres.gouv.cd/sitemap.xml",
+      "outcome": "200; official URL inventory inspected; no public Ilebo parcel viewer or geometry endpoint identified."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.affairesfoncieres.gouv.cd/api/demandes-foncieres",
+      "outcome": "405 Method Not Allowed; route exists for form submission but does not provide anonymous GET data. POST was not attempted because the form requires identity/documents and would create a real service request."
+    },
+    {
+      "method": "GET",
+      "url": "https://backend-cadastre.193.203.191.123.sslip.io/wp-json/",
+      "outcome": "200; public CMS API index readable, but it exposed ministry content rather than a verified anonymous Ilebo parcel layer or safe parcel ID+geometry response."
+    },
+    {
+      "method": "GET",
+      "url": "https://bic.cd/",
+      "outcome": "200; non-government BIC landing page describes cadastral information across 26 provinces, but no public parcel API or Ilebo geometry endpoint was exposed by the landing page. Not treated as first-party government evidence."
+    },
+    {
+      "method": "GET",
+      "url": "https://ins.gouv.cd/cartographie",
+      "outcome": "200; official National Statistics cartography page describes statistical mapping, not a cadastral parcel service; no parcel geometry retained."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed against parcel geometry; no geometry endpoint was available, and the exact WUP point was not shifted.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "National land-affairs/cadastre administration and request procedure",
+    "verifiedOpenScope": "Official national custodian and procedural register access only; no open Ilebo parcel vector response verified",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": [
+    "The official evidence distinguishes the national Ministry custodian and a formal register-search procedure from a local Ilebo map service; an Ilebo-specific registry office was not independently evidenced.",
+    "No owner, address, contact, titleholder, personal, tax, account, or unsafe fields were requested, submitted, or retained.",
+    "The form POST route was intentionally not submitted because doing so would require identity/document data and create an external service request.",
+    "No exact-point hit, map extent miss, timeout, login wall, unavailable UI, or absent endpoint was treated as evidence of citywide parcel absence.",
+    "No raw source-specific attribute set or GeoJSON sample was retained because no safe native parcel ID plus geometry response was verified.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Open parcel coverage, Ilebo local custodian, stable native parcel identity semantics, schema, CRS, geometry endpoint, and citywide completeness remain unresolved.",
+  "retainedSample": null
+}

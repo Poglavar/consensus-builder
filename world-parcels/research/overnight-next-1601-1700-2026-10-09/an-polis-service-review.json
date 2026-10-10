@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-5305-an-polis.json",
+  "cityCode": 5305,
+  "queueRank": 1610,
+  "city": "Anápolis",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Prefeitura de Anápolis sources establish a local municipal cadastral/map custodian and identify the Geomais portal plus mapoteca and cadastral-sheet services. No anonymous parcel ID plus geometry response was verified; no GeoJSON sample was retained. This is not evidence of citywide cadastral absence.",
+  "queryOutcomes": "English and Brazilian Portuguese discovery queries are recorded in city-5305-an-polis.json. Results were limited to official municipal Geomais, mapoteca/planning, citizen portal and cadastral-sheet pages.",
+  "requestOutcomes": "Geomais direct GET timed out after 20 seconds; the indexed landing page is JavaScript-only with login/access controls. Official mapoteca, cadastral-sheet and citizen-portal pages were reviewed as first-party HTML evidence; cadastral-sheet services require login. No credentials, private tokens or unsafe property fields were used.",
+  "scopeLimits": [
+    "Local municipal custody is evidenced, but no city boundary or complete Anápolis parcel coverage was established.",
+    "No exact-point hit/miss was used as an absence claim; the WUP point remains [-16.3250430006323, -48.9520198956505].",
+    "No parcel geometry, native parcel ID, schema or CRS was retrieved, so no sample GeoJSON was retained.",
+    "General/national agency prose was not used to claim a local open registry; only Prefeitura de Anápolis sources support registryFound=true.",
+    "Packet completion does not qualify or admit a runtime adapter."
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "excludedFields": [
+    "owner or titleholder names",
+    "addresses and contact data",
+    "tax/account/registration details beyond a safe native parcel ID",
+    "credentials, private tokens and personal data"
+  ],
+  "nativeIdentityPolicy": "No native parcel identity was observed; no synthetic identity was created. If a future public response is found, retain only one stable native identity in GeoJSON properties and document source field mapping here.",
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No parcel geometry query reached a usable public service. The exact WUP point was preserved but no hit/miss inference was made.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal Geomais/mapoteca/cadastral services for Anápolis.",
+    "verifiedOpenScope": "Municipal custody and described services verified; open parcel geometry not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current viewer/API endpoint, anonymous access behavior, layer schema, CRS, stable native parcel identity and exact-point coverage remain unknown. Direct timeout and login wall are recorded as access limitations, not absence claims.",
+  "retainedSample": null
+}

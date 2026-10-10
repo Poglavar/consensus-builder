@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09T11:52:00Z",
+  "cityCode": 6914,
+  "queueRank": 1234,
+  "cityId": "wup:6914",
+  "name": "Haripur",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "centerLatLon": [33.9992678950979, 72.9293728128631],
+  "point": [33.9992678950979, 72.9293728128631],
+  "population2025": 451578,
+  "population2025k": 451.578,
+  "populationUnit": "persons",
+  "year": 2025,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Haripur Pakistan official cadastral map land records parcel GIS Khyber Pakhtunkhwa",
+        "result": "Found the official Khyber Pakhtunkhwa Revenue & Estate Department computerization page, which explicitly lists Haripur in Phase II and reports 366/366 notified mauzas, 329 operational, and 90% current progress. The official CLRMIS/e-Fard portal describes ownership-record search and account/biometric requirements. No anonymous parcel map or safe vector feature endpoint was exposed.",
+        "actualResultUrls": [
+          "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+          "https://efard.kplr.gkp.pk/",
+          "https://kplr.gkp.pk/",
+          "https://revenue.kp.gov.pk/latest-home/"
+        ]
+      },
+      {
+        "language": "Urdu",
+        "query": "ہری پور پاکستان سرکاری اراضی ریکارڈ کادستر نقشہ GIS خیبر پختونخوا",
+        "result": "Search results returned the official Khyber Pakhtunkhwa Revenue & Estate Department land-record computerization page and the official e-Fard/CLRMIS service. The service workflow requires registration, personal identity information, and biometric verification for ownership-record search; no anonymous safe parcel geometry was returned or retained.",
+        "actualResultUrls": [
+          "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+          "https://efard.kplr.gkp.pk/",
+          "https://kplr.gkp.pk/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+      "observation": "Official Revenue & Estate Department page identifies Haripur in Phase II of Khyber Pakhtunkhwa land-record computerization and reports 366 notified mauzas, 329 operational, and 90% current progress. It describes computerized Fard, mutations, and Fard-e-Bader services."
+    },
+    {
+      "url": "https://efard.kplr.gkp.pk/",
+      "observation": "Official Board of Revenue digital property-record portal states that ownership-record search uses registered name, father's name, and CNIC, and its published workflow requires account creation and NADRA biometric verification. This is an identity-gated record service, not an anonymous parcel geometry viewer."
+    },
+    {
+      "url": "https://kplr.gkp.pk/",
+      "observation": "Official Revenue & Estate Department / KPLR service portal describes computerized land-record service delivery and SDC appointment/search workflows. No public vector parcel layer or safe anonymous geometry endpoint was exposed in the fetched page."
+    },
+    {
+      "url": "https://revenue.kp.gov.pk/latest-home/",
+      "observation": "Official provincial Revenue & Estate Department landing page identifies Board of Revenue land services including Fard issuance, land records, and service-center access."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official Haripur-specific digitization status was retrieved; no parcel schema, CRS, feature identifier, or geometry service was linked."
+    },
+    {
+      "url": "https://efard.kplr.gkp.pk/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Public landing page loaded. It exposes an identity-gated ownership-record workflow requiring registration and biometric verification; no anonymous safe feature response was requested."
+    },
+    {
+      "url": "https://kplr.gkp.pk/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Public service portal loaded. The page describes land-record and SDC services but did not expose a public parcel-map/API route or safe ID-plus-geometry response."
+    },
+    {
+      "url": "https://revenue.kp.gov.pk/latest-home/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official Revenue & Estate Department service landing page loaded; no anonymous parcel geometry endpoint was identified."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Official Khyber Pakhtunkhwa Revenue & Estate Department material is Haripur-specific at district level and documents the provincial Board of Revenue land-record custodian, computerized Fard/mutation services, and operational digitization progress. This establishes local/provincial registry procedure and custody context, not legal title completeness or citywide vector coverage.",
+  "registryEvidenceUrls": [
+    "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+    "https://efard.kplr.gkp.pk/",
+    "https://kplr.gkp.pk/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "url": "https://efard.kplr.gkp.pk/",
+    "kind": "Official Khyber Pakhtunkhwa Board of Revenue identity-gated digital property-record service",
+    "publisher": "Revenue & Estate Department, Government of Khyber Pakhtunkhwa",
+    "scope": "District-level land-record service including Haripur program coverage; anonymous parcel-vector access was not verified.",
+    "safeSampleFile": null,
+    "sampleAttributes": "none retained",
+    "nativeFields": []
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not run: the official services reviewed are identity-gated record workflows or general program/service pages and did not return an anonymous parcel feature layer. The exact WUP point was preserved and not shifted.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Khyber Pakhtunkhwa Board of Revenue land-record services and Haripur district Phase II digitization program.",
+    "verifiedOpenScope": "Haripur-specific administrative/digitization coverage and public service procedure only; no anonymous safe vector parcel response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["safe parcel/cadastral identifier only if exposed by a future anonymous endpoint", "geometry"],
+  "runtimeReadiness": "held_quality_review",
+  "resultCategory": "official_registry_context_no_verified_public_geometry",
+  "status": "complete",
+  "remainingUncertainty": "The Haripur progress figures are district/mauza program metrics, not proof that the WUP city footprint is fully covered. The e-Fard workflow is identity-gated and no public parcel schema, CRS, native identity, or geometry response was available. No owner, address, contact, titleholder, tax, account, CNIC, or other unsafe fields were requested or retained."
+}

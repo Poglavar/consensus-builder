@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:8051",
+  "cityCode": 8051,
+  "wupCityCode": 8051,
+  "name": "Xingping",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "rank": 1575,
+  "queueRank": 1575,
+  "point": [34.3001065572028, 108.455603602849],
+  "centerLatLon": [34.3001065572028, 108.455603602849],
+  "pointBasis": "Exact WUP2025 point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 363206,
+  "population2025k": 363.206,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "The official Xianyang government portal links an Xingping government site, and the official Shaanxi Tianditu portal is a provincial public geospatial platform. This attempt did not verify a Xingping-specific cadastral or real-estate-registration procedure or a current public parcel feature service, so registry custody remains unpromoted.",
+  "registryEvidenceUrls": [
+    "https://www.xianyang.gov.cn/",
+    "http://www.snxingping.gov.cn",
+    "https://shaanxi.tianditu.gov.cn/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The official Shaanxi Tianditu home page was retrieved and exposed the current portal bundle, but a bounded download of its main JavaScript bundle timed out before the viewer's service configuration could be fully inspected. Direct requests to Xingping's linked government host did not expose a verified cadastral endpoint or safe parcel response. No credentials, CAPTCHA bypass, certificate exception or unsafe property query was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "official-provincial-map-and-local-government-indication_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Official Xianyang/Xingping government linkage and the official Shaanxi public geospatial portal were checked; these do not by themselves establish a public Xingping cadastral layer.",
+    "verifiedOpenScope": "Official government and provincial map-platform sources were identified; current Xingping parcel layer, schema, CRS, native identity and anonymous geometry response were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Xingping China official cadastral map parcel natural resources bureau public map API",
+        "scope": "Identify a local registry custodian and an official public cadastral or geospatial map route.",
+        "result": "Search did not expose a Xingping-specific public parcel API. It identified the official Xianyang government portal and the official Shaanxi Tianditu portal; the Xianyang portal links the Xingping government site.",
+        "actualResultUrls": [
+          "https://www.xianyang.gov.cn/",
+          "http://www.snxingping.gov.cn",
+          "https://shaanxi.tianditu.gov.cn/"
+        ],
+        "executionMethod": "Separate English web search followed by first-party page inspection and bounded public GET requests."
+      },
+      {
+        "language": "native/local",
+        "query": "兴平市 不动产登记 地籍图 查询 官方",
+        "scope": "Independent Chinese-language discovery for a local official registry or cadastral-map route.",
+        "result": "Chinese-language search identified the official Shaanxi Tianditu portal and official Xianyang government material linking Xingping, but no current Xingping public cadastral layer, native ID schema or safe anonymous polygon response was found.",
+        "actualResultUrls": [
+          "https://shaanxi.tianditu.gov.cn/",
+          "https://www.xianyang.gov.cn/",
+          "http://www.snxingping.gov.cn"
+        ],
+        "executionMethod": "Separate Chinese-language web search followed by first-party page inspection and bounded public GET requests."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "first_attempt",
+    "attemptEvidence": []
+  },
+  "remainingUncertainty": "The JavaScript timeout and lack of an exposed parcel endpoint are access/discovery limitations only and do not support citywide absence. Current Xingping service URL, parcel schema, CRS, stable native identity, safe field availability, polygon availability and citywide completeness remain unverified.",
+  "nextStep": "Serial reviewer may independently qualify a current official Xingping/Xianyang/Shaanxi cadastral service. Do not enable runtime from this packet alone."
+}

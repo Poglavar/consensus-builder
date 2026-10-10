@@ -1,0 +1,15 @@
+{
+  "taskId": "city:7718",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-7718-qili.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/qili-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T15:46:05Z",
+  "reviewNotes": "Official Hantai page identifies Qili and the Hanzhong registration-center page supports institutional custody; no public native-ID polygon response or adapter qualification. CloudWAF is not absence evidence.",
+  "admissionGate": "Held. Packet completion and bounded responses do not establish the live adapter qualification required for admission; registry, catalog, city configuration and generated reports were not changed."
+}

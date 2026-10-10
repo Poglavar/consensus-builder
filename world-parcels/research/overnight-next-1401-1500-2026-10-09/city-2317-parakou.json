@@ -1,0 +1,55 @@
+{
+  "cityCode": 2317,
+  "queueRank": 1433,
+  "country": "Benin",
+  "countryCode": "BJ",
+  "point": [9.3503067221846, 2.62184184014862],
+  "population2025": 395528,
+  "population2025k": 395.528,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Parakou Benin cadastre parcel map official",
+        "result": "First-party discovery found the official Benin National Cadastre viewer, the official National Agency for Land and Property (ANDF), and an official ANDF notice stating that Parakou was among the communes integrated into e-Foncier from 1 January 2025. No anonymous parcel feature response was obtained.",
+        "actualResultUrls": [
+          "https://www.cadastre.bj/",
+          "https://andf.bj/",
+          "https://andf.bj/formalisation-fonciere-12-communes-desormais-integrees-a-la-plateforme-e-foncier-benin-des-janvier-2025/"
+        ]
+      },
+      {
+        "language": "French (native/local)",
+        "query": "Parakou Bénin cadastre parcellaire carte site officiel",
+        "result": "First-party discovery found the official Mairie de Parakou land-management report, which reports 161,934 parcels and ongoing e-Foncier strengthening, plus the official ANDF e-Foncier integration notice. No anonymous parcel feature response was obtained.",
+        "actualResultUrls": [
+          "https://www.parakou.bj/actualite/premiere-seance-de-reddition-de-comptes-de-2026-le-maire-de-parakou-zul-kifly-zakarie-fait-le-point-sur-la-gestion-fonciere",
+          "https://andf.bj/formalisation-fonciere-12-communes-desormais-integrees-a-la-plateforme-e-foncier-benin-des-janvier-2025/",
+          "https://www.cadastre.bj/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "custodian": "Agence Nationale du Domaine et du Foncier (ANDF), with the Mairie de Parakou as the evidenced local municipal land-management office",
+    "localOffice": "Mairie de Parakou — Urbanisme et Affaires domaniales / municipal land-management context",
+    "localOfficeEvidenceUrl": "https://www.parakou.bj/actualite/premiere-seance-de-reddition-de-comptes-de-2026-le-maire-de-parakou-zul-kifly-zakarie-fait-le-point-sur-la-gestion-fonciere",
+    "sourceScope": "Official Benin national e-Foncier/cadastre program covering Parakou, with municipal reporting on parceling and land administration. This establishes registry/cadastre context, not open geometry access.",
+    "geometryAccess": "No credentials, private tokens, CAPTCHA/Cloudflare bypass, or owner/address/titleholder/personal fields were used. The public viewer could not be inspected through a verified anonymous request during this attempt."
+  },
+  "geometry": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not performed against a public parcel feature service. A certificate-verification failure and a web-fetch timeout are not evidence of citywide absence.",
+    "crs": null
+  },
+  "runtimeReadiness": {
+    "status": "held",
+    "reason": "A local/national cadastral custodian and Parakou coverage are evidenced, but no anonymous safe-ID geometry response, schema/CRS, or independently qualified adapter was found.",
+    "adapterAdmission": false
+  }
+}

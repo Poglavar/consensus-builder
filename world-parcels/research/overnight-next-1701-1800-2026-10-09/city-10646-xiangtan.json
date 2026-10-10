@@ -1,0 +1,91 @@
+{
+  "cityCode": 10646,
+  "queueRank": 1757,
+  "name": "Xiangtan",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [27.8438177084215, 112.941008896496],
+  "population2025": 326965,
+  "population2025k": 326.965,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Xiangtan China official cadastral parcel map land registry GIS service",
+        "result": "Search identified official Hunan/Xiangtan government evidence for municipal land-resource and property-registration services, including the Xiangtan Land Supermarket. No public anonymous parcel feature endpoint or safe parcel geometry response was found.",
+        "actualResultUrls": [
+          "https://zrzyt.hunan.gov.cn/xxgk/gzdt/sxxx/202402/t20240208_32848464.html",
+          "https://zrzyt.hunan.gov.cn/xxgk/gzdt/sxxx/202310/t20231008_31619536.html",
+          "https://gxpt.zrzyt.hunan.gov.cn/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "湘潭 官方 不动产登记 地籍图 宗地 地图 GIS 服务",
+        "result": "Official Hunan Natural Resources reporting says Xiangtan's urban property-registration centre provides parcel maps (宗地图) and related registration information through an electronic certificate QR-code service. The report and linked public platform do not expose an anonymous parcel-ID plus geometry API.",
+        "actualResultUrls": [
+          "https://zrzyt.hunan.gov.cn/xxgk/gzdt/sxxx/202310/t20231008_31619536.html",
+          "https://zrzyt.hunan.gov.cn/xxgk/gzdt/sxxx/202402/t20240208_32848464.html",
+          "https://zwfw-new.hunan.gov.cn/onething/service/hnservicepowerinfo.jsp?areacode=430301000000&business_activity_classificati=&charName=&life_event=&main=1&make_transaction=&minSeq=&orgId=&pager.desc=true&pager.offset=690&themesType=&transact_level=&type=xndtgr&typeIds=&typeid=&word="
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Official Hunan reporting identifies the Xiangtan municipal Natural Resources and Planning Bureau and Xiangtan Real Estate Registration Centre as the local custodians of urban property-registration records and parcel-map attachments. This evidences a local registry/service custodian, not an open vector parcel service.",
+  "officialSources": [
+    {
+      "url": "https://zrzyt.hunan.gov.cn/xxgk/gzdt/sxxx/202310/t20231008_31619536.html",
+      "observation": "Official Hunan Natural Resources report states that Xiangtan's urban property-registration centre implemented electronic certificate QR codes providing access to parcel maps, floor plans and registration-related information. No public geometry endpoint or safe native parcel ID is published."
+    },
+    {
+      "url": "https://zrzyt.hunan.gov.cn/xxgk/gzdt/sxxx/202402/t20240208_32848464.html",
+      "observation": "Official Hunan report says Xiangtan's Natural Resources and Planning Bureau led a Land Supermarket / natural-resource transaction platform with map-based land presentation. The article does not publish a cadastral parcel layer, schema or anonymous geometry API."
+    },
+    {
+      "url": "https://zwfw-new.hunan.gov.cn/onething/service/hnservicepowerinfo.jsp?areacode=430301000000&business_activity_classificati=&charName=&life_event=&main=1&make_transaction=&minSeq=&orgId=&pager.desc=true&pager.offset=690&themesType=&transact_level=&type=xndtgr&typeIds=&typeid=&word=",
+      "observation": "Hunan government service catalogue lists Xiangtan Natural Resources and Planning Bureau land-registration services; this is procedural service evidence, not open parcel geometry."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://zrzyt.hunan.gov.cn/xxgk/gzdt/sxxx/202310/t20231008_31619536.html",
+      "method": "GET via public web search/open",
+      "outcome": "Official page readable; confirms Xiangtan urban parcel-map access through certificate QR code. No machine-readable parcel response."
+    },
+    {
+      "url": "https://zrzyt.hunan.gov.cn/xxgk/gzdt/sxxx/202402/t20240208_32848464.html",
+      "method": "GET via public web search/open",
+      "outcome": "Official page readable; confirms municipal Land Supermarket platform and map-based land presentation. No public parcel schema or geometry route."
+    },
+    {
+      "url": "https://gxpt.zrzyt.hunan.gov.cn/",
+      "method": "GET",
+      "outcome": "Anonymous request timed out after 20 seconds from this environment; no TLS bypass or retry escalation used. Timeout is not treated as evidence of absence."
+    },
+    {
+      "url": "https://zwfw-new.hunan.gov.cn/onething/service/hnservicepowerinfo.jsp?areacode=430301000000&business_activity_classificati=&charName=&life_event=&main=1&make_transaction=&minSeq=&orgId=&pager.desc=true&pager.offset=690&themesType=&transact_level=&type=xndtgr&typeIds=&typeid=&word=",
+      "method": "GET via public web search/open",
+      "outcome": "Public service catalogue readable; procedural registration services listed, but no parcel geometry or safe native identifier response."
+    }
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Xiangtan municipal property-registration services and municipal/provincial natural-resource transaction/map platforms.",
+    "verifiedOpenScope": "Local registry and public land-presentation/service descriptions only; no open parcel geometry scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": "Exact WUP point retained in latitude/longitude order. No exact-point hit/miss inference was made. No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields or global TLS-disable action was used. No GeoJSON sample is retained. Packet completion is not source integration or runtime admission."
+}

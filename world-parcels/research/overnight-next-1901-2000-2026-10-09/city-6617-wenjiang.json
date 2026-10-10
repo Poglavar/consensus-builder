@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 6617,
+  "queueRank": 1949,
+  "name": "Wenjiang",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [30.7009918308298, 103.835825307731],
+  "population2025": 296976,
+  "population2025k": 296.976,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Wenjiang Chengdu China official cadastral parcel map land registration geoportal API",
+        "result": "First-party Chengdu geospatial-service results identified the Chengdu City Common Geospatial Information Service Platform and its official Wenjiang-enabled map application. No anonymous cadastral parcel feature endpoint, schema, CRS, or safe parcel identity was exposed in the discovered pages.",
+        "actualResultUrls": [
+          "https://cdmap.cd168.cn/",
+          "https://sichuan.tianditu.gov.cn/chengdu/public/service.aspx",
+          "https://www.chengdu.gov.cn/data/oportal/index"
+        ]
+      },
+      {
+        "language": "Chinese (local/official language)",
+        "query": "温江区 不动产登记 地籍图 宗地图 官方 成都市 规划和自然资源 地图 服务",
+        "result": "First-party Wenjiang government-service results confirmed local real-estate-registration and natural-resources procedures, while the Chengdu official geospatial portal lists Wenjiang as a selectable district. The public pages did not expose anonymous parcel geometry or a cadastral API response.",
+        "actualResultUrls": [
+          "https://cdswjq.sczwfw.gov.cn/",
+          "https://cdmap.cd168.cn/",
+          "https://www.chengdu.gov.cn/data/oportal/index"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://cdswjq.sczwfw.gov.cn/",
+      "operator": "成都市温江区政务服务网 / Wenjiang District Government Service Portal",
+      "evidence": "First-party local government portal; its housing and government-service sections provide the local administrative service context, and related official material identifies the district planning and natural-resources authority's role in real-estate registration. It does not publish parcel geometry."
+    },
+    {
+      "url": "https://cdmap.cd168.cn/",
+      "operator": "成都市规划和自然资源局 / Chengdu Municipal Planning and Natural Resources Bureau (officially identified host platform)",
+      "evidence": "Officially branded Chengdu geospatial public-service application with Wenjiang as a selectable district. The retrieved JavaScript/configuration was for general place/category map content, not cadastral parcels."
+    },
+    {
+      "url": "https://www.chengdu.gov.cn/data/oportal/index",
+      "operator": "成都市公共数据开放平台 / Chengdu Open Data Platform",
+      "evidence": "First-party municipal open-data portal lists geographic-space data and the municipal planning/natural-resources department, but no public Wenjiang parcel layer was identified in the accessible page."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://cdmap.cd168.cn/",
+      "method": "GET via curl with verified TLS",
+      "status": 200,
+      "summary": "Downloaded and inspected the current HTML. It exposed the Wenjiang category entry, map metadata, and ordinary application scripts; no cadastral parcel layer, feature-service URL, response schema, or safe parcel ID field was exposed."
+    },
+    {
+      "url": "https://sichuan.tianditu.gov.cn/chengdu/public/service.aspx",
+      "method": "GET via first-party web retrieval",
+      "status": "indexed",
+      "summary": "Official Chengdu geospatial public-service resource page found; no anonymous cadastral parcel endpoint was exposed in the retrieved result."
+    },
+    {
+      "url": "https://cdswjq.sczwfw.gov.cn/",
+      "method": "GET via first-party web retrieval",
+      "status": "indexed",
+      "summary": "Official Wenjiang government-service portal retrieved. It confirms local administrative service scope but did not expose a public parcel map/API or geometry response."
+    },
+    {
+      "url": "https://www.chengdu.gov.cn/data/oportal/index",
+      "method": "GET via first-party web retrieval",
+      "status": "indexed",
+      "summary": "Official Chengdu open-data portal retrieved and inspected for geographic-space and planning/natural-resources resources; no anonymous Wenjiang parcel feature route was identified."
+    },
+    {
+      "url": "WUP exact point [30.7009918308298, 103.835825307731]",
+      "method": "parcel point query",
+      "status": "not run",
+      "summary": "No usable anonymous parcel endpoint was identified, so exact-point testing was not possible. This is an access/discovery limitation, not evidence of citywide absence."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": null,
+    "fallbackOidField": null,
+    "compositeKey": null,
+    "fieldMapping": {
+      "geometry": "Not available: no anonymous parcel feature response was returned.",
+      "native identity": "Not available: no parcel feature schema or safe native ID was exposed."
+    },
+    "crs": "Not confirmed.",
+    "geometryType": "Not confirmed."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Wenjiang local government, planning/natural-resources, registration, and Chengdu public geospatial service context is evidenced.",
+    "verifiedOpenScope": "Local custodian/service context only; open citywide parcel geometry coverage was not verified.",
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "No point or parcel response was obtained. This is not evidence of citywide absence."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["geometry", "stable native parcel identifier if later exposed", "CRS", "non-sensitive layer/schema metadata"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "tax", "account", "legal description", "rights/title details", "personal identifiers"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_local_registry_custodian_geometry_unverified",
+  "remainingUncertainty": "A local or municipal authenticated/undiscovered cadastral service may exist. Current anonymous routes did not provide parcel geometry, schema, CRS, stable native identity, or citywide completeness evidence.",
+  "nextStep": "Serial reviewer should independently inspect the current Chengdu/Wenjiang registration or geospatial portal and qualify any public parcel endpoint, schema, CRS, safe native ID, bounded geometry response, and coverage before adapter admission."
+}

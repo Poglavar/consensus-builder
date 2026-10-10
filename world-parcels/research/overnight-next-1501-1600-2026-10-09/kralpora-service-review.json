@@ -1,0 +1,27 @@
+{
+  "cityRecord": "city-151-kralpora.json",
+  "schemaVersion": 1,
+  "cityCode": 151,
+  "queueRank": 1503,
+  "city": "Kralpora",
+  "country": "India",
+  "countryCode": "IN",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "outcome": "complete_no_verified_open_geometry",
+  "registryFound": true,
+  "registryScope": "District Kupwara Revenue Department and Jammu and Kashmir Revenue Department land-record system; local custodial evidence exists, but no open parcel geometry service was verified.",
+  "exactPointLatLon": [34.5064952849221, 74.196330303603],
+  "queries": [
+    {"language": "English", "query": "Kralpora Kashmir official cadastral parcel map land records Kupwara Jammu Kashmir", "outcome": "Official District Kupwara Revenue page and JK-Revenue viewer found; no open geometry.", "urls": ["https://kupwara.nic.in/service/revenue-department/", "https://d14fnjoywemmi.cloudfront.net/jklr/"]},
+    {"language": "Urdu/Hindi", "query": "کرالپورہ کپواڑہ سرکاری زمین ریکارڈ نقشہ / क़रालपोरा कुपवाड़ा आधिकारिक भू-अभिलेख नक्शा", "outcome": "Same official leads found; no public parcel feature response.", "urls": ["https://d14fnjoywemmi.cloudfront.net/jklr/", "https://kupwara.nic.in/service/revenue-department/"]}
+  ],
+  "requestOutcomes": "Viewer GET returned HTTP 200. Current JS bundle identified API base https://d14fnjoywemmi.cloudfront.net/jklr-api. Four bounded anonymous POST checks for district, tehsil and village metadata returned HTTP 401 Unauthorized. No authentication or CAPTCHA bypass was attempted.",
+  "schemaCrs": "Not available from an anonymous response; no parcel geometry response was received.",
+  "safeFieldAllowlist": ["native parcel identifier", "geometry", "source CRS", "non-sensitive administrative scope"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "mutation details"],
+  "sampleGeojson": null,
+  "runtimeReadiness": "held",
+  "uncertainty": "A zero/unauthorized bounded request is not evidence of citywide absence. Coverage, parcel boundaries, native IDs and CRS remain unverified.",
+  "completion": "All executed discovery and request attempts are recorded; packet is complete for attempt 1, with no retained GeoJSON sample."
+}

@@ -1,0 +1,32 @@
+{
+  "taskId": "city:11257",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-11257-hazaribagh.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/hazaribagh-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "tmp/valhalla-parcel-research/runs/20261010T155017-024cab06/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-10T15:55:00.589656Z",
+  "reason": "District first-party land-record pages establish custody, but JharBhoomi timed out and no native-ID polygon response was obtained. Worker packet claims a Hindi search that is absent from its search trace; reviewer executed the Hindi search and confirmed the official Hindi land-record page.",
+  "identity": {
+    "cityCode": 11257,
+    "queueRank": 1812,
+    "country": "India",
+    "point": [
+      23.9952991688034,
+      85.3602411525146
+    ],
+    "populationPersons": 316861,
+    "verifiedAgainst": "official 2025 WUP archive and pending queue"
+  },
+  "searchLanguagesVerified": [
+    "English",
+    "Hindi (reviewer query)"
+  ],
+  "firstPartyUrls": [
+    "https://hazaribag.nic.in/service/land-records/",
+    "https://hazaribag.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%85%E0%A4%AD%E0%A4%BF%E0%A4%B2%E0%A5%87%E0%A4%96/"
+  ],
+  "admissionGates": "No verified public parcel response or native IDs; fresh adapter reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed Details verification are not evidenced."
+}

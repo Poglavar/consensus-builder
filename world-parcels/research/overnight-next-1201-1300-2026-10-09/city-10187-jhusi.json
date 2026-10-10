@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:10187",
+  "wupCityCode": 10187,
+  "queueRank": 1294,
+  "rank": 1294,
+  "name": "Jhusi",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [25.4250788331479, 81.9580751860907],
+  "centerLatLon": [25.4250788331479, 81.9580751860907],
+  "pointBasis": "Immutable WUP 2025 coordinate, copied without adjustment.",
+  "population2025": 431880,
+  "population2025k": 431.88,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "status": "complete",
+  "resultCategory": "official_local_registry_safe_metadata_geometry_unverified",
+  "registryFound": true,
+  "registryBasis": "The official Prayagraj district administration service page links to the Uttar Pradesh Bhulekh land-record service, and the official Uttar Pradesh BhuNaksha viewer exposes Prayagraj revenue hierarchy and plot-map routes. This establishes official district/state revenue-service custody, not citywide parcel coverage.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_pending_serial_review_no_verified_anonymous_geometry",
+  "blocker": "The current public BhuNaksha hierarchy exposed Jhusi Kohna (Prayagraj district 175, Phulpur tehsil 00889, village 161736). Safe plot metadata for plot numbers 1, 2, and 10 returned native ids and map bounds anonymously, but the current plot geometry route returned HTTP 401 Missing or invalid Authorization header. The exact WUP point returned an empty object in the tested village context and is not evidence of citywide absence.",
+  "source": {
+    "sourceId": null,
+    "name": "Government of Uttar Pradesh Bhulekh/BhuNaksha",
+    "url": "https://upbhunaksha.gov.in/home/",
+    "operator": "Board of Revenue, Government of Uttar Pradesh; NIC",
+    "serviceType": "Official public cadastral-map viewer and land-record service",
+    "layer": "BhuNaksha revenue hierarchy: District, Tehsil, Village; plot lookup and geometry routes",
+    "geometryType": "Polygon geometry route exists but anonymous response was not authorized",
+    "nativeIdField": "id (returned by plot-number lookup; stable identity not independently qualified)",
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": true,
+    "geometryStatus": "not_verified",
+    "outputCrs": "Map bounds returned in the viewer's projected coordinates; CRS/extent request failed with upstream 403 for the tested village",
+    "nativeIdEvidence": "Anonymous MapInfo/getPlotByPlotNo returned id and kide for plot numbers 1, 2, and 10.",
+    "attributesRequested": ["safe parcel id", "plot number", "geometry", "map extent", "CRS"],
+    "sampleCount": 0,
+    "sampleFile": null
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Official Prayagraj district service and Uttar Pradesh BhuNaksha; bounded test of the Jhusi Kohna revenue-village hierarchy.",
+    "verifiedOpenScope": "Prayagraj district/tehsil/village hierarchy and safe plot metadata for three bounded plot-number lookups; no anonymous full parcel polygon.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "remainingUncertainty": "Whether a current public session/bootstrap route can qualify the geometry endpoint, whether the urban WUP point is covered by Jhusi Kohna or another adjacent revenue village, and the extent of citywide map coverage remain unresolved.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jhusi Prayagraj Uttar Pradesh official cadastral map parcel BhuNaksha Bhulekh",
+        "result": "Search identified the official Uttar Pradesh BhuNaksha viewer, the official Uttar Pradesh Board of Revenue service page, and the official Prayagraj district land-record service. First-party pages and the viewer API were then inspected.",
+        "actualResultUrls": ["https://upbhunaksha.gov.in/home/", "https://bor.up.nic.in/", "https://prayagraj.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%B2%E0%A5%87%E0%A4%96-%E0%A4%96%E0%A4%A4%E0%A5%8C%E0%A4%A8%E0%A5%80/"]
+      },
+      {
+        "language": "Hindi",
+        "query": "झूंसी प्रयागराज आधिकारिक भू नक्शा खसरा नक्शा",
+        "result": "Search identified the official Hindi Prayagraj district Bhulekh service and the same official Uttar Pradesh BhuNaksha/Bhulekh services; no separate Jhusi city parcel API was found.",
+        "actualResultUrls": ["https://prayagraj.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%B2%E0%A5%87%E0%A4%96-%E0%A4%96%E0%A4%A4%E0%A5%8C%E0%A4%A8%E0%A5%80/", "https://upbhunaksha.gov.in/home/", "https://bor.up.nic.in/"]
+      }
+    ],
+    "portals": [
+      {"url": "https://prayagraj.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%B2%E0%A5%87%E0%A4%96-%E0%A4%96%E0%A4%A4%E0%A5%8C%E0%A4%A8%E0%A5%80/", "operator": "District Administration Prayagraj, Government of Uttar Pradesh", "scope": "Official district Hindi service page linking to UP Bhulekh."},
+      {"url": "https://upbhunaksha.gov.in/home/", "operator": "Board of Revenue, Government of Uttar Pradesh / NIC", "scope": "Official public BhuNaksha viewer with District, Tehsil, Village hierarchy and plot lookup."},
+      {"url": "https://upbhulekh.gov.in/", "operator": "Government of Uttar Pradesh / NIC", "scope": "Official land-record service linked by the district route."}
+    ],
+    "requests": [
+      {"url": "https://upbhunaksha.gov.in/home/", "method": "GET; anonymous public read", "httpStatus": 200, "contentType": "text/html", "assessment": "Current viewer loaded; its live JavaScript/configuration was inspected. No login, credentials, CAPTCHA bypass, or TLS exception was used."},
+      {"url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/getStateName", "method": "GET; anonymous", "httpStatus": 200, "contentType": "text/plain", "assessment": "Returned Uttar Pradesh."},
+      {"url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue", "method": "POST; anonymous; codes=09, level=1/2/3", "httpStatus": 200, "contentType": "application/json", "assessment": "Returned official hierarchy; Prayagraj=175, Phulpur=00889, Jhusi Kohna=161736."},
+      {"url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref", "method": "POST; anonymous; gisLevels=17500889161736", "httpStatus": 500, "contentType": "application/json", "assessment": "Upstream reported 403 from its createGisCode dependency; no CRS/extent retained."},
+      {"url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotAtXY", "method": "POST; anonymous; giscode=17500889161736, x=81.9580751860907, y=25.4250788331479", "httpStatus": 200, "contentType": "application/json", "assessment": "Returned {}; tested only in this bounded village context and not treated as citywide absence."},
+      {"url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotByPlotNo", "method": "POST; anonymous; giscode=17500889161736, plotno=1,2,10", "httpStatus": 200, "contentType": "application/json", "assessment": "Returned safe native ids, kide values, and projected bounding boxes; no full geometry."},
+      {"url": "https://upbhunaksha.gov.in/bhunakshaserver/v1/khasramap/plot", "method": "GET; anonymous; safe id from plot 1", "httpStatus": 401, "contentType": "application/json", "assessment": "Returned Missing or invalid Authorization header; no token or credential was sought or used."}
+    ]
+  },
+  "checkedAt": "2026-10-09",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "sourceIds": [],
+  "adapterReady": false,
+  "nextStep": "Serial reviewer may determine whether a public session/bootstrap route can qualify the geometry endpoint; do not enable runtime or infer absence from the exact-point empty response."
+}

@@ -1,0 +1,12 @@
+{
+  "taskId": "packet:9596",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-9596-chaoyang.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/chaoyang-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T13:34:12Z",
+  "rootFinding": "Chaoyang: immutable rank 1252, country, point and 443864 persons match queue; English and Simplified Chinese searches are recorded. Official local natural-resources and registration custody supports registryFound true, but no anonymous native-ID polygon response or adapter qualification is evidenced. Geometry and citywide coverage remain unknown; hold admission."
+}

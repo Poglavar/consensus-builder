@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 2478,
+  "cityCode": 2478,
+  "cityId": "wup2025:2478",
+  "name": "Mbandaka",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "iso2": "CD",
+  "iso3": "COD",
+  "centerLatLon": [0.0412837424003591, 18.2629942789072],
+  "point": [0.0412837424003591, 18.2629942789072],
+  "queueRank": 1291,
+  "population2025": 432976,
+  "population2025k": 432.976,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Mbandaka official cadastral parcel map land registry Democratic Republic of the Congo",
+        "result": "Found the first-party Ministry of Land Affairs jurisdiction directory naming Mbandaka I and Mbandaka II, and the official public-service catalogue for formal cadastral/register consultation. No public anonymous parcel geometry endpoint was verified.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://servicepublic.gouv.cd/service/4671",
+          "https://bic.cd/"
+        ]
+      },
+      {
+        "language": "French",
+        "query": "Mbandaka cadastre parcellaire carte officielle République démocratique du Congo",
+        "result": "Le répertoire officiel du Ministère des Affaires foncières répertorie les circonscriptions Mbandaka I et Mbandaka II dans la province de l'Équateur. Le catalogue officiel décrit une consultation formelle des registres, mais aucune API publique anonyme fournissant une identité parcellaire sûre et une géométrie n'a été vérifiée.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://servicepublic.gouv.cd/service/4671",
+          "https://bic.cd/"
+        ]
+      }
+    ],
+    "officialViewerInspection": "The BIC public landing page returned HTTP 200 and referenced the current JavaScript bundle /assets/index-BrUTiL_J.js. Static inspection found Supabase-backed application configuration and tables for cadastral search/service configuration, but no verified public parcel layer, safe parcel-identity schema, CRS, or anonymous geometry response. The Ministry directory and service catalogue were fetched anonymously over TLS (HTTP 200). No login, CAPTCHA bypass, credential, private token, owner/address/contact/titleholder/tax/account/personal field, or unsafe request was used."
+  },
+  "registryFound": true,
+  "registryBasis": "The official Ministry of Land Affairs jurisdiction directory lists Mbandaka I and Mbandaka II under Équateur. This evidences local cadastral/land-registry custody and jurisdiction, not public parcel-vector access or runtime admission.",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Official DRC Ministry jurisdiction directory, official government register-consultation procedure, BIC public landing page and current client-bundle inspection.",
+    "verifiedOpenScope": "Local cadastral jurisdictions and formal consultation procedure only; no anonymous safe parcel geometry.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "resultCategory": "local_registry_procedure_no_verified_open_parcel_geometry",
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No bounded anonymous request returned a safe native parcel identity and full polygon geometry. The exact WUP point [0.0412837424003591, 18.2629942789072] was preserved and was not shifted; no exact-point hit/miss or unavailable endpoint is treated as citywide absence."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "technicalBlocker": "The first-party sources establish local registry jurisdiction and a formal consultation workflow, but no current public parcel geometry API with safe identity, CRS, and schema was verified. BIC's client bundle exposes application configuration but not a qualifying anonymous parcel-vector route.",
+  "remainingUncertainty": "A formal or authenticated local workflow, unpublished cadastral map, or future public service may provide parcel geometry. Its current access model, coverage, CRS/schema, safe native identity, and citywide completeness remain unknown.",
+  "nextStep": "A serial reviewer may independently qualify a first-party Mbandaka parcel adapter only after confirming a current public route, CRS/schema, safe ID fields, and a bounded geometry response."
+}

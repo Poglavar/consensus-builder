@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1590-mahilio.json",
+  "purpose": "Document first-party discovery and bounded anonymous cadastral/map-service review for Mahilioŭ, Belarus.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "assessment": "The official National Cadastral Agency public map loaded anonymously. Its current JavaScript exposed WFS and API route patterns, but bounded anonymous WFS requests were denied, so no safe parcel ID, geometry, schema, CRS, or citywide coverage was verified.",
+  "registryAssessment": "registryFound=true because the first-party Belarus public cadastral map and National Cadastral Agency site were actually reached and identify the public cadastral service. This is not evidence of citywide completeness or adapter admission.",
+  "officialPrimarySources": [
+    {"url": "https://map.nca.by/", "observation": "HTTP 200 anonymous response; page title is Public Cadastral Map and description identifies a Belarus cadastral GIS."},
+    {"url": "https://nca.by/", "observation": "HTTP 200 anonymous response from the National Cadastral Agency first-party site."},
+    {"url": "https://gki.gov.by/", "observation": "HTTP 301 from the Belarus State Property Committee host; retained as a discovery URL, not as evidence of parcel integration."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Mahilioŭ Belarus official cadastral map parcel registry GIS", "result": "Official map and National Cadastral Agency URLs found; map shell loaded, but no anonymous parcel geometry response verified.", "actualResultUrls": ["https://map.nca.by/", "https://nca.by/"]},
+    {"language": "Belarusian/Russian local", "query": "Магілёў кадастравая карта зямельныя ўчасткі афіцыйны сайт", "result": "Official Belarus public cadastral-map URLs found; no anonymous parcel geometry response verified.", "actualResultUrls": ["https://map.nca.by/", "https://nca.by/", "https://gki.gov.by/"]}
+  ],
+  "attempts": [
+    {"url": "https://map.nca.by/", "method": "GET", "httpStatus": 200, "result": "HTML shell loaded anonymously; current JS asset /js/app.9ad00b1f.js was downloaded for route/configuration inspection."},
+    {"url": "https://map.nca.by/js/app.9ad00b1f.js", "method": "GET", "httpStatus": 200, "result": "Current JS exposed baseURL /api, WFS route pattern /geoserver/pcm/ows, WFS GetFeature use, and point-query DWITHIN construction. This is route evidence only, not a parcel response."},
+    {"url": "https://map.nca.by/api/layers/list", "method": "GET", "httpStatus": 404, "result": "Not Found; no layer list returned."},
+    {"url": "https://map.nca.by/geoserver/pcm/ows?service=WFS&version=1.0.0&request=GetCapabilities", "method": "GET", "httpStatus": 403, "result": "Forbidden; no capabilities, schema, CRS, or layer metadata returned."},
+    {"url": "https://map.nca.by/geoserver/pcm/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pcm%3A294b19b9-3259-44e5-b8e8-5314b0adf928&outputFormat=application%2Fjson&maxFeatures=3&cql_filter=DWITHIN(geom,Point(3373182%202965907),2,meters)", "method": "GET", "httpStatus": 403, "result": "Forbidden; no bounded ID-plus-geometry response returned. This exploratory bounded request was not an exact WUP-point test, did not alter the immutable city point, and the denied result is not an absence claim."},
+    {"url": "https://nca.by/", "method": "GET", "httpStatus": 200, "result": "National Cadastral Agency first-party site loaded anonymously."},
+    {"url": "https://gki.gov.by/", "method": "GET", "httpStatus": 301, "result": "Redirect received; no parcel response requested."}
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not attempted: the exposed WFS route was denied before a qualified exact-point request could be made. No absence inference is made.", "requestEvidence": ["Official map shell HTTP 200", "WFS GetCapabilities HTTP 403", "bounded WFS GetFeature HTTP 403"]},
+  "coverageAssessment": {"claimedScope": "Official map describes a Belarus public cadastral GIS backed by state land-cadastre registers and registries.", "verifiedOpenScope": "Map shell and route patterns only; no anonymous machine-readable parcel response or citywide/bulk scope verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "Endpoint authorization, exact parcel layer, native fields, schema, CRS, stable ID, pagination, freshness, and completeness remain unknown.",
+  "runtimeAssessment": "held; no adapter admission or source integration implied"
+}

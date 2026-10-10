@@ -1,0 +1,14 @@
+{
+  "taskId": "city:10475",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-10475-tiruvannamalai.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/tiruvannamalai-service-review.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T12:23:58.542613Z",
+  "reason": "First-party district survey-office page returned HTTP 200 and links land-survey service. Packet records TamilNilam 502/DNS failure; no safe native-ID polygon response or live adapter qualification.",
+  "identityCheck": "Matched immutable ranked roster and pending queue against original WUP 2025 CSV: city code, rank, country, exact point, and population converted from thousands to persons.",
+  "qualification": "No full polygon sample; fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, and headed Details verification are not evidenced. No runtime admission."
+}

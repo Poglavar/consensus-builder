@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 11293,
+  "queueRank": 1839,
+  "cityId": "queue:1839",
+  "name": "Vizianagaram",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [18.1127850565228, 83.4048964650267],
+  "centerLatLon": [18.1127850565228, 83.4048964650267],
+  "population2025": 312315,
+  "population2025k": 312.315,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Vizianagaram Andhra Pradesh official cadastral parcel map land records GIS MeeBhoomi",
+        "result": "First-party discovery identified the official Vizianagaram District Collectorate revenue page, district Survey, Settlements and Land Records page, Andhra Pradesh Bhunaksha cadastral-map portal, district official-links page, and Government of India DILRMP state listing. The district revenue page identifies the local revenue/survey custodian and directs users to MeeBhoomi for Adangal, ROR, FMB and village maps. No open parcel feature response was obtained.",
+        "actualResultUrls": ["https://vizianagaram.ap.gov.in/revenue/", "https://vizianagaram.ap.gov.in/department/survey-and-land-records/", "https://bhunaksha.ap.gov.in/", "https://vizianagaram.ap.gov.in/important-website-links/", "https://dilrmp.gov.in/dilrmpold/State-RoR-Web"]
+      },
+      {
+        "language": "native/local (Telugu)",
+        "query": "విజయనగరం ఆంధ్రప్రదేశ్ భూ నక్షా భూమి రికార్డులు అధికారిక",
+        "result": "Telugu first-party discovery reached the official Vizianagaram district Telugu revenue route and Telugu-language content. It confirms the Tahsildar/Mandal Surveyor and points to MeeBhoomi for land records and village maps; no anonymous parcel ID-plus-geometry response was obtained.",
+        "actualResultUrls": ["https://vizianagaram.ap.gov.in/te/revenue/", "https://vizianagaram.ap.gov.in/revenue/"]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "First-party web discovery followed by TLS-verified bounded GET requests with curl. No credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS disablement were used."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {"url": "https://vizianagaram.ap.gov.in/revenue/", "custodian": "Vizianagaram District Collectorate / Revenue Department, Government of Andhra Pradesh", "observation": "Official district revenue page describes the revenue structure, identifies Mandal Surveyors under Survey, Settlement and Land Records, and links to MeeBhoomi for Adangal, ROR, FMB and village maps."},
+    {"url": "https://vizianagaram.ap.gov.in/department/survey-and-land-records/", "custodian": "Vizianagaram District Survey, Settlements and Land Records Department", "observation": "Official directory lists the Assistant Director and Inspector of Survey for Vizianagaram; this is local custodial evidence, not a parcel API."},
+    {"url": "https://bhunaksha.ap.gov.in/", "custodian": "Survey, Settlements and Land Records, Government of Andhra Pradesh / NIC", "observation": "Official Bhunaksha landing page identifies Andhra Pradesh's cadastral mapping platform; direct request timed out during this attempt."},
+    {"url": "https://meebhoomi.ap.gov.in/", "custodian": "Revenue Department, Government of Andhra Pradesh", "observation": "Official district page target for Adangal, ROR, FMB and village maps; direct request did not return a usable response within the bounded attempt."}
+  ],
+  "requests": [
+    {"url": "https://vizianagaram.ap.gov.in/revenue/", "method": "GET", "httpStatus": 200, "contentType": "text/html; charset=UTF-8", "assessment": "Loaded official local revenue page."},
+    {"url": "https://vizianagaram.ap.gov.in/department/survey-and-land-records/", "method": "GET", "httpStatus": 200, "contentType": "text/html; charset=UTF-8", "assessment": "Loaded official local survey/land-records directory."},
+    {"url": "https://vizianagaram.ap.gov.in/te/revenue/", "method": "GET", "httpStatus": 301, "contentType": "text/html; charset=UTF-8", "assessment": "Redirected to canonical revenue page; Telugu content was inspected after redirect."},
+    {"url": "https://bhunaksha.ap.gov.in/", "method": "GET", "httpStatus": null, "contentType": null, "assessment": "Timed out after 20 seconds. No viewer JavaScript/configuration, API route, schema, CRS, parcel identity or geometry was obtained."},
+    {"url": "https://meebhoomi.ap.gov.in/", "method": "GET", "httpStatus": null, "contentType": null, "assessment": "Bounded request did not produce a usable response. No anonymous parcel endpoint or geometry was obtained."}
+  ],
+  "coverageAssessment": {"claimedScope": "Official Vizianagaram district revenue and survey/land-records pages, Andhra Pradesh Bhunaksha and MeeBhoomi portals, and Government of India DILRMP listing.", "verifiedOpenScope": "Local registry custody and public service existence only; no open Vizianagaram parcel geometry scope or city boundary coverage was verified.", "citywideVerified": false, "countrywideVerified": false},
+  "remainingUncertainty": "The current Bhunaksha/MeeBhoomi viewer routes, map-unit identifiers, parcel schema, native stable identity, CRS, update currency, legal status and citywide completeness remain unresolved. The exact WUP point was preserved but was not queried against parcel geometry. A timeout or unusable UI is not evidence of citywide cadastral absence.",
+  "nextStep": "A later attempt may inspect the official Bhunaksha viewer's current JavaScript/configuration when reachable and request only bounded anonymous ID-plus-geometry data. Serial reviewer qualification remains required; runtime readiness stays held."
+}

@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 9835,
+  "cityId": "wup2025:9835",
+  "name": "Palakkad",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "queueRank": 1406,
+  "rank": 1406,
+  "point": [10.7809197026917, 76.6531047853126],
+  "centerLatLon": [10.7809197026917, 76.6531047853126],
+  "pointBasis": "Exact immutable WUP 2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 401965,
+  "population2025k": 401.965,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Kerala's Directorate of Survey and Land Records lists Palakkad district survey, re-survey and digitization offices; the official Bhu-Naksha/e-Maps viewer describes Kerala cadastral parcel mapping; the Government of India DILRMP page has a Palakkad tehsil-level cadastral digitization record. These establish a relevant local/state registry custodian and official map program, but not an open city-bound parcel feature response.",
+  "registryEvidenceUrls": [
+    "https://dslr.kerala.gov.in/en/sub-offices-2/",
+    "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+    "https://emaps.kerala.gov.in/bhunaksha/kl/home.html",
+    "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/tehsil-level/593"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_not_enabled_no_verified_public_geometry",
+  "runtimeAssessment": {
+    "status": "held_not_enabled_no_verified_public_geometry",
+    "reason": "The official cadastral viewer was discoverable but its current page could not be retrieved by direct TLS-verified curl because the certificate was expired. Search inspection confirms parcel-map functionality, but no anonymous native-ID-plus-full-polygon response, schema, CRS or bounded city response was verified. Ente Bhoomi presents live land parcel maps behind login, which was not attempted."
+  },
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Palakkad Kerala official cadastral parcel map GIS land records survey map",
+        "result": "First-party results found Kerala Bhu-Naksha/e-Maps, Kerala Town Planning MIS, Ente Bhoomi, the Directorate of Survey and Land Records Palakkad office list, and a Government of India DILRMP Palakkad digitization-status page. No anonymous city-bound parcel feature endpoint was verified.",
+        "actualResultUrls": [
+          "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+          "https://gis.townplanning.kerala.gov.in/tcp/",
+          "https://entebhoomi.kerala.gov.in/web/home",
+          "https://dslr.kerala.gov.in/en/sub-offices-2/",
+          "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/tehsil-level/593"
+        ],
+        "executionMethod": "Independent web search followed by first-party result inspection."
+      },
+      {
+        "language": "Malayalam",
+        "query": "പാലക്കാട് കേരള ഔദ്യോഗിക ഭൂമി രേഖകൾ കഡസ്ട്രൽ മാപ്പ് GIS",
+        "result": "Malayalam discovery led to the official Kerala Bhu-Naksha/e-Maps viewer, Ente Bhoomi integrated land-information portal and Palakkad survey camp/offices. Ente Bhoomi states that real-time land parcel maps are available through login; no anonymous safe geometry response was verified.",
+        "actualResultUrls": [
+          "https://emaps.kerala.gov.in/bhunaksha/kl/home.html",
+          "https://entebhoomi.kerala.gov.in/web/home",
+          "https://survey.entebhoomi.kerala.gov.in/portal/web/campoffice",
+          "https://dslr.kerala.gov.in/en/sub-offices-2/"
+        ],
+        "executionMethod": "Independent Malayalam-language web search followed by first-party result inspection."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+        "method": "GET",
+        "status": "TLS verification failed: certificate expired",
+        "summary": "Direct anonymous request was stopped by normal TLS verification. No certificate exception was used. Search inspection of the official page describes area-of-interest, resurvey sketches, block/survey/subdivision search and plot information, but did not expose a retrievable JSON schema or endpoint."
+      },
+      {
+        "url": "https://emaps.kerala.gov.in/bhunaksha/kl/home.html",
+        "method": "GET",
+        "status": "TLS verification failed: certificate expired",
+        "summary": "Direct anonymous request was stopped by normal TLS verification; no retry with disabled verification, login, token or CAPTCHA bypass. Official search inspection describes integrated cadastral mapping and a digital sketch for individual parcels."
+      },
+      {
+        "url": "https://entebhoomi.kerala.gov.in/web/home",
+        "method": "GET",
+        "status": "HTTP 200",
+        "summary": "Official Malayalam portal retrieved. It advertises real-time land parcel maps and integrated land services, but access is via single-sign-on/login. No login or personal/property query was attempted."
+      },
+      {
+        "url": "https://dslr.kerala.gov.in/en/sub-offices-2/",
+        "method": "GET",
+        "status": "HTTP 200",
+        "summary": "Official Directorate page retrieved and lists Survey Deputy Director, Assistant Director Re-Survey, District Survey Superintendent, Re-Survey Superintendent and District Digitization Centre for Palakkad. This is local/state custody evidence, not parcel geometry."
+      },
+      {
+        "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/tehsil-level/593",
+        "method": "GET",
+        "status": "TLS verification failed: unable to get local issuer certificate",
+        "summary": "Government of India DILRMP Palakkad page was identified by first-party web inspection and records Palakkad tehsils and cadastral-map digitization fields. Direct request was stopped by normal TLS verification; no exception used."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Kerala Bhu-Naksha/e-Maps cadastral viewer, Ente Bhoomi integrated land-information portal, Directorate of Survey and Land Records Palakkad offices, and Government of India DILRMP Palakkad digitization status.",
+    "verifiedOpenScope": "Official service descriptions, Palakkad survey-office custody and a login-gated land-parcel-map portal were verified. No anonymous native identity, parcel geometry, CRS or citywide extent was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "technicalBlocker": "TLS certificate validation blocked direct retrieval of the Bhu-Naksha viewer and DILRMP page. Ente Bhoomi is login-gated for land parcel maps. No exact-point hit or miss was obtained and none is treated as evidence of citywide absence.",
+  "safeFieldAllowlist": ["stable native parcel or survey identifier if exposed", "geometry", "CRS", "source layer/service metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax/account", "registration or encumbrance details"],
+  "remainingUncertainty": "Whether the Bhu-Naksha viewer exposes a machine-readable anonymous geometry service after certificate recovery, and whether the Palakkad urban area is covered by that service, remains unresolved.",
+  "nextStep": "A serial reviewer may retry the official viewer with normal TLS verification after certificate recovery and independently qualify an adapter only if a bounded anonymous response contains a stable native parcel identity and full polygon."
+}

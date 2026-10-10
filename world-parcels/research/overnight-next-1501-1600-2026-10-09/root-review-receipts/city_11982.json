@@ -1,0 +1,17 @@
+{
+  "taskId": "city:11982",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-11982-tong-an.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/tong-an-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T09:53:00.984835Z",
+  "reviewNote": "Official Xiamen branch and cadastral-map listing support institutional custody. The map host timed out; no native parcel ID, complete polygon, source CRS or live adapter qualification was evidenced. English and Chinese searches are recorded. No absence inferred from access failure.",
+  "firstPartyUrlsChecked": [
+    "https://zygh.xm.gov.cn/zfxxgk/gfjzfxxgk/",
+    "https://ixm.xm.gov.cn/yyzx/202209/t20220909_94940.htm"
+  ],
+  "admissionGatesVerified": false
+}

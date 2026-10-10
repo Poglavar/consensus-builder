@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10184,
+  "cityCode": 10184,
+  "cityId": "wup2025:10184",
+  "name": "Zoucheng",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [35.4003955374662, 116.950785835449],
+  "point": [35.4003955374662, 116.950785835449],
+  "queueRank": 1243,
+  "population2025": 447484,
+  "population2025k": 447.484,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Zoucheng China official cadastral map land parcels natural resources bureau",
+        "result": "First-party Jining government results identified the Zoucheng Natural Resources and Planning Bureau and Zoucheng Real Estate Registration Center as local registry custodians. The official Shandong geographic-information viewer was identified and inspected; no anonymous safe parcel-vector endpoint was established.",
+        "actualResultUrls": [
+          "https://nrp.jining.gov.cn/art/2023/2/16/art_60571_2718852.html",
+          "https://nrp.jining.gov.cn/art/2023/4/7/art_60571_2720099.html",
+          "https://www.sdmap.gov.cn/",
+          "https://www.sdmap.gov.cn/map.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "邹城 官方 不动产登记 地籍图 宗地图 自然资源和规划局",
+        "result": "First-party Jining government results document the Zoucheng real-estate registration center and collective-land ownership registration work. The official Shandong viewer was inspected, but no verified anonymous parcel ID plus geometry response was found.",
+        "actualResultUrls": [
+          "https://nrp.jining.gov.cn/art/2023/2/16/art_60571_2718852.html",
+          "https://nrp.jining.gov.cn/art/2023/4/7/art_60571_2720099.html",
+          "https://www.sdmap.gov.cn/map.html"
+        ]
+      }
+    ],
+    "officialViewerInspection": "The current official Shandong viewer HTML references Config_url.v002.js and map.3fc18556.js. The retrieved application and current configuration were inspected for public service routes. General geographic-information services were visible, but no anonymous safe cadastral parcel layer or geometry-only parcel response was identified. No login, CAPTCHA bypass, credential, or private token was used."
+  },
+  "registryFound": true,
+  "registryBasis": "First-party Jining Natural Resources and Planning Bureau reports identify the Zoucheng Real Estate Registration Center (邹城市不动产登记中心) and Zoucheng Natural Resources and Planning Bureau (邹城市自然资源和规划局) in local registration and cadastral/collective-land work. This establishes a local registry/procedure custodian, not public parcel-vector access.",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Local Zoucheng registration and cadastral-work procedure evidence plus the province-wide public Shandong geographic-information viewer.",
+    "verifiedOpenScope": "Local registry/procedure custodian evidenced; no anonymous safe parcel polygon response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "resultCategory": "local_registry_procedure_no_verified_open_parcel_geometry",
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No bounded anonymous request returned a safe native parcel identity and full polygon geometry. The exact WUP point was not shifted, and no point miss or unavailable endpoint is treated as citywide absence."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "technicalBlocker": "The official local pages document registry activity but do not expose a parcel geometry API. The official Shandong viewer is a JavaScript application; its inspected current HTML, configuration, and map bundle did not establish a safe anonymous cadastral parcel-vector route.",
+  "remainingUncertainty": "A separately published or authenticated cadastral service may exist but was not accessed. Exact-point parcel coverage, CRS/schema, and citywide completeness remain unverified.",
+  "nextStep": "A serial reviewer may independently qualify a first-party Zoucheng parcel adapter only after confirming a current public route, CRS/schema, safe ID fields, and bounded geometry response."
+}

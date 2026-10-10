@@ -1,0 +1,12 @@
+{
+  "taskId": "city:6694",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-6694-nuevo-laredo.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/nuevo-laredo-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T13:57:17Z",
+  "reason": "Held: official municipal/state cadastral custody is evidenced, but the public predial metadata contains no safe parcel ID or full polygon. The 403 predial page is an access limit, not citywide absence. No fresh adapter, paging, 13-cell, GEOS, binding, or headed Details qualification."
+}

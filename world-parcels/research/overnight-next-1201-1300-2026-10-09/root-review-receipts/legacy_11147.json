@@ -1,0 +1,15 @@
+{
+  "taskId": "legacy:11147",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-2026-10-09/city-11147-balia.json",
+    "world-parcels/research/overnight-next-2026-10-09/balia-service-review.json",
+    "tmp/india-uhp-qualification-2026-10-09/paused-city-partial-evidence.json"
+  ],
+  "checkedAt": "2026-10-09T10:44:31Z",
+  "reason": "Immutable WUP identity matches rank 1195, India, point [26.3173952417814,85.9061124111966], and 465399 persons. English and Hindi searches are recorded, but the paired packet's Begusarai/Balia and BaliaaLakhminia custody claim concerns a similarly named place about 97 km from the WUP point. The handoff and paused partial evidence place the point in Bisfi/Madhubani; nearby map-sheet extents and an empty nearby identify do not establish parcel absence. The packet's registryFound:true is not accepted as grounded for this city. No full native-ID polygon or independent paging, 13-cell, metric GEOS, source-binding, or headed Details qualification is evidenced. Runtime remains disabled and the task is held."
+}

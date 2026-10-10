@@ -1,0 +1,86 @@
+{
+  "cityCode": 6528,
+  "queueRank": 1332,
+  "name": "Bida",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "iso3": "NGA",
+  "point": [9.0806551084161, 6.00587274996127],
+  "population2025": 421605,
+  "population2025k": 421.605,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": null,
+  "registryAssessment": "Niger State Ministry of Lands and Survey and the Niger State Geographic Information System (NIGIS) Agency were evidenced as relevant state land-administration custodians. NIGIS exposes public static map-layout images, including a Minna cadastral-zone map, but no public Bida parcel viewer, safe native parcel identity, or anonymous parcel geometry was verified. This is not evidence of citywide absence.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bida Nigeria official cadastral map parcel land registry GIS Niger State",
+        "result": "Found official Niger State Ministry of Lands and Survey, NIGIS agency material, the Niger State government Bida Emirate page, OSGOF cadastral-survey services, and NGSA topographic-map material. Search results did not expose a Bida-specific public parcel API or downloadable safe parcel geometry.",
+        "actualResultUrls": [
+          "https://nigerstate.gov.ng/niger-state-ministry-of-lands-and-survey/",
+          "https://www.nigisservices.com/",
+          "https://nigerstate.gov.ng/bida-emirate/",
+          "https://osgof.gov.ng/",
+          "https://ngsa.gov.ng/mgcp-topographic-maps-of-nigeria/"
+        ]
+      },
+      {
+        "language": "Nupe/local",
+        "query": "Bida Nupe land map",
+        "result": "The local-language-oriented search returned historical/general Nupe and Bida maps, but no current official Bida cadastral service or safe parcel geometry. Nigeria's official public land-administration material found in the search is in English.",
+        "actualResultUrls": [
+          "https://nigerstate.gov.ng/bida-emirate/",
+          "https://commons.wikimedia.org/wiki/File%3AMap_of_Nupe_and_Ilorin%2C_also_showing_the_plans_of_the_cities_of_Bida_and_Ilorin.jpg",
+          "https://www.nigisservices.com/index.php/information/maps"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://nigerstate.gov.ng/niger-state-ministry-of-lands-and-survey/",
+      "role": "Niger State Ministry of Lands and Survey",
+      "observation": "Official state ministry page states responsibility for land allocation, registration, valuation, land surveying, mapping, demarcation, and certification, and says land data is maintained using GIS and imagery. No public parcel endpoint or schema is exposed on the page."
+    },
+    {
+      "url": "https://www.nigisservices.com/",
+      "role": "Niger State Geographic Information System (NIGIS) Agency",
+      "observation": "Official NIGIS site identifies the state GIS land-administration agency and lists geospatial information, legal searches, C of O, and land-related services. No anonymous parcel feature endpoint was exposed in the inspected HTML."
+    },
+    {
+      "url": "https://www.nigisservices.com/index.php/information/maps",
+      "role": "NIGIS public Maps route",
+      "observation": "Current public route loaded successfully and exposes static image links for Niger State LGAs, a Minna cadastral zone, Minna billing areas, Minna major roads, and area offices. It does not expose a Bida parcel layer, service URL, CRS/schema response, or safe native parcel IDs."
+    },
+    {
+      "url": "https://nigerstate.gov.ng/bida-emirate/",
+      "role": "Niger State official Bida Emirate page",
+      "observation": "Official government page identifies Bida as the headquarters of the Nupe people and Bida Emirate/local government context; it is geographic/administrative context, not parcel-source evidence."
+    },
+    {
+      "url": "https://ngsa.gov.ng/mgcp-topographic-maps-of-nigeria/",
+      "role": "Nigeria Geological Survey Agency topographic-map page",
+      "observation": "Official page lists Sheet 184 Bida among national topographic-map coverage. This is topographic context, not cadastral parcel geometry."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No safe native parcel identity and full parcel polygon were obtained. The exact WUP point was preserved and not shifted; no exact-point hit or map-extent miss was treated as citywide absence."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Bida city and Niger State land-administration discovery through the official state ministry, NIGIS public site/maps, Bida Emirate context, OSGOF, and NGSA routes.",
+    "verifiedOpenScope": "State custodians and public map material were verified, but Bida-specific anonymous parcel response, native ID field, CRS, exact parcel containment, and citywide completeness were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

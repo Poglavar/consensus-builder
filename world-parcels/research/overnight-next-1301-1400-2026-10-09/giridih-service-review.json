@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11407-giridih.json",
+  "cityCode": 11407,
+  "purpose": "Document first-party discovery, current public map/service routes, bounded anonymous access review, safe-field limits, and uncertainty.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Giridih district land-records page links to JharBhoomi, and the official NIC Bhu-Naksha implementation directory links Jharkhand's cadastral viewer. The official Jharkhand GIS gateway and DILRMP report provide government context. Direct anonymous requests to JharBhoomi and JharBhuNaksha timed out before any HTML, JavaScript/configuration, API route, schema, CRS, safe parcel identity, or geometry could be obtained. No parcel sample is retained.",
+  "registryAssessment": "Giridih has an evidenced district-government land-record service context, but no local cadastral map response or public parcel-vector endpoint was independently verified. registryFound therefore remains null.",
+  "safeFieldAllowlist": ["safe parcel identifier only if publicly exposed and non-personal", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "queries": [
+    {
+      "language": "English",
+      "query": "Giridih cadastral map parcel land records official Jharkhand",
+      "outcome": "Official Giridih land-records page, Jharkhand GIS gateway, NIC Bhu-Naksha implementation directory, and DILRMP district status page found; Jharkhand viewer routes identified.",
+      "actualResultUrls": ["https://giridih.nic.in/service/land-records/", "https://gis.jharkhand.gov.in/", "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp", "https://dilrmp.gov.in/physicalProgressReports/clr/district-level/20"]
+    },
+    {
+      "language": "Hindi",
+      "query": "गिरिडीह जिला झारखंड आधिकारिक भू नक्शा भूमि अभिलेख प्लॉट मानचित्र",
+      "outcome": "Official Hindi-language discovery context confirmed government land-record and Bhu-Naksha routes; no parcel vector or safe native identity was exposed in the accessible page content.",
+      "actualResultUrls": ["https://giridih.nic.in/service/land-records/", "https://jharbhoomi.jharkhand.gov.in/", "https://jharbhunaksha.jharkhand.gov.in/", "https://jharsewa.jharkhand.gov.in/"]
+    }
+  ],
+  "attempts": [
+    {"url":"https://giridih.nic.in/service/land-records/","method":"GET","httpStatus":200,"result":"Official district page loaded; links to JharBhoomi and identifies the District Revenue Office. No parcel schema or geometry in page response."},
+    {"url":"https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp","method":"GET","httpStatus":200,"result":"Official NIC implementation directory loaded; Jharkhand viewer route identified. No parcel feature response."},
+    {"url":"https://dilrmp.gov.in/physicalProgressReports/clr/district-level/20","method":"GET/search-open","httpStatus":200,"result":"Official DILRMP district report located Giridih status indicators; no parcel geometry or safe parcel ID."},
+    {"url":"https://gis.jharkhand.gov.in/","method":"GET/search-open","httpStatus":"search/open evidence; direct curl connection timeout after 8 seconds","result":"Official GIS gateway advertises state/district GIS applications; no Giridih parcel response obtained."},
+    {"url":"https://jharbhoomi.jharkhand.gov.in/","method":"GET","httpStatus":"TLS connection timeout after 20 seconds","result":"No viewer HTML, JavaScript, configuration, schema, CRS, or geometry inferred; no credentials or TLS bypass used."},
+    {"url":"https://jharbhunaksha.jharkhand.gov.in/","method":"GET","httpStatus":"TLS connection timeout after 20 seconds","result":"No viewer HTML, API route, schema, CRS, or geometry inferred; no credentials or TLS bypass used."},
+    {"url":"http://jharbhoomi.nic.in/jhrlrmsmis/","method":"GET","httpStatus":"not followed beyond official page link","result":"Recorded as the legacy HTTP link present on the official Giridih page; no request sent because the current HTTPS JharBhoomi route was the safer bounded target."}
+  ],
+  "geometryEvidence": null,
+  "geometryDecision": {"verified":false,"sourceId":null,"nativeIdField":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"No exact-point parcel containment test was completed. Exact WUP point [24.1787822217264, 86.3067976525148] was preserved and not shifted; viewer timeout is not evidence of citywide absence."},
+  "remainingUncertainty": "The Jharkhand viewers' current JavaScript/configuration, service endpoints, CRS, native parcel identity, exact-point parcel, and citywide open coverage remain unverified. A future attempt may retry from a responsive trusted route and inspect only safe ID+geometry fields.",
+  "runtimeAssessment": "not enabled; serial reviewer must independently qualify any adapter"
+}

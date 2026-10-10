@@ -1,0 +1,97 @@
+{
+  "cityCode": 1168,
+  "queueRank": 1847,
+  "name": "Brno",
+  "country": "Czechia",
+  "countryCode": "CZ",
+  "point": [49.203210413959, 16.6097275929996],
+  "population2025": 310796,
+  "population2025k": 310.796,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Brno Czechia official cadastral parcels map API WFS katastral map parcels Brno",
+        "result": "First-party discovery found the City of Brno GIS ArcGIS parcel service and ČÚZK official cadastral open-data/service pages.",
+        "actualResultUrls": [
+          "https://gis.brno.cz/ags3/rest/services/PUBLIC/katastr_g/MapServer/",
+          "https://www.cuzk.gov.cz/Uvod/Produkty-a-sluzby/Otevrena-data/Otevrena-data-zakladni-informace.aspx",
+          "https://wms.cuzk.gov.cz/"
+        ]
+      },
+      {
+        "language": "Czech",
+        "query": "Brno oficiální katastrální mapa parcely GIS WFS API",
+        "result": "First-party discovery found the City of Brno GIS parcel layer, Brno cadastral-map application metadata, and ČÚZK cadastral parcel WFS/map-service information.",
+        "actualResultUrls": [
+          "https://gis.brno.cz/ags3/rest/services/PUBLIC/katastr_g/MapServer/5",
+          "https://gis.brno.cz/ost/edas/public/MAPA_MAJETEK_MESTA",
+          "https://services.cuzk.gov.cz/wfs/inspire-cp-wfs.asp"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official City of Brno GIS service exposes a cadastral parcel feature layer and returned a native parcel identifier plus polygon for the exact preserved WUP point. ČÚZK is the national cadastral authority and publishes related official cadastral services.",
+  "registryEvidenceUrls": [
+    "https://gis.brno.cz/ags3/rest/services/PUBLIC/katastr_g/MapServer/",
+    "https://gis.brno.cz/ags3/rest/services/PUBLIC/katastr_g/MapServer/5",
+    "https://www.cuzk.gov.cz/Uvod/Produkty-a-sluzby/Otevrena-data/Otevrena-data-zakladni-informace.aspx"
+  ],
+  "source": {
+    "sourceId": "brno-city-gis-katastr-g-parcely",
+    "name": "GIS města Brna PUBLIC/katastr_g ArcGIS Feature Layer 5 Parcely",
+    "operator": "Statutory City of Brno GIS / Magistrát města Brna",
+    "endpoint": "https://gis.brno.cz/ags3/rest/services/PUBLIC/katastr_g/MapServer/5/query",
+    "method": "GET",
+    "responseFormat": "GeoJSON",
+    "crs": "Native service spatial reference EPSG:5514 (WKID 102067); query output requested as EPSG:4326.",
+    "nativeIdentity": "par_id field; observed value 1417958702",
+    "nativeFieldMapping": {"par_id": "stable native parcel identifier", "geom": "native polygon geometry"},
+    "scope": "Official Brno GIS cadastral parcel layer; one exact-point response and layer metadata were verified. Complete citywide coverage, update currency, and runtime adapter behavior remain unverified.",
+    "safeFieldAllowlist": ["par_id", "polygon geometry", "CRS/service metadata"]
+  },
+  "requests": [
+    {
+      "url": "https://gis.brno.cz/ags3/rest/services/PUBLIC/katastr_g/MapServer/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official ArcGIS service metadata loaded; layers include Parcely (5), parcel-number layers, and native service CRS EPSG:5514/102067."
+    },
+    {
+      "url": "https://gis.brno.cz/ags3/rest/services/PUBLIC/katastr_g/MapServer/5?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Layer metadata loaded; polygon geometry, GeoJSON support, and fields including par_id and geom were confirmed. No unsafe attributes were requested in the parcel query."
+    },
+    {
+      "url": "https://gis.brno.cz/ags3/rest/services/PUBLIC/katastr_g/MapServer/5/query?f=geojson&where=1%3D1&geometry=16.6097275929996%2C49.203210413959&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=par_id&returnGeometry=true&outSR=4326&resultRecordCount=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "One polygon intersected the exact WUP point; safe response contained par_id 1417958702 and polygon geometry in EPSG:4326."
+    }
+  ],
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "parcelRecordCount": 1,
+    "retainedSampleCount": 1,
+    "responseFile": "brno-parcel-sample.geojson",
+    "geometryType": "Polygon",
+    "queryPointLatLon": [49.203210413959, 16.6097275929996],
+    "nativeIdField": "par_id",
+    "nativeIds": [1417958702],
+    "sampleMeaning": "One exact-point parcel response retained as a bounded public geometry example; not a citywide inventory."
+  },
+  "coverageAssessment": {
+    "claimedScope": "City of Brno cadastral parcel visualization/service.",
+    "verifiedOpenScope": "Official public feature layer metadata and one exact-point parcel geometry with native par_id; citywide completeness and operational stability not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification required",
+  "retainedPolygonSampleFile": "brno-parcel-sample.geojson",
+  "remainingUncertainty": "The exact point hit proves a usable public response at one location only. It does not establish complete Brno coverage, temporal currency, legal boundary status, or a production-ready adapter. No owner, address, titleholder, contact, tax/account, personal, or other unsafe fields were requested or retained. Packet completion is not source integration or admission."
+}

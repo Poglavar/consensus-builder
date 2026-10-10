@@ -1,0 +1,12 @@
+{
+  "taskId": "city:7113",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-7113-orenburg.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/orenburg-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-09T14:15:27.475617Z",
+  "reason": "Official map timeout; no native-ID polygon response or live adapter qualification."
+}

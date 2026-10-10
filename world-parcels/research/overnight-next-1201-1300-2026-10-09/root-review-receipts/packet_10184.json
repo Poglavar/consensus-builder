@@ -1,0 +1,23 @@
+{
+  "taskId": "packet:10184",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-10184-zoucheng.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/zoucheng-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/root-review-receipts/city_10184.json"
+  ],
+  "checkedAt": "2026-10-09T13:25:36Z",
+  "identityAndSearchReview": "Zoucheng, China/CN, WUP code 10184, rank 1243, point [35.4003955374662, 116.950785835449], population 447484 persons. English/Chinese search queries and result URLs recorded; zero full polygons retained.",
+  "sourceReview": "First-party Jining government material names the Zoucheng real-estate registration center, supporting local institutional custody. Original Shandong viewer HTML references the public config and map bundle; cached config contains no identified cadastral parcel route. These are viewer artifacts, not native parcel geometry.",
+  "firstPartyUrlsReviewed": [
+    "https://nrp.jining.gov.cn/art/2023/2/16/art_60571_2718852.html",
+    "https://www.sdmap.gov.cn/map.html"
+  ],
+  "originalCacheSha256": {
+    "tmp/valhalla-parcel-research/zoucheng/map.html": "8b0bf0c6f7bcf837427b9f7e59934aef29d055fdec9255c5e53b5efe3b38082a",
+    "tmp/valhalla-parcel-research/zoucheng/config.js": "9559a179c884c9bfea9fb4958210e49d3ba0dd7f64c781698f17f34293ca3308"
+  },
+  "admissionReview": "No verified safe native-ID full polygon response. Fresh exact ID reads, forced paging, 13 bounded cells, metric GEOS validity/duplicate/overlap/operation checks, source binding, and headed Details-panel verification are not evidenced. No runtime/catalog/report admission or absence claim."
+}

@@ -1,0 +1,24 @@
+{
+  "taskId": "city:6933",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-6933-wonosobo.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/wonosobo-service-review.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/root-review-receipts/source-evidence/city_6933-wonosobo-big-layer25.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/root-review-receipts/source-evidence/city_6933-wonosobo-big-query.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/root-review-receipts/source-evidence/city_6933-wonosobo-big-query-geojson.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/root-review-receipts/source-evidence/city_6933-wonosobo-bhumi-layers.json"
+  ],
+  "checkedAt": "2026-10-10T19:33:24Z",
+  "reason": "Wonosobo: official provincial layer metadata exists, but original bounded city responses contain zero features; no Wonosobo native-ID polygon or adapter qualification.",
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

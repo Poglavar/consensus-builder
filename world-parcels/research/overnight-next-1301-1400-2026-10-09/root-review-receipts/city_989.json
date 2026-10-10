@@ -1,0 +1,32 @@
+{
+  "taskId": "city:989",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-989-city.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-queue-extension-1301-2300-verification-2026-10-09.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/989/portal.html",
+    "tmp/valhalla-parcel-research/989/map-config.js"
+  ],
+  "checkedAt": "2026-10-09T15:20:52+00:00",
+  "reason": "Official Xinjiang regional map configuration inspected; no local cadastral custody or safe native-ID parcel geometry evidenced, and no adapter qualification or headed Details evidence.",
+  "identity": {
+    "queueRank": 1370,
+    "countryCode": "CN",
+    "point": [
+      43.9288592045439,
+      81.3166262556781
+    ],
+    "populationPersons": 411163
+  },
+  "reviewFindings": {
+    "englishAndLocalSearchesRecorded": true,
+    "retainedFullPolygons": 0,
+    "safeNativeIdGeometryVerified": false,
+    "adapterQualificationComplete": false,
+    "registryFound": null,
+    "integrationState": "held"
+  }
+}

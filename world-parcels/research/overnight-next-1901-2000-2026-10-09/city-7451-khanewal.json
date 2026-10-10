@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 7451,
+  "wupCityCode": 7451,
+  "queueRank": 1906,
+  "name": "Khanewal",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "point": [30.297419570431, 71.9301698459097],
+  "centerLatLon": [30.297419570431, 71.9301698459097],
+  "population2025": 300722,
+  "population2025k": 300.722,
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": true,
+  "targetGeometryEvidence": "three bounded Khanewal-layer parcel polygons retained; exact WUP point query returned zero",
+  "nativeIdReadiness": "OBJECTID is the service-native stable object identifier evidenced by ArcGIS Feature Layer metadata and GeoJSON feature ids",
+  "registryFound": true,
+  "registryBasis": "Punjab PULSE public GIS exposes a Khanewal-specific cadastral parcel layer (layer 14) in the official Punjab land-mapping service; the District Khanewal government page separately identifies local revenue/land-record custody.",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Khanewal Pakistan official cadastral parcel map land records GIS Punjab",
+        "result": "Found the official Punjab PULSE GIS portal, the Khanewal-specific municipal base map, and the Punjab PULSE GIS page listing Khanewal cadastral coverage.",
+        "actualResultUrls": ["https://lis.pulse.gop.pk/", "https://pmdfc.punjab.gov.pk/gis-map-16_cities-pcp", "https://mckhanewal.lgpunjab.org.pk/wp-content/uploads/2023/02/Base-Map-Khanewal-City-2022-23.pdf"]
+      },
+      {
+        "language": "Urdu",
+        "query": "خانیوال پاکستان سرکاری اراضی ریکارڈ نقشہ کادستر",
+        "result": "Found official Punjab PULSE/land-record mapping results and Khanewal district revenue administration context; no separate Urdu-only parcel API was identified.",
+        "actualResultUrls": ["https://lis.pulse.gop.pk/", "https://khanewal.punjab.gov.pk/districts", "https://khanewal.punjab.gov.pk/node/157"]
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Punjab PULSE VendorMaps/Punjab_Cdastral_Maps MapServer layer 14 named Khanewal; bounded query near the WUP point and layer extent metadata were inspected.",
+    "verifiedOpenScope": "Anonymous public map metadata and geometry query using the page-issued public GIS token; three polygons intersected a 0.02-degree envelope around the unchanged WUP point.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "verifiedParcelResponse": {
+    "sampleFile": "khanewal-parcels-sample.geojson",
+    "featureCount": 3,
+    "nativeIdField": "OBJECTID",
+    "crs": "Source layer reports wkid 102100/latestWkid 3857; retained GeoJSON requested as EPSG:4326",
+    "queryEnvelope": [71.92, 30.287, 71.94, 30.307],
+    "where": "District='Khanewal'",
+    "outFields": ["OBJECTID"]
+  },
+  "sourceIds": ["https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/14"],
+  "runtimeReadiness": "held",
+  "resultCategory": "city_specific_official_cadastral_layer_with_bounded_geometry",
+  "blocker": "No adapter qualification or serial review was performed; the source layer may not represent all city parcels or stable production availability.",
+  "remainingUncertainty": "Exact point miss is not an absence finding. The retained sample is bounded and not evidence of citywide completeness; the portal's public token is transient and no unsafe ownership/address fields were requested.",
+  "nextStep": "Independent serial reviewer should recheck service continuity, geographic qualification, native OBJECTID semantics, and CRS handling before admission."
+}

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3236-gemena.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Review official DRC cadastral channels and qualify bounded anonymous parcel evidence for Gemena.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false, "wupPointPreserved": [3.24829752121518, 19.7791382484463]},
+  "assessment": "The official Ministry of Land Affairs lists Gemena as a Sud-Ubangi land/cadastral jurisdiction, and the official government service catalogue documents formal register consultation. BIC's public client was inspected for a current map/API route, but no safe public parcel polygon or anonymous cadastral response was verified.",
+  "registryAssessment": "Local cadastral custody is evidenced by the Ministry's jurisdiction list naming Gemena under Sud-Ubangi. The consultation route is a formal paid request through the Conservateur des Titres Immobiliers or Chef de Division du Cadastre; it is not an open parcel API.",
+  "coverageAssessment": {"claimedScope": "Official ministry directory, official service procedure, BIC public landing page, and current BIC JavaScript/configuration inspection.", "verifiedOpenScope": "Local jurisdiction and formal procedure only; no open parcel geometry.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "officialPrimarySources": [
+    {"url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions", "operator": "Ministère des Affaires Foncières", "scope": "Official cadastral/land jurisdiction directory; lists Gemena under Sud-Ubangi."},
+    {"url": "https://servicepublic.gouv.cd/service/4671", "operator": "Services publics RDC / AFFAIRES FONCIERES", "scope": "Official register-consultation procedure and local office roles; no open geometry endpoint."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Gemena official cadastral parcel map land registry Democratic Republic of the Congo", "result": "Found official DRC ministry jurisdiction directory and government register-consultation procedure; no open parcel API.", "actualResultUrls": ["https://affairesfoncieres.gouv.cd/secretariat/circonscriptions", "https://servicepublic.gouv.cd/service/4671", "https://bic.cd/"]},
+    {"language": "French", "query": "Gemena cadastre parcellaire carte officielle République démocratique du Congo", "result": "Found the same official first-party jurisdiction and procedure pages; BIC client inspection did not expose a verified anonymous parcel geometry response.", "actualResultUrls": ["https://affairesfoncieres.gouv.cd/secretariat/circonscriptions", "https://servicepublic.gouv.cd/service/4671", "https://bic.cd/"]}
+  ],
+  "attempts": [
+    "Fetched the official Ministry jurisdiction directory anonymously; HTTP 200; Gemena is listed under Sud-Ubangi.",
+    "Fetched the official government service catalogue anonymously; HTTP 200; it describes formal paid cadastral-register consultation through the local title/cadastre offices.",
+    "Fetched BIC's public landing page anonymously; HTTP 200. Inspected its current JavaScript/configuration, including cadastral-map/search modules; no verified safe anonymous parcel route, schema, CRS, or geometry response was established.",
+    "No exact-point parcel request was fabricated or treated as an absence test. No owner/address/contact/titleholder/tax/account/personal fields were requested or retained."
+  ],
+  "safeFieldAllowlist": ["official source URLs", "jurisdiction names", "procedure description", "HTTP status", "geometry type and CRS metadata only when relevant"],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not performed against a verified parcel endpoint; no zero-hit inference made.", "requestEvidence": []},
+  "nextStep": "Root/serial review may independently investigate whether a future authenticated/formal or newly published local service can expose safe parcel geometry. Keep runtime held until an anonymous adapter and bounded geometry response are independently qualified.",
+  "remainingUncertainty": "The formal service may provide parcel information after a paid request, but online availability, local office workflow, parcel coverage, freshness, CRS, and machine-readable schema were not verified. BIC's platform was not treated as a registry or parcel source without a proven route.",
+  "researchAttempt": 1,
+  "rootReview": null,
+  "rootReviewedAt": null
+}

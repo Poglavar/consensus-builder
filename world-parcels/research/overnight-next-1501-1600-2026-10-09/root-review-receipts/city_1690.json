@@ -1,0 +1,13 @@
+{
+  "taskId": "city:1690",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-1690-hama.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/hama-service-review.json",
+    "tmp/valhalla-parcel-research/hama-1690/hama-home.html"
+  ],
+  "checkedAt": "2026-10-10T08:48:27.609396Z",
+  "reviewNote": "Paired packet records English and Arabic executed queries and local registry reports. Cached governorate homepage is an information portal; no parcel geometry response, native ID, CRS, full sample, or adapter qualification exists. Local custody does not establish exact-point or citywide public coverage."
+}

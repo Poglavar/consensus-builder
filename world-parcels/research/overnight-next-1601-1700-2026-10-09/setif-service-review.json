@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-4723-setif.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "cityCode": 4723,
+  "queueRank": 1636,
+  "city": "Setif",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": null,
+  "summary": "No public Setif cadastral parcel service or safe parcel geometry/native identity was verified. The official Wilaya viewer is general cartography, the ASGA viewer is broad-scale cartography, and ANFU provides national urban-land mission prose only.",
+  "queryOutcomes": "Separate English and Arabic/local-language discovery queries are recorded in the city record. They found official general cartography, national urban-land agency information, and a university catalogue entry, but no evidenced Setif parcel endpoint.",
+  "requestOutcomes": "GET/fetch attempt for the official Wilaya viewer returned HTTP 502. Fetch attempt for the official ASGA viewer timed out. The official ANFU page was readable and contained no public Setif parcel endpoint. The university catalogue page was not available from cache. No anonymous ID+geometry response was obtained.",
+  "attemptedRoutes": [
+    {"url": "https://www.wilayasetif.dz/CTOIC/Fr/SITE/index.html", "method": "GET", "httpStatus": 502, "outcome": "Official local Wilaya map fetch failed at the gateway; search metadata describes general layers, not parcels."},
+    {"url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx", "method": "GET", "httpStatus": null, "outcome": "Official national cartography viewer timed out; no parcel schema or geometry response."},
+    {"url": "https://www.anfu.dz/", "method": "GET", "httpStatus": 200, "outcome": "Official ANFU mission page reviewed; national urban-land context only, no public Setif parcel endpoint."},
+    {"url": "https://biblio-iast.univ-setif.dz/opac_css/index.php?id=7060&lvl=notice_display", "method": "GET", "httpStatus": null, "outcome": "Search result identified a land-survey study catalogue record; direct fetch was a cache miss; not a parcel service."}
+  ],
+  "scopeLimits": [
+    "The exact WUP point was preserved and not shifted.",
+    "General cartographic layers, national-agency prose, and academic literature are not local cadastral integration evidence.",
+    "A failed exact-point/map request does not establish citywide absence.",
+    "No owner, address, titleholder, contact, tax/account, registration, personal, credential, or private-token field was requested or retained.",
+    "No retained GeoJSON sample was created because no safe native parcel ID and full polygon geometry were obtained."
+  ],
+  "safeFieldAllowlist": ["safe native parcel identity if later verified", "full parcel polygon geometry", "geometry CRS", "source layer and public service metadata"],
+  "excludedFields": ["owner or titleholder names", "addresses and contact data", "tax/account/registration details", "credentials and private tokens"],
+  "nativeIdentityPolicy": "No identity was retained. An internal row number or synthetic ID must not be used unless a future source proves it is the stable native parcel identity.",
+  "crs": "Not established; no parcel response obtained.",
+  "geometryQuality": "No geometry obtained.",
+  "runtimeReadiness": "held_no_verified_public_parcel_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The local custodian and any public cadastral access route remain unresolved. Timeouts and gateway failure are availability limitations, not absence evidence."
+}

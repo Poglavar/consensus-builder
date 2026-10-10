@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 6799,
+  "wupCityCode": 6799,
+  "queueRank": 1942,
+  "name": "Coatzacoalcos",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "iso3": "MEX",
+  "point": [18.1360797405887, -94.4571756420788],
+  "centerLatLon": [18.1360797405887, -94.4571756420788],
+  "population2025": 297319,
+  "population2025k": 297.319,
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "targetGeometryEvidence": "official_local_cadastre_and_predial_lookup_evidenced_but_no_anonymous_geometry_endpoint",
+  "nativeIdReadiness": "no_safe_native_parcel_identity_or_geometry_response",
+  "registryFound": true,
+  "registryBasis": "The Ayuntamiento de Coatzacoalcos identifies Dirección de Catastro Municipal and publishes local cadastral procedures, while the State of Veracruz publishes Delegación Regional de Catastro Coatzacoalcos service/capacity records. The municipal public predial page permits lookup by clave catastral, but does not expose an anonymous parcel-vector response.",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Coatzacoalcos cadastral parcel map official Veracruz catastro GIS",
+        "result": "Found official municipal Catastro procedure/directorate pages, the municipal predial lookup, and state Catastro service records. No official anonymous cadastral parcel geometry service was found.",
+        "actualResultUrls": [
+          "https://tramites.coatzacoalcos.gob.mx/tramites/81/",
+          "https://desarrollourbano.coatzacoalcos.gob.mx/desarrollo-urbano/directorio/",
+          "https://pagoenlinea.coatzacoalcos.gob.mx/",
+          "https://repositorio.veracruz.gob.mx/finanzas/wp-content/uploads/sites/2/2025/04/Servicios-catastrales-2024-Minatitlan.pdf"
+        ]
+      },
+      {
+        "language": "Spanish (local/native)",
+        "query": "Coatzacoalcos mapa catastral parcelas oficial Veracruz catastro SIG",
+        "result": "Resultados oficiales evidencian deslinde de predio, Dirección de Catastro Municipal, consulta predial por clave catastral, and state Catastro Coatzacoalcos records; no public parcel-vector endpoint or safe target feature was verified.",
+        "actualResultUrls": [
+          "https://tramites.coatzacoalcos.gob.mx/tramites/81/",
+          "https://coatzacoalcos.gob.mx/preguntas-frecuentes/",
+          "https://coatzacoalcos.gob.mx/gobierno-digital/",
+          "https://repositorio.veracruz.gob.mx/finanzas/wp-content/uploads/sites/2/2025/04/Programa-Operativo-Anual-Minatitlan.pdf"
+        ]
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal Coatzacoalcos Catastro procedures/predial lookup plus Veracruz state regional Catastro records and publicly indexed state GIS services.",
+    "verifiedOpenScope": "Local cadastral custody and a key-based predial lookup are evidenced; no open parcel geometry, schema, CRS, or citywide parcel completeness was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "resultCategory": "official_local_registry_custody_evidenced_no_verified_public_parcel_geometry",
+  "blocker": "The current official predial viewer is an ASP.NET/Telerik page whose public form searches by clave catastral and includes payment/account panels. The fetched HTML exposed no anonymous parcel geometry API; the referenced main.js URL returned HTTP 404. Public state ArcGIS results found during discovery were environmental/land-use layers, not cadastral parcel data. No credentials, tokens, owner/address fields, or unsafe lookup fields were used.",
+  "remainingUncertainty": "A municipal or state internal cadastral GIS may exist behind the key-based workflow or an unindexed service. A zero exact-point hit was not used, and no inference of citywide absence is made. Any future geometry admission requires independent qualification of the service, CRS, coverage, and stable native parcel identity.",
+  "nextStep": "Serial reviewer should independently qualify any authenticated-free municipal/state parcel service if discovered; retain runtime admission held pending that review."
+}

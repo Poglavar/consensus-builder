@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-6055-fungurume.json",
+  "cityCode": 6055,
+  "queueRank": 1928,
+  "city": "Fungurume",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official DRC land-registry custody and formal cadastral-search procedures were evidenced, including the Ministry directory covering Lualaba and Lubudi. No anonymous Fungurume parcel ID plus geometry response, public viewer/API, schema, CRS, or citywide open coverage was verified. Runtime remains held.",
+  "queryOutcomes": "Separate English and French discovery queries are recorded in city-6055-fungurume.json. They found official Ministry of Land Affairs and public-service procedure pages but no Fungurume-specific open parcel service.",
+  "requestOutcomes": "TLS-verified anonymous GETs fetched the official Ministry circonscriptions directory, official public-service registry procedure, and BIC landing page. A bounded public ArcGIS search for Fungurume parcel items returned zero results. No credentials, login, private token, CAPTCHA/Cloudflare bypass, unsafe property lookup, formal submission, or TLS disablement was used.",
+  "scopeLimits": [
+    "The WUP point [-10.6190040878108, 26.3302679663275] was preserved exactly in latitude/longitude order.",
+    "No exact-point hit or miss, map extent miss, timeout, login wall, or unusable UI was treated as evidence of citywide cadastral absence.",
+    "Ministry registry custody and formal search procedures do not prove public vector geometry availability or Fungurume coverage.",
+    "The Ministry directory lists Lualaba and Lubudi circonscriptions, but the fetched public page exposed no parcel layer or Fungurume endpoint.",
+    "No owner, address, titleholder, contact, tax/account, personal, or other unsafe fields were requested or retained.",
+    "No GeoJSON sample is retained because no safe native parcel geometry and stable identity response was obtained.",
+    "Packet completion is research evidence only and does not qualify or admit a runtime adapter; serial reviewer qualification remains pending."
+  ],
+  "safeFieldAllowlist": ["id", "geometry", "CRS", "source layer/service metadata"],
+  "nativeIdentityPolicy": "No native parcel identity was observed; do not synthesize one from search results, response order, or internal records.",
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel geometry response obtained",
+  "geometryQuality": "not evaluated; no geometry retained",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public parcel geometry query was available; no hit or miss inference was made.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "DRC national land/cadastral registry procedures and listed circonscriptions.",
+    "verifiedOpenScope": "Institutional custody and formal inquiry procedure only; anonymous Fungurume parcel geometry and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "uncertainty": "A restricted, account-gated, formal-request, locally held, or not-yet-published service may exist. Public availability, parcel schema, CRS, native identity, coverage, and safe anonymous runtime access remain unresolved.",
+  "retainedSample": null
+}

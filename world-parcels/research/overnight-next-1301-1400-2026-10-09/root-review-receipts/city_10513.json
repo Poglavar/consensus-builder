@@ -1,0 +1,13 @@
+{
+  "taskId": "city:10513",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-10513-waidhan.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/waidhan-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T15:41:48Z",
+  "reason": "WUP code 10513, rank 1385, India point and 408489 persons match the immutable queue and 2025 source. English and Hindi searches and official URLs are recorded. Government land-record/map custody at Singrauli/Waidhan is supported, but MP Bhulekh timed out and no native parcel ID or full polygon was captured. DILRMP aggregate map counts are not a Waidhan feature response. No adapter qualification, bounded-cell validation, source binding or headed Details check exists. Timeout is unresolved access, not citywide absence."
+}

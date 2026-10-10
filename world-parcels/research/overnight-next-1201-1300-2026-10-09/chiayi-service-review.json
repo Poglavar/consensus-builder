@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-12131-chiayi.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Review official Taiwan/NLSC and Chiayi land-office channels for safe anonymous cadastral geometry and stable parcel identifiers.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "assessment": "Chiayi local land administration is evidenced by the official Chiayi cadastral-information service. NLSC public WFS capabilities and DescribeFeatureType expose a cadastral layer and polygon schema, but the exact unchanged WUP-point GetFeature request returned Permission Denied. No geometry or native parcel identity was retained.",
+  "registryAssessment": "The official Chiayi land-information service states that cadastral information is provided by local city/county land authorities and specifically offers Chiayi cadastral-map services. This establishes local registry/service custody, not unrestricted anonymous vector access.",
+  "officialPrimarySources": [
+    {"url": "https://mqt-chiayietw.land.nat.gov.tw/", "operator": "Chiayi City land-information service", "scope": "Official service page documents Chiayi cadastral maps, local land-office data provision, fees, and authentication/access controls."},
+    {"url": "https://maps.nlsc.gov.tw/pro/sysinfo_en.jsp", "operator": "National Land Surveying and Mapping Center", "scope": "Official NLSC service description documents public WMS/WMTS spatial layers including land-section/cadastral reference material."},
+    {"url": "https://maps.nlsc.gov.tw/S09SOA/pro/Wfs_ajax_main.jsp", "operator": "National Land Surveying and Mapping Center", "scope": "Official WFS documentation describes URL-based feature access and gives the WFS endpoint."},
+    {"url": "https://wfs.nlsc.gov.tw/WFS?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetCapabilities", "operator": "National Land Surveying and Mapping Center", "scope": "Capabilities listed WFS:CADAS_MERGE titled 地籍圖."},
+    {"url": "https://wfs.nlsc.gov.tw/WFS?SERVICE=WFS&VERSION=1.0.0&REQUEST=DescribeFeatureType&TYPENAME=WFS:CADAS_MERGE", "operator": "National Land Surveying and Mapping Center", "scope": "Schema exposed CITY, SECT, LANDNO and multiPolygon geometry; no unsafe fields were requested or retained."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Chiayi Taiwan official cadastral map parcel GIS land registration National Land Surveying and Mapping Center", "result": "Found official NLSC cadastral/WFS documentation and Chiayi cadastral-information service; exact-point parcel request denied.", "actualResultUrls": ["https://maps.nlsc.gov.tw/pro/sysinfo_en.jsp", "https://www.nlsc.gov.tw/EN/cp.aspx?n=2156", "https://maps.nlsc.gov.tw/S09SOA/pro/Wfs_ajax_main.jsp", "https://mqt-chiayietw.land.nat.gov.tw/"]},
+    {"language": "Chinese (Traditional)", "query": "嘉義市 地籍圖 地政事務所 官方 圖台 地段 地號", "result": "確認嘉義市官方地籍服務與地政資料提供機關說明；未取得安全匿名完整地籍多邊形。", "actualResultUrls": ["https://mqt-chiayietw.land.nat.gov.tw/", "https://maps.nlsc.gov.tw/T09/mapshow.action", "https://www.nlsc.gov.tw/cp.aspx?n=16734"]}
+  ],
+  "attempts": [
+    "Retrieved the public NLSC viewer and inspected its current HTML/JavaScript and cadastral-map documentation.",
+    "Retrieved the official Chiayi land-information service page; did not log in, submit paid queries, or request transcripts/owner/address/title data.",
+    "Retrieved anonymous NLSC WFS capabilities; CADAS_MERGE / 地籍圖 was listed.",
+    "Retrieved anonymous CADAS_MERGE schema; safe candidate fields CITY, SECT, LANDNO and multiPolygon geometry were documented.",
+    "Requested an anonymous bounded CADAS_MERGE GetFeature response at exact unchanged [23.4788024733936, 120.452751544633]; HTTP 200 response body was Permission Denied.",
+    "Ran a non-cadastral public WFS control request; it returned a FeatureCollection, but no parcel inference was made.",
+    "Did not access e-transcripts, owner/address/title/transaction data, login-protected services, credentials, CAPTCHA, or private tokens."
+  ],
+  "safeFieldAllowlist": ["safe parcel/native ID if publicly returned", "CITY/SECT/LANDNO composite identity if publicly returned", "geometry", "geometry CRS", "layer/service metadata", "HTTP status and response size"],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Exact unchanged WUP point sent to CADAS_MERGE WFS; response was Permission Denied.", "requestEvidence": [{"url": "https://wfs.nlsc.gov.tw/WFS?SERVICE=WFS&VERSION=1.0.0&REQUEST=GetFeature&TYPENAME=WFS:CADAS_MERGE&FILTER=point120.4527515446336,23.4788024733936", "method": "GET", "httpStatus": 200, "result": "Permission Denied"}]},
+  "coverageAssessment": {"claimedScope": "Official NLSC national cadastral service and Chiayi local land-information service reviewed.", "verifiedOpenScope": "Cadastral layer and schema verified; exact-point anonymous feature access denied; citywide coverage unknown.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "nextStep": "Serial reviewer may independently re-check a safe public geometry route; keep runtime readiness held until independently qualified.",
+  "remainingUncertainty": "No safe anonymous parcel polygon/native ID was returned. The WUP point may still lie within mapped cadastral coverage; denial is not evidence of absence.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

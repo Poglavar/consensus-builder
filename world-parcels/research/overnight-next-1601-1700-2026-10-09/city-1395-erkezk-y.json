@@ -1,0 +1,72 @@
+{
+  "cityCode": 1395,
+  "queueRank": 1686,
+  "name": "Çerkezköy",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "iso3": "TUR",
+  "locId": 792,
+  "point": [41.3079977291703, 27.9834341443901],
+  "population2025": 338995,
+  "population2025k": 338.995,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Çerkezköy official cadastral parcel map GIS cadastre TKGM",
+        "result": "Found the official TKGM Parsel Sorgu viewer, its official MEGSİS project description, and the official Çerkezköy district land-registry office page. The viewer's current public JavaScript/configuration exposed an anonymous parcel API.",
+        "actualResultUrls": [
+          "https://parselsorgu.tkgm.gov.tr/",
+          "https://www.tkgm.gov.tr/projeler/tamamlanan-projeler/megsis",
+          "https://www.cerkezkoy.gov.tr/ilce-tapu-mudurlugu"
+        ]
+      },
+      {
+        "language": "Turkish",
+        "query": "Çerkezköy parsel sorgu resmi kadastro harita TKGM",
+        "result": "Found the official Çerkezköy district Tapu Müdürlüğü custodian page and TKGM material describing public parcel querying/MEGSİS. The current viewer config identified the public cbsapi.tkgm.gov.tr backend; bounded anonymous point queries returned parcel polygons.",
+        "actualResultUrls": [
+          "https://www.cerkezkoy.gov.tr/ilce-tapu-mudurlugu",
+          "https://www.tkgm.gov.tr/edirne-bm/cerkezkoy-tapu-mudurlugumuze-denetim",
+          "https://www.tkgm.gov.tr/edergi/sayi-12/pdf/TKGM-Mulkiyet-12nci-SayiWeb.pdf",
+          "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/41.3079977291703/27.9834341443901"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official Çerkezköy Kaymakamlığı page identifies the district Tapu Müdürlüğü and its mission to maintain, update and provide property information; TKGM is the national cadastral authority and the current official viewer/API returned local parcel features.",
+  "apiBase": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api",
+  "coordinateEndpoint": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/{latitude}/{longitude}",
+  "sourceCandidate": "TKGM Parsel Sorgu / MEGSİS anonymous coordinate lookup",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "verifiedParcelResponse": {
+    "sourceId": "mahalleId/adaNo/parselNo",
+    "sampleCount": 2,
+    "sampleFile": "cerkezkoy-parcels-sample.geojson",
+    "crs": "GeoJSON coordinate order observed as [longitude, latitude]; formal CRS declaration was not returned, presumed geographic WGS84-compatible but unverified",
+    "nativeFieldMapping": {"mahalleId": "neighborhood identifier", "adaNo": "block/island number", "parselNo": "parcel number"},
+    "compositeKeyProvenance": "Stable native identity formed from the API's mahalleId, adaNo and parselNo fields; no internal row number used. Sample properties retain only this canonical composite id.",
+    "pointQueries": [
+      {"url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/41.3079977291703/27.9834341443901", "httpStatus": 200, "nativeIdentity": "164700/938/19"},
+      {"url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/41.3085/27.9835", "httpStatus": 200, "nativeIdentity": "164700/938/19", "outcome": "duplicate feature; not retained twice"},
+      {"url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/41.3075/27.9828", "httpStatus": 200, "nativeIdentity": "164700/938/21"}
+    ]
+  },
+  "sourceIds": ["164700/938/19", "164700/938/21"],
+  "resultCategory": "official_local_registry_and_anonymous_parcel_geometry_verified_partial_city_coverage",
+  "coverageAssessment": {
+    "claimedScope": "TKGM/MEGSİS national cadastral platform and Çerkezköy district registry custody.",
+    "verifiedOpenScope": "Three bounded coordinate lookups near the exact WUP point returned two distinct Çerkezköy parcel polygons; citywide completeness, boundary coverage and temporal currency were not independently established.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_serial_review_required",
+  "remainingUncertainty": "The API's formal CRS declaration, update date, pagination/extent behavior, complete Çerkezköy coverage and adapter semantics remain unverified. Exact-point success is local evidence only and is not a citywide coverage claim. No owner, address, titleholder, contact, tax/account or personal fields were retained.",
+  "identityPolicy": "Retained GeoJSON contains exactly one canonical native composite identity per feature. Native source fields and their mapping are documented here and in the service review. Packet completion does not qualify or admit a runtime adapter; independent serial review remains required."
+}

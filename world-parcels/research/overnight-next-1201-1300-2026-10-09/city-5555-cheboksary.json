@@ -1,0 +1,105 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:5555",
+  "wupCityCode": 5555,
+  "cityCode": 5555,
+  "queueRank": 1220,
+  "rank": 1220,
+  "name": "Cheboksary",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso2": "RU",
+  "iso3": "RUS",
+  "locId": 643,
+  "capital": false,
+  "aliases": ["cheboksary"],
+  "point": [56.1183130669807, 47.2546672928967],
+  "centerLatLon": [56.1183130669807, 47.2546672928967],
+  "pointBasis": "Immutable WUP 2025 queue point copied unchanged in latitude/longitude order; no coordinate adjustment.",
+  "population2025": 456304,
+  "population2025k": 456.304,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "status": "complete",
+  "resultCategory": "official_cadastral_source_not_qualified",
+  "registryFound": null,
+  "registryBasis": "Rosreestr is evidenced as the national cadastral custodian and its public-map channels were discovered, but this attempt did not obtain a local Cheboksary registry/procedure response or parcel feature from an official endpoint. Null is retained rather than treating a timeout as absence.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_quality_review",
+  "blocker": "No safe anonymous parcel ID+geometry response was obtained; runtime remains held pending independent serial adapter qualification.",
+  "source": {
+    "operator": "Federal Service for State Registration, Cadastre and Cartography (Rosreestr); national custodian, not a separately evidenced Cheboksary municipal registry",
+    "viewerUrls": ["https://pkk.rosreestr.ru/", "https://ppk.rosreestr.ru/"],
+    "crs": null
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "First-party discovery in English and Russian plus anonymous GET attempts to Rosreestr public-map hosts and Rosreestr portal.",
+    "verifiedOpenScope": "No parcel response or geometry was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "technicalBlocker": "The official hosts did not return within the bounded request timeout from this environment, so current JavaScript/configuration, response schema, CRS, safe parcel identifiers, and geometry behavior could not be inspected.",
+  "remainingUncertainty": "A timeout or unavailable map is not evidence of citywide absence. No login, credentials, CAPTCHA/Cloudflare bypass, private token, unsafe field, or TLS exception was used.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Cheboksary official cadastral parcel map public viewer Rosreestr cadastral map",
+        "result": "Discovery returned the Rosreestr/Rosкадастр public cadastral-map channel references and a Cheboksary map result. The Cheboksary-specific result was not itself a first-party Rosreestr host, so it was not used as registry evidence.",
+        "actualResultUrls": ["https://pkk.rosreestr.ru/", "https://ppk.rosreestr.ru/", "https://roscadaster.com/map/respublika-chuvashiya/cheboksary"]
+      },
+      {
+        "language": "native/local",
+        "query": "Чебоксары официальная кадастровая карта публичная кадастровая карта Росреестр",
+        "result": "Russian-language discovery returned references to Rosreestr public cadastral-map channels and general Rosreestr material describing public cadastral maps. No usable official Cheboksary parcel response was returned.",
+        "actualResultUrls": ["https://pkk.rosreestr.ru/", "https://ppk.rosreestr.ru/", "https://rosreestr.gov.ru/"]
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://rosreestr.gov.ru/",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": "timeout after 20 seconds",
+        "assessment": "No response body; no login or bypass attempted."
+      },
+      {
+        "url": "https://pkk.rosreestr.ru/",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": "timeout after 20 seconds; request batch stopped",
+        "assessment": "Public-map host was attempted but no HTML/JavaScript/configuration was obtained."
+      },
+      {
+        "url": "https://ppk.rosreestr.ru/",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": "not completed after preceding bounded timeout",
+        "assessment": "No parcel request was sent because the official viewer configuration could not be inspected."
+      },
+      {
+        "url": "https://rosreestr.gov.ru/wps/portal/p/cc_ib_portal_services/online_request",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": "not completed after preceding bounded timeout",
+        "assessment": "No parcel or owner/address/titleholder request was made."
+      }
+    ],
+    "inspectedConfiguration": {
+      "viewer": null,
+      "apiBase": null,
+      "coordinateRoute": null,
+      "responseSchemaObserved": null,
+      "parcelEndpointObserved": false,
+      "schemaObserved": false,
+      "explicitCrsObserved": false
+    }
+  },
+  "registryEvidenceUrls": ["https://rosreestr.gov.ru/", "https://pkk.rosreestr.ru/", "https://ppk.rosreestr.ru/"],
+  "checkedAt": "2026-10-09",
+  "researchAttempt": 1,
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "adapterReady": false,
+  "runtimeAssessment": {"status": "held_quality_review", "reason": "No official parcel geometry or safe identifier was independently qualified."}
+}

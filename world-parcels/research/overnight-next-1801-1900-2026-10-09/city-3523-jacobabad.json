@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "wupCityCode": 3523,
+  "cityCode": 3523,
+  "cityId": "wup2025:3523",
+  "name": "Jacobabad",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "centerLatLon": [28.2789076566865, 68.439797597988],
+  "point": [28.2789076566865, 68.439797597988],
+  "population2025": 308137,
+  "population2025k": 308.137,
+  "populationUnit": "persons",
+  "queuePriority": 1867,
+  "queueRank": 1867,
+  "cohorts": ["overnight-next-1801-1900-2026-10-09"],
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jacobabad cadastral map official Pakistan land records Sindh Board of Revenue",
+        "result": "First-party results identified the Board of Revenue Sindh land-record portal, its FAQ, the official Board of Revenue site, and an official Sindh education GIS page for Jacobabad. The Board of Revenue portal describes digital land records and cadastral/deh-map services, but the portal and linked map service were not anonymously retrievable in this attempt.",
+        "actualResultUrls": [
+          "https://www.sindhzameen.gos.pk/Default.aspx",
+          "https://www.sindhzameen.gos.pk/FAQs.aspx",
+          "https://bor.sindh.gov.pk/",
+          "https://rsusindh.gov.pk/programs/onlineGIS.php?district=Jacobabad"
+        ]
+      },
+      {
+        "language": "Urdu/Sindhi (native/local)",
+        "query": "جیکب آباد زمین ریکارڈ نقشہ سرکاری سندھ / جيڪب آباد زمين رڪارڊ نقشو سرڪاري سنڌ",
+        "result": "First-party discovery again identified the Sindh Zameen Board of Revenue portal and its Deh Maps service. The official Urdu/Sindhi-facing material establishes the Sindh land-record context, but did not yield an open anonymous parcel feature response.",
+        "actualResultUrls": [
+          "https://www.sindhzameen.gos.pk/Default.aspx",
+          "https://www.sindhzameen.gos.pk/FAQs.aspx",
+          "https://map.sindhzameen.gos.pk/",
+          "https://sindhatlas.com/ur/atlas/geography/district-jacobabad/"
+        ]
+      }
+    ],
+    "officialViewer": "https://www.sindhzameen.gos.pk/Default.aspx",
+    "requests": [
+      {
+        "method": "GET",
+        "url": "https://www.sindhzameen.gos.pk/Default.aspx",
+        "status": "timeout",
+        "outcome": "Direct curl request timed out after 20 seconds; no login, retry bypass, or TLS disablement used. Web search/open also reported a fetch timeout."
+      },
+      {
+        "method": "GET",
+        "url": "https://www.sindhzameen.gos.pk/FAQs.aspx",
+        "status": 200,
+        "outcome": "Official FAQ retrieved. It states data for all Sindh districts and most dehs is available, and lists Village Form II, VII-A and VII-B; it also links the Deh Maps service. No parcel geometry or native parcel identity was returned."
+      },
+      {
+        "method": "GET",
+        "url": "https://bor.sindh.gov.pk/",
+        "status": "timeout",
+        "outcome": "Official Board of Revenue site identified in first-party discovery; web fetch timed out. Search result text identifies the agency's cadastral and land-record mandate, but no map/API response was obtained."
+      },
+      {
+        "method": "GET",
+        "url": "https://map.sindhzameen.gos.pk/",
+        "status": 502,
+        "outcome": "Official Deh Maps link from the Sindh Zameen FAQ returned Bad Gateway. No retry escalation or bypass attempted."
+      },
+      {
+        "method": "GET",
+        "url": "https://rsusindh.gov.pk/programs/onlineGIS.php?district=Jacobabad",
+        "status": 200,
+        "outcome": "Official Sindh education GIS page resolved District Jacobabad and exposes a Google iframe; it is an education/infrastructure map, not cadastral parcel service evidence."
+      }
+    ],
+    "schema": {
+      "nativeFieldMapping": null,
+      "compositeKeyProvenance": null,
+      "crs": "unverified; no parcel geometry response obtained"
+    }
+  },
+  "registryFound": true,
+  "registryBasis": "The Government of Sindh Board of Revenue is evidenced as the provincial cadastral/land-record custodian. Its official Sindh Zameen FAQ says records for all districts and most dehs are available and links a Deh Maps service. This establishes institutional custody and a public service route, not verified Jacobabad citywide parcel geometry access.",
+  "verifiedParcelResponse": null,
+  "statusDetail": "official_custodian_and_map_route_identified_no_open_parcel_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Sindh Board of Revenue land records and Deh Maps, with district/deh coverage described by the official FAQ.",
+    "verifiedOpenScope": "Institutional documentation only; no Jacobabad parcel feature, native ID, extent, schema, CRS, or citywide geometry was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_cadastral_custodian_and_unavailable_map_service_no_open_geometry",
+  "sourceIds": [],
+  "technicalBlocker": "The official Sindh Zameen portal timed out on direct retrieval and its linked Deh Maps host returned HTTP 502. No safe anonymous parcel-ID-plus-geometry response was available; no credentials, private fields, CAPTCHA/Cloudflare bypass, or TLS exception was used.",
+  "remainingUncertainty": "A browser-dependent or intermittently available Deh Maps application may expose parcel geometry, but current public service availability, Jacobabad municipal/deh coverage, native identity field, CRS, update currency, and geometry schema remain unresolved. The exact WUP point was preserved and was not queried as a forced hit/miss test.",
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification required",
+  "sampleGeojson": null
+}

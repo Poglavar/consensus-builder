@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 9017,
+  "queueRank": 1811,
+  "cityId": "queue:1811",
+  "name": "Bhusawal",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [21.0422064442943, 75.7946994593889],
+  "centerLatLon": [21.0422064442943, 75.7946994593889],
+  "population2025": 317085,
+  "population2025k": 317.085,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bhusawal Maharashtra official GIS cadastral map parcel property map site:gov.in",
+        "result": "First-party results identified Maharashtra Government land-record services (Mahabhumi/BhuNaksha), the Maharashtra Land Records Department, the Maharashtra State GIS portal, and an official MRSAC Bhusawal taluka village-map publication.",
+        "actualResultUrls": [
+          "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+          "https://bhumiabhilekh.maharashtra.gov.in/",
+          "https://mrsac.gov.in/writereaddata/MRSAC/map/15672336955d6a169f893a7TH_JLG_Bhusawal.pdf"
+        ]
+      },
+      {
+        "language": "native/local (Marathi)",
+        "query": "भुसावळ महाराष्ट्र अधिकृत GIS नकाशा मालमत्ता भूखंड कॅडस्ट्रल",
+        "result": "First-party results identified the Maharashtra Land Records Department’s Marathi property-card and land-map services, including Mahabhunakasha (maps with land records), and official guidance describing village and survey-number maps. No Bhusawal parcel feature response was obtained.",
+        "actualResultUrls": [
+          "https://www.bhumiabhilekh.maharashtra.gov.in/Services/PropertyCardDownload",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+          "https://maharashtra.gov.in/Site/1600/Essentials",
+          "https://bhumiabhilekh.maharashtra.gov.in/?q=dhbbhe"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "First-party web discovery followed by bounded TLS-verified GET attempts. The public BhuNaksha viewer fetch timed out; no credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS disablement were used."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+      "observation": "Official Maharashtra Revenue Department / Settlement Commissioner land-record gateway. It lists Bhulekh, property cards, digitally signed records and Mahabhunakasha maps with land records; it is a state custodian rather than proof of an open Bhusawal parcel API."
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+      "observation": "Official Maharashtra BhuNaksha public map viewer for state code 27. Search results describe plot-number selection and plot information, but the current viewer could not be fetched anonymously within the bounded timeout."
+    },
+    {
+      "url": "https://mrsac.gov.in/writereaddata/MRSAC/map/15672336955d6a169f893a7TH_JLG_Bhusawal.pdf",
+      "observation": "Official MRSAC Bhusawal taluka village map. It shows administrative/village boundaries, roads, rail and water features and identifies Land Record Department village-map data; it is not retained as parcel geometry."
+    },
+    {
+      "url": "https://stategisportal.nic.in/stategisportal/Home/Map/27",
+      "observation": "Official Maharashtra State GIS portal powered by BharatMaps. Search discovery exposed administrative/GIS map functionality, but the viewer request timed out and no parcel layer or schema was verified."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "TLS-verified anonymous request timed out after 20 seconds; no HTML, JavaScript configuration, service URL, schema, CRS, native ID or geometry was obtained. This is a route failure, not evidence of citywide absence."
+    },
+    {
+      "url": "https://stategisportal.nic.in/stategisportal/Home/Map/27",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Official viewer fetch timed out; no parcel service configuration or bounded response was obtained."
+    },
+    {
+      "url": "https://mrsac.gov.in/writereaddata/MRSAC/map/15672336955d6a169f893a7TH_JLG_Bhusawal.pdf",
+      "method": "GET via first-party search result",
+      "httpStatus": 200,
+      "contentType": "application/pdf",
+      "assessment": "Official Bhusawal taluka village map was identified. It is contextual map evidence, not a safe parcel-polygon response, so no geometry sample was retained."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Maharashtra state land-record and GIS portals, plus official Bhusawal taluka village-map publication.",
+    "verifiedOpenScope": "Official state land-record service presence and Bhusawal taluka map publication; no open parcel feature endpoint or citywide geometry scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The BhuNaksha viewer’s current JavaScript/configuration, public API route, Bhusawal village/urban unit identifiers, parcel schema, stable native identity, CRS, update currency and citywide completeness remain unresolved. The exact WUP point was preserved and never shifted; no exact-point hit/miss inference was made. A timeout, map extent miss, login wall or unusable UI is not evidence of cadastral absence.",
+  "nextStep": "A later attempt may inspect the current BhuNaksha viewer through an available public route and request only bounded anonymous native ID-plus-geometry data for Bhusawal. Serial reviewer qualification remains required; runtime readiness stays held."
+}

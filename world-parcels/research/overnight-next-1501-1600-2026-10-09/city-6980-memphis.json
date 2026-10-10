@@ -1,0 +1,65 @@
+{
+  "cityCode": 6980,
+  "queueRank": 1597,
+  "name": "Memphis",
+  "country": "United States of America",
+  "countryCode": "US",
+  "iso3": "USA",
+  "point": [35.1005667557473, -89.9360317696787],
+  "population2025": 356215,
+  "population2025k": 356.215,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Memphis Tennessee official parcel viewer Shelby County GIS cadastral parcels",
+        "result": "Found the first-party Shelby County Assessor parcel FeatureServer/MapServer and assessor GIS viewer; the official county parcel service was identified through search, while the public gis.shelbycountytn.gov endpoint returned HTTP 403 to direct anonymous curl requests.",
+        "actualResultUrls": [
+          "https://www.assessor.shelbycountytn.gov/gis",
+          "https://gis.shelbycountytn.gov/public/rest/services/BaseMap/Assessor/MapServer/0",
+          "https://gis.shelbycountytn.gov/arcgis/rest/services/BaseMap/Parcel/MapServer/0"
+        ]
+      },
+      {
+        "language": "native/local (English, United States)",
+        "query": "Memphis Tennessee official county parcel map property GIS parcel viewer",
+        "result": "Found the first-party Tennessee GeoViewer service exposing Shelby County Assessor parcels; anonymous layer metadata and bounded geometry queries succeeded.",
+        "actualResultUrls": [
+          "https://geoviewer.cot.tn.gov/arcgis/rest/services/GeoViewer/NonImpact_Parcels/MapServer/6",
+          "https://gis.register.shelby.tn.us/",
+          "https://www.tn.gov/finance/sts-gis/gis/applications.html"
+        ]
+      }
+    ],
+    "researchedAt": "2026-10-10",
+    "localLanguageNote": "The United States has no separate federally designated local language for Memphis; English was used for the native/local-language discovery query."
+  },
+  "registryFound": true,
+  "registry": {
+    "custodian": "Shelby County Assessor of Property, Memphis, Tennessee",
+    "service": "Tennessee GeoViewer GeoViewer/NonImpact_Parcels/MapServer/6",
+    "firstParty": true,
+    "scope": "Shelby County parcel layer; citywide Memphis coverage is inferred from the county service scope, not from a city-boundary completeness test.",
+    "geometryType": "esriGeometryPolygon",
+    "sourceCrs": {"wkid": 102100, "latestWkid": 3857},
+    "outputCrs": {"wkid": 4326},
+    "supportedQueryFormats": ["JSON", "geoJSON", "PBF"],
+    "safeFieldAllowlist": ["OBJECTID", "PARCELID"],
+    "nativeIdentity": "PARCELID",
+    "nativeFieldMapping": {"canonicalId": "PARCELID", "serviceObjectId": "OBJECTID"},
+    "compositeKeyProvenance": "No composite key used; PARCELID was returned by the official service and retained as the stable native identity. OBJECTID was used only as a service record identifier during qualification."
+  },
+  "qualification": {
+    "exactPoint": {"status": "hit", "returnedFeatures": 1, "request": "point intersects, outFields=OBJECTID,PARCELID, returnGeometry=true, outSR=4326"},
+    "boundedEnvelope": {"status": "partial", "returnedFeatures": 3, "request": "-89.938,35.099,-89.934,35.102 WGS84 envelope, resultRecordCount=3", "note": "Response reported exceededTransferLimit=true; not treated as a complete extent sample."},
+    "retainedSample": "city-6980-memphis-sample.geojson"
+  },
+  "runtimeReadiness": "held",
+  "notes": [
+    "This packet documents source qualification only; it is not source integration or admission.",
+    "No owner, address, contact, titleholder, tax/account, deed, or other unsafe fields were requested or retained.",
+    "The exact WUP point was queried unchanged in latitude/longitude order; no coordinate was shifted to obtain the hit."
+  ]
+}

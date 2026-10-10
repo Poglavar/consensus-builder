@@ -1,0 +1,97 @@
+{
+  "cityCode": 5329,
+  "queueRank": 1729,
+  "name": "Yokkaichi",
+  "country": "Japan",
+  "countryCode": "JP",
+  "iso3": "JPN",
+  "point": [35.0087387174813, 136.637123313726],
+  "population2025": 332173,
+  "population2025k": 332.173,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Yokkaichi Japan official cadastral parcel map GIS land registry natural resources",
+        "result": "First-party discovery found the Yokkaichi official public GIS and official city cadastral-map copy/inspection information. The public GIS catalog exposes planning, roads, facilities, disaster, agricultural and sewer maps, but no public cadastral parcel layer or anonymous parcel feature endpoint was identified.",
+        "actualResultUrls": [
+          "https://www.city.yokkaichi.lg.jp/www/contents/1721730282514/",
+          "https://www2.wagmap.jp/yokkaichi/Portal",
+          "https://www5.city.yokkaichi.mie.jp/www/contents/1001000000762/simple/tisekizu.pdf",
+          "https://houmukyoku.moj.go.jp/tsu/table/shikyokutou/all/yokkaiti.html"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "四日市市 公式 地籍図 GIS 不動産 登記 地図 公開",
+        "result": "四日市市の公式GISと地籍図写し交付申請資料が見つかった。市公式GISは行政情報の公開型地図で、公開マップ一覧に地籍・公図の匿名ポリゴンAPIは確認できなかった。地籍図は申請・窓口手続きの資料として案内されている。",
+        "actualResultUrls": [
+          "https://www2.wagmap.jp/yokkaichi/Portal",
+          "https://www5.city.yokkaichi.mie.jp/www/contents/1001000000762/simple/tisekizu.pdf",
+          "https://www.city.yokkaichi.lg.jp/www/contents/1001000000051/index.html",
+          "https://houmukyoku.moj.go.jp/tsu/table/shikyokutou/all/yokkaiti.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "A city-local first-party custodian is evidenced: Yokkaichi City publishes its public GIS and official cadastral-map copy application, while the Tsu Legal Affairs Bureau identifies the Yokkaichi Branch as the local real-estate registration office. This establishes local cadastral/registry procedure evidence, not open parcel geometry access.",
+  "officialSources": [
+    {
+      "url": "https://www2.wagmap.jp/yokkaichi/Portal",
+      "observation": "Official Yokkaichi public GIS portal. The visible catalog lists public facilities/points, planning regulations, building-standard roads, certified roads, archaeological sites, disaster information, agricultural land and sewer ledgers; no cadastral parcel map is listed."
+    },
+    {
+      "url": "https://www.city.yokkaichi.lg.jp/www/contents/1721730282514/",
+      "observation": "Official city page describes the public GIS as a way to view planning information and warns that the overview map is not a legal boundary map."
+    },
+    {
+      "url": "https://www5.city.yokkaichi.mie.jp/www/contents/1001000000762/simple/tisekizu.pdf",
+      "observation": "Official Yokkaichi cadastral-map copy application form; it requests 大字/字/地番 and warns the copy does not exactly represent land shape, boundary lines or parcel-number display. No downloadable parcel geometry service is provided."
+    },
+    {
+      "url": "https://houmukyoku.moj.go.jp/tsu/table/shikyokutou/all/yokkaiti.html",
+      "observation": "First-party Legal Affairs Bureau page identifies the Yokkaichi Branch and real-estate registration services, including inquiries and copies of maps/registration documents."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www2.wagmap.jp/yokkaichi/Portal",
+      "method": "GET",
+      "outcome": "HTTP 200; portal HTML and map catalog readable. No parcel layer or feature-service URL exposed in the bounded page inspection."
+    },
+    {
+      "url": "https://www2.wagmap.jp/yokkaichi/Agreement?IsPost=False&MapId=2&RequestPage=%2Fyokkaichi%2FMap",
+      "method": "GET",
+      "outcome": "HTTP 200; official use-agreement shell for the planning map. The page describes overview planning data and legal/boundary limitations; no parcel schema, CRS or anonymous parcel response."
+    },
+    {
+      "url": "https://www2.wagmap.jp/yokkaichi/Map?gprj=3&mcl=13%2C14%2C140%2C1400&mid=2&mps=10000&mpx=136.637123313726&mpy=35.0087387174813&mtp=dm",
+      "method": "GET",
+      "outcome": "HTTP 200; route returned the agreement/application shell rather than map features because the public-use agreement was not submitted. No login, credentials, private token or bypass was attempted."
+    },
+    {
+      "url": "https://www5.city.yokkaichi.mie.jp/www/contents/1001000000762/simple/tisekizu.pdf",
+      "method": "GET",
+      "outcome": "HTTP 200; official PDF application instructions read. It is a request/counter procedure, not an anonymous parcel geometry endpoint."
+    }
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Yokkaichi City public GIS and city/legal-affairs cadastral/real-estate registration procedures.",
+    "verifiedOpenScope": "Official public GIS catalog and cadastral-map procedure metadata only; no open parcel feature response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": "Exact WUP point preserved in latitude/longitude order; no exact-point parcel query or hit/miss inference was made. The absence of a public feature response, agreement shell, or procedural access limitation is not evidence of citywide cadastral absence. Packet completion records executed attempts only and is not source integration or runtime admission."
+}

@@ -1,0 +1,101 @@
+{
+  "cityCode": 9596,
+  "queueRank": 1252,
+  "name": "Chaoyang",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 1252,
+  "point": [41.5935195114786, 120.436963716254],
+  "population2025": 443864,
+  "population2025k": 443.864,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Chaoyang Liaoning China official cadastral parcel map GIS natural resources bureau land registration",
+        "result": "First-party discovery identified the official Chaoyang Natural Resources Bureau, official Chaoyang government information, and official material naming the local real-estate registration center. The official site was fetched anonymously over TLS; no public parcel viewer or source-native geometry API was exposed in the inspected HTML. No safe anonymous parcel geometry response was verified.",
+        "actualResultUrls": [
+          "https://zrzyj.chaoyang.gov.cn/",
+          "https://zrzyj.chaoyang.gov.cn/cyszrzyj/zrly/czxx/glist.html",
+          "https://chaoyang.gov.cn/html/CYSZF/202408/0172378992128242.html",
+          "https://zwfw.chaoyang.gov.cn/webSite/repertory/view.do?itemId=&itemcode=11211324001207345L421201501700001"
+        ],
+        "scope": "Identify Chaoyang local cadastral or registration custody and a public anonymous parcel-geometry service without requesting owner, address, title, contact, tax, account, or certificate data."
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "朝阳市 辽宁 官方 不动产登记 地籍图 宗地图 自然资源局 GIS 地图服务",
+        "result": "Simplified-Chinese first-party discovery confirmed the Chaoyang Natural Resources Bureau and local real-estate registration functions. Official material describes planning and registration information systems but did not publish an anonymous cadastral parcel-vector endpoint. No exact-point or citywide geometry query was performed against an unverified route.",
+        "actualResultUrls": [
+          "https://zrzyj.chaoyang.gov.cn/",
+          "https://zrzyj.chaoyang.gov.cn/html/ZRZYJ/202407/0172128427734778.html",
+          "https://zrzyj.chaoyang.gov.cn/html/ZRZYJ/202603/0177398770575123.html",
+          "https://files.chaoyang.gov.cn/files/ueditor/ZRZYJ/jsp/upload/file/20250729/1753751512874018333.pdf"
+        ],
+        "method": "Independent Simplified-Chinese discovery followed by first-party official-page review and anonymous direct GET of the bureau homepage.",
+        "scope": "Find safe public geometry and stable native parcel IDs only; do not use identity-authenticated or record-specific registration queries."
+      }
+    ]
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "Chaoyang Natural Resources Bureau and Chaoyang Real Estate Registration Center channels",
+    "url": "https://zrzyj.chaoyang.gov.cn/",
+    "operator": "Chaoyang Natural Resources Bureau; Chaoyang Real Estate Registration Center; local district/county natural-resources authorities",
+    "serviceType": "Official registry/procedure and natural-resources information routes reviewed; no anonymous source-native full parcel polygon endpoint verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "Official local sources evidence natural-resources and real-estate-registration custody, not public anonymous parcel geometry."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Chaoyang Natural Resources Bureau, Chaoyang government, and government-service sources, plus an anonymous direct GET to the bureau homepage.",
+    "verifiedOpenScope": "Local registry/procedure custody is evidenced; anonymous source-native parcel geometry, schema, CRS, native ID, exact-point hit, and citywide completeness remain unverified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No anonymously accessible cadastral geometry endpoint was identified from the current official Chaoyang Natural Resources Bureau site or first-party indexed materials. No login, private token, CAPTCHA bypass, or identity-gated registration lookup was used.",
+  "remainingUncertainty": "A separately published municipal or provincial map service may exist, but its current public service URL/configuration and access model were not verified. No exact-point miss or citywide absence conclusion is made.",
+  "nextStep": "Continue bounded discovery only if an official Chaoyang/Liaoning map or natural-resources portal publishes a public anonymous service URL; do not use authenticated registration lookups or personal/property-record fields.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 9596,
+  "cityId": "wup2025:9596",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [41.5935195114786, 120.436963716254],
+  "populationPlausibility2025": "High",
+  "pointBasis": "Exact unchanged WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Official Chaoyang Natural Resources Bureau and Chaoyang government materials identify local natural-resources and real-estate-registration functions. This establishes institutional custody/procedure, not public anonymous parcel geometry or runtime integration.",
+  "registryEvidenceUrls": [
+    "https://zrzyj.chaoyang.gov.cn/",
+    "https://zrzyj.chaoyang.gov.cn/cyszrzyj/zrly/czxx/glist.html",
+    "https://chaoyang.gov.cn/html/CYSZF/202408/0172378992128242.html",
+    "https://zwfw.chaoyang.gov.cn/webSite/repertory/view.do?itemId=&itemcode=11211324001207345L421201501700001",
+    "https://zrzyj.chaoyang.gov.cn/html/ZRZYJ/202407/0172128427734778.html",
+    "https://zrzyj.chaoyang.gov.cn/html/ZRZYJ/202603/0177398770575123.html"
+  ],
+  "runtimeAssessment": {
+    "status": "unknown_no_verified_public_geometry",
+    "reason": "No anonymous parcel geometry endpoint was verified or queried at the exact WUP point. The direct official homepage request returned ordinary HTML without a discoverable public parcel service route; no absence claim is made."
+  },
+  "cohort": "overnight-next-1201-1300",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

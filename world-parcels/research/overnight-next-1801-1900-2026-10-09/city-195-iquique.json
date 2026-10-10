@@ -1,0 +1,74 @@
+{
+  "cityCode": 195,
+  "queueRank": 1816,
+  "name": "Iquique",
+  "country": "Chile",
+  "countryCode": "CL",
+  "iso3": "CHL",
+  "point": [-20.2447816153401, -70.1246621608432],
+  "population2025": 315904,
+  "population2025k": 315.904,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Iquique Chile official cadastral parcel map API property boundaries municipal GIS",
+        "result": "Found official Chilean IDE/MINVU planning-regulation services and official SII/CIREN references to cadastral or predial information; no confirmed public Iquique parcel API was found.",
+        "actualResultUrls": [
+          "https://geoide.minvu.cl/server/rest/services/IPT/PRC_Tarapaca/FeatureServer/5",
+          "https://www.ide.cl/images/documentos-tecnicos/catalogo_nacional_features.pdf",
+          "https://www.sii.cl/destacados/reavaluo/2018/planos/pdf_planos_actualizados/01_IQUIQUE.pdf",
+          "https://www.ciren.cl/productos/propiedades_rurales"
+        ]
+      },
+      {
+        "language": "Spanish (local)",
+        "query": "Iquique Chile mapa predial catastro límites prediales servicio oficial API",
+        "result": "Found official IDE/MINVU PRC Iquique planning layer and municipal planning-study references to SII digital maps; no confirmed public cadastral parcel service was found. The municipality homepage request was blocked by a Cloudflare challenge.",
+        "actualResultUrls": [
+          "https://geoide.minvu.cl/server/rest/services/IPT/PRC_Tarapaca/FeatureServer/5",
+          "https://www.municipioiquique.cl/",
+          "https://www.municipioiquique.cl/descargas/plano-regulador/2025/11_%20Estudio%20Desafec.%20Exprop.%20Aprop.%20EEPP.pdf",
+          "https://www.sii.cl/normativa_legislacion/resoluciones/2026/reso21.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "source": {
+    "provider": "Ministerio de Vivienda y Urbanismo (MINVU), IDE Chile public ArcGIS service",
+    "service": "IPT/PRC_Tarapaca",
+    "layer": 5,
+    "layerName": "PRC_Iquique",
+    "serviceUrl": "https://geoide.minvu.cl/server/rest/services/IPT/PRC_Tarapaca/FeatureServer",
+    "queryUrl": "https://geoide.minvu.cl/server/rest/services/IPT/PRC_Tarapaca/FeatureServer/5/query",
+    "serviceType": "ArcGIS REST FeatureServer polygon layer",
+    "geometryType": "esriGeometryPolygon",
+    "sourceCrs": "EPSG:32719",
+    "outputCrs": "EPSG:4326",
+    "nativeIdField": "OBJECTID",
+    "geometryField": "geometry",
+    "safeFieldsRequested": ["OBJECTID", "geometry"],
+    "parcelLayerConfirmed": false
+  },
+  "verifiedSample": {
+    "count": 0,
+    "exactWupPointQuery": true,
+    "result": "One polygon (OBJECTID 844) intersected the exact point, but the layer is PRC_Iquique planning/zoning geometry, not a cadastral parcel; no retained parcel sample.",
+    "requestEvidence": "tmp/valhalla-parcel-research/iquique-prc-point-query.geojson"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official MINVU planning-regulation polygon layer for Iquique; not cadastral coverage.",
+    "verifiedOpenScope": "Anonymous metadata and ID-plus-geometry query access for the public PRC Iquique service at the exact WUP point.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; no parcel adapter candidate identified",
+  "notes": "The exact point was preserved in latitude/longitude order and was not shifted. No owner, address, titleholder, contact, tax/account, personal or other unsafe fields were requested or retained. This packet is research evidence only and is not source integration or runtime admission."
+}

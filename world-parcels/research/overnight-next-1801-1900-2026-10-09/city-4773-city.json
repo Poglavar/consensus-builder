@@ -1,0 +1,62 @@
+{
+  "cityCode": 4773,
+  "queueRank": 1882,
+  "name": "Veys",
+  "nativeName": "ویس",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "iso3": "IRN",
+  "point": [31.4874242591069, 48.8771459252476],
+  "population2025": 304967,
+  "population2025k": 304.967,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Veys Iran official cadastral map parcel registry GIS Weys Khuzestan",
+        "result": "Discovery identified Iran's official National Organization for Registration of Deeds and Properties (SSAA) cadastral/land-registration systems and the Shamim service identity. Public map references identified Veys, but no confirmed anonymous Veys parcel viewer or safe ID-plus-geometry API was found.",
+        "actualResultUrls": ["https://ssaa.ir", "https://shamim.ssaa.ir", "https://mapcarta.com/12569736"]
+      },
+      {
+        "language": "Persian (local)",
+        "query": "ویس خوزستان سامانه کاداستر نقشه قطعات ثبتی سازمان ثبت اسناد و املاک GIS",
+        "result": "نتایج، سازمان ثبت اسناد و املاک کشور و سامانه شمیم را به‌عنوان زیرساخت‌های رسمی ثبت و کاداستر نشان دادند. برای ویس یا حوزه ثبتی محلی، پاسخ عمومی ناشناس شامل شناسه امن قطعه و هندسه پیدا نشد؛ منابع عمومی نقشه‌ای غیرثبتی به‌عنوان کاداستر پذیرفته نشدند.",
+        "actualResultUrls": ["https://ssaa.ir", "https://shamim.ssaa.ir", "https://www.samanehha.com/web/327/%D8%B3%D8%A7%D9%85%D8%A7%D9%86%D9%87-%D8%B4%D9%85%DB%8C%D9%85"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "source": {
+    "provider": "Iranian National Organization for Registration of Deeds and Properties (SSAA); Shamim cadastral positioning/service system",
+    "viewerUrl": "https://shamim.ssaa.ir",
+    "serviceRoutePublishedByViewer": null,
+    "serviceType": "Official national registration/cadastral systems identified; public anonymous parcel feature service not verified",
+    "parcelLayerConfirmed": false,
+    "nativeIdField": null,
+    "geometryField": null,
+    "safeFieldsRequested": ["stable parcel ID if publicly exposed", "geometry only"],
+    "crs": null,
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null
+  },
+  "verifiedSample": {
+    "count": 0,
+    "exactWupPointQuery": false,
+    "result": "No anonymous parcel ID-plus-geometry response was obtained. No exact-point hit, map extent miss, or service timeout is evidence of citywide parcel absence.",
+    "requestEvidence": "tmp/valhalla-parcel-research/4773/"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Iran national cadastral/land-registration infrastructure relevant to Veys, Khuzestan.",
+    "verifiedOpenScope": "Official service identities were identified, but anonymous parcel schema, CRS, geometry, local custodian route, and citywide coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; no independently verified parcel adapter candidate",
+  "notes": "Exact WUP point preserved in latitude/longitude order; no coordinate shift applied. No owner, address, contact, titleholder, personal, tax/account, or other unsafe fields were requested or retained. This packet is research evidence only and is not source integration or runtime admission."
+}

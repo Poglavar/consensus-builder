@@ -1,0 +1,125 @@
+{
+  "cityCode": 7354,
+  "queueRank": 1618,
+  "name": "Oak Ridge",
+  "country": "United States of America",
+  "countryCode": "US",
+  "point": [28.5351266228199, -81.450928862174],
+  "population2025": 353212,
+  "population2025k": 353.212,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "site:orangecountyfl.net OR site:ocpafl.org Oak Ridge Florida official cadastral parcel GIS map ArcGIS",
+        "result": "Found Orange County's official GIS/property-appraiser directory and the Orange County Property Appraiser public ArcGIS parcel service; the search also identified the official county GIS and cadastral-base-map roles.",
+        "actualResultUrls": [
+          "https://newsroom.ocfl.net/directory/property-appraiser/",
+          "https://vgispublic.ocpafl.org/server/rest/services/DYNAMIC/Dynamic_Parcels/MapServer",
+          "https://vgispublic.ocpafl.org/server/rest/services/DYNAMIC/Dynamic_Parcels/MapServer/3"
+        ]
+      },
+      {
+        "language": "English (local-language attempt)",
+        "query": "Orange County Florida official parcel viewer GIS property appraiser Oak Ridge Orlando",
+        "result": "For the United States, English is the local/native-language research language. A separate English wording again found the official Orange County Property Appraiser parcel service and county GIS/property-appraiser sources.",
+        "actualResultUrls": [
+          "https://newsroom.ocfl.net/directory/maps/",
+          "https://www.ocpafl.org/",
+          "https://vgispublic.ocpafl.org/server/rest/services/DYNAMIC/Dynamic_Parcels/MapServer"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Orange County Property Appraiser is the local county cadastral-map custodian, and its official public GIS service exposes a Parcels_Poly polygon layer. The county directory identifies the Property Appraiser as maintaining the GIS cadastral base map.",
+  "officialSources": [
+    {
+      "url": "https://newsroom.ocfl.net/directory/property-appraiser/",
+      "observation": "Official Orange County directory identifies the Property Appraiser as responsible for maintaining the GIS cadastral base map."
+    },
+    {
+      "url": "https://vgispublic.ocpafl.org/server/rest/services/DYNAMIC/Dynamic_Parcels/MapServer",
+      "observation": "Official Orange County Property Appraiser ArcGIS MapServer; Parcels_Poly layer is listed and service copyright identifies Orange County Property Appraiser."
+    },
+    {
+      "url": "https://vgispublic.ocpafl.org/server/rest/services/DYNAMIC/Dynamic_Parcels/MapServer/3",
+      "observation": "Official polygon layer schema; native spatial reference is WKID 102658/latestWkid 2236, and query formats include JSON and GeoJSON."
+    }
+  ],
+  "source": {
+    "sourceId": "orange-county-property-appraiser-dynamic-parcels-layer-3",
+    "name": "Parcels_Poly",
+    "operator": "Orange County Property Appraiser",
+    "endpoint": "https://vgispublic.ocpafl.org/server/rest/services/DYNAMIC/Dynamic_Parcels/MapServer/3",
+    "method": "GET ArcGIS REST query",
+    "responseFormat": "JSON/GeoJSON-compatible ArcGIS response",
+    "nativeCrs": "WKID 102658 / latestWkid 2236 (Florida East State Plane feet)",
+    "queryOutputCrs": "EPSG:4326",
+    "nativeIdentity": "PARCEL (stable parcel identifier); OBJECTID retained as the source object identity",
+    "nativeFieldMapping": {
+      "id": "PARCEL",
+      "sourceObjectId": "OBJECTID",
+      "geometry": "SHAPE"
+    },
+    "compositeKeyProvenance": null,
+    "scope": "Orange County Property Appraiser parcel layer; local service availability and three bounded polygons were verified, but citywide completeness and update cadence were not independently established."
+  },
+  "requests": [
+    {
+      "url": "https://newsroom.ocfl.net/directory/property-appraiser/",
+      "method": "GET via first-party discovery",
+      "httpStatus": 200,
+      "outcome": "Official county directory page returned and identified the cadastral-map custodian."
+    },
+    {
+      "url": "https://vgispublic.ocpafl.org/server/rest/services/DYNAMIC/Dynamic_Parcels/MapServer?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official service metadata returned; Parcels_Poly layer (ID 3) was listed."
+    },
+    {
+      "url": "https://vgispublic.ocpafl.org/server/rest/services/DYNAMIC/Dynamic_Parcels/MapServer/3?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Polygon layer schema and native CRS returned. Schema inspection found many unsafe owner, address, value, tax, and situs fields; only OBJECTID and PARCEL were requested."
+    },
+    {
+      "url": "https://vgispublic.ocpafl.org/server/rest/services/DYNAMIC/Dynamic_Parcels/MapServer/3/query?f=json&geometry=-81.450928862174%2C28.5351266228199&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CPARCEL&returnGeometry=true&outSR=4326&resultRecordCount=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Exact WUP point query returned zero features. This is recorded as a point miss only, not evidence of citywide absence."
+    },
+    {
+      "url": "https://vgispublic.ocpafl.org/server/rest/services/DYNAMIC/Dynamic_Parcels/MapServer/3/query?f=json&geometry=%7B%22xmin%22%3A-81.455%2C%22ymin%22%3A28.532%2C%22xmax%22%3A-81.447%2C%22ymax%22%3A28.538%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CPARCEL&returnGeometry=true&outSR=4326&resultRecordCount=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Bounded anonymous envelope query returned three polygon features, with safe identities PARCEL 292231000000015, 292231000000012, and 292231000000008. Response indicated exceededTransferLimit because the bounded result set was capped at three; unchanged raw response is retained in ignored tmp/valhalla-parcel-research/7354/extent-query.json."
+    }
+  ],
+  "verifiedParcelResponse": {
+    "sourceId": "orange-county-property-appraiser-dynamic-parcels-layer-3",
+    "parcelRecordCount": 3,
+    "geometryType": "Polygon",
+    "closedRings": true,
+    "idField": "PARCEL",
+    "spatialTestAreaLonLat": [-81.455, 28.532, -81.447, 28.538],
+    "responseFile": "tmp/valhalla-parcel-research/7354/extent-query.json"
+  },
+  "safeFieldAllowlist": ["PARCEL", "OBJECTID", "geometry"],
+  "unsafeFieldsNotRequested": ["NAME1", "NAME2", "PROP_NAME", "SITUS", "ADD1", "ADD2", "ADD3", "ADD4", "CITY", "STATE", "ZIP", "COUNTRY", "LAND_MKT", "BLDG_MKT", "TOTAL_MKT", "TOTAL_ASSD", "TAXABLE", "TAXES", "SALE_DATE", "SALE_ADJ_VALUE", "QUAL_CODE"],
+  "publicParcelGeometryFound": true,
+  "verifiedSample": true,
+  "sampleFile": "oak-ridge-parcel-samples.geojson",
+  "sampleGeoJSON": "oak-ridge-parcel-samples.geojson",
+  "coverageAssessment": {
+    "claimedScope": "Official Orange County Property Appraiser parcel service covering the county service area; citywide completeness for the WUP city label was not independently established.",
+    "verifiedOpenScope": "Three bounded parcel polygons were returned in EPSG:4326 near the WUP point. The exact point itself was a zero-hit, likely because it falls outside a parcel polygon or on a non-parcel feature; no absence inference is made.",
+    "countrywideVerified": false
+  },
+  "resultCategory": "verified_public_geometry_local_registry",
+  "runtimeReadiness": "held_serial_review",
+  "remainingUncertainty": "The query establishes a public local parcel service and three nearby polygons, not citywide completeness, legal survey status, currentness, or adapter readiness. The public layer schema contains unsafe fields, so any future adapter must request only the safe identity and geometry allowlist. Packet completion is not source integration or admission."
+}

@@ -1,0 +1,47 @@
+{
+  "cityRecord": "city-3271-sincelejo.json",
+  "cityCode": 3271,
+  "queueRank": 1964,
+  "city": "Sincelejo",
+  "country": "Colombia",
+  "countryCode": "CO",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "Municipality of Sincelejo cadastral office, habilitated by IGAC; public Catastro en Línea and Observatorio links were evidenced",
+  "serviceUrl": "https://www.catastroenlinea.com.co/",
+  "discoveryUrls": [
+    "https://www.alcaldiadesincelejo.gov.co/Transparencia/Paginas/Gestor-Catastral-.aspx",
+    "https://www.alcaldiadesincelejo.gov.co/Catastro/Paginas/Home.aspx",
+    "https://www.igac.gov.co/node/234",
+    "https://mapas2.igac.gov.co/server4/rest/services/carto/carto10000sincelejo70001/MapServer?f=pjson",
+    "https://oicsincelejo.com/"
+  ],
+  "attemptedRoutes": [
+    {"route":"English and Spanish first-party discovery queries","outcome":"succeeded; municipal custodian, public portal links, IGAC habilitation, and IGAC map service identified"},
+    {"route":"Municipal Gestor Catastral page GET","outcome":"succeeded; local office and public portal URLs visible"},
+    {"route":"Catastro en Línea landing page GET","outcome":"succeeded; public cadastral portal landing page visible; no parcel feature response verified"},
+    {"route":"Observatorio Inmobiliario Catastral GET","outcome":"502 Bad Gateway; no data inferred"},
+    {"route":"IGAC Sincelejo cartography MapServer metadata GET","outcome":"succeeded; EPSG:9377 and listed base-cartography layers inspected; no parcel layer listed"},
+    {"route":"IGAC service JSON/query GET via curl","outcome":"timed out after 25 seconds with verified TLS; no geometry or schema retained"},
+    {"route":"Colombia en Mapas cadastral tutorial GET","outcome":"succeeded; documented map-click, coordinate, parcel-number and polygon-JSON workflow, but no Sincelejo response obtained"}
+  ],
+  "scope": "Local Sincelejo cadastral custody and public consultation links were verified. Citywide parcel geometry coverage and countrywide parcel coverage were not verified.",
+  "schemaAndCrs": "Only the non-parcel IGAC base-cartography service schema/CRS was confirmed: EPSG:9377; parcel schema and CRS unavailable.",
+  "nativeIdentity": "Unavailable; no parcel feature was retained.",
+  "fieldMapping": {},
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON sample retained.",
+  "safeFieldAllowlist": ["geometry", "stable native parcel identifier if later exposed"],
+  "unsafeDataPolicy": "No owner, address, contact, titleholder, personal, tax/account, legal-description, ownership, or valuation fields were requested or retained. No login, credentials, CAPTCHA bypass, or private token was used.",
+  "officialCustodyEvidence": "The municipal Sincelejo page identifies the local cadastral office and links its public Catastro en Línea and Observatorio services; IGAC separately documents Sincelejo’s habilitation under Resolución 1030 de 2020. This is local registry-custodian evidence, distinct from general national-agency prose.",
+  "limits": [
+    "The IGAC ArcGIS service discovered for Sincelejo is 1:10,000 base cartography and lists no parcel layer.",
+    "Direct IGAC API requests timed out; the timeout is not evidence of citywide absence.",
+    "The Observatorio URL returned 502 and the municipal portal’s internal JavaScript/API was not fully qualified in this attempt.",
+    "No exact-point hit or map-extent miss was used as an absence claim.",
+    "RuntimeReadiness remains held pending independent serial review."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "A public parcel endpoint may exist behind the municipal or Colombia en Mapas viewers, but no stable native parcel ID plus geometry response was successfully observed."
+}

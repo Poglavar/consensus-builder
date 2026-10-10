@@ -1,0 +1,12 @@
+{
+  "taskId": "city:4723",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-4723-setif.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/setif-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T11:39:07Z",
+  "rationale": "Setif: immutable queue identity and English/Arabic searches match; first-party map evidence has no native parcel ID or polygon response. Registry custody unresolved. No qualification gates passed.",
+  "admission": "held; no runtime, source catalog, city config, or generated coverage change"
+}

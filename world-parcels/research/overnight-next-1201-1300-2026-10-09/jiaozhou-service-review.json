@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10722-jiaozhou.json",
+  "purpose": "Document first-party local registry context and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Qingdao/Shandong government service record establishes Jiaozhou's local natural-resources and real-estate-registration custodians. The official Shandong Tian地图 viewer was inspected through its current HTML and JavaScript configuration. It exposes general public geographic-information services, but no anonymous safe cadastral parcel-vector response was verified.",
+  "registryAssessment": "Local registry/procedure evidenced: the government service page names 胶州市自然资源和规划局 and 胶州市不动产登记中心. This is local procedure evidence, not admission of a parcel source or runtime integration.",
+  "safeFieldAllowlist": ["safe public parcel/source ID if available", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "officialPrimarySources": [
+    {
+      "url": "https://qdzwfw.sd.gov.cn/jz/icity/proinfo/index3?code=181463c6-1c02-4799-9e1b-c9f0dbdab8bc",
+      "observation": "First-party Qingdao/Shandong government service page: implementing body is Jiaozhou Natural Resources and Planning Bureau; handling agency is Jiaozhou Real Estate Registration Center. It documents a real-estate registration procedure; no parcel geometry payload was exposed in the page evidence."
+    },
+    {
+      "url": "https://www.sdmap.gov.cn/map.html",
+      "observation": "First-party Shandong geographic-information viewer. Current page is a JavaScript application; inspected configuration and map bundle provide general map/region/POI services. No anonymous cadastral parcel-vector route was identified."
+    },
+    {
+      "url": "https://sdmap.gov.cn/mapAPI.html",
+      "observation": "First-party API documentation describes public Shandong basemap, place-name, imagery and general feature-map services; it does not establish Jiaozhou cadastral parcel geometry access."
+    },
+    {
+      "url": "https://www.sdmap.gov.cn/",
+      "observation": "First-party platform landing page identifies the Shandong geographic-information public-service platform and its natural-resources ministry/provincial operator context."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Jiaozhou China official cadastral map land parcels natural resources bureau",
+      "result": "Found the official Jiaozhou real-estate registration procedure and official Shandong geographic-information platform; no verified anonymous parcel geometry route.",
+      "resultUrls": ["https://qdzwfw.sd.gov.cn/jz/icity/proinfo/index3?code=181463c6-1c02-4799-9e1b-c9f0dbdab8bc", "https://www.sdmap.gov.cn/map.html", "https://sdmap.gov.cn/mapAPI.html"]
+    },
+    {
+      "language": "Chinese",
+      "query": "胶州 官方 不动产登记 地籍图 宗地图 自然资源和规划局",
+      "result": "Found the official Jiaozhou government service record naming the local implementing body and handling agency; no verified anonymous parcel geometry route.",
+      "resultUrls": ["https://qdzwfw.sd.gov.cn/jz/icity/proinfo/index3?code=181463c6-1c02-4799-9e1b-c9f0dbdab8bc", "https://www.sdmap.gov.cn/map.html"]
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not performed against a verified cadastral parcel endpoint; the exact point remains unchanged and no absence inference is made.",
+    "requestEvidence": []
+  },
+  "attempts": [
+    {
+      "url": "https://qdzwfw.sd.gov.cn/jz/icity/proinfo/index3?code=181463c6-1c02-4799-9e1b-c9f0dbdab8bc",
+      "method": "GET via first-party search/open; direct curl also attempted",
+      "httpStatus": "web result available; direct curl TLS hostname mismatch",
+      "result": "Official procedure record was read through search/open evidence. Direct curl was not retried with certificate verification disabled; no TLS exception was authorized."
+    },
+    {
+      "url": "https://www.sdmap.gov.cn/map.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official viewer HTML retrieved; current JavaScript asset references were followed to Config_url.v002.js and map.3fc18556.js. General public map routes were inspected; no safe cadastral parcel-vector route was found."
+    },
+    {
+      "url": "https://www.sdmap.gov.cn/Config_url.v002.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Current viewer configuration retrieved and retained in ignored scratch cache only; no credentials or private tokens were used or retained in the packet."
+    },
+    {
+      "url": "https://www.sdmap.gov.cn/js/map.3fc18556.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Current map bundle retrieved and inspected. It contains general basemap, region, POI and user-plot application routes; no verified anonymous cadastral parcel geometry endpoint was identified."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official Jiaozhou registration procedure plus province-wide public geographic-information platform.",
+    "verifiedOpenScope": "Local registry/procedure only; parcel geometry access unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "An authenticated or separately published cadastral service may exist, but it was not accessed. Exact-point hit testing and citywide parcel completeness are therefore unknown."
+}

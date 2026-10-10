@@ -1,0 +1,143 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence and executed public requests.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 262,
+  "queueRank": 1801,
+  "cityId": "262:RO:timisoara",
+  "name": "Timișoara",
+  "country": "Romania",
+  "countryCode": "RO",
+  "iso3": "ROU",
+  "locId": 642,
+  "point": [45.7497794549937, 21.2271321583919],
+  "population2025": 319240,
+  "population2025k": 319.24,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "aliases": ["timisoara"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Timișoara official cadastral parcel GIS map API ANCPI geoportal parcels",
+        "result": "Search identified the official ANCPI Geoportal CP/CP_View MapServer and its Cadastral Parcel polygon layer; it also returned official Timișoara municipal GIS/cadastral pages.",
+        "actualResultUrls": [
+          "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer",
+          "https://geoportal.gov.ro/inspireview/rest/services/CP/CP_View/MapServer/1",
+          "https://www.primariatm.ro/2026/02/26/platforma-gis",
+          "https://www.primariatm.ro/valorificare-drept-proprietate/evidenta-patrimoniu-cadastru"
+        ]
+      },
+      {
+        "language": "Romanian",
+        "query": "Timișoara cadastru parcele hartă GIS oficial imobile geoportal cadastral",
+        "result": "Search identified the official ANCPI cadastral parcel layer, the OCPI Timiș publicări cadastru general map page, and the Timișoara municipal GIS and cadastral-service pages.",
+        "actualResultUrls": [
+          "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1",
+          "https://cadgen.ocpitm.ro/gismaps/",
+          "https://harta.primariatm.ro/",
+          "https://www.primariatm.ro/valorificare-drept-proprietate/evidenta-patrimoniu-cadastru"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1",
+      "custodian": "Agenția Națională de Cadastru și Publicitate Imobiliară (ANCPI)",
+      "observation": "Search metadata describes a public ArcGIS Feature Layer named Cadastral Parcel with polygon geometry, supported GeoJSON queries, EPSG:4258 service metadata, and safe technical fields including OBJECTID/IFCID/INSPIRE identifiers. No feature response was successfully retrieved in this environment."
+    },
+    {
+      "url": "https://www.primariatm.ro/valorificare-drept-proprietate/evidenta-patrimoniu-cadastru",
+      "custodian": "Municipiul Timișoara, Serviciul Evidența Patrimoniu și Cadastru",
+      "observation": "Official municipal page documents cadastral parcel identification, parcel plans, cadastral documentation, and liaison/data exchange with OCPI Timiș. It is evidence of a local cadastral custodian, not an anonymous citywide parcel API."
+    },
+    {
+      "url": "https://cadgen.ocpitm.ro/gismaps/",
+      "custodian": "OCPI Timiș",
+      "observation": "Official OCPI Timiș publication page lists cadastral-general map publications including Timișoara; the live page returned an unknown-status gateway failure when opened."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1?f=json",
+      "method": "GET",
+      "outcome": "TLS-verified curl attempt failed locally with DNS resolution error (HTTP unavailable); no metadata response retained."
+    },
+    {
+      "url": "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1/query",
+      "method": "GET",
+      "params": {
+        "geometry": "{\"xmin\":21.224,\"ymin\":45.748,\"xmax\":21.230,\"ymax\":45.752}",
+        "geometryType": "esriGeometryEnvelope",
+        "spatialRel": "esriSpatialRelIntersects",
+        "inSR": 4326,
+        "outSR": 4326,
+        "outFields": "OBJECTID,IFCID,id_namespace,id_localId,id_versionId",
+        "returnGeometry": true,
+        "resultRecordCount": 3,
+        "f": "geojson"
+      },
+      "outcome": "TLS-verified curl attempt failed locally with DNS resolution error; no exact-point or bounded geometry hit/miss inference made."
+    },
+    {
+      "url": "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1",
+      "method": "web search/open",
+      "outcome": "Search result exposed layer metadata, but the direct inspection open returned HTTP 502 Bad Gateway."
+    },
+    {
+      "url": "https://geoportal.gov.ro/inspireview/rest/services/CP/CP_View/MapServer/1",
+      "method": "web open",
+      "outcome": "Inspection request timed out; no feature geometry retrieved."
+    },
+    {
+      "url": "https://cadgen.ocpitm.ro/gismaps/",
+      "method": "web open",
+      "outcome": "Inspection returned HTTP 525 Unknown Status Code; no map/API configuration retrieved."
+    },
+    {
+      "url": "https://harta.primariatm.ro/",
+      "method": "web search result",
+      "outcome": "Official municipal GIS landing page was identified, but no anonymous parcel feature endpoint was verified."
+    },
+    {
+      "url": "https://www.primariatm.ro/2026/02/26/platforma-gis",
+      "method": "web open",
+      "outcome": "HTTP-readable official page confirms the municipal GIS platform is informational for urban plans; it does not expose a parcel geometry API in the observed page."
+    },
+    {
+      "url": "https://www.primariatm.ro/valorificare-drept-proprietate/evidenta-patrimoniu-cadastru",
+      "method": "web open",
+      "outcome": "HTTP-readable official municipal cadastral-service page confirms local cadastral responsibilities and OCPI Timiș liaison; no public parcel geometry response."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "First-party ANCPI parcel-layer metadata and first-party Timișoara municipal cadastral-service documentation establish national and local cadastral custodians. Anonymous parcel geometry and stable native identity were not verified.",
+  "registryEvidenceUrls": [
+    "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1",
+    "https://www.primariatm.ro/valorificare-drept-proprietate/evidenta-patrimoniu-cadastru"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "resultCategory": "city_registry_or_map_evidence_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "ANCPI national cadastral parcel layer and Timișoara municipal/OCPI cadastral responsibilities.",
+    "verifiedOpenScope": "No anonymous parcel geometry response; citywide coverage, current dataset vintage, and Timișoara-specific layer filtering remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "pointBasis": "Exact WUP queue point preserved; no coordinate shift and no exact-point hit/miss inference.",
+  "safeFieldAllowlist": ["stable native parcel identifier only", "full parcel polygon geometry", "source layer metadata", "CRS metadata"],
+  "uncertainty": "A public layer may be available when the service is reachable, but the current access path, live schema, Timișoara coverage, native identity semantics, CRS response, update currency, and anonymous runtime behavior remain unresolved. No owner, address, contact, titleholder, tax/account, personal, or unsafe fields were requested or retained.",
+  "researchGroup": "europe"
+}

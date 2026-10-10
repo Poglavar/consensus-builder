@@ -1,0 +1,11 @@
+{
+  "taskId": "city:9267",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-9267-pilibhit.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pilibhit-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T10:29:28Z",
+  "reason": "District land-record service and public map route support custody; empty exact-point responses do not prove absence, and no safe native-ID-plus-full-polygon response or adapter qualification was obtained."
+}

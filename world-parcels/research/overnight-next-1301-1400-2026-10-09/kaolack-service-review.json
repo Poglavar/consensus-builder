@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1650-kaolack.json",
+  "cityCode": 1650,
+  "purpose": "Document first-party discovery, current public map/API access outcomes, safe-field limits, and bounded anonymous parcel-geometry review for Kaolack.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "DGID is a verified local cadastral custodian/procedure for Kaolack: its official site lists CSF Kaolack and its NICAD page assigns cadastral identifiers and plan extracts to the local cadastral bureau. Public Géo Sénégal and ONDDL routes were checked for safe geometry, but no source-native anonymous parcel response was verified. Runtime readiness remains held.",
+  "registryAssessment": "registryFound=true is based on the city-local CSF Kaolack listing and local cadastral-bureau procedure, not on a public parcel API or retained parcel geometry.",
+  "safeFieldAllowlist": ["safe native parcel identifier if exposed", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "queries": [
+    {"language": "English", "query": "Kaolack Senegal official cadastre land registry cadastral map parcel portal", "outcome": "DGID local office/procedure verified; Kaolack public buildings data found; no public parcel feature response verified.", "actualResultUrls": ["https://www.dgid.sn/", "https://www.dgid.sn/fiches/nicad", "https://geosenegal.gouv.sn/kaolack-bati-2019.html", "https://sig.onddl.sn/"]},
+    {"language": "French", "query": "Kaolack Sénégal cadastre registre foncier carte parcellaire portail officiel", "outcome": "La procédure cadastrale locale est confirmée par la DGID; aucune géométrie parcellaire publique anonyme n'a été vérifiée.", "actualResultUrls": ["https://www.dgid.sn/", "https://www.dgid.sn/fiches/nicad", "https://www.dgid.sn/wp-content/uploads/2023/02/NICAD.pdf", "https://geosenegal.gouv.sn/description-et-acces-aux-services.html"]}
+  ],
+  "attempts": [
+    {"url": "https://www.dgid.sn/", "method": "GET/search-open+curl", "result": "Loaded official DGID page; CSF Kaolack listed at Quartier Léona, Kaolack. No public parcel feature endpoint exposed."},
+    {"url": "https://www.dgid.sn/fiches/nicad", "method": "GET/search-open+curl", "result": "Loaded official NICAD procedure. It names the local cadastral bureau as issuer of NICAD and cadastral-plan extracts; requirements include supporting title/plan/identity documents. No request submitted."},
+    {"url": "https://geosenegal.gouv.sn/kaolack-bati-2019.html", "method": "GET/click+curl", "result": "Page and 15.5 MB ZIP loaded successfully. Dataset is ANAT urban buildings/built features in SHP format, not parcels; retained only in ignored scratch and not used as parcel evidence."},
+    {"url": "https://geosenegal.gouv.sn/description-et-acces-aux-services.html", "method": "GET/search-open", "result": "Official service page describes WMS/WMTS/AGS access and links BaseGeo services. A direct WMS capabilities request to the linked basegeoweb host failed DNS resolution (HTTP 000); this is an access failure only and not evidence of absence."},
+    {"url": "https://sig.onddl.sn/api/datasets/?q=Kaolack", "method": "GET/curl", "result": "Public GeoNode API returned seven catalog objects, all administrative/general Senegal layers; no Kaolack parcel layer was listed."},
+    {"url": "https://sig.onddl.sn/geoserver/ows?service=WFS&request=GetCapabilities", "method": "GET/curl", "result": "Public WFS capabilities loaded successfully; bounded catalog review did not identify a Kaolack cadastral parcel feature type. No feature request was made against an unqualified layer."}
+  ],
+  "geometryEvidence": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "nativeIdField": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "No parcel containment test completed; exact point [14.1552214925657, -16.0736772019438] preserved and not shifted."
+  },
+  "remainingUncertainty": "Whether DGID, the municipality, or another official Senegal service exposes an anonymous parcel map/API for the WUP-point locality; the native parcel identity, CRS, response schema, exact parcel containment, and citywide coverage remain unknown.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter"
+}

@@ -1,0 +1,32 @@
+{
+  "cityCode": 8492,
+  "queueRank": 1383,
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "point": [-3.99122776823972, 122.520273611264],
+  "population2025": 408731,
+  "population2025k": 408.731,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kendari Indonesia official cadastral parcel map API ATR BPN geoportal",
+        "result": "Found the official BHUMI ATR/BPN interactive land map documentation, the official national ATR/BPN site, and an official Kendari municipal GIS asset portal. No bounded anonymous parcel geometry response was verified.",
+        "actualResultUrls": ["https://bhumi.atrbpn.go.id/", "https://bhumi.atrbpn.go.id/bantuan/landing", "https://bhumi.atrbpn.go.id/bantuan/katalog_data", "https://simsetgis.kendarikota.go.id/", "https://satudata.kendarikota.go.id/"]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Kendari peta bidang tanah resmi ATR BPN geoportal",
+        "result": "Found BHUMI ATR/BPN documentation describing bidang tanah layers and coordinate/NIB/HAK/NIBEL search, and official Kendari Satu Data material describing certified municipal land assets. These sources do not expose a verified open citywide parcel-vector download in this attempt.",
+        "actualResultUrls": ["https://bhumi.atrbpn.go.id/bantuan/unsur_peta", "https://bhumi.atrbpn.go.id/bantuan/katalog_data", "https://satudata.kendarikota.go.id/pt_BR/dataset/data-luas-aset-tanah-pemerintah-kota-yang-telah-bersertifikat-m2-kota-kendari-2025", "https://simsetgis.kendarikota.go.id/"]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryAssessment": "The official national BHUMI viewer establishes a public land-map context, and Kendari has a municipal asset GIS, but this attempt did not evidence a local cadastral registry endpoint or an anonymous parcel-vector service. registryFound remains null.",
+  "sourceAssessment": "No safe parcel geometry or native parcel identity was retained. BHUMI is a national ATR/BPN viewer; SIMSETGIS is a local Kendari government asset GIS and is not established here as a cadastral registry.",
+  "runtimeReadiness": "held; no independently qualified adapter",
+  "geometryEvidence": null
+}

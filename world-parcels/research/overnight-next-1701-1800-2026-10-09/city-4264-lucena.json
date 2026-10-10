@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "wupCityCode": 4264,
+  "cityCode": 4264,
+  "cityId": "wup2025:4264",
+  "name": "Lucena",
+  "country": "Philippines",
+  "countryCode": "PH",
+  "iso3": "PHL",
+  "centerLatLon": [13.9426847834823, 121.624034793322],
+  "point": [13.9426847834823, 121.624034793322],
+  "queueRank": 1777,
+  "population2025": 323308,
+  "population2025k": 323.308,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted",
+  "nativeIdReadiness": "not_applicable_no_verified_open_parcel_response",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Lucena City Philippines official cadastral parcel map GIS lot map assessor",
+        "result": "Found the official Quezon Provincial Assessor page. It identifies tax mapping, cadastral-map scanning, tax-map custody, property-index numbering, and verification/issuance of tax maps; it is a registry/custodian lead, not an open parcel geometry service. The official Lucena city site was also found, but no public parcel viewer or API was exposed in the fetched page.",
+        "actualResultUrls": [
+          "https://quezon.gov.ph/pao/",
+          "https://lucenacity.gov.ph/home/"
+        ]
+      },
+      {
+        "language": "Tagalog/local",
+        "query": "Lucena City mapa ng lupa cadastral GIS assessor",
+        "result": "Search results did not expose a Lucena-specific public parcel viewer or downloadable parcel geometry. The official Quezon Assessor page remains the relevant local custodial lead; Geoportal Philippines exposes a public map/lot-plotter application, but no Lucena parcel layer or bounded parcel response was identified.",
+        "actualResultUrls": [
+          "https://quezon.gov.ph/pao/",
+          "https://www.geoportal.gov.ph/",
+          "https://www.geoportal.gov.ph/gpapps/lotplotter"
+        ]
+      }
+    ],
+    "searchMethod": "bounded web discovery plus ordinary HTTPS GET inspection; no login, credentials, CAPTCHA bypass, or private fields used"
+  },
+  "registryBasis": "The official Quezon Provincial Assessor page places the office in Capitol Compound, Brgy. 10, Lucena City and documents the Tax Mapping Operations Division as custodian of cadastral maps, tax maps and index maps, including scanning cadastral maps and verification/issuance of tax maps. This establishes a relevant official cadastral/tax-map custodian, but not an open geometry endpoint.",
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://quezon.gov.ph/pao/",
+      "operator": "Quezon Provincial Assessor's Office",
+      "scope": "Provincial assessment and tax-mapping custody; page specifically lists Lucena City contact/location context.",
+      "observation": "Documents preparation and custody of cadastral maps, tax maps, index maps and tax-mapping control rolls; also scanning cadastral maps and verification/issuance of tax maps. No machine-readable public parcel layer is linked on the inspected page."
+    },
+    {
+      "url": "https://lucenacity.gov.ph/home/",
+      "operator": "City of Lucena",
+      "scope": "Official city government website.",
+      "observation": "Public landing page provides city governance/contact navigation but did not expose a parcel viewer, cadastral download, or map API in the fetched HTML."
+    },
+    {
+      "url": "https://www.geoportal.gov.ph/",
+      "operator": "Geoportal Philippines",
+      "scope": "National geospatial portal and map applications.",
+      "observation": "Public portal lists parcel data among layers and links a lot-plotter, but no Lucena-specific parcel layer was established from the public page."
+    },
+    {
+      "url": "https://www.geoportal.gov.ph/gpapps/lotplotter",
+      "operator": "Geoportal Philippines",
+      "scope": "Public bearing/distance lot plotting utility.",
+      "observation": "Viewer supports selecting province/municipality and plotting an uploaded survey; it is not evidence of a public parcel polygon dataset and explicitly warns that output is for viewing only."
+    },
+    {
+      "url": "https://www.foi.gov.ph/agencies/denrlmb/SUCCESSFUL/?page=5/",
+      "operator": "Land Management Bureau (DENR-LMB) FOI portal",
+      "scope": "National cadastral/land-management information custodian.",
+      "observation": "Search-indexed official FOI results include a successful Lucena City CLUP request and separate cadastral-map requests, but no public Lucena parcel geometry file or service was retrieved."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://quezon.gov.ph/pao/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official assessor page fetched; inspected mapping/cadastral custody and Lucena location/contact text."
+    },
+    {
+      "url": "https://lucenacity.gov.ph/home/",
+      "method": "GET",
+      "status": "HTTP 200 via public page fetch",
+      "summary": "Official city landing page fetched; no parcel service URL or public cadastral geometry endpoint exposed in page content."
+    },
+    {
+      "url": "https://www.geoportal.gov.ph/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "National portal fetched; parcel data is listed among map layers, but Lucena-specific layer identity and geometry were not established."
+    },
+    {
+      "url": "https://www.geoportal.gov.ph/gpapps/lotplotter",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Public lot-plotter page fetched. It accepts survey bearings/distances or CSV upload; no parcel query response was requested because it is not a parcel source."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?f=json&num=100&start=1&q=parcel%20Philippines",
+      "method": "GET",
+      "status": "HTTP 200 JSON",
+      "summary": "Bounded ArcGIS public catalog search returned no Lucena-specific parcel service among the returned parcel/Philippines matches; returned unrelated or non-Lucena results only."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?f=json&num=100&start=1&q=Lucena%20Philippines",
+      "method": "GET",
+      "status": "not retained as a successful parcel route",
+      "summary": "Catalog discovery did not yield a verified Lucena cadastral/parcel feature service."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official provincial cadastral and tax-map custody serving Quezon, with Lucena City explicitly located in the assessor contact block.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "exactPointHit": null,
+    "mapExtentCheck": "not available; no Lucena parcel layer was established"
+  },
+  "sourceFields": {
+    "nativeFieldsObserved": ["cadastral maps", "tax maps", "index maps", "tax mapping control rolls", "Property Index Number"],
+    "safeFieldAllowlist": ["stable native parcel or map identity", "geometry", "source CRS", "source URL", "retrieval timestamp"],
+    "unsafeFieldsExcluded": ["owner", "address", "contact", "titleholder", "tax/account details", "personal information"],
+    "fieldMapping": "No parcel response was retained; no source-specific feature fields mapped."
+  },
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "No anonymous, Lucena-scoped parcel polygon response with a stable native identity was verified. The official assessor evidence supports registry custody and map production, not public API integration.",
+  "remainingUncertainty": "The exact WUP point is a research locator and was not shifted. A local or national service may exist behind an unlinked, restricted, or separately requested dataset; absence from these bounded public checks is not evidence of citywide parcel absence.",
+  "nextStep": "A future attempt should obtain or discover a documented public Lucena parcel service, inspect its current viewer configuration if present, and request only a small geometry-plus-safe-ID response near the saved WUP point."
+}

@@ -1,0 +1,13 @@
+{
+  "taskId": "legacy:7534",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-2026-10-09/city-7534-kemerovo.json",
+    "world-parcels/research/overnight-next-2026-10-09/kemerovo-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T10:35:29.766462Z",
+  "reason": "Kemerovo: identity matches the immutable roster and English/Russian searches are recorded. The official-site check timed out; there is no polygon response or native ID. Local custody remains unresolved (null). No independent adapter qualification is evidenced; timeout is not absence."
+}

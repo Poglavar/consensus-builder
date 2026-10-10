@@ -1,0 +1,88 @@
+{
+  "cityCode": 1302,
+  "queueRank": 1346,
+  "name": "Eldoret",
+  "country": "Kenya",
+  "countryCode": "KE",
+  "iso3": "KEN",
+  "point": [0.524205333339166, 35.2660146100744],
+  "population2025": 418175,
+  "population2025k": 418.175,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": null,
+  "registryAssessment": "The official State Department for Lands registry directory identifies Uasin Gishu / Eldoret Ardhi House and land registration, administration, valuation, survey and mapping functions. This establishes a local registry custodian and procedure context, but no anonymous public cadastral parcel response with safe native ID and geometry was verified; registryFound therefore remains null.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Eldoret Kenya official cadastral parcel GIS map county land registry",
+        "result": "Found the official City of Eldoret service portal, official State Department for Lands registry directory listing Eldoret Ardhi House, eProcedures contact details, and Ardhisasa. Also found a public ArcGIS service named Parcels_v, but its metadata extent is Nairobi rather than Eldoret and it was excluded as a false positive. Eldoret-specific public ArcGIS services found were land-use/land-cover and city-boundary/roads layers, not cadastral parcels.",
+        "actualResultUrls": [
+          "https://eldoretcity.go.ke/",
+          "https://www.lands.go.ke/land-registries",
+          "https://eprocedures.investkenya.go.ke/Contacts/100?includeSearch=false&l=en",
+          "https://ardhisasa.lands.go.ke/",
+          "https://services1.arcgis.com/PGZ6rHy9gfyUWIVY/ArcGIS/rest/services/Eldoret_City_Land_Use_Land_Cover_Map_WFL1/FeatureServer",
+          "https://services1.arcgis.com/PGZ6rHy9gfyUWIVY/ArcGIS/rest/services/Eldoret_City_Boundary_WFL1/FeatureServer"
+        ]
+      },
+      {
+        "language": "Swahili/local",
+        "query": "Eldoret Kenya ramani ya ardhi kadastri viwanja huduma rasmi",
+        "result": "Search returned the Kenya Lands Department Swahili service charter and the same official national land-service ecosystem. The Swahili materials describe land registration, survey/mapping and plot services, but no public Eldoret parcel viewer or anonymous parcel geometry endpoint was found.",
+        "actualResultUrls": [
+          "https://lands.go.ke/sites/default/files/2025-04/Lands%20Swahili%20Service%20Charter.pdf",
+          "https://lands.go.ke/wp-content/uploads/2024/09/MKATABA-WA-HUDUMA.pdf",
+          "https://www.lands.go.ke/land-registries",
+          "https://ardhisasa.lands.go.ke/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.lands.go.ke/land-registries",
+      "role": "Kenya State Department for Lands official registry directory",
+      "observation": "Lists Uasin Gishu / Eldoret Ardhi House, Oloo Street, Eldoret, with land registration, administration, valuation, survey and mapping functions. It is a custodian/procedure listing, not an open parcel-vector API."
+    },
+    {
+      "url": "https://eldoretcity.go.ke/",
+      "role": "Official City of Eldoret service portal",
+      "observation": "Provides official city land-rates/property-charge and property-valuation pathways, but no public cadastral map or parcel geometry endpoint was exposed in the fetched page."
+    },
+    {
+      "url": "https://ardhisasa.lands.go.ke/",
+      "role": "Kenya national land-service application",
+      "observation": "Public Angular application shell loaded anonymously. No login was attempted and no safe anonymous parcel query/schema/geometry response was obtained."
+    },
+    {
+      "url": "https://services1.arcgis.com/PGZ6rHy9gfyUWIVY/ArcGIS/rest/services/Eldoret_City_Land_Use_Land_Cover_Map_WFL1/FeatureServer",
+      "role": "Public ArcGIS service discovered for Eldoret",
+      "observation": "HTTP 200 metadata identifies polygon layer Land Use 2020 in Web Mercator; it is land-use/land-cover, not cadastral parcel geometry, so it was not retained as a parcel sample."
+    },
+    {
+      "url": "https://services1.arcgis.com/PGZ6rHy9gfyUWIVY/ArcGIS/rest/services/Eldoret_City_Boundary_WFL1/FeatureServer",
+      "role": "Public ArcGIS service discovered for Eldoret",
+      "observation": "HTTP 200 metadata identifies EldoretCityBoundary and Roads_prj layers in Web Mercator; no parcel layer is present."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No safe native parcel ID plus full polygon was obtained from an anonymous public response. The generic Parcels_v candidate was rejected because its metadata full extent is Nairobi. Eldoret-specific public layers are land use and boundary/roads only. The WUP point was preserved exactly and was not shifted to force a hit; no exact-point parcel test was claimed."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Eldoret city services, Uasin Gishu/Eldoret Ardhi House registry functions, Kenya national land-service application, and Eldoret-specific public ArcGIS thematic/boundary layers.",
+    "verifiedOpenScope": "Official custodian and service existence plus non-cadastral Eldoret thematic/boundary metadata were verified; citywide parcel-vector access, native parcel identity, parcel schema, parcel CRS response, and exact-point containment remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

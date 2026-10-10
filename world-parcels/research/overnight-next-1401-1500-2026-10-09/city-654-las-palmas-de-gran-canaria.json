@@ -1,0 +1,42 @@
+{
+  "cityCode": 654,
+  "queueRank": 1489,
+  "name": "Las Palmas de Gran Canaria",
+  "country": "Spain",
+  "countryCode": "ES",
+  "point": [28.1144784301988, -15.4347243474751],
+  "population2025": 381670,
+  "population2025k": 381.67,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "official cadastral parcel map Las Palmas de Gran Canaria Spain WMS API Catastro",
+        "result": "Official Spanish Catastro and municipal Las Palmas de Gran Canaria sources were found. The municipal first-party ArcGIS REST parcel service exposes a public parcel layer and bounded geometry query.",
+        "actualResultUrls": [
+          "https://www.sedecatastro.gob.es/OVCInicio.aspx?Seguir=S",
+          "https://www.catastro.hacienda.gob.es/es-ES/wms.html",
+          "https://sit.laspalmasgc.es/server/rest/services/geursa/Parcela/MapServer"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Sede Electrónica Catastro visor cartográfico Las Palmas de Gran Canaria parcela",
+        "result": "Official Spanish Catastro documentation confirms the national public cadastral map/WMS scope; the municipal official map service provides the locally scoped parcel layer used for the bounded geometry review.",
+        "actualResultUrls": [
+          "https://www.sedecatastro.gob.es/OVCInicio.aspx?Seguir=S",
+          "https://www.catastro.hacienda.gob.es/es-ES/wms.html",
+          "https://www.laspalmasgc.es/es/areas-tematicas/innovacion/visores-geograficos-municipales/",
+          "https://sit.laspalmasgc.es/server/rest/services/geursa/Parcela/MapServer"
+        ]
+      }
+    ]
+  },
+  "serviceReview": "las-palmas-de-gran-canaria-service-review.json",
+  "geometrySample": "las-palmas-de-gran-canaria-parcel-samples.geojson",
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "Source discovery and bounded safe geometry review are complete; serial adapter qualification remains pending."
+}

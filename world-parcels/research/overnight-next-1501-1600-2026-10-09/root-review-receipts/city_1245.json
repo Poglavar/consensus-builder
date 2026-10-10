@@ -1,0 +1,16 @@
+{
+  "taskId": "city:1245",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-1245-gona-ves.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/gona-ves-service-review.json",
+    "tmp/valhalla-parcel-research/1245/sia.html",
+    "tmp/valhalla-parcel-research/1245/commune.json",
+    "tmp/valhalla-parcel-research/1245/wfs.xml"
+  ],
+  "checkedAt": "2026-10-10T09:48:01.136766Z",
+  "reviewNote": "ONACA custody confirmed; cached first-party SIA map exposes administrative layers, and HaitiData WFS capabilities show no parcel layer. No native parcel ID or polygon read; all adapter, cell, metric, binding, and headed UI gates remain unverified."
+}

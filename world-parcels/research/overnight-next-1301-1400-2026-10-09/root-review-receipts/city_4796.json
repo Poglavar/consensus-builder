@@ -1,0 +1,18 @@
+{
+  "taskId": "city:4796",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-4796-nice.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/nice-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/nice-parcel-sample.geojson"
+  ],
+  "checkedAt": "2026-10-09T14:49:22.288645Z",
+  "reason": "Live official MapServer layer 8 returned one complete polygon at the immutable WUP point with native CODEIDENT 060088   MT0022. It exactly matches the retained one-feature sample, which has only safe id properties; metric GEOS found it valid. This bounded discovery does not establish adapter qualification or citywide completeness.",
+  "firstPartyUrlsChecked": [
+    "https://cartes.nicecotedazur.org/heberge2/rest/services/Cadastre/Cadastre/MapServer/8?f=pjson",
+    "https://cartes.nicecotedazur.org/heberge2/rest/services/Cadastre/Cadastre/MapServer/8/query"
+  ],
+  "admissionGates": "Exact-ID reread, forced paging, 13 bounded cells, metric full-scope validity/duplicate/overlap/operation checks, source binding, and headed Details verification are not independently evidenced."
+}

@@ -1,0 +1,39 @@
+{
+  "cityRecord": "city-2957-fallujah.json",
+  "schemaVersion": "1.0",
+  "cityCode": 2957,
+  "queueRank": 1586,
+  "city": "Fallujah",
+  "country": "Iraq",
+  "countryCode": "IQ",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "outcome": "complete_registry_found_no_verified_open_geometry",
+  "registryFound": true,
+  "registryScope": "Iraqi Ministry of Justice Real-Estate Registration Directorate, with an explicitly listed Fallujah directorate; official property deed/map requests are described through the Ur Portal.",
+  "exactPointLatLon": [33.3497150718708, 43.7841281365146],
+  "queries": [
+    {
+      "language": "English",
+      "query": "Fallujah Iraq official cadastral map land registry parcel GIS",
+      "outcome": "Official Ministry contact, property-service announcement, and Ur Portal deed/map procedure found; no anonymous parcel feature response.",
+      "urls": ["https://www.moj.gov.iq/contact_us.php", "https://moj.gov.iq/view.9289/", "https://ur.gov.iq/index/show-eservice/40227/10049/cat"]
+    },
+    {
+      "language": "Arabic",
+      "query": "الفلوجة العراق خريطة عقارية كادستر دائرة التسجيل العقاري",
+      "outcome": "Official Arabic sources confirm the Fallujah real-estate registration directorate and describe the deed/map request; the Ur Portal says current electronic availability is Baghdad, and no public geometry endpoint was exposed.",
+      "urls": ["https://www.moj.gov.iq/contact_us.php", "https://www.moj.gov.iq/view.9274/", "https://ur.gov.iq/index/show-eservice/40227/10049/cat"]
+    }
+  ],
+  "requestOutcomes": "GET https://www.moj.gov.iq/contact_us.php returned the official directorate listing, including مديرية تسجيل عقاري الفلوجة and its public office email; no map/API configuration was present. GET https://www.moj.gov.iq/view.9274/ returned the official Ministry article reporting a visit to the Fallujah directorate; it contained no parcel data. GET https://moj.gov.iq/view.9289/ returned the official announcement for electronic real-estate services, including property deed/map requests, linked to Ur Portal. GET https://ur.gov.iq/index/show-eservice/40227/10049/cat returned the official service page, which says the service is currently electronic in Baghdad and will be provided in other directorates in later phases; no public feature URL, schema, CRS, or geometry was present. GET https://eservice.ur.gov.iq/index/new-service/10947 returned an application/service shell without anonymous parcel data. No login, credentials, private token, CAPTCHA bypass, or unsafe property field was used.",
+  "schemaCrs": "Not available; no parcel feature response was received.",
+  "safeFieldAllowlist": ["stable native parcel identifier", "geometry", "source CRS", "non-sensitive administrative scope"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "mortgage/lien details"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "sampleGeojson": null,
+  "runtimeReadiness": "held",
+  "uncertainty": "Local registry custody is evidenced, but the public availability, extent, currency, schema, CRS, native identity, and citywide completeness of any underlying Fallujah parcel database remain unknown. The Baghdad-only online availability statement, lack of an anonymous endpoint, and absence of geometry are not evidence of citywide parcel absence.",
+  "completion": "All executed discovery and request attempts are recorded; packet is complete for attempt 1, with no retained GeoJSON sample. This packet is not source integration or adapter admission."
+}

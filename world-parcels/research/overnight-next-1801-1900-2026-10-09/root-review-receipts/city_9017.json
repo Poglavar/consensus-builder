@@ -1,0 +1,32 @@
+{
+  "taskId": "city:9017",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-9017-bhusawal.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/bhusawal-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "tmp/valhalla-parcel-research/runs/20261010T155017-acc98d10/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-10T15:55:00.589086Z",
+  "reason": "Official Maharashtra land-record and map services establish custody, but the viewer timed out and no Bhusawal native-ID polygon response was obtained.",
+  "identity": {
+    "cityCode": 9017,
+    "queueRank": 1811,
+    "country": "India",
+    "point": [
+      21.0422064442943,
+      75.7946994593889
+    ],
+    "populationPersons": 317085,
+    "verifiedAgainst": "official 2025 WUP archive and pending queue"
+  },
+  "searchLanguagesVerified": [
+    "English",
+    "Marathi"
+  ],
+  "firstPartyUrls": [
+    "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+    "https://mahabhunakasha.mahabhumi.gov.in/27/index.html"
+  ],
+  "admissionGates": "No verified public parcel response or native IDs; fresh adapter reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed Details verification are not evidenced."
+}

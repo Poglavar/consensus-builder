@@ -1,0 +1,11 @@
+{
+  "taskId": "city:8778",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-8778-najibabad.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/najibabad-service-review.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T19:22:11Z",
+  "reason": "Official Najibabad tehsil digitization and Bhu-Naksha viewer are evidenced, but the metadata request timed out and no native-ID parcel geometry or adapter qualification was obtained."
+}

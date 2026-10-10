@@ -1,0 +1,17 @@
+{
+  "taskId": "city:10239",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-10239-basti.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/basti-service-review.json",
+    "tmp/valhalla-parcel-research/basti-10239/mapinfo.json",
+    "tmp/valhalla-parcel-research/basti-10239/plot1.json"
+  ],
+  "checkedAt": "2026-10-09T11:59:38Z",
+  "identity": "Queue and roster agree on code 10239, rank 1236, India/IN, point [26.8009241721327,82.7436691752189], and 450449 persons.",
+  "searchReview": "English and Hindi executed searches and result URLs are recorded in the paired packet and review.",
+  "sourceReview": "The cached first-party mapinfo response identifies the Basti revenue village and EPSG:32644. The cached plot1 response is an Authorization-header error, so the packet claim of safe plot metadata is not independently established by that cache. Registry custody is supported; anonymous full polygon geometry and citywide coverage are unresolved.",
+  "admissionReview": "Zero full polygons retained. Fresh native-ID polygon reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are missing. No admission."
+}

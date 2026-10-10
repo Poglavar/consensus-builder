@@ -1,0 +1,116 @@
+{
+  "cityCode": 8134,
+  "queueRank": 1634,
+  "name": "Dahod",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "point": [22.8420144481058, 74.2541052026989],
+  "population2025": 350660,
+  "population2025k": 350.66,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dahod Gujarat official cadastral parcel map land records GIS Bhunaksha AnyROR",
+        "result": "First-party discovery found the official Dahod district Land Records page, which states that cadastral survey was completed across Gujarat and that records are maintained through computerized taluka e-Dhara centres. It links the official AnyRoR land-record route. No open Dahod parcel feature service or safe ID-plus-geometry response was found.",
+        "actualResultUrls": [
+          "https://dahod.nic.in/service/land-records/",
+          "https://revenuedepartment.gujarat.gov.in/iora-service",
+          "https://anyror.gujarat.gov.in/"
+        ]
+      },
+      {
+        "language": "Gujarati",
+        "query": "દાહોદ ગુજરાત સત્તાવાર જમીન રેકોર્ડ નકશો કેડાસ્ટ્રલ પાર્સલ ભૂનકશો AnyROR",
+        "result": "Gujarati first-party discovery found the Gujarati Dahod district administration pages and the Gujarati-facing land-record terminology/routes. The official district land-record page identifies village/Jan Seva Kendra and taluka e-Dhara record access, but no anonymous parcel geometry endpoint, native parcel identity, schema, or CRS was exposed.",
+        "actualResultUrls": [
+          "https://dahod.nic.in/gu/",
+          "https://dahod.nic.in/service/land-records/",
+          "https://revenuedepartment.gujarat.gov.in/iora-service"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://dahod.nic.in/service/land-records/",
+      "observation": "Official Dahod district page says cadastral survey was completed for the entire state in 1960 and that land records are updated through computerized applications at each taluka e-Dhara centre; it links AnyRoR. This establishes district land-record custody and procedure, not an open parcel geometry API."
+    },
+    {
+      "url": "https://revenuedepartment.gujarat.gov.in/iora-service",
+      "observation": "Official Gujarat Revenue Department page lists online land-record and property-card services, but exposes no public Dahod parcel feature layer or geometry response in the inspected content."
+    },
+    {
+      "url": "https://dahod.nic.in/gu/",
+      "observation": "Official Gujarati Dahod district administration entry point; the Gujarati route confirms the local government context but did not expose a public parcel service."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://dahod.nic.in/service/land-records/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official page loaded. HTML and linked content were inspected for viewer/configuration/API references; it contained the AnyRoR link and land-record procedure text, but no parcel feature endpoint, schema, CRS, ID field, or geometry."
+    },
+    {
+      "url": "https://revenuedepartment.gujarat.gov.in/iora-service",
+      "method": "GET via first-party web discovery",
+      "httpStatus": 200,
+      "outcome": "Official Revenue Department online-services page was found and inspected. It lists View Land Records and View Property Cards, but no anonymous parcel ID-plus-geometry response or public map service was obtained."
+    },
+    {
+      "url": "https://dahod.nic.in/gu/",
+      "method": "GET via first-party web discovery",
+      "httpStatus": 200,
+      "outcome": "Gujarati official district route was found. No parcel viewer or public feature service was exposed in the accessible page."
+    },
+    {
+      "url": "https://anyror.gujarat.gov.in/",
+      "method": "GET",
+      "httpStatus": "timeout after 20 seconds",
+      "outcome": "The official AnyRoR host linked by Dahod district timed out in a bounded anonymous request. No retry with credentials, CAPTCHA bypass, TLS disablement, or private token was attempted. This timeout is not evidence of citywide parcel absence."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The official Dahod district Land Records page identifies the district/taluka e-Dhara land-record process and the official Gujarat Revenue Department identifies the statewide land-record/property-card services. This evidences a local/state land-record custodian and procedure, but not an open Dahod parcel geometry service.",
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": null,
+  "geometryQuality": "not evaluated; no parcel geometry retrieved",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": "gujarat-anyror-e-dhara-land-record-services",
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Dahod district land-record/e-Dhara process and Gujarat statewide AnyRoR/Revenue Department services.",
+    "verifiedOpenScope": "Official local/state custody and procedure pages only; Dahod city coverage, safe native parcel identity, schema, CRS, and public geometry were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "Exact WUP point [22.8420144481058, 74.2541052026989] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point hit or miss conclusion was drawn because no usable public parcel query was available.",
+    "The AnyRoR timeout and absence of a visible public API are not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, personal, tax/account or other unsafe fields were requested or retained.",
+    "No raw source-specific attribute set, synthetic parcel identity, or sample GeoJSON was retained.",
+    "Packet completion is not source integration/admission; runtime remains held pending serial review."
+  ],
+  "uncertainty": "The current AnyRoR viewer route, request parameters, access policy, Dahod city/village selection, parcel schema, stable native identity, CRS transformation path, and citywide coverage remain unresolved.",
+  "retainedSample": null
+}

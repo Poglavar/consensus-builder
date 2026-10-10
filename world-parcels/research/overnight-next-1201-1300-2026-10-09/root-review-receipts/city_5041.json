@@ -1,0 +1,26 @@
+{
+  "taskId": "city:5041",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-5041-polokwane.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/polokwane-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/polokwane-parcel-samples.geojson",
+    "tmp/valhalla-parcel-research/polokwane/sdf-properties-layer.json",
+    "tmp/valhalla-parcel-research/polokwane/local-envelope.geojson",
+    "tmp/valhalla-parcel-research/polokwane/local-query.geojson"
+  ],
+  "checkedAt": "2026-10-09T11:55:58.509556Z",
+  "reason": "Municipal public polygon discovery verified from the original cached response: 999 returned features with exceededTransferLimit=true; three safe SG21-ID polygons are exact unchanged matches. Custody is municipal GIS, not title authority. No independently qualified full manifest/forced paging, 13 bounded cells, metric GEOS checks, source binding, or headed Details check.",
+  "identityCheck": "City code, rank, country, point and population persons match the immutable ranked roster, pending queue and integration ledger. English and native/local executed search query records and result URLs are present in the paired evidence.",
+  "retainedFullPolygonCount": 3,
+  "qualificationGates": "Fresh exact native-ID reads, complete forced paging, 13 bounded cells, metric GEOS validity/duplicate/overlap checks, source binding and headed Details-panel verification are not independently evidenced. No admission or runtime/catalog/report edit made.",
+  "originalCacheSha256": {
+    "tmp/valhalla-parcel-research/polokwane/sdf-properties-layer.json": "f31a7b0a67d449a61e2531e11edc8e4f5a88ea65eab55c52cec323e211df82e8",
+    "tmp/valhalla-parcel-research/polokwane/local-envelope.geojson": "ef4ab7bf5ff2d4a59fa50b1126a2697b7f6b65bac5773a2214a82a8bb61d4b9d",
+    "tmp/valhalla-parcel-research/polokwane/local-query.geojson": "ed778c73ea51338d6576fb5992b189f2b94d9f3d5e199f46c1af520d6b0b3e6c"
+  }
+}

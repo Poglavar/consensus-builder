@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11274-tongling.json",
+  "purpose": "Document first-party local registry context and bounded anonymous parcel-geometry access review for Tongling, China.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Tongling's official Natural Resources and Planning Bureau is a local natural-resources and real-estate-registration custodian. Official material documents a Tongling geographic-information public-service platform, but bounded anonymous requests did not produce a parcel feature response. No parcel geometry, schema, CRS, or stable native parcel identity was retained.",
+  "registryAssessment": "Local registry/cadastre custodian verified: 铜陵市自然资源和规划局（铜陵市林业局）. The official bureau's real-estate-registration material and platform notice establish local administrative and geospatial-service responsibility, but not open parcel geometry.",
+  "officialPrimarySources": [
+    {"url": "https://zrzyhghj.tl.gov.cn/", "observation": "Official Tongling Natural Resources and Planning Bureau portal; ordinary GET returned HTTP 403 during this attempt."},
+    {"url": "https://zrzyhghj.tl.gov.cn/tlszrzyhghj/gjzc/pc/content/content_1770298861338931202.html", "observation": "Official Tongling bureau material on unified real-estate registration; identifies local administrative responsibility, not an open parcel API."},
+    {"url": "https://zrzyhghj.tl.gov.cn/tlszrzyhghj/dtgl/pc/content/content_1687371447390756864.html", "observation": "Official notice for the Tongling geographic-information public-service platform; describes imagery, topographic, place-name, and DEM datasets and publishes the legacy platform address."},
+    {"url": "https://zrzyhghj.tl.gov.cn/tlszrzyhghj/c00036/pc/content/content_1849747480831123456.html", "observation": "Official bureau article describing the Digital Tongling geospatial framework and online geographic-information service role; no anonymous parcel response was documented."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Tongling China official cadastral parcel map GIS natural resources bureau public service", "result": "Official bureau and platform materials found; no open parcel feature endpoint verified.", "actualResultUrls": ["https://zrzyhghj.tl.gov.cn/", "https://zrzyhghj.tl.gov.cn/tlszrzyhghj/dtgl/pc/content/content_1687371447390756864.html"]},
+    {"language": "Chinese", "query": "铜陵市 不动产登记 地籍图 自然资源和规划局 官方 地图 服务", "result": "Official Chinese-language bureau materials found local registration and GIS-platform evidence; no anonymous parcel geometry verified.", "actualResultUrls": ["https://zrzyhghj.tl.gov.cn/tlszrzyhghj/gjzc/pc/content/content_1770298861338931202.html", "https://zrzyhghj.tl.gov.cn/tlszrzyhghj/dtgl/pc/content/content_1687371447390756864.html"]}
+  ],
+  "attempts": [
+    {"url": "https://zrzyhghj.tl.gov.cn/", "httpStatus": 403, "result": "Current official host blocked the ordinary request; no configuration or API was extracted."},
+    {"url": "http://59.203.206.77:8090/", "result": "Bounded anonymous GET timed out after 8 seconds."},
+    {"url": "https://59.203.206.77:8090/", "result": "Bounded anonymous HTTPS GET timed out after 8 seconds; TLS verification remained enabled."}
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Not performed against a public feature service; timeout and 403 are not evidence of citywide absence.", "requestEvidence": []},
+  "coverageAssessment": {"claimedScope": "Municipal Tongling GIS and natural-resources/real-estate-registration administration.", "verifiedOpenScope": "Local custodian and GIS platform are evidenced, but anonymous parcel geometry, schema/CRS, and citywide completeness are unverified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "The current public map route, endpoint structure, access policy, schema/CRS, and exact-point parcel coverage remain unknown. No absence conclusion is made.",
+  "runtimeAssessment": "held; no adapter admission or source integration implied"
+}

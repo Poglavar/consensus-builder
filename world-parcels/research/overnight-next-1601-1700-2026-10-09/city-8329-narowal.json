@@ -1,0 +1,117 @@
+{
+  "cityCode": 8329,
+  "queueRank": 1641,
+  "name": "Narowal",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "point": [32.1018299788328, 74.874087134035],
+  "population2025": 348144,
+  "population2025k": 348.144,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "site:punjab-zameen.gov.pk Narowal land records map cadastral parcel GIS",
+        "result": "Official Punjab Land Records Authority and PULSE results were found. PULSE's current public viewer exposes a Punjab cadastral MapServer with a Narowal sublayer; the official Narowal district site also identifies the local revenue/land-record custodian context.",
+        "actualResultUrls": [
+          "https://lis.pulse.gop.pk/",
+          "https://www.punjab-zameen.gov.pk/",
+          "https://narowal.punjab.gov.pk/Additional_Deputy_Commissioner_%28Revenue%29"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "نارووال اراضی ریکارڈ نقشہ کادستر پنجاب سرکاری",
+        "result": "Official Punjab land-record and Narowal district results were found, including PLRA land-record services and the district revenue administration. The Urdu search did not itself expose a separate local parcel API; the public PULSE viewer was then inspected as the first-party map route.",
+        "actualResultUrls": [
+          "https://www.punjab-zameen.gov.pk/",
+          "https://narowal.punjab.gov.pk/district_profile",
+          "https://lis.pulse.gop.pk/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "A first-party Punjab government map viewer exposes a Narowal cadastral sublayer and returned a safe native OBJECTID plus polygon through its public ArcGIS service. This evidences a public map/data custodian, not legal title or ownership access.",
+  "officialSources": [
+    {
+      "url": "https://lis.pulse.gop.pk/",
+      "observation": "Official Punjab Urban Land Systems Enhancement viewer. Current JavaScript configuration identifies the public ArcGIS host and maps Narowal to cadastral sublayer 24. The page states that complete parcel details require login."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/24",
+      "observation": "First-party ArcGIS Feature Layer metadata: name Narowal, polygon geometry, source spatial reference EPSG 3857 / WKID 102100, extent and field schema."
+    },
+    {
+      "url": "https://narowal.punjab.gov.pk/Additional_Deputy_Commissioner_%28Revenue%29",
+      "observation": "Official District Narowal page identifies revenue-record and LRMIS responsibilities of the Additional Deputy Commissioner (Revenue)."
+    },
+    {
+      "url": "https://www.punjab-zameen.gov.pk/",
+      "observation": "Official Punjab Land Records Authority site describes GIS-linked digital land-record services and service-center access."
+    }
+  ],
+  "source": {
+    "sourceId": "pulse-punjab-cadastral-narowal-layer-24",
+    "name": "PULSE Punjab Cadastral Maps / Narowal",
+    "operator": "Punjab Urban Land Systems Enhancement / Punjab Land Records Authority GIS host",
+    "endpoint": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/24",
+    "method": "Official viewer JavaScript/configuration inspection followed by bounded anonymous ArcGIS REST metadata and point query using the viewer's public application token",
+    "responseFormat": "ArcGIS Feature Layer JSON; no GeoJSON sample retained",
+    "nativeCrs": "EPSG:3857 / WKID 102100 (service sourceSpatialReference); query output requested as GeoJSON and returned longitude/latitude coordinates",
+    "queryOutputCrs": "WGS 84 longitude/latitude in the observed GeoJSON response",
+    "nativeIdentity": "OBJECTID",
+    "nativeFieldMapping": {
+      "id": "OBJECTID",
+      "geometry": "service polygon geometry",
+      "sourceFieldsObservedNotRetained": ["District", "Dist_ID", "Tehsil", "Tehsil_ID", "QH", "QH_ID", "PC", "PC_ID", "Mouza", "Mouza_ID", "Type", "M", "A", "K", "SK", "Label", "Karam", "Khasra_ID", "Shape.STArea()", "Shape.STLength()", "MN", "Join_Shp", "Remarks", "Khewat_ID", "B", "propstatus", "Status", "Remarks_G", "Wanda_R", "Mutation_N"]
+    },
+    "compositeKeyProvenance": null,
+    "scope": "Narowal cadastral sublayer exposed by the official PULSE map. One bounded point-intersection response was observed but not retained as a sample; this does not establish citywide completeness or legal cadastral coverage."
+  },
+  "requests": [
+    {
+      "url": "https://lis.pulse.gop.pk/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Public map page returned. Current inline JavaScript was inspected and identified the ArcGIS service, Narowal layer 24, and the /api/gis/token public application-token route."
+    },
+    {
+      "url": "https://lis.pulse.gop.pk/api/gis/token",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Returned the viewer's short-lived public application token; no login or private credential was used."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/24?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Returned Narowal layer metadata, polygon geometry type, EPSG 3857/WKID 102100 source CRS, extent, and schema."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/24/query",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Bounded query where=1=1, resultRecordCount=3, returnGeometry=true, point geometry [74.874087134035,32.1018299788328], input CRS 4326, spatial relationship intersects, output GeoJSON. One feature returned with native OBJECTID 5921642 and polygon geometry. The exact WUP point was not shifted."
+    }
+  ],
+  "verifiedParcelResponse": {
+    "count": 1,
+    "nativeIds": [5921642],
+    "sampleFile": null
+  },
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRequestedOrRetained": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "legal_description", "value", "full parcel attributes"],
+  "publicParcelGeometryFound": true,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Official PULSE Narowal cadastral sublayer.",
+    "verifiedOpenScope": "One safe ID plus full polygon was returned in the bounded exact-point intersection query; no sample file was retained.",
+    "countrywideVerified": false
+  },
+  "resultCategory": "local_cadastral_map_and_public_geometry_verified",
+  "runtimeReadiness": "held_serial_review",
+  "remainingUncertainty": "The exact point hit is one feature only and does not prove citywide completeness, parcel freshness, legal validity, or that all map layers are anonymously queryable. The public viewer says complete parcel details require login. Packet completion is not source integration or admission."
+}

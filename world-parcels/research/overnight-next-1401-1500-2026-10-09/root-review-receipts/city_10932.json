@@ -1,0 +1,14 @@
+{
+  "taskId": "city:10932",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-10932-danzhou-city.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/danzhou-city-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T16:56:37Z",
+  "reason": "Queue code, rank 1440, China, point and 394343 persons match the packet; English and Chinese searches are recorded. First-party search results support local registration custody, but direct official-host requests returned 403. No full parcel polygon or safe native ID was obtained, and none of the live adapter, paging, 13-cell, metric GEOS, binding or headed Details gates is evidenced. The access wall does not establish citywide absence.",
+  "fullPolygonCount": 0,
+  "runtimeAdmission": false
+}

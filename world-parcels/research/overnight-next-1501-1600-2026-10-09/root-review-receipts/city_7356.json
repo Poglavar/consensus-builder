@@ -1,0 +1,13 @@
+{
+  "taskId": "city:7356",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-7356-abonnema.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/abonnema-service-review.json",
+    "tmp/valhalla-parcel-research/7356/sgriv.html"
+  ],
+  "checkedAt": "2026-10-10T09:04:58.292071Z",
+  "reason": "Queue identity checked. Original SGRIV landing cache supports Rivers State survey-office custody and login/request flow, not public parcel geometry. The purported Kalabari/Ijaw query uses a Yoruba token and otherwise English terms, so native-language search is not established. No adapter or headed gate is evidenced; 403/login is not absence."
+}

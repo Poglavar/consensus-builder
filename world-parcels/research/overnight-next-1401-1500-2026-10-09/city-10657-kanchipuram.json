@@ -1,0 +1,104 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10657,
+  "cityId": "wup2025:10657",
+  "name": "Kanchipuram",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "queueRank": 1437,
+  "rank": 1437,
+  "point": [12.8287816344265, 79.7081049733236],
+  "centerLatLon": [12.8287816344265, 79.7081049733236],
+  "pointBasis": "Exact immutable WUP 2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 394850,
+  "population2025k": 394.85,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Kancheepuram District's official Survey & Land Records office page identifies the district custodian and documents digitized Natham and urban land records, digitized Field Measurement sketches, online land-record management, and village-map mosaicing. The district's official land-services page links the Tamil Nadu e-Services land-record workflow for Patta/FMB/Chitta/TSLR and A-Register extracts. This establishes local/state registry custody, but not a verified open parcel-vector response.",
+  "registryEvidenceUrls": [
+    "https://kancheepuram.nic.in/departments/survey-land-records/",
+    "https://kancheepuram.nic.in/service/e-services-anytime-anywhere-land/",
+    "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu",
+    "https://www.tngis.tn.gov.in/apps.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_not_enabled_no_verified_public_geometry",
+  "runtimeAssessment": {
+    "status": "held_not_enabled_no_verified_public_geometry",
+    "reason": "The official district pages expose the public Tamil Nadu land-record workflow, but the linked eservices.tn.gov.in host timed out during a bounded anonymous GET. No safe native-ID-plus-full-polygon response, schema, CRS, or city extent was verified. No credentials, token values, TLS bypass, CAPTCHA bypass, or unsafe property lookup was used."
+  },
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kanchipuram Tamil Nadu official cadastral parcel map GIS land records e-services",
+        "result": "Found the official Kancheepuram District Survey & Land Records page, official district land-services page, National Government Services Portal description of Tamil Nadu Patta/FMB/Chitta/TSLR services, and official TNGIS portal. No anonymous parcel polygon response was verified.",
+        "actualResultUrls": [
+          "https://kancheepuram.nic.in/departments/survey-land-records/",
+          "https://kancheepuram.nic.in/service/e-services-anytime-anywhere-land/",
+          "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu",
+          "https://www.tngis.tn.gov.in/apps.html"
+        ],
+        "executionMethod": "Separate English web search followed by first-party page inspection and bounded anonymous GETs."
+      },
+      {
+        "language": "Tamil",
+        "query": "காஞ்சிபுரம் தமிழ்நாடு அதிகாரப்பூர்வ நில வரைபடம் பட்டா புல வரைபடம் GIS",
+        "result": "Tamil-language discovery found the official Tamil Nadu Rural Development map page and Tamil Nadu land-record/GIS references, including the Kanchipuram district context. It did not yield a machine-readable public Kanchipuram parcel polygon endpoint.",
+        "actualResultUrls": [
+          "https://tnrd.tn.gov.in/rdweb_newsite/project/reports/Public/map_layout_content.php",
+          "https://kancheepuram.nic.in/ta/%E0%AE%A8%E0%AF%80%E0%AE%B0%E0%AF%8D-%E0%AE%A8%E0%AE%BF%E0%AE%B2%E0%AF%88%E0%AE%95%E0%AE%B3%E0%AF%8D/",
+          "https://www.tngis.tn.gov.in/apps.html"
+        ],
+        "executionMethod": "Independent Tamil-language web search followed by first-party page inspection."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://kancheepuram.nic.in/departments/survey-land-records/",
+        "method": "GET",
+        "status": "HTTP 200",
+        "summary": "Official district Survey & Land Records page retrieved; it documents digitized urban/Natham records, FMB sketches, online management, and the district survey office."
+      },
+      {
+        "url": "https://kancheepuram.nic.in/service/e-services-anytime-anywhere-land/",
+        "method": "GET",
+        "status": "HTTP 200",
+        "summary": "Official district service page retrieved; it lists Patta/FMB/Chitta/TSLR, A-Register, Patta verification and Poramboke verification, and links the Tamil Nadu e-Services host."
+      },
+      {
+        "url": "https://eservices.tn.gov.in/eservicesnew/home.html",
+        "method": "GET",
+        "status": "timeout after 20 seconds",
+        "summary": "Linked official public land-record service did not return within the bounded request. No retry with disabled TLS verification, credentials, token values, CAPTCHA bypass or unsafe fields was attempted."
+      },
+      {
+        "url": "https://www.tngis.tn.gov.in/apps.html",
+        "method": "GET via first-party search inspection",
+        "status": "official public portal found",
+        "summary": "Official TNGIS portal describes public GIS services and displays Kanchipuram context, but no safe parcel feature response or current parcel service configuration was verified."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Kancheepuram District Survey & Land Records custodian, official district land-services page, linked Tamil Nadu e-Services host, and official TNGIS discovery.",
+    "verifiedOpenScope": "Local/state registry custody and public service documentation were verified. No anonymous native parcel identity, CRS, full parcel polygon, or citywide geometry extent was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "technicalBlocker": "The linked Tamil Nadu e-Services host timed out during bounded anonymous retrieval. Exact-point hit status is unknown and is not treated as evidence of absence; the public workflow may require interactive selections or a service route not exposed by the bounded request.",
+  "safeFieldAllowlist": ["stable native parcel or survey identifier if exposed", "geometry", "CRS", "source layer/service metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax/account", "registration or encumbrance details"],
+  "remainingUncertainty": "Whether Tamil Nadu's official interactive land-record/TamilNilam/TNGIS workflows expose Kanchipuram-scoped geometry with a stable native survey identity remains unresolved.",
+  "nextStep": "A serial reviewer may retry the official Tamil Nadu workflow and independently qualify a geometry-only adapter only after verifying a Kanchipuram-scoped response with a stable native parcel/survey identity and full polygon."
+}

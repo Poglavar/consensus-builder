@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 11273,
+  "queueRank": 1828,
+  "cityId": "queue:1828",
+  "name": "Kodarma",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [24.4494084017094, 85.5490191854637],
+  "centerLatLon": [24.4494084017094, 85.5490191854637],
+  "population2025": 313949,
+  "population2025k": 313.949,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kodarma Koderma Jharkhand official cadastral parcel map land records Jharbhoomi Bhu Naksha",
+        "result": "First-party discovery identified the official Koderma district land-record/e-Mutation page, which directs users to the Jharkhand Jharbhoomi portal. The official Bhu-Naksha implementation page identifies Jharkhand's current public viewer as jharbhunaksha.jharkhand.gov.in and records state code 20.",
+        "actualResultUrls": [
+          "https://koderma.nic.in/service/land-record-and-e-mutation/",
+          "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp",
+          "https://jharbhoomi.jharkhand.gov.in/",
+          "https://jharbhunaksha.jharkhand.gov.in/"
+        ]
+      },
+      {
+        "language": "native/local (Hindi)",
+        "query": "कोडरमा झारखंड आधिकारिक भू नक्शा खसरा खतियान भूमि अभिलेख",
+        "result": "First-party discovery identified the official Hindi Koderma district revenue, registration and land-reforms page. It directs users to the same Jharkhand Jharbhoomi land-record portal; no public parcel feature response was obtained.",
+        "actualResultUrls": [
+          "https://koderma.nic.in/hi/service/%E0%A4%B0%E0%A4%BE%E0%A4%9C%E0%A4%B8%E0%A5%8D%E0%A4%B5-%E0%A4%A8%E0%A4%BF%E0%A4%AC%E0%A4%82%E0%A4%A7%E0%A4%A8-%E0%A4%8F%E0%A4%B5%E0%A4%82-%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B8%E0%A5%81/",
+          "https://jharbhoomi.jharkhand.gov.in/"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Separate English and Hindi first-party discovery followed by bounded TLS-verified anonymous GET attempts. No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields or TLS disablement were used."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://koderma.nic.in/service/land-record-and-e-mutation/",
+      "observation": "Official Government of India Koderma district page for land records and e-Mutation; it identifies Jharbhoomi as the destination. This is local district service evidence, not an open parcel API response."
+    },
+    {
+      "url": "https://koderma.nic.in/hi/service/%E0%A4%B0%E0%A4%BE%E0%A4%9C%E0%A4%B8%E0%A5%8D%E0%A4%B5-%E0%A4%A8%E0%A4%BF%E0%A4%AC%E0%A4%82%E0%A4%A7%E0%A4%A8-%E0%A4%8F%E0%A4%B5%E0%A4%82-%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B8%E0%A5%81/",
+      "observation": "Official Hindi Koderma district revenue/land page directing users to Jharbhoomi."
+    },
+    {
+      "url": "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp",
+      "observation": "Official NIC Bhu-Naksha implementation-status page identifies Jharkhand state code 20 and links its current viewer to jharbhunaksha.jharkhand.gov.in. National implementation documentation is not treated as citywide geometry evidence."
+    },
+    {
+      "url": "https://jharbhoomi.jharkhand.gov.in/",
+      "observation": "Jharkhand state land-record portal named by the official Koderma district pages; anonymous request did not return within the bounded timeout."
+    },
+    {
+      "url": "https://jharbhunaksha.jharkhand.gov.in/",
+      "observation": "Jharkhand Bhu-Naksha viewer linked by the official NIC implementation page; anonymous request did not return within the bounded timeout."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://jharbhoomi.jharkhand.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "TLS-verified anonymous request timed out after 20 seconds before HTML or JavaScript configuration was returned. No service URL, schema, CRS, native ID or geometry was obtained. This is a route failure, not evidence of citywide absence."
+    },
+    {
+      "url": "https://jharbhunaksha.jharkhand.gov.in/",
+      "method": "GET/HEAD",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "TLS-verified anonymous request timed out after 12 seconds before viewer configuration was returned. No parcel API route or bounded response was obtained."
+    },
+    {
+      "url": "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "assessment": "Official implementation-status HTML was retrieved and inspected for the Jharkhand viewer link and state code 20. It provides implementation metadata only, not Kodarma parcel features."
+    },
+    {
+      "url": "https://koderma.nic.in/service/land-record-and-e-mutation/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "Official Koderma district page retrieved; it links to Jharbhoomi but contains no bounded parcel geometry response."
+    },
+    {
+      "url": "https://koderma.nic.in/hi/service/%E0%A4%B0%E0%A4%BE%E0%A4%9C%E0%A4%B8%E0%A5%8D%E0%A4%B5-%E0%A4%A8%E0%A4%BF%E0%A4%AC%E0%A4%82%E0%A4%A7%E0%A4%A8-%E0%A4%8F%E0%A4%B5%E0%A4%82-%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B8%E0%A5%81/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "Official Hindi Koderma district page retrieved; it links to Jharbhoomi but contains no bounded parcel geometry response."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Koderma district official land-record directions and Jharkhand's official Bhu-Naksha implementation/viewer routes.",
+    "verifiedOpenScope": "Local district service custody and official state viewer existence only; no open Kodarma parcel geometry coverage verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The current Jharbhoomi/Bhu-Naksha JavaScript configuration, public API route, Koderma urban/village unit identifiers, parcel schema, CRS, stable native identity, update currency and citywide completeness remain unresolved. The exact WUP point was preserved and never shifted; no exact-point hit/miss inference was made. A timeout or unusable viewer is not evidence of cadastral absence.",
+  "nextStep": "A later attempt may inspect the Jharkhand viewer through an available public route and request only bounded anonymous native ID-plus-geometry data for Kodarma. Serial reviewer qualification remains required; runtime readiness stays held."
+}

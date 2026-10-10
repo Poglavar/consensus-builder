@@ -1,0 +1,19 @@
+{
+  "taskId": "city:9463",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-9463-orai.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/orai-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "tmp/valhalla-parcel-research/orai/jalaun-land-records.html",
+    "tmp/valhalla-parcel-research/orai/jalaun-land-records.headers",
+    "tmp/valhalla-parcel-research/orai/bhunaksha.html",
+    "tmp/valhalla-parcel-research/orai/bhunaksha.headers",
+    "tmp/valhalla-parcel-research/orai/bhunaksha-main.js"
+  ],
+  "checkedAt": "2026-10-10T18:06:56Z",
+  "reason": "Jalaun first-party land-record page names its Orai office and Bhulekh; the saved Bhunaksha viewer exposes plot routes, but no successful anonymous plot or native-ID polygon response is evidenced. The bootstrap timeout establishes no citywide absence.",
+  "admissionGates": "Fresh exact native-ID polygon reads, forced paging, 13 bounded cells, independent metric GEOS validity/duplicate/overlap checks, source binding, and headed Details-panel verification are not evidenced; city remains excluded.",
+  "registryFound": true
+}

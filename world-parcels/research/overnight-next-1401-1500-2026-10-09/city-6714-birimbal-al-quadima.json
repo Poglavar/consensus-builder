@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 6714,
+  "queueRank": 1466,
+  "name": "Birimbal al Quadima",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "iso3": "EGY",
+  "cityId": "wup2025:6714",
+  "point": [31.169460159851, 31.798149461348],
+  "population2025": 389333,
+  "population2025k": 389.333,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-09",
+  "cohorts": ["overnight-next-1401-1500-2026-10-09"],
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Birimbal al Quadima Egypt cadastral parcel map GIS Egyptian Survey Authority",
+        "result": "No first-party city-specific parcel viewer or anonymous parcel API was found. Official Egyptian Survey Authority material was found for national survey/cadastral responsibilities, digital-map purchasing, and Dakahlia topographic map coverage.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://www.esa.gov.eg/files/Topographic_Maps.pdf"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "بربمبل القديمة خريطة مساحية قطع الأراضي سجل عيني الدقهلية هيئة المساحة المصرية",
+        "result": "لم يُعثر على عارض قطع أراضٍ محلي أو واجهة API عامة مجهولة للقرية. وُجدت صفحات الهيئة المصرية العامة للمساحة التي تثبت اختصاصها بالخرائط والسجلات المساحية، وصفحة شراء الخرائط الرقمية، ودليل خرائط الدقهلية؛ ولا توفر هذه الصفحات استعلاماً مجهولاً عن هندسات القطع.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://www.esa.gov.eg/amlak.aspx",
+          "https://www.esa.gov.eg/files/Topographic_Maps.pdf"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "operator": "Egyptian General Authority for Survey (ESA)",
+      "observation": "Official agency history and services describe production of topographic/property maps and ownership books for agricultural land and built property; this establishes a national survey/cadastral custodian, not a local Birimbal public parcel service."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "operator": "Egyptian General Authority for Survey (ESA)",
+      "observation": "Official digital-map workflow requires a written request specifying location, scale, requested layers, format and projection, followed by inspection, quotation, payment and delivery. No anonymous parcel feature endpoint is advertised."
+    },
+    {
+      "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+      "operator": "Egyptian General Authority for Survey (ESA)",
+      "observation": "Official map guide includes Dakahlia at map scales including 1:1,000, 1:2,500 and 1:5,000 and identifies digital/village map production areas; it is map-product evidence, not an open parcel API or target-city parcel extract."
+    },
+    {
+      "url": "https://geoportal.capmas.gov.eg/",
+      "operator": "CAPMAS",
+      "observation": "Official geospatial portal lead discovered during research, but the anonymous request timed out in this bounded attempt; contents, schema and coverage remain unverified."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "method": "GET; anonymous",
+      "httpStatus": 200,
+      "result": "Official ESA home page retrieved. It exposed agency services and project links but no parcel feature service URL."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "method": "GET; anonymous",
+      "httpStatus": 200,
+      "result": "Official digital-map page retrieved. HTML inspection found no FeatureServer, MapServer, WFS or parcel API marker; page describes request/quotation/purchase access."
+    },
+    {
+      "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+      "method": "GET; anonymous via first-party indexed document",
+      "httpStatus": "accessible in web search",
+      "result": "Official ESA guide reviewed for Dakahlia map scales and coverage context; no machine-readable parcel endpoint or safe native parcel identity."
+    },
+    {
+      "url": "https://geoportal.capmas.gov.eg/",
+      "method": "GET; anonymous",
+      "httpStatus": "timeout after 8 seconds",
+      "result": "No HTTP response. No login, token, CAPTCHA or bypass was attempted; no inference of absence was made."
+    }
+  ],
+  "geometryEvidence": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "crs": null,
+    "exactWupPointTest": "Not run: no documented anonymous parcel geometry endpoint was found. Exact immutable WUP point [31.169460159851, 31.798149461348] was preserved and was not shifted; no zero-hit or extent-miss inference was made."
+  },
+  "coverageAssessment": {
+    "claimedScope": "ESA national survey/cadastral mapping responsibilities and official Dakahlia map-product context; CAPMAS portal lead.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identity if publicly exposed", "geometry", "source CRS", "service layer name"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax/account", "private credentials or tokens"],
+  "verifiedSample": false,
+  "runtimeReadiness": {
+    "status": "held",
+    "reason": "No anonymous safe native parcel ID plus geometry response was verified and no adapter was independently qualified. This packet records source discovery only and does not imply integration or admission.",
+    "adapterAdmission": false
+  },
+  "blocker": "ESA official digital-map access is request/quotation based rather than an open parcel feature service; the CAPMAS portal timed out. A local Birimbal registry custodian and public parcel schema/CRS remain unverified.",
+  "remainingUncertainty": "Parcel records may exist in ESA, Dakahlia Survey Directorate, local registry files, or an unindexed/interactive portal. The current attempt did not establish public access, exact-point inclusion, citywide completeness, native identity, schema or geometry.",
+  "nextStep": "A later attempt may inspect a documented first-party Dakahlia/local service if it exposes anonymous geometry-only access; retain no attributes beyond a stable native ID and geometry, and keep runtime readiness held until independent adapter qualification."
+}

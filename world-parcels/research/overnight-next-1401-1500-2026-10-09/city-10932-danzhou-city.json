@@ -1,0 +1,148 @@
+{
+  "cityCode": 10932,
+  "name": "Danzhou City",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 1440,
+  "point": [19.5198711711538, 109.572031037454],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Danzhou City official cadastral parcel map GIS land registration natural resources bureau China",
+        "scope": "Identify city-local land-registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point. Do not submit owner, address, tax, account, applicant, or private-property values.",
+        "result": "Search results identified official Danzhou government pages for the municipal natural-resources bureau, real-estate registration center, and a spatial resource platform; no public vector endpoint or schema was identified.",
+        "actualResultUrls": [
+          "https://www.danzhou.gov.cn/danzhou/ywdt/mtkdz/202509/t20250928_3938799.html",
+          "https://www.danzhou.gov.cn/danzhou/rdzt/bdcdj/zlxz/202305/P020230510552898736964.pdf",
+          "https://www.danzhou.gov.cn/danzhou/rdzt/bdcdj/zcfg/202305/t20230510_3413994.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "儋州市 不动产登记 地籍图 自然资源和规划局 官方",
+        "scope": "Identify city-local land-registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point. No owner, address, tax, account, applicant, or private-property values submitted.",
+        "result": "Official first-party results identify 儋州市不动产登记中心, the municipal natural-resources bureau, and the 儋洋资源云 map/query platform. Direct anonymous fetches to the government host returned HTTP 403; no parcel geometry response was obtained.",
+        "actualResultUrls": [
+          "https://www.danzhou.gov.cn/danzhou/rdzt/bdcdj/zlxz/202305/P020230510552898736964.pdf",
+          "https://www.danzhou.gov.cn/danzhou/ywdt/mtkdz/202509/t20250928_3938799.html",
+          "https://www.danzhou.gov.cn/danzhou/zfxxgkzl/bm/gtj/gknb/202401/t20240126_3581558.html"
+        ],
+        "executionMethod": "Separate Chinese-language search followed by first-party source review and bounded anonymous GET attempts."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://www.danzhou.gov.cn/danzhou/rdzt/bdcdj/zlxz/202305/P020230510552898736964.pdf",
+        "operator": "Danzhou Municipal Government / Hainan provincial real-estate registration directory",
+        "observation": "Official directory lists 儋州市不动产登记中心 in 那大镇, with a public office address and telephone contact; this supports local registration-custodian evidence, not public parcel geometry."
+      },
+      {
+        "url": "https://www.danzhou.gov.cn/danzhou/ywdt/mtkdz/202509/t20250928_3938799.html",
+        "operator": "Danzhou Municipal Government, citing Danzhou Natural Resources and Planning Bureau",
+        "observation": "Official article describes 儋洋资源云 as a spatial display/query/monitoring platform covering Danzhou resources. It does not expose a public parcel vector service or native parcel-ID schema in the accessible search result."
+      },
+      {
+        "url": "https://www.danzhou.gov.cn/danzhou/rdzt/bdcdj/zcfg/202305/t20230510_3413994.html",
+        "operator": "Danzhou Municipal Government / Hainan real-estate registration service rules",
+        "observation": "Official rules describe county/city natural-resources and real-estate-registration departments as the registration service authorities; no anonymous parcel geometry route was exposed."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.danzhou.gov.cn/",
+        "method": "GET; anonymous; standard TLS; no credentials",
+        "httpStatus": 403,
+        "contentType": "text/html",
+        "bytesRead": 146,
+        "transportOutcome": "Government host denied the request; no page/API payload."
+      },
+      {
+        "url": "https://www.danzhou.gov.cn/danzhou/ywdt/mtkdz/202509/t20250928_3938799.html",
+        "method": "GET; anonymous; standard TLS; no credentials",
+        "httpStatus": 403,
+        "contentType": "text/html",
+        "bytesRead": 146,
+        "transportOutcome": "Government host denied the request; no JavaScript/configuration or map endpoint could be inspected."
+      },
+      {
+        "url": "https://www.danzhou.gov.cn/danzhou/rdzt/bdcdj/zlxz/202305/P020230510552898736964.pdf",
+        "method": "GET; anonymous; standard TLS; no credentials",
+        "httpStatus": 403,
+        "contentType": "text/html",
+        "bytesRead": 146,
+        "transportOutcome": "Government host denied the request; search-indexed official result was retained as custody evidence, but no PDF bytes were obtained."
+      },
+      {
+        "url": "https://www.danzhou.gov.cn/danzhou/zfxxgkzl/bm/gtj/gknb/202401/t20240126_3581558.html",
+        "method": "GET; anonymous; standard TLS; no credentials",
+        "httpStatus": 403,
+        "contentType": "text/html",
+        "bytesRead": 146,
+        "transportOutcome": "Government host denied the request; no additional service configuration was obtained."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "https://www.danzhou.gov.cn/danzhou/ywdt/mtkdz/202509/t20250928_3938799.html",
+    "url": "https://www.danzhou.gov.cn/danzhou/ywdt/mtkdz/202509/t20250928_3938799.html",
+    "operator": "Danzhou Municipal Government / Danzhou Natural Resources and Planning Bureau",
+    "serviceType": "Official local registry and spatial-platform evidence reviewed; no safe full-parcel geometry retained.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "Official search-indexed sources support local registration custody and a municipal spatial resource platform, but direct anonymous requests were denied and no public parcel vector response was verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Danzhou government sources identify the municipal real-estate registration center and natural-resources bureau; an official article describes a citywide resource map/query platform.",
+    "verifiedOpenScope": "No source-native full parcel polygon, parcel ID field, CRS, or anonymous vector endpoint was returned in this investigation.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "Official Danzhou pages and search-indexed materials identify local registration custody and a spatial platform, but direct government-host requests returned HTTP 403 and no public vector service/schema was accessible.",
+  "remainingUncertainty": "A local registry/cadastral platform may exist behind the described 儋洋资源云 or authenticated/public-service interfaces. Exact-point parcel geometry, native identifiers, CRS, legal/title scope, coverage completeness, and currentness remain unverified. A zero or blocked exact-point request is not evidence of citywide absence.",
+  "nextStep": "Keep runtime disabled until a serial reviewer independently qualifies a real anonymous adapter with safe native parcel IDs and full geometry.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10932,
+  "cityId": "wup2025:10932",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [19.5198711711538, 109.572031037454],
+  "population2025k": 394.343,
+  "populationUnit": "persons",
+  "queueRank": 1440,
+  "population2025": 394343,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "Exact unchanged UN WUP 2025 city point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Official Danzhou government sources identify 儋州市不动产登记中心 and the Danzhou Natural Resources and Planning Bureau; the described 儋洋资源云 platform is spatial but no anonymous parcel vector/schema was verified.",
+  "registryEvidenceUrls": [
+    "https://www.danzhou.gov.cn/danzhou/rdzt/bdcdj/zlxz/202305/P020230510552898736964.pdf",
+    "https://www.danzhou.gov.cn/danzhou/ywdt/mtkdz/202509/t20250928_3938799.html",
+    "https://www.danzhou.gov.cn/danzhou/rdzt/bdcdj/zcfg/202305/t20230510_3413994.html"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Local registry and spatial-platform evidence exists, but no safe public geometry or native-ID response was verified."
+  },
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

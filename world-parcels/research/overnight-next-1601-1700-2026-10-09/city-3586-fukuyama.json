@@ -1,0 +1,114 @@
+{
+  "cityCode": 3586,
+  "queueRank": 1605,
+  "name": "Fukuyama",
+  "country": "Japan",
+  "countryCode": "JP",
+  "iso3": "JPN",
+  "locId": 392,
+  "point": [34.4915393332044, 133.394107616366],
+  "population2025": 355352,
+  "population2025k": 355.352,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Fukuyama Hiroshima official cadastral map parcel GIS land registry",
+        "result": "First-party discovery found Fukuyama City's official open-data catalog entry for citywide parcel-number map Shapefiles, the city explanation of the tax-assessment map, and the official Fukuyama integrated map viewer. The catalog dataset is a public geometry source, but its downloaded Shapefile has no declared CRS file.",
+        "actualResultUrls": [
+          "https://data.city.fukuyama.hiroshima.jp/bg/dataset/digital_numbers_map",
+          "https://www.city.fukuyama.hiroshima.jp/soshiki/shisanzei/351419.html",
+          "https://www.city.fukuyama.hiroshima.jp/soshiki/toshikeikaku/216127.html"
+        ]
+      },
+      {
+        "language": "Japanese",
+        "query": "福山市 公式 地籍図 公図 GIS 土地 台帳 地図",
+        "result": "福山市公式ページ confirms that 地番図 is assembled from 法務局備付地図/公図 and aerial imagery for fixed-asset land valuation, and the city open-data catalog publishes the 2026 Shapefile. The city explicitly warns it is not evidence of legal boundaries, exact position/shape, or rights.",
+        "actualResultUrls": [
+          "https://www.city.fukuyama.hiroshima.jp/soshiki/shisanzei/351419.html",
+          "https://data.city.fukuyama.hiroshima.jp/bg/dataset/digital_numbers_map",
+          "https://houmukyoku.moj.go.jp/hiroshima/table/shikyokutou/all/hukuyama.html"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://data.city.fukuyama.hiroshima.jp/bg/dataset/digital_numbers_map",
+      "observation": "Fukuyama City Asset Tax Division open-data catalog entry for 2026 Fukuyama parcel-number map data. It provides a downloadable Shapefile ZIP under CC BY and describes the data as assembled for fixed-asset valuation; the catalog says it is not proof of parcel boundaries, exact position/shape, or rights."
+    },
+    {
+      "url": "https://www.city.fukuyama.hiroshima.jp/soshiki/shisanzei/351419.html",
+      "observation": "Official city procedure page says the 地番図 is based on Legal Affairs Bureau maps/public maps and aerial imagery, is viewable by anyone at city service counters for a fee, and cannot be used for boundary confirmation, surveying, area calculation, registration, or other formal applications."
+    },
+    {
+      "url": "https://www.city.fukuyama.hiroshima.jp/soshiki/toshikeikaku/216127.html",
+      "observation": "Official city page documents the public Fukuyama integrated map viewer, but lists planning, road, development, and facility layers rather than a cadastral parcel layer."
+    },
+    {
+      "url": "https://houmukyoku.moj.go.jp/hiroshima/table/shikyokutou/all/hukuyama.html",
+      "observation": "Official Hiroshima Legal Affairs Bureau Fukuyama Branch page; this establishes the national registry custodian's local office, not an open parcel API or anonymous geometry service."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://data.city.fukuyama.hiroshima.jp/bg/dataset/digital_numbers_map",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Fetched the public CKAN catalog page. HTML exposed the resource UUID and the direct download route."
+    },
+    {
+      "url": "https://data.city.fukuyama.hiroshima.jp/dataset/8eb0229c-3666-4945-b4fc-560f749ab9cf/resource/93328fe8-64fb-4321-9964-84eab4f68fcd/download/.zip",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/zip",
+      "outcome": "Downloaded the unchanged 2026 ZIP (approximately 130 MiB) to ignored scratch storage. It contains polygon layer 地番図/面/筆界_面.shp plus DBF/SHX and a scanned attribute-definition PDF; no .prj file was present."
+    },
+    {
+      "url": "https://data.city.fukuyama.hiroshima.jp/bg/dataset/digital_numbers_map/resource/93328fe8-64fb-4321-9964-84eab4f68fcd",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Resource landing route returned the catalog HTML rather than the binary; the catalog's explicit /download/.zip route was then used."
+    },
+    {
+      "url": "local:ogrinfo tmp/valhalla-parcel-research/fukuyama/extract/地番図/面/筆界_面.shp",
+      "method": "local inspection",
+      "outcome": "Anonymous bounded source inspection succeeded. Geometry is Polygon; feature count is 789640; extent is (95865.877400, -186663.817000) to (119980.042100, -142213.321000). Safe fields exposed are OBJEXOID Integer64, LINKKEY String, AZACD String, KOAZA_* String, and TXTCD String. A bounded spatial query returned 10 polygon features with native LINKKEY values such as 2840206300/7354-1. No .prj or SRS was reported."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "A city-published, citywide parcel-number polygon dataset and an official Asset Tax Division procedure are evidenced. This is a local city source, distinct from general national-agency prose, but it is an assessment/reference map rather than a legal cadastral boundary source.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": true,
+  "sourceCandidate": {
+    "name": "Fukuyama City 地番図データ 2026",
+    "url": "https://data.city.fukuyama.hiroshima.jp/bg/dataset/digital_numbers_map",
+    "format": "ESRI Shapefile ZIP",
+    "nativeIdentity": "LINKKEY, with AZACD/TXTCD as source fields; OBJEXOID is also present",
+    "coverage": "Fukuyama citywide according to the city dataset title/catalog context; exact boundary coverage was not independently reconstructed",
+    "crs": "unverified; no .prj was distributed and OGR reported unknown SRS"
+  },
+  "verifiedParcelResponse": {
+    "geometryType": "Polygon",
+    "featureCount": 789640,
+    "safeFields": ["LINKKEY", "geometry"],
+    "sampleIdentityObserved": "2840206300/7354-1",
+    "sampleRetained": false
+  },
+  "sourceIds": ["LINKKEY"],
+  "resultCategory": "official_citywide_parcel_geometry_found_crs_unverified_reference_map",
+  "coverageAssessment": {
+    "claimedScope": "Fukuyama City's 2026 地番図 data, described as citywide parcel-number map data for fixed-asset valuation.",
+    "verifiedOpenScope": "The public ZIP contains 789640 polygon features and a bounded anonymous ID+geometry response was inspected. Exact municipal completeness and WUP-point inclusion were not asserted.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_crs_unverified_and_reference_map_only",
+  "remainingUncertainty": "The source's native coordinate reference system is not declared in the download and could not be safely inferred from the coordinate extent without risking a shifted geometry. The city's own warning limits the data to tax-assessment reference use, not legal boundary or surveyed parcel integration. No owner, address, titleholder, tax, or other unsafe fields were requested or retained."
+}

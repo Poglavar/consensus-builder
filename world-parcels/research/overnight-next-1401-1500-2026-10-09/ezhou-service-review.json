@@ -1,0 +1,107 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10680-ezhou.json",
+  "purpose": "Document first-party local registry context and bounded anonymous parcel-geometry access review for Ezhou, China.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Ezhou's official municipal bureau and Real Estate Registration Center document cadastral-map visualization and parcel query through Hubei government services, the Ezhou online service hall, app, and WeChat. The online service host currently returned an nginx default page, and the linked Hubei GreatMap host timed out. No anonymous parcel feature API, schema, CRS, safe native ID, or geometry was verified.",
+  "registryAssessment": "Local registry/cadastre custodian verified: 鄂州市自然资源和城乡建设局 / 鄂州市不动产登记中心, evidenced by first-party notices describing Ezhou cadastral-map maintenance and public query procedures.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zrzyhghj.ezhou.gov.cn/",
+      "observation": "Official Ezhou municipal natural-resources bureau portal. Current response is a maintenance page, but it is the first-party host for the registration-center materials."
+    },
+    {
+      "url": "https://zrzyhghj.ezhou.gov.cn/bdcdjzx/yshj/zcwj/202501/t20250109_684453.html",
+      "observation": "Official notice says citizens, legal persons, and organizations can use listed government-service channels for Ezhou cadastral-map visualization; it does not expose anonymous GIS service metadata."
+    },
+    {
+      "url": "https://zrzyhghj.ezhou.gov.cn/bdcdjzx/yshj/zcwj/202501/t20250109_684468.html",
+      "observation": "Official implementation plan describes identity-verified visualization and parcel query concepts, including parcel fields, but no public endpoint or anonymous response."
+    },
+    {
+      "url": "https://bdcwt.ezrerc.com/",
+      "observation": "Officially advertised Ezhou online service hall URL; bounded anonymous GET returned an nginx default page rather than the cadastral viewer."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Ezhou China official cadastral parcel map land registry GIS",
+      "result": "First-party bureau and registration-center sources found; no anonymous parcel geometry service established.",
+      "actualResultUrls": [
+        "https://zrzyhghj.ezhou.gov.cn/",
+        "https://zrzyhghj.ezhou.gov.cn/bdcdjzx/yshj/zcwj/202501/t20250109_684453.html"
+      ]
+    },
+    {
+      "language": "Chinese",
+      "query": "鄂州市 地籍图 不动产登记 地图 GIS 官方 自然资源和规划局",
+      "result": "官方结果确认地籍图可视化查询流程和本地登记中心，但未公开可匿名访问的要素服务、字段模式、CRS或宗地几何。",
+      "actualResultUrls": [
+        "https://zrzyhghj.ezhou.gov.cn/bdcdjzx/yshj/zcwj/202501/t20250109_684453.html",
+        "https://zrzyhghj.ezhou.gov.cn/bdcdjzx/yshj/zcwj/202501/t20250109_684494.html",
+        "https://bdcwt.ezrerc.com/"
+      ]
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://zrzyhghj.ezhou.gov.cn/",
+      "httpStatus": 200,
+      "result": "Official site fetched over normal TLS; current response is a maintenance page with no viewer configuration."
+    },
+    {
+      "url": "https://zrzyhghj.ezhou.gov.cn/bdcdjzx/yshj/zcwj/202501/t20250109_684453.html",
+      "httpStatus": 200,
+      "result": "Official registration-center notice fetched; it documents cadastral-map visualization routes but no anonymous feature API."
+    },
+    {
+      "url": "https://zrzyhghj.ezhou.gov.cn/bdcdjzx/yshj/zcwj/202501/t20250109_684468.html",
+      "httpStatus": 200,
+      "result": "Official plan fetched; it describes identity verification, map layers, and parcel query fields, but no public service URL or response."
+    },
+    {
+      "url": "https://bdcwt.ezrerc.com/",
+      "httpStatus": 200,
+      "result": "Returned an nginx default page; no JavaScript/configuration or parcel request route was available."
+    },
+    {
+      "url": "https://hubei.greatmap.com.cn/",
+      "result": "Bounded anonymous GET timed out after 15 seconds. No credentials, CAPTCHA bypass, or TLS weakening was attempted."
+    },
+    {
+      "url": "http://122.189.154.5:8089/docViewer/",
+      "result": "Legacy URL found in an official 2020 notice but not used for parcel retrieval; no geometry or safe ID response was retained."
+    }
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed against a responsive public feature service. The nginx default page and timeout are not evidence of citywide absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal cadastral and real-estate-registration administration under Ezhou's natural-resources bureau and registration center.",
+    "verifiedOpenScope": "Local custodian and procedure verified, but anonymous parcel geometry, schema/CRS, native identity, and citywide completeness were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "The current route/configuration of the Hubei/Ezhou online service, its access policy, schema/CRS, and exact-point parcel coverage remain unknown.",
+  "runtimeAssessment": "held; no adapter admission or source integration implied"
+}

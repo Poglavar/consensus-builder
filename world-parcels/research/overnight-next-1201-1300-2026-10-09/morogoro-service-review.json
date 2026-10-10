@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3354-morogoro.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Ministry of Lands e-Ardhi deployment exposes a public taspro GeoServer WFS. Capabilities and the spatial_units schema were retrieved anonymously, establishing a first-party cadastral/spatial-unit map service. Bounded anonymous GetFeature requests at and around the exact WUP point timed out, so no parcel geometry or safe ID sample was verified.",
+  "registryAssessment": "registryFound=true is supported by the official Ministry map service and its spatial_units layer. Morogoro Municipal Council and Ministry pages separately evidence local land surveying/title activity, but do not establish citywide public parcel coverage.",
+  "officialPrimarySources": [
+    {"url": "https://eardhi.lands.go.tz/", "observation": "Official e-Ardhi service page; applications require an account."},
+    {"url": "https://eardhi.lands.go.tz/map/geoserver/taspro/ows?service=WFS&version=1.0.0&request=GetCapabilities", "observation": "Official WFS capabilities retrieved; includes spatial_units and related land/map layers."},
+    {"url": "https://eardhi.lands.go.tz/map/geoserver/taspro/ows?service=WFS&version=1.0.0&request=DescribeFeatureType&typeName=taspro:spatial_units&outputFormat=application/json", "observation": "Official schema retrieved; safe fields id, uid and geom were identified."},
+    {"url": "https://morogoromc.go.tz/", "observation": "Official Morogoro Municipal Council site reviewed for local custodian context; no public parcel feature service verified there."},
+    {"url": "https://www.lands.go.tz/news/wananchi-morogoro-wahamashishwa-kutumia-fursa-za-huduma-za-ardhi-katika-tamasha-la-utamaduni", "observation": "Official Ministry page describes land services for Morogoro residents; general service context, not geometry coverage."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Morogoro Tanzania official cadastral parcel map land registry GIS Ministry of Lands", "result": "Found official e-Ardhi and GeoServer sources; bounded geometry request timed out."},
+    {"language": "Swahili", "query": "Morogoro Manispaa huduma ardhi ramani kadastri kiwanja daftari ardhi", "result": "Found official Ministry/Morogoro municipal land-service evidence; no public city parcel response verified."}
+  ],
+  "safeFieldAllowlist": ["id", "uid", "geom"],
+  "geometryDecision": "No parcel geometry retained; no anonymous point-level feature response was verified.",
+  "attempts": [
+    {"route": "e-Ardhi home", "method": "GET", "outcome": "Retrieved; account workflow described."},
+    {"route": "taspro WFS GetCapabilities", "method": "GET", "outcome": "Retrieved; schema/layer discovery succeeded."},
+    {"route": "taspro WFS DescribeFeatureType spatial_units", "method": "GET", "outcome": "Retrieved; safe ID and geometry fields confirmed."},
+    {"route": "taspro WFS spatial_units bounded bbox, maxFeatures=3", "method": "GET", "outcome": "30-second timeout; no response."},
+    {"route": "taspro WFS spatial_units tiny point bbox, maxFeatures=1", "method": "GET", "outcome": "20-second timeout; no response."}
+  ],
+  "coverageAssessment": {"citywideVerified": false, "countrywideVerified": false, "geometryVerified": false, "note": "Timeout and zero response are not evidence of citywide absence."},
+  "remainingUncertainty": "Service-side performance, alternate WFS layer behavior, and Morogoro citywide parcel coverage remain unverified.",
+  "runtimeReadiness": "held_pending_independent_serial_review"
+}

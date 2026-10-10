@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11726-fuyang.json",
+  "cohort": "overnight-next-1301-1400",
+  "purpose": "Review official Fuyang cadastral/registration custodian and public channels for safe anonymous parcel geometry and stable parcel identity.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The Hangzhou Planning and Natural Resources Bureau Fuyang Branch and Hangzhou real-estate registration service centre are evidenced local/regional cadastral-registration custodians. The public Fuyang registration page is a login/registration workflow; no safe anonymous parcel vector response, native identity, CRS, or geometry was qualified.",
+  "registryAssessment": "Official Hangzhou reporting assigns registration, cadastral investigation, surveying-result management, public queries, and cadastral-database work to the registration service centre; official Zhejiang publication identifies the Fuyang branch in natural-resources land administration. This establishes registry presence, not open parcel-vector access.",
+  "officialPrimarySources": [
+    {"url": "https://zrzyt.zj.gov.cn/art/2024/12/27/art_1229453692_272070.html", "operator": "杭州市规划和自然资源局富阳分局 / Zhejiang Natural Resources Department publication", "scope": "Official Fuyang branch land-administration publication."},
+    {"url": "https://hzbb.hangzhou.gov.cn/col/col1229857599/art/2026/art_a44aca2fe6f24d74bd813645ef837d56.html", "operator": "Hangzhou real-estate registration service centre", "scope": "Official annual report describing registration, cadastral investigation, surveying, public queries, and cadastral database responsibilities."},
+    {"url": "https://cyfz.fuyang.gov.cn/workhall/Register/register-index.html", "operator": "Fuyang public registration service", "scope": "Current public registration entry; login/registration workflow only in bounded anonymous inspection."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Fuyang Zhejiang China official cadastral map parcel GIS land registry public map API", "result": "Official natural-resources and registration results found; no safe anonymous polygon verified.", "actualResultUrls": ["https://zrzyt.zj.gov.cn/art/2024/12/27/art_1229453692_272070.html", "https://hzbb.hangzhou.gov.cn/col/col1229857599/art/2026/art_a44aca2fe6f24d74bd813645ef837d56.html", "https://cyfz.fuyang.gov.cn/workhall/Register/register-index.html"]},
+    {"language": "Chinese", "query": "富阳 杭州 不动产登记 地籍图 GIS 公开 地图 服务", "result": "检索到官方 Fuyang branch and registration sources; 未验证安全匿名地籍要素响应。", "actualResultUrls": ["https://zrzyt.zj.gov.cn/art/2024/12/27/art_1229453692_272070.html", "https://hzbb.hangzhou.gov.cn/col/col1229857599/art/2026/art_a44aca2fe6f24d74bd813645ef837d56.html", "https://cyfz.fuyang.gov.cn/workhall/Register/register-index.html"]}
+  ],
+  "attempts": [
+    "Performed separate English and Chinese first-party discovery searches.",
+    "Reviewed the official Hangzhou registration-centre report for cadastral and public-query responsibilities.",
+    "Retrieved the public Fuyang registration page anonymously; it presents user registration/login steps and no parcel feature response.",
+    "Attempted official Fuyang government and Hangzhou government routes; received HTTP 420 and 403 respectively, without bypassing access controls.",
+    "Reviewed Tianditu API documentation; it requires an application key and does not establish Fuyang cadastral geometry.",
+    "No cadastral viewer configuration, parcel endpoint, feature schema, CRS, native ID, exact-point response, or geometry was returned.",
+    "Did not shift the exact WUP point and did not infer citywide absence from login, timeout, 403, 420, or missing public feature responses."
+  ],
+  "safeFieldAllowlist": ["safe parcel/native ID if publicly returned", "geometry", "geometry CRS", "layer/service metadata", "HTTP status and response size"],
+  "geometryEvidence": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No exact-point parcel feature query completed because no anonymous parcel feature endpoint was exposed.",
+    "requestEvidence": [
+      {"url": "https://cyfz.fuyang.gov.cn/workhall/Register/register-index.html", "method": "GET", "httpStatus": 200, "result": "Registration/login workflow; no parcel geometry."},
+      {"url": "https://www.fuyang.gov.cn/col1392663/index.html", "method": "GET", "httpStatus": 420, "result": "Anti-automated-access response; no bypass attempted."},
+      {"url": "https://www.hangzhou.gov.cn/", "method": "GET", "httpStatus": 403, "result": "Access denied; no bypass attempted."}
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Fuyang/Hangzhou/Zhejiang registry and public-service sources reviewed.",
+    "verifiedOpenScope": "Local custodian and registration workflow verified; parcel geometry, native identity, CRS, and schema unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "nextStep": "Serial reviewer may re-check only a public anonymous network flow and qualify safe ID plus geometry if actually returned; preserve held runtime state.",
+  "remainingUncertainty": "No safe anonymous parcel polygon/native ID was returned. Login boundaries, timeouts, 403/420 responses, and documentation-only evidence are not evidence of cadastral absence.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

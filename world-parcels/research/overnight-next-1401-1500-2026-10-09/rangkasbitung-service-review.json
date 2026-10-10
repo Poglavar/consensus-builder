@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5713-rangkasbitung.json",
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "purpose": "Document official ATR/BPN cadastral service discovery and a bounded safe geometry response for Rangkasbitung.",
+  "assessment": "The national ATR/BPN GeoServer WFS exposes bhumi:Persil anonymously and returned three polygons in the tested bbox. Local registry custody is separately evidenced by a public official land-office notice naming Kantor Pertanahan Kabupaten Lebak in Rangkasbitung. Geometry is a bounded sample only; runtime remains held.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "officialPrimarySources": [
+    {"url": "https://atlas.atrbpn.go.id/geoserver/wfs?service=WFS&request=GetCapabilities", "operator": "Kementerian ATR/BPN", "observation": "Anonymous WFS capabilities response lists bhumi:Persil and advertises GeoJSON output and EPSG:3857 as the default layer CRS."},
+    {"url": "https://bhumi.atrbpn.go.id/bantuan/katalog_data", "operator": "Kementerian ATR/BPN", "observation": "Official help material describes parcel layers as a main BHUMI dataset and ATLAS as the centralized geospatial platform."},
+    {"url": "https://supercmspro.pn-cikarang.go.id/images/UmVsYXNfMTgzUGR0X0cyMDI1UE5fQ2tyXyhCb2VkaW1hbl9HYXphbGlfLV9UZXJndWdhdClfKDIpLnBkZg", "operator": "Pengadilan Negeri Cikarang-hosted official notice", "observation": "Public official notice names Kantor Pertanahan Kabupaten Lebak and its Rangkasbitung address; used only as local custodian evidence."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Rangkasbitung cadastral parcel map official GIS land registry Indonesia", "actualResultUrls": ["https://bhumi.atrbpn.go.id/", "https://atlas.atrbpn.go.id/geoserver/wfs", "https://supercmspro.pn-cikarang.go.id/images/UmVsYXNfMTgzUGR0X0cyMDI1UE5fQ2tyXyhCb2VkaW1hbl9HYXphbGlfLV9UZXJndWdhdClfKDIpLnBkZg"]},
+    {"language": "Indonesian", "query": "Rangkasbitung peta bidang tanah kadaster resmi GIS pertanahan", "actualResultUrls": ["https://bhumi.atrbpn.go.id/bantuan/katalog_data", "https://simpatig.big.go.id/peta", "https://atlas.atrbpn.go.id/geoserver/wfs"]}
+  ],
+  "attempts": [
+    {"url": "https://bhumi.atrbpn.go.id/", "method": "GET; anonymous", "httpStatus": 200, "assessment": "Official BHUMI shell reachable; it delegates map content to the official console."},
+    {"url": "https://atlas.atrbpn.go.id/geoserver/wfs?service=WFS&request=GetCapabilities", "method": "GET; anonymous", "httpStatus": 200, "assessment": "WFS capabilities returned; bhumi:Persil listed."},
+    {"url": "https://atlas.atrbpn.go.id/geoserver/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=bhumi:Persil", "method": "GET; anonymous", "httpStatus": 200, "assessment": "Schema returned; geometry element is batas and safe response was limited to geometry plus service feature ID."},
+    {"url": "https://atlas.atrbpn.go.id/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=bhumi:Persil&outputFormat=application/json&srsName=EPSG:4326&bbox=106.2366060263,-6.36243580595279,106.2566060263,-6.34243580595279,EPSG:4326&count=3", "method": "GET; anonymous bounded bbox", "httpStatus": 200, "assessment": "Three polygon features returned; full geometry retained in sample file only, with exactly one canonical id property per feature."},
+    {"url": "https://atlas.atrbpn.go.id/geoserver/rest/layers.json", "method": "GET; anonymous", "httpStatus": 401, "assessment": "REST layer administration endpoint is protected; not pursued."}
+  ],
+  "geometryEvidence": {"verified": true, "sampleCount": 3, "sampleFile": "rangkasbitung-parcel-sample.geojson", "nativeId": "WFS feature id", "nativeIdField": "service feature id (not a retained source attribute column)", "exactWupPointTest": "No exact-point hit test was used; a 0.02-degree bbox around the exact immutable WUP point was used without moving it.", "requestEvidence": "The bounded GetFeature request above returned three polygon features."},
+  "sourceFieldMapping": {"serviceLayer": "bhumi:Persil", "geometryField": "batas", "identity": "GeoJSON feature id", "omittedFields": ["nilai", "tipehak", "luas", "tahun", "nib", "alatukur", "nomor", "akurasibidang"], "reason": "Native attributes were not retained; owner, title, address, valuation, and other unsafe or unnecessary fields were excluded."},
+  "safeFieldAllowlist": ["service feature id", "geometry", "geometryType", "spatialReference"],
+  "nextStep": "Hold for serial review and independent adapter qualification."
+}

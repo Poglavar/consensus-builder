@@ -1,0 +1,48 @@
+{
+  "cityRecord": "city-941-misrata.json",
+  "cityCode": 941,
+  "queueRank": 1974,
+  "city": "Misrata",
+  "country": "Libya",
+  "countryCode": "LY",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "Real Estate Registration Authority regional branch is evidenced; no verified open parcel provider",
+  "serviceUrl": "https://misrata.gov.ly/map/",
+  "discoveryUrls": [
+    "https://misrata.gov.ly/map/",
+    "https://reril.ly/",
+    "https://reril.ly/2023/07/14/%D9%81%D8%B1%D8%B9-%D8%A7%D9%84%D9%85%D8%B5%D9%84%D8%AD%D8%A9-%D8%A8%D9%85%D9%86%D8%B7%D9%82%D8%A9-%D9%85%D8%B5%D8%B1%D8%A7%D8%AA%D8%A9/",
+    "https://www.sdl.gov.ly/"
+  ],
+  "attemptedRoutes": [
+    {"route":"English discovery query: Misrata Libya official cadastral parcel map cadastre geoportal","outcome":"Found official municipality map, registry authority homepage/branch listing, and Survey Authority homepage; no public parcel API."},
+    {"route":"Arabic discovery query: بلدية مصراتة السجل العقاري الخريطة العقارية الأراضي المساحية","outcome":"Found the same first-party channels and local branch evidence; no anonymous parcel API."},
+    {"route":"GET https://misrata.gov.ly/map/","outcome":"200; current JS/config inspected; jVectorMap administrative/municipal branch polygons only, not parcels."},
+    {"route":"GET https://reril.ly/","outcome":"200; official homepage lists the Misrata regional registration branch and survey inquiry route; no public parcel service exposed."},
+    {"route":"GET Misrata branch article on reril.ly","outcome":"404; stale/unavailable public page, not treated as registry absence."},
+    {"route":"GET https://misrata.gov.ly/wp-json/wp/v2/pages/800","outcome":"403 secure_guard_invalid_token; no credentials or token requested and no bypass attempted."},
+    {"route":"GET https://www.sdl.gov.ly/","outcome":"200; official Survey Authority mapping/GIS/archive material inspected; no anonymous parcel feature response."},
+    {"route":"Exact WUP point query [32.3660037121569, 15.089469695447]","outcome":"Not run because no parcel endpoint was identified; no point-hit or absence inference made."}
+  ],
+  "scope": "Public first-party discovery and bounded endpoint inspection covered the Misrata municipal map, Libya Real Estate Registration Authority, and Libya Survey Authority. No citywide or countrywide open parcel coverage was verified.",
+  "schemaAndCrs": "Unavailable for cadastral parcels; the municipal map is a jVectorMap with administrative vector paths and no parcel schema/CRS response.",
+  "nativeIdentity": "Unavailable; no parcel feature was retained.",
+  "fieldMapping": {},
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON sample retained.",
+  "safeFieldAllowlist": ["geometry", "stable native parcel id if later exposed"],
+  "unsafeDataPolicy": "No owner, address, contact, titleholder, personal, tax/account, legal-description, or ownership fields were requested or retained. No login, credentials, private token, CAPTCHA, or TLS bypass was used.",
+  "officialCustodyEvidence": "The official Real Estate Registration Authority homepage lists a Misrata regional branch, while the official Survey Authority site documents national mapping/GIS and archival responsibilities. The official municipal map is local but administrative rather than cadastral. These establish custodianship context, not an open parcel integration.",
+  "limits": [
+    "No anonymous public cadastral parcel geometry, schema, CRS, or native ID was available.",
+    "The municipality map extent/layers are administrative and cannot qualify parcel coverage.",
+    "The indexed Misrata registration-branch article returned 404; this does not prove the branch or registry is absent.",
+    "The municipality WordPress REST endpoint required a JWT and was not accessed with credentials.",
+    "No exact-point query was possible and no absence inference was made.",
+    "RuntimeReadiness remains held pending independent serial review."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "A non-public, stale, or separately hosted registry/map service may exist. Further work requires an independently evidenced anonymous endpoint or authorized source-integration review."
+}

@@ -1,0 +1,14 @@
+{
+  "taskId": "legacy:4148",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-2026-10-09/city-4148-tetouan.json",
+    "world-parcels/research/overnight-next-2026-10-09/tetouan-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T10:31:00.095199Z",
+  "reason": "ANCFCC first-party pages confirm cadastral custody and a title-based plan order workflow. No anonymous full-polygon response, native ID, or live adapter qualification is evidenced. Geometry presence and citywide coverage remain unknown.",
+  "firstPartySourceReviewed": "https://www.ancfcc.gov.ma/cadastre/"
+}

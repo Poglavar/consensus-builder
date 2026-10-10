@@ -1,0 +1,17 @@
+{
+  "taskId": "city:6144",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-6144-shizuoka.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/shizuoka-service-review.json",
+    "tmp/valhalla-parcel-research/shizuoka-geocloud.html"
+  ],
+  "reason": "WUP 6144 / rank 1748 / Japan / [34.9893169984688,138.43060038945] / 328613 persons matches the immutable queue. English and Japanese search queries and outcomes are recorded. The Shizuoka City GIS page independently confirms its parcel-reference map and municipal tax office; the saved current GIS response is 403. No safe native-ID plus polygon response or retained sample exists. Fresh IDs, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed Details verification are absent; 403 is not citywide absence.",
+  "firstPartyUrls": [
+    "https://www.city.shizuoka.lg.jp/s7594/s012362.html",
+    "https://www.city.shizuoka.lg.jp/shinsei/s8374/p2377.html"
+  ],
+  "checkedAt": "2026-10-10T14:18:09Z"
+}

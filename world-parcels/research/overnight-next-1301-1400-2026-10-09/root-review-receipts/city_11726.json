@@ -1,0 +1,16 @@
+{
+  "taskId": "city:11726",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-11726-fuyang.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/fuyang-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/root-identity-decision-overlay.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/root-review-receipts/identity_11726.json"
+  ],
+  "checkedAt": "2026-10-09T15:01:02.059948Z",
+  "reason": "Resolved identity overlay distinguishes Zhejiang Fuyang WUP11726 from Anhui Fuyang WUP10440. Official Hangzhou report supports registration and cadastral responsibilities, while the Fuyang entry is a login workflow. English and Chinese searches and zero retained polygons are recorded. No original parcel response, native ID, or independent adapter qualification; access walls do not establish citywide absence.",
+  "admission": "not_integrated"
+}

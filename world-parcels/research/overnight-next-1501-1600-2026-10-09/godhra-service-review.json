@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-7734-godhra.json",
+  "purpose": "Document first-party registry/map discovery, public-service routes, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Godhra local land-record custody is evidenced by official Gujarat government material listing the Panchmahals District Inspector of Land Records at Godhra and the Godhra City Survey Superintendent. Gujarat Revenue Department services and the national DILRMP page identify AnyRoR/E-Dhara, e-Milkat, and Bhunaksha context, but no safe anonymous native-ID-plus-complete-geometry response was verified.",
+  "registryAssessment": "The Panchmahals DILR and Godhra City Survey Superintendent are local custodial roles evidenced by an official Gujarat government document. The Gujarat Revenue Department and DILRMP are broader state/national service or reporting sources and do not alone prove citywide open geometry.",
+  "officialPrimarySources": [
+    {"url": "https://gil.gujarat.gov.in/tendercms/TenderDocs/2017418182241922.pdf", "observation": "Official Gujarat Informatics Limited government tender document lists Superintendent Land Records cum Consolidation Officer Panchmahals at Godhra, District Inspector of Land Records Panchmahals at Godhra, and City Survey Superintendent, Godhra."},
+    {"url": "https://revenuedepartment.gujarat.gov.in/branch/h-branch", "observation": "Official Gujarat Revenue Department H-Branch page describes state responsibility for survey, settlement, city survey, and Directorate of Land Records."},
+    {"url": "https://revenuedepartment.gujarat.gov.in/iora-service", "observation": "Official Gujarat Revenue Department service index links land-record, AnyRoR, property-card/e-Milkat, and revenue services."},
+    {"url": "https://dilrmp.gov.in/dilrmpold/State-RoR-Web", "observation": "Official Government of India DILRMP page lists Gujarat E-Dhara, Bhunaksha Gujarat, and E-Milkat categories; this is service context, not a parcel feature response."},
+    {"url": "https://stategisportal.nic.in/stategisportal/Home/Map/24", "observation": "Official State GIS Portal map page exposes administrative/tehsil map functions and disclaimers; reviewed route did not provide a verified Godhra parcel layer or safe feature response."},
+    {"url": "https://anyror.gujarat.gov.in/", "observation": "Official linked AnyRoR host for Gujarat land records; no parcel geometry response was retained."},
+    {"url": "https://e-milkat.gujarat.gov.in/GeneralReport.aspx", "observation": "Official linked e-Milkat property-card route; no parcel geometry response was retained."}
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://revenuedepartment.gujarat.gov.in/iora-service",
+    "observedTechnology": "Official service index plus linked AnyRoR/e-Milkat routes; State GIS Portal map page was also reviewed.",
+    "observedRoutes": ["https://anyror.gujarat.gov.in/", "https://e-milkat.gujarat.gov.in/GeneralReport.aspx", "https://stategisportal.nic.in/stategisportal/Home/Map/24"],
+    "schemaAndCrs": "Not verified from a successful parcel feature response.",
+    "nativeFieldNames": "Not retained; no successful parcel feature response was obtained."
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"],
+  "attempts": [
+    {"url": "https://gil.gujarat.gov.in/tendercms/TenderDocs/2017418182241922.pdf", "method": "GET/search-result review", "normalTlsVerification": true, "result": "Official government document reviewed; local Panchmahals DILR and Godhra City Survey Superintendent identified."},
+    {"url": "https://revenuedepartment.gujarat.gov.in/branch/h-branch", "method": "GET/search-result review", "normalTlsVerification": true, "result": "Official page reviewed; state survey and city-survey responsibilities documented."},
+    {"url": "https://revenuedepartment.gujarat.gov.in/iora-service", "method": "GET", "normalTlsVerification": true, "timeoutSeconds": 20, "result": "Direct request timed out from this environment; no response body or geometry."},
+    {"url": "https://anyror.gujarat.gov.in/", "method": "GET", "normalTlsVerification": true, "timeoutSeconds": 20, "result": "Direct anonymous request did not yield a usable parcel feature response within the bounded attempt; no schema, native ID, or geometry retained."},
+    {"url": "https://e-milkat.gujarat.gov.in/GeneralReport.aspx", "method": "GET", "normalTlsVerification": true, "timeoutSeconds": 20, "result": "Attempted through the official service route; no safe parcel geometry response was obtained or retained."},
+    {"url": "https://stategisportal.nic.in/stategisportal/Home/Map/24", "method": "GET", "normalTlsVerification": true, "result": "Official GIS viewer page reviewed; administrative map controls observed, but no verified Godhra cadastral feature service was exposed."},
+    {"url": "https://dilrmp.gov.in/dilrmpold/State-RoR-Web", "method": "GET/search-result review", "normalTlsVerification": true, "result": "Official national service inventory reviewed; Gujarat service categories confirmed, but no bounded parcel feature response."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "query": "No parcel geometry query was submitted because reviewed first-party routes did not expose a verified safe anonymous feature endpoint."},
+  "coverageAssessment": {"claimedScope": "Godhra local cadastral custody plus Gujarat state land-record services and national DILRMP context.", "verifiedOpenScope": "Official local custodian evidence and service routes only; no anonymous complete-polygon feature response verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "A timeout, lack of a point hit, unavailable UI, or absent discovered public geometry route is not evidence of citywide absence. CRS, native identity, feature schema, parcel coverage, and citywide completeness remain unverified.",
+  "runtimeAssessment": {"status": "held", "reason": "No independently verified anonymous native-ID-plus-complete-geometry response; packet does not qualify an adapter or enable runtime."}
+}

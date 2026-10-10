@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 6233,
+  "queueRank": 1944,
+  "name": "Quy Nhơn",
+  "country": "Viet Nam",
+  "countryCode": "VN",
+  "iso3": "VNM",
+  "point": [13.7788040869455, 109.187901258743],
+  "population2025": 297184,
+  "population2025k": 297.184,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Quy Nhon Vietnam official cadastral parcel map GIS land registry",
+        "result": "Found official Quy Nhơn and Bình Định government land-registration and land-administration material, plus the national VBDLIS system lead. No anonymous Quy Nhơn parcel map/API or feature response was verified.",
+        "actualResultUrls": [
+          "https://quynhon.binhdinh.gov.vn/upload/105285/20230808/746fdb05186b2bdb2261b5d4f481d393102f01abd6.pdf",
+          "https://binhdinh.gov.vn/chinh-quyen/co-quan-chuyen-mon/so-tai-nguyen-va-moi-truong.html",
+          "https://dt-authen.mplis.gov.vn/"
+        ]
+      },
+      {
+        "language": "Vietnamese (local/official)",
+        "query": "Quy Nhơn bản đồ địa chính thửa đất cổng thông tin chính thức",
+        "result": "Official local procedure material identifies Văn phòng Đăng ký đất đai Chi nhánh Quy Nhơn; Bình Định government search results also identify land-registration procedures and cadastral-map references. No public anonymous parcel geometry service or schema was exposed.",
+        "actualResultUrls": [
+          "https://quynhon.binhdinh.gov.vn/upload/105285/20230808/746fdb05186b2bdb2261b5d4f481d393102f01abd6.pdf",
+          "https://dichvucong.binhdinh.gov.vn/dichvucong/bothutuc/chiTietThuTuc?maThuTuc=43442",
+          "https://binhdinh.gov.vn/?id=64ae10430e5bf101ee2cfd62&page=Post.QA.detail"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://quynhon.binhdinh.gov.vn/upload/105285/20230808/746fdb05186b2bdb2261b5d4f481d393102f01abd6.pdf",
+      "operator": "Ủy ban nhân dân thành phố Quy Nhơn / local public-service procedure document",
+      "evidence": "Official local procedure table names Văn phòng ĐKĐĐ Chi nhánh Quy Nhơn as the implementing agency for first land-use registration and related land procedures. This is direct local registry-branch evidence, not merely national agency prose."
+    },
+    {
+      "url": "https://binhdinh.gov.vn/chinh-quyen/co-quan-chuyen-mon/so-tai-nguyen-va-moi-truong.html",
+      "operator": "Sở Tài nguyên và Môi trường tỉnh Bình Định",
+      "evidence": "Official provincial department page describes land registration, certificates, and management/update/correction of cadastral records within its delegated remit. It does not expose an anonymous parcel feature service."
+    },
+    {
+      "url": "https://dt-authen.mplis.gov.vn/",
+      "operator": "VBDLIS / national land-information system",
+      "evidence": "Official system landing page identifies a restricted government land-information system deployed with provincial departments and integrated with land registration. The page is an access-controlled lead, not an open Quy Nhơn parcel API."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://quynhon.binhdinh.gov.vn/",
+      "method": "GET via curl with verified TLS",
+      "status": "connection reset / HTTP 000",
+      "summary": "Direct bounded request was reset. Search-indexed official documents remained usable; no TLS bypass was attempted."
+    },
+    {
+      "url": "https://binhdinh.gov.vn/chinh-quyen/co-quan-chuyen-mon/so-tai-nguyen-va-moi-truong.html",
+      "method": "GET via curl with verified TLS",
+      "status": "TLS certificate expired / HTTP 000",
+      "summary": "The host presented an expired certificate to the local curl client. No certificate exception was authorized or used; no data was retrieved through this request."
+    },
+    {
+      "url": "https://dichvucong.binhdinh.gov.vn/dichvucong/bothutuc/chiTietThuTuc?maThuTuc=43442",
+      "method": "GET via curl with verified TLS",
+      "status": "TLS certificate expired / HTTP 000",
+      "summary": "The official public-service host presented an expired certificate. No bypass, login, credential, or private token was used. Search-indexed page material recorded the procedure lead."
+    },
+    {
+      "url": "https://dt-authen.mplis.gov.vn/",
+      "method": "GET via curl with verified TLS",
+      "status": 200,
+      "summary": "Official VBDLIS landing page was reachable, but it identifies a restricted government system and did not return anonymous parcel features, schema, CRS, or geometry. No login was attempted."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": null,
+    "fallbackOidField": null,
+    "compositeKey": null,
+    "fieldMapping": {
+      "geometry": "Not available: no safe anonymous parcel feature response was returned.",
+      "native identity": "Not available: no parcel feature schema or native ID was exposed by the attempted public routes."
+    },
+    "crs": "Not confirmed.",
+    "geometryType": "Not confirmed."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Quy Nhơn branch and Bình Định land-administration authorities maintain or process cadastral records for the local jurisdiction; VBDLIS is a restricted national/provincial system lead.",
+    "verifiedOpenScope": "Local registry custodian and official procedure evidence only; open Quy Nhơn parcel geometry and feature coverage were not verified.",
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "No usable point or parcel response was obtained. This is an endpoint/access limitation, not evidence of citywide absence."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["native parcel identifier if later exposed", "geometry", "source CRS", "service URL", "retrieval timestamp"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "tax", "account", "legal description", "rights/title details", "personal data"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_local_registry_custodian_geometry_unverified",
+  "remainingUncertainty": "The local registry branch and provincial cadastral remit are evidenced, but the current open map/API route, parcel schema, CRS, native identity, and citywide feature coverage remain unverified. The VBDLIS lead is access-restricted. No parcel polygons were retained.",
+  "nextStep": "Serial reviewer should independently inspect the current official Bình Định/VBDLIS route without credentials, confirm whether an anonymous parcel feature service exists, identify its native ID and CRS, and verify Quy Nhơn coverage before any adapter admission."
+}

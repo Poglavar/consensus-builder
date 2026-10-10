@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "1",
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "wupCityCode": 3305,
+  "cityId": "wup2025:3305",
+  "name": "Zanjan",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "iso3": "IRN",
+  "centerLatLon": [36.6786290061276, 48.4991935679887],
+  "point": [36.6786290061276, 48.4991935679887],
+  "queueRank": 1539,
+  "population2025": 370993,
+  "population2025k": 370.993,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Zanjan Iran cadastral parcel map official cadastre GIS API",
+        "result": "Search found references to the national Organization for Registration of Deeds and Properties, its Shamim cadastral positioning service, and a Zanjan provincial registration office. No public Zanjan parcel viewer/API or downloadable safe parcel geometry was found.",
+        "actualResultUrls": ["https://ssaa.ir", "https://my.ssaa.ir/portal", "https://shamim.ssaa.ir", "https://mapcarta.com/W989870831"]
+      },
+      {
+        "language": "Persian",
+        "query": "زنجان نقشه کاداستر سامانه کاداستر املاک سازمان ثبت اسناد",
+        "result": "Search found Persian references describing the national cadastral/land-registration organization, Shamim, and Zanjan provincial registration activity. Results did not expose a public anonymous parcel map/API or safe parcel geometry for the city.",
+        "actualResultUrls": ["https://www.samanehha.com/web/327/%D8%B3%D8%A7%D9%85%D8%A7%D9%86%D9%87-%D8%B4%D9%85%DB%8C%D9%85.html", "https://ostandari-zn.ir/zanjangov/%D8%AF%D8%B3%D8%AA%DA%AF%D8%A7%D9%87-%D9%87%D8%A7%D9%8A-%D8%A7%D8%AC%D8%B1%D8%A7%D9%8A%D9%8A-%D8%B4%D9%87%D8%B1%D8%B3%D8%AA%D8%A7%D9%86/%D8%A7%D8%B7%D9%84%D8%A7%D8%B9%D8%A7%D8%AA-%D8%AF%D8%B3%D8%AA%DA%AF%D8%A7%D9%87%D9%87%D8%A7%DB%8C-%D8%A7%D8%AC%D8%B1%D8%A7%D8%A6%DB%8C-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%88-%D8%B4%D9%87%D8%B1%D8%B3%D8%AA%D8%A7%D9%86", "https://tasnimnews.ir/fa/news/1405/04/01/3623487/70-%D8%AF%D8%B1%D8%B5%D8%AF-%D8%A7%D8%B1%D8%A7%D8%B6%DB%8C-%D8%DA%A9%D8%B4%D8%A7%D9%88%D8%B1%D8%B2%DB%8C-%D8%B2%D9%86%D8%AC%D8%A7%D9%86-%D8%B3%D9%86%D8%AF%D8%AF%D8%A7%D8%B1-%D8%B4%D8%AF"]
+      }
+    ]
+  },
+  "sourceAssessment": {
+    "localRegistryCustodian": "Zanjan provincial registration-office references and reporting identify the provincial office of Iran's Organization for Registration of Deeds and Properties as the cadastral/registration custodian. This establishes custody/procedure, not an open parcel feature feed.",
+    "nationalServiceLead": "The Organization's Shamim service is described as a cadastral survey/positioning service, but available references indicate restricted authenticated access for authorized users; no login was attempted.",
+    "openGeometrySource": null,
+    "nativeIdentity": null,
+    "sourceFields": [],
+    "fieldMapping": {},
+    "compositeKeyProvenance": "No source feature was obtained; no composite key was constructed.",
+    "crs": null,
+    "sampleFile": null,
+    "sampleScope": "No polygon retained. This is not evidence of citywide cadastral absence or map coverage failure."
+  },
+  "verifiedSample": false,
+  "targetGeometryEvidence": "no_bounded_safe_geometry_response_obtained; no_retained_sample",
+  "coverageAssessment": {
+    "claimedScope": "Iran national cadastral/land-registration services and Zanjan provincial registration custody.",
+    "verifiedOpenScope": "No anonymous parcel viewer/API response, layer schema, CRS, native ID, or citywide geometry coverage was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "requestsAndEndpointChecks": [
+    {"url": "https://ssaa.ir", "method": "GET; normal TLS verification", "status": "timeout", "summary": "Direct request timed out after 15 seconds; no HTML or viewer configuration."},
+    {"url": "https://my.ssaa.ir/portal", "method": "GET; normal TLS verification", "status": "timeout", "summary": "Direct request timed out after 15 seconds; no public parcel response; no login attempted."},
+    {"url": "https://shamim.ssaa.ir", "method": "GET; normal TLS verification", "status": "timeout", "summary": "Direct request timed out; no configuration or anonymous geometry endpoint."},
+    {"url": "https://ostandari-zn.ir/", "method": "GET; normal TLS verification", "status": "timeout", "summary": "Zanjan provincial government host timed out; search-indexed directory reference was not independently fetched."},
+    {"url": "https://cadastre.mimt.gov.ir", "method": "GET; normal TLS verification", "status": "not completed", "summary": "Mining-cadastre lead; not treated as a land-parcel source and no request beyond the bounded discovery attempt was used."},
+    {"url": "https://mapcarta.com/W989870831", "method": "GET via search index", "status": "search result found", "summary": "Third-party map page locates the Zanjan provincial registration office; used only as a lead, not as parcel evidence."}
+  ],
+  "safeFieldAllowlist": ["safe public parcel/source ID", "complete parcel geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "No public anonymous ID-plus-geometry response was available from the identified first-party cadastral services; direct hosts timed out and Shamim references indicate restricted access.",
+  "remainingUncertainty": "Viewer/API route, schema, CRS, native parcel identity, city boundary coverage, and exact-point parcel relationship remain unverified. A timeout, login wall, or unavailable UI is not evidence of citywide absence. No owner, address, contact, titleholder, personal, tax, or account fields were requested or retained.",
+  "nextStep": "Retry first-party services when reachable; inspect the current public JavaScript/configuration if exposed, then request only a small city-bounded geometry-plus-safe-ID response and independently verify location and CRS.",
+  "identityPolicy": "No GeoJSON sample retained. Any future sample must contain exactly one stable native source identity as properties.id and geometry only.",
+  "cohort": "overnight-next-1501-1600",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

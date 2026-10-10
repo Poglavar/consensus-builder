@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-7241-al-manshah.json",
+  "purpose": "Document first-party registry/map discovery, viewer/service evidence, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "ESA official pages evidence an Egyptian national survey/map custodian and digital-map procedure; the Sohag governorate page evidences Al-Manshah administratively. No public anonymous parcel feature response was verified.",
+  "registryAssessment": "The ESA is a national agency, not a proven Al-Manshah municipal registry office. Its official pages describe survey, digital-map, and property-related map services. The reviewed Sohag page identifies مركز ومدينة المنشاة but does not expose a cadastral parcel service.",
+  "officialPrimarySources": [
+    {"url": "https://www.esa.gov.eg/services.aspx", "observation": "Official ESA services page lists survey/map and land-related services, including digital and paper maps."},
+    {"url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx", "observation": "Official ESA digital-map page says customers request a specified location, scale, layers, format, and projection; it describes a mediated purchase workflow rather than an anonymous parcel API."},
+    {"url": "https://www.sohag.gov.eg/gov2/division/local%20unites%20display.aspx?ID=26", "observation": "Official Sohag governorate administrative page identifies مركز ومدينة المنشاة and local units; it is administrative evidence, not parcel geometry evidence."}
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://www.esa.gov.eg/services.aspx",
+    "observedTechnology": "Official HTML service pages; no public map viewer JavaScript/configuration or feature-service URL was exposed in the reviewed pages.",
+    "observedControls": ["ESA digital-map service/procedure", "paper-map search/service links"],
+    "schemaAndCrs": "Not exposed for a parcel feature layer; ESA digital-map procedure allows a requested projection but does not document a public parcel API schema.",
+    "nativeFieldNames": [],
+    "sourceFieldMapping": null,
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://www.esa.gov.eg/services.aspx", "method": "GET", "normalTlsVerification": true, "result": "First-party page found by web discovery; page content lists ESA map/survey services. A separate direct curl retrieval timed out after 20 seconds; no retry with altered TLS settings was made."},
+    {"url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx", "method": "GET", "normalTlsVerification": true, "result": "First-party digital-map procedure found by web discovery; it describes requesting and purchasing maps with selected location/layers/projection. No anonymous parcel feature endpoint or parcel schema was exposed."},
+    {"url": "https://www.sohag.gov.eg/gov2/division/local%20unites%20display.aspx?ID=26", "method": "GET", "normalTlsVerification": true, "result": "First-party Sohag page found by web discovery; it identifies مركز ومدينة المنشاة and local administrative units. No parcel API or geometry response."},
+    {"url": "https://www.esa.gov.eg/paper_maps_search.aspx", "method": "GET", "normalTlsVerification": true, "result": "Official ESA paper-map search route found during source review; it provides map-scale/name controls, not a parcel feature response."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous parcel response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "query": "No parcel geometry query was submitted because no documented public parcel feature endpoint or layer schema was exposed by the official sources reviewed."},
+  "coverageAssessment": {"claimedScope": "ESA national survey/map services plus Sohag governorate administrative identification of Al-Manshah.", "verifiedOpenScope": "No anonymous complete-polygon feature response verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "No local cadastral office custodian, public parcel service URL, native identity field, CRS, or current parcel response was independently verified. Timeout, missing API, or general agency/service prose is not evidence of cadastral absence.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."}
+}

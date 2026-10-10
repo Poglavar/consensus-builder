@@ -1,0 +1,56 @@
+{
+  "cityCode": 9923,
+  "queueRank": 1788,
+  "name": "Katni",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [23.8272583192004, 80.3937527808262],
+  "population2025": 321522,
+  "population2025k": 321.522,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Katni Madhya Pradesh official cadastral map land records GIS parcel map",
+        "result": "First-party discovery identified the official Katni district administration site, its district map page, the Government of India DILRMP Katni map-digitization status page, and the Madhya Pradesh MP Bhulekh land-record/map service. No open citywide parcel-vector download was identified.",
+        "actualResultUrls": ["https://katni.nic.in/en/", "https://katni.nic.in/en/map-of-district/", "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/460", "https://mpbhulekh.gov.in/mpbhulekh.do", "https://webgis2.mpbhulekh.gov.in/"]
+      },
+      {
+        "language": "native/local",
+        "query": "कटनी मध्य प्रदेश आधिकारिक भू नक्शा खसरा नक्शा भूमि अभिलेख",
+        "result": "First-party discovery returned the official Katni Hindi district site and MP Bhulekh references. Official service descriptions identify MP Bhulekh as the Madhya Pradesh land-record portal for searchable records and certified khasra/khatauni/naksha copies, but no public parcel geometry response was obtained.",
+        "actualResultUrls": ["https://katni.nic.in/", "https://services.mp.gov.in/eservice/eServices?srvs=19", "https://mpbhulekh.gov.in/mpbhulekh.do", "https://webgis2.mpbhulekh.gov.in/"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official Katni district administration site identifies Katni district and links the district map; Government of India DILRMP identifies Katni district's cadastral-map status; Madhya Pradesh government service information identifies MP Bhulekh as the authorized land-record and map portal. This evidences a state/local revenue workflow, not an open citywide parcel-vector API.",
+  "officialSources": [
+    {"url": "https://katni.nic.in/en/", "observation": "Official District Katni administration site; identifies Katni and links the district map and GIS-related public services."},
+    {"url": "https://katni.nic.in/en/map-of-district/", "observation": "Current official district map page embeds a Google map centered near Katni; it is not a cadastral parcel viewer."},
+    {"url": "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/460", "observation": "Government of India DILRMP Katni page for cadastral-map digitization/georeferencing status; status metadata only, no parcel geometry endpoint."},
+    {"url": "https://services.mp.gov.in/eservice/eServices?srvs=19", "observation": "Madhya Pradesh government e-service description lists land-record search and certified khasra, khatauni and naksha services."},
+    {"url": "https://webgis2.mpbhulekh.gov.in/", "observation": "Current MP Bhulekh WebGIS public entry page is JavaScript-only and displays a security notice."}
+  ],
+  "requests": [
+    {"url": "https://katni.nic.in/en/", "method": "GET", "outcome": "TLS-verified HTML retrieved; official district site and public links inspected."},
+    {"url": "https://katni.nic.in/en/map-of-district/", "method": "GET", "outcome": "TLS-verified HTML retrieved; current page contains a Google Maps embed centered near Katni, with no cadastral layer or parcel API."},
+    {"url": "https://mpbhulekh.gov.in/mpbhulekh.do", "method": "GET", "outcome": "Anonymous TLS-verified GET timed out after 25 seconds; no HTML, configuration, schema or geometry was received."},
+    {"url": "https://webgis2.mpbhulekh.gov.in/", "method": "GET", "outcome": "Public page is JavaScript-only and returned a security notice in the web reader; direct anonymous curl timed out after 20 seconds, so current JS/config/API routes could not be inspected."},
+    {"url": "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/460", "method": "GET", "outcome": "Government of India Katni cadastral-status page was available through first-party discovery; it exposes program/status metadata, not parcel polygons or a public query endpoint."},
+    {"url": "https://services.mp.gov.in/eservice/eServices?srvs=19", "method": "GET", "outcome": "Government service description was available through first-party discovery; it describes land-record and certified map procedures without publishing geometry."}
+  ],
+  "source": "Madhya Pradesh MP Bhulekh/WebGIS and official Katni district administration/DILRMP references",
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {"claimedScope": "Madhya Pradesh official land-record/map workflow and Katni district cadastral-status metadata.", "verifiedOpenScope": "Official local/state custodians and public service descriptions only; no anonymous parcel response, schema or CRS.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": "Exact WUP point preserved in latitude/longitude order. No exact-point hit/miss inference was made. No owner, address, titleholder, contact, tax/account, personal or unsafe fields were requested or retained. No GeoJSON sample is retained because no stable native parcel identity plus full polygon was obtained. Packet completion is not source integration or runtime admission; serial reviewer qualification remains required."
+}

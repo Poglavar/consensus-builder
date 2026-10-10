@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2362-lop-buri.json",
+  "cityCode": 2362,
+  "purpose": "Document first-party discovery, current public cadastral/property routes, request outcomes, scope limits, safe fields, and uncertainty.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Department of Lands custody for Lop Buri and the national land-map center was evidenced. The linked LandsMaps viewer timed out on anonymous requests, so no public parcel schema, CRS, safe native identity, or geometry sample was verified.",
+  "registryAssessment": "registryFound=true is limited to evidenced DOL provincial/national land-map custody. It does not mean an open city-local registry endpoint or citywide parcel completeness was verified.",
+  "queries": [
+    {
+      "language": "English",
+      "query": "Lop Buri Thailand official cadastral parcel map land registry GIS",
+      "outcome": "Official Lop Buri DOL office, DOL Land Map Center, and LandsMaps viewer found; no city-bounded safe parcel response.",
+      "actualResultUrls": ["https://www.dol.go.th/lopburi/home", "https://www.dol.go.th/landmap/home/", "https://landsmaps.dol.go.th/"]
+    },
+    {
+      "language": "Thai",
+      "query": "ลพบุรี แผนที่รูปแปลงที่ดิน кадастр กรมที่ดิน ระบบสารสนเทศภูมิศาสตร์",
+      "outcome": "พบหน่วยงานและบริการแผนที่รูปแปลงที่ดินของกรมที่ดิน แต่ LandsMaps หมดเวลาในการเข้าถึงแบบไม่ระบุตัวตน จึงไม่ยืนยันรูปแปลงพร้อมรหัสแปลง.",
+      "actualResultUrls": ["https://www.dol.go.th/lopburi/home/", "https://www.dol.go.th/landmap/home/", "https://landsmaps.dol.go.th/"]
+    }
+  ],
+  "attempts": [
+    {"url": "https://www.dol.go.th/lopburi/home", "method": "GET", "httpStatus": 200, "result": "Official Lop Buri Provincial Land Office page loaded and linked Landsmap parcel search."},
+    {"url": "https://www.dol.go.th/landmap/home/", "method": "GET", "httpStatus": 200, "result": "Official DOL Land Map Center page loaded; no parcel feature response exposed."},
+    {"url": "https://landsmaps.dol.go.th/", "method": "GET", "httpStatus": "timeout", "result": "Anonymous HTTPS request timed out after 30 seconds; no login or TLS exception."},
+    {"url": "http://landsmaps.dol.go.th/", "method": "HEAD", "httpStatus": "timeout", "result": "Anonymous HTTP fallback timed out."}
+  ],
+  "geometryEvidence": {"sourceUrl": null, "sampleFile": null, "nativeIdField": null, "nativeFieldMapping": {}, "compositeKeyProvenance": null, "sampleCount": 0, "crs": null, "queryExtent": null},
+  "geometryDecision": {"verified": false, "sourceId": null, "nativeIdField": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not attempted as a parcel-hit test; exact WUP point [14.8115111082598, 100.644267089142] was preserved and not shifted.", "retentionNote": "No GeoJSON retained because no safe native parcel identity and full polygon response was evidenced."},
+  "safeFieldAllowlist": ["stable native parcel identity", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "remainingUncertainty": "Viewer availability, current JavaScript/configuration, parcel layer schema/CRS, native identity, exact-point inclusion, and citywide coverage remain unknown. No owner, address, contact, titleholder, personal, tax/account, credential, or private-token fields were requested.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter",
+  "researchAttempt": 1
+}

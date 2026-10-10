@@ -1,0 +1,18 @@
+{
+  "taskId": "city:4340",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-4340-takamatsu.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/takamatsu-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T12:39:42Z",
+  "reason": "Official city Smart Map lists the cadastral reference map, and one public tile contains polygon shapes; the cached tile has 89 polygons with empty properties and 63 separately labeled points. No stable native polygon ID or full parcel polygon was established.",
+  "firstPartyArtifactsInspected": [
+    "tmp/valhalla-parcel-research/takamatsu/catalog.json",
+    "tmp/valhalla-parcel-research/takamatsu/tiles.json",
+    "tmp/valhalla-parcel-research/takamatsu/point.geojson"
+  ],
+  "admissionGates": "No independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. No runtime admission."
+}

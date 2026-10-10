@@ -1,0 +1,48 @@
+{
+  "cityCode": 8154,
+  "queueRank": 1335,
+  "name": "Kamoke",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "point": [31.976363675421, 74.2232766931292],
+  "population2025": 421152,
+  "population2025k": 421.152,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": null,
+  "registryAssessment": "Official Punjab PLRA/PULSE and Municipal Committee Kamoke sources were evidenced. The PULSE public-user viewer exposes a Gujranwala cadastral map service that returned parcel polygons, but no city-scoped registry custodian or legally authoritative open parcel coverage was established; registryFound remains null.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kamoke Punjab Pakistan official cadastral parcel map land records PLRA",
+        "result": "Found the official Punjab Land Records Authority, the public-user PULSE urban land viewer, the Municipal Committee Kamoke maps page, and an official Kamoke base-map PDF whose legend includes parcel boundaries. PULSE JavaScript exposed the current Punjab cadastral ArcGIS route; no separate Kamoke-specific cadastral endpoint was found.",
+        "actualResultUrls": ["https://www.punjab-zameen.gov.pk/", "https://lis.pulse.gop.pk/", "https://mckamoke.lgpunjab.org.pk/map/", "https://mckamoke.lgpunjab.org.pk/wp-content/uploads/2023/02/Base-Map_Kamoke_10.02.23.pdf"]
+      },
+      {
+        "language": "Urdu",
+        "query": "کاموکی پنجاب پاکستان سرکاری اراضی ریکارڈ نقشہ پارسل",
+        "result": "Search returned the official Urdu-facing Punjab online Fard/LRMIS route and Punjab land-record references, but no Urdu-specific Kamoke parcel API. The public PULSE viewer remained the only current first-party route exposing anonymous parcel geometry.",
+        "actualResultUrls": ["https://onlinefard.punjab-zameen.gov.pk/", "https://www.punjab-zameen.gov.pk/", "https://lis.pulse.gop.pk/"]
+      }
+    ]
+  },
+  "officialSources": [
+    {"url": "https://lis.pulse.gop.pk/", "role": "Punjab Urban Land Systems Enhancement public-user viewer", "observation": "Current viewer HTML/JavaScript provides a Continue as Public User path and references the Punjab_Cdastral_Maps ArcGIS service; it states the map is indicative and not a legal boundary."},
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/8", "role": "Punjab PLRA GIS Gujranwala cadastral layer", "observation": "Anonymous app-issued token request allowed metadata access; layer name is Gujranwala, geometry is polygon, source spatial reference is WKID 102100/latestWkid 3857, and safe native fields include OBJECTID and Khasra_ID."},
+    {"url": "https://mckamoke.lgpunjab.org.pk/map/", "role": "Municipal Committee Kamoke official maps page", "observation": "Lists current municipal service maps and an official base map; this is a local municipal map custodian, not proof of a cadastral registry service."},
+    {"url": "https://mckamoke.lgpunjab.org.pk/wp-content/uploads/2023/02/Base-Map_Kamoke_10.02.23.pdf", "role": "Municipal Committee Kamoke base map", "observation": "Official February 2023 PDF covers Kamoke and labels a Parcel Boundary legend, but it is a rendered map without native parcel IDs or full machine-readable parcel geometry."},
+    {"url": "https://www.punjab-zameen.gov.pk/", "role": "Punjab Land Records Authority official portal", "observation": "Official provincial land-record authority and service context; no city-specific parcel-vector endpoint was exposed by the landing page."}
+  ],
+  "serviceReview": "kamoke-service-review.json",
+  "geometryDecision": {"verified": true, "sampleCount": 3, "sampleFile": "kamoke-parcel-samples.geojson", "reason": "A bounded anonymous query against the official Gujranwala cadastral layer returned three full polygon geometries with native OBJECTID identities. The exact WUP point query returned zero features; this is recorded as an exact-point miss and not as evidence of citywide absence. Khasra_ID returned 0 for the sampled features, so it was not used as identity."},
+  "coverageAssessment": {"claimedScope": "Official Punjab PULSE/PLRA Gujranwala cadastral layer plus Municipal Committee Kamoke map references.", "verifiedOpenScope": "The Gujranwala layer is publicly queryable through the PULSE public-user route, but the response was bounded around Kamoke and does not prove complete citywide coverage or legal boundary authority.", "exactWupPointParcelSample": false, "citywideVerified": false, "countrywideVerified": false, "geometryVerified": true},
+  "sourceFieldMapping": {"nativeIdentity": "OBJECTID", "nativeIdentityEvidence": "ArcGIS layer metadata declares OBJECTID as the object ID field; Khasra_ID was observed but returned 0 in all retained samples and was not retained.", "geometryField": "ArcGIS feature geometry", "sourceCrs": "EPSG:3857 (WKID 102100/latestWkid 3857); query was requested with outSR=4326 for retained GeoJSON", "compositeKey": null},
+  "safeFieldAllowlist": ["native parcel OBJECTID", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

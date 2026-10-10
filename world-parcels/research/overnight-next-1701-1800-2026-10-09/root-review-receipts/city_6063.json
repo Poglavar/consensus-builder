@@ -1,0 +1,19 @@
+{
+  "taskId": "city:6063",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-queue-extension-1301-2300-verification-2026-10-09.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-6063-faridpur.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/faridpur-service-review.json",
+    "tmp/valhalla-parcel-research/6063/dhaka-districts.json",
+    "tmp/valhalla-parcel-research/6063/faridpur-surveys.json",
+    "tmp/valhalla-parcel-research/6063/faridpur-upazilas.json",
+    "tmp/valhalla-parcel-research/6063/MapSearch.js"
+  ],
+  "checkedAt": "2026-10-10T14:14:17.040941Z",
+  "reason": "Official Faridpur survey hierarchy identifies district and BDS survey but cached upazila response is empty. No parcel response, native ID or full polygon; forced paging, 13 cells, metric GEOS checks, source binding and headed Details check are unevidenced. Empty hierarchy is not citywide absence.",
+  "sourceUrlsChecked": [
+    "https://settlement.gov.bd/Map/MapSearch"
+  ]
+}

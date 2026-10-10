@@ -1,0 +1,47 @@
+{
+  "cityCode": 10365,
+  "queueRank": 1550,
+  "country": "India",
+  "countryCode": "IN",
+  "point": [8.80700371725202, 78.1358658773619],
+  "population2025": 368221,
+  "population2025k": 368.221,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Thoothukudi official cadastral map land records parcel GIS Tamil Nadu government",
+        "result": "The official Thoothukudi district site links Tamil Nadu land e-services for Patta, FMB/Chitta/TSLR, A-Register and related land-record services. Search also found the official Tamil Nadu GIS portal and a Government of India port-authority Web GIS for Thoothukudi. No anonymous citywide cadastral polygon API was established from the district service page.",
+        "actualResultUrls": [
+          "https://thoothukudi.nic.in/service/e-services-anytime-anywhere-land/",
+          "https://tngis.tn.gov.in/apps.html",
+          "https://webgis.vocport.gov.in/land_info_sys/webgis/public.php"
+        ]
+      },
+      {
+        "language": "Tamil",
+        "query": "தூத்துக்குடி அதிகாரப்பூர்வ நில அளவை வரைபடம் பட்டா நிலப்பதிவு",
+        "result": "The local-language discovery was consistent with the official district land-record service: Tamil Nadu e-services provide Patta and FMB/Chitta/TSLR/A-Register access. No separate anonymous citywide parcel-vector endpoint was verified. The TamilNilam Geo-Info description identifies the Department of Survey and Settlement as the land-map custodian, but its public description does not expose a safe geometry API.",
+        "actualResultUrls": [
+          "https://thoothukudi.nic.in/ta/service/%e0%ae%87%e0%ae%a3%e0%af%88%e0%ae%af%e0%ae%b5%e0%ae%b4%e0%ae%bf-%e0%ae%9a%e0%af%87%e0%ae%b5%e0%af%88%e0%ae%95%e0%ae%b3%e0%af%8d-%e0%ae%8e%e0%ae%99%e0%af%8d%e0%ae%95%e0%af%87%e0%ae%af%e0%af%8d%e0%ae%af%e0%af%81/",
+          "https://play.google.com/store/apps/details?id=org.tnega.tamil.nilam"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryAssessment": "Official district and Tamil Nadu sources establish the state land-record/cadastral custodian and public land-record services. A separate Government of India VOC Port Authority Web GIS is a local Thoothukudi map service, but it covers port-estate land rather than the city's complete cadastral fabric.",
+  "geometry": {
+    "verified": false,
+    "sampleFile": null,
+    "sampleCount": 0,
+    "sourceId": null,
+    "nativeIdField": null,
+    "crs": null,
+    "reason": "No safe citywide cadastral polygon was retained. The exact WUP-point query against the bounded port-estate WFS returned zero features; this is not evidence of citywide absence."
+  },
+  "runtimeReadiness": "held",
+  "notes": "Attempt 1 of 3. Research packet completion is not source integration or adapter admission."
+}

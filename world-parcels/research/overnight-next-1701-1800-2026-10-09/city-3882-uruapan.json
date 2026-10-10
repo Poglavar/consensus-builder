@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 3882,
+  "queueRank": 1769,
+  "cityId": "queue:1769",
+  "name": "Uruapan",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "iso3": "MEX",
+  "point": [19.410676635401, -102.047099594884],
+  "centerLatLon": [19.410676635401, -102.047099594884],
+  "population2025": 324219,
+  "population2025k": 324.219,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Uruapan Mexico official cadastral parcel map GIS catastro predial",
+        "result": "Found the official Uruapan municipal site, IMPLAN Uruapan SIG directory, municipal cartography page, SEDATU SITU/PNIRC, and Michoacan cadastral-procedure sources. No direct open parcel feature endpoint was established by search alone.",
+        "actualResultUrls": [
+          "https://uruapan.gob.mx/",
+          "https://implanuruapan.gob.mx/directorio-sig/",
+          "https://situ.sedatu.gob.mx/",
+          "https://sistemas.sedatu.gob.mx/PlataformaMRC/"
+        ]
+      },
+      {
+        "language": "native/local (Spanish)",
+        "query": "site:uruapan.gob.mx catastro Uruapan mapa predial",
+        "result": "Found Uruapan municipal predial services and the official municipal/IMPLAN GIS pages; the municipal material describes cadastral and planning maps but did not expose a public parcel ID plus geometry response.",
+        "actualResultUrls": [
+          "https://uruapan.gob.mx/",
+          "https://www.tesoreriauruapan.net/Contact",
+          "https://implanuruapan.gob.mx/directorio-sig/",
+          "https://implanuruapan.gob.mx/cartografia-municipal/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "portalsFound": [
+    {"url": "https://uruapan.gob.mx/", "observation": "Official municipal portal links Pago de Predial and municipal services."},
+    {"url": "https://implanuruapan.gob.mx/directorio-sig/", "observation": "Official municipal planning institute GIS inventory lists cadastral zoning, RAN parcelled private property, blocks and other polygon datasets."},
+    {"url": "https://implanuruapan.gob.mx/cartografia-municipal/", "observation": "Official IMPLAN cartography landing page; maps are presented as municipal cartography, not an identified parcel API."},
+    {"url": "http://md.implanuruapan.gob.mx/", "observation": "Official IMPLAN Mapa Digital portal loaded HTTP 200; its HTML exposed legacy scripts but no parcel service URL in the inspected landing page."},
+    {"url": "http://ovie.implanuruapan.gob.mx/", "observation": "Official IMPLAN OVIE portal loaded HTTP 200; its landing page exposed legacy scripts but no parcel service URL in the inspected landing page."},
+    {"url": "https://situ.sedatu.gob.mx/veide/", "observation": "Official SEDATU strategic viewer loaded HTTP 200 and advertises live WMS/WFS interoperability; current JavaScript exposed SEDATU GeoServer and RAN WMS/WFS routes."},
+    {"url": "https://irycem.michoacan.gob.mx/ubicaciones-ircemo/", "observation": "Official Michoacan IRYCEM location page identifies the state Dirección de Catastro and Registro Público custodian."}
+  ],
+  "requests": [
+    {"url": "https://uruapan.gob.mx/", "method": "GET", "httpStatus": 200, "contentType": "text/html", "assessment": "Official municipal portal fetched with browser-like headers; no public parcel API in inspected HTML."},
+    {"url": "https://implanuruapan.gob.mx/directorio-sig/", "method": "GET", "httpStatus": 200, "contentType": "text/html", "assessment": "Official GIS inventory fetched; cadastral-related polygon catalogue entries were visible, but linked material was map/document inventory rather than a bounded parcel feature response."},
+    {"url": "https://implanuruapan.gob.mx/cartografia-municipal/", "method": "GET", "httpStatus": 200, "contentType": "text/html", "assessment": "Official cartography landing page fetched; no parcel endpoint exposed."},
+    {"url": "https://md.implanuruapan.gob.mx/", "method": "GET", "httpStatus": 200, "contentType": "text/html", "assessment": "Official digital map landing page fetched; legacy JavaScript inspection did not yield a confirmed parcel endpoint."},
+    {"url": "https://ovie.implanuruapan.gob.mx/", "method": "GET", "httpStatus": 200, "contentType": "text/html", "assessment": "Official OVIE landing page fetched; no confirmed parcel endpoint or safe parcel response."},
+    {"url": "https://ide.sedatu.gob.mx/geoserver/wfs?service=WFS&request=GetCapabilities", "method": "GET", "httpStatus": null, "contentType": null, "assessment": "Timed out after 25 seconds with no response; temporarily unavailable, not absence evidence."},
+    {"url": "https://sig.ran.gob.mx/cgi-bin/mapserv?map=/wms/ran_wfs.map&service=WFS&request=GetCapabilities", "method": "GET", "httpStatus": null, "contentType": null, "assessment": "Attempted from the SEDATU viewer-discovered route but the combined capability probe did not complete before the request window; no geometry or schema retained."},
+    {"url": "https://situ.sedatu.gob.mx/api/v2/datasets/?limit=3", "method": "GET", "httpStatus": 404, "contentType": "text/html", "assessment": "Guessed host-relative route from current JavaScript returned 404; not treated as a parcel-service absence."}
+  ],
+  "verifiedParcelResponse": null,
+  "source": null,
+  "coverageAssessment": {
+    "claimedScope": "Municipal IMPLAN GIS and cadastral-planning inventory for Uruapan; state cadastral custody in Michoacan; national SEDATU/RAN geospatial services.",
+    "verifiedOpenScope": "Official portal/catalogue and institutional custody only. No anonymous bounded parcel ID plus polygon response, parcel schema, or CRS was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "requestsHeaders": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0 Safari/537.36; Accept and Accept-Language: es-MX,es;q=0.9,en;q=0.7; viewer Referer used for SEDATU route.",
+  "remainingUncertainty": "The municipal GIS catalogue may rely on a separate map backend or downloadable files not exposed in the inspected landing pages. The current SEDATU/RAN service response, layer names, CRS, native parcel identity and city coverage remain unresolved. No claim is made about parcel absence, completeness, ownership, title, tax, address or legal boundaries.",
+  "nextStep": "Retry the official IMPLAN map backends and SEDATU/RAN capabilities in a later attempt, preserving the exact WUP point and requesting only stable parcel ID plus geometry if a public service responds.",
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification required"
+}

@@ -1,0 +1,124 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; local registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09T00:00:00Z",
+  "cityCode": 10978,
+  "queueRank": 1286,
+  "cityId": "wup:10978",
+  "name": "Gaozhou",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "centerLatLon": [21.917830542753, 110.854435638004],
+  "point": [21.917830542753, 110.854435638004],
+  "population2025": 435368,
+  "population2025k": 435.368,
+  "populationUnit": "persons",
+  "year": 2025,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gaozhou China official cadastral map parcel GIS land registry",
+        "result": "Search found general Gaozhou location context and Guangdong's official public map platform, but no Gaozhou-specific open cadastral parcel dataset or anonymous parcel API.",
+        "actualResultUrls": ["https://guangdong.tianditu.gov.cn/ggdt/index.html", "https://www.gaozhou.gov.cn/"]
+      },
+      {
+        "language": "Chinese",
+        "query": "高州市 自然资源局 地籍图 不动产登记 宗地 GIS 官方",
+        "result": "Search identified Guangdong's official public map service and general cadastral/real-estate-registration information, but did not expose a Gaozhou-specific public parcel layer or anonymous geometry response. A search result located a Gaozhou Natural Resources Bureau office reference, not an official parcel service endpoint.",
+        "actualResultUrls": ["https://guangdong.tianditu.gov.cn/ggdt/index.html", "https://guangdong.tianditu.gov.cn/ggdt/ggdt/index.html", "https://mapcarta.com/W923013154"]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://guangdong.tianditu.gov.cn/ggdt/index.html",
+      "operator": "Guangdong Provincial Department of Natural Resources public map platform",
+      "observation": "Official provincial public map portal offers map browsing and a cadastral-query entry in the Guangzhou-branded section, but the inspected Guangdong public-map shell did not expose Gaozhou parcel geometry.",
+      "scope": "Provincial/general public mapping context; not verified Gaozhou parcel coverage."
+    },
+    {
+      "url": "https://guangdong.tianditu.gov.cn/ggdt/config/index.js",
+      "operator": "Guangdong public map platform",
+      "observation": "Current JavaScript configuration names a hosted Guangdong administrative-area VectorTileServer. The inspected configuration contains no Gaozhou cadastral parcel endpoint.",
+      "scope": "Current viewer configuration; administrative/base mapping only."
+    },
+    {
+      "url": "https://mapcarta.com/W923013154",
+      "operator": "Mapcarta third-party map directory",
+      "observation": "Identifies a Gaozhou Natural Resources Bureau office near 21.89981, 110.85645. This is corroborative location context only and is not an official registry or parcel service.",
+      "scope": "Not used as registry proof or geometry source."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://guangdong.tianditu.gov.cn/ggdt/index.html",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Official Guangdong public-map shell returned. HTML scripts and current configuration were inspected; no Gaozhou parcel endpoint was exposed."
+    },
+    {
+      "url": "https://guangdong.tianditu.gov.cn/ggdt/config/index.js",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Current config returned a hosted Guangdong administrative-area VectorTileServer URL; no parcel layer or parcel schema was present."
+    },
+    {
+      "url": "https://guangdong.tianditu.gov.cn/ggdt/js/app.a49e255d.js",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Current application bundle returned and searched for cadastral/parcel/宗地/不动产/FeatureServer routes. No Gaozhou parcel feature endpoint was found."
+    },
+    {
+      "url": "https://guangdong.tianditu.gov.cn/ggdt/mapService/server/rest/services/Hosted/%E5%B9%BF%E4%B8%9C%E7%9C%81%E5%9C%B0%E7%BA%A7%E5%B8%82%E8%A1%8C%E6%94%BF%E5%8C%BA%E5%88%92%E9%9D%A215/VectorTileServer?f=pjson",
+      "method": "GET; anonymous; TLS verification enabled; bounded request",
+      "httpStatus": null,
+      "outcome": "Not queried after configuration inspection because this is a vector-tile administrative-boundary service, not a proven parcel layer. No parcel geometry was inferred from it."
+    },
+    {
+      "url": "https://mapcarta.com/W923013154",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Third-party office-location page returned. It does not provide a cadastral service or parcel geometry and was not used as official registry evidence."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "No Gaozhou-specific official local registry, cadastral viewer, or public parcel service was verified in this attempt. The provincial public-map platform is general mapping context only; the third-party office listing is not sufficient to establish a local registry endpoint.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "url": "https://guangdong.tianditu.gov.cn/ggdt/index.html",
+    "kind": "Official Guangdong public map platform with inspected administrative VectorTileServer configuration",
+    "publisher": "Guangdong Provincial Department of Natural Resources public map platform",
+    "scope": "General provincial mapping and administrative context; no Gaozhou parcel layer, safe native parcel identity, schema, CRS, or parcel geometry was exposed.",
+    "safeSampleFile": null,
+    "sampleAttributes": "none retained",
+    "nativeFields": [],
+    "fieldMapping": {
+      "nativeIdentityCandidates": [],
+      "excludedFields": ["all source-specific attributes; no parcel feature response received"]
+    }
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not completed because no parcel-capable public endpoint was identified. Exact WUP point [21.917830542753, 110.854435638004] was preserved unchanged and not shifted.",
+    "requestEvidence": ["Current official viewer configuration exposed administrative/base mapping only; no parcel query route was available."]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Guangdong public map platform and Gaozhou-area public natural-resources context.",
+    "verifiedOpenScope": "General public map shell and administrative/base-map configuration only; no anonymous parcel polygon response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel/cadastral identifier only if exposed by a future anonymous safe endpoint", "geometry", "CRS/layer metadata"],
+  "runtimeReadiness": "held_quality_review",
+  "resultCategory": "no_verified_local_registry_or_public_geometry",
+  "status": "complete",
+  "remainingUncertainty": "A zero parcel result was not tested: the current official provincial map route did not expose a parcel-capable endpoint. This is an access/discovery limitation, not evidence of citywide absence. No owner, address, contact, titleholder, tax, account, personal or other unsafe fields were requested or retained."
+}

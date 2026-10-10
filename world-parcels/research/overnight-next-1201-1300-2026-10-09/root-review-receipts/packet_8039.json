@@ -1,0 +1,15 @@
+{
+  "taskId": "packet:8039",
+  "decision": "held",
+  "reason": "Sterling Heights code 8039/rank 1284, United States, original point [42.4672562666258,-82.953282452946] and 435980 persons match the immutable roster. Two English searches cover the local language. The city map gallery and county GIS page ground local public parcel-map custody (registryFound=true); the saved TLS-verified city ArcGIS request timed out before any HTTP response. No native-ID polygon, exact-point coverage, complete paging, 13 cells, metric GEOS checks, source binding or headed Details verification is evidenced. Timeout is availability uncertainty, not parcel absence; no admission.",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-8039-sterling-heights.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/sterling-heights-service-review.json",
+    "tmp/valhalla-parcel-research/8039/curl.log"
+  ],
+  "checkedAt": "2026-10-09T13:54:39.255503Z"
+}

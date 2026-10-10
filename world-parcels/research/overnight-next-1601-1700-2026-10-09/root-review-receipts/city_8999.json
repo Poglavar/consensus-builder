@@ -1,0 +1,11 @@
+{
+  "taskId": "city:8999",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-8999-thakurdwara.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/thakurdwara-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T13:07:08.053200Z",
+  "reviewNotes": "Held: official UP Bhu-Naksha viewer and selected village navigation are evidenced, but only plot IDs/bounding boxes were returned; full polygon route reported 401 and selected village extent misses the immutable WUP point. No fresh native-ID polygon read or adapter qualification."
+}

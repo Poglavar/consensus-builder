@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-11810-pinghu.json",
+  "purpose": "Document first-party local registry/cadastre context and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Pinghu local registry/cadastre activity is evidenced by first-party government material and a cadastral-map procurement notice. No anonymous parcel-vector response was verified.",
+  "registryAssessment": "Local registry/cadastre custodian evidenced: Pinghu Natural Resources and Planning Bureau. This is local procedure/administrative evidence, not source admission or runtime integration.",
+  "safeFieldAllowlist": ["safe public parcel/source ID if available", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "nativeFieldMapping": null,
+  "officialPrimarySources": [
+    {"url": "https://www.pinghu.gov.cn/art/2021/8/26/art_1229456584_2330610.html", "observation": "First-party Pinghu government notice describes the Natural Resources and Planning Bureau's role in land and immovable-property registration-related investigation; no parcel geometry payload is exposed."},
+    {"url": "https://m.sizebid.com/001/zhejiang/caigou/2025/21a0aae0509e0f2cf34064319451c42e.html", "observation": "Procurement notice records Pinghu cadastral database and cadastral-map compilation, with planned coverage work; it is evidence of local cadastre activity, not an open API or geometry response."},
+    {"url": "https://www.pinghu.gov.cn/art/2025/7/18/art_1229406239_5547958.html", "observation": "First-party Pinghu land-use-rights notice identifies the Natural Resources and Planning Bureau as custodian; published tabular notice contains no parcel polygon service."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Pinghu China official cadastral parcel map land registration natural resources bureau", "result": "Found first-party local registry/cadastre context and a cadastral-map procurement reference; no verified anonymous parcel geometry route.", "resultUrls": ["https://www.pinghu.gov.cn/art/2021/8/26/art_1229456584_2330610.html", "https://www.pinghu.gov.cn/module/download/downfile.jsp?classid=0&filename=c0ee4d38b3904a029b6a2d6810eb631b.pdf"]},
+    {"language": "Chinese", "query": "平湖市 官方 不动产登记 地籍图 宗地图 自然资源和规划局", "result": "Found first-party local custodian and cadastral-map project evidence; no verified anonymous parcel geometry route.", "resultUrls": ["https://www.pinghu.gov.cn/art/2021/8/26/art_1229456584_2330610.html", "https://m.sizebid.com/001/zhejiang/caigou/2025/21a0aae0509e0f2cf34064319451c42e.html", "https://www.pinghu.gov.cn/art/2025/7/18/art_1229406239_5547958.html"]}
+  ],
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not performed against a verified cadastral parcel endpoint; exact point [30.7247750528208, 121.005126953426] remains unchanged and no absence inference is made.", "requestEvidence": [{"url": "https://www.pinghu.gov.cn/col/col1229358431/index.html", "method": "GET", "outcome": "HTML page retrieved anonymously; no parcel viewer/API configuration or safe geometry payload identified"}]},
+  "attempts": [
+    {"url": "https://www.pinghu.gov.cn/col/col1229358431/index.html", "method": "GET", "httpStatus": 200, "result": "Official Pinghu public-information page retrieved; page inspection did not expose a cadastral viewer or parcel-vector endpoint."},
+    {"url": "https://www.pinghu.gov.cn/art/2021/8/26/art_1229456584_2330610.html", "method": "GET via first-party search/open", "httpStatus": "web result available", "result": "Local land/immovable-property registration administration context; no parcel geometry response."},
+    {"url": "https://m.sizebid.com/001/zhejiang/caigou/2025/21a0aae0509e0f2cf34064319451c42e.html", "method": "GET via search result", "httpStatus": "web result available", "result": "Cadastral database/map compilation procurement summary; no public API or geometry response."},
+    {"url": "https://www.pinghu.gov.cn/art/2025/7/18/art_1229406239_5547958.html", "method": "GET via first-party search/open", "httpStatus": "web result available", "result": "Local land-use-rights notice naming the bureau; no parcel geometry response."}
+  ],
+  "coverageAssessment": {"claimedScope": "Official Pinghu local registry/cadastre evidence plus attempted official public-information access.", "verifiedOpenScope": "Local registry/cadastre context only; parcel geometry access unverified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "An authenticated or separately published cadastral service may exist but was not accessed. Exact-point hit testing, CRS/schema, native identity fields, and citywide parcel completeness are unknown."
+}

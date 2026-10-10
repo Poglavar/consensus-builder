@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "wupCityCode": 11803,
+  "queueRank": 1523,
+  "cityId": "wup2025:11803",
+  "name": "Debandi",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [22.6463459550528, 88.029605774771],
+  "population2025": 374423,
+  "population2025k": 374.423,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Debandi India official cadastral parcel map land records West Bengal Howrah",
+        "result": "Official West Bengal land-records, registration, state geoportal, NIC land-records, and Howrah district results were found. Debandi-specific parcel geometry or a safe anonymous feature response was not verified.",
+        "actualResultUrls": [
+          "https://banglarbhumi.gov.in/",
+          "https://wbregistration.gov.in/index/Search_By_Property_new.aspx",
+          "https://basundhara.wb.gov.in/",
+          "https://wb.nic.in/profile/",
+          "https://howrah.gov.in/map-of-district/"
+        ]
+      },
+      {
+        "language": "Bengali",
+        "query": "দেবান্দি পশ্চিমবঙ্গ জমির রেকর্ড মৌজা মানচিত্র সরকারি",
+        "result": "Official West Bengal land-record and registration results were found, but no Debandi-specific safe anonymous parcel geometry or native parcel identity was verified.",
+        "actualResultUrls": [
+          "https://banglarbhumi.gov.in/",
+          "https://wbregistration.gov.in/index/Search_By_Property_new.aspx",
+          "https://basundhara.wb.gov.in/"
+        ]
+      }
+    ]
+  },
+  "administrativeIdentity": {
+    "district": "Howrah (inferred from WUP point context; not independently resolved to a revenue village)",
+    "tehsilOrTaluk": null,
+    "revenueVillage": null,
+    "identityEvidence": "The exact WUP point was preserved. Search results identified the official Howrah district administration and West Bengal land-record channels, but did not establish Debandi's revenue-village or local registry jurisdiction."
+  },
+  "coverageAssessment": {
+    "claimedScope": "West Bengal Government Land and Land Reforms land-record services, official registration services, state geoportal, and Howrah district administration.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_state_land_records_found_no_verified_open_parcel_geometry",
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://banglarbhumi.gov.in/",
+      "operator": "Land and Land Reforms, Refugee Relief and Rehabilitation Department, Government of West Bengal",
+      "observation": "Official portal advertises plot information, plot-map requests, mouza-map availability, and land-record services; no safe anonymous parcel vector response was verified."
+    },
+    {
+      "url": "https://wb.nic.in/profile/",
+      "operator": "NIC West Bengal / Government of West Bengal",
+      "observation": "Official project description identifies eBhuchitra as the state land-records application and says certified ROR, plot information, and plot-map services exist; it does not publish a verified open parcel feature endpoint."
+    },
+    {
+      "url": "https://basundhara.wb.gov.in/",
+      "operator": "Government of West Bengal state geoportal",
+      "observation": "Official state geoportal advertises geospatial data and a WMS, but no parcel layer, schema, CRS, or anonymous parcel response was verified."
+    },
+    {
+      "url": "https://howrah.gov.in/map-of-district/",
+      "operator": "Howrah District Administration / Government of West Bengal",
+      "observation": "Official district page provides a district-map link and identifies the district administration; it is not a parcel service."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://banglarbhumi.gov.in/",
+      "method": "GET",
+      "status": "connection timeout after 10 seconds",
+      "summary": "Direct anonymous request with normal TLS verification did not connect; no HTML, current JavaScript/configuration, service route, schema, CRS, or parcel response was retrieved."
+    },
+    {
+      "url": "https://basundhara.wb.gov.in/",
+      "method": "GET",
+      "status": "connection timeout after 10 seconds",
+      "summary": "Direct anonymous request with normal TLS verification did not connect; no WMS configuration, layer metadata, schema, CRS, or parcel response was retrieved."
+    },
+    {
+      "url": "https://wbregistration.gov.in/index/Search_By_Property_new.aspx",
+      "method": "GET via first-party web discovery",
+      "status": "official page indexed",
+      "summary": "Official registration search exposes district, thana, local-body, mouza, road, and property-search concepts; no parcel polygon endpoint was verified and no property or owner fields were requested."
+    },
+    {
+      "url": "https://howrah.gov.in/map-of-district/",
+      "method": "GET via first-party web discovery",
+      "status": "HTTP 200 in web inspection",
+      "summary": "Official Howrah district page and district-map link were inspected; no parcel service or parcel feature response was present."
+    }
+  ],
+  "safeFieldAllowlist": ["native parcel identifier if publicly exposed", "complete parcel geometry", "source CRS", "non-sensitive administrative or layer metadata"],
+  "sourceFields": null,
+  "crs": null,
+  "nativeIdReadiness": "not_ready_no_verified_parcel_response",
+  "geometryEvidence": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No exact-point parcel feature query completed because the official endpoints did not yield a usable anonymous service response; no point-hit or timeout was interpreted as cadastral absence."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "No independently verified anonymous response containing a stable native parcel identity plus complete polygon and CRS. Runtime integration/admission is not qualified.",
+  "remainingUncertainty": "Debandi's exact local revenue jurisdiction, official viewer JavaScript/configuration, parcel layer schema, CRS, native identity, anonymous query shape, and citywide coverage remain unverified. Connection timeout, map extent uncertainty, or lack of a public feature response is not evidence of citywide cadastral absence.",
+  "nextStep": "Serial reviewer may re-check the official West Bengal land-record viewer and state geoportal for a public anonymous geometry-only flow, then validate a bounded Debandi-area response and stable native parcel identity before any adapter qualification.",
+  "identityPolicy": "Retain only a stable native parcel identity with geometry if source evidence proves it; never substitute an internal row number."
+}

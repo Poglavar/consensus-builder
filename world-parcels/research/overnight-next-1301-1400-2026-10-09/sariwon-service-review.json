@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4489-sariwon.json",
+  "cityCode": 4489,
+  "purpose": "Document first-party discovery, current public map/service routes, bounded anonymous access review, and evidence limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "No Sariwon-specific public cadastral service was identified. DPRK official-domain discovery produced general or other-location pages without parcel vectors. Two direct official-domain GET attempts failed TLS certificate validation in the available client; no source-specific bypass was authorized. A bounded OpenStreetMap map GET returned HTTP 200, but it is a general volunteered geographic map and not evidence of cadastral parcels; no retained geometry was created.",
+  "registryAssessment": "No local Sariwon registry, cadastre, map/procedure, or public parcel-vector service was actually evidenced. registryFound remains null.",
+  "safeFieldAllowlist": ["safe parcel identifier only if publicly exposed and non-personal", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "queries": [
+    {"language":"English","query":"Sariwon North Korea official cadastral map parcel land registry GIS","outcome":"No Sariwon parcel source found; official-domain results were general or for other locations.","actualResultUrls":["https://www.naenara.com.kp/images/trade/advertise/siniju_e.pdf","https://www.koreanarchitecture.gov.kp/","https://en.wikipedia.org/wiki/Sariwon"]},
+    {"language":"native/local","query":"사리원시 지적도 토지정보 공식 지도 지적측량","outcome":"No Sariwon-specific official cadastral or parcel-vector source found; results were mostly South Korean services or general DPRK material.","actualResultUrls":["https://www.kgeop.go.kr/","https://kcsc.co.kr/kor/sub01_02_01_01.do","https://www.naenara.com.kp/images/trade/advertise/siniju_e.pdf"]}
+  ],
+  "attempts": [
+    {"url":"https://www.naenara.com.kp/","method":"GET","httpStatus":"TLS verification failure","result":"Official DPRK domain identified, but direct request was not accepted by the local trust store. No TLS verification bypass was used; no viewer/API/config/schema/geometry inferred."},
+    {"url":"https://www.koreanarchitecture.gov.kp/","method":"GET","httpStatus":"TLS verification failure","result":"Official DPRK architecture domain identified, but direct request was not accepted by the local trust store. No TLS verification bypass was used; no parcel route inferred."},
+    {"url":"https://www.openstreetmap.org/api/0.6/map?bbox=125.745,38.500,125.765,38.520","method":"GET","httpStatus":200,"result":"Bounded anonymous general-map response returned. It was not a cadastral service and was not used as parcel evidence or retained as a sample."}
+  ],
+  "geometryEvidence": null,
+  "geometryDecision": {"verified":false,"sourceId":null,"nativeIdField":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"No exact-point parcel containment test was completed. The exact WUP point [38.5104736623283,125.755403558968] was preserved and not shifted; source discovery/TLS limits are not evidence of citywide absence."},
+  "remainingUncertainty": "A current DPRK public viewer, if one exists, its JavaScript/configuration, service endpoint, CRS, native parcel identity, exact-point parcel, and citywide coverage remain unverified. No owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested.",
+  "runtimeAssessment": "not enabled; serial reviewer must independently qualify any adapter"
+}

@@ -1,0 +1,131 @@
+{
+  "cityCode": 8402,
+  "queueRank": 1638,
+  "name": "Palu",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso3": "IDN",
+  "locId": 360,
+  "point": [-0.903681490907629, 119.8754630596],
+  "population2025": 348948,
+  "population2025k": 348.948,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Palu Indonesia official cadastral parcel map GIS land registry BPN geoportal",
+        "result": "First-party discovery identified the official Kantor Pertanahan Kota Palu, the ATR/BPN BHUMI spatial portal, and the ATR/BPN ATLAS portal. BHUMI documentation describes an open interactive geospatial land-information platform; the bounded anonymous inspection did not yield a safe Palu parcel feature response.",
+        "actualResultUrls": [
+          "https://kot-palu.atrbpn.go.id/",
+          "https://bhumi.atrbpn.go.id/",
+          "https://atlas.atrbpn.go.id/"
+        ]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Palu peta bidang tanah kadaster ATR BPN geoportal resmi",
+        "result": "Indonesian first-party discovery found the Kantor Pertanahan Kota Palu service page, the official Palu spatial-planning and land office, and ATR/BPN BHUMI guidance. The sources establish local land-survey/cadastral custody and public map documentation, but no anonymous Palu parcel ID-plus-geometry response was retrieved.",
+        "actualResultUrls": [
+          "https://bpnpalu.id/",
+          "https://tataruang.palukota.go.id/beranda/",
+          "https://bhumi.atrbpn.go.id/bantuan/landing",
+          "https://bhumi.atrbpn.go.id/bantuan/fitur_toolbox"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://kot-palu.atrbpn.go.id/",
+      "observation": "Official Kantor Pertanahan Kota Palu site identifies the local ATR/BPN land office and its public service channel."
+    },
+    {
+      "url": "https://bpnpalu.id/",
+      "observation": "Palu land-office service page lists land registration, land information, surveying and parcel mapping services, establishing a local cadastral custodian."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/landing",
+      "observation": "Official ATR/BPN BHUMI guidance describes a public interactive geospatial platform for land and spatial data, with accuracy/completeness disclaimers and public-information limits."
+    },
+    {
+      "url": "https://atlas.atrbpn.go.id/",
+      "observation": "Official ATR/BPN ATLAS portal loaded and describes spatial datasets; the public catalog exposed no Palu parcel feature service in this bounded attempt."
+    },
+    {
+      "url": "https://tataruang.palukota.go.id/beranda/",
+      "observation": "Official Palu municipal spatial-planning and land office site confirms the city land/spatial custodian and public publication role, but exposes no anonymous parcel API in the inspected page."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://kot-palu.atrbpn.go.id/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official local land-office page loaded; no parcel geometry endpoint or public schema was exposed."
+    },
+    {
+      "url": "https://bpnpalu.id/",
+      "method": "GET via first-party web access",
+      "httpStatus": 200,
+      "outcome": "Official/local Palu land-office service page loaded and listed parcel surveying/mapping; no feature response was exposed."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Current BHUMI HTML and referenced JavaScript chunks were fetched. The inspected client assets exposed no usable anonymous Palu parcel request, stable native identity, feature schema, CRS response, or safe geometry. No login or private workflow was attempted."
+    },
+    {
+      "url": "https://atlas.atrbpn.go.id/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Current ATLAS portal loaded. Its public catalog was inspected for parcel/cadastral coverage; no Palu parcel feature endpoint or bounded ID-plus-geometry response was obtained."
+    },
+    {
+      "url": "https://tataruang.palukota.go.id/beranda/",
+      "method": "GET via first-party web access",
+      "httpStatus": 200,
+      "outcome": "Official Palu municipal land/spatial office page loaded; no anonymous parcel endpoint or schema was exposed."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The official Kantor Pertanahan Kota Palu / ATR-BPN local office and the official Palu municipal spatial-planning and land office establish local cadastral/land-information custody. This does not establish an open city-bounded parcel geometry API.",
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": null,
+  "geometryQuality": "not evaluated; no parcel geometry retrieved",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": "atrbpn-bhumi-atlas-palu",
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Kantor Pertanahan Kota Palu and national ATR/BPN BHUMI/ATLAS land-information channels.",
+    "verifiedOpenScope": "Local cadastral custody and public portal documentation only; Palu citywide coverage, safe native parcel identity, schema, CRS and geometry were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "Exact WUP point [-0.903681490907629, 119.8754630596] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point hit or miss conclusion was drawn because no safe anonymous feature query response was obtained.",
+    "A map extent miss, inaccessible UI, absent client endpoint, timeout or login wall would not establish citywide parcel absence; no such inference is made here.",
+    "No owner, address, titleholder, contact, personal, tax/account or other unsafe fields were requested or retained.",
+    "No raw source-specific attribute set and no synthetic parcel identity were retained.",
+    "Packet completion is not source integration/admission; runtime remains held pending serial review."
+  ],
+  "uncertainty": "The current BHUMI/ATLAS anonymous request contract, Palu layer selection, native parcel identity, CRS, geometry availability and citywide coverage remain unresolved. Public documentation indicates land-information functionality, but it does not by itself prove an open feature service or usable parcel response.",
+  "retainedSample": null
+}

@@ -1,0 +1,12 @@
+{
+  "taskId": "city:9278",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-9278-jiyuan.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/jiyuan-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T17:06:55Z",
+  "reason": "Official Jiyuan registry/map custody is corroborated by its first-party announcement. Anonymous map access redirects to login or yields encrypted/error responses; no safe full polygon/native ID response, fresh exact-ID read, forced paging, 13 bounded cells, metric GEOS checks, source binding, or headed Details proof exists."
+}

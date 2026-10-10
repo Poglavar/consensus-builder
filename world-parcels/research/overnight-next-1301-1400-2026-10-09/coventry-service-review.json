@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4647-coventry.json",
+  "cityCode": 4647,
+  "purpose": "Document first-party discovery, current public map/service routes, bounded anonymous access review, and evidence limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Coventry City Council has an official online planning map and property-search index. The council landing page was fetched successfully and linked to the current public interactive map host. A bounded anonymous map/API response containing safe parcel identifiers and geometry could not be verified: the linked host failed TLS certificate verification in the available client, and no certificate exception was authorized. HM Land Registry official pages describe index-map searches and paid/request-based registered-title polygon products, not an open citywide parcel endpoint. No parcel sample is retained.",
+  "registryAssessment": "The official local council planning/property-search pages establish a local public mapping/procedure context, but not an evidenced local cadastral registry or open parcel-vector service. Therefore registryFound remains null.",
+  "safeFieldAllowlist": ["safe parcel or title identifier only if publicly exposed and non-personal", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "queries": [
+    {
+      "language": "English",
+      "query": "Coventry UK official cadastral map parcel data API council map",
+      "outcome": "Official Coventry City Council planning map, property-search page, council geography resources, and HM Land Registry sources found.",
+      "actualResultUrls": ["https://www.coventry.gov.uk/planning-2/online-planning-map", "https://www.coventry.gov.uk/propertysearches", "https://coventry-city-council.github.io/resources/maps/", "https://www.gov.uk/get-information-about-property-and-land/search-the-index-map", "https://www.gov.uk/guidance/hm-land-registry-electronic-extent-data-polygons"]
+    },
+    {
+      "language": "English (United Kingdom local usage)",
+      "query": "Coventry City Council official parcel map cadastral land registry map service",
+      "outcome": "Confirmed the same official council and HM Land Registry procedures; no distinct local-language source applies and no public anonymous parcel vector response was found.",
+      "actualResultUrls": ["https://www.coventry.gov.uk/planning-2/online-planning-map", "https://www.coventry.gov.uk/propertysearches", "https://www.gov.uk/guidance/mapsearch", "https://www.gov.uk/guidance/finding-information-held-by-hm-land-registry"]
+    }
+  ],
+  "attempts": [
+    {"url":"https://www.coventry.gov.uk/planning-2/online-planning-map","method":"GET","httpStatus":200,"result":"Official Coventry City Council planning-map page loaded; extracted linked interactive map URL and reviewed scope/use conditions."},
+    {"url":"https://www.coventry.gov.uk/propertysearches","method":"GET","httpStatus":200,"result":"Official council property-search index loaded; links to land charges, ownership checks, council-owned land and restrictive-covenant procedures; no anonymous parcel geometry endpoint exposed."},
+    {"url":"https://coventry-city-council.github.io/resources/maps/","method":"GET","httpStatus":200,"result":"Official council-maintained geography directory loaded; listed ward/statistical/general geography files, but no cadastral parcel layer."},
+    {"url":"https://maps.coventry.gov.uk/connect/analyst/mobile/#/main?mapcfg=planning","method":"GET","httpStatus":"TLS verification failure","result":"Linked public interactive map could not be fetched by the available client because its certificate chain was not locally trusted. No TLS verification bypass or source-specific exception was authorized; no API/config/schema/geometry was inferred."},
+    {"url":"https://www.gov.uk/guidance/hm-land-registry-electronic-extent-data-polygons","method":"GET","httpStatus":200,"result":"HM Land Registry official polygon guidance reviewed; service provides specific registered-title extents through request/paid products. No request was submitted and no unsafe fields were sought."},
+    {"url":"https://www.gov.uk/get-information-about-property-and-land/search-the-index-map","method":"GET","httpStatus":200,"result":"HM Land Registry index-map guidance reviewed; searches require a submitted address, plan, or Ordnance Survey reference. No search request was submitted."}
+  ],
+  "geometryEvidence": null,
+  "geometryDecision": {"verified":false,"sourceId":null,"nativeIdField":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"No exact-point parcel containment test was completed. The WUP point was preserved exactly and was not shifted to force a hit; map-host TLS failure and request-based HMLR procedures are not evidence of citywide absence."},
+  "remainingUncertainty": "The linked council viewer's current JavaScript/configuration, service endpoints, CRS, native parcel identity, exact-point parcel, and citywide open coverage remain unverified. A future attempt may inspect the viewer from a trusted client or use an explicitly authorized, source-specific certificate exception; no such exception was available for this attempt.",
+  "runtimeAssessment": "not enabled; serial reviewer must independently qualify any adapter"
+}

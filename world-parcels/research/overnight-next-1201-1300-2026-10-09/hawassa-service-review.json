@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09T12:16:00Z",
+  "cityRecord": "city-6299-hawassa.json",
+  "purpose": "Document first-party Hawassa local registry/service context and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Hawassa City Administration pages name a Land Administration and Investment Department and link an online municipal service portal. The portal's public landing page provides registration/login-oriented service access, but no public cadastral viewer, JavaScript map configuration, parcel layer, schema, CRS, or safe anonymous geometry response was verified. No credentials, login, owner, address, or record-specific lookup was attempted.",
+  "registryAssessment": "Local administrative/service custody is evidenced by first-party Hawassa City Administration pages. This is registry context only and does not establish a public parcel-vector source, complete city coverage, or source integration.",
+  "safeFieldAllowlist": ["safe public parcel/source ID if available", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "officialPrimarySources": [
+    {
+      "url": "https://www.hawassa.gov.et/en/office/land-administration-and-investment-department-1",
+      "observation": "Official city department page names the local Land Administration and Investment Department and describes its local administrative remit; no public parcel geometry endpoint is exposed."
+    },
+    {
+      "url": "https://hawassa.gov.et/am/service_category",
+      "observation": "Official Amharic service-category page lists Land Administration and Investment Department as a city service category; no public parcel-vector route is linked."
+    },
+    {
+      "url": "https://www.hawassaudcd.gov.et/",
+      "observation": "Officially linked municipality online-service portal describes registration/sign-in based service requests. No cadastral map or anonymous parcel geometry route was exposed; no account was used."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Hawassa Ethiopia official cadastral map land registry parcel GIS",
+      "result": "Official Hawassa City Administration pages and local land-administration department were found; no public parcel-vector endpoint or geometry response was verified.",
+      "actualResultUrls": [
+        "https://www.hawassa.gov.et/en",
+        "https://www.hawassa.gov.et/en/office/land-administration-and-investment-department-1",
+        "https://www.hawassaudcd.gov.et/"
+      ],
+      "method": "Separate English-language web search followed by first-party source review.",
+      "scope": "Identify local cadastral/land-administration custody and safe anonymous parcel geometry."
+    },
+    {
+      "language": "Amharic",
+      "query": "ሀዋሳ ኢትዮጵያ ካዳስተር የመሬት ምዝገባ ካርታ",
+      "result": "Official Hawassa pages, including the Amharic service-category page and municipality portal, were identified. No public cadastral parcel layer, schema, CRS, or anonymous geometry response was found.",
+      "actualResultUrls": [
+        "https://hawassa.gov.et/am/service_category",
+        "https://www.hawassa.gov.et/en/office/land-administration-and-investment-department-1",
+        "https://www.hawassaudcd.gov.et/"
+      ],
+      "method": "Separate Amharic-language web search followed by first-party source review.",
+      "scope": "Find local-language first-party land/cadastre services and any public parcel-map/geometry route."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed against a verified cadastral parcel endpoint; exact point [7.047341148246, 38.488014071846] remains unchanged and no absence inference is made.",
+    "requestEvidence": []
+  },
+  "attempts": [
+    {
+      "url": "https://www.hawassa.gov.et/en",
+      "method": "GET; anonymous; TLS verification enabled",
+      "result": "Official home page reviewed; local land-administration department and municipality portal links were visible, but no parcel service route was exposed."
+    },
+    {
+      "url": "https://www.hawassa.gov.et/en/office/land-administration-and-investment-department-1",
+      "method": "GET; anonymous; TLS verification enabled",
+      "result": "Official local department page reviewed; no public cadastral map/API, schema, CRS, or geometry payload exposed."
+    },
+    {
+      "url": "https://hawassa.gov.et/am/service_category",
+      "method": "GET; anonymous; TLS verification enabled",
+      "result": "Official Amharic service page reviewed; land administration category present, no public parcel-vector route exposed."
+    },
+    {
+      "url": "https://www.hawassaudcd.gov.et/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "result": "Municipal online-service landing page returned HTTP 200 and presents registration/login links. No cadastral map, public vector API, or safe anonymous parcel geometry response was found. No login was attempted."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "First-party Hawassa City Administration pages and linked municipal service portal.",
+    "verifiedOpenScope": "Local land-administration/service custody context only; parcel geometry access unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "A non-indexed or authenticated cadastral service may exist. Public geometry availability, exact-point inclusion, native parcel IDs, CRS, and citywide completeness remain unknown.",
+  "geometryEvidence": null,
+  "runtimeAssessment": "not enabled; runtime readiness remains held pending independent adapter qualification."
+}

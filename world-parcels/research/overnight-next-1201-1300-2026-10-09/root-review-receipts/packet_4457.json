@@ -1,0 +1,19 @@
+{
+  "taskId": "packet:4457",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-4457-santa-marta.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/santa-marta-service-review.json",
+    "tmp/valhalla-parcel-research/4457/gestor-47001.json",
+    "tmp/valhalla-parcel-research/4457/u-terreno-metadata.json",
+    "tmp/valhalla-parcel-research/4457/exact-point-igac.geojson",
+    "tmp/valhalla-parcel-research/4457/catastro.html",
+    "tmp/valhalla-parcel-research/4457/observatorio-headers.txt"
+  ],
+  "checkedAt": "2026-10-09T13:38:23.907969Z",
+  "reason": "Immutable WUP code 4457, rank 1259, Colombia, point [11.2345904677867,-74.1864107381004], and 442455 persons match roster, queue and ledger. English and Spanish searches are recorded. First-party IGAC gestor response confirms operating Santa Marta district cadastral custody and the local site describes cadastral products. U_TERRENO metadata exposes a polygon layer, but the original exact-point GeoJSON has zero features, the bounded envelope timed out, and the observatory returned a Cloudflare challenge. These do not establish citywide absence. No safe returned native parcel ID/polygon or independent paging, 13 cells, metric GEOS, source binding or headed Details qualification."
+}

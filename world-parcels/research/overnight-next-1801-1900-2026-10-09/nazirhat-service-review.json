@@ -1,0 +1,71 @@
+{
+  "cityRecord": "city-7548-nazirhat.json",
+  "schemaVersion": "1.0",
+  "cityCode": 7548,
+  "queueRank": 1809,
+  "city": "Nazirhat",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Bangladesh DLRS survey/map services and Nazirhat municipal land-plot procedure evidence were found, but no anonymous Nazirhat parcel ID-plus-polygon response was verified. No sample GeoJSON is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Bangla discovery queries and actual result URLs are recorded in city-7548-nazirhat.json. First-party sources establish DLRS custody and public mouza-map workflows; they do not establish open citywide Nazirhat geometry coverage.",
+  "requestOutcomes": "TLS-verified GET/POST requests loaded the current viewer and its public JSON endpoints. Chattogram district returned only the ongoing BDS survey and two upazila records (Anwara and Banshkhali); no Fatikchhari/Nazirhat record was returned. A metadata request for an Anwara mouza succeeded but was outside Nazirhat and was not retained. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request or TLS disablement was used.",
+  "attemptedRoutes": [
+    "DLRS settlement homepage",
+    "DLRS MapSearch viewer",
+    "Division list JSON endpoint",
+    "District-by-division JSON endpoint",
+    "Survey-by-district JSON endpoint",
+    "Thana/upazila-by-survey JSON endpoint",
+    "DLRS Martin tile catalog",
+    "Bounded parcel metadata endpoint for a returned non-Nazirhat mouza",
+    "Nazirhat Pourashava official plot application material"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [22.6487438204526, 91.8096353514098] was preserved and never shifted; no exact-point hit/miss inference was made.",
+    "No Fatikchhari/Nazirhat mouza, sheet, parcel geometry, native stable parcel identity, source parcel schema or CRS was retrieved.",
+    "The current Chattogram BDS route's returned Anwara/Banshkhali list is not proof that Nazirhat lacks cadastral records; historic or alternate survey routes may exist.",
+    "No city boundary or complete city coverage was established for an open geometry service.",
+    "A timeout, map extent miss, login wall, partial endpoint response or unusable UI is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account or other personal/sensitive fields were requested or retained.",
+    "Packet completion is research evidence only and does not qualify or admit a runtime adapter; serial reviewer qualification remains pending."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no Nazirhat geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No Nazirhat parcel geometry query reached a usable public service. The exact WUP point was preserved but no hit/miss inference was made.",
+    "requestEvidence": [
+      "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap",
+      "https://settlement.gov.bd/tiles/parcels/201901/4111/040107008/meta"
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Bangladesh DLRS survey/mouza-map services with Chattogram BDS route inspection.",
+    "verifiedOpenScope": "Official national survey/map portal and current Chattogram BDS endpoint only; no open Nazirhat parcel geometry coverage verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Fatikchhari mouza/sheet identifiers, relevant survey vintage, current viewer access path, parcel schema, CRS, native identity, update currency, legal status and citywide coverage remain unresolved. No claim is made about parcel absence, ownership, title or completeness of Bangladeshi cadastral data.",
+  "retainedSample": null
+}

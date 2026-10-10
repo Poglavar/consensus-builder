@@ -1,0 +1,49 @@
+{
+  "cityCode": 1033,
+  "queueRank": 1962,
+  "country": "Mali",
+  "countryCode": "ML",
+  "point": [13.4286099987787, -6.25080382642436],
+  "population2025": 295589,
+  "population2025k": 295.589,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ségou Mali cadastral parcel map cadastre official",
+        "result": "First-party results identified the official Mali Directorate General of Domains and Cadastre (DGDC/DNDC) cadastre page and Ségou regional-office directory, but no public parcel viewer or downloadable parcel layer.",
+        "actualResultUrls": [
+          "https://dndc.gouv.ml/cadastre/",
+          "https://dndc.gouv.ml/services-regionaux-et-subregionaux/",
+          "https://www.dgi.gouv.ml/du-ninacad-adresse-bientot-disponible-au-mali/"
+        ]
+      },
+      {
+        "language": "French (local/official administrative language)",
+        "query": "Ségou Mali registre foncier cadastre parcelles carte officiel",
+        "result": "First-party results identified the DGDC cadastre description, an explicit DRDC/SEGOU office listing, official title-verification procedure, and an official Journal officiel reference to a Ségou title; no anonymous parcel geometry service was found.",
+        "actualResultUrls": [
+          "https://dndc.gouv.ml/cadastre/",
+          "https://dndc.gouv.ml/services-regionaux-et-subregionaux/",
+          "https://demarchesadministratives.gouv.ml/verification-des-titres-de-propriete/",
+          "https://sgg-mali.ml/JO/2023/mali-jo-2023-18.pdf"
+        ]
+      }
+    ],
+    "method": "Separate first-party web discovery in English and French; actual result URLs recorded. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe property lookup, or TLS-disable action used."
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Direction générale des Domaines et du Cadastre du Mali (DGDC), with DRDC/SEGOU listed in the official regional-services directory.",
+    "urls": [
+      "https://dndc.gouv.ml/cadastre/",
+      "https://dndc.gouv.ml/services-regionaux-et-subregionaux/"
+    ],
+    "localEvidence": "The official directory lists DRDC/SEGOU and phone 21 32 26 48; this establishes a local/regional cadastral custodian route, not an open parcel API."
+  },
+  "attempt": 1,
+  "researchDate": "2026-10-10",
+  "notes": "NINACAD reporting names Ségou among cities covered by an addressing initiative, but no anonymous parcel geometry or public map/API endpoint was verified. Packet is research evidence only; no source integration or runtime admission."
+}

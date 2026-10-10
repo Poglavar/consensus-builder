@@ -1,0 +1,107 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:7370",
+  "wupCityCode": 7370,
+  "cityCode": 7370,
+  "queueRank": 1224,
+  "rank": 1224,
+  "name": "Butembo",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "iso3": "COD",
+  "point": [0.116532088870001, 29.2956748029224],
+  "centerLatLon": [0.116532088870001, 29.2956748029224],
+  "pointBasis": "Immutable WUP 2025 queue point copied unchanged in latitude/longitude order; no coordinate adjustment.",
+  "population2025": 454857,
+  "population2025k": 454.857,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "status": "complete",
+  "resultCategory": "official_local_cadastral_custodian_and_procedure_verified_no_public_parcel_geometry",
+  "registryFound": true,
+  "registryBasis": "The official DRC Ministry of Land Affairs lists Butembo I and Butembo II as cadastral/land jurisdictions in Nord-Kivu. The government service catalogue documents formal consultation of cadastral and land registers through the Conservateur des Titres Immobiliers or Chef de Division du Cadastre, with a paid request process. No open Butembo parcel map or anonymous parcel-geometry endpoint was verified.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_quality_review",
+  "blocker": "No safe public parcel polygon or qualified anonymous parcel adapter was verified; runtime remains held.",
+  "source": {
+    "operator": "Ministère des Affaires Foncières de la République démocratique du Congo",
+    "localCustodianEvidence": "Official jurisdiction list names Butembo I and Butembo II under Nord-Kivu.",
+    "registryDirectoryUrl": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+    "consultationProcedureUrl": "https://servicepublic.gouv.cd/service/4671",
+    "publicPlatformChecked": "https://bic.cd/"
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Official ministry jurisdiction listing, official government service procedure, public BIC landing page/client inspection, and one non-cadastral ArcGIS layer check near Butembo.",
+    "verifiedOpenScope": "Local cadastral jurisdiction and formal register-consultation procedure are evidenced; no open parcel geometry is evidenced.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "technicalBlocker": "The official Ministry pages expose jurisdiction/procedure information but no public parcel geometry API. BIC was reachable, but its current JavaScript exposed generic application infrastructure rather than a verified safe parcel route. The ArcGIS North_Kivu_HF service contains point health-facility layers, including CUG Butembo, not parcel polygons.",
+  "remainingUncertainty": "A zero exact-point parcel hit was not used as evidence of absence. The ministry procedure may require a formal paid request and local office interaction; coverage, freshness, CRS, schema, and anonymous geometry access remain unverified. No owner, address, contact, titleholder, tax/account, or personal fields were requested or retained.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Butembo official cadastral parcel map land registry Democratic Republic of the Congo",
+        "result": "First-party discovery found the DRC Ministry of Land Affairs jurisdiction directory listing Butembo I and Butembo II, and the government service catalogue describing cadastral-register consultation. No official open parcel map/API was found.",
+        "actualResultUrls": ["https://affairesfoncieres.gouv.cd/secretariat/circonscriptions", "https://servicepublic.gouv.cd/service/4671"]
+      },
+      {
+        "language": "native/local",
+        "query": "Butembo cadastre parcellaire carte officielle République démocratique du Congo",
+        "result": "French-language discovery found the same official Ministry jurisdiction directory and public-service procedure. No public Butembo parcel geometry service was identified.",
+        "actualResultUrls": ["https://affairesfoncieres.gouv.cd/secretariat/circonscriptions", "https://servicepublic.gouv.cd/service/4671"]
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "assessment": "Official directory lists Butembo I and Butembo II under Nord-Kivu; jurisdiction evidence only, not parcel geometry."
+      },
+      {
+        "url": "https://servicepublic.gouv.cd/service/4671",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "assessment": "Official government catalogue describes paid consultation of cadastral and land registers through local land/title offices; it is a procedure, not an open API."
+      },
+      {
+        "url": "https://bic.cd/",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "assessment": "Public landing page reachable. Current JavaScript/client inspection exposed a generic Supabase-backed application and a home-count function, but no verified safe parcel lookup route or parcel schema was established."
+      },
+      {
+        "url": "https://services9.arcgis.com/mt4kvYhNXSa5AqLG/ArcGIS/rest/services/North_Kivu_HF/FeatureServer?f=pjson",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "assessment": "Service metadata lists health-facility point layers, not cadastral parcel polygons; excluded from parcel evidence."
+      },
+      {
+        "url": "https://services9.arcgis.com/mt4kvYhNXSa5AqLG/ArcGIS/rest/services/North_Kivu_HF/FeatureServer/48/query?where=1%3D1&outFields=OBJECTID,Field1,Field2,Field3,Field4,Field5,Field6,Field7&returnGeometry=true&f=geojson",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "assessment": "Returned one point feature labelled CUG Butembo at [29.2622000000001,0.124400000000037]; this is a health-facility point, not parcel geometry. Unsafe attributes were not retained."
+      }
+    ],
+    "inspectedConfiguration": {
+      "officialRegistryDirectory": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "procedurePage": "https://servicepublic.gouv.cd/service/4671",
+      "publicParcelEndpointObserved": false,
+      "responseSchemaObserved": "No cadastral parcel response observed",
+      "explicitCrsObserved": false
+    }
+  },
+  "registryEvidenceUrls": ["https://affairesfoncieres.gouv.cd/secretariat/circonscriptions", "https://servicepublic.gouv.cd/service/4671"],
+  "checkedAt": "2026-10-09",
+  "researchAttempt": 1,
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "adapterReady": false,
+  "runtimeAssessment": {"status": "held_quality_review", "reason": "Registry custodian and consultation procedure are evidenced, but no public parcel geometry or qualified adapter was verified."}
+}

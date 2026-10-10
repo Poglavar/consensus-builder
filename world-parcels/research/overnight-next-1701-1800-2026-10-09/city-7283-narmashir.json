@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 7283,
+  "queueRank": 1742,
+  "cityId": "wup2025:7283",
+  "name": "Narmashir",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "point": [28.9435750852175, 58.6940034834704],
+  "centerLatLon": [28.9435750852175, 58.6940034834704],
+  "population2025": 329526,
+  "population2025k": 329.526,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Narmashir Iran cadastral parcel map GIS official registry",
+        "result": "No Narmashir-specific first-party parcel viewer or feature service was found. Results included general Iranian cadastral background, a legacy cadastre map URL reference, and non-first-party place pages.",
+        "actualResultUrls": [
+          "https://cadastre.mimt.gov.ir/Map/Map.aspx?PNid=0",
+          "https://map.mimt.gov.ir:8006/maptile.ashx?x=41&y=25&z=6&r=19d775e599cb90aa33108d674cf56701",
+          "https://www.unstats.un.org/unsd/geoinfo/rcc/docs/rccap19/crp/E_Conf.102_CRP2_Iranian_National_Report.pdf",
+          "https://mapcarta.com/13148310"
+        ]
+      },
+      {
+        "language": "Persian (local/national working language)",
+        "query": "نرماشیر کاداستر نقشه پارسل ثبت اسناد سامانه رسمی",
+        "result": "No Narmashir-specific first-party parcel viewer, public schema, or geometry endpoint was found. Results indicated the national Registration Organization cadastral custodian and general cadastral procedures, without an anonymous city parcel response.",
+        "actualResultUrls": [
+          "https://ssaa.ir/",
+          "https://shamim.ssaa.ir/",
+          "https://www.ncc.gov.ir/uploads/1/2025/Jul/07/%D9%86%D8%B4%D8%B1%DB%8C%D9%87%20%D8%B4%D9%85%D8%A7%D8%B1%D9%87%20122.pdf",
+          "https://www.samisoft.ir/jam_location_finder/"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://ssaa.ir/",
+      "operator": "Iran National Organization for Registration of Deeds and Properties; national land/property registration custodian",
+      "observation": "National cadastral custodian lead identified, but no Narmashir-specific public map/API or local office evidence was exposed during this attempt. This is not sufficient for registryFound=true."
+    },
+    {
+      "url": "https://cadastre.mimt.gov.ir/Map/Map.aspx?PNid=0",
+      "operator": "Legacy Iranian cadastral map reference associated with the Ministry of Industry, Mine and Trade domain",
+      "observation": "A historical public map URL was found in indexed GIS discussion, but the host did not return a usable response during the bounded request. No current JavaScript/configuration, schema, CRS, or parcel identity was verified."
+    },
+    {
+      "url": "https://www.ncc.gov.ir/uploads/1/2025/Jul/07/%D9%86%D8%B4%D8%B1%DB%8C%D9%87%20%D8%B4%D9%85%D8%A7%D8%B1%D9%87%20122.pdf",
+      "operator": "National Cartographic Center of Iran",
+      "observation": "Official publication search result discusses cadastral coordination and the Registration Organization, but does not expose a Narmashir parcel layer or anonymous geometry service."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://ssaa.ir/",
+      "method": "GET",
+      "status": "connection timeout after 5 seconds",
+      "summary": "National registration site could not be fetched from this environment; no login or retry beyond the bounded request was attempted."
+    },
+    {
+      "url": "https://cadastre.mimt.gov.ir/Map/Map.aspx?PNid=0",
+      "method": "GET",
+      "status": "connection timeout after 5 seconds",
+      "summary": "Legacy cadastral map host was unreachable; no viewer JavaScript, service configuration, schema, CRS, or parcel response was obtained."
+    },
+    {
+      "url": "http://map.mimt.gov.ir:8006/maptile.ashx?x=41&y=25&z=6&r=19d775e599cb90aa33108d674cf56701",
+      "method": "GET",
+      "status": "connection timeout after 5 seconds",
+      "summary": "Indexed legacy tile route was unreachable; it was not treated as a parcel endpoint and no tile was retained."
+    },
+    {
+      "url": "https://www.ncc.gov.ir/uploads/1/2025/Jul/07/%D9%86%D8%B4%D8%B1%DB%8C%D9%87%20%D8%B4%D9%85%D8%A7%D8%B1%D9%87%20122.pdf",
+      "method": "GET via first-party indexed publication result",
+      "status": "document result found in discovery; not a parcel service",
+      "summary": "Read as institutional cadastral context only; no unsafe fields requested and no geometry extracted."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Iranian national cadastral and registration institutions were identified; no Narmashir-specific open parcel coverage was demonstrated.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "citywideParcelCoverageVerified": false
+  },
+  "qualityAssessment": {
+    "geometryQuality": "not sampled",
+    "identityReadiness": "not ready; no safe native parcel identity and geometry response retrieved",
+    "attributesRequested": "none beyond public service/schema discovery; no owner, address, contact, titleholder, tax, or account fields requested",
+    "safeFieldAllowlist": ["native parcel identifier if publicly exposed", "geometry", "source layer name", "CRS", "service metadata"]
+  },
+  "sourceFields": null,
+  "crs": null,
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "national_cadastral_custodian_leads_no_verified_open_geometry",
+  "blocker": "No anonymous first-party Narmashir parcel viewer, API, schema response, CRS response, or geometry-plus-native-ID extract was verified after bounded English and Persian discovery.",
+  "remainingUncertainty": "A local registration office or restricted national cadastral service may hold parcel coverage. Search failure and unreachable hosts do not establish citywide absence, and the exact WUP point was not shifted or used as an absence test.",
+  "nextStep": "On a later attempt, locate a current official Iranian cadastral viewer or documented provincial/local service, inspect its JavaScript/configuration, and request only a bounded geometry-plus-native-ID response around the unchanged WUP point.",
+  "registryBasis": null,
+  "registryEvidenceUrls": [],
+  "identityPolicy": "No GeoJSON retained because no safe, verified native parcel identity and geometry response was available."
+}

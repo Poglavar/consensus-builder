@@ -1,0 +1,14 @@
+{
+  "taskId": "city:11966",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-11966-guankou.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/guankou-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T12:12:23+00:00",
+  "reason": "Official Xiamen source names cadastral and parcel-map services, while its registration portal requires authentication; no anonymous native-ID parcel geometry was obtained.",
+  "firstPartyUrlChecked": "https://ixm.xm.gov.cn/yyzx/202209/t20220909_94940.htm",
+  "admissionGates": "No verified safe native-ID full polygon; fresh ID reads, forced paging, 13 cells, metric GEOS checks, source binding and headed Details remain unverified."
+}

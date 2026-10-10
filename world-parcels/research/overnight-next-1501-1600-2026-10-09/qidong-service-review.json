@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-11772-qidong.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Jiangsu government service page is reachable and identifies Qidong Municipal Bureau of Natural Resources and Planning as the implementing authority for real-estate registration. It references cadastral materials and a web-map URL, but the fetched page exposes no public Qidong parcel viewer/API, schema, or safe anonymous geometry response. No parcel polygon was retained.",
+  "registryAssessment": "Local registry/procedure custodian evidenced: Qidong Municipal Bureau of Natural Resources and Planning. This is not evidence of an open parcel geometry service or citywide parcel coverage.",
+  "officialPrimarySources": [
+    {
+      "url": "https://ntqd.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=1132068101425001954000715001007&iddept_yw_inf=113206810142500195400071500100701&ql_kind=07&webId=52",
+      "observation": "HTTP 200. Official Qidong service procedure for initial registration of state-owned construction land-use rights and building ownership; names Qidong Municipal Bureau of Natural Resources and Planning, and references cadastral-map materials and webmap.cn. No public parcel geometry endpoint or feature response exposed."
+    },
+    {
+      "url": "http://www.webmap.cn/store.do?method=store&storeId=909#",
+      "observation": "URL linked by the official procedure page as a web-map reference. Direct GET returned a small HTML response without a usable Qidong parcel viewer, service configuration, schema, or anonymous feature endpoint."
+    },
+    {
+      "url": "https://ntqd.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=1132068101425001954000715001009&iddept_yw_inf=113206810142500195400071500100901&ql_kind=07&webId=52",
+      "observation": "Official Qidong land-contract registration procedure; confirms the local natural-resources authority and that cadastral-survey outputs can include a parcel map and boundary-point coordinates. No public parcel layer or geometry response exposed."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Qidong China official cadastral parcel map land registration map API",
+      "result": "Official procedure source found; no public Qidong parcel viewer/API or geometry response found.",
+      "method": "Separate English-language web search and first-party source review.",
+      "scope": "Identify a city-specific registry custodian and safe anonymous parcel geometry."
+    },
+    {
+      "language": "Chinese",
+      "query": "启东市 不动产登记 地籍图 宗地图 地图 官方",
+      "result": "Official Jiangsu service result found; it identifies the local authority and procedural cadastral materials, but no public Qidong parcel viewer/API or geometry response was found.",
+      "method": "Separate Chinese-language web search and first-party source review.",
+      "scope": "Identify local registry custody and whether public full parcel geometry is anonymously queryable."
+    }
+  ],
+  "attempts": [
+    {
+      "method": "GET",
+      "url": "https://ntqd.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=1132068101425001954000715001007&iddept_yw_inf=113206810142500195400071500100701&ql_kind=07&webId=52",
+      "httpStatus": 200,
+      "result": "Fetched official Qidong registration procedure. Inspected only public procedural text and links; no parcel feature service, schema, or safe geometry response."
+    },
+    {
+      "method": "GET",
+      "url": "http://www.webmap.cn/store.do?method=store&storeId=909#",
+      "httpStatus": 200,
+      "result": "Fetched linked web-map reference. Response did not provide a usable Qidong viewer/API configuration or parcel feature response."
+    },
+    {
+      "method": "GET",
+      "url": "https://ntqd.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=1132068101425001954000715001009&iddept_yw_inf=113206810142500195400071500100901&ql_kind=07&webId=52",
+      "httpStatus": "search-index evidence; direct request not repeated",
+      "result": "Official result documents cadastral-survey materials including parcel map and boundary-point coordinates, but does not expose an anonymous parcel geometry service."
+    }
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": "No parcel geometry retained; no qualifying safe WUP-point sample was available for retention.",
+  "coverageAssessment": {
+    "claimedScope": "Qidong local real-estate registration procedure and cadastral-material custody only.",
+    "verifiedOpenScope": "No open parcel geometry scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "The local registry and cadastral procedure are evidenced, but the public availability, endpoint, schema, CRS, parcel identity, and citywide coverage of any Qidong cadastral map remain unresolved. A zero exact-point hit was not obtained and is not treated as absence.",
+  "termsHandling": "Informational only; no credentials, login, CAPTCHA/Cloudflare bypass, unsafe ownership/address fields, or TLS exceptions used."
+}

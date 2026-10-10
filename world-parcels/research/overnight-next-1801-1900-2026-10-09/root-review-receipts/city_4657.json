@@ -1,0 +1,28 @@
+{
+  "taskId": "city:4657",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-4657-samalut.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/samalut-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T16:27:03.917384Z",
+  "reason": "No verified Samalut parcel ID-plus-polygon response. The official GIS layer inspected is Building, not parcels; its bounded query returned an error. Local parcel custody remains unresolved (registryFound null).",
+  "identity": {
+    "cityCode": 4657,
+    "queueRank": 1832,
+    "country": "Egypt",
+    "point": [
+      28.3124570979132,
+      30.7227808637348
+    ],
+    "populationPersons": 313324,
+    "verifiedAgainst": "2025 WUP archive (SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114) and pending queue"
+  },
+  "searchLanguagesVerified": [
+    "English",
+    "Arabic"
+  ],
+  "retainedFullPolygons": 0,
+  "admissionGates": "No qualifying parcel response or fresh native-ID adapter read. Forced paging, 13 bounded cells, metric GEOS validity/overlap/operation checks, source binding and headed Details-panel verification are not evidenced."
+}

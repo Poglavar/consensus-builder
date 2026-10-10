@@ -1,0 +1,27 @@
+{
+  "taskId": "city:10365",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-10365-thoothukudi.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/thoothukudi-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T09:35:55.348579Z",
+  "reviewFindings": "Official district land-service page supports local land-record custody. The port WFS described by the worker is limited to port-estate land; its empty WUP-point response is not citywide absence. No citywide native-ID plus complete-polygon response or independent adapter qualification exists.",
+  "identityCheck": "Packet matches both immutable ranked roster and pending queue on city code, rank, country, point, and population converted from thousands to persons.",
+  "bilingualSearchCheck": "Distinct English and native-language queries with result URLs and outcomes recorded in packet; the queries were re-executed during root review.",
+  "retainedFullPolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "independentlyCheckedFirstPartyUrls": [
+    "https://thoothukudi.nic.in/service/e-services-anytime-anywhere-land/"
+  ],
+  "sourceAdmission": "not_admitted"
+}

@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-847-tripoli.json",
+  "checkedAt": "2026-10-10",
+  "cityCode": 847,
+  "queueRank": 1502,
+  "city": "Tripoli",
+  "country": "Lebanon",
+  "countryCode": "LB",
+  "purpose": "First-party cadastral-source discovery and bounded anonymous service review for Tripoli, Lebanon.",
+  "assessment": "A local Tripoli registry and survey-office custodian is evidenced by the official Directorate General of Land Registry and Cadastre. Its public title-register page is a lookup workflow requiring parcel identifiers, not an anonymous geometry service. An official Ministry of Public Health ArcGIS endpoint was inspected and queried, but its Cadaster layer is cadastral-zone polygons with zone names/codes, not individual parcel polygons. No safe parcel sample is retained.",
+  "registryAssessment": "registryFound=true: the official LRC publishes Tripoli registry/survey-office organizational evidence and cadastral-map procedures. This is local custodian evidence, not source integration or adapter qualification.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "wupPointPreserved": [34.4394204360595, 35.8416069020689]
+  },
+  "searchQueries": [
+    {"language": "English", "query": "Tripoli Lebanon official cadastral parcel map GIS cadastre viewer Ministry Finance", "result": "Official LRC pages, title-register UI, and an official ArcGIS cadastral-zone service found; no parcel-level public feature service verified.", "actualResultUrls": ["https://payment.lrc.gov.lb/main.aspx?lang=en", "https://www.lrc.gov.lb/en/node/61", "https://maps.moph.gov.lb/server/rest/services/Administrative_Zones/MapServer/4"]},
+    {"language": "Arabic", "query": "طرابلس لبنان السجل العقاري خريطة عقارية مسح الأراضي GIS", "result": "Official Arabic LRC procedures and Tripoli office structure found; no anonymous parcel-level geometry endpoint verified.", "actualResultUrls": ["https://www.lrc.gov.lb/ar/node/61", "https://www.lrc.gov.lb/ar/content/أعمال-دوائر-المساحة", "https://www.lrc.gov.lb/sites/default/files/RegOrgPDF/ar/tripoli_org.pdf", "https://payment.lrc.gov.lb/main.aspx?lang=ar"]}
+  ],
+  "attempts": [
+    {"url": "https://www.lrc.gov.lb/sites/default/files/RegOrgPDF/ar/tripoli_org.pdf", "method": "GET; official indexed source", "result": "Tripoli registry and survey-office structure evidenced; no geometry returned."},
+    {"url": "https://www.lrc.gov.lb/ar/content/أعمال-دوائر-المساحة", "method": "GET; anonymous", "result": "Official survey-office duties include cadastral maps, measurements, records, and map copies; no public parcel API exposed."},
+    {"url": "https://payment.lrc.gov.lb/main.aspx?lang=en", "method": "GET; anonymous", "httpStatus": 200, "result": "Title-register form loaded with Province, Caza, Cadastral zone, Parcel No, Unit No, and Block No; no parcel geometry endpoint exposed in current HTML."},
+    {"url": "https://payment.lrc.gov.lb/main.aspx?lang=ar", "method": "GET; anonymous", "httpStatus": 200, "result": "Arabic title-register form loaded; no parcel geometry endpoint exposed."},
+    {"url": "https://maps.moph.gov.lb/server/rest/services/Administrative_Zones/MapServer/4?f=pjson", "method": "GET; anonymous", "httpStatus": 200, "result": "Cadaster polygon layer schema inspected: ID, DISTRICT_ID, OID, NAME, NAME_AR, PCODE, STATUS, audit fields, and geometry; CRS 102100/3857."},
+    {"url": "https://maps.moph.gov.lb/server/rest/services/Administrative_Zones/MapServer/4/query", "method": "GET; anonymous exact-point query", "httpStatus": 200, "result": "Returned one zone polygon, Trablous Et-Tell, OID 203, PCODE 31121, stable ID {F5A7198A-7EBB-495A-B36E-1CB20322A165}; not an individual parcel."},
+    {"url": "https://maps.moph.gov.lb/server/rest/services/Administrative_Zones/MapServer/4/query", "method": "GET; anonymous bounded envelope count query", "httpStatus": 200, "result": "Returned 27 intersecting cadastral-zone features in the bounded Tripoli-area envelope; not a parcel count."}
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": {"nativeIdentityField": null, "nativeIdentityObserved": "ID (zone GUID), with OID and GlobalID also present", "geometryEvidence": "Zone polygon only; no parcel polygon retained.", "otherObservedFieldNames": ["DISTRICT_ID", "NAME", "NAME_AR", "PCODE", "STATUS"]},
+  "compositeKeyProvenance": null,
+  "geometryDecision": {"verified": false, "sourceId": "https://maps.moph.gov.lb/server/rest/services/Administrative_Zones/MapServer/4", "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Zone hit only; no parcel hit claim and no absence inference.", "requestEvidence": "See attempts above."},
+  "coverageAssessment": {"claimedScope": "Tripoli local registry/survey custody and official cadastral-zone service.", "verifiedOpenScope": "Cadastral zones only; individual parcel geometry unavailable anonymously.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeAssessment": "held; no adapter admission or source integration implied",
+  "remainingUncertainty": "Request-only, authenticated, or non-indexed official parcel-map workflows may exist. Parcel identity schema, parcel CRS/geometry endpoint, freshness, and completeness remain unverified. Login, credentials, private tokens, owner/address/titleholder/personal/tax fields, CAPTCHA/Cloudflare bypass, and unsafe fields were not used or requested."
+}

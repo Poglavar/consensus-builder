@@ -1,0 +1,21 @@
+{
+  "taskId": "city:2797",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-2797-neiva.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/neiva-service-review.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "tmp/valhalla-parcel-research/2797/Direccion-de-Gestion-Catastral.aspx.html",
+    "tmp/valhalla-parcel-research/2797/CatastroMultiproposito.aspx.html",
+    "tmp/valhalla-parcel-research/2797/2d330a5d82.json",
+    "tmp/valhalla-parcel-research/2797/a0773f9e20.json",
+    "tmp/valhalla-parcel-research/2797/query-schema-test.json",
+    "tmp/valhalla-parcel-research/2797/neiva-code-query.geojson",
+    "tmp/valhalla-parcel-research/runs/20261010T133319-e46e8eef/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-10T13:39:14Z",
+  "registryFound": true,
+  "reason": "Municipal custodianship is supported by cached first-party pages. IGAC layer metadata identifies CODIGO as a candidate native ID, but the cached false-predicate query returned 2,000 global ID-only rows and no geometry; the municipality query cache is an HTML WAF response and the exact-point query timed out. No Neiva full polygon or stable feature-level native ID was verified.",
+  "admission": "Held: no verified full native parcel polygon and ID; independent fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, and headed Details-panel verification are missing. Runtime, catalog, city configuration and generated coverage remain unchanged."
+}

@@ -1,0 +1,14 @@
+{
+  "taskId": "city:9176",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-9176-chengde.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/chengde-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T12:15:28.180318Z",
+  "reason": "Official Chengde registration center confirms local custody; certificate access is login-gated. No anonymous native-ID polygon response or adapter qualification is evidenced.",
+  "primarySourceUrl": "https://zrgh.chengde.gov.cn/online/public/cms/jgjs",
+  "admissionGate": "Held: no fresh exact native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed details-panel verification."
+}

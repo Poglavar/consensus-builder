@@ -1,0 +1,74 @@
+{
+  "cityCode": 10790,
+  "queueRank": 1366,
+  "name": "Jixi",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [45.3069435829134, 130.966231335848],
+  "population2025": 412341,
+  "population2025k": 412.341,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": true,
+  "registryAssessment": "Official Jixi government sources identify the Jixi Natural Resources and Planning Bureau as the source for real-estate registration guidance and identify the Jixi Real Estate Registration Center as the local service custodian. This establishes local registry custody and procedures, not an open parcel-vector service or adapter readiness.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jixi China official cadastral map parcel GIS natural resources land registration Jixi",
+        "result": "First-party search results identified official Jixi registration guidance and a Jixi Real Estate Registration Center service report. No English-language public parcel ID plus geometry API or viewer endpoint was identified.",
+        "actualResultUrls": [
+          "https://www.jixi.gov.cn/jixi/c100076/202409/c06_306577.shtml",
+          "https://www.jixi.gov.cn/jixi/c100004/202404/c06_295129.shtml"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "script": "Simplified Chinese",
+        "query": "鸡西市 不动产登记 地籍图 地图 自然资源局",
+        "result": "First-party Jixi results identify 鸡西市自然资源和规划局 and 鸡西市不动产登记中心 and describe registration procedures and cross-area service coverage. No anonymous parcel geometry endpoint, parcel layer schema, or safe native parcel identity was exposed.",
+        "actualResultUrls": [
+          "https://jixi.gov.cn/jixi/c100076/202409/c06_306577.shtml",
+          "https://www.jixi.gov.cn/jixi/c100004/202404/c06_295129.shtml",
+          "https://www.jixi.gov.cn/jixi/c100004/202411/c06_315153.shtml"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.jixi.gov.cn/jixi/c100076/202409/c06_306577.shtml",
+      "role": "Jixi government official registration guidance, source credited to Jixi Natural Resources and Planning Bureau",
+      "observation": "Describes real-estate registration types, lawful access to registration materials, and district registration service locations; no public parcel map or vector endpoint is published."
+    },
+    {
+      "url": "https://www.jixi.gov.cn/jixi/c100004/202404/c06_295129.shtml",
+      "role": "Jixi government official department report",
+      "observation": "Identifies the Jixi Real Estate Registration Center and reports citywide/cross-level registration service arrangements; no anonymous parcel geometry service is exposed."
+    },
+    {
+      "url": "https://www.jixi.gov.cn/jixi/c100004/202411/c06_315153.shtml",
+      "role": "Jixi government official department report",
+      "observation": "Reports online one-window registration service activity for Jixi; this is a registration workflow, not a public cadastral feature service."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No safe native parcel ID plus full polygon was returned by an anonymous public request. The WUP point was preserved exactly and no exact-point hit or citywide absence is inferred from endpoint failures."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Jixi municipal real-estate registration custody and official service procedures.",
+    "verifiedOpenScope": "Local registry custody and procedure context only; current public viewer JavaScript/configuration, parcel layer, CRS, native identity, exact-point containment, and citywide open coverage remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

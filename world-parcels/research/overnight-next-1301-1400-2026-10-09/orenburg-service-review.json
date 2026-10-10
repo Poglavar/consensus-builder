@@ -1,0 +1,26 @@
+{
+  "schemaVersion":"1.0",
+  "checkedAt":"2026-10-09",
+  "cityRecord":"city-7113-orenburg.json",
+  "cityCode":7113,
+  "purpose":"Document first-party discovery, public map/API route attempts, safe-field limits, and uncertainty.",
+  "scopeLimits":{"maxFullPolygonsRetainedInCityRecord":0,"maxFullPolygonsRetainedInReview":0,"maxFullPolygonsRetainedInRepository":0,"ownerOrAddressDataRetained":false,"credentialsOrTokenValuesRetained":false,"unsafeFieldsRequested":false,"citywideCompletenessAsserted":false},
+  "assessment":"The federal National Spatial Data System public cadastral-map route and Orenburg-region Rosreestr/cadastral-chamber custodians were evidenced. The official map and Rosreestr hosts were unavailable or timed out in this attempt, so no current viewer configuration, service endpoint, schema, CRS, native parcel identity, or geometry was claimed. No parcel sample is retained.",
+  "registryAssessment":"Orenburg-region Rosreestr and the cadastral chamber are evidenced as custodians/procedure providers, but no anonymous local cadastral registry or open parcel-vector response was verified; registryFound remains null.",
+  "safeFieldAllowlist":["safe parcel/cadastral identifier only if publicly exposed and non-personal","geometry","CRS","non-personal layer/schema metadata"],
+  "queries":[
+    {"language":"English","query":"Orenburg official cadastral map parcel public map API Rosreestr Orenburg Russian Federation","outcome":"Found NSDI public cadastral-map route and Orenburg-region Rosreestr/cadastral-chamber references; direct official map access timed out.","actualResultUrls":["https://nspd.gov.ru/map?thematic=PKK","https://orenmfc.orb.ru/services/departments/upravlenie-federalnoj-sluzhby-gosudarstvennoy-registracii-kadastra-i-kartografii-po-orenburgskoy-oblasti-rosreestr-i-filial-fgbu-fkp-rosreestra-po-orenburgskoy-oblasti-kadastrovaya-palata/gosudarstvennaya-usluga-po-gosudarstvennomu-kadastrovomu-uchetu-nedvizhimogo-imushchestva-i-ili-gosudarstvennoy-registratsii-prav-na-nedvizhimoe-imushchestvo-i-sdelok-s-nim/"]},
+    {"language":"Russian","query":"Оренбург официальная публичная кадастровая карта Росреестр кадастровые кварталы API","outcome":"Found official NSDI/Rosreestr references and Orenburg-region custodian material; no bounded anonymous ID-plus-geometry response was obtained.","actualResultUrls":["https://nspd.gov.ru/map?thematic=PKK","https://www.rkc56.ru/attach/orenburg/docs/Pisma_Rosreestra/2025/Pismo-Rosreestra-ot-13.12.2024-N06-02428_24_.pdf"]}
+  ],
+  "attempts":[
+    {"url":"https://nspd.gov.ru/map?thematic=PKK","method":"GET","httpStatus":"timeout","result":"Web fetch timed out; viewer JS/config/service route not inspected."},
+    {"url":"https://nspd.gov.ru/map?thematic=PKK","method":"GET","httpStatus":"timeout after 20s","result":"Direct curl timed out before response; TLS verification remained enabled."},
+    {"url":"https://rosreestr.gov.ru/","method":"GET","httpStatus":"timeout","result":"Federal Rosreestr host timed out; no endpoint inferred."},
+    {"url":"https://56.rosreestr.gov.ru/","method":"GET","httpStatus":"not accessible","result":"Regional host unavailable to fetch client; no credentials or TLS bypass used."},
+    {"url":"https://orenmfc.orb.ru/services/departments/upravlenie-federalnoj-sluzhby-gosudarstvennoy-registracii-kadastra-i-kartografii-po-orenburgskoy-oblasti-rosreestr-i-filial-fgbu-fkp-rosreestra-po-orenburgskoy-oblasti-kadastrovaya-palata/gosudarstvennaya-usluga-po-gosudarstvennomu-kadastrovomu-uchetu-nedvizhimogo-imushchestva-i-ili-gosudarstvennoy-registratsii-prav-na-nedvizhimoe-imushchestvo-i-sdelok-s-nim/","method":"GET/search review","httpStatus":200,"result":"Custodian/procedure evidence reviewed; no open parcel vector endpoint exposed."}
+  ],
+  "geometryEvidence":null,
+  "geometryDecision":{"verified":false,"sourceId":null,"nativeIdField":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"No exact-point containment test was completed. Exact WUP point [51.795436024663, 55.1172994900619] was preserved and not shifted; timeout/unavailable viewer is not evidence of citywide absence."},
+  "remainingUncertainty":"The current NSDI viewer JavaScript/configuration, API endpoints, CRS, native parcel identity, exact-point parcel, and citywide open coverage remain unverified. No owner, address, titleholder, personal, tax, account, or other unsafe fields were requested.",
+  "runtimeAssessment":"held; serial reviewer must independently qualify any adapter"
+}

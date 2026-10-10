@@ -1,0 +1,124 @@
+{
+  "cityCode": 5008,
+  "queueRank": 1668,
+  "name": "Edendale",
+  "country": "South Africa",
+  "countryCode": "ZA",
+  "iso3": "ZAF",
+  "locId": 710,
+  "point": [-29.6564531242963, 30.3431977067269],
+  "population2025": 342930,
+  "population2025k": 342.93,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Edendale South Africa cadastral parcel map official GIS property viewer KwaZulu-Natal",
+        "result": "First-party discovery found the KwaZulu-Natal Office of the Premier cadastral dashboard, the national Chief Surveyor-General spatial/property viewers, and an official eThekwini cadastral ArcGIS service. Official Edendale Town Centre procurement mapping also exposes a cadastral map. No public Msunduzi/Edendale parcel API or safe anonymous feature response was verified.",
+        "actualResultUrls": [
+          "https://gis.kznpidh.gov.za/home/",
+          "https://gis.kznpidh.gov.za/portal/apps/dashboards/e51a0410b7dc46e09088c44d50ec1a46",
+          "https://csg.dlrrd.gov.za/",
+          "https://csg.dlrrd.gov.za/data.htm",
+          "https://www.etenders.gov.za/home/Download/?blobName=b43cfb81-5ba0-42e4-8276-cd3db231ba64.pdf&downloadedFileName=ETC+-+Cadastral.pdf",
+          "https://gis.durban.gov.za/server/rest/services/WebViewers/EXT_Cadastral/MapServer"
+        ]
+      },
+      {
+        "language": "isiZulu",
+        "query": "Edendale eKZN imephu yeziza cadastre GIS umhlaba iMsunduzi",
+        "result": "No separate first-party isiZulu cadastral parcel service was returned. The relevant official English-language KZN cadastral dashboard and South African cadastral sources remained the usable first-party routes; no public Edendale parcel geometry response was obtained.",
+        "actualResultUrls": [
+          "https://gis.kznpidh.gov.za/home/",
+          "https://csg.dlrrd.gov.za/",
+          "https://www.msunduzi.gov.za/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://gis.kznpidh.gov.za/home/",
+      "observation": "Official KwaZulu-Natal Office of the Premier geospatial home page exposes a Cadastral dashboard described as the location of cadastral boundaries."
+    },
+    {
+      "url": "https://gis.kznpidh.gov.za/portal/apps/dashboards/e51a0410b7dc46e09088c44d50ec1a46",
+      "observation": "Official KZN cadastral dashboard route was reachable as a public ArcGIS dashboard, but its dashboard data request returned HTTP 403 when queried anonymously; no service URL or parcel schema was exposed by the bounded inspection."
+    },
+    {
+      "url": "https://www.etenders.gov.za/home/Download/?blobName=b43cfb81-5ba0-42e4-8276-cd3db231ba64.pdf&downloadedFileName=ETC+-+Cadastral.pdf",
+      "observation": "Official government tender portal PDF titled EDENDALE TOWN CENTRE: CADASTRAL shows registered and unregistered cadastral boundaries and parcel labels. It is static planning/procurement evidence, not an anonymous parcel API."
+    },
+    {
+      "url": "https://csg.dlrrd.gov.za/",
+      "observation": "Chief Surveyor-General official site describes the national cadastral management system and links to spatial cadastral data/property viewer routes."
+    },
+    {
+      "url": "https://gis.durban.gov.za/server/rest/services/WebViewers/EXT_Cadastral/MapServer",
+      "observation": "First-party eThekwini cadastral ArcGIS service advertises parcel and parcel-boundary layers, but its published extent begins east of the supplied Edendale point and does not establish Msunduzi coverage."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://gis.kznpidh.gov.za/portal/apps/dashboards/e51a0410b7dc46e09088c44d50ec1a46",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Dashboard HTML route opened. Its anonymous ArcGIS sharing REST item and data requests returned HTTP 403, so no underlying cadastral service configuration was recovered."
+    },
+    {
+      "url": "https://gis.durban.gov.za/server/rest/services/WebViewers/EXT_Cadastral/MapServer",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": "not obtained",
+      "contentType": null,
+      "outcome": "Official search indexing exposed the service metadata and layers, but direct bounded curl requests failed local TLS certificate verification. No certificate exception was used."
+    },
+    {
+      "url": "https://gis.durban.gov.za/server/rest/services/WebViewers/EXT_Cadastral/MapServer/17/query",
+      "method": "GET; anonymous; TLS verification enabled; point geometry query at exact WUP point",
+      "httpStatus": "not obtained",
+      "contentType": null,
+      "outcome": "Request was attempted against the advertised Parcels layer with OBJECTID and geometry only. TLS verification failed before an HTTP response; the point was not shifted and no hit/miss was inferred."
+    },
+    {
+      "url": "https://csggis.drdlr.gov.za/portal/apps/mapviewer/index.html?webmap=8dc745dca75849b3be0952916253af22",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": "not obtained",
+      "contentType": null,
+      "outcome": "Official property viewer URL was discovered, but the host could not be resolved from this environment. No retry with credentials or altered TLS settings was made."
+    },
+    {
+      "url": "https://www.etenders.gov.za/home/Download/?blobName=b43cfb81-5ba0-42e4-8276-cd3db231ba64.pdf&downloadedFileName=ETC+-+Cadastral.pdf",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "application/pdf",
+      "outcome": "Static cadastral map was available and reviewed as source evidence. It contains parcel labels and boundaries but no machine-readable safe native identity/geometry response suitable for retention."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "A first-party KZN cadastral map/dashboard and an official Edendale Town Centre cadastral map establish a local/regional cadastral map route. They do not establish a public Msunduzi parcel API or current anonymous parcel coverage.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "operator": "KwaZulu-Natal Office of the Premier / South African Chief Surveyor-General cadastral services; Edendale local context is Msunduzi Local Municipality",
+    "viewerUrls": [
+      "https://gis.kznpidh.gov.za/portal/apps/dashboards/e51a0410b7dc46e09088c44d50ec1a46",
+      "https://csggis.drdlr.gov.za/portal/apps/mapviewer/index.html?webmap=8dc745dca75849b3be0952916253af22"
+    ],
+    "crs": null
+  },
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "resultCategory": "official_cadastral_map_routes_no_verified_public_parcel_endpoint",
+  "coverageAssessment": {
+    "claimedScope": "KZN provincial and South African national cadastral/spatial viewer coverage; static official Edendale cadastral planning map.",
+    "verifiedOpenScope": "No anonymous Edendale/Msunduzi parcel record, stable native parcel identity, schema, CRS, or geometry was retrieved.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "The KZN dashboard may wrap a restricted or separately configured ArcGIS service, and the national CSG viewer may require a browser-accessible host not resolvable here. The eThekwini service is extent-limited away from the WUP point. No exact-point miss, map extent miss, timeout, login wall, or unusable UI was treated as evidence of citywide cadastral absence. No owner, address, titleholder, tax, account, contact, or other unsafe fields were requested."
+}

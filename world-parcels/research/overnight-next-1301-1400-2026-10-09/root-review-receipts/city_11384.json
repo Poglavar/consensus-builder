@@ -1,0 +1,13 @@
+{
+  "taskId": "city:11384",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-11384-jingdezhen.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/jingdezhen-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-09T14:22:47Z",
+  "reason": "Municipal first-party interview confirms the city registration center and identity-verified cadastral-map visualization, supporting registryFound=true. No anonymous safe native-ID/full-polygon response or live adapter admission evidence exists.",
+  "firstPartyCustodySource": "https://jdz.gov.cn/zwgk/fdzdgknr/zcwj/zcjd/t977888.shtml"
+}

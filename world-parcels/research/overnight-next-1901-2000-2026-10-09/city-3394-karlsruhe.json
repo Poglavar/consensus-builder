@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 3394,
+  "queueRank": 1929,
+  "name": "Karlsruhe",
+  "country": "Germany",
+  "countryCode": "DE",
+  "iso3": "DEU",
+  "point": [49.0084967221897, 8.4011625005132],
+  "population2025": 298556,
+  "population2025k": 298.556,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Karlsruhe Germany official cadastral map parcels geoportal API",
+        "result": "Found the official City of Karlsruhe Geoportal, its municipal open-data/geoservices page, and the municipal Liegenschaftskataster service page. The Geoportal explicitly advertises a parcel-background map, but no public parcel feature API was confirmed in this attempt.",
+        "actualResultUrls": [
+          "https://www.karlsruhe.de/mobilitaet-stadtbild/bauen-und-immobilien/geoportal-karlsruhe",
+          "https://www.karlsruhe.de/mobilitaet-stadtbild/bauen-und-immobilien/geoportal-karlsruhe/basis-daten-und-hintergrundkarten",
+          "https://www.karlsruhe.de/mobilitaet-stadtbild/bauen-und-immobilien/geoportal-karlsruhe/e-service-und-open-data"
+        ]
+      },
+      {
+        "language": "German",
+        "query": "Karlsruhe amtliche Flurkarte Geoportal Flurstücke WFS",
+        "result": "Found the official municipal pages naming the Regiokarte mit Flurstücken, the three cadastral Gemarkungen, the Liegenschaftsamt, and the paid Liegenschaftskataster extract service. The open-data page says municipal WMS services are available on request; no anonymous parcel WFS endpoint was published there.",
+        "actualResultUrls": [
+          "https://www.karlsruhe.de/mobilitaet-stadtbild/bauen-und-immobilien/geoportal-karlsruhe/basis-daten-und-hintergrundkarten",
+          "https://www.karlsruhe.de/mobilitaet-stadtbild/bauen-und-immobilien/lageplaene-und-bebauungsplaene",
+          "https://www.karlsruhe.de/mobilitaet-stadtbild/bauen-und-immobilien/geoportal-karlsruhe/e-service-und-open-data"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.karlsruhe.de/mobilitaet-stadtbild/bauen-und-immobilien/geoportal-karlsruhe/basis-daten-und-hintergrundkarten",
+      "operator": "City of Karlsruhe Geoportal / Liegenschaftsamt",
+      "evidence": "Official page identifies Regiokarte mit Flurstücken as a municipal map containing parcels and states Karlsruhe has three cadastral Gemarkungen used for parcel numbering."
+    },
+    {
+      "url": "https://www.karlsruhe.de/mobilitaet-stadtbild/bauen-und-immobilien/geoportal-karlsruhe/e-service-und-open-data",
+      "operator": "City of Karlsruhe Geoportal",
+      "evidence": "Official page documents municipal geoservices and says the Regiokarte and aerial-photo WMS services are available on request."
+    },
+    {
+      "url": "https://www.karlsruhe.de/mobilitaet-stadtbild/bauen-und-immobilien/lageplaene-und-bebauungsplaene",
+      "operator": "City of Karlsruhe Liegenschaftsamt",
+      "evidence": "Official service page identifies the municipal Liegenschaftskataster extract service and its cadastral-map output."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://geoportal.karlsruhe.de/stadtplan_iframe/?webmap=0172268193924a2c8516139e7e497f84",
+      "method": "GET",
+      "status": "success_html_then_timeout",
+      "summary": "Verified TLS GET returned the current ArcGIS Experience Builder iframe HTML and its ArcGIS JS API configuration; web viewer fetch timed out before a usable map/API response. Exact WUP point was not shifted and no absence was inferred."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/content/items/0172268193924a2c8516139e7e497f84?f=json",
+      "method": "GET",
+      "status": "error_inaccessible",
+      "summary": "Anonymous ArcGIS REST item lookup returned HTTP application error 400, Item does not exist or is inaccessible; no layer schema or service URL was obtained."
+    },
+    {
+      "url": "https://www.karlsruhe.de/mobilitaet-stadtbild/bauen-und-immobilien/geoportal-karlsruhe/e-service-und-open-data",
+      "method": "GET",
+      "status": "success_documentation_only",
+      "summary": "Official open-data documentation was retrieved. It advertises municipal WMS services, but says they are available on request and provides no public anonymous parcel feature endpoint."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": null,
+    "fallbackOidField": null,
+    "compositeKey": null,
+    "fieldMapping": {},
+    "crs": "Not obtained; viewer HTML exposed ArcGIS JS API configuration but no parcel layer schema.",
+    "geometryType": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "City of Karlsruhe municipal Geoportal parcel-background map and Liegenschaftskataster custody.",
+    "verifiedOpenScope": "Municipal parcel map existence and custodianship were verified from first-party pages; anonymous parcel feature coverage and geometry were not verified.",
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "No point query was completed. This is an endpoint/viewer limitation, not evidence of parcel absence at the exact WUP point or citywide."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "tax", "account", "legal description", "ownership or rights details"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_municipal_cadastral_viewer_verified_no_anonymous_geometry",
+  "remainingUncertainty": "The public map viewer timed out and its ArcGIS item was inaccessible to anonymous REST lookup. A serial reviewer must independently identify a live public service, inspect native parcel identity/schema/CRS, and verify bounded geometry before any adapter qualification.",
+  "nextStep": "Serial reviewer should obtain or verify a current anonymous municipal parcel endpoint or an authorized public WMS/WFS service, without credentials or unsafe fields, and keep runtime readiness held until independently qualified."
+}

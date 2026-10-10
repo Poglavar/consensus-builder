@@ -1,0 +1,35 @@
+{
+  "cityRecord": "city-3394-karlsruhe.json",
+  "cityCode": 3394,
+  "queueRank": 1929,
+  "city": "Karlsruhe",
+  "country": "Germany",
+  "countryCode": "DE",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "City of Karlsruhe Geoportal / Liegenschaftsamt",
+  "serviceUrl": "https://geoportal.karlsruhe.de/stadtplan_iframe/?webmap=0172268193924a2c8516139e7e497f84",
+  "scope": "Municipal cadastral parcel-background map and Liegenschaftskataster service; no anonymous parcel feature response was obtained.",
+  "schemaAndCrs": "Not obtained. The current iframe HTML identifies ArcGIS Experience Builder and ArcGIS JS API 5.1, but the public ArcGIS item lookup was inaccessible and the viewer fetch timed out.",
+  "nativeIdentity": null,
+  "fieldMapping": {
+    "sourceAttributes": "Not observed; no raw source attribute set retained.",
+    "safeRetainable": ["id", "geometry"],
+    "unsafeNotRequested": ["owner", "titleholder", "address", "contact", "tax", "account", "legal description", "ownership or rights details"]
+  },
+  "requestOutcome": "English and German first-party discovery succeeded. Municipal pages verified the parcel map, cadastral Gemarkungen, and Liegenschaftsamt custody. Current viewer HTML was retrieved, but the map fetch timed out; anonymous ArcGIS REST item and item-data requests returned inaccessible-item errors; no parcel ID or geometry was retained.",
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON retained; no safe native parcel identity or full polygon was obtained.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "officialCustodyEvidence": "City of Karlsruhe first-party Geoportal pages identify the Regiokarte mit Flurstücken, the three cadastral Gemarkungen, and the Liegenschaftsamt; the municipal service page describes cadastral extracts and maps.",
+  "limits": [
+    "No exact-point query was completed, so no point-hit or point-miss inference is made.",
+    "Viewer timeout and inaccessible ArcGIS item are service/access limitations, not evidence of citywide parcel absence.",
+    "Municipal WMS services are documented as available on request; no public anonymous parcel feature endpoint was published on the inspected page.",
+    "No login, credentials, private tokens, CAPTCHA bypass, or TLS exception was used.",
+    "RuntimeReadiness remains held pending independent serial review."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "Independent review must identify a live public parcel service and confirm schema, CRS, native identity stability, and bounded coverage before adapter admission."
+}

@@ -1,0 +1,51 @@
+{
+  "cityCode": 10978,
+  "cityName": "Gaozhou",
+  "cityRecord": "city-10978-gaozhou.json",
+  "checkedAt": "2026-10-09T00:00:00Z",
+  "reviewType": "cadastral_source_service_review",
+  "queryOutcomes": {
+    "englishDiscovery": "Official Guangdong public map platform identified; no Gaozhou-specific parcel vector dataset or anonymous parcel API found.",
+    "nativeDiscovery": "Chinese search identified general Guangdong mapping/cadastral context and a third-party Gaozhou bureau location reference; no official Gaozhou parcel endpoint found.",
+    "viewerFollowed": "Yes. The official Guangdong public-map HTML, current config/index.js and application bundle were fetched and inspected.",
+    "metadataRequest": "No parcel metadata request was made because the configured hosted service is an administrative-boundary VectorTileServer, not a proven parcel layer.",
+    "exactPointRequest": "Not performed against the administrative/base-map service; exact WUP point was preserved unchanged and not shifted.",
+    "otherRequest": "Third-party Gaozhou Natural Resources Bureau location page returned, but it is not an official cadastral service."
+  },
+  "attemptedRoutes": [
+    "https://guangdong.tianditu.gov.cn/ggdt/index.html",
+    "https://guangdong.tianditu.gov.cn/ggdt/config/index.js",
+    "https://guangdong.tianditu.gov.cn/ggdt/js/app.a49e255d.js",
+    "https://guangdong.tianditu.gov.cn/ggdt/mapService/server/rest/services/Hosted/%E5%B9%BF%E4%B8%9C%E7%9C%81%E5%9C%B0%E7%BA%A7%E5%B8%82%E8%A1%8C%E6%94%BF%E5%8C%BA%E5%88%92%E9%9D%A215/VectorTileServer?f=pjson",
+    "https://mapcarta.com/W923013154"
+  ],
+  "scopeLimits": [
+    "The configured official service is administrative/base mapping, not verified cadastral parcel coverage.",
+    "No exact-point hit or miss was claimed; no coordinate shift was made.",
+    "Discovery and endpoint identification limits are not evidence of citywide parcel absence.",
+    "No login, credentials, private tokens, CAPTCHA or Cloudflare bypass was used.",
+    "No unsafe owner, address, contact, titleholder, tax, account or personal fields were requested or retained.",
+    "No retained GeoJSON sample was created because no safe parcel feature response was received."
+  ],
+  "safeFieldAllowlist": ["stable native parcel/cadastral identifier only if exposed by a future anonymous safe endpoint", "geometry", "CRS/layer metadata", "transport status and response metadata"],
+  "sourceFieldMapping": {
+    "observedViewerConfigFields": ["serviceUrl", "virtualPath", "villagePath"],
+    "observedQueryParameters": [],
+    "parcelIdentity": null,
+    "compositeKeyProvenance": null
+  },
+  "registryAssessment": {
+    "registryFound": null,
+    "custodian": null,
+    "basis": "No official Gaozhou local registry/cadastral endpoint was verified in this attempt.",
+    "notEstablished": "No parcel schema, stable parcel identity, parcel CRS, anonymous geometry, or citywide coverage was verified."
+  },
+  "geometryAssessment": {
+    "sampleCount": 0,
+    "sampleFile": null,
+    "runtimeReadiness": "held_quality_review",
+    "decision": "Do not admit or integrate a parcel adapter from this attempt."
+  },
+  "uncertainty": "The official provincial map platform was reachable and its current JavaScript/configuration was inspected, but it exposed only general/base-map configuration. The absence of a parcel-capable route in this bounded inspection does not establish citywide absence. A later attempt may need a Gaozhou/茂名 official registration or cadastral viewer endpoint.",
+  "status": "complete"
+}

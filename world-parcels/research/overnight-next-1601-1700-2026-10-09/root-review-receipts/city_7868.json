@@ -1,0 +1,19 @@
+{
+  "taskId": "city:7868",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-7868-burewala.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/burewala-service-review.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "tmp/valhalla-parcel-research/burewala/route-0.bin",
+    "tmp/valhalla-parcel-research/burewala/route-1.bin"
+  ],
+  "checkedAt": "2026-10-10T11:07:19Z",
+  "reason": "Official Burewala municipal basemap labels Parcel Boundary and supports local municipal map custody, but no safe native parcel ID/full polygon was verified. The tested official ArcGIS parcel route returned 499 Token Required. One discovery result, jamabandi.punjab.gov.in, belongs to India and was excluded from Pakistan custody evidence. No fresh native-ID reads, paging, 13 bounded cells, metric GEOS checks, source binding, or headed Details verification.",
+  "firstPartyUrlsChecked": [
+    "https://mcburewala.lgpunjab.org.pk/wp-content/uploads/2024/05/Base-Map_MC-Burewala_2023-24.pdf",
+    "https://lis.pulse.gop.pk/"
+  ],
+  "verifiedFullPolygonCount": 0,
+  "runtimeAdmitted": false
+}

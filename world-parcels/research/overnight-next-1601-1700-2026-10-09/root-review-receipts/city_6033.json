@@ -1,0 +1,27 @@
+{
+  "taskId": "city:6033",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-6033-bauru.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/bauru-service-review.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-10T11:28:48Z",
+  "reason": "Bauru municipal geoprocessing page and public viewer configuration confirm local custodian, but anonymous service metadata returned 401 and no native parcel ID or polygon response is evidenced.",
+  "firstPartyChecks": [
+    {
+      "url": "https://www2.bauru.sp.gov.br/geoprocessamento/",
+      "httpStatus": 200,
+      "finding": "Municipal GIS page links Geopixel viewer."
+    },
+    {
+      "url": "https://bauru.geopixel.com.br/geopixelcidades3/configurations.json",
+      "httpStatus": 200,
+      "finding": "Public configuration names Bauru-specific server."
+    }
+  ],
+  "qualification": "No fresh native-ID geometry read, forced paging, 13 bounded cells, metric GEOS checks, source binding, or headed Details verification; runtime admission remains unqualified.",
+  "polygonSampleCount": 0,
+  "custody": "true: first-party institutional evidence; no claim of public parcel coverage or citywide absence"
+}

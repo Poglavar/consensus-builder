@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "kind": "root_identity_decision_overlay",
+  "cohort": "overnight-next-1901-2000",
+  "recordedAt": "2026-10-10T18:08:43.559411Z",
+  "decisions": [
+    {
+      "wupCityCode": 11209,
+      "rank": 1999,
+      "countryCode": "IN",
+      "name": "Nawada",
+      "decision": "different_settlement",
+      "effectiveAttemptState": "pending",
+      "candidatePointLatLon": [
+        24.8896035518647,
+        85.5407309971938
+      ],
+      "populationPersons": 290657,
+      "priorCityCode": 11285,
+      "priorCityName": "Nawada",
+      "priorPointLatLon": [
+        26.1919216548581,
+        86.4585859656502
+      ],
+      "distanceKm": 171.61,
+      "reason": "The original UN WUP 2025 table gives Nawada two distinct City_Code rows. WUP11209 is at 24.8896035518647 N, 85.5407309971938 E, 1.52 km from the Nawada district administration’s published 24.88 N, 85.53 E location and its explicitly named headquarters town. The earlier research packet is explicitly WUP11285 and used an older normalized locator 171.1 km away, near the Madhepur/Madhubani geographic lead; the original UN 2025 point for WUP11285 is 171.61 km from WUP11209. The same name in that packet is not evidence of a prior attempt on WUP11209. Preserve the immutable WUP11209 rank, point and 290657-person population and place it into pending research. This resolves only prior-attempt identity; cadastral custody, public geometry and live adapter qualification remain unverified.",
+      "evidence": [
+        {
+          "path": "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+          "observation": "Immutable WUP11209 rank 1999, India, 2025 population 290.657 thousand and point 24.8896035518647,85.5407309971938."
+        },
+        {
+          "path": "world-parcels/research/overnight-next-1901-2000-2026-10-09/identity-11209-official-geography-response.json",
+          "observation": "Original UN source archive SHA-256 and both 2025 rows; direct HTTP 200 official Nawada district profile response and Madhubani district Madhepur block listing, with response hashes and extracted text."
+        },
+        {
+          "path": "world-parcels/research/india-africa-2026-10-08/india-city-11285.json",
+          "observation": "Prior research is explicitly for WUP11285, with older normalized point 26.2001645571738,86.4343948922223 and no verified parcel sample; its Madhepur lead is explicitly non-authoritative."
+        },
+        {
+          "url": "https://nawada.nic.in/about-district/district-profile/",
+          "observation": "Nawada district administration identifies Nawada town as its headquarters and states 24.88 N, 85.53 E."
+        },
+        {
+          "url": "https://madhubani.nic.in/subdivision-blocks/",
+          "observation": "Madhubani district administration lists Madhepur among its blocks; used only to contextualize the older WUP11285 geographic lead."
+        }
+      ]
+    }
+  ],
+  "scope": "Prior-attempt identity only; no runtime admission, parcel custody or citywide coverage conclusion."
+}

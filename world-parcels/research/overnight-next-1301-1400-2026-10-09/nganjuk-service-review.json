@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7539-nganjuk.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "A local land-registration custodian is evidenced, but no safe public parcel geometry service or native parcel identity schema was verified. No sample GeoJSON was retained.",
+  "registryAssessment": "Kantor Pertanahan Kabupaten Nganjuk is a real local registry/cadastre custodian under ATR/BPN, evidenced by official Nganjuk reporting on PTSL certificate delivery and GEMAPULDADIS preparation. This is registry evidence only; it is not evidence of an open bulk parcel layer.",
+  "officialPrimarySources": [
+    {"url": "https://api-nsc.nganjukkab.go.id/detail_berita/NTUwMw%3D%3D", "observation": "Official local report documents Kantah Nganjuk PTSL certificate delivery in Desa Setren."},
+    {"url": "https://api-nsc.nganjukkab.go.id/detail_berita/NTcyOQ%3D%3D", "observation": "Official local report documents Kantah Nganjuk GEMAPULDADIS/ PTSL 2026 preparation and land-field mapping objective."},
+    {"url": "https://api-nsc.nganjukkab.go.id/detail_berita/NTU0OQ%3D%3D", "observation": "Official local report describes Sentuh Tanahku Cek Bidang as identifier-driven property lookup, not an anonymous bulk feature service."},
+    {"url": "https://lokageonganjuk.org/katalog-data.html", "observation": "Accessible spatial catalog lists non-parcel datasets and no bidang tanah layer."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Nganjuk Indonesia official cadastral parcel map GIS geoportal parcel land registry", "result": "Local registry and municipal geoportal/catalog references found; no safe public parcel endpoint verified."},
+    {"language": "Indonesian", "query": "Kantor Pertanahan Kabupaten Nganjuk resmi peta bidang tanah GIS geoportal", "result": "Official reports confirm Kantah/PTSL/GEMAPULDADIS and identifier-based Sentuh Tanahku lookup; no public parcel layer verified."}
+  ],
+  "serviceChecks": [
+    {"url": "https://geoportal.nganjukkab.go.id/", "method": "GET anonymous", "outcome": "timeout/no bytes after 15 seconds; not interpreted as absence"},
+    {"url": "http://geoportal.nganjukkab.go.id/", "method": "GET anonymous", "outcome": "bounded request timed out; no service inventory inferred"},
+    {"url": "https://lokageonganjuk.org/katalog-data.html", "method": "GET anonymous", "outcome": "HTTP 200 HTML; catalog showed boundaries, hazards, roads, RDTR, and facilities, no parcel layer/schema"},
+    {"url": "https://api-nsc.nganjukkab.go.id/", "method": "GET anonymous", "outcome": "HTTP 200 HTML directory; GEOPORTAL and Sentuh Tanahku links visible, no parcel API/config exposed"}
+  ],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "schema_unverified",
+    "reason": "No safe anonymous parcel endpoint was available for schema/CRS/native-ID verification. The municipal geoportal timed out; LokaGeo exposed only non-parcel catalog entries; Sentuh Tanahku is described as identifier-driven property lookup and was not queried."
+  },
+  "privacy": "No owner, address, taxpayer, account, title, certificate, NIBEL, protected attribute, or property-record lookup was made. No geometry was retained.",
+  "runtimeAssessment": {"status": "not_enabled_no_verified_safe_geometry_schema", "reason": "Held pending serial review and independent adapter qualification."},
+  "point": [-7.63022516432905, 111.903552010308]
+}

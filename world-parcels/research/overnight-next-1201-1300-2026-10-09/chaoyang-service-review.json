@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9596-chaoyang.json",
+  "purpose": "Document first-party Chaoyang registry context and bounded anonymous geometry-access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Chaoyang sources evidence local natural-resources and real-estate-registration custody. No safe anonymous cadastral parcel-vector response, schema, CRS, or native parcel ID was verified.",
+  "registryAssessment": "Local registry/procedure is evidenced through official Chaoyang Natural Resources Bureau and government-service material; this is institutional custody evidence, not admission of a public parcel source or runtime integration.",
+  "safeFieldAllowlist": ["safe public parcel/source ID if available", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "officialPrimarySources": [
+    {
+      "url": "https://zrzyj.chaoyang.gov.cn/",
+      "observation": "Anonymous direct GET over TLS returned the official bureau homepage HTML. Inspected links/scripts exposed bureau information pages but no public parcel-vector endpoint or service configuration."
+    },
+    {
+      "url": "https://zrzyj.chaoyang.gov.cn/cyszrzyj/zrly/czxx/glist.html",
+      "observation": "Official bureau natural-resources information page; confirms the local bureau as the relevant custodian but exposes no parcel geometry payload."
+    },
+    {
+      "url": "https://chaoyang.gov.cn/html/CYSZF/202408/0172378992128242.html",
+      "observation": "Official Chaoyang government decision/budget material lists the municipal natural-resources and real-estate-registration center functions; it is institutional evidence, not a public geometry service."
+    },
+    {
+      "url": "https://zwfw.chaoyang.gov.cn/webSite/repertory/view.do?itemId=&itemcode=11211324001207345L421201501700001",
+      "observation": "Official government-service material describes real-estate registration information procedures; no anonymous source-native parcel polygon response was exposed or requested."
+    },
+    {
+      "url": "https://zrzyj.chaoyang.gov.cn/html/ZRZYJ/202407/0172128427734778.html",
+      "observation": "Official bureau policy interpretation discusses registration information systems and a property-management map concept, but does not publish a public parcel geometry endpoint."
+    },
+    {
+      "url": "https://zrzyj.chaoyang.gov.cn/html/ZRZYJ/202603/0177398770575123.html",
+      "observation": "Official Chaoyang territorial-spatial-plan notice references a planning one-map information system; planning-system prose is not cadastral parcel geometry evidence."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Chaoyang Liaoning China official cadastral parcel map GIS natural resources bureau land registration",
+      "result": "First-party Chaoyang Natural Resources Bureau and government sources were found; no verified anonymous parcel geometry route.",
+      "resultUrls": ["https://zrzyj.chaoyang.gov.cn/", "https://chaoyang.gov.cn/html/CYSZF/202408/0172378992128242.html"]
+    },
+    {
+      "language": "Chinese (Simplified)",
+      "query": "朝阳市 辽宁 官方 不动产登记 地籍图 宗地图 自然资源局 GIS 地图服务",
+      "result": "Official Chaoyang sources evidenced local registration and natural-resources custody and described planning/information systems; no verified anonymous cadastral geometry route.",
+      "resultUrls": ["https://zrzyj.chaoyang.gov.cn/", "https://zrzyj.chaoyang.gov.cn/html/ZRZYJ/202407/0172128427734778.html", "https://zrzyj.chaoyang.gov.cn/html/ZRZYJ/202603/0177398770575123.html"]
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not performed against a verified cadastral parcel endpoint; exact point [41.5935195114786, 120.436963716254] remains unchanged and no absence inference is made.",
+    "requestEvidence": []
+  },
+  "attempts": [
+    {
+      "url": "https://zrzyj.chaoyang.gov.cn/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "result": "Official bureau homepage returned successfully. Current HTML and linked scripts were inspected; no public parcel map/API route or safe parcel schema endpoint was found."
+    },
+    {
+      "url": "https://zrzyj.chaoyang.gov.cn/cyszrzyj/zrly/czxx/glist.html",
+      "method": "GET via first-party search result",
+      "httpStatus": "web result available",
+      "result": "Official bureau information page confirms natural-resources custody; no geometry payload."
+    },
+    {
+      "url": "https://zwfw.chaoyang.gov.cn/webSite/repertory/view.do?itemId=&itemcode=11211324001207345L421201501700001",
+      "method": "GET via first-party search result",
+      "httpStatus": "web result available",
+      "result": "Official government-service registration procedure material reviewed; no anonymous parcel geometry request was made."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official Chaoyang bureau/government sources relevant to cadastral and real-estate registration, plus anonymous direct GET and HTML/configuration inspection of the bureau homepage.",
+    "verifiedOpenScope": "Local registry/procedure custody only; parcel geometry access unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "A separately published municipal or provincial cadastral/map service may exist, but its current public anonymous URL and access model were not verified. Exact-point hit testing and citywide parcel completeness are unknown.",
+  "runtimeAssessment": "held: no independently qualified public geometry adapter",
+  "integrationState": "not_integrated"
+}

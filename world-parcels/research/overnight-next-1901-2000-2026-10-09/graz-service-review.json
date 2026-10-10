@@ -1,0 +1,36 @@
+{
+  "cityRecord": "city-938-graz.json",
+  "cityCode": 938,
+  "queueRank": 1936,
+  "city": "Graz",
+  "country": "Austria",
+  "countryCode": "AT",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "Stadt Graz Stadtvermessungsamt / GBG ArcGIS REST service",
+  "serviceUrl": "https://geodaten.graz.at/server/rest/services/GBG/KATASTER_und_Städtische_Grundstücke/FeatureServer",
+  "scope": "Municipal Graz cadastral and city-property parcel polygons; exact-point feature response verified, citywide completeness not independently proven.",
+  "schemaAndCrs": "Layer 2 is esriGeometryPolygon with EPSG:31256 source/extent; service supports JSON/GeoJSON query output. Native fields observed include OBJECTID, KG and GRSTNR.",
+  "nativeIdentity": "Composite native cadastral identity KG:GRSTNR, example 63106:59/12; OBJECTID 17411 was observed as the ArcGIS row identity but is not the retained sample identity.",
+  "fieldMapping": {
+    "sourceAttributes": ["OBJECTID", "KG_GNR", "KG", "GRSTNR", "EIGENTUEMER", "ANTEIL", "VERMOEGENSART", "PAKET", "GZ", "ANMERKUNG", "GBNR", "EZ", "PLAN_NR", "GDBAUSZUG", "BEARBEITET_VON", "BEARBEITET_AM", "CREATE_BY", "CHANGE_BY", "CREATE_DAT", "CHANGE_DAT", "CLIENT_ID", "DELETED", "Shape__Area", "Shape__Length"],
+    "safeRetainable": ["id", "geometry"],
+    "safeIdentityMapping": {"id": "KG + ':' + GRSTNR"},
+    "unsafeNotRequestedOrRetained": ["EIGENTUEMER", "ANTEIL", "VERMOEGENSART", "GZ", "ANMERKUNG", "GBNR", "EZ", "PLAN_NR", "GDBAUSZUG", "BEARBEITET_VON", "BEARBEITET_AM", "CREATE_BY", "CHANGE_BY", "CREATE_DAT", "CHANGE_DAT", "CLIENT_ID", "DELETED"]
+  },
+  "requestOutcome": "English and German first-party discovery succeeded. Service metadata and layer schema GETs succeeded. Exact immutable WUP point query succeeded and returned one polygon. A nearby bounded envelope query timed out; no absence inference was made.",
+  "retainedSample": "graz-parcels-sample.geojson",
+  "retainedProperties": "Exactly one canonical native composite identity is retained as properties.id; no raw source attribute set is retained.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "officialCustodyEvidence": "Official Graz pages identify the Stadtvermessungsamt/Geoportal; the first-party geodaten.graz.at GBG service is titled KATASTER und Städtische Grundstücke and exposes the parcel layer.",
+  "limits": [
+    "The municipal GBG layer is not evidence of nationwide Austrian cadastral coverage.",
+    "The exact-point hit is local evidence only and does not establish citywide completeness.",
+    "The nearby envelope request timed out and was not treated as a negative result.",
+    "No login, credentials, private tokens, CAPTCHA bypass, unsafe owner/address fields, or TLS exception was used.",
+    "RuntimeReadiness remains held pending independent serial adapter qualification."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "A serial reviewer should verify public-service durability, bounded query behavior, identity stability and citywide coverage before adapter admission."
+}

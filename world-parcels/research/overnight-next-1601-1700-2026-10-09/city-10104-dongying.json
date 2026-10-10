@@ -1,0 +1,96 @@
+{
+  "cityCode": 10104,
+  "queueRank": 1666,
+  "name": "Dongying",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "point": [37.4464106417529, 118.51195574618],
+  "population2025": 343003,
+  "population2025k": 343.003,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dongying China official cadastral map parcel GIS land registry",
+        "result": "First-party discovery identified the official Dongying Municipal Natural Resources and Planning Bureau site and its real-estate registration section. No anonymous city-bounded parcel viewer, parcel API, schema, CRS, or downloadable parcel layer was found in the indexed first-party results.",
+        "actualResultUrls": [
+          "http://dyzrzy.dongying.gov.cn/",
+          "http://dyzrzy.dongying.gov.cn/col/col254089/index.html",
+          "https://dysmap.cn/dymap/application.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "东营市 不动产登记 地籍图 地图 自然资源和规划局 官方",
+        "result": "官方中文检索确认东营市自然资源和规划局承担自然资源和不动产统一确权登记、权籍调查和不动产测绘等职责，官网有不动产登记栏目。未发现可匿名访问、具有城市范围说明的宗地几何接口或公开下载图层。",
+        "actualResultUrls": [
+          "http://dyzrzy.dongying.gov.cn/",
+          "http://dyzrzy.dongying.gov.cn/col/col254089/index.html",
+          "https://dysmap.cn/dymap/application.html"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "http://dyzrzy.dongying.gov.cn/",
+      "observation": "Official Dongying Municipal Natural Resources and Planning Bureau homepage. The page links an official real-estate registration section and identifies the bureau as the local natural-resources custodian."
+    },
+    {
+      "url": "http://dyzrzy.dongying.gov.cn/col/col254089/index.html",
+      "observation": "Official bureau real-estate registration service section; it is an institutional/procedural route, not a verified anonymous parcel geometry service."
+    },
+    {
+      "url": "https://dysmap.cn/dymap/application.html",
+      "observation": "Official bureau-linked Dongying map application link. The bounded anonymous request timed out before a response; no parcel schema or geometry was retained."
+    }
+  ],
+  "requests": [
+    {
+      "url": "http://dyzrzy.dongying.gov.cn/",
+      "method": "GET; anonymous; TLS verification not applicable because the published URL is HTTP",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Fetched successfully. Page exposed the official real-estate registration section and a bureau-linked map application link, but no parcel service configuration, schema, CRS, or safe parcel feature response."
+    },
+    {
+      "url": "http://dyzrzy.dongying.gov.cn/col/col254089/index.html",
+      "method": "GET; anonymous; TLS verification not applicable because the published URL is HTTP",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Official registration-service page was reachable through the bureau site. It provided institutional/procedural information only; no anonymous parcel ID plus geometry response was returned."
+    },
+    {
+      "url": "https://dysmap.cn/dymap/application.html",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": null,
+      "contentType": null,
+      "outcome": "Request timed out after 20 seconds. No retry with credentials, private token, CAPTCHA/Cloudflare bypass, or TLS exception was attempted. Timeout is not evidence of citywide parcel absence."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The official Dongying Municipal Natural Resources and Planning Bureau is a local custodian and publishes a real-estate registration service section. This establishes local registry/cadastre responsibility, not an open parcel adapter.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "operator": "Dongying Municipal Natural Resources and Planning Bureau / Dongying real-estate registration service",
+    "viewerUrls": ["https://dysmap.cn/dymap/application.html"],
+    "crs": null
+  },
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "resultCategory": "official_local_custodian_no_verified_public_parcel_endpoint",
+  "coverageAssessment": {
+    "claimedScope": "Dongying municipal natural-resources and real-estate registration administration.",
+    "verifiedOpenScope": "No anonymous city-bounded parcel record, stable native parcel identity, schema, CRS, or geometry was retrieved.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "The official bureau or linked map may support restricted, interactive, or not-yet-published cadastral data. The bounded timeout and absence of a public response are not evidence of citywide parcel absence. No owner, address, titleholder, contact, tax/account, or personal fields were requested or retained."
+}

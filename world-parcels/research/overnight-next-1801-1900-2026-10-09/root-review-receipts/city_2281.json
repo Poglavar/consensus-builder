@@ -1,0 +1,14 @@
+{
+  "taskId": "city:2281",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-2281-gandhidham.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/gandhidham-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T16:22:59Z",
+  "reviewNotes": "WUP identity and English/Gujarati search records checked. Official Gujarat custody is supported; maps timed out and the Gandhidham survey page failed TLS validation. No native-ID polygon response or admission gates evidenced; these failures are not absence.",
+  "admissionGate": "No independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. No runtime or coverage admission."
+}

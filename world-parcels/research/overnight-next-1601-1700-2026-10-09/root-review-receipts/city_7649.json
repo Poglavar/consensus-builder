@@ -1,0 +1,17 @@
+{
+  "taskId": "city:7649",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-7649-gojra.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/gojra-service-review.json",
+    "tmp/valhalla-parcel-research/gojra/lis.html",
+    "tmp/valhalla-parcel-research/gojra/cadastral-mapserver.json",
+    "tmp/valhalla-parcel-research/gojra/cadastral-0.json"
+  ],
+  "checkedAt": "2026-10-10T12:45:17Z",
+  "reason": "Immutable WUP rank, country, point and 340108 persons match source. English and Urdu searches were executed. Official Punjab land-record custodian is evidenced, but the cached first-party viewer has no Gojra-specific layer and both anonymous cadastral metadata responses are ArcGIS 499 Token Required. No public Gojra parcel geometry or native ID was obtained; custody true is distinct from coverage.",
+  "admissionGates": "No fresh native-ID read, paging, 13 bounded cells, metric GEOS checks, source binding or headed Details verification."
+}

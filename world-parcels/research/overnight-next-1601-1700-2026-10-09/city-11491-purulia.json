@@ -1,0 +1,120 @@
+{
+  "cityCode": 11491,
+  "queueRank": 1633,
+  "name": "Purulia",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [23.3282282801323, 86.3696442557633],
+  "population2025": 350713,
+  "population2025k": 350.713,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Purulia West Bengal official cadastral map land records parcel GIS map",
+        "result": "First-party discovery identified the Purulia district government land-records page, the official West Bengal Banglarbhumi service, and the state land-records/DLRS custodian. The official portal route timed out for anonymous requests; no parcel geometry or schema was verified.",
+        "actualResultUrls": [
+          "https://purulia.gov.in/service/land-records/",
+          "https://banglarbhumi.gov.in/",
+          "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action"
+        ]
+      },
+      {
+        "language": "Bengali",
+        "query": "পুরুলিয়া পশ্চিমবঙ্গ সরকারি ভূমি মানচিত্র খতিয়ান মৌজা ম্যাপ",
+        "result": "প্রথম-পক্ষীয় অনুসন্ধানে পুরুলিয়া জেলা সরকারের বাংলা ভূমি-রেকর্ড পৃষ্ঠা এবং পশ্চিমবঙ্গ সরকারের Banglarbhumi পরিষেবা পাওয়া গেছে। সরকারি পোর্টালে বেনামী অনুরোধের সময়সীমা শেষ হয়েছে; পার্সেল জ্যামিতি বা স্কিমা যাচাই করা যায়নি।",
+        "actualResultUrls": [
+          "https://purulia.gov.in/bn/%E0%A6%9C%E0%A7%87%E0%A6%B2%E0%A6%BE%E0%A6%B0-%E0%A6%AE%E0%A6%BE%E0%A6%A8%E0%A6%9A%E0%A6%BF%E0%A6%A4%E0%A7%8D%E0%A6%B0/",
+          "https://purulia.gov.in/",
+          "https://banglarbhumi.gov.in/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official Purulia district land-records page directs users to Banglarbhumi and identifies the Director of Land Records and Survey; the official Banglarbhumi page lists Plot Map, Mouza Map, RS-LR and related land-record services. This establishes the West Bengal state/district revenue land-record custodian and service route, but not open parcel geometry or complete city coverage.",
+  "officialSources": [
+    {
+      "url": "https://purulia.gov.in/service/land-records/",
+      "observation": "Purulia district government page describes land-record administration, links Banglarbhumi, and names the Director of Land Records and Survey."
+    },
+    {
+      "url": "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action",
+      "observation": "Official West Bengal land-record page lists public service routes including RS-LR Plot Information, Plot Map Request, Mouza Map Request, and Mouza Map Availability Details."
+    },
+    {
+      "url": "https://wb.gov.in/departments-details.aspx?id=D190305165850306",
+      "observation": "West Bengal government department page identifies the web-based e-Bhuchitra/Banglarbhumi land-record system and public access role."
+    }
+  ],
+  "source": {
+    "sourceId": "west-bengal-banglarbhumi-purulia",
+    "name": "West Bengal Banglarbhumi / Directorate of Land Records and Survey",
+    "operator": "Land and Land Reforms and Refugee Relief and Rehabilitation Department, Government of West Bengal; Directorate of Land Records and Survey; Purulia district administration",
+    "endpoint": "https://banglarbhumi.gov.in/",
+    "method": "Separate English and Bengali first-party discovery, followed by bounded anonymous HTTPS GET attempts to the official portal and current service page inspection through published page evidence",
+    "responseFormat": null,
+    "nativeCrs": null,
+    "queryOutputCrs": null,
+    "nativeIdentity": null,
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "scope": "Purulia district/state land-record service custody evidenced; no verified open parcel geometry for Purulia city."
+  },
+  "requests": [
+    {
+      "url": "https://banglarbhumi.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "outcome": "TLS-preserving anonymous request timed out after 30 seconds; no response body or JavaScript/configuration was obtained."
+    },
+    {
+      "url": "https://basundhara.wb.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "outcome": "TLS-preserving anonymous request to the official West Bengal state geoportal timed out after 20 seconds; no response body or parcel service configuration was obtained."
+    },
+    {
+      "url": "https://purulia.gov.in/service/land-records/",
+      "method": "GET via first-party indexed page",
+      "httpStatus": 200,
+      "outcome": "Official district page was available in discovery evidence and linked Banglarbhumi/DLRS land-record services; it contained no parcel geometry endpoint."
+    },
+    {
+      "url": "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action",
+      "method": "GET via first-party indexed page",
+      "httpStatus": 200,
+      "outcome": "Official service page was available in discovery evidence and listed plot/mouza map and land-record service routes; no anonymous parcel feature response was obtained."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "personal",
+    "tax",
+    "account",
+    "legal_description",
+    "value"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Purulia district administration and West Bengal state land-record service routes.",
+    "verifiedOpenScope": "Custodian and service route only; no city-bounded anonymous parcel identity plus full polygon response.",
+    "countrywideVerified": false
+  },
+  "resultCategory": "local_registry_map_evidenced_no_verified_public_parcel_geometry",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "The current portal JavaScript/configuration, parcel layer schema, CRS, stable native identity, city boundary coverage, and anonymous geometry access remain unresolved because the official hosts timed out. A timeout is not evidence of citywide parcel absence. No synthetic identity or raw source attributes were retained. Packet completion is not source integration/admission; independent serial reviewer qualification remains required."
+}

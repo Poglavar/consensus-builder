@@ -1,0 +1,145 @@
+{
+  "cityCode": 11189,
+  "queueRank": 1625,
+  "name": "Madhubani",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "point": [26.3483180392326, 86.0718523656917],
+  "population2025": 352336,
+  "population2025k": 352.336,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Madhubani Bihar official cadastral map parcel GIS land records Bihar Bhunaksha",
+        "result": "First-party discovery identified Bihar Government BhuNaksha, the Bihar Revenue and Land Reforms Department, the Madhubani district land-record computerization page, and the NIC BhuNaksha documentation. BhuNaksha is an official cadastral-map viewer, but discovery alone did not establish a usable city-bounded parcel geometry response.",
+        "actualResultUrls": [
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://land.bihar.gov.in/landbihar/Default.aspx",
+          "https://madhubani.nic.in/service/land-record-computerization/",
+          "https://bhunaksha.nic.in/bhunaksha/customization.jsp"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "मधुबनी बिहार आधिकारिक भू नक्शा भूलेख खसरा नक्शा",
+        "result": "Hindi-language discovery identified the official Madhubani district भू अभिलेख page, Bihar BhuNaksha, and the Directorate of Land Records and Survey service page. The pages document official map/land-record services but did not expose a safe anonymous parcel feature response in search results.",
+        "actualResultUrls": [
+          "https://madhubani.nic.in/hi/service/%E0%A4%AD%E0%A5%82-%E0%A4%85%E0%A4%AD%E0%A4%BF%E0%A4%B2%E0%A5%87%E0%A4%96/",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "https://dlrs.bihar.gov.in/services.html"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+      "observation": "Official Bihar Government/NIC BhuNaksha viewer. The public page exposes State, District, Sub Div, Circle, Mauza, Survey Type, Map Instance and Sheet No selectors and describes the system as cadastral mapping software. The inspected current JavaScript configured public REST and WMS routes."
+    },
+    {
+      "url": "https://madhubani.nic.in/service/land-record-computerization/",
+      "observation": "Official Madhubani district page says land-record computerization services, including record of rights and online mutation, are provided through the respective circle offices and links to Bihar's land-record route. This is local service-custodian evidence, not a parcel geometry API."
+    },
+    {
+      "url": "https://land.bihar.gov.in/landbihar/Default.aspx",
+      "observation": "Official Bihar Revenue and Land Reforms Department page links Bhu-Naksha, online revenue records, online Jamabandi and related land services. General departmental service evidence does not itself prove citywide open parcel geometry."
+    },
+    {
+      "url": "https://dlrs.bihar.gov.in/services.html",
+      "observation": "Official Directorate of Land Records and Survey service page lists Online Map and related survey/map services. It is agency/service evidence rather than an anonymous parcel feature response."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Fetched the current public viewer HTML. It loaded assets/misc/config.js and index.js; the configuration used same-host public REST routes and WMS."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/assets/misc/config.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Current configuration returned SERVICE_PATH and COMMON_SERVER_PATH as same-host relative routes; no credentials or private tokens were present."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/count",
+      "method": "POST",
+      "requestBody": "state=10",
+      "httpStatus": 200,
+      "outcome": "Returned 7 viewer levels for Bihar (state code 10)."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST",
+      "requestBody": "state=10&level=1&codes=05,02,&hasmap=true",
+      "httpStatus": 200,
+      "outcome": "Returned the Madhubani district/subdivision selection context, including Sadar Madhubani and its circle options; the response also exposed survey types and map-instance choices. Full unchanged response is in ignored scratch evidence under tmp/valhalla-parcel-research/madhubani/sadar-levels.json."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST",
+      "requestBody": "state=10&level=1&codes=05,02,07,&hasmap=true",
+      "httpStatus": 200,
+      "outcome": "Returned the Rajnagar circle village list; one observed native village code/name was 0453 / Madhubani Tol(48). This is a source selection identity, not a city parcel identity. Other Sadar circles were also enumerated in scratch requests."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref",
+      "method": "POST",
+      "requestBody": "state=10&gisLevels=05,02,05,RS,07,00,&srs=0 (bounded survey/map extent probe)",
+      "httpStatus": 200,
+      "outcome": "No usable response body or extent was returned for the bounded anonymous probe. This was recorded as an unusable/partial viewer response, not as evidence of cadastral absence."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/WMS?SERVICE=WMS&REQUEST=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 500,
+      "outcome": "Anonymous WMS capabilities request returned server error. No retry escalation, login, CAPTCHA/Cloudflare bypass, private token, or TLS exception was used."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Bihar's official BhuNaksha viewer and the official Madhubani district land-record service page establish an official state/local land-record and cadastral-map service route. A city-bounded anonymous parcel ID-plus-geometry response was not verified.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "name": "BhuNaksha Bihar",
+    "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+    "format": "web viewer with same-host REST selection routes and WMS map route",
+    "nativeIdentity": "not observed in a usable parcel response",
+    "coverage": "Bihar viewer selection hierarchy; Madhubani district and Sadar subdivision options were observed, but citywide parcel coverage was not verified",
+    "crs": "unverified; no usable geometry response"
+  },
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "resultCategory": "official_local_land_registry_cadastral_viewer_open_parcel_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Bihar BhuNaksha cadastral-map viewer and Madhubani district land-record services.",
+    "verifiedOpenScope": "Public viewer hierarchy and current route configuration were inspected; no city-bounded stable parcel identity, safe schema, CRS or geometry was retrieved.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "scopeLimits": [
+    "Exact WUP point [26.3483180392326, 86.0718523656917] was preserved and was not shifted; no exact-point hit or miss inference was made.",
+    "The viewer selection hierarchy is not proof that the city point lies in a particular circle, mauza, survey type or sheet.",
+    "No parcel geometry or stable native parcel identity was retained; therefore no GeoJSON sample is included.",
+    "The empty extent response and WMS 500 are access/route limitations, not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, personal, tax/account or other unsafe fields were requested or retained.",
+    "Packet completion is not source integration or runtime admission; runtime remains held pending serial review."
+  ],
+  "remainingUncertainty": "The current Bihar viewer route, exact Madhubani city map hierarchy, public parcel-layer schema, CRS, native parcel identity, and citywide coverage remain unresolved. The official local/state service may expose maps through a different selected sheet or a restricted workflow. No claim is made about parcel absence, legal title, ownership, or completeness of any Bihar cadastral dataset."
+}

@@ -1,0 +1,120 @@
+{
+  "schemaVersion": "1.0",
+  "cityCode": 8107,
+  "queueRank": 1675,
+  "name": "Neijiang",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "point": [29.5953558235259, 105.058962701695],
+  "population2025": 341371,
+  "population2025k": 341.371,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Neijiang China official cadastral parcel map land registry GIS natural resources bureau",
+        "result": "First-party discovery identified the Sichuan government service catalog for Neijiang property-registration inquiries, a Sichuan government report on Neijiang land-acquisition information disclosure, the national Real Estate Registration Center directory, and a national map-service directory entry for the Neijiang Natural Resources and Planning Bureau. No public anonymous Neijiang parcel feature endpoint was identified.",
+        "actualResultUrls": [
+          "https://www.sczwfw.gov.cn/jiq/front/transition/ywTransToDetail?areaCode=511011000000&deptCode=12510902MBOP61623D&itemCode=511F0093300072-511011000000-000-12510902MBOP61623D-1-00&taskType=7",
+          "https://www.sc.gov.cn/10462/c103107/2025/6/10/af619e447a8b41819aa7205409a0903c.shtml",
+          "https://rerc.com.cn/",
+          "https://www.webmap.cn/store.do?method=store&storeId=874"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "内江 不动产登记 地籍图 宗地图 自然资源和规划局 官方",
+        "result": "中文 first-party discovery found the Sichuan government service record naming the Dongxing District Real Estate Registration Center as the implementing authority, the Sichuan government report describing Neijiang's municipal land-acquisition disclosure portal, and official national directories. These establish local registration custody and procedures but expose no anonymous parcel polygon API or safe parcel-ID-plus-geometry response.",
+        "actualResultUrls": [
+          "https://www.sczwfw.gov.cn/jiq/front/transition/ywTransToDetail?areaCode=511011000000&deptCode=12510902MBOP61623D&itemCode=511F0093300072-511011000000-000-12510902MBOP61623D-1-00&taskType=7",
+          "https://www.sc.gov.cn/10462/c103107/2025/6/10/af619e447a8b41819aa7205409a0903c.shtml",
+          "https://rerc.com.cn/",
+          "https://www.webmap.cn/store.do?method=store&storeId=874"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.sczwfw.gov.cn/jiq/front/transition/ywTransToDetail?areaCode=511011000000&deptCode=12510902MBOP61623D&itemCode=511F0093300072-511011000000-000-12510902MBOP61623D-1-00&taskType=7",
+      "observation": "Official Sichuan government service page identifies the Neijiang Dongxing District Real Estate Registration Center as the implementing authority for real-estate registration-record inquiry and describes required materials and inquiry procedures. It is not an open cadastral feature service."
+    },
+    {
+      "url": "https://www.sc.gov.cn/10462/c103107/2025/6/10/af619e447a8b41819aa7205409a0903c.shtml",
+      "observation": "Official Sichuan government report says Neijiang publishes municipal land-acquisition information through county/district government portals and a one-stop disclosure arrangement. This is public administrative information, not parcel geometry or title data."
+    },
+    {
+      "url": "https://rerc.com.cn/",
+      "observation": "Official Ministry of Natural Resources Real Estate Registration Center directory provides a national directory of local registration websites and registration information services; it does not expose a Neijiang anonymous parcel layer in the accessible page."
+    },
+    {
+      "url": "https://www.webmap.cn/store.do?method=store&storeId=874",
+      "observation": "National official map-service directory entry names the Neijiang Natural Resources and Planning Bureau. The fetched store page did not expose a usable parcel service URL, schema, CRS or geometry response."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.sczwfw.gov.cn/jiq/front/transition/ywTransToDetail?areaCode=511011000000&deptCode=12510902MBOP61623D&itemCode=511F0093300072-511011000000-000-12510902MBOP61623D-1-00&taskType=7",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official service page loaded through public GET. It documented local registration inquiry custody/procedure but returned no anonymous parcel geometry, native parcel ID, schema or CRS."
+    },
+    {
+      "url": "https://www.webmap.cn/store.do?method=store&storeId=874",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official map-directory page returned, but its accessible response contained no usable public parcel map/API configuration or feature response."
+    },
+    {
+      "url": "https://rerc.com.cn/",
+      "method": "GET/search inspection",
+      "httpStatus": 200,
+      "outcome": "Official national registration-center directory was available and confirmed the national/local service context; no anonymous Neijiang parcel endpoint was exposed."
+    },
+    {
+      "url": "https://www.sc.gov.cn/10462/c103107/2025/6/10/af619e447a8b41819aa7205409a0903c.shtml",
+      "method": "GET/search inspection",
+      "httpStatus": 200,
+      "outcome": "Official Sichuan report was available and described Neijiang land-acquisition disclosure. No parcel vector data or safe native parcel identity was returned."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "A local registry custodian is evidenced by the official Sichuan government service page naming the Neijiang Dongxing District Real Estate Registration Center and describing the local registration-record inquiry service. This establishes institutional custody/procedure, not an open parcel geometry service.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Neijiang municipal/district registration and land-information services.",
+    "verifiedOpenScope": "Local institutional custody and public administrative disclosure procedures only; anonymous parcel geometry and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "excludedFields": [
+    "owner or titleholder names",
+    "addresses and contact data",
+    "tax/account/registration details beyond a safe native parcel ID",
+    "credentials and private tokens"
+  ],
+  "nativeIdentityPolicy": "No native parcel identity was observed; no synthetic identity was created. A future retained sample must use exactly one stable native identity in GeoJSON properties and document source field mapping in review metadata.",
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "remainingUncertainty": "The current Neijiang viewer/API route, anonymous access behavior, parcel schema, CRS, stable native parcel identity and exact-point coverage remain unknown. The exact WUP point was preserved and was not shifted or used to infer presence/absence.",
+  "retainedSample": null
+}

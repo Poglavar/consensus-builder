@@ -1,0 +1,112 @@
+{
+  "cityCode": 7415,
+  "queueRank": 1719,
+  "name": "Sikar",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [27.6155333922711, 75.1518268773882],
+  "population2025": 333509,
+  "population2025k": 333.509,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sikar Rajasthan official cadastral map land records portal parcel map",
+        "result": "First-party discovery identified Rajasthan's official BhuNaksha cadastral viewer, the Rajasthan Urban GIS portal with Khasra search, Rajasthan land-record integration pages, and Rajasthan's land-revenue cadastral-map documentation. No Sikar city-bounded anonymous parcel ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+          "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+          "https://swcstest.rajasthan.gov.in/ComprehensiveLandInformation.aspx",
+          "https://landrevenue.rajasthan.gov.in/content/landrevenuenew/en/board-of-revenue-for-raj-dep/about-us/section/cadstralmap.html",
+          "https://sikar.rajasthan.gov.in/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "सीकर राजस्थान आधिकारिक भू नक्शा खसरा नक्शा भूमि अभिलेख पोर्टल",
+        "result": "First-party Hindi discovery identified Rajasthan's BhuNaksha and Apna Khata services and official Rajasthan land-record/cadastral documentation. The results evidence state and district land-record custody, but not a public Sikar city parcel geometry response.",
+        "actualResultUrls": [
+          "https://bhunaksha.rajasthan.gov.in/",
+          "https://apnakhata.rajasthan.gov.in/Owner_wise/DistrictMap.aspx",
+          "https://landrevenue.rajasthan.gov.in/content/landrevenuenew/en/board-of-revenue-for-raj-dep/documents/circulars/LRcircular.html",
+          "https://dta.rajasthan.gov.in/writereaddata/LatestOrders/02232023152316PM2167.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Official Rajasthan BhuNaksha and Apna Khata services establish a Rajasthan cadastral/land-record custodian. An official Rajasthan personnel/cadre record separately identifies the Collector (Land Record), Sikar, and Tehsildar, Sikar. This supports local custodial responsibility, but does not establish a citywide open parcel API.",
+  "officialSources": [
+    {
+      "url": "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+      "observation": "Official Rajasthan BhuNaksha cadastral mapping viewer; public page was identified, but direct retrieval from this environment timed out. No viewer schema, CRS, or parcel payload was retained."
+    },
+    {
+      "url": "https://apnakhata.rajasthan.gov.in/Owner_wise/DistrictMap.aspx",
+      "observation": "Official Rajasthan Apna Khata land-record portal; page exposes district selection for Jamabandi copies, but direct request from this environment timed out and no parcel geometry was captured."
+    },
+    {
+      "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+      "observation": "Official Rajasthan Urban GIS portal exposes District/Tehsil/Village/Khasra search and map functions and states that Khasra/village boundaries come from the Settlement Department. Its disclaimer limits displayed data to viewing use."
+    },
+    {
+      "url": "https://dta.rajasthan.gov.in/writereaddata/LatestOrders/02232023152316PM2167.pdf",
+      "observation": "Official Rajasthan cadre record lists COLLECTOR (LAND RECORD) and TEHSILDAR for SIKAR under the Revenue Department, supporting a local land-record custodian. This is administrative evidence, not a parcel API."
+    },
+    {
+      "url": "https://landrevenue.rajasthan.gov.in/content/landrevenuenew/en/board-of-revenue-for-raj-dep/about-us/section/cadstralmap.html",
+      "observation": "Official Board of Revenue page documents digitization of cadastral maps in Rajasthan; it is general state agency documentation and not city-specific geometry."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+      "method": "GET",
+      "outcome": "bounded 30-second request timed out; no HTML, JavaScript configuration, service URL, schema, CRS, or geometry captured"
+    },
+    {
+      "url": "https://landrevenue.rajasthan.gov.in/content/landrevenuenew/en/board-of-revenue-for-raj-dep/about-us/section/cadstralmap.html",
+      "method": "GET",
+      "outcome": "bounded 15-second request timed out; official page was nevertheless readable through first-party web discovery"
+    },
+    {
+      "url": "https://apnakhata.rajasthan.gov.in/Owner_wise/DistrictMap.aspx",
+      "method": "GET",
+      "outcome": "bounded 15-second request timed out; no payload captured"
+    },
+    {
+      "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+      "method": "GET",
+      "outcome": "HTTP 200; official HTML and current JavaScript/configuration were retrieved. Config identifies ArcGIS services, including a JDA Settlement_JDA Khasra layer; the configuration is Jaipur Development Authority-focused and did not provide a Sikar parcel response."
+    },
+    {
+      "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/js/Config.js",
+      "method": "GET",
+      "outcome": "HTTP 200; current public configuration inspected. It exposed service URLs and a Khasra layer, but no Sikar-specific query, schema response, CRS confirmation for Sikar, or safe parcel geometry was requested or retained."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/tehsil-level/111",
+      "method": "GET via public web search/open",
+      "outcome": "official Sikar district map-digitization status route was identified, but direct/open retrieval timed out; no city parcel response"
+    }
+  ],
+  "source": "Rajasthan BhuNaksha / Apna Khata / Settlement and Revenue land-record services",
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Rajasthan state cadastral and land-record services, with official Sikar land-record custodial roles and an Urban GIS Khasra interface.",
+    "verifiedOpenScope": "Official state service presence, current Urban GIS configuration, and Sikar Revenue Department custodial evidence; no Sikar city-bounded anonymous geometry response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": "Exact WUP point preserved in latitude/longitude order. No exact-point hit/miss inference was made. A timeout, map extent miss, login wall, or unusable viewer is not evidence of citywide absence. No owner, address, titleholder, contact, tax/account, personal, or unsafe fields were requested or retained. Packet completion is not source integration or runtime admission; serial reviewer qualification remains pending."
+}

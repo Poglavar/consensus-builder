@@ -1,0 +1,141 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:2496",
+  "wupCityCode": 2496,
+  "cityCode": 2496,
+  "queueRank": 1240,
+  "rank": 1240,
+  "name": "Ramadi",
+  "country": "Iraq",
+  "countryCode": "IQ",
+  "iso3": "IRQ",
+  "point": [33.4266566041522, 43.2980396021696],
+  "centerLatLon": [33.4266566041522, 43.2980396021696],
+  "pointBasis": "Immutable WUP 2025 queue point copied unchanged in latitude/longitude order; no coordinate adjustment.",
+  "population2025": 449183,
+  "population2025k": 449.183,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "status": "complete",
+  "resultCategory": "official_registry_custodian_identified_no_public_parcel_geometry",
+  "registryFound": true,
+  "registryBasis": "Iraq's Ministry of Justice identifies the General Real Estate Registration Department and its Anbar directorate, and an official Ministry report explicitly discusses real-estate registration in Ramadi. This evidences a local registry custodian, not an open parcel-data endpoint.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_quality_review",
+  "blocker": "No bounded anonymous parcel ID+geometry response was available from the discovered official Iraqi services; runtime remains held pending independent serial adapter qualification.",
+  "source": {
+    "registryOperator": "Ministry of Justice of the Republic of Iraq, General Real Estate Registration Department / Anbar Directorate",
+    "officialRegistryDirectory": "https://moj.gov.iq/contact_us.php",
+    "officialGeospatialPortal": "https://igp.ur.gov.iq/",
+    "crs": null
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "First-party English and Arabic discovery, official page retrieval, current public portal/service inspection, and bounded anonymous GET checks only.",
+    "verifiedOpenScope": "Registry custody and non-parcel geospatial service descriptions were verified; no parcel polygon or parcel identifier was returned.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "technicalBlocker": "The Iraq Geographic Portal service page exposes state-land ownership/distribution and other institutional layers, not a public cadastral parcel query. Ministry of Justice deed/map services describe owner-authenticated workflows and state that online availability is currently Baghdad-only. No safe anonymous parcel response or CRS was observed.",
+  "remainingUncertainty": "A zero geometry result is not evidence of citywide absence. The official portal may expose additional services behind interactive navigation or authentication; no login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe owner/address fields, or TLS exception was used.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ramadi Iraq official cadastral parcel map land registry GIS site:gov.iq OR site:edu.iq",
+        "result": "First-party discovery located the Iraq Geographic Portal, Ministry of Justice real-estate registration directory, and an official Ministry page describing electronic deed/map services. No public Ramadi parcel viewer or parcel geometry API was found.",
+        "actualResultUrls": [
+          "https://igp.ur.gov.iq/",
+          "https://moj.gov.iq/contact_us.php",
+          "https://ur.gov.iq/index/show-eservice/40227/10049/cat",
+          "https://moj.gov.iq/view.7801/"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "الرمادي العراق خريطة عقارية كادستر تسجيل عقاري موقع رسمي",
+        "result": "Arabic first-party discovery located بوابة العراق الجغرافية, the Ministry of Justice registry directory, and official Ur Portal deed/map procedure pages. The discovered geospatial service concerns state-land/institutional layers; the deed/map workflow requires owner identity/documents and is currently described as Baghdad-only. No anonymous parcel geometry was found.",
+        "actualResultUrls": [
+          "https://igp.ur.gov.iq/Services.aspx?m=d24f0c1a-6ed8-4185-839d-aec82744694a",
+          "https://moj.gov.iq/contact_us.php",
+          "https://ur.gov.iq/index/show-eservice/40227/10049/cat",
+          "https://eservice.ur.gov.iq/index/new-service/10360"
+        ]
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://igp.ur.gov.iq/",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "assessment": "Official Iraq Geographic Portal homepage retrieved; it identifies the portal and government institutional services but does not itself expose parcel geometry."
+      },
+      {
+        "url": "https://igp.ur.gov.iq/Services.aspx?m=d24f0c1a-6ed8-4185-839d-aec82744694a",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "assessment": "Official Arabic service page retrieved. Relevant service is state-land ownership/distribution by governorate and real-estate-registration offices; no parcel ID/geometry route was exposed in the page."
+      },
+      {
+        "url": "https://igp.ur.gov.iq/View.aspx?i=8026a1f8-8a7a-474d-8cdb-fbefea9a7ca9",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "assessment": "Resolved to a portal content page without a public parcel map/API or geometry response."
+      },
+      {
+        "url": "https://moj.gov.iq/contact_us.php",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "assessment": "Official Ministry directory retrieved; it lists the Anbar real-estate registration directorate and local registration offices."
+      },
+      {
+        "url": "https://ur.gov.iq/index/show-eservice/40227/10049/cat",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "assessment": "Official Ur Portal procedure page states that deed/map requests are made by the property owner or named person, require identity/property documents, and are currently electronically available in Baghdad; no public parcel data response."
+      },
+      {
+        "url": "https://eservice.ur.gov.iq/index/new-service/10360",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "assessment": "Official service page requires account/login for submission; no login attempted."
+      },
+      {
+        "url": "https://rmd.gov.iq/",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": "200 in first-party discovery result",
+        "assessment": "Official Ramadi Municipality site identifies municipal planning/building/land-distribution functions, but no public cadastral parcel API or geometry was evidenced."
+      }
+    ],
+    "inspectedConfiguration": {
+      "officialPortal": "https://igp.ur.gov.iq/",
+      "relevantService": "Services.aspx?m=d24f0c1a-6ed8-4185-839d-aec82744694a",
+      "responseSchemaObserved": "HTML service/content pages only; no parcel Feature/geometry schema observed",
+      "parcelEndpointObserved": false,
+      "schemaObserved": false,
+      "explicitCrsObserved": false
+    }
+  },
+  "registryEvidenceUrls": [
+    "https://moj.gov.iq/contact_us.php",
+    "https://moj.gov.iq/view.7801/",
+    "https://igp.ur.gov.iq/Services.aspx?m=d24f0c1a-6ed8-4185-839d-aec82744694a"
+  ],
+  "checkedAt": "2026-10-09",
+  "researchAttempt": 1,
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "adapterReady": false,
+  "runtimeAssessment": {
+    "status": "held_quality_review",
+    "reason": "Registry custody is evidenced, but no public parcel geometry or safe native parcel identifier was returned."
+  },
+  "sampleRetention": {
+    "retainedFeatureProperties": [],
+    "fullGeometryChanged": false,
+    "featureReferencesChanged": false
+  }
+}

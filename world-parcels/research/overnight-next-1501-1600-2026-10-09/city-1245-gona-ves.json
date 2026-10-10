@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:1245",
+  "cityCode": 1245,
+  "wupCityCode": 1245,
+  "name": "Gonaïves",
+  "country": "Haiti",
+  "countryCode": "HT",
+  "iso2": "HT",
+  "iso3": "HTI",
+  "rank": 1559,
+  "queueRank": 1559,
+  "point": [19.4578147422757, -72.6794620153342],
+  "centerLatLon": [19.4578147422757, -72.6794620153342],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 367158,
+  "population2025k": 367.158,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official MTPTC describes ONACA (Office National du Cadastre) as responsible for establishing the general cadastre and producing cadastral information. This establishes national cadastral custody, but no Gonaïves-specific registry office or public parcel geometry was verified.",
+  "registryEvidenceUrls": [
+    "https://mail.mtptc.gouv.ht/accueil/page_oast.html",
+    "https://www.mtptc.gouv.ht/media/upload/doc/publications/OFFICE%20NATIONAL%20DU%20CADASTRIE.pdf",
+    "https://cnigs.ht/haitidata/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The first-party public map/API routes inspected expose administrative and thematic geography, not a safe anonymous parcel feature response with a stable native parcel ID and complete polygon. No credentials, private tokens, owner, address, titleholder, tax/account, or personal fields were requested.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "ONACA is the national cadastral custodian; CNIGS/HaitiData and SIA Haïti provide public geospatial distribution/viewer channels.",
+    "verifiedOpenScope": "SIA administrative boundaries and HaitiData WFS capabilities were verified; no parcel layer or parcel feature response was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gonaïves Haiti official cadastral parcel map land registry",
+        "scope": "Identify a city-specific registry custodian and a safe public parcel geometry route.",
+        "result": "Search located official MTPTC/ONACA custody material, CNIGS HaitiData, and the official SIA Haïti map. No Gonaïves-specific public cadastral parcel service was found.",
+        "actualResultUrls": [
+          "https://mail.mtptc.gouv.ht/accueil/page_oast.html",
+          "https://cnigs.ht/haitidata/",
+          "https://sia-haiti.ht/geo/carte/"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "French/Créole",
+        "query": "Gonaïves Haïti cadastre officiel parcelles carte registre foncier",
+        "scope": "Independent local-language discovery for ONACA, local cadastral custody, and a public parcel map/API.",
+        "result": "Search confirmed ONACA as the national cadastral institution and found official Gonaïves geography references, but no anonymous parcel ID-plus-geometry response or city-specific public cadastral viewer.",
+        "actualResultUrls": [
+          "https://www.mtptc.gouv.ht/media/upload/doc/publications/OFFICE%20NATIONAL%20DU%20CADASTRIE.pdf",
+          "https://cnigs.ht/haitidata/",
+          "https://sia-haiti.ht/geo/carte/"
+        ],
+        "executionMethod": "Separate French-language web search and first-party source review; no credentials or unsafe fields used."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "No exact-point parcel query was used to infer absence. The WUP point remains unchanged. ONACA coverage in Gonaïves, any non-public or offline cadastral records, HaitiData layer publication completeness, native parcel identity, and parcel CRS/schema remain unverified.",
+  "nextStep": "Serial reviewer may independently qualify a first-party parcel route; do not enable runtime from this packet alone."
+}

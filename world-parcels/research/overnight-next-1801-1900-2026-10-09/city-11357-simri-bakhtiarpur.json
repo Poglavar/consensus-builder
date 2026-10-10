@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 11357,
+  "queueRank": 1841,
+  "cityId": "queue:1841",
+  "name": "Simri Bakhtiarpur",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [25.7023284134512, 86.5931675970423],
+  "centerLatLon": [25.7023284134512, 86.5931675970423],
+  "population2025": 311434,
+  "population2025k": 311.434,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Simri Bakhtiarpur Bihar official cadastral map parcel GIS",
+        "result": "First-party discovery identified the Government of Bihar BhuNaksha viewer, the Bihar Revenue and Land Reforms portal, and the Government of India DILRMP village map-digitization record for Simri Bakhtiarpur, Saharsa. The BhuNaksha viewer is the local public cadastral-map route.",
+        "actualResultUrls": [
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://land.bihar.gov.in/landbihar/Default.aspx",
+          "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/1178"
+        ]
+      },
+      {
+        "language": "native/local (Hindi)",
+        "query": "सिमरी बख्तियारपुर बिहार आधिकारिक भू नक्शा खसरा नक्शा",
+        "result": "First-party discovery identified the Hindi Bihar land-record portal and the same official BhuNaksha viewer. The public viewer hierarchy returned Saharsa district, Simri Bakhtiyarpur subdivision, Simri Bakhtiarpur circle, and Hindi/English location labels; no parcel feature response was obtained.",
+        "actualResultUrls": [
+          "https://biharbhumi.bihar.gov.in/Biharbhumi/default/UserRegister",
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Separate English and Hindi first-party discovery followed by TLS-verified anonymous GET/POST inspection of the current BhuNaksha HTML, JavaScript and public REST routes. No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields or TLS disablement were used."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+      "observation": "Official Bihar cadastral mapping viewer; its current page loads assets/misc/config.js and index.js and exposes public location and map routes."
+    },
+    {
+      "url": "https://land.bihar.gov.in/landbihar/Default.aspx",
+      "observation": "Official Bihar Department of Revenue and Land Reforms page linking Bhu-Naksha and other land services."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/1178",
+      "observation": "Official DILRMP record for Bihar, Saharsa, Simri Bakhtiarpur; it reports village map digitization and Bhu-Naksha use. This supports cadastral custody/availability context, not an open geometry response."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Viewer HTML retrieved. Current JavaScript references assets/misc/config.js, index.js, rest/Levels/*, rest/MapInfo/*, ScalarDatahandler and WMS."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/assets/misc/config.js and https://bhunaksha.bihar.gov.in/index.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/javascript",
+      "assessment": "Current configuration and client code inspected. The client uses state=10, hierarchy codes, ScalarDatahandler, getPlotAtXY, getVVVVExtentGeoref and WMS; no authentication was needed for these public files."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/count",
+      "method": "POST",
+      "httpStatus": 200,
+      "contentType": "text/plain",
+      "requestBody": "state=10",
+      "assessment": "Returned 7 levels."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "requestBody": "state=10; level=2; codes=12,02,08,; hasmap=true",
+      "assessment": "Returned the official hierarchy including Saharsa (12), Simri Bakhtiarpur subdivision (02), Simri Bakhtiarpur circle (08), and a mauza list containing Simri(80) with code 0402."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/ScalarDatahandler",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "requestBody": "OP=4; state=10; levels=12,02,08,0402,CS,06,01,; x=459182.8852; y=2842782.1178",
+      "assessment": "Returned a map extent with has_data=N (xmin=459139.7138912235, ymin=2847831.716496993, xmax=461081.363382295, ymax=2850029.8020009366). This was an extent/point miss or service limitation only; no citywide absence inference was made."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY",
+      "method": "POST",
+      "httpStatus": 204,
+      "contentType": null,
+      "requestBody": "state=10; giscode=12_02_08_0402_CS_06_01; x=459182.8852; y=2842782.1178",
+      "assessment": "No parcel ID or geometry response. Exact WUP point was transformed only for the service's apparent projected coordinates; the WUP latitude/longitude was preserved and not shifted."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref",
+      "method": "POST",
+      "httpStatus": 204,
+      "contentType": null,
+      "requestBody": "state=10; giscode=12_02_08_0402_CS_06_01",
+      "assessment": "No extent response for the candidate GIS code."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Bihar's official BhuNaksha cadastral viewer and DILRMP map-digitization record for Saharsa / Simri Bakhtiarpur.",
+    "verifiedOpenScope": "Local official cadastral viewer, hierarchy metadata and map extent behavior only; no open parcel ID-plus-geometry feature was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; client service coordinates appear projected but no authoritative CRS declaration was retrieved",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable parcel response. The exact WUP point was preserved; an extent miss/204 response is not evidence of citywide cadastral absence.",
+    "requestEvidence": []
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review required",
+  "remainingUncertainty": "The exact public feature route, stable native parcel identity, authoritative CRS, attribute schema, city boundary interpretation, update currency and citywide completeness remain unresolved. No owner, address, titleholder, contact, tax/account or other unsafe fields were requested or retained.",
+  "nextStep": "A later attempt may continue from the saved ignored request evidence, verify the correct mauza/map-instance route, and request only bounded anonymous native ID-plus-geometry data. Packet completion is research evidence only and does not qualify or admit a runtime adapter."
+}

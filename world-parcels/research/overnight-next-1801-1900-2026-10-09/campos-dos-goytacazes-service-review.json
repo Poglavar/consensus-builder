@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-8159-campos-dos-goytacazes.json",
+  "cityCode": 8159,
+  "queueRank": 1851,
+  "city": "Campos dos Goytacazes",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "The official municipal geoprocessing custodian and cadastral/IPTU custodian were verified, but no anonymous safe native parcel ID plus polygon response was obtained. No sample GeoJSON was retained.",
+  "queryOutcomes": "Separate English and Portuguese discovery queries, exact text, outcomes and actual result URLs are recorded in city-8159-campos-dos-goytacazes.json.",
+  "requestOutcomes": [
+    {"route":"https://geo.campos.rj.gov.br/","method":"GET","status":200,"outcome":"Official municipal Geo portal loaded; page identifies the municipal geoprocessing sector and provides links to maps and data. No parcel feature schema or service endpoint exposed in the accessible HTML/configuration."},
+    {"route":"https://geo.campos.rj.gov.br/index.php/mapas/","method":"GET","status":200,"outcome":"Official maps catalog loaded. It exposes planning and thematic map links, including Plano Diretor 2020 Mapa 08 - Parcelamento, but no anonymous parcel ID-plus-geometry service."},
+    {"route":"https://geo.campos.rj.gov.br/index.php/dados/","method":"GET","status":200,"outcome":"Official data catalog loaded; no public parcel feature download, schema, CRS or safe native identity response was exposed."},
+    {"route":"https://geo.campos.rj.gov.br/wp-content/uploads/2023/02/Lei-0015_2020-MAPA-08-Parcelamento_R00.pdf","method":"GET","status":200,"outcome":"Official 4.0 MB PDF downloaded as a planning/parcelamento map. It is not a machine-readable parcel polygon response with stable native parcel identities; no geometry retained."},
+    {"route":"https://fazenda.campos.rj.gov.br/","method":"GET","status":200,"outcome":"Official Municipal Finance portal loaded and identifies cadastral/IPTU services and the municipal cadastral custodian; no parcel geometry endpoint exposed."},
+    {"route":"https://tributos.campos.rj.gov.br:8084/imobiliarioGateway/","method":"GET","status":200,"outcome":"Official municipal IPTU gateway loaded. The service is property/tax-account oriented; no anonymous parcel feature schema or safe polygon response was exposed, and no account/owner/tax fields were requested."},
+    {"route":"https://campos.rj.gov.br/exibirNoticia.php?id_noticia=78585","method":"GET/search discovery","status":200,"outcome":"Official municipal notice documents Planta On-line for project/licensing workflows; it does not establish an open parcel geometry service."}
+  ],
+  "requestCoordinates": {"wupPointLatLon":[-21.7523065609658,-41.3194155481189],"coordinateOrderNote":"WUP point preserved as latitude/longitude. No exact-point parcel query completed and no coordinate shift applied."},
+  "safeFieldAllowlist": ["stable native parcel ID if exposed", "polygon geometry", "service/layer metadata", "CRS metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": {"source":null,"retainedSample":null},
+  "geometryQuality": "No parcel geometry feature response obtained; zero samples retained.",
+  "geometryDecision": {"verified":false,"sourceId":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"Not completed because no anonymous parcel feature service was verified; this is not evidence of parcel absence.","requestEvidence":"tmp/valhalla-parcel-research/8159/"},
+  "coverageAssessment": {"claimedScope":"Official Campos dos Goytacazes municipal geoprocessing and Municipal Finance cadastral/IPTU services.","verifiedOpenScope":"Municipal custodians and public catalog/service pages verified; anonymous parcel schema, CRS, stable identity and citywide coverage unverified.","citywideVerified":false,"countrywideVerified":false},
+  "scopeLimits": [
+    "The public Geo portal exposes planning/thematic maps and catalogs but no verified parcel feature API in this attempt.",
+    "The Mapa 08 - Parcelamento PDF is a planning map and does not establish safe machine-readable parcel polygons or stable native parcel IDs.",
+    "The IPTU/cadastral gateway is property/tax-account oriented; no login, credentials, CAPTCHA bypass, owner, address, titleholder, contact, tax/account or personal fields were requested, logged or retained.",
+    "No exact-point hit, map extent miss, absent visible layer, or service limitation is evidence of citywide parcel absence.",
+    "Packet completion is research evidence only and does not admit a runtime adapter."
+  ],
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review remains required",
+  "uncertainty": "A current authenticated, request-gated, or undocumented municipal cadastral source may provide parcel data, and the public catalog may have additional client-side resources. No anonymous safe ID-plus-geometry response was verified in this attempt; parcel completeness, legal status, update currency and stable native identity remain unverified."
+}

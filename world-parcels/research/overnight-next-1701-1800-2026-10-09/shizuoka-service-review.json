@@ -1,0 +1,46 @@
+{
+  "cityRecord": "city-6144-shizuoka.json",
+  "cityCode": 6144,
+  "queueRank": 1748,
+  "name": "Shizuoka",
+  "country": "Japan",
+  "countryCode": "JP",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "registryCustodian": "Shizuoka City municipal GIS and tax/municipal records offices are evidenced as local custodians for the listed parcel-reference map and cadastral-map issuance procedure.",
+  "serviceSummary": "Official city documentation establishes a local parcel-reference/cadastral publication lead. No safe anonymous parcel ID-plus-geometry response was verified.",
+  "queryOutcomes": "English and Japanese first-party discovery queries found the official Shizuoka City GIS page, cadastral-survey page and cadastral-map application page. URLs and outcomes are recorded in the city record.",
+  "requestOutcomes": "The legacy WAGMAP portal returned HTTP 200 and its inline configuration was inspected; it exposed only the road-ledger map. The newer city.geocloud.jp host linked by the official page returned HTTP 403. No login, CAPTCHA bypass, credentials, private token, unsafe field request or TLS exception was used.",
+  "routesAttempted": [
+    "https://www.city.shizuoka.lg.jp/s7594/s012362.html",
+    "https://www.city.shizuoka.lg.jp/shinsei/s8374/p2377.html",
+    "https://www.city.shizuoka.lg.jp/s8769/s007775.html",
+    "https://www2.wagmap.jp/shizuoka/Portal",
+    "https://city.shizuoka.geocloud.jp/"
+  ],
+  "schemaAndCrs": {
+    "verified": false,
+    "nativeFields": null,
+    "crs": null,
+    "reason": "No parcel feature response was available."
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier", "parcel polygon geometry", "source CRS", "source layer/service identifier"],
+  "excludedFields": ["owner", "titleholder", "personal/contact information", "tax/account details", "unsafe address or registry details"],
+  "sampleGeojson": null,
+  "coverage": {
+    "verifiedOpenScope": null,
+    "citywide": false,
+    "exactPointHit": false,
+    "note": "No exact-point query was performed because no parcel endpoint was established; this is not evidence of absence."
+  },
+  "uncertainty": [
+    "The current geocloud host may expose a public parcel-reference layer through a browser bootstrap unavailable to this attempt.",
+    "The city documentation describes parcel-reference maps and cadastral maps but does not by itself establish vector geometry access or stable native IDs.",
+    "Packet completion records research execution only; it is not source integration or admission."
+  ],
+  "runtimeReadiness": "held_pending_independent_serial_review",
+  "runtimeEligible": false,
+  "reviewConclusion": "Retain the official local registry/GIS lead, but hold runtime readiness and retain no parcel sample until an independent reviewer verifies a real anonymous parcel adapter and safe native identity."
+}

@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:10553",
+  "wupCityCode": 10553,
+  "queueRank": 1296,
+  "rank": 1296,
+  "name": "Padrauna",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [26.8970542583885, 84.0080908667882],
+  "centerLatLon": [26.8970542583885, 84.0080908667882],
+  "pointBasis": "Exact immutable WUP 2025 queue point in latitude/longitude order; not shifted to force a parcel hit.",
+  "population2025": 431649,
+  "population2025k": 431.649,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "aliases": ["padrauna"],
+  "status": "complete",
+  "resultCategory": "official_local_registry_entry_verified_but_city_geometry_unavailable",
+  "registryFound": true,
+  "registryBasis": "The official Uttar Pradesh Revenue Board/UP Bhulekh and UP Bhunaksha services identify the state land-record and cadastral-map service. The public dashboard is specifically parameterized for Kushinagar district and Padrauna tehsil, and the current viewer returns Padrauna tehsil's village values and map metadata. This evidences an official local/tehsil registry service, not citywide geometry completeness.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_pending_serial_review",
+  "blocker": "The current public service exposed village-level map extents and a native CRS (EPSG:32644), but the returned Padrauna tehsil village list did not contain the urban Padrauna city as a selectable village and no safe parcel polygon/native parcel identity for the city was verified. A missing exact-point or urban extent is not evidence of citywide absence.",
+  "source": {
+    "sourceId": null,
+    "name": "Uttar Pradesh Bhunaksha / UP Bhulekh",
+    "url": "https://upbhunaksha.gov.in/",
+    "operator": "Revenue Board, Government of Uttar Pradesh; public map service for Kushinagar district, Padrauna tehsil",
+    "serviceType": "Official state cadastral-map viewer and land-record service",
+    "layer": "Village cadastral maps / Bhunaksha",
+    "geometryType": "Not verified in city scope",
+    "nativeIdField": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": true,
+    "geometryStatus": "not_verified",
+    "sampleCount": 0,
+    "sampleFile": null
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Official Uttar Pradesh Bhunaksha/UP Bhulekh service; Kushinagar district (189), Padrauna tehsil (00955), village cadastral maps.",
+    "verifiedOpenScope": "Anonymous viewer metadata and village-level map extents; no safe city parcel response or polygon obtained.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Padrauna Uttar Pradesh official cadastral map parcel भू नक्शा पडरौना",
+        "result": "First-party results located the Uttar Pradesh Revenue Board, UP Bhulekh, the Kushinagar/Padrauna cadastral digitization dashboard, and the official UP Bhunaksha viewer. No city parcel polygon was exposed by discovery alone.",
+        "actualResultUrls": ["https://bor.up.nic.in/", "https://upbhulekh.gov.in/", "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=189&tehsilCode=00955", "https://upbhunaksha.gov.in/"]
+      },
+      {
+        "language": "Hindi",
+        "query": "पडरौना उत्तर प्रदेश भू नक्शा खतौनी भूमि अभिलेख आधिकारिक",
+        "result": "First-party Hindi results confirmed the Revenue Board/UP Bhulekh land-record service and the Padrauna tehsil map-digitization dashboard. The dashboard lists rural revenue villages and their linkage status; it does not itself provide a city parcel polygon.",
+        "actualResultUrls": ["https://bor.up.nic.in/?search_key=HOMECENTER", "https://upbhulekh.gov.in/?site=aHR0cHM6Ly9uZXd5ZWFhcjIwMjAuYmxvZ3Nwb3QuY29tLw%3D%3D", "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=189&tehsilCode=00955"]
+      }
+    ],
+    "portals": [
+      {"url": "https://upbhunaksha.gov.in/", "operator": "Government of Uttar Pradesh / Revenue Board", "scope": "Current public cadastral-map viewer; JS configuration resolved base API https://upbhunaksha.gov.in/bhunakshaserver."},
+      {"url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=189&tehsilCode=00955", "operator": "Government of Uttar Pradesh", "scope": "Kushinagar district / Padrauna tehsil map digitization and linkage status."},
+      {"url": "https://bor.up.nic.in/", "operator": "Revenue Board, Uttar Pradesh", "scope": "Official state land-record and Bhunaksha service directory."}
+    ],
+    "requests": [
+      {"url": "https://upbhunaksha.gov.in/", "method": "GET; anonymous public request over TLS", "httpStatus": 200, "contentType": "text/html", "assessment": "Loaded current viewer HTML and JavaScript assets."},
+      {"url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/levelLabels", "method": "GET; anonymous public API", "httpStatus": 200, "contentType": "application/json", "assessment": "Returned levels District, Tehsil, Village."},
+      {"url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue", "method": "POST form-encoded; level=2, codes=189", "httpStatus": 200, "contentType": "application/json", "assessment": "Returned Padrauna tehsil code 00955."},
+      {"url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue", "method": "POST form-encoded; level=3, codes=189,00955", "httpStatus": 200, "contentType": "application/json", "assessment": "Returned the Padrauna tehsil village list; urban Padrauna was not present as a returned village value."},
+      {"url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref", "method": "POST form-encoded; gisLevels=189,00955,188479 (bounded control village request)", "httpStatus": 200, "contentType": "application/json", "assessment": "Returned a village map extent, attribution, and CRS EPSG:32644; no parcel polygon was requested or retained."},
+      {"url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref", "method": "POST form-encoded; gisLevels=189,00955,000000 (tehsil/urban probe)", "httpStatus": 200, "contentType": "application/json", "assessment": "Returned zero extent; treated only as an unavailable probe, not evidence of citywide absence."}
+    ],
+    "schemaCrs": {"nativeCrs": "EPSG:32644", "geometryResponseSchema": "Current viewer JS exposes map-info JSON fields xmin, ymin, xmax, ymax, attribution, crs, gisCode; parcel geometry response was not obtained.", "viewerLayers": ["Village cadastral map extent metadata"]}
+  },
+  "safeFieldAllowlist": ["cityCode", "queueRank", "WUP point", "official service URLs", "HTTP status/content type", "public service metadata", "native CRS/ID only if returned safely", "geometry only if independently verified"],
+  "remainingUncertainty": "Whether the urban Padrauna municipality has a separate city-survey layer or alternate official endpoint, which safe parcel identity field is used, whether anonymous polygon export is available, and the citywide coverage boundary remain unknown. No exact-point parcel query was run; the exact WUP point was preserved unchanged.",
+  "registryEvidenceUrls": ["https://upbhunaksha.gov.in/", "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=189&tehsilCode=00955", "https://bor.up.nic.in/"],
+  "checkedAt": "2026-10-09",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "sourceIds": [],
+  "adapterReady": false,
+  "adapterQualification": "held_pending_serial_review",
+  "nextStep": "Serial reviewer should independently qualify whether the current UP Bhunaksha service has a separate urban Padrauna/city-survey route and safe parcel polygon response; keep runtime held until native IDs and real geometry are independently verified.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

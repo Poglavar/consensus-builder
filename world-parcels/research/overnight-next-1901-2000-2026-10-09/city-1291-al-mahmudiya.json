@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 1291,
+  "wupCityCode": 1291,
+  "queueRank": 1946,
+  "name": "Al-Mahmudiya",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "iso3": "EGY",
+  "point": [31.1895473584316, 30.5480711282472],
+  "centerLatLon": [31.1895473584316, 30.5480711282472],
+  "population2025": 297143,
+  "population2025k": 297.143,
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted",
+  "nativeIdReadiness": "not_applicable_no_verified_parcel_response",
+  "registryFound": true,
+  "registryBasis": "The official Egyptian General Survey Authority (ESA) describes its historical and current role in producing property/cadastral maps and land records, documents digital-map products in GIS/CAD/PDF/JPG formats, and states that its state-property inventory project includes Beheira Governorate. This establishes relevant official national cadastral custody, but not open parcel-vector integration for Al-Mahmudiya.",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Egypt official cadastral parcel map service Al Mahmudiyah Beheira GIS Egyptian General Survey Authority",
+        "result": "Found the official ESA homepage and digital-map service page. ESA identifies cadastral/property-map and digital GIS map work, but no public anonymous Al-Mahmudiya parcel viewer or feature endpoint was exposed.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://www.esa.gov.eg/amlak.aspx"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "المحمودية البحيرة خريطة كادسترية قطع الأراضي الهيئة المصرية العامة للمساحة",
+        "result": "Found official ESA references to Beheira cadastral/state-property work and an official notice concerning survey records/maps at the Mahmudiya local unit, but no anonymous parcel-vector response or public Al-Mahmudiya map API.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/amlak.aspx",
+          "https://www.esa.gov.eg/main.aspx",
+          "https://diwanalomran.com/en/legal/2025-0-4/"
+        ]
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Egyptian General Survey Authority national cadastral/property-map custody, with documented Beheira coverage and Mahmudiya survey-map procedure context.",
+    "verifiedOpenScope": "Official registry and map-production/procedure context only; anonymous parcel geometry access unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "resultCategory": "official_registry_and_map_procedure_evidenced_no_anonymous_geometry",
+  "blocker": "Bounded verified-TLS GETs to https://www.esa.gov.eg/main.aspx, /sellingmaproomdigital.aspx, /amlak.aspx, /testmap.aspx, /egypt_maps.aspx, /alexDigitalMaps.aspx, and /robots.txt were used to inspect official pages and public route hints. The pages provided institutional/service information and static maps, but no parcel feature service, schema, CRS, or bounded ID+geometry response. No login, CAPTCHA bypass, credentials, private token, unsafe property fields, or TLS-disabling workaround was used.",
+  "remainingUncertainty": "A staff-mediated ESA/Beheira registry, a non-indexed public viewer, or a separate local GIS service may exist. The unchanged WUP point was not used to infer absence; no exact-point or citywide parcel hit test was possible.",
+  "nextStep": "A later researcher may retry official ESA/Beheira routes or obtain a documented public service endpoint. Retain only a stable native parcel identity and full geometry after geographic qualification; keep runtime admission held pending independent serial review."
+}

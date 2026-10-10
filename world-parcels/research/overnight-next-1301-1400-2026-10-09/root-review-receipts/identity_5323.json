@@ -1,0 +1,13 @@
+{
+  "taskId": "identity:5323",
+  "decision": "resolved",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-followon-2026-10-09/city-5431-belkuchi.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/root-identity-decision-overlay.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/identity-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/identity-5323-official-geography-response.json"
+  ],
+  "checkedAt": "2026-10-09T13:57:18.220156Z"
+}

@@ -1,0 +1,33 @@
+{
+  "cityRecord": "city-11491-purulia.json",
+  "cityCode": 11491,
+  "queueRank": 1633,
+  "city": "Purulia",
+  "country": "India",
+  "countryCode": "IN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Purulia district and West Bengal land-record pages establish the local/state revenue land-record custodian and Banglarbhumi plot/mouza-map service route. The official portal and state geoportal timed out during bounded anonymous requests, so no current JavaScript/configuration, parcel schema, CRS, safe native parcel ID, or full polygon was verified. No GeoJSON sample is retained and runtime remains held.",
+  "queryOutcomes": "Separate English and Bengali discovery queries and actual first-party URLs are recorded in city-11491-purulia.json.",
+  "requestOutcomes": "TLS verification remained enabled. Anonymous GET requests to banglarbhumi.gov.in and basundhara.wb.gov.in timed out. First-party indexed Purulia district and Banglarbhumi service pages established service custody and available service categories but supplied no parcel feature response. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe lookup, or TLS exception was used.",
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no usable parcel geometry response",
+  "geometryQuality": "not evaluated; no parcel geometry retained",
+  "retainedSample": null,
+  "scopeLimits": [
+    "Exact WUP point [23.3282282801323, 86.3696442557633] was preserved in latitude/longitude order; it was not shifted and no exact-point presence/absence conclusion was drawn.",
+    "Purulia district and West Bengal service pages evidence custody and procedures, not complete Purulia city parcel coverage.",
+    "Timeouts and unavailable response bodies are not evidence of citywide parcel absence.",
+    "No source-specific raw attribute set, owner/address/contact information, or synthetic parcel identity was retained.",
+    "No GeoJSON was retained because no safe native ID plus full polygon response was verified.",
+    "This packet is not source integration/admission; serial reviewer qualification remains pending."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current selected-sheet route, parcel layer schema, CRS, stable native identity, anonymous geometry access and citywide coverage remain unresolved. Future work should continue through public first-party routes only and retain at most three full polygons with exactly one canonical native identity per feature if a safe geometry response is independently verified."
+}

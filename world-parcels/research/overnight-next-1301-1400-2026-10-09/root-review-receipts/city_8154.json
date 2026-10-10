@@ -1,0 +1,16 @@
+{
+  "taskId": "city:8154",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-8154-kamoke.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/kamoke-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/kamoke-parcel-samples.geojson",
+    "tmp/valhalla-parcel-research/8154/gujranwala-layer.json",
+    "tmp/valhalla-parcel-research/8154/kamoke-exact.geojson",
+    "tmp/valhalla-parcel-research/8154/kamoke-query.geojson"
+  ],
+  "checkedAt": "2026-10-09T14:37:51Z",
+  "reason": "Kamoke identity and English/Urdu search records checked. Original Gujranwala layer 8 response has three polygons with native OBJECTIDs matching the full retained geometries, but exceededTransferLimit is true and the exact point response is empty. Fresh ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are unproven; no admission or citywide inference."
+}

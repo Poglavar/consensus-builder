@@ -1,0 +1,67 @@
+{
+  "cityCode": 4383,
+  "queueRank": 1869,
+  "name": "Ciudad Bolivar",
+  "country": "Venezuela (Bolivarian Republic of)",
+  "countryCode": "VE",
+  "iso3": "VEN",
+  "locId": 862,
+  "point": [8.08467761910864, -63.556971231147],
+  "population2025": 307794,
+  "population2025k": 307.794,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ciudad Bolivar Venezuela official cadastral parcel map API municipality Angostura del Orinoco",
+        "result": "Found the official municipal Angostura revenue portal and official municipal cadastral ordinance material identifying the Dirección de Catastro, Tierras y Planeamiento Urbano. No anonymous public parcel-map or geometry API was found.",
+        "actualResultUrls": [
+          "https://angostura.alcaldia.web.ve/",
+          "https://ciudadpiar.sigat.net/",
+          "https://ciudadpiar.sigat.net/documentos/ordenanzas/reforma_de_la_ordenanza_de_impuesto_sobre_inmuebles_urbanos_y_periurbanos_del_municipio_angostura.pdf"
+        ]
+      },
+      {
+        "language": "Spanish (local)",
+        "query": "Ciudad Bolívar Venezuela catastro municipal mapa predial parcelas API Alcaldía Municipio Angostura del Orinoco",
+        "result": "La búsqueda encontró la ordenanza municipal oficial alojada en el portal SIGAT/Alcaldía Web. La Dirección de Catastro, Tierras y Planeamiento Urbano administra el Registro Catastral y la ficha/cédula catastral, pero no se encontró un visor o API pública anónima de geometría parcelaria.",
+        "actualResultUrls": [
+          "https://ciudadpiar.sigat.net/",
+          "https://angostura.alcaldia.web.ve/",
+          "https://ciudadpiar.sigat.net/documentos/ordenanzas/reforma_de_la_ordenanza_de_impuesto_sobre_inmuebles_urbanos_y_periurbanos_del_municipio_angostura.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "source": {
+    "provider": "Municipio Angostura del Orinoco, Dirección de Catastro, Tierras y Planeamiento Urbano",
+    "service": "Municipal Registro Catastral / ficha o cédula catastral, documented by municipal ordinance",
+    "serviceUrl": "https://ciudadpiar.sigat.net/",
+    "serviceType": "Official municipal tax/revenue web portal and ordinance; no public parcel geometry endpoint confirmed",
+    "nativeIdField": "ficha/cédula catastral (described by the ordinance; no values exposed anonymously)",
+    "geometryField": null,
+    "safeFieldsRequested": [],
+    "parcelLayerConfirmed": false
+  },
+  "verifiedSample": {
+    "count": 0,
+    "exactWupPointQuery": false,
+    "result": "No public anonymous parcel geometry route was available, so no exact-point parcel query was attempted and no geometry was retained.",
+    "requestEvidence": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal cadastral registration administered by Angostura del Orinoco; the public portal exposes municipal service/ordinance information, not an open parcel layer.",
+    "verifiedOpenScope": "Anonymous GET access to the official municipal portals and ordinance PDF only.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; no anonymous parcel geometry adapter candidate identified",
+  "notes": "The exact WUP point was preserved in latitude/longitude order and was not shifted. The municipality is evidenced as a local cadastral custodian, but its public routes did not expose safe parcel IDs plus geometry. No owner, address, titleholder, contact, title, tax/account, personal or other unsafe fields were requested or retained. This packet is research evidence only and is not source integration or runtime admission."
+}

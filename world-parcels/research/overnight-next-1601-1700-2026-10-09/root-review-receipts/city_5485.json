@@ -1,0 +1,23 @@
+{
+  "taskId": "city:5485",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-5485-sherpur.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/sherpur-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T12:34:04Z",
+  "reason": "The DLRS government map viewer and Sherpur district land-service route support registry custody. Sherpur survey selector returned an empty list; the land-zoning selector did not offer Mymensingh and configured WMS returned 503. These limited responses do not prove parcel absence.",
+  "identityCheck": "Queue, ranked roster, and original WUP 2025 CSV agree on code, rank, country, point and population in persons.",
+  "searchCheck": "Packet records separate English and local-language queries with result URLs; first-party source pages were independently inspected.",
+  "custody": {
+    "registryFound": true,
+    "firstPartyUrls": [
+      "https://settlement.gov.bd/Map/MapSearch",
+      "https://www.sherpur.gov.bd/en"
+    ]
+  },
+  "sampleCheck": "No full parcel polygons retained; no unsafe ID attributes in a retained sample.",
+  "admissionGates": "No native-ID parcel polygon response. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding and headed details-panel verification are not evidenced. No runtime admission."
+}

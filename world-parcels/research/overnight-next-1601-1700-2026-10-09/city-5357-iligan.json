@@ -1,0 +1,131 @@
+{
+  "cityCode": 5357,
+  "queueRank": 1676,
+  "name": "Iligan",
+  "country": "Philippines",
+  "countryCode": "PH",
+  "point": [8.22741968503304, 124.236632688198],
+  "population2025": 341172,
+  "population2025k": 341.172,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Iligan City Philippines official cadastral parcel map GIS assessor cadastre",
+        "result": "Found official Iligan City government evidence for the City Assessor Office and official city maps, plus the national Geoportal Philippines catalog. The live Geoportal configuration exposes an LMB parcel-data layer, but it is not marked for open download. No anonymous parcel feature response was obtained.",
+        "actualResultUrls": [
+          "https://iligan.gov.ph/contactus?25524=",
+          "https://iligan.gov.ph/knowiligan/map?15954149=",
+          "https://geoportal.gov.ph/",
+          "https://geoportal.gov.ph/gpapps/lotplotter",
+          "https://www.geoportal.gov.ph/resources/GP_DataInventory.pdf"
+        ]
+      },
+      {
+        "language": "Cebuano/Filipino (local-language discovery)",
+        "query": "Iligan City opisyal nga mapa kadastral parsela assessor katastre / mapa ng parsela cadastral Iligan City",
+        "result": "No separate public Iligan parcel viewer was found in local-language discovery. The official Iligan site and its Citizen's Charter/Assessor references use English administrative terms; the City Assessor Office is the evidenced local cadastral/assessment custodian.",
+        "actualResultUrls": [
+          "https://iligan.gov.ph/",
+          "https://iligan.gov.ph/contactus?25524=",
+          "https://iligan.gov.ph/CC2024-5th-Edition.pdf?1491188561=",
+          "https://geoportal.gov.ph/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Iligan City's official website lists the City Assessor Office (CASSO) and the official Citizen's Charter identifies City Assessor functions including assessment records and tax-mapping operations. This establishes a local municipal assessment/cadastral custodian, not an openly accessible parcel API or proof of citywide geometry completeness.",
+  "officialSources": [
+    {
+      "url": "https://iligan.gov.ph/contactus?25524=",
+      "observation": "Official Iligan City government contact page lists the City Assessor Office (CASSO), its head, telephone, and official email." 
+    },
+    {
+      "url": "https://iligan.gov.ph/CC2024-5th-Edition.pdf?1491188561=",
+      "observation": "Official Iligan City Citizen's Charter; search-indexed text identifies City Assessor appraisal/assessment and tax-mapping operations, including property identification numbers and assessment records." 
+    },
+    {
+      "url": "https://geoportal.gov.ph/",
+      "observation": "Official Geoportal Philippines map application. Its current layer endpoint lists LMB's Parcel data layer with native layer name denr_parcel_data." 
+    },
+    {
+      "url": "https://geoportal.gov.ph/layers/fetchlayers",
+      "observation": "Current public Geoportal JSON layer configuration. LMB parcel layer is denr_parcel_data, style ParcelData, and download is not enabled in the returned configuration." 
+    },
+    {
+      "url": "https://geoportal.gov.ph/js/script.js",
+      "observation": "Current public frontend JavaScript configures Geoportal layers through https://geoserver.geoportal.gov.ph/geoserver/geoportal/wms and uses WMS feature-info interaction." 
+    },
+    {
+      "url": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/wms",
+      "observation": "First-party GeoServer WMS endpoint referenced by the live Geoportal configuration; bounded anonymous GetFeatureInfo request timed out." 
+    }
+  ],
+  "source": {
+    "sourceId": "philippines-geoportal-lmb-parcel-data-iligan-city-assessor",
+    "name": "Geoportal Philippines LMB Parcel data with Iligan City Assessor custody",
+    "operator": "Land Management Bureau through Geoportal Philippines; local municipal custody evidenced by Iligan City Assessor Office",
+    "endpoint": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/wms",
+    "method": "First-party discovery, live JavaScript/configuration inspection, layer-catalog inspection, and bounded anonymous WMS request",
+    "responseFormat": "WMS; no parcel feature response obtained",
+    "nativeCrs": null,
+    "nativeIdentity": null,
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "scope": "The national LMB parcel layer is evidenced in the Geoportal catalog, and Iligan local assessment custody is evidenced. Parcel layer coverage in Iligan, schema, CRS, stable native identity, update cadence, and citywide completeness remain unverified."
+  },
+  "requests": [
+    {
+      "url": "https://geoportal.gov.ph/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official map application returned; layer panel and current frontend references were inspected."
+    },
+    {
+      "url": "https://geoportal.gov.ph/layers/fetchlayers",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Returned current layer JSON. Found LMB denr_parcel_data / Parcel data; download field was null, so no download route was attempted."
+    },
+    {
+      "url": "https://geoportal.gov.ph/js/script.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Returned current JavaScript. It documents the WMS endpoint and WMS feature-info interaction used by the public viewer."
+    },
+    {
+      "url": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&LAYERS=geoportal:denr_parcel_data&QUERY_LAYERS=geoportal:denr_parcel_data&STYLES=&SRS=EPSG:4326&BBOX=124.2358,8.2266,124.2375,8.2282&WIDTH=800&HEIGHT=800&X=401&Y=400&INFO_FORMAT=application/json&FEATURE_COUNT=3",
+      "method": "GET",
+      "httpStatus": null,
+      "outcome": "Timed out after 20 seconds from the anonymous request environment; no response, parcel ID, attributes, or geometry obtained. This is not evidence of parcel absence."
+    },
+    {
+      "url": "https://iligan.gov.ph/contactus?25524=",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official local page returned and lists City Assessor Office custody/contact."
+    },
+    {
+      "url": "https://iligan.gov.ph/knowiligan/map?15954149=",
+      "method": "GET",
+      "httpStatus": null,
+      "outcome": "Official city map route redirected to a JavaScript/browser gate in the discovery fetch; it is a general city map, not evidence of parcel geometry."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "safeFieldAllowlist": ["native parcel identity if later documented", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "titleholder", "address", "contact", "tax/account", "legal/title", "personal data"],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "National LMB parcel-data layer listed by Geoportal Philippines, with local Iligan City Assessor custody.",
+    "verifiedOpenScope": "Official catalog/configuration and local custodian evidence only; no bounded parcel feature response or geometry was verified.",
+    "countrywideVerified": false
+  },
+  "resultCategory": "local_registry_evidenced_no_anonymous_parcel_response",
+  "runtimeReadiness": "held_serial_review",
+  "remainingUncertainty": "Exact-point parcel hit status, map extent, layer schema, CRS, native identity, geometry access, update cadence, and citywide completeness are unknown. The Geoportal layer's conditional/non-open download state and the WMS timeout were not treated as absence. Packet completion is not source integration or admission."
+}

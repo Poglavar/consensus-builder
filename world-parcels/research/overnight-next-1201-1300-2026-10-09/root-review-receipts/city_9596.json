@@ -1,0 +1,14 @@
+{
+  "taskId": "city:9596",
+  "decision": "held",
+  "reason": "Chaoyang code 9596, rank 1252, China, immutable point [41.5935195114786,120.436963716254] and 443864 persons match the roster and queue. English and Simplified Chinese executed searches are recorded with result URLs. Original official bureau homepage HTML identifies the Chaoyang Natural Resources Bureau and registration section; this supports institutional custody (registryFound=true), but there is no original safe parcel ID/polygon response, verified public geometry service, or independent adapter qualification. Public geometry and citywide presence remain unresolved; no runtime admission.",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-9596-chaoyang.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/chaoyang-service-review.json",
+    "tmp/valhalla-parcel-research/9596/home.html"
+  ],
+  "checkedAt": "2026-10-09T12:18:10.830295Z"
+}

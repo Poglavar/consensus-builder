@@ -1,0 +1,15 @@
+{
+  "taskId": "city:1133",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-1133-port-de-paix.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/port-de-paix-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T14:33:24Z",
+  "independentlyOpenedFirstPartyUrls": [
+    "https://sia-haiti.ht/geo/carte/"
+  ],
+  "reason": "The inspected SIA first-party map is an agricultural map, and the paired packet reports only administrative/environmental routes. Local cadastre custody and a native-ID parcel polygon remain unresolved; the CIAT 503 cannot establish absence. Fresh reads, paging, 13-cell metric audit, source binding and headed Details check are missing; city remains held."
+}

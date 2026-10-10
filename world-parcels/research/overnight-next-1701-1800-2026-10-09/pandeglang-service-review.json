@@ -1,0 +1,56 @@
+{
+  "cityRecord": "city-5665-pandeglang.json",
+  "schemaVersion": "1.0",
+  "cityCode": 5665,
+  "queueRank": 1770,
+  "city": "Pandeglang",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "First-party ATR/BPN BHUMI/ATLAS and the official Kantor Pertanahan Kabupaten Pandeglang site establish cadastral custody routes. Public shells and current configuration were inspected, but no anonymous parcel geometry, safe native parcel identity, schema or CRS response was retrieved; no sample is retained and runtime remains held.",
+  "queryOutcomes": "Separate English and Indonesian discovery queries and their actual first-party URLs are recorded in city-5665-pandeglang.json.",
+  "requestOutcomes": "ATLAS and BHUMI landing/help routes, current JavaScript/configuration, public settings, the guessed catalog API route, and the official local land-office route were attempted. The settings route returned branding only; the guessed catalog route returned 404; no parcel request reached a geometry response. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request or global TLS disable was used.",
+  "scopeLimits": [
+    "Exact WUP point [-6.31355115684856, 106.097731937787] was preserved; no coordinate shift or parcel hit/miss inference was made.",
+    "Local custodian evidence does not imply an open parcel geometry API or citywide coverage.",
+    "No owner, address, titleholder, contact, tax/account or personal fields were requested or retained.",
+    "No raw source-specific attributes or retained GeoJSON sample exist for this packet.",
+    "A zero exact-point hit, map extent miss, 404, timeout or unusable UI would not establish citywide absence.",
+    "Runtime readiness remains held pending independent serial adapter qualification."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "public service and layer metadata"
+  ],
+  "nativeFieldMapping": "No parcel fields returned; mapping not established.",
+  "compositeKeyProvenance": "No parcel-level composite key returned.",
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public parcel geometry response; no hit/miss inference.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "ATR/BPN national land-spatial portal and Pandeglang local land-office custody",
+    "verifiedOpenScope": "Public portal metadata and custodial pages only",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Current anonymous parcel endpoint, native parcel identity, schema, CRS, geometry behavior and citywide coverage remain unresolved.",
+  "retainedSample": null
+}

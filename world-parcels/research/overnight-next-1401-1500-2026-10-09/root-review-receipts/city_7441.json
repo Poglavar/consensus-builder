@@ -1,0 +1,17 @@
+{
+  "taskId": "city:7441",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-7441-feni.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/feni-service-review.json",
+    "tmp/valhalla-parcel-research/feni-7441/info.body",
+    "tmp/valhalla-parcel-research/feni-7441/main.js",
+    "tmp/valhalla-parcel-research/feni-7441/dists.json",
+    "tmp/valhalla-parcel-research/feni-7441/info.headers"
+  ],
+  "checkedAt": "2026-10-09T16:11:46+00:00",
+  "basis": "Official DLRS zonal listing includes Feni. Original viewer configuration names a GIS host and mouza layer, but original bounded GIS response is HTTP 503; administrative district subset omitted Feni. Neither result proves absence; no native-ID geometry or independent adapter qualification is evidenced.",
+  "admissionGates": "No verified native parcel geometry; fresh exact-ID read, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are not evidenced."
+}

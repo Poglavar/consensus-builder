@@ -1,0 +1,12 @@
+{
+  "taskId": "city:5250",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-5250-middlesbrough.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/middlesbrough-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T11:39:07Z",
+  "rationale": "Middlesbrough: immutable queue identity and separate English/local searches match; first-party council registry and Land Registry INSPIRE partition are documented, but no GML polygon response or adapter qualification was obtained.",
+  "admission": "held; no runtime, source catalog, city config, or generated coverage change"
+}

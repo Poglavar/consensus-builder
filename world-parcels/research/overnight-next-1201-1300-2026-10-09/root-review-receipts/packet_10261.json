@@ -1,0 +1,18 @@
+{
+  "taskId": "packet:10261",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-10261-dindigul.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/dindigul-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/root-review-receipts/city_10261.json"
+  ],
+  "checkedAt": "2026-10-09T13:43:54Z",
+  "identityReview": "Immutable WUP code, rank, country, point, and population in persons match the ranked roster and pending queue.",
+  "searchReview": "Paired packet documents executed English and Tamil searches with actual result URLs.",
+  "sourceReview": "The live first-party Dindigul District Survey and Land Records page names the local Assistant Director and survey/land-record functions, supporting custody. State e-Services and TNGIS requests timed out in the paired evidence; no anonymous parcel schema, native ID, or polygon was obtained. A timeout does not establish absence.",
+  "geometryReview": "No full source parcel polygon was retained; sample count is zero and no safe native parcel ID response is evidenced. Point/timeout/viewer limitations are not citywide absence.",
+  "admissionReview": "Held: no independently evidenced fresh exact native-ID reads, forced paging and complete manifest, 13 bounded cells, metric GEOS validity/duplicate/overlap/operation checks, full-parcel source binding, or headed Details-panel verification. No runtime, catalog, registry, or generated report admission."
+}

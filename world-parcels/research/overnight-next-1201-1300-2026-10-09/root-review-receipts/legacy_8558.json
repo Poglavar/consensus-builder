@@ -1,0 +1,13 @@
+{
+  "taskId": "legacy:8558",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-2026-10-09/city-8558-manado.json",
+    "world-parcels/research/overnight-next-2026-10-09/manado-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T10:39:59Z",
+  "reason": "Manado: official national parcel-map custody is documented, but the city geoportal has no verified parcel layer and no anonymous parcel geometry or native ID was read. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed Details verification are not evidenced; absence is not established."
+}

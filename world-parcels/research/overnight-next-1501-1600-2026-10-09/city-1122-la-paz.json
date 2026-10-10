@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:1122",
+  "cityCode": 1122,
+  "wupCityCode": 1122,
+  "name": "La Paz",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "iso2": "MX",
+  "iso3": "MEX",
+  "rank": 1529,
+  "queueRank": 1529,
+  "point": [24.1214845987258, -110.31000709561],
+  "centerLatLon": [24.1214845987258, -110.31000709561],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 372988,
+  "population2025k": 372.988,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Ayuntamiento de La Paz, Baja California Sur, site identifies Dirección General de Catastro and publishes cadastral procedures; the official Visor Urbano is a public municipal geospatial viewer.",
+  "registryEvidenceUrls": [
+    "https://www.lapaz.gob.mx/catalogo-tramites-servicios/0034",
+    "https://noticias.lapaz.gob.mx/milena-quiroga-presenta-el-visor-urbano-una-herramienta-digital-de-transparencia-y-desarrollo-urbano/",
+    "https://visorurbano.lapaz.gob.mx/"
+  ],
+  "verifiedSample": true,
+  "sampleFile": "la-paz-parcel-samples.geojson",
+  "publicParcelGeometryFound": true,
+  "sourceIds": ["78376", "78377", "77368"],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "A first-party anonymous WFS ID-plus-geometry response was verified, but no adapter was qualified independently for runtime admission. The viewer also exposes unsafe descriptive fields in its unrestricted schema; the retained request explicitly selected only id and geom.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_verified_sample",
+  "coverageAssessment": {
+    "claimedScope": "Municipal Dirección General de Catastro custody and the municipal Visor Urbano cadastral map; the WFS sample is local to a bounded area around the WUP point.",
+    "verifiedOpenScope": "Three bounded parcel polygons returned by cartografia:predios2 WFS in EPSG:4326 near the exact WUP point.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "La Paz Baja California Sur official cadastral parcel map viewer cadastre land registry",
+        "result": "Search located the official municipal Visor Urbano announcement and municipal cadastral-services catalog. The viewer's current JavaScript was inspected and led to the first-party GeoServer WFS route.",
+        "actualResultUrls": [
+          "https://noticias.lapaz.gob.mx/milena-quiroga-presenta-el-visor-urbano-una-herramienta-digital-de-transparencia-y-desarrollo-urbano/",
+          "https://www.lapaz.gob.mx/catalogo-tramites-servicios/0034",
+          "https://visorurbano.lapaz.gob.mx/"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "Spanish (local/national language)",
+        "query": "La Paz Baja California Sur visor urbano mapa catastral predios catastro oficial",
+        "result": "Search located the official Ayuntamiento cadastral catalog, the official Visor Urbano announcement, and the current municipal viewer. The Spanish-language viewer configuration identifies the predios2 cadastral layer and its GeoServer host.",
+        "actualResultUrls": [
+          "https://www.lapaz.gob.mx/catalogo-tramites-servicios/0034",
+          "https://noticias.lapaz.gob.mx/milena-quiroga-presenta-el-visor-urbano-una-herramienta-digital-de-transparencia-y-desarrollo-urbano/",
+          "https://visorurbano.lapaz.gob.mx/"
+        ],
+        "executionMethod": "Separate Spanish-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "The exact WUP point was not shifted. Three nearby features were returned by a bounded bbox, but no citywide completeness, temporal currency, or independent adapter qualification was established.",
+  "nextStep": "Serial reviewer may independently qualify the municipal WFS route and safe native id mapping; do not enable runtime from this packet alone."
+}

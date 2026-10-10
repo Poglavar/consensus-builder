@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-7325-golapganj.json",
+  "cityCode": 7325,
+  "queueRank": 1880,
+  "city": "Golapganj",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "summary": "Official Bangladesh DLRS map-search and land-zoning services were inspected. Current hierarchy requests reached the Sylhet district layer and identified Golapganj's national cadastral workflow context, but the anonymous survey-to-upazila request returned an empty list and the linked GIS WMS host returned 503. No safe parcel ID-plus-geometry response was verified; no GeoJSON sample is retained.",
+  "searchQueries": [
+    {"language":"English","query":"Golapganj Bangladesh official cadastral map land records parcel GIS","result":"Found official DLRS map search, official Mouza-map purchase portal, and official land-zoning portal; no local open vector parcel API in indexed results.","actualResultUrls":["https://settlement.gov.bd/Map/MapSearch","https://map.settlement.gov.bd/","https://map.land.gov.bd/"]},
+    {"language":"Bengali","query":"গোলাপগঞ্জ বাংলাদেশ সরকারি ভূমি নকশা খতিয়ান ক্যাডাস্ট্রাল মানচিত্র","result":"সরকারি DLRS ভূমি রেকর্ড/নকশা সেবা এবং ভূমি নকশা প্রকল্প পাওয়া গেছে; Golapganj-specific anonymous parcel geometry endpoint পাওয়া যায়নি।","actualResultUrls":["https://settlement.gov.bd/Map/MapSearch","https://map.settlement.gov.bd/","https://map.land.gov.bd/","https://dlrs.portal.gov.bd/"]}
+  ],
+  "requestOutcomes": [
+    {"route":"https://settlement.gov.bd/Map/MapSearch","method":"GET","status":"200","outcome":"Current official DLRS map-search HTML retrieved. It loads MapSearch.js and exposes division, district, survey, upazila, mouza, sheet and plot controls."},
+    {"route":"https://settlement.gov.bd/js/MapSearch.js?v=yIrkacclePMWogM6Pmn4B9h1nLF0RbM3YSk70pezUfQ","method":"GET","status":"200","outcome":"Current JavaScript/configuration inspected. It exposes POST hierarchy routes and a parcel vector-tile pattern /tiles/parcels/{survey}/{districtCode}/{mouza}/{z}/{x}/{y}.pbf plus /meta; no public citywide catalog or CRS metadata was exposed in the script."},
+    {"route":"https://settlement.gov.bd/Map/GetDivisionList","method":"POST","status":"200","outcome":"Returned official division list; Sylhet was identified as code 050000000."},
+    {"route":"https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise","method":"POST","status":"200","outcome":"With divid=050000000, returned Sylhet district code 050100000 and comcod 4146."},
+    {"route":"https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise","method":"POST","status":"200","outcome":"With districtid=050100000 and comcod=4146, returned one current survey entry: RS/digital survey rsnum=201901, marked ongoing."},
+    {"route":"https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap","method":"POST","status":"200, empty JSON list","outcome":"With comcod=4146, rsno1=201901 and districtid=050100000, returned [] rather than an upazila/mouza response. No plot request was issued because no local unit identifier was available."},
+    {"route":"https://map.land.gov.bd/","method":"GET","status":"200","outcome":"Official Ministry of Land national digital land-zoning page retrieved. Current main.js exposes /getAdminByCode and /getGeomByCode POST routes and states that mouza/plot maps are digitized and georeferenced."},
+    {"route":"https://map.land.gov.bd/getAdminByCode","method":"POST","status":"419 Page Expired","outcome":"Anonymous direct POST using the page's visible CSRF value and cookie jar was rejected; no login, token bypass, CAPTCHA or private request was attempted."},
+    {"route":"https://gis.land.gov.bd/geoserver/wsDMMS/wms?service=WMS&request=GetCapabilities","method":"GET","status":"503 Service Unavailable","outcome":"Current official land GIS WMS host was identified from the viewer JavaScript but returned 503. No WMS schema, CRS, parcel layer, identity or geometry was obtained."},
+    {"route":"https://map.settlement.gov.bd/","method":"GET via first-party indexed discovery","status":"200/indexed","outcome":"Official DLRS Mouza-map purchase portal describes CS, SA, RS, BRS and BDS survey maps and a location search workflow; it is a map/document procurement service, not an anonymous parcel-vector response."}
+  ],
+  "requestCoordinates":{"wupPointLatLon":[24.8198610020619,92.014645981473],"queryAttempted":false,"coordinateOrderNote":"Exact WUP point preserved in latitude/longitude order. No point or map query was completed and no coordinate was shifted."},
+  "safeFieldAllowlist":["stable native parcel ID if anonymously exposed","parcel polygon geometry","source layer metadata","CRS metadata"],
+  "nativeFieldMapping":null,
+  "compositeKeyProvenance":null,
+  "crs":{"source":null,"retainedSample":null},
+  "geometryQuality":"No anonymous parcel ID-plus-geometry response obtained; zero samples retained.",
+  "geometryDecision":{"verified":false,"sourceId":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"not performed because the current hierarchy produced no local unit identifier and the GIS WMS was unavailable","requestEvidence":"tmp/valhalla-parcel-research/7325/"},
+  "coverageAssessment":{"claimedScope":"Official Bangladesh DLRS cadastral-map and land-zoning infrastructure, with the Sylhet district hierarchy reached for Golapganj context.","verifiedOpenScope":"Official national map/search procedures and hierarchy metadata only; no citywide or countrywide anonymous parcel geometry coverage verified.","citywideVerified":false,"countrywideVerified":false},
+  "scopeLimits":["A national DLRS map workflow and district hierarchy do not establish a complete Golapganj parcel inventory.","The empty survey-to-upazila response, WMS 503, CSRF page-expired response, or unavailable UI is not evidence of cadastral absence.","No owner, address, titleholder, contact, personal, tax/account, or other unsafe fields were requested, logged or retained.","No stable parcel identity, parcel schema, CRS, geometry quality, update currency, exact-point result, or citywide completeness was verified.","No full parcel polygon is retained and no GeoJSON sample file is provided.","Packet completion is research evidence only and does not admit a runtime adapter."],
+  "runtimeReadiness":"held_pending_serial_review",
+  "serialReviewerQualification":"not qualified; independent serial review and adapter qualification still required",
+  "uncertainty":"Bangladesh's official DLRS systems clearly provide cadastral-map search/procurement workflows, but this attempt could not traverse the current anonymous service to a Golapganj mouza/plot response. The current GIS host may require a browser session or service recovery; that limitation is not evidence of citywide absence."
+}

@@ -1,0 +1,12 @@
+{
+  "taskId": "city:11480",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-11480-taixing.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/taixing-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-09T14:52:59.803384Z",
+  "reason": "Official Taixing bureau page and government-service HTML support registry custody; the service list exposes registration workflow rather than a parcel feature response. No native parcel polygon or adapter qualification."
+}

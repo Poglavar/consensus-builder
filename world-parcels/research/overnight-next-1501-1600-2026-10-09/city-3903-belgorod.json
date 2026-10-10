@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:3903",
+  "wupCityCode": 3903,
+  "name": "Belgorod",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso2": "RU",
+  "iso3": "RUS",
+  "rank": 1573,
+  "queueRank": 1573,
+  "point": [50.5919318148311, 36.5862404865279],
+  "centerLatLon": [50.5919318148311, 36.5862404865279],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 363411,
+  "population2025k": 363.411,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Belgorod regional Rosreestr administration's first-party announcement identifies the National Spatial Data System (NSPD) public cadastral map as the public cadastral-map service and says it is available without authorization. This establishes federal/regional cadastral-service custody; it does not establish a verified anonymous parcel response for the WUP point.",
+  "registryEvidenceUrls": [
+    "https://kartgeocentre.ru/produkty-i-uslugi/publichnaya-kadastrovaya-karta-teper-dostupna-na-platforme-nacionalnaya-sistema",
+    "https://nspd.gov.ru/",
+    "https://belgorod.geofsm.ru/mapadmin/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No source-native anonymous response containing a safe parcel identity and complete polygon was verified. The official NSPD homepage timed out during a bounded GET; the Belgorod municipal GIS returned its administration/login page, and its inspected map configuration referenced only a regional-boundary WFS layer, not parcel features.",
+  "scopeLimits": "Cadastral-service custody is evidenced separately from open geometry. No full polygon was retained; no exact-point hit, citywide completeness, or countrywide completeness is asserted.",
+  "resultCategory": "official_registry_geometry_unverified",
+  "remainingUncertainty": "The current NSPD map's internal public API, exact WUP-point coverage, parcel-layer schema, and citywide completeness remain unverified. The timeout and login wall are access findings, not evidence of parcel absence.",
+  "nextStep": "Root review may independently inspect the current NSPD viewer/API configuration and qualify an adapter only after a bounded anonymous ID+geometry response is verified.",
+  "coverageAssessment": {
+    "claimedScope": "Rosreestr/NSPD public cadastral-map custody is evidenced for Russia and the Belgorod regional administration; the Belgorod municipal GIS is a separate local geospatial service with an administrative login wall.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No safe native parcel ID plus complete polygon was obtained from an anonymous public response; packet completion is not source integration or runtime admission."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Belgorod official cadastral map parcel GIS Rosreestr public cadastral map",
+        "scope": "Identify first-party cadastral custody and a safe anonymous parcel-geometry route.",
+        "result": "Search identified the Rosreestr/NSPD public cadastral-map route and the Belgorod municipal GIS. No verified anonymous parcel feature response was found.",
+        "actualResultUrls": [
+          "https://kartgeocentre.ru/produkty-i-uslugi/publichnaya-kadastrovaya-karta-teper-dostupna-na-platforme-nacionalnaya-sistema",
+          "https://nspd.gov.ru/",
+          "https://belgorod.geofsm.ru/mapadmin/"
+        ],
+        "executionMethod": "Separate fresh English web search followed by first-party/official-service page and configuration inspection."
+      },
+      {
+        "language": "Russian",
+        "query": "Белгород официальная кадастровая карта земельные участки Росреестр геопортал",
+        "scope": "Identify first-party local/regional cadastral custody and a safe anonymous parcel-geometry route.",
+        "result": "Russian-language search identified the Rosreestr/NSPD public cadastral-map announcement and the municipal Belgorod GIS. The municipal service exposed an administration/login page; no safe parcel geometry response was verified.",
+        "actualResultUrls": [
+          "https://kartgeocentre.ru/produkty-i-uslugi/publichnaya-kadastrovaya-karta-teper-dostupna-na-platforme-nacionalnaya-sistema",
+          "https://belgorod.geofsm.ru/mapadmin/",
+          "https://belgorod.geofsm.ru/mapadmin/content/services/9"
+        ],
+        "executionMethod": "Separate fresh Russian-language web search followed by official-service page and JavaScript/configuration inspection."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nspd.gov.ru/",
+        "method": "GET",
+        "httpStatus": null,
+        "assessment": "Timed out after 20 seconds; no retry with credentials, private tokens, CAPTCHA bypass, or TLS disablement."
+      },
+      {
+        "url": "https://belgorod.geofsm.ru/mapadmin/",
+        "method": "GET",
+        "httpStatus": 200,
+        "assessment": "Returned the municipal GIS administration/login page; no parcel response. No login attempted."
+      },
+      {
+        "url": "https://belgorod.geofsm.ru/mapadmin/scripts/mapsurfer/map_with_cku.js",
+        "method": "GET",
+        "httpStatus": 200,
+        "assessment": "Inspected public JavaScript references `http://regionkt.rekod.ru/geoserver/wfs` layer `cku:k100_np_p_cku`, a regional-boundary layer; no parcel layer or safe parcel schema was identified. No request was made to that third-party endpoint."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://nspd.gov.ru/",
+        "observation": "Official national cadastral-map platform identified by the Rosreestr regional announcement; homepage access timed out in this bounded attempt."
+      },
+      {
+        "url": "https://belgorod.geofsm.ru/mapadmin/",
+        "observation": "Belgorod municipal GIS administration page; anonymous page is a login/administration wall, not a verified public parcel API."
+      }
+    ],
+    "safeFieldAllowlist": ["native parcel identifier", "geometry"],
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null
+  },
+  "verifiedParcelResponse": null,
+  "priorCheck": {
+    "attemptState": "attempt_1_of_3",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "taskId": "city:5796",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-5796-stavropol.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/stavropol-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T08:32:47Z",
+  "reason": "WUP code 5796, rank 1508, Russian Federation, point and 376062 persons match the immutable roster and queue. English and Russian searches identify an official Stavropol municipal cadastral-plan procedure and the NSPD public-map route. No original anonymous native-ID complete-polygon response or retained sample exists. Service timeout and certificate or DNS failures do not establish absence. Fresh ID reads, forced paging, 13 cells, metric GEOS checks, source binding and headed Details are unproved.",
+  "independentlyCheckedFirstPartyUrls": [
+    "https://www.stavropol-gov.ru/doc/52829"
+  ],
+  "sourceAdmission": "not_admitted"
+}

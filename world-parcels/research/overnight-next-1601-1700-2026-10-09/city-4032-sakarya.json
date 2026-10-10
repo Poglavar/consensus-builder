@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "1.0",
+  "cityCode": 4032,
+  "queueRank": 1640,
+  "name": "Sakarya",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "iso3": "TUR",
+  "locId": 792,
+  "point": [40.7632117164762, 30.4078913508982],
+  "population2025": 348302,
+  "population2025k": 348.302,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sakarya Türkiye official cadastral parcel map GIS TKGM Sakarya municipality",
+        "result": "First-party discovery found the official TKGM Parsel Sorgu v2 viewer, TKGM's organizational directory naming SAKARYA KADASTRO MÜDÜRLÜĞÜ, and Sakarya Metropolitan Municipality's official map/index page. The viewer did not yield a usable anonymous API or bounded parcel geometry response in this attempt.",
+        "actualResultUrls": [
+          "https://parselsorguv2.tkgm.gov.tr/",
+          "https://www.tkgm.gov.tr/kurumsal/organizasyon-yapisi/tasra-teskilati",
+          "https://sakarya.bel.tr/tr/Harita",
+          "https://sakarya.bel.tr/tr/Harita/Detail?hrt=adapazari"
+        ]
+      },
+      {
+        "language": "Turkish",
+        "query": "Sakarya resmi kadastro parsel sorgu harita TKGM Sakarya",
+        "result": "Türkçe birinci taraf aramada TKGM Parsel Sorgu, Sakarya Kadastro Müdürlüğü ve Sakarya Büyükşehir Belediyesi Harita/Harita Şube Müdürlüğü kaynakları bulundu. Kamuya açık, anonim ve sınırlandırılmış parsel kimliği+geometri yanıtı alınamadı.",
+        "actualResultUrls": [
+          "https://parselsorguv2.tkgm.gov.tr/",
+          "https://www.tkgm.gov.tr/sites/default/files/2021-09/SAKARYA%20KM%20BA%C4%9ELI%20KADASTRO%20B%C4%B0R%C4%B0MLER%C4%B0.pdf",
+          "https://sakarya.bel.tr/tr/Harita",
+          "https://sakarya.bel.tr/trtemap-index.xml/Mudurluk/harita-sube-mudurlugu/19"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.tkgm.gov.tr/kurumsal/organizasyon-yapisi/tasra-teskilati",
+      "observation": "Official TKGM organizational directory lists SAKARYA KADASTRO MÜDÜRLÜĞÜ/SAKARYA and provides a Sakarya cadastral office contact. This establishes the local cadastral custodian, not open vector access."
+    },
+    {
+      "url": "https://parselsorguv2.tkgm.gov.tr/",
+      "observation": "Official TKGM Parsel Sorgu v2 viewer is the relevant national public parcel-query entry point. The current viewer could not be inspected to a usable anonymous API response during this attempt."
+    },
+    {
+      "url": "https://sakarya.bel.tr/tr/Harita",
+      "observation": "Official Sakarya Metropolitan Municipality map index lists district map pages, including Adapazarı; it is a map/index source and does not itself expose a parcel feature response."
+    },
+    {
+      "url": "https://sakarya.bel.tr/trtemap-index.xml/Mudurluk/harita-sube-mudurlugu/19",
+      "observation": "Official municipality Harita Şube Müdürlüğü page describes municipal map, parcelation-plan and related duties. It is local administrative evidence, not a verified anonymous parcel API."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://parselsorguv2.tkgm.gov.tr/",
+      "method": "GET",
+      "httpStatus": 0,
+      "outcome": "Direct curl could not resolve the host in this environment. No TLS bypass, login, CAPTCHA bypass or alternate credentialed route was attempted; this is not evidence of absence."
+    },
+    {
+      "url": "https://parselsorguv2.tkgm.gov.tr/",
+      "method": "GET",
+      "httpStatus": 502,
+      "outcome": "Independent web fetch returned 502 Bad Gateway. No viewer JavaScript/configuration, schema, CRS, native ID or geometry response was recovered."
+    },
+    {
+      "url": "https://sakarya.bel.tr/tr/Harita",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official HTML returned successfully. It exposed district map links and static map assets; no parcel feature service or GeoJSON response was exposed."
+    },
+    {
+      "url": "https://sakarya.bel.tr/tr/Harita/Detail?hrt=adapazari",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official Adapazarı detail page returned successfully and links to a static /uploads/haritalar/adapazari.jpg image. It did not expose parcel geometry or a safe native parcel identity."
+    },
+    {
+      "url": "https://www.tkgm.gov.tr/kurumsal/organizasyon-yapisi/tasra-teskilati",
+      "method": "GET/search inspection",
+      "httpStatus": 200,
+      "outcome": "Official TKGM directory/search result evidenced SAKARYA KADASTRO MÜDÜRLÜĞÜ and its local scope. No parcel data request was made against the directory."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "A local cadastral custodian is directly evidenced by the official TKGM directory entry for SAKARYA KADASTRO MÜDÜRLÜĞÜ. Municipal map and Harita Şube Müdürlüğü pages provide additional local map administration context. This does not establish public anonymous parcel geometry access.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": "TKGM Parsel Sorgu v2 (viewer/API not qualified)",
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Sakarya provincial cadastral administration and official TKGM parcel-query viewer, with Sakarya Metropolitan Municipality map administration.",
+    "verifiedOpenScope": "No city-bounded parcel record, stable native parcel ID, schema, CRS or geometry response was retrieved.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "The current TKGM viewer may expose anonymous parcel queries and downloads through a JavaScript flow unavailable in this environment. Its endpoint, request parameters, schema, CRS, stable native identity and exact-point coverage remain unknown. The WUP point [40.7632117164762, 30.4078913508982] was preserved and was not used to infer absence.",
+  "nextStep": "Serial reviewer should independently inspect the current TKGM Parsel Sorgu v2 viewer and, if anonymous access is available, qualify a bounded geometry-only Sakarya query with one stable native parcel identity."
+}

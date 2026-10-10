@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:8885",
+  "cityCode": 8885,
+  "wupCityCode": 8885,
+  "name": "Gamboru",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "iso2": "NG",
+  "iso3": "NGA",
+  "rank": 1506,
+  "queueRank": 1506,
+  "point": [12.3659825050771, 14.2004549768318],
+  "centerLatLon": [12.3659825050771, 14.2004549768318],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 376374,
+  "population2025k": 376.374,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Borno State Geographic Information Service (BOGIS) material identifies BOGIS as the Borno land-administration and land-registry custodian. The Borno State Land Use Regulations identify the BOGIS File Archive as the official depositary for registration books, land files, survey files, layouts, title-deed plans, registers, and related maps. This establishes state-level custody relevant to Gamboru; it does not establish public parcel geometry or citywide coverage.",
+  "registryEvidenceUrls": [
+    "https://bogis.bornostate.gov.ng/",
+    "https://app.bogis.bornostate.gov.ng/",
+    "https://bogis.bornostate.gov.ng/assets/web/docx/2.%20Borno%20State%20Land%20Use%20Regulations%202022.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The official BOGIS public site provides land-administration information and the official portal provides account-based land-title/deed applications. No anonymous public map/API route returning a stable safe parcel ID and complete polygon was identified. No login, credential, private token, CAPTCHA bypass, or unsafe field request was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "BOGIS is the Borno State land-administration and registry custodian; its public portal supports land-related applications.",
+    "verifiedOpenScope": "No anonymous complete-polygon feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gamboru Nigeria official cadastral parcel map land registry Borno survey GIS",
+        "scope": "Identify the local registry custodian and a safe public cadastral geometry route.",
+        "result": "First-party results identified BOGIS, the official Borno land-administration service, its public application portal, and the Borno State Land Use Regulations. The official material supports registry custody but did not expose an anonymous parcel map/API response.",
+        "actualResultUrls": [
+          "https://bogis.bornostate.gov.ng/",
+          "https://app.bogis.bornostate.gov.ng/",
+          "https://bogis.bornostate.gov.ng/assets/web/docx/2.%20Borno%20State%20Land%20Use%20Regulations%202022.pdf"
+        ],
+        "executionMethod": "Separate English web search followed by first-party page and portal inspection."
+      },
+      {
+        "language": "Hausa",
+        "query": "Taswirar filaye Gamboru Najeriya rajistar fili Borno",
+        "scope": "Independent local-language discovery for a Borno/Gamboru cadastral map or registry service.",
+        "result": "No additional first-party Hausa cadastral viewer or anonymous parcel endpoint was found. The search corroborated the same BOGIS/Borno land-administration sources; no geometry was retained.",
+        "actualResultUrls": [
+          "https://bogis.bornostate.gov.ng/",
+          "https://app.bogis.bornostate.gov.ng/"
+        ],
+        "executionMethod": "Separate Hausa-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "first_attempt",
+    "attemptEvidence": []
+  },
+  "remainingUncertainty": "The exact WUP point was not shifted, and no point-hit, extent miss, timeout, or unusable portal behavior was treated as evidence of citywide parcel absence. BOGIS viewer/API availability, schema, CRS, native parcel identity, parcel coverage, and anonymous geometry access remain unverified.",
+  "nextStep": "Serial reviewer may independently qualify a public BOGIS or other first-party Nigerian cadastral adapter; do not enable runtime from this packet alone."
+}

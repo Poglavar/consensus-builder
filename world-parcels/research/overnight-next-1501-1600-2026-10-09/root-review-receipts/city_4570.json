@@ -1,0 +1,14 @@
+{
+  "taskId": "city:4570",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-4570-posadas.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/posadas-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/posadas-parcel-samples.geojson"
+  ],
+  "checkedAt": "2026-10-10T08:40:40.144188Z",
+  "reason": "Official Misiones and IDE Posadas sources support custody. The three retained ID-only polygons match a fresh bounded WFS response by IDGIS and pass sample metric validity/overlap checks. Forced paging, 13 bounded cells, source binding, and headed details-panel verification remain unproved; no admission.",
+  "sourceAdmission": "not_admitted"
+}

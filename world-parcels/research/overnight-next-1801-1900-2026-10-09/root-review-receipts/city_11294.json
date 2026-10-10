@@ -1,0 +1,15 @@
+{
+  "taskId": "city:11294",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-11294-gaoming.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/gaoming-service-review.json",
+    "tmp/valhalla-parcel-research/11294/foshan-survey.headers",
+    "tmp/valhalla-parcel-research/11294/foshan-survey.html"
+  ],
+  "checkedAt": "2026-10-10T17:43:15Z",
+  "reason": "WUP code 11294, rank 1884, China point and 304429 persons match the original archive and queue. English and Chinese searches are recorded. First-party Foshan response is an HTTP 420 blacklist page, not a parcel service response. Local natural-resources custody is supported, but no full polygon with a safe native ID or independent adapter and headed Details qualification is evidenced."
+}

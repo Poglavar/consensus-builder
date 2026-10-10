@@ -1,0 +1,14 @@
+{
+  "taskId": "city:3531",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-3531-py-ngs-ng.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/py-ngs-ng-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T12:45:17Z",
+  "reason": "Immutable WUP rank, country, point and 340370 persons match source. English and Korean searches were executed. No DPRK first-party parcel geometry, native ID or source schema was evidenced; South Korean services are out of scope, and timeout/non-response do not prove absence. Registry custody remains unresolved (null).",
+  "admissionGates": "No fresh native-ID read, paging, 13 bounded cells, metric GEOS checks, source binding or headed Details verification."
+}

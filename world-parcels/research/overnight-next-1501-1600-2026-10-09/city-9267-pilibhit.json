@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:9267",
+  "cityCode": 9267,
+  "wupCityCode": 9267,
+  "name": "Pilibhit",
+  "country": "India",
+  "countryCode": "IN",
+  "iso2": "IN",
+  "iso3": "IND",
+  "rank": 1589,
+  "queueRank": 1589,
+  "point": [28.6241383152122, 79.8085612096802],
+  "centerLatLon": [28.6241383152122, 79.8085612096802],
+  "pointBasis": "Exact WUP2025 settlement point; not shifted and not a municipal boundary or parcel-coverage claim.",
+  "population2025": 358059,
+  "population2025k": 358.059,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Pilibhit District Administration land-record page identifies the Uttar Pradesh Bhulekh service as the computerized land-record interface for all state tehsils. The official UP Revenue Board page identifies Bhulekh/Bhunaksha (भू-नक्शा / शजरा) as the public route for village maps and gata boundaries. This establishes local district service custody and a state cadastral-map route, not citywide parcel completeness.",
+  "registryEvidenceUrls": [
+    "https://pilibhit.nic.in/service/land-records/",
+    "https://bor.up.nic.in/?search_key=HOMECENTER",
+    "https://upbhunaksha.gov.in/",
+    "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=151",
+    "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/CLR/tehsil-level/151"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The official UP Bhunaksha application exposed anonymous metadata and map methods, but the bounded exact-point lookup for the preserved WUP point returned an empty object and no safe ID-plus-complete-polygon feature response was obtained. Current service schema/CRS for a returned parcel was therefore not verified. No login, credential, token, CAPTCHA bypass, or unsafe record request was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Pilibhit District Administration land-record custody, Uttar Pradesh Bhulekh/Bhunaksha public services, UP cadastral-map digitization dashboard, and DILRMP reporting.",
+    "verifiedOpenScope": "Anonymous district/tehsil/village metadata and a public map endpoint were verified; no anonymous complete parcel polygon feature was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pilibhit official land records cadastral map GIS Uttar Pradesh parcel map",
+        "scope": "Identify local registry custody and a safe public parcel-geometry route.",
+        "result": "Search located the official Pilibhit District land-record page, UP Bhunaksha, the UP cadastral-map digitization dashboard, and DILRMP Pilibhit status. The district page establishes the official Bhulekh route; no complete anonymous parcel feature was found in search results.",
+        "actualResultUrls": [
+          "https://pilibhit.nic.in/service/land-records/",
+          "https://upbhunaksha.gov.in/",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=151",
+          "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/CLR/tehsil-level/151"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "Hindi",
+        "query": "Pilibhit जिला आधिकारिक भू नक्शा खसरा नक्शा भूमि अभिलेख",
+        "scope": "Independent Hindi-language search for local registry custody and public cadastral geometry.",
+        "result": "Search located the official UP Revenue Board Bhulekh/Bhunaksha route, the official Pilibhit Hindi district map page, and UP cadastral-map references. The Hindi results describe village maps/gata boundaries but did not provide a qualifying anonymous complete-polygon response.",
+        "actualResultUrls": [
+          "https://bor.up.nic.in/?search_key=HOMECENTER",
+          "https://pilibhit.nic.in/hi/%E0%A4%9C%E0%A4%BF%E0%A4%B2%E0%A5%87-%E0%A4%95%E0%A5%87-%E0%A4%AE%E0%A4%BE%E0%A4%A8%E0%A4%9A%E0%A4%BF%E0%A4%A4%E0%A5%8D%E0%A4%B0/",
+          "https://upbhunaksha.gov.in/",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=151"
+        ],
+        "executionMethod": "Separate Hindi-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "The exact WUP point was preserved unchanged. A public UP Bhunaksha parcel layer exists in the viewer, but returned-feature schema, CRS, stable native parcel identity, urban-village mapping, exact-point coverage, and citywide completeness remain unverified. An empty exact-point response, map extent limitation, timeout, or unusable UI is not treated as cadastral absence.",
+  "nextStep": "Serial reviewer should independently validate a first-party anonymous Pilibhit-area village map request that returns a safe native parcel ID and complete polygon before any adapter qualification; keep runtime held."
+}

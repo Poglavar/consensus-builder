@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-86-kaliningrad.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Review official Kaliningrad cadastral-map and municipal geoportal channels and qualify bounded anonymous parcel evidence.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "wupPointPreserved": [54.7148268101403, 20.5072107472647]
+  },
+  "assessment": "The official city geoportal is reachable and lists Земельные участки, with a public EPSG:3857 project extent. The official municipal spatial-data page also publishes land-parcel-related address-register files. No bounded anonymous parcel feature response with a safe native ID and geometry was obtained.",
+  "registryAssessment": "registryFound is true because a local official public map channel with a land-parcels layer was evidenced. This does not establish a local cadastral custodian or prove that the layer is downloadable parcel geometry; Rosreestr/NSPD remain the national cadastral references.",
+  "coverageAssessment": {
+    "claimedScope": "First-party English and Russian discovery plus bounded anonymous inspection of the official city geoportal, municipal spatial-data page, and national cadastral references.",
+    "verifiedOpenScope": "Public map catalogue, local layer name, project CRS and extent; no parcel features, schema, native IDs, or response geometry.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "officialPrimarySources": [
+    {
+      "url": "https://geoportal.klgd.ru/index.php/view/map/",
+      "operator": "Administration of the urban district City of Kaliningrad / city geoportal",
+      "scope": "Local public map; catalogue includes Земельные участки; EPSG:3857; city project extent; no feature response observed."
+    },
+    {
+      "url": "https://www.klgd.ru/activity/construction/adresnyy-reestr/prostranstdannye_adresreestr.php?print=Y",
+      "operator": "Official City of Kaliningrad administration",
+      "scope": "Municipal address-register spatial-data publication; land-parcel-related files are listed, but no parcel boundary API was verified."
+    },
+    {
+      "url": "https://nspd.gov.ru/map?thematic=PKK",
+      "operator": "National Spatial Data System / public cadastral map",
+      "scope": "National cadastral-map reference; no bounded feature response retained."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Kaliningrad official cadastral parcel map public viewer Rosreestr cadastral map",
+      "result": "Found the official city geoportal, municipal spatial-data publication, and national cadastral references; no parcel feature response.",
+      "actualResultUrls": ["https://geoportal.klgd.ru/", "https://www.klgd.ru/activity/construction/adresnyy-reestr/prostranstdannye_adresreestr.php?print=Y", "https://nspd.gov.ru/map?thematic=PKK", "https://rosreestr.gov.ru/"]
+    },
+    {
+      "language": "Russian",
+      "query": "Калининград публичная кадастровая карта официальный карта земельных участков Росреестр",
+      "result": "Found the official city geoportal and Земельные участки layer plus official municipal and national references; no anonymous parcel ID plus geometry response.",
+      "actualResultUrls": ["https://geoportal.klgd.ru/", "https://www.klgd.ru/press/news/detail.php?ID=103914&print=Y", "https://www.klgd.ru/activity/construction/adresnyy-reestr/prostranstdannye_adresreestr.php?print=Y", "https://nspd.gov.ru/map?thematic=PKK"]
+    }
+  ],
+  "attempts": [
+    "GET official city geoportal: 200/redirect to public map; layer catalogue, EPSG:3857 and extent observed; no parcel feature payload.",
+    "GET official municipal spatial-data page: 200 via first-party discovery; land-parcel-related files listed; no parcel-boundary API verified.",
+    "GET NSPD public cadastral-map reference: route identified; no bounded anonymous feature response retained.",
+    "GET Rosreestr reference: national custodian identified; no bounded anonymous feature response retained.",
+    "Only safe fields were in scope: public native parcel ID and geometry. No owner, address, contact, titleholder, personal, tax/account, credential, or token fields were requested or retained.",
+    "No citywide or countrywide completeness claim; runtime remains held for serial review."
+  ],
+  "geometryEvidence": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "responseCrs": null,
+    "sampleCrs": null,
+    "exactWupPointTest": "No parcel query reached a geometry response. The immutable WUP point was preserved; no coordinate shift was used."
+  },
+  "nextStep": "Root/serial review may inspect the geoportal's live JavaScript/configuration from a reachable network and independently qualify any public parcel endpoint before adapter admission.",
+  "remainingUncertainty": "A missing feature response is a route/configuration limitation, not evidence of citywide cadastral absence. The municipal files may contain address attributes and were not treated as safe parcel geometry evidence.",
+  "researchAttempt": 1,
+  "rootReview": null,
+  "rootReviewedAt": null,
+  "sampleRetention": {
+    "retainedFeatureProperties": [],
+    "fullGeometryChanged": false,
+    "featureReferencesChanged": false
+  }
+}

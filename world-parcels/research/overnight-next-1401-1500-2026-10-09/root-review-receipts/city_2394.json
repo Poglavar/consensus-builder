@@ -1,0 +1,12 @@
+{
+  "taskId": "city:2394",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-2394-iseyin.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/iseyin-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T17:20:46Z",
+  "reason": "Queue identity and English/Yoruba searches match. Cached first-party OyoGISS and land-use-charge pages establish state land administration and an ISEYIN row; the linked survey search returned HTTP 403. No native-ID parcel polygon, sample, adapter paging/13-cell/metric GEOS/source-binding qualification, or headed Details proof exists. The access wall does not establish citywide absence."
+}

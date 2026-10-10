@@ -1,0 +1,43 @@
+{
+  "cityCode": 2789,
+  "queueRank": 1955,
+  "city": "Gumi-si",
+  "country": "Republic of Korea",
+  "countryCode": "KR",
+  "iso3": "KOR",
+  "point": [36.1089634843612, 128.367049228517],
+  "population2025": 296323,
+  "population2025k": 296.323,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gumi-si South Korea official cadastral parcel map GIS land information public service",
+        "result": "Found the official Gumi City comprehensive map, Gumi City cadastral-survey procedure page, and the national Ministry of Land K-GeoP land-information map. The municipal map is a general civic map; K-GeoP is the first-party public parcel-information viewer/API.",
+        "actualResultUrls": [
+          "https://www.gumi.go.kr/map/main.do",
+          "https://www.gumi.go.kr/city/contents.do?mid=0303000000",
+          "https://www.kgeop.go.kr/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "구미시 지적도 토지정보 공식 지도 필지 조회",
+        "result": "Found official Gumi City pages for the comprehensive map and cadastral survey, plus K-GeoP (국가공간정보센터/국토교통부) public land-information map. The live K-GeoP configuration exposes its public address-to-parcel and parcel-information routes.",
+        "actualResultUrls": [
+          "https://www.gumi.go.kr/map/main.do",
+          "https://www.gumi.go.kr/city/contents.do?mid=0303000000",
+          "https://www.kgeop.go.kr/info/infoMap.do?initMode=L"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "Gumi City officially documents cadastral surveying and identifies its Land Information Division as the responsible municipal department; the public parcel geometry/API response was obtained from the national Ministry of Land K-GeoP service, not from a separately verified Gumi municipal parcel feature service.",
+  "serviceReview": "gumi-si-service-review.json",
+  "runtimeReadiness": "held_pending_serial_review"
+}

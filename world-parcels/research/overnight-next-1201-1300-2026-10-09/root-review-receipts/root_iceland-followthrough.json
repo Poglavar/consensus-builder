@@ -1,0 +1,12 @@
+{
+  "taskId": "root:iceland-followthrough",
+  "decision": "held",
+  "reason": "The HMS Reykjavik bbox returned four native-CRS polygons and three existing safe samples remain valid, but the tested LANDEIGN_NR filter and count/startIndex were ignored. Exact polygon-part identity, explicit ID absence, forced paging, 13 cells, metric topology, binding and headed Details are unqualified. DNS failure is transport failure, not absence.",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/country-integration-audit-2026-10-09/Iceland-protocol-followthrough.json",
+    "world-parcels/research/country-integration-audit-2026-10-09/named-country-recheck-current.json",
+    "world-parcels/research/country-integration-audit-2026-10-09/named-country-recheck-IS-samples.json"
+  ],
+  "checkedAt": "2026-10-09T11:44:40.360511Z"
+}

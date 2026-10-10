@@ -1,0 +1,11 @@
+{
+  "taskId": "city:4993",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-4993-t-y-ninh.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/t-y-ninh-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T12:44:32Z",
+  "reason": "Queue identity and English/Vietnamese searches match. Indexed first-party Tây Ninh provincial planning-map page names the Land Registration Office as map/data custodian; direct page access failed and no anonymous native-ID parcel response or adapter qualification exists. Viewer unavailability is not citywide absence."
+}

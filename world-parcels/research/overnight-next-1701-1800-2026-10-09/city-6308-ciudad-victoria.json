@@ -1,0 +1,102 @@
+{
+  "cityCode": 6308,
+  "queueRank": 1781,
+  "name": "Ciudad Victoria",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "point": [23.7390229166815, -99.1491926457333],
+  "population2025": 322403,
+  "population2025k": 322.403,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ciudad Victoria Tamaulipas official cadastral map parcel GIS",
+        "result": "Found first-party Tamaulipas state cartography and the state Instituto Registral y Catastral; no public anonymous parcel feature endpoint was identified.",
+        "actualResultUrls": [
+          "https://sie.tamaulipas.gob.mx/cartografia.html",
+          "https://www.tamaulipas.gob.mx/secretariageneral/instituto-registral-y-catastral/",
+          "https://finanzas.tamaulipas.gob.mx/pago-de-contribuciones/Servicios-Catastrales.php"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Ciudad Victoria Tamaulipas catastro SIG mapa parcelas sitio oficial",
+        "result": "Found official state Instituto Registral y Catastral, state Servicios Catastrales page, and a Victoria cartography listing; no anonymous parcel ID plus geometry response was found.",
+        "actualResultUrls": [
+          "https://www.tamaulipas.gob.mx/secretariageneral/instituto-registral-y-catastral/",
+          "https://finanzas.tamaulipas.gob.mx/pago-de-contribuciones/Servicios-Catastrales.php",
+          "https://sie.tamaulipas.gob.mx/cartografia.html",
+          "https://www.tamaulipas.gob.mx/informaciongeografica/wp-content/uploads/sites/41/2018/05/cdvictoria_localidad.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "The official Tamaulipas Instituto Registral y Catastral page identifies the state cadastral institution and says it maintains current and historical digital cartography of urban and rural real estate in support of municipalities. The state Finance site exposes an Instituto Registral y Catastral / Servicios Catastrales page. This establishes state/local registry custody, not open parcel geometry access.",
+  "requestsAndEndpointChecks": [
+    {
+      "method": "GET",
+      "url": "https://www.tamaulipas.gob.mx/secretariageneral/instituto-registral-y-catastral/",
+      "outcome": "The first-party URL returned an anti-bot hCaptcha/perfdrive challenge instead of the institutional page; no bypass was attempted. Search-indexed first-party content was retained as discovery evidence only."
+    },
+    {
+      "method": "GET",
+      "url": "https://finanzas.tamaulipas.gob.mx/pago-de-contribuciones/Servicios-Catastrales.php",
+      "outcome": "HTTP 200 HTML. The page identifies Instituto Registral y Catastral and embeds the public Servicios Catastrales route; no parcel schema or geometry payload was present in the parent HTML."
+    },
+    {
+      "method": "GET",
+      "url": "https://finanzas.tamaulipas.gob.mx/ingresos/pagosnet/view/opd/opd_13.php?Id=13&Inst=SERVICIOS%20CATASTRALES",
+      "outcome": "HTTP 200, but the current response was an anti-bot hCaptcha/perfdrive challenge. No login, CAPTCHA solving, credentials, private token, or unsafe lookup was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://sie.tamaulipas.gob.mx/cartografia.html",
+      "outcome": "The official search result lists a Victoria cartography PDF, but the bounded direct GET timed out after 20 seconds. No parcel vector service or geometry was inferred from the timeout."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.tamaulipas.gob.mx/informaciongeografica/wp-content/uploads/sites/41/2018/05/cdvictoria_localidad.pdf",
+      "outcome": "First-party city map identified by discovery; it is a general street/block/neighborhood cartographic PDF, not a verified parcel feature response, and was not retained as parcel evidence."
+    }
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate-reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel feature response obtained",
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed against a usable parcel feature service; exact WUP point [23.7390229166815, -99.1491926457333] was preserved and not shifted. No hit/miss inference is made.",
+    "citywideAbsenceInferred": false
+  },
+  "coverageAssessment": {
+    "claimedScope": "Tamaulipas state cadastral institution, state cadastral services, and official Victoria cartography.",
+    "verifiedOpenScope": "Institutional custody and general cartographic material only; anonymous parcel ID, schema, CRS, geometry, and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review required",
+  "scopeLimits": [
+    "The state institution and public services establish cadastral custody but do not prove an open vector parcel API.",
+    "The anti-bot challenge and timeout are access-path limitations, not evidence of cadastral absence.",
+    "No owner, address, titleholder, contact, personal, tax, account, registration-detail, credential, or private-token fields were requested or retained.",
+    "Packet completion records executed research attempts only; it is not source integration or adapter admission."
+  ],
+  "uncertainty": "The current public viewer/API route, access controls, native parcel identity, source field schema, CRS, exact-point coverage, city boundary relationship, currency, and completeness remain unresolved."
+}

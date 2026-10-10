@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:1056",
+  "cityCode": 1056,
+  "wupCityCode": 1056,
+  "name": "Matadi",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "iso2": "CD",
+  "iso3": "COD",
+  "rank": 1504,
+  "queueRank": 1504,
+  "point": [-5.8324888844972, 13.4754390912462],
+  "centerLatLon": [-5.8324888844972, 13.4754390912462],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 377297,
+  "population2025k": 377.297,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Ministry of Land Affairs directory lists Matadi among the 11 Kongo-Central land and cadastral districts, establishing a city-specific local registry/cadastre custodian. This does not establish public parcel geometry or citywide digital coverage.",
+  "registryEvidenceUrls": [
+    "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+    "https://cadastre.gouv.cd/page/4/",
+    "https://servicepublic.gouv.cd/service/4671"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The official sources identify Matadi's land/cadastral district and a formal register-consultation procedure, but no anonymous public map/API returning a safe native parcel ID plus complete polygon was verified. The formal consultation service is not an anonymous geometry API and its description includes unsafe ownership/legal fields that were not requested.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Matadi is listed as a Kongo-Central land and cadastral district by the national Ministry of Land Affairs.",
+    "verifiedOpenScope": "No anonymous complete-polygon feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Matadi official cadastral parcel map land registry Democratic Republic of the Congo",
+        "scope": "Identify a city-specific registry custodian and a safe public parcel geometry route.",
+        "result": "Search located the official Ministry of Land Affairs site, its circonscriptions directory, an official public-service description of land-record consultation, and a Ministry cadastral digitization page. The sources establish local custody but no verified anonymous parcel geometry endpoint.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://servicepublic.gouv.cd/service/4671",
+          "https://cadastre.gouv.cd/page/4/"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "French",
+        "query": "Matadi cadastre officiel République démocratique du Congo parcelle carte",
+        "scope": "Independent local-language search for the Matadi cadastral custodian and public cadastral map/API.",
+        "result": "Search confirmed the official Ministry directory entry for Matadi under Kongo-Central and official references to cadastral digitization and register consultation. No anonymous public parcel geometry response was found or verified.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://cadastre.gouv.cd/page/4/",
+          "https://www.affairesfoncieres.gouv.cd/ressources/lois-decrets-arretes"
+        ],
+        "executionMethod": "Separate French-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "first_attempt",
+    "attemptEvidence": []
+  },
+  "remainingUncertainty": "No point query was used to infer absence. The exact WUP point was preserved. Public map availability, service configuration, schema, CRS, native parcel identity, geometry coverage, and citywide completeness remain unverified.",
+  "nextStep": "Serial reviewer may independently qualify a first-party digital cadastral route; do not enable runtime from this packet alone."
+}

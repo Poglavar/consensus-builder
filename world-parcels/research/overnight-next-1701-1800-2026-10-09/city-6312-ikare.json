@@ -1,0 +1,70 @@
+{
+  "cityCode": 6312,
+  "queueRank": 1736,
+  "name": "Ikare",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "point": [7.53786333451326, 5.76938491486402],
+  "population2025": 330941,
+  "population2025k": 330.941,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ikare Akoko Ondo State official cadastral parcel map land registry GIS",
+        "result": "First-party discovery found the Ondo State land-registration guide and the Ondo State Land Registry public portal. The official guide identifies the Akoko area office at State Secretariat Annex, Tanimowo Complex, Ikare-Akoko, and describes state land-title digitization/e-archiving. No anonymous public parcel geometry service was found.",
+        "actualResultUrls": [
+          "https://ondostate.gov.ng/wp-content/uploads/2022/11/ONDO-STATE-LAND-REGISTRATION-1.pdf",
+          "https://www.ondolandportal.org/",
+          "https://www.ondolandportal.org/help/"
+        ]
+      },
+      {
+        "language": "Yoruba",
+        "query": "Ikare Akoko ìforúkọsílẹ ilẹ maapu kadasita GIS Ondo",
+        "result": "Separate Yoruba/local-language discovery did not surface a distinct first-party parcel-map endpoint. The Ondo State land-registration guide and Ondo Land Registry portal remained the relevant local/state sources.",
+        "actualResultUrls": [
+          "https://ondostate.gov.ng/wp-content/uploads/2022/11/ONDO-STATE-LAND-REGISTRATION-1.pdf",
+          "https://www.ondolandportal.org/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "source": {
+    "sourceId": null,
+    "name": "Ondo State Ministry of Lands and Housing / Ondo State Land Registry",
+    "url": "https://ondostate.gov.ng/wp-content/uploads/2022/11/ONDO-STATE-LAND-REGISTRATION-1.pdf",
+    "operator": "Ondo State Government",
+    "serviceType": "Official state land-title registration and local Akoko area-office custodian evidenced; public parcel geometry not verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified"
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official Ondo guide describes state land-title registration, digitization/e-archiving, and an Akoko area office in Ikare-Akoko.",
+    "verifiedOpenScope": "The public portal exposes property/search/verification service pages, but no anonymous parcel layer, geometry endpoint, CRS, safe native parcel-ID schema, or bounded feature response was verified. This does not establish parcel absence or citywide absence.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "runtimeReadiness": "held_pending_serial_review",
+  "adapterReady": false,
+  "cohort": "overnight-next-1701-1800-2026-10-09",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "checkedAt": "2026-10-10"
+}

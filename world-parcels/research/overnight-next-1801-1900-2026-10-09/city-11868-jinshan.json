@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 11868,
+  "queueRank": 1872,
+  "cityId": "queue:1872",
+  "name": "Jinshan",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [30.7323947902576, 121.332047117118],
+  "centerLatLon": [30.7323947902576, 121.332047117118],
+  "population2025": 307246,
+  "population2025k": 307.246,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jinshan Shanghai cadastral parcel map official service",
+        "result": "First-party discovery found Shanghai's government service entry for Jinshan's online immovable-property map query, naming the Jinshan District Planning and Natural Resources Bureau as implementing body. The official Shanghai Tianditu platform was also identified, but no anonymous parcel ID-plus-geometry layer was exposed.",
+        "actualResultUrls": [
+          "https://zwdt.sh.gov.cn/govPortals/bsfw/item/78b8cbf5-02f5-4b8a-ab91-6059a239e54a",
+          "https://shanghai.tianditu.gov.cn/"
+        ]
+      },
+      {
+        "language": "native/local (Simplified Chinese)",
+        "query": "金山区 不动产登记 地图 官方 宗地 查询",
+        "result": "First-party discovery identified the same Shanghai government service entry for 不动产查询（以图查房）, which states that users can locate buildings on an electronic map and view registration information, house plans, and 宗地图. The entry documents a district-level public service, but not an open anonymous parcel feature endpoint.",
+        "actualResultUrls": [
+          "https://zwdt.sh.gov.cn/govPortals/bsfw/item/78b8cbf5-02f5-4b8a-ab91-6059a239e54a",
+          "https://ghzyj.sh.gov.cn/js/index.html"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Separate English and Simplified-Chinese first-party discovery, followed by bounded TLS-verified GET attempts; no credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe-field request, or TLS disablement."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://zwdt.sh.gov.cn/govPortals/bsfw/item/78b8cbf5-02f5-4b8a-ab91-6059a239e54a",
+      "observation": "Official Shanghai government service page identifies Jinshan District Planning and Natural Resources Bureau as implementing body, district-level scope, online query availability, and map-based immovable-property/宗地图 query functionality. It does not publish a safe anonymous parcel layer, schema, CRS, or geometry response."
+    },
+    {
+      "url": "https://ghzyj.sh.gov.cn/js/index.html",
+      "observation": "Official Shanghai Planning and Natural Resources Jinshan section confirms the local planning/natural-resources authority. No public parcel feature service was exposed by the page."
+    },
+    {
+      "url": "https://shanghai.tianditu.gov.cn/",
+      "observation": "Official Shanghai Tianditu public geographic-information platform, hosted by Shanghai Planning and Natural Resources Bureau and operated by Shanghai Surveying and Mapping Institute. The bounded homepage request succeeded, but no cadastral parcel layer or safe ID-plus-geometry response was identified."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://biz.ghzyj.sh.gov.cn/bdcdj/forwardHouseStateQuery",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "The official service page's listed online query route failed TLS negotiation with OpenSSL error unsafe legacy renegotiation disabled. No certificate exception was authorized, so the route was not retried with verification disabled and no UI/API/configuration was harvested."
+    },
+    {
+      "url": "https://shanghai.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official public map homepage returned successfully. The bounded response exposed general map/developer entry points but no parcel layer, safe native parcel ID, schema, CRS, or geometry response; no further unsafe or authenticated route was attempted."
+    },
+    {
+      "url": "https://ghzyj.sh.gov.cn/js/index.html",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Referenced as first-party discovery evidence; no parcel API route was obtained from the page search result, and no geometry request was made."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Jinshan District, Shanghai Municipality, China; local planning/natural-resources and immovable-property registration services.",
+    "verifiedOpenScope": "Local registry/service custody and public map-service evidence only; anonymous parcel geometry and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "The current viewer/API configuration, access controls, source layer schema, CRS, stable native parcel identity, geometry quality, update currency, and citywide coverage remain unresolved. The exact WUP point was preserved and never shifted; no exact-point hit or miss inference was made. Packet completion is research evidence only; runtime remains held pending independent serial qualification."
+}

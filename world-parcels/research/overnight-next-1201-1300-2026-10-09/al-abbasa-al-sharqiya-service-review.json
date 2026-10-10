@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6894-al-abbasa-al-sharqiya.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Review first-party Egyptian and Sharqia cadastral/map channels for anonymous parcel geometry with safe native identifiers.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "wupPointPreserved": [30.5708595246245, 31.6943125351129]
+  },
+  "assessment": "Official national survey/map pages were reachable and documented general mapping and cadastral-related service responsibilities, but no anonymous parcel feature API was exposed. The Sharqia governorate spatial-variables portal returned an authentication page; its anonymous JavaScript exposed only a Leaflet basemap. No exact-point parcel request was made because no documented anonymous parcel endpoint existed. No geometry absence or citywide coverage conclusion is made.",
+  "registryAssessment": "Local registry/cadastre custody is not sufficiently evidenced for this packet. National General Authority for Survey material is general agency evidence; the Sharqia local portal is operationally visible but login-gated and does not disclose a public parcel layer.",
+  "coverageAssessment": {
+    "claimedScope": "Official Egyptian General Authority for Survey pages plus anonymous Sharqia governorate portal/login-page inspection.",
+    "verifiedOpenScope": "No anonymous full parcel geometry or stable safe native parcel ID verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "officialPrimarySources": [
+    {"url": "https://www.esa.gov.eg/main.aspx", "operator": "Egyptian General Authority for Survey", "scope": "Official agency history and project/service descriptions, including cadastral-related mapping responsibilities; no city parcel API."},
+    {"url": "https://www.esa.gov.eg/services.aspx", "operator": "Egyptian General Authority for Survey", "scope": "Official service catalogue includes digital/紙 maps, coordinate certificates and boundary services; it does not publish an anonymous parcel-vector query endpoint."},
+    {"url": "https://makani.sharkia.gov.eg/login", "operator": "Sharqia Governorate", "scope": "Official Spatial Variables Unit login page. Anonymous access stops at authentication; no parcel schema or safe ID endpoint is disclosed."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Egypt official cadastral map parcel viewer Al Abbasa al Sharqiya", "result": "Found official Egyptian General Authority for Survey map/services pages; no public city parcel API.", "actualResultUrls": ["https://www.esa.gov.eg/egyptmap.aspx", "https://www.esa.gov.eg/services.aspx", "https://www.esa.gov.eg/main.aspx"]},
+    {"language": "Arabic", "query": "خريطة عقارية رسمية مصر العباسة الشرقية السجل العيني محافظة الشرقية", "result": "Found official Sharqia Spatial Variables Unit login and official Arabic national map pages; the local portal is login-gated and no anonymous parcel endpoint was exposed.", "actualResultUrls": ["https://makani.sharkia.gov.eg/login", "https://www.esa.gov.eg/egyptmap.aspx", "https://www.esa.gov.eg/egypt_maps.aspx"]}
+  ],
+  "attempts": [
+    "Fetched the official ESA Arabic map page anonymously (HTTP 200); inspected HTML/scripts and found no parcel API.",
+    "Fetched the official ESA map catalogue anonymously (HTTP 200); inspected links to general downloadable maps only.",
+    "Fetched the official ESA district/map page anonymously (HTTP 200); inspected image-map and ordinary site scripts only.",
+    "Fetched the official Sharqia Spatial Variables Unit login page anonymously (HTTP 200); did not submit credentials or attempt bypass.",
+    "Inspected the local login page's current JavaScript/configuration: Leaflet and ArcGIS World_Dark_Gray_Base basemap were present; no parcel endpoint, field schema, or CRS for parcel data was present.",
+    "No exact WUP point parcel query was run. The unchanged point [30.5708595246245, 31.6943125351129] is retained and no absence claim is made.",
+    "Safe field allowlist for any future public query: feature/native parcel ID and geometry only. Owner, address, titleholder, contact, tax/account, certificate and personal fields were neither requested nor retained."
+  ],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Not run: no documented anonymous parcel geometry endpoint was found; zero-hit/absence inference prohibited.", "requestEvidence": [{"url": "https://makani.sharkia.gov.eg/login", "method": "GET; anonymous", "httpStatus": 200, "assessment": "Authentication wall; no parcel query was attempted."}]},
+  "nextStep": "Root review may seek an independently documented public Sharqia parcel endpoint or a permitted local adapter; keep runtime held until real geometry, ID, CRS and bounded query behavior are independently qualified.",
+  "remainingUncertainty": "Post-login capabilities and any non-indexed local service remain unknown. National map PDFs/general pages cannot establish parcel coverage for Al Abbasa al Sharqiya.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

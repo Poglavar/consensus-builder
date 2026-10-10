@@ -1,0 +1,37 @@
+{
+  "cityRecord": "city-2379-kitchener.json",
+  "cityCode": 2379,
+  "queueRank": 1644,
+  "city": "Kitchener",
+  "country": "Canada",
+  "countryCode": "CA",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "First-party City of Kitchener and Region of Waterloo GIS sources document parcel polygons and a current ArcGIS REST layer. The layer schema and CRS were verified, but bounded anonymous queries around the exact WUP point returned no features and the source metadata restricts external export of Teranet-derived parcels. No sample was retained and runtime remains held.",
+  "queryOutcomes": "Separate English and French discovery queries are recorded in city-2379-kitchener.json. English found official City GeoHub metadata and the regional Property_Parcels service. French found no separate French parcel endpoint and led back to the same official municipal/regional sources.",
+  "requestOutcomes": "Official City map page, Kitchener parcel metadata, current Region of Waterloo layer configuration, web-map configuration, and two bounded anonymous query requests were fetched with TLS verification enabled. No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, TLS disablement, or unsafe property lookup was used.",
+  "scopeLimits": [
+    "The municipal/regional layer establishes a local registry custodian route but not an export license or adapter-ready public feed.",
+    "The exact WUP point and a 2,000-meter radius query both returned zero features; neither miss was treated as evidence of citywide absence.",
+    "The official Kitchener metadata says the parcel data are Teranet-derived and cannot be exported for external use, so no GeoJSON sample was retained.",
+    "Native schema fields were inspected, but only safe OBJECTID was requested in bounded query attempts; no owner, address, titleholder, tax, assessment, roll-number, or contact data were requested or retained.",
+    "This packet is research evidence only and must not be treated as source integration or adapter admission."
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeIdentityPolicy": "OBJECTID is the documented service object ID, but no feature was retained. RollNumber and other source-specific fields remain metadata-only and are not included in any sample.",
+  "nativeFieldMapping": {
+    "OBJECTID": "documented ArcGIS service object ID; safe candidate native identity",
+    "RollNumber": "observed schema field; not requested or retained",
+    "StreetName": "observed schema/display field; not requested or retained",
+    "Location": "observed schema field; not requested or retained"
+  },
+  "crs": "EPSG:26917 (NAD 83 / UTM zone 17N) in official layer metadata; no retained GeoJSON sample",
+  "geometryQuality": "Official metadata reports polygon property boundaries and approximately +/-0.5 m feature accuracy for the Kitchener Land_Parcels layer; no retained sample was evaluated.",
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "uncertainty": "A map-display or licensed/internal route may provide broader coverage than the bounded anonymous queries. The source's external-export restriction, exact public query coverage, and runtime admission status remain unresolved.",
+  "retainedSample": null
+}

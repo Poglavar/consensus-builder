@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-2654-kuantan.json",
+  "purpose": "Document first-party registry/map discovery, viewer/service evidence, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Official JUPEM sources evidence JUPEM Pahang and the Eastern Pahang District Survey Office in Kuantan as local cadastral custody. Current MyLot configuration exposes Pahang parcel table names and EPSG:3379, but anonymous data requests returned 401 and no complete safe polygon response was obtained.",
+  "registryAssessment": "JUPEM is the national survey and mapping agency; its official Pahang information identifies the Kuantan headquarters and Eastern Pahang district survey office. This is local cadastral custody evidence, not open citywide parcel geometry.",
+  "officialPrimarySources": [
+    {"url": "https://www.jupem.gov.my/ebiz/info-korp", "observation": "Official JUPEM page identifies JUPEM Pahang in Kuantan and the Eastern Pahang District Survey Office; it describes cadastral survey functions."},
+    {"url": "https://www.jupem.gov.my/jupem18a/assets/uploads/images/contents/20210329091423-585c7-pspk.jupem.01-profil-sistem-pengurusan-kualiti-jupem.pdf", "observation": "Official JUPEM profile lists Pejabat Ukur Daerah Pahang Timur at 25200 Kuantan."},
+    {"url": "https://jupem2u.kul.jupem.gov.my/MyLot/index.html", "observation": "Official JUPEM MyLot public viewer shell; its current configuration was retrieved and inspected."},
+    {"url": "https://ebiz.jupem.gov.my/PetaInteraktif?c=pl&jenis=Pemetaan&no=7991&type=MY701T", "observation": "Official JUPEM eBiz interactive product page describes digital cadastral lot products and login/purchase workflow."},
+    {"url": "https://iplan.planmalaysia.gov.my/site/mdyan/geoportal", "observation": "Official PLANMalaysia i-Plan public viewer advertises a Lot Kadaster layer and search controls; no parcel response was retained for this city."}
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://jupem2u.kul.jupem.gov.my/MyLot/index.html",
+    "observedTechnology": "Current MyLot JavaScript configuration and public config JSON; REST-style JUPEM data service.",
+    "observedControls": ["MyLot map", "lot layers", "location/coordinate lookup", "digital cadastral lot product workflow"],
+    "schemaAndCrs": "Config names parcel tables CSRS.RELATIVE_NDCDBLOT, CSRS.NDCDBLOT, and EGLMS.C3LOT; Pahang StateCode is 06 and StateProjection is EPSG:3379. No feature response was obtained to validate fields or geometry axis order.",
+    "nativeFieldNames": ["UPI", "PA"],
+    "sourceFieldMapping": "Observed only in public MyLot config QR-code column list; not used as a retained parcel identity because no parcel feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://jupem2u.kul.jupem.gov.my/MyLot/index.html", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 public viewer shell retrieved; current script/configuration inspected."},
+    {"url": "https://jupem2u.kul.jupem.gov.my/MyLot/content/AppConfig.json", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200; public configuration exposed Pahang host mapping, EPSG:3379, parcel table names, and MyLot route structure. No credential or token value was retained."},
+    {"url": "https://kom.kul.jupem.gov.my/jupemapi/GetNegeri?lng=103.305658093593&lat=3.8120664604539", "method": "GET", "normalTlsVerification": true, "result": "Timed out after 15 seconds; no response body."},
+    {"url": "https://kom.phg.jupem.gov.my/jupemapi/GetNegeri?lng=103.305658093593&lat=3.8120664604539", "method": "GET", "normalTlsVerification": true, "result": "HTTP 404; endpoint unavailable at the configured Pahang host."},
+    {"url": "https://kom.phg.jupem.gov.my/data/select/ekadas/CSRS.T_NEGERI:KODNEGERI,KETERANGAN?STATUS%3D%27N%27", "method": "GET", "normalTlsVerification": true, "result": "HTTP 401 TokenNotFoundException; anonymous request rejected. No login or token-bearing request attempted."},
+    {"url": "https://kom.phg.jupem.gov.my/data/select/ekadas/CSRS.T_DAERAH:KETERANGAN,KODDAERAH,KODNEGERI?STATUS%3D%27N%27%26KODNEGERI%3D%2706%27", "method": "GET", "normalTlsVerification": true, "result": "HTTP 401 TokenNotFoundException; anonymous request rejected. No login or token-bearing request attempted."},
+    {"url": "https://iplan.planmalaysia.gov.my/site/mdyan/geoportal", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 public viewer HTML retrieved; viewer advertises Lot Kadaster but no bounded parcel feature/API response was obtained."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous parcel response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "query": "No parcel geometry query was submitted because the current official JUPEM data service required an unavailable authentication token and i-Plan service schema was not exposed by the bounded retrieval."},
+  "coverageAssessment": {"claimedScope": "JUPEM Pahang and Eastern Pahang District Survey Office custody plus official MyLot/eBiz/i-Plan channels.", "verifiedOpenScope": "No anonymous complete-polygon feature response verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "Exact MyLot parcel endpoint request syntax, native identity field, returned schema, anonymous access policy, and Kuantan coverage remain unverified. HTTP 401, timeout, 404, or a general viewer is not evidence of no cadastral records.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."}
+}

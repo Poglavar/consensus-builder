@@ -1,0 +1,14 @@
+{
+  "taskId": "city:5534",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-5534-pishva.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pishva-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T17:24:31.834843Z",
+  "reason": "SSAA and Shamim checks timed out. No native ID or polygon response, adapter qualification, or headed details check.",
+  "registryFound": null,
+  "admissionQualified": false
+}

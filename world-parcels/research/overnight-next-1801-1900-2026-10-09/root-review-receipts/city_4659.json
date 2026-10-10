@@ -1,0 +1,15 @@
+{
+  "taskId": "city:4659",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-4659-tambov.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/tambov-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T16:19:06Z",
+  "reviewNotes": "Tambov municipal cadastral-plan procedure names the regional Rosreestr administration; the document is historical custody evidence. NSPD and Rosreestr routes timed out in the worker packet. No first-party parcel response, native ID, or geometry was retained. A timeout is unresolved access, not parcel absence.",
+  "firstPartyCustodyUrl": "https://tambov-gov.ru/doc/39956",
+  "admissionGate": "No independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. No runtime, catalog, or generated coverage admission."
+}

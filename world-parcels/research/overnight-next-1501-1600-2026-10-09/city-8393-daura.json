@@ -1,0 +1,88 @@
+{
+  "cityCode": 8393,
+  "queueRank": 1543,
+  "name": "Daura",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "iso3": "NGA",
+  "point": [13.0292088405912, 8.32267894132444],
+  "population2025": 369916,
+  "population2025k": 369.916,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Daura Nigeria official cadastral parcel map land registry GIS Katsina State",
+        "result": "First-party KATGIS and Katsina Ministry of Lands & Survey sources were found. They evidence state land administration, certificate verification, e-services, registration and legal-search workflows, but no public parcel viewer, vector layer, service configuration, schema, CRS, or safe anonymous parcel ID+geometry endpoint was exposed.",
+        "actualResultUrls": [
+          "https://gis.katsinastate.gov.ng/",
+          "https://katgis.org.ng/e-service",
+          "https://mols.kt.gov.ng/",
+          "https://katsinastate.gov.ng/"
+        ]
+      },
+      {
+        "language": "Hausa/local",
+        "query": "Daura Najeriya taswirar filaye cadastral rajistar ƙasa Katsina official",
+        "result": "No first-party Hausa-language cadastral viewer or parcel-geometry service was located. The available first-party Katsina land-service material is in English; this is a discovery limitation, not evidence of citywide absence.",
+        "actualResultUrls": [
+          "https://gis.katsinastate.gov.ng/",
+          "https://mols.kt.gov.ng/",
+          "https://katsinastate.gov.ng/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Katsina State Geographic Information Service (KATGIS) and Katsina State Ministry of Lands & Survey.",
+    "scope": "KATGIS describes Katsina State land administration and geospatial services, including certificate verification, recertification, regularisation, legal search and land transactions. The Ministry site provides state registration information and land-law/fee material. This establishes state-level custody relevant to Daura, not verified citywide parcel geometry coverage.",
+    "urls": [
+      "https://gis.katsinastate.gov.ng/",
+      "https://katgis.org.ng/e-service",
+      "https://mols.kt.gov.ng/",
+      "https://mols.kt.gov.ng/registration/"
+    ]
+  },
+  "source": {
+    "sourceId": null,
+    "name": "Katsina State Geographic Information Service (KATGIS) / Katsina State Ministry of Lands & Survey",
+    "url": "https://gis.katsinastate.gov.ng/",
+    "operator": "Katsina State Government",
+    "serviceType": "First-party state land-administration, GIS and registration custodian evidenced; public parcel geometry service not verified",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "The accessible KATGIS pages expose service and verification/registration workflows. No public map, parcel layer, API schema, CRS or anonymous safe ID+geometry response was exposed. No login, registration, owner/address, titleholder or unsafe field request was attempted."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Katsina State land administration, GIS and land-registration custody is evidenced for the state containing Daura.",
+    "verifiedOpenScope": "No safe anonymous parcel ID+geometry response, native field, CRS, or public vector layer was verified. The unchanged WUP point was not used as a parcel hit/miss test.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "local_registry_custody_evidenced_geometry_unverified",
+  "technicalBlocker": "Current first-party KATGIS pages are service/verification/registration workflows. Anonymous GETs and review of the current Next.js page scripts found no public parcel map, ArcGIS/GeoServer/vector endpoint, schema, CRS or safe ID+geometry response. MOLS registration is an application form and its public WordPress API is content metadata, not a parcel service.",
+  "remainingUncertainty": "Whether KATGIS maintains a separate authorized public map or service endpoint, its native parcel identity and CRS, and whether any such service covers Daura. A zero public response here is not evidence of citywide absence.",
+  "nextStep": "Revisit only if an official public viewer configuration or vector service is documented; qualify metadata and a bounded safe ID+geometry response before runtime admission.",
+  "runtimeReadiness": "held_not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "pointBasis": "WUP 2025 settlement point in latitude/longitude order; not a municipal boundary or parcel-coverage claim.",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1
+}

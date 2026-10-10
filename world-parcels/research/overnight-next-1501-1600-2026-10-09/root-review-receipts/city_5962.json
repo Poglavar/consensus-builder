@@ -1,0 +1,28 @@
+{
+  "taskId": "city:5962",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-5962-sivas.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/sivas-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T09:35:55.349072Z",
+  "reviewFindings": "Official TKGM material supports cadastral custody and the municipal e-İmar search is discoverable, but the paired files contain no anonymous native-ID plus complete-polygon response. DNS/502 and unverified municipal service routes do not establish absence. No independent adapter qualification exists.",
+  "identityCheck": "Packet matches both immutable ranked roster and pending queue on city code, rank, country, point, and population converted from thousands to persons.",
+  "bilingualSearchCheck": "Distinct English and native-language queries with result URLs and outcomes recorded in packet; the queries were re-executed during root review.",
+  "retainedFullPolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "independentlyCheckedFirstPartyUrls": [
+    "https://www.tkgm.gov.tr/projeler/tamamlanan-projeler/megsis",
+    "https://keos.sivas.bel.tr/imardurumu/"
+  ],
+  "sourceAdmission": "not_admitted"
+}

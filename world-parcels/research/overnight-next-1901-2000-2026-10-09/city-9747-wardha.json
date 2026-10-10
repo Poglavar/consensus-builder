@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 9747,
+  "wupCityCode": 9747,
+  "queueRank": 1967,
+  "name": "Wardha",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [20.7437089692261, 78.6031521382345],
+  "centerLatLon": [20.7437089692261, 78.6031521382345],
+  "population2025": 295117,
+  "population2025k": 295.117,
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "targetGeometryEvidence": "No parcel geometry was retained. The unchanged WUP point was not shifted; the official MahaBhu-Nakasha route timed out and no anonymous parcel ID-plus-geometry response was verified.",
+  "nativeIdReadiness": "not_ready_no_geometry",
+  "registryFound": true,
+  "registryBasis": "The official Maharashtra Land Records service directory links the MahaBhu-Nakasha map service and identifies Wardha as a district land-record jurisdiction. The Wardha district land-record page identifies the district-level Land Records office and local survey activity. This is local/state custody evidence, not source admission or runtime integration.",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Wardha Maharashtra official cadastral parcel map land records GIS government",
+        "result": "Found the official Wardha district government site, Maharashtra Land Records service directory, Wardha district land-record page, and official MahaBhu-Nakasha service link. No usable anonymous Wardha parcel geometry response was verified.",
+        "actualResultUrls": [
+          "https://wardha.gov.in/en/",
+          "https://bhumiabhilekh.maharashtra.gov.in/Services",
+          "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR?districtId=7",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/index.html"
+        ]
+      },
+      {
+        "language": "Marathi",
+        "query": "वर्धा महाराष्ट्र अधिकृत भू नकाशा जमीन अभिलेख कॅडस्ट्रल नकाशा",
+        "result": "Official Marathi-first-party results identified the Maharashtra Land Records service directory, Wardha district land-record office page, and MahaBhu-Nakasha map service. No anonymous parcel ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://bhumiabhilekh.maharashtra.gov.in/Services",
+          "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR?districtId=7",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+          "https://wardha.gov.in/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/Services",
+      "operator": "Maharashtra Land Records Department",
+      "evidence": "Official service directory links e-Map/Bhu-Nakasha, describes village, city-survey and parcel-map viewing, and identifies Wardha under the Nagpur division district list."
+    },
+    {
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR?districtId=7",
+      "operator": "Wardha District Superintendent Land Records / Maharashtra Land Records Department",
+      "evidence": "Official Wardha district land-record page identifies Wardha and shows district survey/land-record activity, including CAD/GNSS and local survey-office material."
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+      "operator": "Maharashtra Land Records Department",
+      "evidence": "Official service URL reached through the Maharashtra Land Records directory as the state map-with-land-records route; no response payload was obtained in this bounded attempt."
+    },
+    {
+      "url": "https://wardha.gov.in/en/map-of-district/",
+      "operator": "District Wardha, Government of Maharashtra",
+      "evidence": "Official district map page confirms district administrative mapping context; it is not parcel geometry and was not retained as a sample."
+    }
+  ],
+  "attemptedRoutes": [
+    {
+      "route": "GET https://bhumiabhilekh.maharashtra.gov.in/Services",
+      "outcome": "Official page available through first-party inspection; it exposes the Wardha district link and MahaBhu-Nakasha service link, but no parcel feature response."
+    },
+    {
+      "route": "GET https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR?districtId=7",
+      "outcome": "Official Wardha district land-record page available; local custody and survey-office activity evidenced, but no parcel geometry endpoint exposed in the inspected page."
+    },
+    {
+      "route": "GET https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+      "outcome": "Official MahaBhu-Nakasha route linked by the service directory; bounded request timed out. No login, credentials, CAPTCHA/Cloudflare bypass, or TLS exception was used."
+    },
+    {
+      "route": "GET https://bhumiabhilekh.maharashtra.gov.in/",
+      "outcome": "Bounded direct request timed out; no response payload was retained."
+    },
+    {
+      "route": "GET https://wardha.gov.in/en/map-of-district/",
+      "outcome": "Official district map page found; maps are administrative/regional references, not parcel-vector geometry."
+    }
+  ],
+  "schemaAndCrs": "No parcel response, native field schema, CRS, or geometry was safely observed.",
+  "sourceIdentity": {
+    "nativeIdField": null,
+    "fallbackOidField": null,
+    "compositeKey": null,
+    "fieldMapping": null,
+    "crs": null,
+    "geometryType": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Maharashtra Land Records Department map services and Wardha district land-record custody.",
+    "verifiedOpenScope": "Official service directory and Wardha district custodian page only; anonymous Wardha parcel geometry, schema, CRS and citywide coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "No exact-point parcel query was completed; timeout is not evidence of citywide absence. The exact WUP point was preserved and not shifted."
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier if independently obtained", "geometry", "declared CRS", "non-sensitive layer/schema metadata", "non-sensitive administrative survey lookup fields"],
+  "unsafeFieldsNotRetained": ["owner", "address", "contact", "titleholder", "personal", "tax/account", "legal description", "ownership or rights/interests"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_local_registry_custodian_no_verified_open_geometry",
+  "remainingUncertainty": "The official MahaBhu-Nakasha application may expose public map/API requests when available, but this attempt did not obtain its current JavaScript/configuration or an anonymous parcel response. No absence inference was made.",
+  "nextStep": "Serial reviewer should independently recheck the official MahaBhu-Nakasha route, identify any public bounded geometry request, and qualify stable native identity, schema, CRS and coverage before adapter consideration."
+}

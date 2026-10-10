@@ -1,0 +1,27 @@
+{
+  "cityRecord": "city-1499-dusuq.json",
+  "schemaVersion": 1,
+  "cityCode": 1499,
+  "queueRank": 1567,
+  "city": "Dusuq",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "outcome": "complete_no_verified_open_geometry",
+  "registryFound": true,
+  "registryScope": "Kafr El-Sheikh Governorate geospatial and spatial-property services, with Egyptian Survey Authority national mapping/cadastral-service leads; no anonymous open parcel geometry service was verified.",
+  "exactPointLatLon": [31.1298016174317, 30.6455342626633],
+  "queries": [
+    {"language": "English", "query": "Dusuq Egypt official cadastral parcel map land registry GIS Kafr El Sheikh", "outcome": "First-party Kafr El-Sheikh spatial-map and geospatial-service leads found; no anonymous parcel feature response.", "urls": ["https://kfs.gov.eg/interactive-map", "https://geo.kfs.gov.eg/", "https://kfs.gov.eg/services/019bbb46-a0c4-7373-a25b-d7853ad3b16c", "https://www.esa.gov.eg/services.aspx"]},
+    {"language": "Arabic", "query": "دسوق مصر خريطة عقارية سجل عقاري مسح أراضي جهاز مدينة دسوق", "outcome": "بوابة المحافظة والخدمات المكانية وهيئة المساحة ظهرت كمصادر رسمية؛ تقديم الطلب المكاني يتطلب تسجيل الدخول ولم تظهر هندسة عامة.", "urls": ["https://kfs.gov.eg/interactive-map", "https://geo.kfs.gov.eg/", "https://kfs.gov.eg/services/019bbb46-a0c4-7373-a25b-d7853ad3b16c", "https://www.esa.gov.eg/services.aspx"]}
+  ],
+  "requestOutcomes": "GET https://geo.kfs.gov.eg/ and GET https://kfs.gov.eg/interactive-map each timed out after 20 seconds during anonymous direct inspection. Official indexed inspection of the Kafr El-Sheikh spatial-services page returned HTTP 200 and states that request submission requires login. Official Egyptian Survey Authority service inspection returned HTTP 200 with service descriptions but no Dusuq parcel endpoint. A first-party SIS discovery result described digital real-estate-registry geospatial work and Kafr El-Sheikh Survey Directorate data-center plans; direct open returned 502. No login, credentials, CAPTCHA bypass, private token, or unsafe property fields were used.",
+  "schemaCrs": "Not available; no parcel feature response was received.",
+  "safeFieldAllowlist": ["stable native parcel identifier", "geometry", "source CRS", "non-sensitive administrative scope"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "mortgage/lien details"],
+  "sampleGeojson": null,
+  "runtimeReadiness": "held",
+  "uncertainty": "The local portal may have a currently unavailable or authenticated geometry service. Evidence does not prove exact-point, cadastral-section, or citywide coverage; timeouts and absence of a point response are not evidence of citywide absence.",
+  "completion": "All executed discovery and request attempts are recorded; packet is complete for attempt 1, with no retained GeoJSON sample."
+}

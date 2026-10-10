@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-4929-celaya.json",
+  "purpose": "Document first-party registry/map discovery, current public map configuration, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Official Municipio de Celaya evidence establishes a city-specific Dirección de Impuestos Inmobiliarios y Catastro. The municipal GIS currently exposes a CRS84 GeoJSON urban-block layer with 7,098 features and an extent containing the exact WUP point, but not a cadastral parcel layer. The official Predial portal loaded without exposing a safe anonymous parcel ID-plus-complete-polygon route.",
+  "registryAssessment": "Local city cadastral custody found through the official Municipio de Celaya site. The official Predial portal is a municipal tax channel. Neither was treated as proof of citywide public parcel geometry availability.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.celaya.gob.mx/dependencia/impuestos-inmobiliarios-catastro/",
+      "observation": "Official city page names Impuestos Inmobiliarios y Catastro and provides city catastro contacts."
+    },
+    {
+      "url": "https://predial.celaya.gob.mx/home/",
+      "observation": "Official municipal Predial portal loads as the city property-tax service; no public parcel geometry route was visible in the returned page."
+    },
+    {
+      "url": "https://www.imipecelaya.org/cartografia-celaya/",
+      "observation": "Local Celaya municipal GIS page publishes planning/map layers and JavaScript configuration."
+    }
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://www.imipecelaya.org/cartografia-celaya/",
+    "observedLayer": "marco_geoestadistico/manzanas.json",
+    "observedVendor": "OpenLayers client with static GeoJSON assets",
+    "observedLayerDescription": "Urban blocks/manzanas, not cadastral parcels.",
+    "schemaAndCrs": "Successful GET returned GeoJSON FeatureCollection, 7,098 features, CRS `urn:ogc:def:crs:OGC:1.3:CRS84`; feature properties included planning fields such as `No_manzana` and `Superficie`.",
+    "exactPointExtentCheck": "The returned urban-block dataset extent was approximately [-100.92679382005086, 20.366262038720034, -100.6620070662878, 20.68208515893839] in longitude/latitude order and contains the exact WUP point. This is an extent check only, not a parcel hit.",
+    "nativeFieldNames": "No cadastral parcel native fields observed; urban-block fields were not retained in a sample.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {
+      "url": "https://www.celaya.gob.mx/dependencia/impuestos-inmobiliarios-catastro/",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 200; official city catastro page and local office/contact evidence returned."
+    },
+    {
+      "url": "https://predial.celaya.gob.mx/home/",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 200; official municipal Predial landing page returned. No safe anonymous parcel geometry or stable parcel identity endpoint was identified in the page."
+    },
+    {
+      "url": "https://www.imipecelaya.org/cartografia-celaya/",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 200; current OpenLayers page and JavaScript configuration inspected. Published layers are municipal planning/map layers."
+    },
+    {
+      "url": "https://www.imipecelaya.org/cartografia-celaya/marco_geoestadistico/manzanas.json",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 200; bounded public GeoJSON response with 7,098 urban-block features and CRS84 metadata. Not cadastral parcel geometry; no feature retained."
+    },
+    {
+      "url": "https://predial.celaya.gob.mx/api/",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 404 HTML response; no API schema or parcel response. This route was exploratory and did not include credentials or unsafe fields."
+    }
+  ],
+  "geometryDecision": "No full polygon retained; the only successful geometry response was urban-block planning data, not a qualifying cadastral parcel response.",
+  "geometryEvidence": {
+    "sampleFile": null,
+    "featureCount": 0,
+    "query": "No parcel-point query submitted because no public cadastral parcel service and safe request shape were verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "City-specific catastro custody plus municipal planning GIS and Predial portal.",
+    "verifiedOpenScope": "Public urban-block GeoJSON only; no anonymous complete-polygon parcel feature verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "remainingUncertainty": "The map extent includes the WUP point, but map extent and urban-block presence do not prove a parcel hit. Any separate state/federal cadastral service, its parcel schema, native identity, CRS, access controls and citywide completeness remain unverified.",
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "No independent anonymous safe ID-plus-parcel-geometry response; this packet does not qualify an adapter or enable runtime."
+  }
+}

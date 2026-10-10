@@ -1,0 +1,14 @@
+{
+  "taskId": "city:10402",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-10402-wafangdian.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/wafangdian-service-review.json",
+    "tmp/valhalla-parcel-research/root-review-1901-2000/wafangdian-department.headers",
+    "tmp/valhalla-parcel-research/root-review-1901-2000/wafangdian-department.html"
+  ],
+  "checkedAt": "2026-10-10T18:57:10.645176Z",
+  "reason": "Identity and persons match immutable roster/queue. English and Chinese searches are recorded. Live first-party Wafangdian department response names the Natural Resources Bureau and real-estate registration/survey duties, supporting custody only. Linked service timed out in worker attempt, and no native-ID polygon response or retained polygon exists. All adapter, paging, 13-cell, metric geometry, source binding, and headed Details gates are unproved; held without an absence inference."
+}

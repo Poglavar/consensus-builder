@@ -1,0 +1,16 @@
+{
+  "taskId": "city:220",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-220-belfast.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/belfast-service-review.json",
+    "tmp/valhalla-parcel-research/belfast/hub.html"
+  ],
+  "checkedAt": "2026-10-09T12:30:51Z",
+  "identityReview": "Rank 1262; WUP code 220; United Kingdom GB/GBR; [54.602197727664,-5.93500686517269]; 441925 persons. Exact roster and pending queue match.",
+  "sourceReview": "English and Irish searches with result URLs are recorded. Official Land Registry documentation establishes custody; the cached Spatial NI Hub HTML contains no parcel or FeatureServer reference, and no full native polygon or safe ID response was obtained.",
+  "admissionReview": "Zero durable polygons. Fresh native-ID reads, forced paging, 13 bounded cells, independent metric GEOS checks, source binding, and headed Details verification are absent. Lack of an identified open endpoint does not establish citywide parcel absence."
+}

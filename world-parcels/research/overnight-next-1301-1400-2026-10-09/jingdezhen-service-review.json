@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11384-jingdezhen.json",
+  "cityCode": 11384,
+  "purpose": "Document first-party discovery, current public service routes, bounded anonymous access review, and evidence limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Jingdezhen first-party municipal sources establish local real-estate registration custody and a cadastral-map visualization service. The public service portal was reachable anonymously, but the relevant query workflow requires identity verification and did not yield a safe parcel ID+geometry response. No parcel sample is retained.",
+  "registryAssessment": "Local registry custody is evidenced by Jingdezhen municipal government sources, so registryFound is true. This does not establish an open public parcel-vector service or adapter readiness.",
+  "safeFieldAllowlist": ["safe parcel identifier only if publicly exposed and non-personal", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "queries": [
+    {
+      "language": "English",
+      "query": "Jingdezhen China official cadastral map parcel GIS land registration natural resources",
+      "outcome": "First-party Jingdezhen results identified local registry custody and cadastral-map visualization context; no anonymous public parcel endpoint found.",
+      "actualResultUrls": ["https://jdz.gov.cn/zwgk/fdzdgknr/zcwj/zcjd/t977888.shtml", "https://bdc.jdz.gov.cn/wx/WX/App/WFW.aspx", "https://jdz.gov.cn/zwgk/fdzdgknr/zcwj/zfwj/szfbgswj/t364178.shtml"]
+    },
+    {
+      "language": "native/local",
+      "script": "Simplified Chinese",
+      "query": "景德镇市 不动产登记 地籍图 地图 自然资源局",
+      "outcome": "景德镇市政府官方结果确认市不动产登记中心和地籍图可视化查询服务；业务查询需要身份验证，未发现匿名宗地几何接口。",
+      "actualResultUrls": ["https://jdz.gov.cn/zwgk/fdzdgknr/zcwj/zcjd/t977888.shtml", "https://www.jdz.gov.cn/zwgk/fdzdgknr/zcwj/zfwj/szfbgswj/t920879.shtml", "https://bdc.jdz.gov.cn/wx/WX/App/WFW.aspx"]
+    }
+  ],
+  "attempts": [
+    {"url": "https://jdz.gov.cn/zwgk/fdzdgknr/zcwj/zcjd/t977888.shtml", "method": "GET via first-party search/open", "httpStatus": 200, "result": "Official municipal interview confirmed local registration-center custody and identity-verified cadastral-map visualization; no public parcel response."},
+    {"url": "https://www.jdz.gov.cn/zwgk/fdzdgknr/zcwj/zfwj/szfbgswj/t920879.shtml", "method": "GET via first-party search/open", "httpStatus": 200, "result": "Official policy notice assigned cadastral-map visualization expansion to the Municipal Natural Resources and Planning Bureau; no parcel API or geometry."},
+    {"url": "https://bdc.jdz.gov.cn/wx/WX/App/WFW.aspx", "method": "GET", "httpStatus": 200, "result": "Official service landing page reachable anonymously; registration/query navigation and service paths were inspected. No parcel layer, CRS, safe native ID, or geometry was returned."},
+    {"url": "https://bdc.jdz.gov.cn/wx/WX/App/ICQQK.aspx", "method": "GET", "httpStatus": 200, "result": "Official registration-information query page reachable, but page logic requires business/user verification. No anonymous parcel ID+geometry response was requested or obtained."},
+    {"url": "https://bdc.jdz.gov.cn/api/nres", "method": "GET", "httpStatus": "not independently queried", "result": "The landing page exposed this as a service base path; no unauthenticated business request was made because the workflow is protected and no public parcel endpoint was documented."},
+    {"url": "https://bdc.jdz.gov.cn/api/ios", "method": "GET", "httpStatus": "not independently queried", "result": "The landing page exposed this as a service base path; no unauthenticated business request was made because the workflow is protected and no public parcel endpoint was documented."}
+  ],
+  "geometryEvidence": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "nativeIdField": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "No exact-point parcel containment test was completed. The WUP point [29.2989078251208,117.192681771754] was preserved exactly and not shifted; protected-service limitations are not evidence of citywide absence."
+  },
+  "remainingUncertainty": "The current authenticated viewer configuration, parcel layer endpoint, CRS, native parcel identity, exact-point parcel, and open citywide coverage remain unverified. No credentials, private token values, CAPTCHA/Cloudflare bypass, owner/address/contact/titleholder data, or other unsafe fields were used or retained.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter"
+}

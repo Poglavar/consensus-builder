@@ -1,0 +1,16 @@
+{
+  "taskId": "city:4669",
+  "decision": "held",
+  "reason": "Pabna rank 1283, Bangladesh, unchanged point and 436119 persons match the immutable roster. English and Bengali executed-search records are present. First-party DLRS viewer, Pabna Zonal Settlement Office and saved survey metadata support local cadastral custody (registryFound=true). Original 3319-feature sheet cache is bounded to longitude 90.27397-90.29270, latitude 22.35779-22.37983, outside the WUP point [24.0069361559384,89.2376788585173]; no city-qualified polygon retained. Service-level access is not citywide coverage. Live adapter admission gates are missing.",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-4669-pabna.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pabna-service-review.json",
+    "tmp/valhalla-parcel-research/pabna/sheet-031101021-001.json",
+    "tmp/valhalla-parcel-research/pabna/surveys.json",
+    "tmp/valhalla-parcel-research/pabna/MapSearch.js"
+  ],
+  "checkedAt": "2026-10-09T13:03:22.983203Z"
+}

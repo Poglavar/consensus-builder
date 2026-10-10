@@ -1,0 +1,12 @@
+{
+  "taskId": "city:2064",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-2064-santo-domingo-de-los-tsachilas.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/santo-domingo-de-los-tsachilas-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T10:38:17.221453Z",
+  "reason": "Official municipal cadastral department and property registry support registryFound=true. Municipal route timed out and registry access is credentialed; no safe native-ID full polygon response or independent admission gates. Neither condition proves citywide absence."
+}

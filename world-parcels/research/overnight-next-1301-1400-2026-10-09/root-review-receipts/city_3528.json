@@ -1,0 +1,13 @@
+{
+  "taskId": "city:3528",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-3528-hat-yai.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/hat-yai-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T15:46:22Z",
+  "reason": "Hat Yai WUP identity matches the original 2025 row and immutable rank 1387 queue: Thailand, exact point, 407059 persons. English and Thai searches are recorded. Official Songkhla land-office material supports local custody, but the described LandsPublic point route is public-land only, the bounded WFS response is empty, and no safe native-ID cadastral polygon or original positive response artifact is present. No fresh adapter ID reads, forced paging, 13 cells, metric geometry checks, source binding, or headed Details verification. A point-zero response is not citywide absence."
+}

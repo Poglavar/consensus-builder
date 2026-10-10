@@ -1,0 +1,19 @@
+{
+  "taskId": "packet:7613",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-7613-blitar.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/blitar-service-review.json",
+    "tmp/valhalla-parcel-research/blitar/bhumi.headers",
+    "tmp/valhalla-parcel-research/blitar/konsol.html",
+    "tmp/valhalla-parcel-research/blitar/console.headers",
+    "tmp/valhalla-parcel-research/blitar/proxy.headers",
+    "tmp/valhalla-parcel-research/blitar/proxy.body"
+  ],
+  "checkedAt": "2026-10-09T13:38:23.908297Z",
+  "reason": "Immutable WUP code 7613, rank 1260, Indonesia, point [-8.10100602100698,112.181443093969], and 442219 persons match roster, queue and ledger. English and Indonesian searches are recorded. Official Kota Blitar page independently confirms BPN Kota Blitar electronic land-certificate service and the saved first-party BHUMI responses confirm reachable viewer shells; the tested proxy route redirects to a 404 HTML page. SIHANDAL TLS failure does not establish absence. No parcel schema, returned native ID/polygon, or independent paging, 13 cells, metric GEOS, source binding and headed Details qualification."
+}

@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "wupCityCode": 1690,
+  "queueRank": 1520,
+  "cityId": "wup2025:1690",
+  "name": "Hama",
+  "country": "Syrian Arab Republic",
+  "countryCode": "SY",
+  "point": [35.1345747864745, 36.7586604856154],
+  "population2025": 374643,
+  "population2025k": 374.643,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hama Syria official cadastral parcel map land registry Directorate of Real Estate Affairs GIS",
+        "result": "First-party SANA reporting confirms the Hama Directorate of Real Estate Affairs resumed services and provides cadastral-plan statements and land-registry records. The official Hama governorate site was reachable, but no public parcel viewer, GIS service, or parcel API was exposed.",
+        "actualResultUrls": [
+          "https://sana.sy/governorates/hama/2183446/",
+          "https://hama.gov.sy/"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "حماة سوريا مديرية المصالح العقارية خريطة عقارية سجل عقاري مخطط مساحي",
+        "result": "البحث العربي أظهر مصادر رسمية عن مديرية المصالح العقارية في حماة وأتمتة الصحائف العقارية، بما في ذلك بيانات القيد العقاري والمخططات المساحية. لم تُعثر على خدمة عامة مجهولة الهوية تُرجع هندسات قطع أو CRS.",
+        "actualResultUrls": [
+          "https://sana.sy/governorates/hama/2206045/",
+          "https://sana.sy/governorates/hama/2218458/",
+          "https://hama.gov.sy/about"
+        ]
+      }
+    ]
+  },
+  "administrativeIdentity": {
+    "governorate": "Hama",
+    "city": "Hama",
+    "revenueVillage": null,
+    "identityEvidence": "The official Hama governorate site identifies Hama governorate and the SANA reports identify the Hama Directorate of Real Estate Affairs; the exact cadastral zone for the WUP point was not independently resolved."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Hama Directorate of Real Estate Affairs land-registry and cadastral-plan services; SANA reports digitization across multiple Hama-area cadastral zones.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_local_registry_found_no_verified_open_parcel_geometry",
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://sana.sy/governorates/hama/2183446/",
+      "operator": "Hama Directorate of Real Estate Affairs, reported by SANA",
+      "observation": "Official report states the directorate resumed services and provides land-registry statements and cadastral-plan statements. This is local custodial evidence, not a public geometry service."
+    },
+    {
+      "url": "https://sana.sy/governorates/hama/2206045/",
+      "operator": "Hama Directorate of Real Estate Affairs, reported by SANA",
+      "observation": "Official report documents automated land-record sheets for five Hama-area towns/villages and says similar projects exist in 12 cadastral zones; no endpoint or parcel feature payload is published."
+    },
+    {
+      "url": "https://hama.gov.sy/",
+      "operator": "Official Hama Governorate website",
+      "observation": "Current public site is a governorate information portal. HTML and referenced JavaScript were inspected for map/GIS/cadastral routes; no public parcel service was exposed."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://hama.gov.sy/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official governorate homepage returned HTML. No parcel map/API route was exposed in the page or referenced application assets."
+    },
+    {
+      "url": "https://hama.gov.sy/about",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official Arabic about page returned HTML and administrative overview; no cadastral geometry endpoint was exposed."
+    },
+    {
+      "url": "https://sana.sy/governorates/hama/2183446/",
+      "method": "GET via official report inspection",
+      "status": "HTTP 200",
+      "summary": "Official SANA report confirms local registry services, including cadastral-plan statements; it contains no public map/API request details."
+    },
+    {
+      "url": "https://sana.sy/governorates/hama/2206045/",
+      "method": "GET via official report inspection",
+      "status": "HTTP 200",
+      "summary": "Official SANA report confirms digitization in multiple Hama cadastral zones; no parcel geometry response or service endpoint was provided."
+    },
+    {
+      "url": "https://sana.sy/governorates/hama/2218458/",
+      "method": "GET via official report inspection",
+      "status": "HTTP 200",
+      "summary": "Official SANA report describes automated land-registry statements in three additional Hama-area cadastral zones; no public geometry endpoint was provided."
+    }
+  ],
+  "schemaCrs": null,
+  "safeFieldAllowlist": ["stable native parcel identifier if publicly exposed", "geometry", "source CRS", "non-sensitive administrative scope"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "mortgage/lien details"],
+  "sourceFields": null,
+  "nativeIdReadiness": "not_ready_no_verified_parcel_response",
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "A local official registry custodian is evidenced, but no anonymous public parcel geometry/CRS response or current official map/API route was identified. No geometry sample is retained.",
+  "remainingUncertainty": "The digitized registry may be available through an unindexed internal or authenticated service, and the reported cadastral zones do not establish coverage of the exact WUP point or the whole city. A zero exact-point hit was not used as evidence of absence.",
+  "nextStep": "Recheck the official Hama registry/governorate channels for a documented anonymous geometry-only service; validate bounded parcel features, CRS, and stable native IDs before adapter qualification.",
+  "registryEvidenceUrls": [
+    "https://sana.sy/governorates/hama/2183446/",
+    "https://sana.sy/governorates/hama/2206045/",
+    "https://sana.sy/governorates/hama/2218458/",
+    "https://hama.gov.sy/"
+  ],
+  "identityPolicy": "Do not infer a parcel identity from a synthetic row number; retain only a stable native identifier with geometry if a safe public response becomes available."
+}

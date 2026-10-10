@@ -1,0 +1,18 @@
+{
+  "taskId": "city:2963",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-2963-jizzakh.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/jizzakh-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T08:28:41.295314Z",
+  "reason": "Official Jizzakh regional cadastre supports registry custody; the public national geoportal timed out in direct checks. No verified native parcel ID plus complete polygon; fresh reads, forced paging, 13 cells, metric GEOS checks, source binding, and headed Details remain unproved. Timeout is not citywide absence.",
+  "independentlyCheckedFirstPartyUrls": [
+    "https://uzdkp.uz/",
+    "https://gov.uz/oz/jizzax/news/view/130096",
+    "https://open.ngis.uz/"
+  ],
+  "sourceAdmission": "not_admitted"
+}

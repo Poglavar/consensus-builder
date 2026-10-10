@@ -1,0 +1,33 @@
+{
+  "cityRecord": "city-7649-gojra.json",
+  "cityCode": 7649,
+  "queueRank": 1680,
+  "city": "Gojra",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official PLRA/PULSE and Toba Tek Singh sources evidence a Punjab land-record/cadastral custodian and a Gojra Arazi Record Center, but anonymous public requests to the current cadastral MapServer returned Token Required and no safe parcel geometry, stable native identity, schema, or CRS.",
+  "queryOutcomes": "Separate English and Urdu first-party discovery queries are recorded in city-7649-gojra.json. English results identified PLRA, PULSE, and Toba Tek Singh district administration; Urdu results identified the official PLRA service/login and PULSE viewer but no separate Gojra parcel API.",
+  "requestOutcomes": "TLS-verified GETs loaded the PLRA site, PULSE viewer, Toba Tek Singh district profile, and PLRA Gojra ARC document. The viewer's configured Punjab cadastral MapServer and layer metadata endpoint each returned ArcGIS error 499 Token Required. No login, credentials, private token, CAPTCHA/Cloudflare bypass, TLS disablement, or unsafe property lookup was used.",
+  "scopeLimits": [
+    "Official custodian and Gojra local ARC evidence establish a registry route, not anonymous parcel geometry availability or citywide coverage.",
+    "The PULSE viewer says complete parcel details require login; the configured MapServer metadata and layer requests were token-gated.",
+    "No exact-point hit or miss, map extent miss, timeout, login wall, or unusable UI was treated as evidence of citywide cadastral absence, and the WUP point was not shifted.",
+    "No GeoJSON sample was retained because no safe native parcel geometry and identity response was obtained.",
+    "This packet is research evidence only and must not be treated as source integration or adapter admission."
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeIdentityPolicy": "No native parcel identity was observed; do not synthesize one from directory rows, search results, response order, or internal records.",
+  "nativeFieldMapping": {},
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel geometry response obtained",
+  "geometryQuality": "not evaluated; no parcel geometry retained",
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "uncertainty": "A restricted, account-gated, formal-request, or not-yet-published cadastral service may exist. Public availability, parcel schema, CRS, native identity, coverage, and safe anonymous runtime access remain unresolved.",
+  "retainedSample": null
+}

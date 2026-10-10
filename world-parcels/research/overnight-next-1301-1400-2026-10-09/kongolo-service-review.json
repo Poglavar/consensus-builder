@@ -1,0 +1,26 @@
+{
+  "schemaVersion":"1.0",
+  "checkedAt":"2026-10-09",
+  "cityRecord":"city-6529-kongolo.json",
+  "cityCode":6529,
+  "purpose":"Document first-party discovery, current public cadastral routes, bounded anonymous access review, and evidence limits.",
+  "scopeLimits":{"maxFullPolygonsRetainedInCityRecord":0,"maxFullPolygonsRetainedInReview":0,"maxFullPolygonsRetainedInRepository":0,"ownerOrAddressDataRetained":false,"credentialsOrTokenValuesRetained":false,"unsafeFieldsRequested":false,"citywideCompletenessAsserted":false},
+  "assessment":"Official national cadastral administration and Kongolo territorial-map context was found, but no Kongolo-specific anonymous parcel viewer/API or safe ID-plus-geometry response was exposed. No parcel sample is retained.",
+  "registryAssessment":"registryFound remains null: national agency and territorial-map evidence is not local Kongolo registry evidence.",
+  "safeFieldAllowlist":["safe parcel identifier only if publicly exposed and non-personal","geometry","CRS","non-personal layer/schema metadata"],
+  "queries":[
+    {"language":"English","query":"Kongolo Democratic Republic of the Congo official cadastral map parcel registry","outcome":"Found official national ministry, public cadastral-register service description, Kongolo territorial map and BIC context; no open Kongolo parcel-vector endpoint.","actualResultUrls":["https://affairesfoncieres.gouv.cd/","https://servicepublic.gouv.cd/service/4671","https://www.caid.cd/cartes/downloads/96.pdf","https://bic.cd/"]},
+    {"language":"French","query":"Kongolo RDC cadastre parcelles carte foncière service officiel","outcome":"Trouvé le contexte cadastral national et la carte territoriale de Kongolo; aucun service anonyme local ne fournissait une identité parcellaire, un schéma, un SCR ou une géométrie.","actualResultUrls":["https://affairesfoncieres.gouv.cd/","https://servicepublic.gouv.cd/service/4671","https://www.caid.cd/cartes/downloads/96.pdf","https://bic.cd/cadastral-map"]}
+  ],
+  "attempts":[
+    {"url":"https://affairesfoncieres.gouv.cd/","method":"GET; current HTML/JavaScript review","httpStatus":200,"result":"Official Ministry site loaded; national cadastral remit and pilot digitization context found, with no public Kongolo parcel layer or anonymous geometry route."},
+    {"url":"https://servicepublic.gouv.cd/service/4671","method":"GET/search result review","httpStatus":200,"result":"Official central-government service description loaded; consultation requires a formal request to the relevant cadastral/title office. No Kongolo parcel response or local endpoint."},
+    {"url":"https://www.caid.cd/cartes/downloads/96.pdf","method":"GET/PDF map review","httpStatus":200,"result":"Official Kongolo territorial administrative map loaded; it shows administrative geography, roads and localities, not parcel polygons or parcel identifiers."},
+    {"url":"https://bic.cd/","method":"GET; module JavaScript/configuration review","httpStatus":200,"result":"BIC portal loaded. Current JavaScript identified Supabase project configuration and the cadastral_parcels table route; safe fields observed in code were parcel_number, latitude, longitude and gps_coordinates. No login, private route, owner/address field, or unsafe field was requested."},
+    {"url":"https://vqrcggcqgnkanngqhcga.supabase.co/rest/v1/cadastral_parcels","method":"GET; anonymous bounded REST query; select=parcel_number,latitude,longitude,gps_coordinates","httpStatus":200,"result":"Exact WUP-point equality query returned []; 0.1-degree bounding box around [-5.37850227970108,26.9999262774553] returned []; approximately 1-degree bounding box returned []. No geometry or native ID was retained. Empty bounded responses are not citywide absence evidence."}
+  ],
+  "geometryEvidence":null,
+  "geometryDecision":{"verified":false,"sourceId":null,"nativeIdField":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"The exact WUP point [-5.37850227970108,26.9999262774553] was queried against the public BIC table and returned zero rows. This is only a bounded endpoint result, not evidence of citywide absence; the point was not shifted.","crs":null},
+  "remainingUncertainty":"Any authenticated or non-indexed ministry/BIC service, current local parcel schema, CRS, native identity, exact-point parcel, and citywide open coverage remain unverified. No login, CAPTCHA, credentials, private tokens, owner/address/contact/titleholder/tax fields, or TLS bypass was used.",
+  "runtimeAssessment":"held; serial reviewer must independently qualify any adapter"
+}

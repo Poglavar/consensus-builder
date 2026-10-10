@@ -1,0 +1,17 @@
+{
+  "taskId": "city:12131",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-12131-chiayi.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/chiayi-service-review.json",
+    "tmp/valhalla-parcel-research/chiayi/chiayi.html",
+    "tmp/valhalla-parcel-research/chiayi/capabilities.xml",
+    "tmp/valhalla-parcel-research/chiayi/cadas_schema.xml",
+    "tmp/valhalla-parcel-research/chiayi/point.gml"
+  ],
+  "checkedAt": "2026-10-09T12:59:24.945912Z",
+  "reason": "Chiayi registry custody is supported by the first-party land-information page and NLSC cadastral schema, but the original exact-point GetFeature response is Permission Denied. No parcel polygon/native ID or independent adapter qualification exists; absence is not inferred.",
+  "runtimeAdmission": "held; no registry/catalog/city-config or coverage change"
+}

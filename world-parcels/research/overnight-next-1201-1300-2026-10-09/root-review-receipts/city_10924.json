@@ -1,0 +1,14 @@
+{
+  "taskId": "city:10924",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-10924-zhanjiang.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/zhanjiang-service-review.json",
+    "tmp/valhalla-parcel-research/10924/dchy-config.js",
+    "tmp/valhalla-parcel-research/10924/mapTable-7581cadc.js",
+    "tmp/valhalla-parcel-research/10924/dchy.headers"
+  ],
+  "checkedAt": "2026-10-09T12:35:25Z",
+  "reason": "Immutable queue identity and English/Chinese searches match. Original viewer configuration points to an administrative-boundary layer; bounded service/point requests timed out. No public parcel polygon or live adapter qualification; timeout is not citywide absence."
+}

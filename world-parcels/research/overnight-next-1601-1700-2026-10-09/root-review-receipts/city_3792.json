@@ -1,0 +1,13 @@
+{
+  "taskId": "city:3792",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-3792-longueuil.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/longueuil-service-review.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/longueuil-parcel-sample.geojson"
+  ],
+  "checkedAt": "2026-10-10T11:25:34Z",
+  "reason": "The original municipal response contains one native NUMERO lot and a full valid polygon at the immutable queue point; exceededTransferLimit prevents completeness inference. Fresh native-ID reads, forced paging, 13 bounded cells, metric overlap protocol, source binding and headed Details verification are not independently evidenced, so admission remains held."
+}

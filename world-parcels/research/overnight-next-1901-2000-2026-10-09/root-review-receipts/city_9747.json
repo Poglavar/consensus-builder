@@ -1,0 +1,19 @@
+{
+  "taskId": "city:9747",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-9747-wardha.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/wardha-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T19:47:49.591806Z",
+  "reason": "Wardha district government directory confirms the Superintendent of Land Records. The official map route timed out in the packet; no parcel response, native ID, or qualification exists. targetPointHit=false records that no test completed, not a negative hit.",
+  "firstPartyCheck": {
+    "url": "https://wardha.gov.in/en/telephone-directory/",
+    "httpStatus": 200,
+    "title": "Telephone Directory | जिल्हा वर्धा, महाराष्ट्र शासन | India",
+    "observedInstitutionalTerms": "Supt. of Land Records, Wardha"
+  },
+  "admissionGates": "No parcel geometry response or native identity; fresh ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed details check unproven."
+}

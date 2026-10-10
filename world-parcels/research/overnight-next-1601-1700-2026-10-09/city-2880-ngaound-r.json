@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 2880,
+  "queueRank": 1658,
+  "name": "Ngaoundéré",
+  "country": "Cameroon",
+  "countryCode": "CM",
+  "iso3": "CMR",
+  "point": [7.31311180873989, 13.5812812640781],
+  "population2025": 345148,
+  "population2025k": 345.148,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ngaoundéré Cameroon official cadastre parcel registry GIS map",
+        "result": "Found the ACAGER municipal cartographic gateway and MINDCAF national cadastral authority pages. ACAGER describes thematic municipal layers (boundaries, infrastructure, buildings and risk zones), not a parcel layer. MINDCAF documents departmental cadastral responsibilities, but no anonymous parcel API was exposed.",
+        "actualResultUrls": [
+          "https://acager.org/portalgis/en/",
+          "https://acager.org/en/cartographie-libre-pour-aider-la-ville-de-ngaoundere-a-sadapter-aux-changements-climatiques/",
+          "https://www.mindcaf.gov.cm/fr/organisation/"
+        ]
+      },
+      {
+        "language": "French",
+        "query": "Ngaoundéré Cameroun cadastre parcellaire registre foncier carte SIG",
+        "result": "Found the ACAGER Ngaoundéré cartographic gateway, MINDCAF cadastral-organization/docs pages, and official procurement notices describing geodetic densification around Ngaoundéré. These establish institutional and municipal mapping context, but no safe anonymous parcel ID plus geometry service was verified.",
+        "actualResultUrls": [
+          "https://acager.org/portalgis/fr/",
+          "https://mindcaf.gov.cm/fr/docs/",
+          "https://www.armp.cm/details?id_publication=6285&type_publication=AMI"
+        ]
+      }
+    ],
+    "sources": [
+      "https://acager.org/portalgis/fr/",
+      "https://acager.org/portalgis/en/",
+      "https://www.mindcaf.gov.cm/fr/organisation/",
+      "https://mindcaf.gov.cm/fr/docs/",
+      "https://www.armp.cm/details?id_publication=6285&type_publication=AMI"
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "MINDCAF is the official Ministry of State Property, Surveys and Land Tenure. Its organization page assigns cadastral plans, cadastral registers, cadastral extracts and land-map maintenance to regional/departmental cadastral services. Ngaoundéré-specific official procurement evidence places geodetic densification in Ngaoundéré, while ACAGER identifies the Ngaoundéré municipal cartographic gateway and the Urban Community as a project partner.",
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Ngaoundéré municipal thematic mapping through ACAGER, with cadastral custody held by MINDCAF departmental/regional services.",
+    "verifiedOpenScope": "Institutional cadastral responsibilities and municipal thematic map publication only; no open parcel geometry coverage verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://acager.org/portalgis/fr/",
+      "method": "GET",
+      "status": "HTTP 403",
+      "summary": "Anonymous TLS-verified request denied; no viewer JavaScript/configuration or layer endpoint could be inspected. Search-indexed page content lists thematic municipal layers, with no parcel layer named."
+    },
+    {
+      "url": "https://acager.org/portalgis/en/",
+      "method": "GET",
+      "status": "HTTP 403",
+      "summary": "Anonymous TLS-verified English gateway request denied. No parcel response or schema obtained."
+    },
+    {
+      "url": "https://acager.org/geoserver/",
+      "method": "GET",
+      "status": "HTTP 403",
+      "summary": "Bounded, source-specific public GeoServer route check denied; not treated as evidence of absence."
+    },
+    {
+      "url": "https://acager.org/geoserver/wfs?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "status": "HTTP 403",
+      "summary": "Bounded anonymous WFS capabilities check denied; no service metadata, layer schema, CRS, identity or geometry obtained."
+    },
+    {
+      "url": "https://www.mindcaf.gov.cm/fr/organisation/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official organization page fetched. It describes regional and departmental cadastral duties, including cadastral plans/registers/maps and cadastral extracts, but exposes no anonymous parcel feature service."
+    },
+    {
+      "url": "https://mindcaf.gov.cm/fr/docs/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official public documents page fetched. It provides institutional/procedural material; no parcel API or safe parcel geometry response was exposed."
+    },
+    {
+      "url": "https://www.armp.cm/details?id_publication=6285&type_publication=AMI",
+      "method": "GET via first-party search result",
+      "status": "indexed official result",
+      "summary": "Official procurement notice documents geodetic-network densification including Ngaoundéré. This is cadastral/geodetic project evidence, not an open parcel endpoint."
+    }
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel geometry response obtained",
+  "geometryQuality": "not evaluated; no geometry retained",
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "scopeLimits": [
+    "The exact WUP point [7.31311180873989, 13.5812812640781] was preserved; no coordinate shift or exact-point hit/miss inference was made.",
+    "ACAGER's published thematic map categories do not establish cadastral parcel coverage or a parcel API.",
+    "MINDCAF institutional custody and geodetic procurement evidence do not establish anonymous public parcel geometry access.",
+    "HTTP 403 responses, unavailable viewer/configuration, timeout, login wall, map extent miss or zero exact-point hit would not be evidence of citywide cadastral absence.",
+    "No owner, address, contact, titleholder, personal, tax/account or other unsafe fields were requested or retained.",
+    "No GeoJSON sample is retained because no safe native parcel identity plus full polygon was obtained.",
+    "Packet completion is research status only and does not qualify or admit a runtime adapter."
+  ],
+  "remainingUncertainty": "The current ACAGER viewer backend, any access-controlled cadastral map service, parcel schema, CRS, stable native identity and citywide coverage remain unresolved. A formal or authenticated MINDCAF workflow may exist. No claim is made about parcel absence, ownership, title records or completeness of any Cameroonian cadastral dataset."
+}

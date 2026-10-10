@@ -1,0 +1,13 @@
+{
+  "taskId": "legacy:7651",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-2026-10-09/city-7651-cox-s-bazar.json",
+    "world-parcels/research/overnight-next-2026-10-09/cox-s-bazar-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T10:35:29.767823Z",
+  "reason": "Cox's Bazar: identity matches the immutable roster and English/Bangla searches are recorded. The official DLRS map uses administrative and plot selectors and exposes owner fields; the packet records no safe geometry request, full polygon, native ID, or independent adapter qualification. Viewer availability does not establish absence."
+}

@@ -1,0 +1,16 @@
+{
+  "taskId": "packet:5555",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-5555-cheboksary.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/cheboksary-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/root-review-receipts/city_5555.json"
+  ],
+  "checkedAt": "2026-10-09T12:05:31Z",
+  "reason": "Cheboksary code 5555, rank 1220, Russian Federation/RU, immutable point and 456304 persons match the WUP queue. English and Russian searches are recorded in both paired files. Official Rosreestr map requests timed out; an alternate route was listed but not completed, and no city-specific first-party registry response was obtained. Registry custody remains null, not false. No native ID or full polygon is evidenced; zero polygons are retained.",
+  "qualificationCheck": "No independent evidence of fresh native-ID full-polygon reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, full-parcel source binding, or headed Details-panel verification. Keep held, unintegrated and unenabled. A timeout or login wall is not evidence of citywide absence."
+}

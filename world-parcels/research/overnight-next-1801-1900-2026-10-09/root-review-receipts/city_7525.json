@@ -1,0 +1,23 @@
+{
+  "taskId": "city:7525",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-7525-sandwip.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/sandwip-service-review.json",
+    "tmp/valhalla-parcel-research/7525/dlrs-index.js",
+    "tmp/valhalla-parcel-research/7525/resp-494ed988.txt"
+  ],
+  "checkedAt": "2026-10-10T17:06:45.971933Z",
+  "reason": "Official DLRS frontend cache exposes location and map-catalog routes, while the paired evidence reports Sandwip map metadata only. No native parcel ID and full polygon response, CRS, or qualified adapter is evidenced. Catalog search misses do not establish parcel absence.",
+  "identity": {
+    "cityCode": 7525,
+    "queueRank": 1860,
+    "populationPersons": 309439,
+    "verifiedAgainst": "ranked-population.json and pending-queue.json"
+  },
+  "retainedFullPolygons": 0,
+  "admissionGates": "Held; independent live adapter qualification and headed Details-panel verification are not evidenced."
+}

@@ -1,0 +1,22 @@
+{
+  "taskId": "city:7886",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-7886-silvassa.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/silvassa-service-review.json",
+    "tmp/valhalla-parcel-research/7886/dnh.headers",
+    "tmp/valhalla-parcel-research/7886/dnh.html",
+    "tmp/valhalla-parcel-research/7886/avanika-contact.html",
+    "tmp/valhalla-parcel-research/7886/revenue.headers",
+    "tmp/valhalla-parcel-research/7886/revenue.html"
+  ],
+  "checkedAt": "2026-10-10T09:53:00.985829Z",
+  "reviewNote": "Official Silvassa Mamlatdar contact and UT map-service link support custody. Original DNH map response was HTTP 500; a cached revenue header was HTTP 404 despite the paired review's HTTP 200 claim for that page. No native parcel ID or polygon, CRS, or adapter qualification was evidenced. English and Hindi searches are recorded; no absence inferred from access failures.",
+  "firstPartyUrlsChecked": [
+    "https://dnh.nlrmp.in/avanika/ContactUs.aspx",
+    "https://ddd.gov.in/hi/service/%E0%A4%B0%E0%A4%BE%E0%A4%9C%E0%A4%B8%E0%A5%8D%E0%A4%B5-%E0%A4%B8%E0%A5%87%E0%A4%B5%E0%A4%BE/"
+  ],
+  "admissionGatesVerified": false
+}

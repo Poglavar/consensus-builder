@@ -1,0 +1,25 @@
+{
+  "taskId": "city:11529",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-11529-katihar.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/katihar-service-review.json",
+    "tmp/valhalla-parcel-research/katihar/count.json",
+    "tmp/valhalla-parcel-research/katihar/levels-3.json",
+    "tmp/valhalla-parcel-research/katihar/extent-katihar.json",
+    "tmp/valhalla-parcel-research/katihar/xy-559000.json",
+    "tmp/valhalla-parcel-research/katihar/xy-556953.86.json",
+    "tmp/valhalla-parcel-research/katihar/featureinfo.json",
+    "tmp/valhalla-parcel-research/katihar/featureinfo.headers"
+  ],
+  "checkedAt": "2026-10-09T13:28:15Z",
+  "identityCheck": "Immutable WUP code 11529, rank 1300, India/IN, [25.5448308206641,87.5669238686115], and 430470 persons agree across ranked roster, pending queue, integration ledger, and packet.",
+  "searchReview": "English and Hindi queries with result URLs are recorded in both paired files; official English/Hindi district land-record pages and Bihar revenue/BhuNaksha portal were independently checked.",
+  "firstPartyReview": "Cached Bihar BhuNaksha hierarchy returned 7 levels and Katihar mauza 0062; bounded plot lookup returned safe id loP830khRR6MfrOSJRDTEg with no polygon. Exact WUP-point lookup body is empty. The retained GetFeatureInfo artifact is image/png, and retained Katihar extent response has null bounds; the packet's numeric sheet extent is not reproducible from these original caches. None of this proves citywide parcel absence.",
+  "polygonCheck": "Zero full Polygon/MultiPolygon geometries in paired files and no sample file; safe native ID observed only as point-selection metadata.",
+  "qualificationGates": "No full native-ID polygon read, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. No runtime/catalog/report admission change."
+}

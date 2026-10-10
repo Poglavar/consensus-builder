@@ -1,0 +1,24 @@
+{
+  "cityRecord": "city-2239-rouen.json",
+  "cityCode": 2239,
+  "city": "Rouen",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "routeAttempts": [
+    {"route": "Ville de Rouen cadastre page", "request": "GET https://www.rouen.fr/fr/cadastre", "outcome": "200/search result; confirms municipal consultation and official online cadastre link, parcel reference/situation/area, and urbanism contact."},
+    {"route": "IGN API Carto commune", "request": "GET https://apicarto.ign.fr/api/cadastre/commune?code_insee=76540", "outcome": "200; one Rouen commune MultiPolygon returned with code_insee 76540."},
+    {"route": "IGN API Carto parcel by municipality", "request": "GET https://apicarto.ign.fr/api/cadastre/parcelle?code_insee=76540", "outcome": "200; GeoJSON response returned 1000 features, indicating a response cap; native fields observed and not all retained."},
+    {"route": "IGN API Carto parcel filtered", "request": "GET https://apicarto.ign.fr/api/cadastre/parcelle?code_insee=76540&section=IK&numero=0110", "outcome": "200; one MultiPolygon returned, native idu 76540000IK0110."},
+    {"route": "IGN API Carto exact-point probe", "request": "GET parcel endpoint with encoded POINT(1.08426580718412 49.4334014958952)", "outcome": "200 with zero features; not treated as citywide absence or parcel absence because query semantics/coordinate intersection were not validated."},
+    {"route": "IGN API Carto broad bounded polygon probe", "request": "GET parcel endpoint with encoded WGS84 polygon around Rouen", "outcome": "200 with 1000 features; response cap prevents using it as complete extent evidence."},
+    {"route": "cadastre.gouv.fr standard WMS guidance", "request": "GET https://cadastre.gouv.fr/scpc/afficherServiceWMS.do", "outcome": "200/search result; official guidance documents commune-scoped INSPIRE WMS and GetCapabilities/GetMap, but no WMS map response retained."}
+  ],
+  "schemaAndCrs": {"format": "GeoJSON", "crs": "WGS84, longitude/latitude per API Carto documentation", "geometryObserved": "MultiPolygon", "nativeIdentity": "idu", "nativeFieldsObserved": ["gid", "numero", "feuille", "section", "code_dep", "nom_com", "code_com", "com_abs", "code_arr", "idu", "contenance", "code_insee"]},
+  "safeFieldAllowlist": ["id", "geometry"],
+  "samplePolicy": "One sample GeoJSON feature retained, exactly one canonical native identity in properties; raw source attributes remain only in ignored scratch evidence.",
+  "scopeLimits": ["National cadastral data/API, with Rouen municipality page as local custodian guidance; not a separate Rouen-owned parcel database.", "Municipal response and broad polygon response were capped at 1000 features.", "No owner, address, titleholder, contact, tax/account, or property-matrix fields requested or retained.", "No login, credentials, private token, CAPTCHA/Cloudflare bypass, or TLS exception used."],
+  "uncertainty": ["The exact WUP point was preserved and not shifted; zero point-result is non-diagnostic.", "API adapter qualification and runtime admission remain held for serial review.", "A single safe parcel sample demonstrates usable public geometry/identity, not complete city coverage or production suitability."],
+  "runtimeReadiness": "held",
+  "completionSummary": {"cityRecordWritten": true, "serviceReviewWritten": true, "sampleGeoJSONWritten": true, "fullParcelPolygonCount": 1, "packetComplete": true, "sourceIntegrationAdmitted": false}
+}

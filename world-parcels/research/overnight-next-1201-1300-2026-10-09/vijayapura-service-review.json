@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9283-vijayapura.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Document Vijayapura's official cadastral/land-record entry point and bounded anonymous service attempts while separating registry evidence from geometry and runtime qualification.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Vijayapura district administration page establishes a first-party link to Karnataka Bhoomi land records. The linked Bhoomi and candidate revenue-map routes did not return within bounded anonymous HTTPS requests, so no parcel schema, safe native identity, CRS, or polygon geometry was verified. No GeoJSON sample is retained and runtime readiness remains held.",
+  "registryAssessment": "registryFound=true is supported by the official Vijayapura district land-records page and its explicit link to the Karnataka Government Bhoomi land-records system. This does not establish citywide coverage, parcel geometry availability, or title/ownership conclusions.",
+  "coverageAssessment": {
+    "claimedScope": "Official Vijayapura district land-records page plus Karnataka Bhoomi and revenue-map public routes.",
+    "verifiedOpenScope": "Official service identity and district linkage; no live parcel response was obtained.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["cityCode", "queueRank", "WUP point", "official service URLs", "HTTP status/content type", "public service metadata", "native CRS/ID only if returned safely", "geometry only if independently verified"],
+  "searchQueries": [
+    {"language": "English", "query": "Vijayapura Karnataka official cadastral map parcel land records GIS Bhoomi Karnataka", "actualResultUrls": ["https://vijayapura.nic.in/en/service/land-records/", "https://landrecords.karnataka.gov.in/"]},
+    {"language": "Kannada", "query": "ವಿಜಯಪುರ ಕರ್ನಾಟಕ ಅಧಿಕೃತ ಭೂ ನಕ್ಷೆ ಜಮೀನು ಪಾರ್ಸೆಲ್ ನಕ್ಷೆ", "actualResultUrls": ["https://vijayapura.nic.in/en/service/land-records/", "https://landrecords.karnataka.gov.in/", "https://rdservices.karnataka.gov.in/BhoomiMaps"]}
+  ],
+  "attempts": [
+    "Loaded the official Vijayapura district English land-records page over TLS; it describes Bhoomi as Karnataka's land-records management system and links landrecords.karnataka.gov.in.",
+    "Performed separate English and Kannada first-party discovery queries and recorded the actual result URLs.",
+    "Attempted an anonymous GET/HEAD of https://landrecords.karnataka.gov.in/; the route timed out after 20 seconds.",
+    "Attempted the official-looking revenue-map route https://landrecords.karnataka.gov.in/revenuemaps/; no response was obtained in the bounded request window.",
+    "Attempted an anonymous GET of https://rdservices.karnataka.gov.in/BhoomiMaps; no response was obtained in the bounded request window.",
+    "Did not submit the WUP latitude/longitude to any local endpoint, did not shift the point, did not request owner/address/title/account/tax fields, did not log in, and did not bypass CAPTCHA/Cloudflare or TLS verification.",
+    "No sample GeoJSON was created because no full parcel polygon response or safe native parcel identity was verified."
+  ],
+  "geometryEvidence": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "nativeCrs": null,
+    "exactWupPointTest": "Not run; exact WUP point [16.8304984756639,75.7162603665653] preserved unchanged.",
+    "polygonResponse": "None; all parcel-service routes either were not queried for unsafe fields or timed out before a response."
+  },
+  "nextStep": "Independent serial review of the live Karnataka service and any public geometry-export capability; keep adapter/runtime held until a real safe native polygon response is independently qualified.",
+  "remainingUncertainty": "The service's current JavaScript/configuration, native schema/CRS, parcel identity field, anonymous geometry capability, and Vijayapura citywide coverage remain unverified because the bounded routes timed out.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

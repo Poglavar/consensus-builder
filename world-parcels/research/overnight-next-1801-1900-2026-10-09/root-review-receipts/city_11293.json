@@ -1,0 +1,16 @@
+{
+  "taskId": "city:11293",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-11293-vizianagaram.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/vizianagaram-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/vizianagaram/telugu.html",
+    "tmp/valhalla-parcel-research/vizianagaram/body.html",
+    "tmp/valhalla-parcel-research/vizianagaram/telugu-headers.txt"
+  ],
+  "checkedAt": "2026-10-10T16:38:23Z",
+  "reason": "Official district pages support registry custody, but the map portals timed out or returned no usable response. No native ID plus full polygon, adapter qualification, or headed Details check is evidenced."
+}

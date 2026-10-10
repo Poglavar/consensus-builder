@@ -1,0 +1,22 @@
+{
+  "taskId": "city:11231",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-11231-benipur.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/benipur-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T17:38:33Z",
+  "reason": "The immutable WUP identity and English/Hindi search records agree with the queue. Packet reports a first-party BhuNaksha Benipur hierarchy and EPSG:32645 map extent, but retains no original feature response or safe native-ID polygon. Three 204 coordinate probes and WMS 500 are not citywide absence.",
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

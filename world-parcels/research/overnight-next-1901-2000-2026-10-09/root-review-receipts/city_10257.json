@@ -1,0 +1,12 @@
+{
+  "taskId": "city:10257",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-10257-karur.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/karur-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T19:04:54.205227Z",
+  "reason": "Karur district land-record custody is supported; attempted portals timed out and no parcel geometry response or native ID was obtained."
+}

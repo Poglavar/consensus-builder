@@ -1,0 +1,16 @@
+{
+  "taskId": "city:9175",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-9175-badaun.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/badaun-service-review.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-09T17:54:48Z",
+  "reason": "Immutable WUP rank 1486 identity matches both roster artifacts; English and Hindi searches and first-party custody evidence reviewed. Public BhuNaksha login/CAPTCHA and worker-reported upstream 403 leave no verified parcel response, native ID, sample polygon, or independent adapter qualification. A metadata count of zero does not establish absence.",
+  "firstPartyUrlsChecked": [
+    "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=149",
+    "https://upbhunaksha.gov.in/login/"
+  ]
+}

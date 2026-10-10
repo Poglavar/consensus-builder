@@ -1,0 +1,130 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; local registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09T00:00:00Z",
+  "cityCode": 10743,
+  "queueRank": 1279,
+  "cityId": "wup:10743",
+  "name": "Cuddalore",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "centerLatLon": [11.754857981796, 79.7597932867723],
+  "point": [11.754857981796, 79.7597932867723],
+  "population2025": 436495,
+  "population2025k": 436.495,
+  "populationUnit": "persons",
+  "year": 2025,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Cuddalore Tamil Nadu official cadastral parcel map GIS land records survey map",
+        "result": "Found official Cuddalore District and Tamil Nadu sources documenting Survey and Land Records custody and public e-Services for Patta, FMB, Chitta, TSLR and A-Register extracts. No anonymous parcel-vector response was verified.",
+        "actualResultUrls": [
+          "https://cuddalore.nic.in/service/e-services-anytime-anywhere-land/",
+          "https://cuddalore.nic.in/survey/",
+          "https://tn.nic.in/news/additional-land-records-services-launch-by-honourable-minister-for-revenue-and-disaster-management-tamil-nadu/",
+          "https://eservices.tn.gov.in/eservicesnew/index.html",
+          "https://www.tngis.tn.gov.in/apps.html"
+        ]
+      },
+      {
+        "language": "Tamil",
+        "query": "கடலூர் அதிகாரப்பூர்வ நில அளவை வரைபடம் பட்டா நிலப்பதிவு GIS",
+        "result": "Results were the official Cuddalore District Tamil-language switch and Tamil Nadu land-record services context; the public viewer route did not return an inspectable anonymous parcel geometry payload.",
+        "actualResultUrls": [
+          "https://cuddalore.nic.in/",
+          "https://eservices.tn.gov.in/eservicesnew/index.html",
+          "https://tamilnilam.tn.gov.in/citizen"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://cuddalore.nic.in/survey/",
+      "observation": "Official Cuddalore District Survey page identifies the Assistant Director of Survey and Land Records as district officer; states that A-Register, Chitta, FMB, Village Natham and Town records are computerised and available through Tamil Nilam. It also identifies district survey custodians and the District Survey Office."
+    },
+    {
+      "url": "https://cuddalore.nic.in/service/e-services-anytime-anywhere-land/",
+      "observation": "Official Cuddalore District service page links Tamil Nadu e-Services and lists View Patta/FMB, Chitta, TSLR, A-Register, FMB Sketch and verification services."
+    },
+    {
+      "url": "https://tn.nic.in/news/additional-land-records-services-launch-by-honourable-minister-for-revenue-and-disaster-management-tamil-nadu/",
+      "observation": "Official NIC Tamil Nadu announcement states that Integrated Land Record combines textual Record of Rights, FMB/maps and Chitta, and links the public e-services and TamilNilam citizen routes."
+    },
+    {
+      "url": "https://cdnbbsr.s3waas.gov.in/s3b5f1e8fb36cd7fbeb7988e8639ac79e9/uploads/2025/01/2025010931.pdf",
+      "observation": "Official NIC Tamil Nadu newsletter describes TamilNILAM/CollabLand digitisation and public access to cadastral maps through Tamil Nadu e-Services; it is statewide system documentation, not a Cuddalore parcel payload."
+    },
+    {
+      "url": "https://www.tngis.tn.gov.in/apps.html",
+      "observation": "Official TNGIS app index search result identifies Tamil Nadu GIS and a Cuddalore entry; the direct page timed out during this bounded review."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://eservices.tn.gov.in/eservicesnew/index.html",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": "timeout",
+      "outcome": "Direct curl request timed out after 25 seconds; no HTML, JavaScript, configuration, schema, or geometry response was obtained."
+    },
+    {
+      "url": "https://www.tngis.tn.gov.in/apps.html",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": "timeout",
+      "outcome": "Direct curl request timed out; no application configuration or service URL was obtained."
+    },
+    {
+      "url": "https://tngis.tn.gov.in/apps/gi_viewer/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": "timeout",
+      "outcome": "Bounded public fetch also timed out; viewer JavaScript/configuration could not be inspected."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/5849",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": "timeout",
+      "outcome": "Official DILRMP Cuddalore map-digitisation route was identified in discovery but timed out during bounded access; no status payload was retained."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Official Cuddalore District Survey and e-Services pages evidence the local district Survey and Land Records office, its custodial role, and public land-record/cadastral-map procedures. This is local registry/cadastre context only and does not establish an open vector parcel source or runtime admission.",
+  "registryEvidenceUrls": [
+    "https://cuddalore.nic.in/survey/",
+    "https://cuddalore.nic.in/service/e-services-anytime-anywhere-land/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "url": "https://eservices.tn.gov.in/eservicesnew/index.html",
+    "kind": "Tamil Nadu Department of Survey and Settlement public land-record e-Services / TamilNILAM and CollabLand-linked cadastral-map service",
+    "publisher": "Government of Tamil Nadu, Department of Survey and Settlement / NIC Tamil Nadu",
+    "scope": "Official public interface advertises Cuddalore-capable land-record and cadastral-map access by district and survey hierarchy; anonymous vector endpoint, schema, CRS and safe native parcel ID were not verified.",
+    "safeSampleFile": null,
+    "sampleAttributes": "none retained",
+    "nativeFields": []
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not executed against a returned cadastral feature layer because the official viewer/e-services routes timed out. Exact WUP point [11.754857981796, 79.7597932867723] was preserved and no absence inference is made.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Cuddalore District Survey and Tamil Nadu e-Services/TamilNILAM documentation covers district and statewide land records, FMB/TSLR records and cadastral maps.",
+    "verifiedOpenScope": "Local district registry custody and public procedure documented; no anonymous safe full-polygon response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["safe public survey/cadastral identifier only if exposed by a future anonymous endpoint", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "runtimeReadiness": "held_quality_review",
+  "resultCategory": "official_registry_context_no_verified_public_geometry",
+  "status": "complete",
+  "remainingUncertainty": "The official e-services and TNGIS interfaces may expose map or sketch content after district/town/ward/survey selections, but current direct access timed out and no anonymous API contract was verifiable. No owner, address, contact, titleholder, tax, account or other unsafe fields were requested or retained."
+}

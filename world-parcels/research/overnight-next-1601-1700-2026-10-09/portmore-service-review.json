@@ -1,0 +1,38 @@
+{
+  "cityRecord": "city-643-portmore.json",
+  "cityCode": 643,
+  "queueRank": 1645,
+  "city": "Portmore",
+  "country": "Jamaica",
+  "countryCode": "JM",
+  "attempt": 2,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "The official NLA eLandJamaica viewer currently configures a public ArcGIS parcel layer. A bounded anonymous query near the exact WUP point returned three parcel polygons with stable native OBJECTID_1 identities; the packet is complete as research evidence, while runtime readiness remains held for serial review.",
+  "queryOutcomes": "Separate English and native/local-language discovery queries are recorded in city-643-portmore.json. First-party English discovery found the current viewer, parcel service, and Portmore Master Map catalogue. The French variant found no separate local-language service; Jamaica's official sources are English-language.",
+  "requestOutcomes": "Viewer HTML, current JavaScript configuration, layer metadata, and a bounded ArcGIS query were fetched anonymously with TLS verification enabled. The query used EPSG:3448 coordinates derived from the exact supplied WUP point and requested only OBJECTID_1 plus geometry, with ArcGIS returning geometry in EPSG:4326. No login, credentials, private token, CAPTCHA/Cloudflare bypass, TLS disablement, formal purchase, or unsafe property lookup was used.",
+  "scopeLimits": [
+    "The exact WUP point was preserved and not shifted; the returned parcel polygons are nearby within a bounded envelope, not an assertion that the point itself lies in a parcel.",
+    "The bounded response was capped at three features and reported exceededTransferLimit; no attempt was made to download the larger response or citywide dataset.",
+    "A successful local sample does not establish complete Portmore coverage or uniform data currency; NLA's layer description explicitly warns that update currency varies.",
+    "The NLA source is a national agency custodian, with Portmore-specific master-map catalogue evidence; this does not imply a separate Portmore municipal registry.",
+    "No owner, address, volume/folio, valuation, title, tax, contact, or other unsafe fields were requested or retained.",
+    "This packet is research evidence only and must not be treated as source integration or adapter admission."
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeIdentityPolicy": "Retained GeoJSON uses exactly one canonical native identity, id, sourced from the service's OBJECTID_1 OID field. No synthetic row number or composite identity was used.",
+  "nativeFieldMapping": {
+    "id": "OBJECTID_1 (ArcGIS esriFieldTypeOID)",
+    "geometry": "ArcGIS polygon geometry, returned as EPSG:4326 rings"
+  },
+  "sourceFieldNamesObservedNotRetained": ["OBJECTID", "LV_NUMBER", "SHAPE_STAR", "SHAPE_STLE", "VOL_FOL", "SIZE_SQMT", "STREET_ADD", "SCHEME_ADD", "FULLADDRES", "LOCATION", "DSS_ID", "PARISH_1", "PARISH"],
+  "compositeKeyProvenance": null,
+  "crs": "Native/source EPSG:3448 (JAD2001 / Jamaica Metric Grid; service also identifies legacy wkid 102095); retained sample coordinates EPSG:4326.",
+  "geometryQuality": "Three full polygon features retained unchanged from the bounded ArcGIS response after server-side outSR=4326 conversion; ring closure observed. No topology or citywide completeness validation performed.",
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "uncertainty": "The public service is reachable and returned safe parcel geometry, but the city boundary, full Portmore coverage, temporal currency, and adapter-safe operational limits remain unresolved. The service's exceededTransferLimit confirms that the bounded area contains more than the retained sample.",
+  "retainedSample": "portmore-parcels-sample.geojson"
+}

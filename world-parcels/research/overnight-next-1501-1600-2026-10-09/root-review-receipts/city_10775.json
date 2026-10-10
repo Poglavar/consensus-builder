@@ -1,0 +1,14 @@
+{
+  "taskId": "city:10775",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-10775-korba.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/korba-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T10:44:01+00:00",
+  "reason": "Korba District Administration confirms Land Records Section custody. First-party Bhu-Naksha cache contains administrative levels, a village extent, and one safe plot ID, but no complete parcel polygon or verified CRS.",
+  "admissionGates": "No independently evidenced fresh native-ID polygon reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, or headed Details-panel verification. Runtime and catalog remain unmodified.",
+  "sourceChecks": "Root fetched the cited first-party public page with HTTP 200 and inspected it. For Korba, root also inspected saved original Bhu-Naksha Levels, MapInfo extent, plot-at-center, ScalarDatahandler, and WMS response bytes; the WMS response is PNG.",
+  "searchEvidenceLimit": "The paired packet and review record separate bilingual searches and results; no separate raw search-result cache is present in the reviewed repository evidence."
+}

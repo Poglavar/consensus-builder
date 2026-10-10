@@ -1,0 +1,35 @@
+{
+  "cityRecord": "city-3806-menongue.json",
+  "cityCode": 3806,
+  "queueRank": 1917,
+  "city": "Menongue",
+  "country": "Angola",
+  "countryCode": "AO",
+  "reviewStatus": "complete",
+  "registryFound": null,
+  "provider": "No Menongue-specific local registry or public parcel provider verified; IGCA is evidenced only as the national cadastral authority.",
+  "serviceUrl": "https://capupa-service.minfin.gov.ao/api-ip/",
+  "scope": "No city parcel scope was verified. The Inscreva Já public landing page describes nationwide property registration but did not expose anonymous parcel features.",
+  "schemaAndCrs": "Not available. Current public JavaScript/configuration identified an authenticated Ministry API, while the unauthenticated API request returned not permitted; no parcel schema, geometry type, or CRS was returned.",
+  "nativeIdentity": "Not available; no native parcel identity or composite key was exposed.",
+  "fieldMapping": {
+    "geometry": "Not available",
+    "native identity": "Not available"
+  },
+  "requestOutcome": "First-party English and Portuguese discovery succeeded for national-authority and campaign pages. The public campaign HTML and current JavaScript were retrieved; the unauthenticated API root returned application code 300 / request not permitted. No geometry was retained.",
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON retained because no safe native parcel ID and geometry response were available.",
+  "safeFieldAllowlist": ["native parcel identifier if later exposed", "geometry"],
+  "unsafeDataPolicy": "Owner, address, contact, titleholder, tax/account, legal-description, rights/title, and other personal or unsafe fields were not requested or retained.",
+  "officialCustodyEvidence": "IGCA's official page directly establishes national cadastral authority. No direct local Menongue or Cubango registry office, local cadastral service, or city parcel endpoint was evidenced.",
+  "limits": [
+    "No anonymous parcel feature response was available.",
+    "No exact-point or map-extent hit was tested against parcel data; lack of response is not evidence of citywide absence.",
+    "National agency and nationwide campaign claims do not establish Menongue city coverage.",
+    "No owner or title records were accessed.",
+    "RuntimeReadiness remains held pending independent serial review."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "Independent review must confirm whether an official anonymous Menongue/Cubango cadastral map or API exists, its access conditions, schema, CRS, native identity stability, and coverage before integration."
+}

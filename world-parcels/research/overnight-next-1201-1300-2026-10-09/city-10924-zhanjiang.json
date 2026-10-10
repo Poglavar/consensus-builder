@@ -1,0 +1,171 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; local registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09T12:35:00Z",
+  "cityCode": 10924,
+  "queueRank": 1265,
+  "cityId": "wup:10924",
+  "name": "Zhanjiang",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "centerLatLon": [21.2775461499627, 110.351604648056],
+  "point": [21.2775461499627, 110.351604648056],
+  "population2025": 440587,
+  "population2025k": 440.587,
+  "populationUnit": "persons",
+  "year": 2025,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Zhanjiang China official cadastral map parcel GIS land registry",
+        "result": "Search identified official Zhanjiang Natural Resources Bureau pages, the city's public standard-map service notice, and the official engineering-project joint surveying/results-sharing viewer. No open parcel dataset was identified in the English search results.",
+        "actualResultUrls": [
+          "https://www.zhanjiang.gov.cn/nr/",
+          "https://www.zhanjiang.gov.cn/zjsfw/bmdh/zrzyj/zwggk/gzdt/content/post_2127746.html",
+          "https://zrzyj.zhanjiang.gov.cn/dchy/"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "湛江 官方 地籍图 不动产登记 地图 GIS 宗地",
+        "result": "检索到湛江市自然资源局官方门户、湛江市标准地图服务公告、工程建设项目联合测绘监管与成果共享服务平台，以及不动产登记办事入口。官方材料证明地方自然资源/不动产登记业务和测绘成果管理背景，但未公开可匿名下载的城市宗地矢量数据。",
+        "actualResultUrls": [
+          "https://www.zhanjiang.gov.cn/nr/",
+          "https://www.zhanjiang.gov.cn/zjsfw/bmdh/zrzyj/yhyshj/bdcdjzt/bsrk/mindex.html",
+          "https://www.zhanjiang.gov.cn/nr/gkmlpt/content/2/2144/post_2144672.html",
+          "https://www.zhanjiang.gov.cn/attachment/0/256/256724/2069183.pdf"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.zhanjiang.gov.cn/nr/",
+      "operator": "Zhanjiang Municipal Natural Resources Bureau / Zhanjiang Municipal People's Government",
+      "observation": "Official bureau portal exposes natural-resources, land, planning and real-estate-registration government information and links to the Guangdong public map service.",
+      "scope": "Local natural-resources custodian context; not a verified parcel-vector endpoint."
+    },
+    {
+      "url": "https://www.zhanjiang.gov.cn/zjsfw/bmdh/zrzyj/yhyshj/bdcdjzt/bsrk/mindex.html",
+      "operator": "Zhanjiang Municipal Natural Resources Bureau",
+      "observation": "Official real-estate-registration service entry page; it provides registration-service guidance and links, but no anonymous parcel geometry response was exposed in the retrieved HTML.",
+      "scope": "Local registration procedure/custody context; no owner or title data requested."
+    },
+    {
+      "url": "https://zrzyj.zhanjiang.gov.cn/dchy/",
+      "operator": "Zhanjiang Municipal Natural Resources Bureau",
+      "observation": "Current public engineering-project joint-survey supervision and results-sharing viewer. Its published config.js names a GeoScene ArcGIS MapServer for administrative-boundary context; the viewer bundle constructs standard ArcGIS envelope query URLs and requests geometry plus all fields for its map layer.",
+      "scope": "Official public viewer configuration; the exposed service address was not reachable from this research environment and was not treated as parcel coverage."
+    },
+    {
+      "url": "https://www.zhanjiang.gov.cn/zjsfw/bmdh/zrzyj/zwggk/gzdt/content/post_2127746.html",
+      "operator": "Zhanjiang Municipal Natural Resources Bureau",
+      "observation": "Official notice for Zhanjiang standard-map services. It describes public browsing/downloading of standard maps and required map-review attribution, not a cadastral parcel feature service.",
+      "scope": "General public cartography; no parcel polygons verified."
+    },
+    {
+      "url": "https://www.zhanjiang.gov.cn/attachment/0/256/256724/2069183.pdf",
+      "operator": "Zhanjiang Municipal Natural Resources Bureau",
+      "observation": "Official joint-survey technical material references cadastral survey results, cadastral database entry and SHP/DWG deliverables, including parcel-map production requirements.",
+      "scope": "Survey-data procedure/format evidence, not an open parcel download."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.zhanjiang.gov.cn/nr/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Official Natural Resources Bureau portal returned successfully. HTML links and current bureau sections were inspected; no parcel feature endpoint was exposed on the page."
+    },
+    {
+      "url": "https://www.zhanjiang.gov.cn/zjsfw/bmdh/zrzyj/yhyshj/bdcdjzt/bsrk/mindex.html",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Official real-estate-registration entry page returned successfully; it exposed service guidance and links, not anonymous parcel geometry."
+    },
+    {
+      "url": "https://zrzyj.zhanjiang.gov.cn/dchy/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Current viewer shell returned successfully. Its config.js was fetched and the current JavaScript bundle was inspected for service/configuration routes."
+    },
+    {
+      "url": "https://zrzyj.zhanjiang.gov.cn/dchy/config.js",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Returned current viewer configuration naming http://19.145.4.15:6080/geoscene/rest/services/zhanjianggis/ggjc_xzq_xjxzq/MapServer, layerId 0 and xzqhmc field. This is administrative-boundary configuration, not proof of parcel coverage."
+    },
+    {
+      "url": "https://zrzyj.zhanjiang.gov.cn/dchy/assets/mapTable-7581cadc.js",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Returned current map chunk. It constructs ArcGIS /0/query requests with returnGeometry=true, envelope geometry, inSR/outSR and outFields=*. No credentials or tokens were used."
+    },
+    {
+      "url": "http://19.145.4.15:6080/geoscene/rest/services/zhanjianggis/ggjc_xzq_xjxzq/MapServer?f=pjson",
+      "method": "GET; anonymous; TLS verification enabled; 15-second timeout",
+      "httpStatus": null,
+      "outcome": "Timed out after 15 seconds from this environment. No service metadata, schema, CRS or geometry was received. The private-address route was not retried with credentials or bypass methods."
+    },
+    {
+      "url": "http://19.145.4.15:6080/geoscene/rest/services/zhanjianggis/ggjc_xzq_xjxzq/MapServer/0/query",
+      "method": "GET; anonymous; exact WUP point preserved; outFields=OBJECTID; returnGeometry=true; outSR=4326; 15-second timeout",
+      "httpStatus": null,
+      "outcome": "Timed out after 15 seconds. No exact-point response was received; this is not evidence of citywide absence and no coordinate shift was made."
+    },
+    {
+      "url": "https://nr.gd.gov.cn/map/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": null,
+      "outcome": "Connection returned an empty reply in the bounded request. No challenge was bypassed and no geometry was retained."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Official Zhanjiang Municipal Natural Resources Bureau and real-estate-registration pages establish a local natural-resources/registration custodian and current public survey-results viewer. This proves local registry/service context, not open cadastral polygon availability or citywide coverage.",
+  "registryEvidenceUrls": [
+    "https://www.zhanjiang.gov.cn/nr/",
+    "https://www.zhanjiang.gov.cn/zjsfw/bmdh/zrzyj/yhyshj/bdcdjzt/bsrk/mindex.html",
+    "https://zrzyj.zhanjiang.gov.cn/dchy/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "url": "https://zrzyj.zhanjiang.gov.cn/dchy/",
+    "kind": "Official Zhanjiang joint-survey/results-sharing viewer with configured GeoScene ArcGIS service",
+    "publisher": "Zhanjiang Municipal Natural Resources Bureau",
+    "scope": "Public viewer configuration exposes an administrative-boundary MapServer route and standard ArcGIS geometry-query construction. The configured private-address service did not respond to bounded anonymous metadata or point requests; parcel-layer scope was not established.",
+    "safeSampleFile": null,
+    "sampleAttributes": "none retained",
+    "nativeFields": [],
+    "fieldMapping": {
+      "nativeIdentityCandidates": [],
+      "excludedFields": ["all source-specific attributes; no feature response received"]
+    }
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not completed because the configured service timed out. Exact WUP point [21.2775461499627, 110.351604648056] was preserved unchanged and not shifted.",
+    "requestEvidence": [
+      "Configured service metadata request timed out after 15 seconds.",
+      "Configured service exact-point query timed out after 15 seconds."
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Zhanjiang municipal natural-resources, real-estate-registration and joint-survey/results-sharing services.",
+    "verifiedOpenScope": "Official local custody/procedure pages and viewer configuration; no anonymous parcel polygon response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel/cadastral identifier only if exposed by a future anonymous safe endpoint", "geometry", "CRS/layer metadata"],
+  "runtimeReadiness": "held_quality_review",
+  "resultCategory": "official_local_registry_context_no_verified_public_geometry",
+  "status": "complete",
+  "remainingUncertainty": "The official local custodian and a current viewer were evidenced, but the viewer's configured backend was unreachable from this environment and its exposed layer was administrative-boundary context rather than proven parcel data. No conclusion about citywide parcel absence or completeness is made. No owner, address, contact, titleholder, tax, account or other unsafe fields were requested or retained."
+}

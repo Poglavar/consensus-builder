@@ -1,0 +1,15 @@
+{
+  "taskId": "city:11924",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-11924-shengzhou.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/shengzhou-service-review.json",
+    "tmp/valhalla-parcel-research/shengzhou/sx-map.html",
+    "tmp/valhalla-parcel-research/shengzhou/map.b9b14efb.js",
+    "tmp/valhalla-parcel-research/shengzhou/zj-platform.html"
+  ],
+  "checkedAt": "2026-10-10T19:00:25.974404Z",
+  "reason": "First-party official source supports local registration custody; inspected public maps give no bounded safe native-ID parcel polygon response, and no admission qualification is evidenced."
+}

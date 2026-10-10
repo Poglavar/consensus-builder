@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Zheba",
+  "country": "China",
+  "countryCode": "CN",
+  "cityCode": 8836,
+  "wupCityCode": 8836,
+  "cityId": "wup2025:8836",
+  "queueRank": 1454,
+  "rank": 1454,
+  "point": [29.2760912955364, 106.245170674004],
+  "centerLatLon": [29.2760912955364, 106.245170674004],
+  "pointBasis": "UN WUP 2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 390709,
+  "population2025k": 390.709,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "Official Qijiang district planning/natural-resources pages evidence the local cadastral and real-property registration custodian, but the bounded review found no anonymous geometry-only parcel service or safe parcel feature response. General Chongqing registration guidance is not treated as local vector-source evidence.",
+  "registryEvidenceUrls": [
+    "https://cqqj.gov.cn/bm/qghzrzyj/",
+    "https://www.cqqj.gov.cn/tszl/map/",
+    "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/index.html",
+    "https://www.cq.gov.cn/zt/yhyshj/zcjj/djcc/201912/t20191231_8740783.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_unqualified",
+  "adapterReady": false,
+  "technicalBlocker": "The official Qijiang convenience map is a general points-of-interest service, and the reviewed local and municipal registration pages expose procedures or registration guidance rather than an anonymous parcel-vector layer. The Chongqing guidance describes location-based cadastral-map queries through the government service platform, but no safe geometry-only API/schema was exposed in the bounded review; no location, parcel, owner, address, title, tax, or personal lookup was submitted.",
+  "scopeLimits": "First-party discovery and bounded anonymous GET review only. The exact WUP point was preserved and not queried against an unverified parcel endpoint. No parcel geometry was retained. This does not establish citywide absence, completeness, positional accuracy, legal title, or currentness.",
+  "remainingUncertainty": "Whether the Chongqing government service platform exposes a current anonymous geometry route for rural/local Zheba-area parcels, and whether any such service covers the WUP locator.",
+  "resultCategory": "official_local_registry_custodian_confirmed_geometry_unverified",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Zheba China official cadastral parcel map land registry GIS Chongqing Qijiang",
+        "result": "Search identified Zheba as a locality in China and surfaced official Chongqing/Qijiang government cadastral-registration and convenience-map pages. No public anonymous parcel-vector endpoint or safe feature schema was found.",
+        "actualResultUrls": [
+          "https://www.cqqj.gov.cn/tszl/map/",
+          "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/index.html",
+          "https://www.cq.gov.cn/zt/yhyshj/zcjj/djcc/201912/t20191231_8740783.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "这坝 中国 官方 地籍图 不动产登记 地图 GIS",
+        "result": "Search surfaced official Qijiang planning/natural-resources and Chongqing real-property registration guidance. The Qijiang pages identify local land/cadastral administration and registration services; no anonymous parcel-vector endpoint or safe geometry-only schema was found.",
+        "actualResultUrls": [
+          "https://cqqj.gov.cn/bm/qghzrzyj/",
+          "https://www.cqqj.gov.cn/tszl/map/",
+          "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/index.html"
+        ]
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "cn-qijiang-zheba-registry-review",
+    "name": "Qijiang local planning/natural-resources and Chongqing real-property registration route review",
+    "operator": "Qijiang District Planning and Natural Resources Bureau; Chongqing Municipal Planning and Natural Resources Bureau",
+    "url": "https://cqqj.gov.cn/bm/qghzrzyj/",
+    "scope": "Local custodian and public-service discovery only; no anonymous parcel geometry contract verified.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No safe parcel feature identifier retrieved.",
+    "geometryStatus": "no_public_geometry_contract_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Official local custodian pages and general cadastral-registration guidance were reviewed; no parcel polygon or anonymous geometry endpoint was verified.",
+    "notEstablished": ["anonymous full-polygon access", "exact-point parcel hit", "citywide cadastral coverage", "runtime source binding"],
+    "wupPointRelation": "The unchanged WUP point was not shifted and no parcel relation is asserted."
+  }
+}

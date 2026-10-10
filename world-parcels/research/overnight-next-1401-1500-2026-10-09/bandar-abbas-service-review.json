@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7140-bandar-abbas.json",
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "purpose": "Review first-party and relevant Iranian cadastral channels for anonymous parcel geometry with safe native identifiers.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "wupPointPreserved": [27.1967377823746, 56.3015895089066]
+  },
+  "assessment": "The national Iranian registration/cadastre leads were not reachable during bounded anonymous checks. Search also found a third-party Hormozgan office listing and general cadastral guidance, but no public parcel viewer/API or geometry response. No parcel geometry or native ID was verified.",
+  "registryAssessment": "A local Bandar Abbas registry custodian is not sufficiently evidenced by first-party material in this attempt; the third-party Hormozgan directory listing is retained only as a lead, so registryFound remains null.",
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Bandar Abbas official cadastral map parcel GIS land registry Iran",
+      "result": "National registration/cadastre leads and a Hormozgan office listing found; no public parcel endpoint.",
+      "actualResultUrls": ["https://ssaa.ir/", "https://shamim.ssaa.ir/", "https://avval.ir/profile/b73c9/%D8%A7%D8%AF%D8%A7%D8%B1%D9%87-%DA%A9%D9%84-%D8%AB%D8%A8%D8%AA-%D8%A7%D8%B3%D9%86%D8%A7%D8%AF-%D9%88-%D8%A7%D9%85%D9%84%D8%A7%D9%83-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%B1%D9%85%D8%B2%DA%AF%D8%A7%D9%86"]
+    },
+    {
+      "language": "Persian (local/native)",
+      "query": "بندرعباس نقشه کاداستر املاک اداره ثبت اسناد و املاک",
+      "result": "Hormozgan office listing and general cadastral guidance found; no first-party public parcel service.",
+      "actualResultUrls": ["https://avval.ir/profile/b73c9/%D8%A7%D8%AF%D8%A7%D8%B1%D9%87-%DA%A9%D9%84-%D8%AB%D8%A8%D8%AA-%D8%A7%D8%B3%D9%86%D8%A7%D8%AF-%D9%88-%D8%A7%D9%85%D9%84%D8%A7%DA%A9-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%87%D8%B1%D9%85%D8%B2%DA%AF%D8%A7%D9%86", "https://amagestate.com/legal/cadastral-map-changes-organization/", "https://shamim.ssaa.ir/"]
+    }
+  ],
+  "attempts": [
+    "Searched in English and Persian; recorded actual result URLs and distinguished the non-first-party directory lead from national official leads.",
+    "Fetched https://ssaa.ir/ anonymously with TLS verification enabled; timed out after 15 seconds.",
+    "Fetched https://shamim.ssaa.ir/ anonymously with TLS verification enabled; timed out after 15 seconds.",
+    "Started bounded anonymous checks for https://my.ssaa.ir/ and https://kateb.ir; no usable response or schema was obtained before the command window ended.",
+    "Did not log in, submit credentials, bypass CAPTCHA/Cloudflare, disable TLS verification, or request owner/address/titleholder/personal/tax fields.",
+    "Did not issue an exact-point parcel query because no documented anonymous parcel endpoint was available. The preserved WUP point is not evidence of coverage or absence."
+  ],
+  "geometryEvidence": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not run: no documented anonymous parcel geometry endpoint was found.",
+    "requestEvidence": [
+      {"url": "https://ssaa.ir/", "method": "GET; anonymous", "httpStatus": null, "assessment": "Timeout."},
+      {"url": "https://shamim.ssaa.ir/", "method": "GET; anonymous", "httpStatus": null, "assessment": "Timeout."}
+    ]
+  },
+  "nativeSchema": {"inspected": false, "crs": null, "nativeFieldMapping": null, "compositeKeyProvenance": null},
+  "safeFieldAllowlist": ["stable native parcel identity", "geometry", "source CRS", "service layer name"],
+  "nextStep": "Retry reachable first-party services and inspect the ordinary public viewer bootstrap, then qualify a small geometry-only sample with a stable native identity before any adapter consideration.",
+  "remainingUncertainty": "The national services may expose non-indexed or intermittently available public workflows; local Bandar Abbas parcel coverage and schema remain unknown.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "status": "complete",
+  "cityCode": 11560,
+  "queueRank": 1888,
+  "name": "Fanling",
+  "country": "China, Hong Kong SAR",
+  "countryCode": "HK",
+  "iso3": "HKG",
+  "point": [22.4969823927341, 114.135123361368],
+  "population2025": 304190,
+  "population2025k": 304.19,
+  "populationUnit": "persons",
+  "registryFound": true,
+  "verifiedSample": true,
+  "targetGeometryEvidence": "one native lot polygon returned for the exact preserved WUP point",
+  "nativeIdReadiness": "stable native LOTID observed",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "site:gov.hk Fanling cadastral map parcel Hong Kong official map API; site:landsd.gov.hk Fanling cadastral map Hong Kong official",
+        "result": "First-party results identified the Lands Department, GeoInfo Map, Hong Kong Map Service 2.0, e-HongKongGuide, and the official Land Parcel and Public Utility Number Search API documentation. The GeoInfo Map and HKMS pages establish local government map/cadastral service scope; the search API documentation is a location/identifier search API, not a parcel geometry download.",
+        "actualResultUrls": ["https://www2.map.gov.hk/", "https://open.hkmapservice.gov.hk/OneStopSystem/map-search?locale=zh_hk", "https://hosting.csdi.gov.hk/csdi-webpage/apidoc/LPPUNSearchAPI", "https://www.landsd.gov.hk/en/resources/mapping-information/ehkg.html/cf8n5mv85.html"]
+      },
+      {
+        "language": "native/local",
+        "query": "香港 粉嶺 地政總署 地圖 地籍 圖 官方",
+        "result": "First-party Traditional Chinese results identified the Hong Kong Lands Department geospatial portals, GeoInfo Map, HKMS 2.0 cadastral survey-record service, official e-HongKongGuide material, and a Lands Department lot-index reference. The local service route was then inspected through the current GeoInfo Map JavaScript/configuration.",
+        "actualResultUrls": ["https://www.landsd.gov.hk/tc/spatial-data/geospatial-infomation-services/geospatial-portals.html", "https://www.map.gov.hk/gm/", "https://open.hkmapservice.gov.hk/OneStopSystem/map-search?locale=zh_hk", "https://www.landsd.gov.hk/doc/sc/mapping/paper-map/lot-index-plan/smo_old%20lot%20boundaries.pdf"]
+      }
+    ],
+    "searchLimits": "First-party discovery and public documentation only; no login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe owner/address/titleholder fields, or TLS disablement used."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Hong Kong-wide Lands Department GeoInfo Map dynamic lot layer and identify service.",
+    "verifiedOpenScope": "Anonymous public identify response at one exact coordinate plus one bounded native LOTID-and-geometry query.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "resultCategory": "official_local_registry_evidenced_with_verified_native_parcel_geometry",
+  "registryBasis": "The Hong Kong Lands Department is the local cadastral/map custodian evidenced by its official GeoInfo Map, Hong Kong Map Service 2.0, cadastral survey-record references, and current viewer configuration. The exact-point identify response returned a LOT record for FL 454 with LOTID 1800068273.",
+  "officialSources": [
+    {"url": "https://www.map.gov.hk/gm/", "operator": "Hong Kong Lands Department", "observation": "Current public GeoInfo Map viewer; its JavaScript configured the anonymous /gih-ws2 identify service and ArcGIS dynamic layer service."},
+    {"url": "https://www2.map.gov.hk/", "operator": "Hong Kong Lands Department", "observation": "Official GeoInfo Map landing page describing the public geospatial map and data sources."},
+    {"url": "https://open.hkmapservice.gov.hk/OneStopSystem/map-search?locale=zh_hk", "operator": "Hong Kong Lands Department", "observation": "Official HKMS 2.0 search page listing cadastral survey records; it also warns that displayed polygons are approximate and not actual lot boundaries."},
+    {"url": "https://hosting.csdi.gov.hk/csdi-webpage/apidoc/LPPUNSearchAPI", "operator": "Hong Kong CSDI / government geospatial platform", "observation": "Official public documentation for land parcel-number/location search; no credentials used."}
+  ],
+  "requestsAndEndpointChecks": [
+    {"url": "https://www.map.gov.hk/gm/", "method": "GET", "status": "200", "summary": "Loaded current viewer HTML and followed its JavaScript/configuration."},
+    {"url": "https://www.map.gov.hk/gm/res/js/map.config-controller.js?v=793b49d", "method": "GET", "status": "200", "summary": "Verified map host, dynamic ArcGIS path /arcgis2/rest/services/rGeoInfoMap/rgeo_highlight_d00/MapServer, and app web-service base /gih-ws2."},
+    {"url": "https://www.map.gov.hk/gih-ws2/identify/831971.8781528565/839709.3317163215/2000/WEB", "method": "GET", "status": "200", "summary": "HK80 coordinates transformed from the exact WUP point; response returned ADDRESS 338 FANLING WAI and LOT FL 454 with native LOTID 1800068273. Address data was used only to document the response and was not retained as parcel evidence."},
+    {"url": "https://www.map.gov.hk/arcgis2/rest/services/rGeoInfoMap/rgeo_highlight_d00/MapServer?f=json&v=2.129.3", "method": "GET", "status": "200", "summary": "Verified current ArcGIS layer metadata; C1K_LOT_SDO is layer 107 with polygon geometry."},
+    {"url": "https://www.map.gov.hk/arcgis2/rest/services/rGeoInfoMap/rgeo_highlight_d00/MapServer/107/query", "method": "GET", "status": "200", "summary": "Bounded query where LOTID IN (1800068273), outFields=LOTID, returnGeometry=true, outSR=4326, f=geojson; returned one Polygon and only LOTID in properties."},
+    {"url": "https://www.map.gov.hk/arcgis/rest/services/rGeoInfoMap/gm_urgent_layers/MapServer", "method": "GET", "status": "403", "summary": "Viewer-configured urgent-layer route was not needed for parcel evidence; no absence inference made."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel ID LOTID", "full parcel polygon geometry", "source layer/service metadata", "CRS/output CRS", "bounded retrieval metadata"],
+  "nativeFieldMapping": {"LOTID": "stable native lot identifier", "geometry": "native polygon geometry returned by ArcGIS query"},
+  "compositeKeyProvenance": null,
+  "crs": "Viewer service uses Hong Kong 1980 Grid for identify coordinates; retained query explicitly requested EPSG:4326 GeoJSON output. Source layer native CRS metadata was not independently retained in the bounded response.",
+  "geometryQuality": "One valid Polygon returned unchanged in EPSG:4326 coordinate order [longitude, latitude]. It contains the exact WUP point within the service identify tolerance; the point itself was not shifted.",
+  "geometryDecision": {"verified": true, "sourceId": "hong-kong-landsd-geoinfo-c1k-lot-sdo", "sampleCount": 1, "sampleFile": "fanling-parcel-sample.geojson", "nativeId": "1800068273", "nativeIdField": "LOTID", "exactWupPointTest": "Exact preserved WUP point produced a LOT identify response; one bounded LOTID query returned one polygon.", "requestEvidence": ["requestsAndEndpointChecks[2]", "requestsAndEndpointChecks[4]"]},
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "Serial reviewer must independently qualify adapter behavior and broader coverage; this packet is research evidence only and is not source integration/admission.",
+  "remainingUncertainty": "Citywide completeness, update schedule, legal boundary semantics, rate limits, and production adapter behavior remain unverified. HKMS search-page polygon disclaimers mean the retained source geometry should be treated as research evidence pending serial review."
+}

@@ -1,0 +1,12 @@
+{
+  "taskId": "city:4684",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/provenance.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-4684-southampton.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/southampton-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T11:54:05.913299Z",
+  "reviewFindings": "WUP code 4684, rank 1647, United Kingdom, point and 347446 persons match the immutable queue and official 2025 source. Two English queries are recorded, appropriate to the local administrative language. The Southampton council first-party personal land-charge page confirms its SO14-SO19 search procedure. Viewer interstitial and national download redirect yielded no Southampton parcel response, native ID or geometry. No admission."
+}

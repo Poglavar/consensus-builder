@@ -1,0 +1,60 @@
+{
+  "cityRecord": "city-11371-madhepura.json",
+  "schemaVersion": "1.0",
+  "cityCode": 11371,
+  "queueRank": 1863,
+  "city": "Madhepura",
+  "country": "India",
+  "countryCode": "IN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Bihar BhuNaksha, Madhepura district land-record, and DILRMP evidence establishes a local cadastral-map custodian and public hierarchy, but bounded anonymous requests did not produce a parcel ID-plus-geometry response. No sample GeoJSON is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Hindi first-party queries, actual URLs and outcomes are recorded in city-11371-madhepura.json.",
+  "requestOutcomes": "The current BhuNaksha HTML/JavaScript was retrieved and inspected. Public metadata endpoints returned Bihar/Madhepura hierarchy data and map-instance counts; bounded map extent requests returned no usable response. No safe parcel feature was retrieved.",
+  "attemptedRoutes": [
+    "Government of Bihar BhuNaksha viewer",
+    "BhuNaksha current JavaScript/configuration",
+    "BhuNaksha rest/GetMapInstanceMap/getMapInstance",
+    "BhuNaksha rest/Levels/count",
+    "BhuNaksha rest/Levels/LevelLabels",
+    "BhuNaksha rest/Levels/ListsAfterLevel",
+    "BhuNaksha rest/MapInfo/getVVVVExtentGeoref",
+    "BhuNaksha village_selector.jsp",
+    "Madhepura district official land-records page",
+    "Government of India DILRMP village map-digitization record"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [25.9174225025172, 86.7858723235066] was preserved in latitude/longitude order and never shifted.",
+    "The hierarchy and extent probes were bounded and did not establish a citywide parcel inventory.",
+    "No parcel geometry, stable native parcel identity, source attribute schema or authoritative CRS was retrieved or retained.",
+    "Local cadastral-map custody and DILRMP digitization evidence do not prove complete citywide open-vector coverage.",
+    "No owner, address, titleholder, contact, tax/account, personal or other unsafe fields were requested or retained.",
+    "Packet completion is research evidence only; serial reviewer qualification and runtime adapter admission remain pending."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable parcel response; no hit/miss inference.",
+    "requestEvidence": []
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The correct public feature route, map-instance semantics, stable native ID, CRS, update currency and citywide completeness remain unresolved."
+}

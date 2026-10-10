@@ -1,0 +1,104 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8335-abakaliki.json",
+  "purpose": "Document separate English/local-language discovery, first-party registry custody, anonymous request outcomes, safe-field limits, and geometry uncertainty.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "A first-party Ebonyi State Ministry of Lands and Survey / Office of the Surveyor-General land-registration and survey custodian is evidenced for Abakaliki. The reviewed official material documents C-of-O and registration procedures and references digitization/GIS work, but no public parcel geometry service was verified.",
+  "registryAssessment": "registryFound=true is limited to evidenced local/state custody and procedure scope. It is not a claim that a public cadastral layer exists or that the city is fully covered.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.ebonyistate.gov.ng/ministries/lands-and-survey/MIN-88RUZ7R6",
+      "operator": "Ebonyi State Government, Ministry of Lands and Survey",
+      "scope": "Official ministry page identifies Lands and Survey as a state ministry and Abakaliki as the state capital/contact context; no public parcel layer is exposed."
+    },
+    {
+      "url": "https://ebsmeda.eb.gov.ng/wp-content/uploads/2025/10/EBONYI-STATE-PROPERTY-REGISTRATION-PROCEDURES-FOR-OBTAININ-GCERTIFICATE-OF-OCCUPANCY.pdf",
+      "operator": "Ebonyi State government procedure document",
+      "scope": "C-of-O procedure names Ministry of Land and Survey at Block II Centenary City Secretariat, Ochudo City, Abakaliki, and Lands & Survey registration steps."
+    },
+    {
+      "url": "https://www.eblands.online/reg_infor.php",
+      "operator": "Ebonyi State Ministry of Lands and Survey information site",
+      "scope": "Registration guidance names the Abakaliki ministry office; page was not usable for safe public geometry/schema inspection."
+    },
+    {
+      "url": "https://ebonyistate.gov.ng/storage/documents/min-1-proposed-2026-pdf-1769901855.pdf",
+      "operator": "Ebonyi State Government budget document",
+      "scope": "References production of a digital administrative map in Abakaliki and Office of the Surveyor-General work; planning/budget evidence, not an accessible parcel service."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Abakaliki official cadastral parcel map land registry GIS Ebonyi Nigeria",
+      "result": "Found first-party ministry, C-of-O procedure, and budget/GIS references; no public parcel API or vector schema.",
+      "actualResultUrls": [
+        "https://www.ebonyistate.gov.ng/ministries/lands-and-survey/MIN-88RUZ7R6",
+        "https://ebsmeda.eb.gov.ng/cat_doc/lands/",
+        "https://ebonyistate.gov.ng/storage/documents/min-1-proposed-2026-pdf-1769901855.pdf"
+      ]
+    },
+    {
+      "language": "Igbo/local",
+      "query": "Abakaliki Igbo ala ndebanye aha map cadastral Ebonyi Ministry of Lands and Survey",
+      "result": "No first-party Igbo-language cadastral viewer or parcel service located; English official material was the available procedural source.",
+      "actualResultUrls": [
+        "https://www.ebonyistate.gov.ng/ministries/lands-and-survey/MIN-88RUZ7R6",
+        "https://ebsmeda.eb.gov.ng/cat_doc/lands/",
+        "https://www.eblands.online/reg_infor.php"
+      ]
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://www.ebonyistate.gov.ng/ministries/lands-and-survey/MIN-88RUZ7R6",
+      "method": "Anonymous read-only official page review",
+      "result": "Search-indexed official ministry content reviewed; custody context present, no viewer/API/configuration or parcel schema. Direct GET from the worker closed without a response."
+    },
+    {
+      "url": "https://ebsmeda.eb.gov.ng/wp-content/uploads/2025/10/EBONYI-STATE-PROPERTY-REGISTRATION-PROCEDURES-FOR-OBTAININ-GCERTIFICATE-OF-OCCUPANCY.pdf",
+      "method": "Anonymous read-only official document review",
+      "result": "Procedure document confirms Abakaliki Ministry of Land and Survey office and registration workflow; it contains no public parcel feature endpoint."
+    },
+    {
+      "url": "https://www.eblands.online/data_list.php?nav=426",
+      "method": "Anonymous GET, no query for property values",
+      "result": "HTTP 406; no schema or safe geometry response obtained. No retry with registration/property parameters was made."
+    },
+    {
+      "url": "https://www.eblands.online/reg_infor.php",
+      "method": "Anonymous GET, no credentials or property values",
+      "result": "HTTP 406; registration guidance was available through search-indexed content but no public geometry service was exposed."
+    }
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier", "geometry", "source CRS", "service metadata"],
+  "nativeFieldMapping": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed against a verified parcel layer; unchanged WUP point retained exactly.",
+    "requestEvidence": "No safe anonymous ID+geometry response was obtained. A zero hit, timeout, 406, or unavailable UI would not establish citywide absence."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Local/state land-registration and survey custody for Abakaliki is evidenced by official ministry and procedure documents.",
+    "verifiedOpenScope": "No public parcel polygon, native ID, CRS, or citywide coverage was verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "remainingUncertainty": "Current public availability, schema, native parcel key, CRS, and WUP-point coverage of any Ebonyi land-information/GIS system.",
+  "nextStep": "Locate an official public viewer configuration or vector service, then inspect metadata and request only safe ID+geometry fields before any adapter qualification.",
+  "runtimeAssessment": "held_not_enabled_no_verified_public_geometry",
+  "cohort": "overnight-next-1301-1400-2026-10-09",
+  "attempt": 1
+}

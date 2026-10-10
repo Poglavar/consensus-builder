@@ -1,0 +1,69 @@
+{
+  "cityCode": 6058,
+  "queueRank": 1468,
+  "name": "Ulyanovsk",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "point": [54.3000327102264, 48.3371699285129],
+  "population2025": 387698,
+  "population2025k": 387.698,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ulyanovsk Russia official cadastral parcel map Rosreestr public GIS",
+        "result": "Search found the official Ulyanovsk regional land-and-property information center page describing the Public Cadastral Map, and current references identify the national public map at the NSPD portal. Direct anonymous GETs to the current map and Rosreestr hosts timed out from this environment; no parcel schema or geometry was verified.",
+        "actualResultUrls": ["https://regioncentr73.ru/site/servisy/publichnaya-kadastrovaya-karta/", "https://nspd.gov.ru/map?thematic=PKK", "https://rosreestr.gov.ru/"]
+      },
+      {
+        "language": "Russian",
+        "query": "Публичная кадастровая карта Ульяновск Росреестр кадастровые участки официальный сервис",
+        "result": "Официальная региональная страница подтверждает публичную кадастровую карту и перечисляет безопасные публичные сведения, включая границы земельных участков и кадастровые номера. Текущий портал НСПД и старые хосты Росреестра не ответили на анонимные GET-запросы в пределах тайм-аута; схема, CRS, стабильный ID и геометрия не подтверждены.",
+        "actualResultUrls": ["https://regioncentr73.ru/site/servisy/publichnaya-kadastrovaya-karta/", "https://nspd.gov.ru/map?thematic=PKK", "https://pkk.rosreestr.ru/"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidenceUrls": ["https://regioncentr73.ru/site/servisy/publichnaya-kadastrovaya-karta/", "https://nspd.gov.ru/map?thematic=PKK"],
+  "registryBasis": "The official Ulyanovsk regional land-and-property information center identifies the Public Cadastral Map as a public real-estate information service and provides local Ulyanovsk contact/location context. This evidences a relevant public cadastral service, not open parcel integration.",
+  "source": {
+    "sourceId": "RU-6058-ULYANOVSK-NSPD-PKK-REVIEW",
+    "name": "Russian Public Cadastral Map / NSPD",
+    "url": "https://nspd.gov.ru/map?thematic=PKK",
+    "operator": "Rosreestr / National Spatial Data Portal (NSPD); local service information by OGKU Regional Land-and-Property Information Center",
+    "serviceType": "National public cadastral map with regional official documentation; anonymous parcel response not verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "nativeFieldMapping": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "The regional official page describes the Public Cadastral Map as a real-time public service containing cadastral parcel boundaries and cadastral numbers; the current national map is hosted on NSPD.",
+    "verifiedOpenScope": "Official documentation and service URLs were identified, but current anonymous transport did not return application HTML/configuration or a parcel response. No citywide completeness or bulk-download scope was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_registry_geometry_unverified",
+  "technicalBlocker": "Anonymous TLS GET requests to https://nspd.gov.ru/map?thematic=PKK, https://pkk.rosreestr.ru/, and https://rosreestr.gov.ru/ timed out in this environment. No login, credentials, private token, CAPTCHA bypass, unsafe field request, or TLS verification exception was used. A timeout is not treated as evidence of citywide absence.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "registration-rights"],
+  "remainingUncertainty": "Current NSPD JavaScript/configuration, public endpoint paths, schema, CRS, stable native parcel identity, response pagination, freshness, and citywide completeness remain unverified.",
+  "nextStep": "Hold runtime integration. A later researcher may qualify the current anonymous first-party endpoint after independently verifying schema, CRS, stable native identity, and safe ID-plus-geometry output.",
+  "runtimeReadiness": "held_unqualified",
+  "adapterReady": false,
+  "centerLatLon": [54.3000327102264, 48.3371699285129],
+  "populationPlausibility2025": "High",
+  "pointBasis": "Exact immutable WUP 2025 population-weighted settlement point; not shifted to force a parcel hit.",
+  "sourceIds": [],
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "attempt": 1,
+  "priorCheck": {"attemptState": "pending", "attemptEvidence": [], "possiblePriorMatches": []},
+  "schemaVersion": "1.0"
+}

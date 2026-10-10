@@ -1,0 +1,14 @@
+{
+  "taskId": "city:6053",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-6053-hull.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/hull-service-review.json",
+    "tmp/valhalla-parcel-research/hull/my-hull.html",
+    "tmp/valhalla-parcel-research/hull/download.html",
+    "tmp/valhalla-parcel-research/hull/e2283178.txt"
+  ],
+  "reason": "Queue identity and separate English/local-English searches checked. Original cache shows the public Hull viewer and the HMLR download challenge redirect, with no Hull GML parcel bytes, native ID, or polygon response. Adapter qualification gates remain unproven; challenge is not absence.",
+  "checkedAt": "2026-10-10T15:08:11.270580Z"
+}

@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 11593,
+  "queueRank": 1878,
+  "cityId": "queue:1878",
+  "name": "Bankura",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [23.2362984097822, 87.0576226724306],
+  "centerLatLon": [23.2362984097822, 87.0576226724306],
+  "population2025": 306650,
+  "population2025k": 306.65,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "searchedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bankura West Bengal official cadastral parcel map land records GIS plot map",
+        "result": "First-party discovery found the official Bankura district land-records page, which directs citizens to the West Bengal Department of Land & Land Reforms Banglarbhumi portal. It also found an official West Bengal GIS ArcGIS REST layer containing Bankura mouza polygons; this is not a parcel layer.",
+        "actualResultUrls": [
+          "https://bankura.gov.in/service/land-records/",
+          "https://banglarbhumi.gov.in/",
+          "https://nhpgw.wb.gov.in/gisserver/rest/services/WUA/mouza_realted_tables_vdp_report_new/MapServer/3"
+        ]
+      },
+      {
+        "language": "native/local (Bengali)",
+        "query": "Bankura পশ্চিমবঙ্গ সরকারি মৌজা মানচিত্র দাগ খতিয়ান ভূমি তথ্য পরিষেবা",
+        "result": "Bengali discovery found the Bengali version of the official Bankura district land-records page, which directs users to banglarbhumi.gov.in. No public anonymous parcel ID-plus-geometry endpoint was exposed by the search results.",
+        "actualResultUrls": [
+          "https://bankura.gov.in/bn/service/%E0%A6%9C%E0%A6%AE%E0%A6%BF-%E0%A6%B0%E0%A7%87%E0%A6%95%E0%A6%B0%E0%A7%8D%E0%A6%A1/",
+          "https://banglarbhumi.gov.in/"
+        ]
+      }
+    ],
+    "method": "Separate English and Bengali first-party discovery followed by bounded TLS-verified GET attempts; no credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe-field request, or TLS disablement."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "portalsFound": [
+    {
+      "url": "https://bankura.gov.in/service/land-records/",
+      "operator": "Bankura District Administration, Government of West Bengal",
+      "observation": "Official district service page says citizens can obtain Department of Land & Land Reforms services and links to banglarbhumi.gov.in; page identifies Bankura as the city scope. This evidences a local/district land-records custodian, but not an open parcel geometry API."
+    },
+    {
+      "url": "https://nhpgw.wb.gov.in/gisserver/rest/services/WUA/mouza_realted_tables_vdp_report_new/MapServer/3",
+      "operator": "West Bengal government GIS service",
+      "observation": "Public ArcGIS Feature Layer named wua.sde.MouzaISRO; polygon geometry, EPSG:4326, query formats include JSON and GeoJSON, and district field includes Bankura. The layer represents mouza/village and development attributes, not cadastral parcels."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://banglarbhumi.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "TLS-verified request timed out after 20 seconds from this environment. No retry with disabled verification or bypass was attempted; no viewer JavaScript/configuration or parcel endpoint was obtained."
+    },
+    {
+      "url": "https://nhpgw.wb.gov.in/gisserver/rest/services/WUA/mouza_realted_tables_vdp_report_new/MapServer/3",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "ArcGIS REST layer metadata was inspected. It reports polygon geometry, EPSG:4326, max record count 2000, and safe administrative/mouza fields including objectid, district, mouza, block and id. No parcel field or parcel semantics are present."
+    },
+    {
+      "url": "https://nhpgw.wb.gov.in/gisserver/rest/services/WUA/mouza_realted_tables_vdp_report_new/MapServer/3/query?where=district%3D%27Bankura%27&outFields=objectid%2Cmouza%2Cblock%2Cpra_jl_no%2Cid%2Cglobalid&returnGeometry=false&f=json",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Bounded anonymous query timed out after 30 seconds from this environment. The timeout is not evidence of citywide absence. No geometry was retained."
+    },
+    {
+      "url": "https://nhpgw.wb.gov.in/gisserver/rest/services/WUA/mouza_realted_tables_vdp_report_new/MapServer/3/query?where=district%3D%27Bankura%27&outFields=objectid%2Cmouza%2Cblock%2Cpra_jl_no%2Cid%2Cglobalid&returnGeometry=false&f=pjson",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Equivalent bounded query through the web research fetcher was inaccessible/internal-error; no result was treated as a negative finding."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Bankura district land-record services via West Bengal Banglarbhumi, plus a West Bengal government mouza GIS layer whose attribute domain includes Bankura.",
+    "verifiedOpenScope": "Official district service custody and GIS layer metadata only; no anonymous Bankura parcel response was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel or feature id if verified", "full parcel polygon or multipolygon geometry if verified", "service/layer metadata", "CRS metadata"],
+  "sourceFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review remains required",
+  "remainingUncertainty": "The public district portal clearly identifies the official land-record service, but its current viewer/API, access controls, parcel schema, stable native parcel identity, parcel geometry, update currency, and citywide coverage remain unresolved. The exact WUP point was preserved and never shifted; no exact-point hit or miss inference was made.",
+  "nextStep": "Retry the official Banglarbhumi portal and inspect its ordinary public bootstrap/configuration when reachable; request only safe parcel identity and geometry in a small Bankura-area extent, then independently qualify any adapter before runtime admission."
+}

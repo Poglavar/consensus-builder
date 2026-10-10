@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "parcel_service_review",
+  "checkedAt": "2026-10-09",
+  "cityCode": 11778,
+  "queueRank": 1395,
+  "cityRecord": "city-11778-jiashan.json",
+  "city": "Jiashan",
+  "country": "China",
+  "countryCode": "CN",
+  "wupPoint": [30.8508959324406, 120.924624299604],
+  "status": "held",
+  "registryFound": true,
+  "registryBasis": "First-party Jiashan County Natural Resources and Planning Bureau material evidences the local bureau as custodian for unified natural-resource and real-estate registration, cadastral investigation, real-estate surveying, and registration information management. No open parcel-vector service was evidenced.",
+  "assessment": "Official local registry custody is evidenced, but current anonymous access to the county portal and linked PDFs returned HTTP 403. No public viewer JavaScript/configuration, parcel layer, native ID field, CRS, or geometry response was safely qualified. Runtime readiness remains held.",
+  "attempt": 1,
+  "attemptsAllowed": 3,
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false,
+    "exactPointHitTest": false
+  },
+  "searchQueries": [
+    {"language": "English", "query": "Jiashan China official cadastral parcel map GIS land registration natural resources bureau", "outcome": "Official Jiashan bureau sources found; no anonymous safe parcel response.", "actualResultUrls": ["https://www.jiashan.gov.cn/module/download/downfile.jsp?classid=0&filename=064b5d51f97146cc8091c30c183a0216.pdf", "https://www.jiashan.gov.cn/module/download/downfile.jsp?classid=0&filename=81cd17807394459fb7300042bf4c512a.pdf"]},
+    {"language": "native/local", "script": "Simplified Chinese", "query": "嘉善县 地籍图 不动产登记 地图 GIS 自然资源和规划局 官方", "outcome": "官方材料确认当地自然资源和规划局的统一确权登记、权籍调查、不动产测绘和登记信息管理职责；未取得匿名安全宗地编号、服务 schema、CRS 或几何。", "actualResultUrls": ["https://www.jiashan.gov.cn/module/download/downfile.jsp?classid=0&filename=064b5d51f97146cc8091c30c183a0216.pdf", "https://www.jiashan.gov.cn/module/download/downfile.jsp?classid=0&filename=81cd17807394459fb7300042bf4c512a.pdf", "https://www.jiashan.gov.cn/art/2024/4/22/art_1229603343_5292570.html"]}
+  ],
+  "requestOutcomes": [
+    {"url": "https://www.jiashan.gov.cn/", "method": "GET; anonymous curl", "outcome": "HTTP 403; no bypass attempted."},
+    {"url": "https://www.jiashan.gov.cn/module/download/downfile.jsp?classid=0&filename=064b5d51f97146cc8091c30c183a0216.pdf", "method": "GET; anonymous curl", "outcome": "HTTP 403; indexed first-party function description reviewed; no parcel endpoint or geometry."},
+    {"url": "https://www.jiashan.gov.cn/module/download/downfile.jsp?classid=0&filename=81cd17807394459fb7300042bf4c512a.pdf", "method": "GET; anonymous curl", "outcome": "HTTP 403; indexed first-party planning material reviewed; no parcel endpoint or geometry."},
+    {"url": "https://www.jiashan.gov.cn/art/2024/4/22/art_1229603343_5292570.html", "method": "GET; public search/open route", "outcome": "First-party planning publication identified; no public parcel-vector route exposed."}
+  ],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "crs": null, "exactWupPointTest": "Not completed; exact WUP point preserved and not shifted."},
+  "safeFieldAllowlist": ["safe native parcel identifier only if publicly returned", "geometry", "source CRS", "public layer/schema metadata", "HTTP status/content type"],
+  "coverageAssessment": {"claimedScope": "Official Jiashan County Natural Resources and Planning Bureau materials and current county portal access checks.", "verifiedOpenScope": "Local registry/cadastral custodian evidenced; no anonymous parcel geometry.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "qualification": {"verifiedParcelGeometry": false, "verifiedNativeIdentity": false, "runtimeReadiness": "held"},
+  "uncertainty": "The county bureau or another official platform may expose cadastral services outside the anonymously accessible routes. This attempt did not log in and did not request owner, address, titleholder, tax, contact, or other unsafe data. HTTP 403, access denial, and no exact-point test do not prove cadastral absence.",
+  "conclusion": "No adapter qualification or GeoJSON sample is justified on attempt 1 of 3."
+}

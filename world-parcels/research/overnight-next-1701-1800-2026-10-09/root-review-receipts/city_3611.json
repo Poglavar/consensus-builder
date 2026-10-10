@@ -1,0 +1,12 @@
+{
+  "taskId": "city:3611",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-3611-ilebo.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ilebo-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T15:20:45Z",
+  "reason": "Queue identity matches rank 1791, Democratic Republic of the Congo, point and 321392 persons; English and French searches are recorded. Official national ministry and service catalogue support cadastre/register custody and formal consultation, while Ilebo-specific custody and anonymous safe native-ID parcel polygon access remain unverified. The form route is procedural and no absence is inferred. Fresh ID reads, paging, 13 cells, metric GEOS checks, source binding and headed Details verification are unevidenced; hold without admission."
+}

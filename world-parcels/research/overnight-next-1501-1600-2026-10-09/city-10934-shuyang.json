@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:10934",
+  "cityCode": 10934,
+  "wupCityCode": 10934,
+  "name": "Shuyang",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "rank": 1549,
+  "queueRank": 1549,
+  "point": [34.1160806534136, 118.783475506672],
+  "centerLatLon": [34.1160806534136, 118.783475506672],
+  "pointBasis": "Exact WUP2025 point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 368686,
+  "population2025k": 368.686,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Shuyang government service portal identifies the Shuyang County Natural Resources and Planning Bureau as the implementing authority for a county-level real-estate registration procedure. This establishes local registration custody, but not an open cadastral parcel geometry service.",
+  "registryEvidenceUrls": [
+    "https://sqshuy.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=1132132201431342XJ4000715001013&iddept_yw_inf=1132132201431342XJ400071500101301&ql_kind=07&webId=75",
+    "https://sqshuy.jszwfw.gov.cn/",
+    "https://sq.jszwfw.gov.cn/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The official Shuyang service shell links to a public-service iframe at https://zwfw.xzspj.suqian.gov.cn/sq_shuyang_yzw/sq_shuyang_index?ticket=null&moduleSite=321322. A bounded anonymous GET returned HTTP 493 JFE Forbidden before viewer JavaScript/configuration or a parcel service could be inspected. No login, credential, CAPTCHA bypass, private token, certificate exception or unsafe property request was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "local-registry-custodian_verified_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "The official Shuyang service portal evidences the county registration custodian and a registration procedure; the linked service shell is not evidence of parcel coverage.",
+    "verifiedOpenScope": "Local registration authority and procedure verified. Current public parcel layer, schema, CRS, native identity, anonymous geometry response and citywide completeness were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Shuyang China official cadastral map parcel land registration public map 沭阳县 不动产 登记 地图",
+        "scope": "Identify a local registry custodian and an official public cadastral or geospatial map route.",
+        "result": "Search identified the official Jiangsu government service portal and its Shuyang county registration page. The result exposed a county-level registration procedure and local bureau, but no public parcel feature endpoint or parcel schema.",
+        "actualResultUrls": [
+          "https://sqshuy.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=1132132201431342XJ4000715001013&iddept_yw_inf=1132132201431342XJ400071500101301&ql_kind=07&webId=75",
+          "https://jszwfw.gov.cn/"
+        ],
+        "executionMethod": "Separate English web search followed by first-party page inspection."
+      },
+      {
+        "language": "native/local",
+        "query": "沭阳县 不动产登记 地籍图 查询 官方",
+        "scope": "Independent Chinese-language discovery for a local official registry or cadastral-map route.",
+        "result": "Chinese-language search identified the official Shuyang county service page. It names 沭阳县自然资源和规划局 (Shuyang County Natural Resources and Planning Bureau) as the implementing authority for a registration procedure. No current public parcel layer, native ID schema or safe anonymous polygon response was found.",
+        "actualResultUrls": [
+          "https://sqshuy.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=1132132201431342XJ4000715001013&iddept_yw_inf=1132132201431342XJ400071500101301&ql_kind=07&webId=75",
+          "https://sqshuy.jszwfw.gov.cn/"
+        ],
+        "executionMethod": "Separate Chinese-language web search followed by first-party page inspection."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "first_attempt",
+    "attemptEvidence": []
+  },
+  "remainingUncertainty": "The HTTP 493 access result is a route/access limitation only and does not support citywide absence. The current parcel viewer/API URL, layer existence, schema, CRS, stable native identity, safe fields, geometry availability and citywide completeness remain unverified.",
+  "nextStep": "Serial reviewer may independently inspect the current Shuyang/Suqian registration viewer or qualify a public parcel service. Do not enable runtime from this packet alone."
+}

@@ -1,0 +1,117 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; local registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10T00:00:00Z",
+  "cityCode": 6304,
+  "queueRank": 1671,
+  "cityId": "wup:6304",
+  "name": "Dujiangyan",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "centerLatLon": [30.9954940087978, 103.642378061023],
+  "point": [30.9954940087978, 103.642378061023],
+  "population2025": 342467,
+  "population2025k": 342.467,
+  "populationUnit": "persons",
+  "year": 2025,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dujiangyan China official cadastral parcel map GIS natural resources land registration",
+        "result": "First-party Chinese government-service material was found for Dujiangyan foundational surveying approval, identifying the Dujiangyan Planning and Natural Resources Bureau. No verified anonymous parcel-vector endpoint or safe ID+geometry response was found.",
+        "actualResultUrls": [
+          "https://cdsdjys.sczwfw.gov.cn/module/download/downfile.jsp?classid=0&filename=ee11c23c9bd44d789b57db3c827d1aaf.pdf",
+          "https://www.chengdu.gov.cn/data/oportal/index",
+          "https://www.cgs.gov.cn/ywdt/ddyw/202504/t20250423_820380.html"
+        ]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "都江堰 官方 地籍图 宗地图 不动产登记 自然资源 GIS",
+        "result": "Official search results identified Dujiangyan Planning and Natural Resources Bureau custody in a government-service document and national real-estate-registration guidance describing cadastral maps as registration-record material. No anonymous public parcel geometry was verified.",
+        "actualResultUrls": [
+          "https://cdsdjys.sczwfw.gov.cn/module/download/downfile.jsp?classid=0&filename=ee11c23c9bd44d789b57db3c827d1aaf.pdf",
+          "https://www.rerc.com.cn/",
+          "https://zygh.xa.gov.cn/ztzl/yhyshj/bsrk/bdcdj/bszn/djtcxbszn/1774698618606374913.html"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://cdsdjys.sczwfw.gov.cn/module/download/downfile.jsp?classid=0&filename=ee11c23c9bd44d789b57db3c827d1aaf.pdf",
+      "observation": "Official Dujiangyan government-service document lists approval for organizations using classified foundational surveying成果 and names the Dujiangyan Planning and Natural Resources Bureau. This evidences local natural-resources custody, not an open parcel-vector service."
+    },
+    {
+      "url": "https://www.chengdu.gov.cn/data/oportal/index",
+      "observation": "Official Chengdu public-data portal exposes geographic-space and district/county catalogs, but the bounded review did not verify a Dujiangyan parcel dataset or geometry API."
+    },
+    {
+      "url": "https://www.rerc.com.cn/",
+      "observation": "Ministry of Natural Resources Real Estate Registration Center site provides national registration context and links to local registration websites; it did not expose Dujiangyan parcel geometry in the bounded review."
+    },
+    {
+      "url": "https://www.cgs.gov.cn/ywdt/ddyw/202504/t20250423_820380.html",
+      "observation": "China Geological Survey report describes Tianditu as the national public geographic-information service platform and its public-service role; it is general national platform context, not evidence of Dujiangyan cadastral polygons."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.djy.gov.cn/",
+      "method": "GET; anonymous; TLS verification enabled; max-time 20s",
+      "httpStatus": 412,
+      "outcome": "Response was HTTP 412 with text/html; no official HTML, JavaScript configuration, viewer route, or parcel service could be inspected. This is an access limitation, not evidence of citywide absence."
+    },
+    {
+      "url": "https://cdsdjys.sczwfw.gov.cn/",
+      "method": "GET; anonymous; TLS verification enabled; max-time 20s",
+      "httpStatus": "timeout during bounded request",
+      "outcome": "No response body was retained and no retry or credentialed access was attempted."
+    },
+    {
+      "url": "https://www.chengdu.gov.cn/data/oportal/index",
+      "method": "GET; anonymous; TLS verification enabled; max-time 20s",
+      "httpStatus": "not completed after prior request timeout",
+      "outcome": "No parcel request was issued; portal search-result context was inspected through first-party indexed material only."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "An official Dujiangyan government-service document identifies the municipal Planning and Natural Resources Bureau as the custodian for a foundational-surveying approval. This is local institutional custody evidence only; it does not establish an open cadastral API or runtime admission.",
+  "registryEvidenceUrls": [
+    "https://cdsdjys.sczwfw.gov.cn/module/download/downfile.jsp?classid=0&filename=ee11c23c9bd44d789b57db3c827d1aaf.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "url": null,
+    "kind": "No verified anonymous cadastral parcel-vector source",
+    "publisher": "Dujiangyan Planning and Natural Resources Bureau (custodian evidenced; service endpoint unverified)",
+    "scope": "Local custody and public-service context only; no safe anonymous parcel ID, schema, CRS, or polygon response verified.",
+    "safeSampleFile": null,
+    "sampleAttributes": "none retained",
+    "nativeFields": []
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not executed against a returned parcel feature layer. Exact WUP point [30.9954940087978, 103.642378061023] remains unchanged; no absence inference is made.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Dujiangyan/Chengdu government-service and national registration/geographic-platform context relevant to cadastral custody.",
+    "verifiedOpenScope": "Local custodian evidence only; no anonymous safe full-polygon response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["safe public parcel/source ID if available", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "runtimeReadiness": "held_quality_review",
+  "resultCategory": "official_registry_context_no_verified_public_geometry",
+  "status": "complete",
+  "remainingUncertainty": "A protected or separately published municipal cadastral/map service may exist, but no safe anonymous endpoint was verified. The HTTP 412 and timeout outcomes are access limitations. No owner, address, contact, titleholder, tax, account, or other unsafe fields were requested or retained."
+}

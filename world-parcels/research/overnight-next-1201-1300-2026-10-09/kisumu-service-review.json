@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1084-kisumu.json",
+  "purpose": "Document first-party local registry context, current official viewer/API inspection, bounded request outcomes, and safe parcel-geometry qualification.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Kisumu local registry custody is evidenced by the official State Department for Lands directory. The official Ardhisasa viewer was inspected anonymously and its current JavaScript/configuration was followed to the public government API host, but no safe anonymous parcel geometry query was exposed or verified. No GeoJSON sample is retained.",
+  "registryAssessment": "The Kisumu Lands Office is a city-local Ministry of Lands registry/survey custodian. County GIS and cadastral-data planning evidence is separate and does not prove a public parcel service.",
+  "safeFieldAllowlist": ["stable native parcel identifier if publicly exposed", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "officialPrimarySources": [
+    {"url": "https://www.lands.go.ke/land-registries", "observation": "Kisumu Lands Office at Ardhi House Kisumu is listed with land registration and land survey and mapping functions."},
+    {"url": "https://ardhisasa.lands.go.ke/", "observation": "Anonymous official application shell loaded; current JS references government API services, but no public parcel-map route was verified."},
+    {"url": "https://www.kisumu.go.ke/wp-content/uploads/FINAL-FINAL-FOR-REQUEST-FOR-PROPOSAL-LAND-SPATIAL-WITH-NEG-NO.-2.pdf", "observation": "County procurement document describes cadastral spatial-database preparation and UTM Arc 1960, without publishing queryable parcel features."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Kisumu Kenya official cadastral map parcel GIS land registry survey parcels", "result": "First-party registry and GIS-planning evidence found; no anonymous parcel geometry endpoint found.", "actualResultUrls": ["https://www.lands.go.ke/land-registries", "https://ardhisasa.lands.go.ke/", "https://www.kisumu.go.ke/wp-content/uploads/FINAL-FINAL-FOR-REQUEST-FOR-PROPOSAL-LAND-SPATIAL-WITH-NEG-NO.-2.pdf"]},
+    {"language": "Swahili", "query": "Kisumu Kenya ramani ya ardhi ya cadastral viwanja usajili wa ardhi GIS rasmi", "result": "No distinct public Kisumu parcel viewer found; official Swahili service-charter material concerns land-map services generally.", "actualResultUrls": ["https://www.lands.go.ke/sites/default/files/2025-04/SDLPP%20Kiswahili%20Service%20Charter.pdf", "https://www.lands.go.ke/land-registries", "https://ardhisasa.lands.go.ke/"]}
+  ],
+  "attempts": [
+    {"url": "https://www.lands.go.ke/land-registries", "method": "GET/search result review", "httpStatus": 200, "result": "Official directory evidence for Kisumu Lands Office and land survey/mapping custody; no parcel features."},
+    {"url": "https://ardhisasa.lands.go.ke/", "method": "GET", "httpStatus": 200, "result": "Anonymous Angular application shell loaded."},
+    {"url": "https://ardhisasa.lands.go.ke/main.69ac27a50746b7c2.js", "method": "GET", "httpStatus": 200, "result": "Current configuration inspected; API host is https://ardhisasa-api.lands.go.ke/ and survey service is configured as a government application service. No public city parcel geometry endpoint was found in the inspected route/configuration."},
+    {"url": "https://ardhisasa-api.lands.go.ke/", "method": "GET", "httpStatus": 404, "result": "API host responded, but root route is not a usable parcel endpoint; no further record lookup was attempted."},
+    {"url": "https://www.kisumu.go.ke/wp-content/uploads/FINAL-FINAL-FOR-REQUEST-FOR-PROPOSAL-LAND-SPATIAL-WITH-NEG-NO.-2.pdf", "method": "GET", "httpStatus": 502, "result": "Official PDF search result was reviewed; direct fetch returned a gateway error. Search extract documents cadastral spatial-database planning only; no geometry was inferred."},
+    {"url": "https://storymaps.arcgis.com/stories/19ae8bdfb8f8445cad50d1c2f9b8f380", "method": "GET", "httpStatus": 200, "result": "Official County GIS story reviewed. ArcGIS item-data request returned 403 subscription disabled; no parcel layer inferred."}
+  ],
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "requestEvidence": []},
+  "coverageAssessment": {"claimedScope": "Kisumu Lands Office local registry custody; County GIS/cadastral planning evidence.", "verifiedOpenScope": "No public anonymous parcel geometry or schema verified.", "citywideVerified": false, "countrywideVerified": false},
+  "remainingUncertainty": "No exact-point result, citywide extent, native parcel identifier, CRS response, or public geometry service was available from safe anonymous requests. A map extent miss or unavailable UI is not treated as citywide absence.",
+  "runtimeAssessment": {"status": "held", "reason": "No independently qualified real adapter or safe anonymous parcel geometry sample."}
+}

@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9845-tumakuru.json",
+  "purpose": "Independent first-party registry/map discovery and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "exactPointMissNotInterpretedAsAbsence": true
+  },
+  "assessment": "Tumakuru City Corporation has a public municipal PID/assessment property-search procedure, and Karnataka's official Revenue Commissionerate portal documents Bhoomi/SSLR Revenue Maps. No anonymous parcel geometry response with a safe native identity was verified, so no GeoJSON sample was retained and runtime remains held.",
+  "registryAssessment": "Local municipal property-search custody is evidenced by the Tumakuru City Corporation page. State cadastral/revenue-map service custody is evidenced by the Karnataka Revenue Commissionerate portal. Neither source was verified as an open city-bound parcel vector service.",
+  "officialPrimarySources": [
+    {
+      "url": "https://tumakurucitycorp.org/WebSite/Citizen/PropertySearch.aspx",
+      "operator": "Tumakuru City Corporation",
+      "observation": "HTTP 200 public ASP.NET page; instructions describe lookup by PID or by ward and old/new assessment number, with Kannada text. Form action is PropertySearch.aspx. No safe geometry endpoint was exposed and no property lookup was submitted."
+    },
+    {
+      "url": "https://landrecords.karnataka.gov.in/",
+      "operator": "Revenue Department, Government of Karnataka / Bhoomi Monitoring Cell",
+      "observation": "HTTP 200 official portal; lists Survey (SSLR) Services and Revenue Maps and identifies the state-government operator."
+    },
+    {
+      "url": "https://kla.kar.nic.in/council/house/Paperlaid/147/33.pdf",
+      "operator": "Karnataka Legislature-hosted Tumakuru Urban Development Authority report",
+      "observation": "Annual report describes GIS-based master-plan/base-map work for the Tumakuru local planning area; it is planning evidence, not a public parcel geometry service."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Tumakuru Karnataka official cadastral parcel map land records GIS Bhoomi survey map",
+      "result": "Official state land-records service directory and municipal property-search page found; no verified public parcel vector endpoint.",
+      "actualResultUrls": ["https://landrecords.karnataka.gov.in/", "https://tumakurucitycorp.org/WebSite/Citizen/PropertySearch.aspx", "https://kla.kar.nic.in/council/house/Paperlaid/147/33.pdf"]
+    },
+    {
+      "language": "Kannada",
+      "query": "ತುಮಕೂರು ಕರ್ನಾಟಕ ಅಧಿಕೃತ ಭೂ ದಾಖಲೆ ಪಾರ್ಸೆಲ್ ನಕ್ಷೆ ಭೂಮಿ",
+      "result": "Kannada discovery confirmed the official state portal and Kannada municipal property-search instructions; no parcel polygon endpoint.",
+      "actualResultUrls": ["https://landrecords.karnataka.gov.in/", "https://tumakurucitycorp.org/WebSite/Citizen/PropertySearch.aspx"]
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": "Official state portal and service-route inspection",
+      "result": "Portal home accessible; service3 Revenue Maps route timed out on direct anonymous retrieval. No TLS exception, login, CAPTCHA bypass or token use.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    },
+    {
+      "attempt": "Tumakuru municipal public property-search inspection",
+      "result": "HTTP 200 form retrieved; form documents PID/ward/assessment lookup. No form submission or unsafe field request.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://landrecords.karnataka.gov.in/service3/",
+      "method": "GET",
+      "outcome": "timeout",
+      "safeRequest": true
+    },
+    {
+      "url": "https://tumakurucitycorp.org/WebSite/Citizen/PropertySearch.aspx",
+      "method": "GET",
+      "outcome": "HTTP 200; HTML saved to ignored scratch cache only",
+      "safeRequest": true
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": false,
+    "sampleFile": null,
+    "details": "No full parcel polygon and no verified stable cadastral native identity were obtained. No exact-point hit or miss was used to infer coverage."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Tumakuru municipal property-search procedure plus Karnataka state Bhoomi/SSLR Revenue Maps service directory.",
+    "verifiedOpenScope": "Public service documentation and one accessible municipal form only; parcel geometry, schema, CRS and citywide extent remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "The official state service may expose Tumakuru-specific revenue maps after recovery or through an ordinary portal workflow; current availability and machine-readable geometry are unknown.",
+  "runtimeDecision": "held_not_enabled_no_verified_public_geometry"
+}

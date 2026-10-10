@@ -1,0 +1,123 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-632-surrey.json",
+  "cohort": "overnight-next-1201-1300-2026-10-09",
+  "purpose": "Independent service review for official Surrey public parcel-map evidence; runtime qualification is intentionally held for serial review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "wupPointPreserved": [
+      49.1578411996007,
+      -122.842214202135
+    ]
+  },
+  "assessment": "The City of Surrey's first-party Maps & COSMOS page identifies the public mapping system and links the city GIS service. The official ArcGIS REST lots layer returned safe polygon geometry from an unchanged exact-point request and a nearby bounded envelope request. The evidence supports local public parcel geometry, not citywide completeness or legal-title authority.",
+  "registryAssessment": "A local municipal GIS custodian is evidenced: City of Surrey GIS/Engineering maintains COSMOS and property information, and its public service returned parcel polygons. This does not establish the provincial land-title registry as integrated, and no unsafe title or ownership data was requested.",
+  "coverageAssessment": {
+    "claimedScope": "City of Surrey COSMOS/GIS and the ICI_Data lots layer, plus two bounded anonymous queries.",
+    "verifiedOpenScope": "One unchanged WUP point response and three safe polygon features from a 0.02-degree envelope around it.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "officialPrimarySources": [
+    {
+      "url": "https://www.surrey.ca/services-payments/online-services/maps-cosmos",
+      "operator": "City of Surrey",
+      "scope": "First-party COSMOS page; identifies the public mapping system, property-map functions, and city GIS data provenance."
+    },
+    {
+      "url": "https://gisservices.surrey.ca/arcgis/rest/services/ICI_Data/MapServer/1",
+      "operator": "City of Surrey GIS",
+      "scope": "Official ArcGIS lots layer; polygon geometry, service schema, CRS metadata, and safe parcel fields."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Surrey British Columbia official cadastral parcel map GIS property parcels ArcGIS",
+      "result": "Found official City of Surrey COSMOS page and official GIS lots layer."
+    },
+    {
+      "language": "native/local",
+      "query": "Surrey BC carte cadastrale parcelles SIG officiel",
+      "result": "French-language discovery attempt found the same official City of Surrey GIS/COSMOS sources; the city's public source is English."
+    }
+  ],
+  "attempts": [
+    "Attempted the City of Surrey Maps & COSMOS page anonymously over TLS; HTTP 403 from this research environment, recorded as a route limitation. First-party search discovery and prior retained response identify the page.",
+    "Fetched the current public COSMOS viewer shell anonymously over TLS; HTTP 200. bootstrap.js is the Sencha entrypoint and ArcGIS JS API 4.21 is referenced.",
+    "Fetched current official ArcGIS REST layer metadata anonymously over TLS; HTTP 200. Observed polygon schema, safe fields, and NAD83/UTM Zone 10N source CRS; did not request owner/address/titleholder fields.",
+    "Sent an anonymous exact-point GeoJSON query at [49.1578411996007, -122.842214202135] without shifting the WUP coordinate; HTTP 200; two duplicate records shared identical geometry and MSLINK.",
+    "Sent an anonymous bounded envelope GeoJSON query for [-122.85,49.15,-122.83,49.17] with resultRecordCount=3; HTTP 200; three Polygon features returned and exceededTransferLimit=true.",
+    "Retained three unchanged native polygons in surrey-parcel-samples.geojson. No owner, address, contact, titleholder, tax/account, personal, credential, or private-token fields were requested or retained.",
+    "Safe field allowlist: geometry, OBJECTID, MSLINK, FOLIO, PID, LTSA_LOT, LTSA_BLOCK, LTSA_PLAN, LTSA_PARCEL, ACCURACY, METHOD.",
+    "No citywide or countrywide completeness claim; runtime remains held for serial review."
+  ],
+  "geometryEvidence": {
+    "verified": true,
+    "sampleCount": 3,
+    "sampleFile": "surrey-parcel-samples.geojson",
+    "nativeId": "OBJECTID/MSLINK with published parcel identifiers where present",
+    "exactWupPointTest": "The unchanged WUP point returned a Polygon response. Duplicate records were observed and not counted as separate retained parcels.",
+    "requestEvidence": [
+      {
+        "url": "https://gisservices.surrey.ca/arcgis/rest/services/ICI_Data/MapServer/1/query",
+        "method": "GET; anonymous; TLS verified",
+        "httpStatus": 200,
+        "assessment": "Exact-point query returned two duplicate-geometry records."
+      },
+      {
+        "url": "https://gisservices.surrey.ca/arcgis/rest/services/ICI_Data/MapServer/1/query",
+        "method": "GET; anonymous; TLS verified",
+        "httpStatus": 200,
+        "assessment": "Bounded envelope returned three Polygon features; sample retained."
+      }
+    ]
+  },
+  "nextStep": "Serial reviewer should independently check current viewer/configuration, CRS and coordinate order, duplicate-record semantics, safe key stability, transfer limits, and bounded coverage before any adapter admission. Keep runtime held.",
+  "remainingUncertainty": "Current layer metadata reports NAD83/UTM Zone 10N while query output was requested as EPSG:4326; the bounded response was transfer-limited; the direct City page fetch returned 403 in this environment; legal-title authority, data vintage, freshness, and citywide completeness are not established.",
+  "researchAttempt": 3,
+  "latestAttempt": {
+    "checkedAt": "2026-10-09",
+    "discovery": "English and French first-party discovery re-found City of Surrey Maps & COSMOS/GIS pages and the official ArcGIS lots layer.",
+    "requests": [
+      {
+        "url": "https://cosmos.surrey.ca/",
+        "method": "GET; anonymous; TLS verified",
+        "httpStatus": 302,
+        "outcome": "Redirected to the public /external/ viewer; no authentication wall encountered."
+      },
+      {
+        "url": "https://gisservices.surrey.ca/arcgis/rest/services/ICI_Data/MapServer/1?f=pjson",
+        "method": "GET; anonymous; TLS verified",
+        "httpStatus": 200,
+        "outcome": "Confirmed lots polygon layer, GeoJSON support, max record count 2000, and NAD83/UTM Zone 10N source metadata."
+      },
+      {
+        "url": "https://gisservices.surrey.ca/arcgis/rest/services/ICI_Data/MapServer/1/query",
+        "method": "GET; anonymous; TLS verified",
+        "httpStatus": 200,
+        "outcome": "Exact unchanged WUP point returned two duplicate-geometry Polygon records with safe requested fields only."
+      }
+    ],
+    "scopeLimit": "No new sample retained; existing sample remains three full polygons maximum. This recheck does not establish citywide coverage, legal-title authority, freshness, or adapter readiness."
+  },
+  "runtimeAssessment": {
+    "status": "held_quality_review",
+    "reason": "Official public polygon geometry is verified, but adapter/runtime qualification is reserved for the serial reviewer."
+  },
+  "sampleRetention": {
+    "retainedFeatureProperties": [
+      "id"
+    ],
+    "fullGeometryChanged": false,
+    "featureReferencesChanged": false,
+    "fullGeometrySha256": "fd9bceebb1d2aec253607edce090b4338b92f125f044348ffe45da4639168189"
+  }
+}

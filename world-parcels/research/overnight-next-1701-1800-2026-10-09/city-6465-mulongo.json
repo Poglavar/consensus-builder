@@ -1,0 +1,108 @@
+{
+  "cityCode": 6465,
+  "queueRank": 1784,
+  "city": "Mulongo",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "iso3": "COD",
+  "point": [-7.83385955265596, 26.9965375561645],
+  "population2025": 321881,
+  "population2025k": 321.881,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Mulongo Democratic Republic of the Congo cadastre parcel map official",
+        "result": "Found the official Ministry of Land Affairs site and its public list of cadastral jurisdictions; no Mulongo-specific public parcel viewer, parcel API, safe native parcel ID response, or polygon geometry was found.",
+        "actualResultUrls": ["https://www.affairesfoncieres.gouv.cd/", "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions"]
+      },
+      {
+        "language": "French (DRC official working language)",
+        "query": "Mulongo République démocratique du Congo cadastre parcelle carte officiel",
+        "result": "Found the official Ministère des Affaires Foncières site, the Haut-Lomami jurisdiction list, and the official public land-record consultation procedure; no Mulongo-specific anonymous parcel service or geometry was found.",
+        "actualResultUrls": ["https://www.affairesfoncieres.gouv.cd/", "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions", "https://servicepublic.gouv.cd/service/4671"]
+      }
+    ]
+  },
+  "registryFound": null,
+  "requestsAndEndpointChecks": [
+    {
+      "route": "Ministère des Affaires Foncières official home",
+      "url": "https://www.affairesfoncieres.gouv.cd/",
+      "method": "GET",
+      "outcome": "Readable official ministry site. It describes cadastral reform and links a pilot digitization project, but exposes no public Mulongo parcel layer or geometry endpoint. National custodian evidence only."
+    },
+    {
+      "route": "Official cadastral jurisdiction directory",
+      "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "method": "GET",
+      "outcome": "Readable official directory. Haut-Lomami lists Kamina and Kanyama as the two jurisdictions; Mulongo is not listed as a separate jurisdiction. This does not establish parcel coverage or absence."
+    },
+    {
+      "route": "Official public land-record consultation procedure",
+      "url": "https://servicepublic.gouv.cd/service/4671",
+      "method": "GET",
+      "outcome": "Readable official procedure for formal consultation through a Conservateur des Titres Immobiliers or Chef de Division du Cadastre. It is a request procedure, not an anonymous map/API or local Mulongo registry endpoint; no request was submitted."
+    },
+    {
+      "route": "Official site JavaScript/configuration inspection",
+      "url": "https://www.affairesfoncieres.gouv.cd/",
+      "method": "GET plus linked JavaScript inspection",
+      "outcome": "The current site exposes /api/sliders and /api/documents endpoints and advertises https://supabasecadastre.193.203.191.123.sslip.io in its CSP, but no parcel/map route or public schema was exposed."
+    },
+    {
+      "route": "Discovered Supabase REST root",
+      "url": "https://supabasecadastre.193.203.191.123.sslip.io/rest/v1/",
+      "method": "GET",
+      "outcome": "TLS-verified request returned HTTP 401 with `www-authenticate: Key`; no key was available or requested, and no authenticated/private route was attempted."
+    },
+    {
+      "route": "Bounded candidate REST table probe",
+      "url": "https://supabasecadastre.193.203.191.123.sslip.io/rest/v1/parcels",
+      "method": "GET",
+      "outcome": "TLS-verified request returned HTTP 401 requiring a key. No fields, IDs, geometry, CRS, or coverage were obtained."
+    },
+    {
+      "route": "Initial host connectivity check",
+      "url": "https://supabasecadastre.193.203.191.123.sslip.io/",
+      "method": "GET",
+      "outcome": "An initial exploratory curl invocation included an unnecessary `-k` flag; it returned only HTTP 401 and no response data. A TLS-verified repeat was then used for the REST checks above. No certificate exception is relied upon in this packet."
+    }
+  ],
+  "scopeLimits": [
+    "Exact WUP point [-7.83385955265596, 26.9965375561645] was preserved in latitude/longitude order and was not shifted; no exact-point parcel hit/miss inference was made.",
+    "The official ministry directory is national/local-custodian evidence only; it does not prove that Mulongo has an open parcel layer or that the listed Kamina/Kanyama jurisdictions publish Mulongo data.",
+    "A 401/login-key wall, absent anonymous endpoint, unavailable UI, or zero exact-point result is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, title, tax/account, personal, or other unsafe fields were requested or retained.",
+    "Packet completion records research attempts only; runtime adapter qualification/admission remains held for independent serial review."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier", "full parcel polygon geometry", "geometry CRS", "public source layer/service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": null,
+  "geometryQuality": "not evaluated; no parcel geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed; no usable public parcel geometry response.",
+    "requestEvidence": ["official ministry home", "official jurisdiction directory", "official consultation procedure", "TLS-verified Supabase REST 401"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Democratic Republic of the Congo cadastral ministry and public land-record resources relevant to Mulongo.",
+    "verifiedOpenScope": "Official institutional directory and formal consultation procedure only; no open Mulongo parcel geometry scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review required",
+  "uncertainty": "Local custody within Haut-Lomami, current public parcel endpoint, native identity, schema, CRS, geometry, update currency, and citywide completeness remain unresolved.",
+  "retainedSample": null
+}

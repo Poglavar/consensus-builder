@@ -1,0 +1,55 @@
+{
+  "cityCode": 8750,
+  "queueRank": 1427,
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "point": [11.7075337413054, 11.0899508285363],
+  "population2025": 397981,
+  "population2025k": 397.981,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Potiskum Nigeria cadastral parcel map official GIS land registry Yobe",
+        "result": "Discovery found the official Yobe State Geographic Information Service (YOGIS) property portal, official Yobe budget records describing Damaturu–Potiskum master-plan/cadastral mapping work, and an official Federal Surveys Potiskum topographic map. The YOGIS public property route requires login; no anonymous parcel feature service was established.",
+        "actualResultUrls": [
+          "https://dli.gis.yb.gov.ng/MyProperties/login.php",
+          "https://saber.pfm.yb.gov.ng/wp-content/uploads/2024/10/Yobe-State-Q3-BPR-2024-final.pdf",
+          "https://nigeriareposit.nln.gov.ng/items/c861170f-0ed8-499c-bc77-d52ac66794f0"
+        ]
+      },
+      {
+        "language": "Hausa",
+        "query": "Potiskum Nigeria taswirar filaye cadastral GIS rajistar ƙasa Yobe official",
+        "result": "The Hausa-language discovery query did not expose a public parcel endpoint. First-party follow-up located the same official YOGIS property route and Yobe government records; the route is login-gated and no geometry or safe native parcel identity was inferred from that limitation.",
+        "actualResultUrls": [
+          "https://dli.gis.yb.gov.ng/MyProperties/login.php",
+          "https://irs.yb.gov.ng/revenueCode",
+          "https://saber.pfm.yb.gov.ng/yogis-documents-2/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "custodian": "Yobe State Geographic Information Service (YOGIS)",
+    "localOffice": "YOGIS, Yobe State Government",
+    "localOfficeEvidenceUrl": "https://dli.gis.yb.gov.ng/MyProperties/login.php",
+    "sourceScope": "Yobe state geographic-information and land-administration service; official Yobe budget records specifically reference Damaturu–Potiskum master-plan and cadastral-mapping work.",
+    "geometryAccess": "The public property-management route is login-gated. No credentials, private token, CAPTCHA bypass, owner/address/titleholder fields, or unsafe fields were used."
+  },
+  "geometry": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not performed against a public parcel feature service because no anonymous feature service was exposed. The login wall and route misses are not evidence of citywide absence.",
+    "crs": null
+  },
+  "runtimeReadiness": {
+    "status": "held",
+    "reason": "Local YOGIS custodian and cadastral-mapping context were verified, but no anonymous safe-ID geometry response, schema/CRS, or independently qualified adapter was found.",
+    "adapterAdmission": false
+  }
+}

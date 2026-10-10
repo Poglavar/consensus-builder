@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "attempt": 1,
+  "cityRecord": "city-4699-as-samawah.json",
+  "cityFile": "city-4699-as-samawah.json",
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "purpose": "Review official Iraqi cadastral and geographic-portal channels for anonymous parcel geometry with safe native identifiers.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false, "wupPointPreserved": [31.3134839412364, 45.2807814279876]},
+  "assessment": "Official Iraqi Ministry of Justice and Iraq Geographic Portal pages were reachable. They document national real-estate registration, deed/property-map procedures and a general state-land geographic service, but no anonymous As Samawah parcel feature layer, schema, CRS or geometry endpoint was exposed. No sample GeoJSON is retained.",
+  "registryAssessment": "registryFound remains null. The Ministry of Justice is a national registration custodian, and IGP is a national/general portal; neither inspected page evidences a local As Samawah or Dhi Qar public parcel registry/map endpoint.",
+  "registryFound": null,
+  "coverageAssessment": {"claimedScope": "Official Iraqi national registration and geographic-portal pages.", "verifiedOpenScope": "No anonymous stable parcel ID plus full polygon response.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "officialPrimarySources": [
+    {"url": "https://moj.gov.iq/view.9289/", "operator": "Ministry of Justice, Iraq", "scope": "Official registration-department announcement; listed initial electronic services are Baghdad directorates."},
+    {"url": "https://ur.gov.iq/index/show-eservice/40227/10049/cat", "operator": "Iraq Unified Electronic Portal", "scope": "Official deed/property-map request procedure; authenticated owner/document workflow and Baghdad-only current online availability."},
+    {"url": "https://igp.ur.gov.iq/Services.aspx?m=d24f0c1a-6ed8-4185-839d-aec82744694a", "operator": "Iraq Geographic Portal", "scope": "Official service catalogue; state-land ownership locations, not parcel-boundary data."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "As Samawah Iraq official cadastral parcel map GIS API municipality land registry", "result": "Official Ministry of Justice and IGP leads found; no public parcel API or geometry.", "actualResultUrls": ["https://moj.gov.iq/view.9289/", "https://igp.ur.gov.iq/Services.aspx?m=d24f0c1a-6ed8-4185-839d-aec82744694a"]},
+    {"language": "Arabic (local/native)", "query": "السماوة العراق خريطة كادستر قطع الأراضي GIS التسجيل العقاري", "result": "عُثر على صفحات وزارة العدل وبوابة العراق الجغرافية؛ لا توجد طبقة عامة لقطع الأراضي أو API مجهول تم التحقق منه.", "actualResultUrls": ["https://moj.gov.iq/view.9289/", "https://ur.gov.iq/index/show-eservice/40227/10049/cat", "https://igp.ur.gov.iq/Services.aspx?m=d24f0c1a-6ed8-4185-839d-aec82744694a"]}
+  ],
+  "attempts": [
+    "Fetched the official Ministry of Justice announcement anonymously (HTTP 200) and inspected its current registration-service links.",
+    "Fetched the official Ur Portal deed/property-map service page anonymously (HTTP 200); it describes an authenticated owner/document process and says online availability is currently Baghdad.",
+    "Fetched the official IGP service catalogue anonymously (HTTP 200); it lists a state-land ownership service, not parcel boundaries.",
+    "Followed the IGP catalogue's current View.aspx link anonymously (HTTP 200); the response was portal homepage/news content, not a map/API, so no endpoint was guessed.",
+    "Fetched the linked e-service application shell anonymously (HTTP 200); it requires JavaScript/authenticated workflow and exposed no safe public parcel response.",
+    "No exact WUP-point or city-extent parcel request was run because no documented anonymous parcel geometry endpoint was found. The unchanged point [31.3134839412364, 45.2807814279876] is preserved and no absence inference is made.",
+    "Safe field allowlist for any future public query: stable native parcel ID and geometry only. Owner, address, titleholder, contact, tax/account, certificate and personal fields were neither requested nor retained."
+  ],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "crs": null, "exactWupPointTest": "Not run: no documented anonymous parcel endpoint was found; zero-hit/absence inference prohibited."},
+  "nativeSchema": {"inspected": false, "crs": null, "nativeFieldMapping": null, "compositeKeyProvenance": null},
+  "runtimeReadiness": "held",
+  "reviewDisposition": "Source integration/admission is not claimed; serial reviewer qualification required.",
+  "nextStep": "Retry only with a documented official Dhi Qar/As Samawah parcel endpoint or map service; retain runtime hold until independent adapter qualification.",
+  "remainingUncertainty": "Post-request registry holdings, IGP service internals, local Dhi Qar services and non-indexed public endpoints remain unknown."
+}

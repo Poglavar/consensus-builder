@@ -1,0 +1,149 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; local registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09T00:00:00Z",
+  "cityCode": 220,
+  "queueRank": 1262,
+  "cityId": "wup:220",
+  "name": "Belfast",
+  "country": "United Kingdom",
+  "countryCode": "GB",
+  "iso3": "GBR",
+  "centerLatLon": [54.602197727664, -5.93500686517269],
+  "point": [54.602197727664, -5.93500686517269],
+  "population2025": 441925,
+  "population2025k": 441.925,
+  "populationUnit": "persons",
+  "status": "complete",
+  "year": 2025,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Belfast official cadastral parcel map land registry GIS Northern Ireland Land and Property Services Spatial NI",
+        "result": "First-party discovery identified Land & Property Services (LPS) as the Northern Ireland Land Registry custodian, the official Land Registry map description, the official statement that online public Land Registry searching is not currently available, and the public Spatial NI/OSNI viewer. No anonymous parcel feature service with safe native IDs and full polygons was verified.",
+        "actualResultUrls": [
+          "https://www.finance-ni.gov.uk/articles/land-registry-map",
+          "https://www.nidirect.gov.uk/articles/searching-land-registry",
+          "https://www.spatialni.gov.uk/?page_id=2",
+          "https://osni-spatialni.hub.arcgis.com/"
+        ],
+        "scope": "Identify Belfast/Northern Ireland registry custody and an anonymous public parcel geometry source without requesting owner, address, title, contact, tax/account, personal data or credentials."
+      },
+      {
+        "language": "Irish / Gaeilge",
+        "query": "Béal Feirste léarscáil clárlainne talún ceapacha cadastral GIS Oifig Seirbhísí Talún agus Maoine Tuaisceart Éireann",
+        "result": "A separate Irish-language discovery pass was performed. First-party English/Irish government navigation led to the same LPS Land Registry and Spatial NI/OSNI sources; no separate public Irish-language parcel-vector endpoint was exposed or verified.",
+        "actualResultUrls": [
+          "https://www.nidirect.gov.uk/articles/searching-land-registry",
+          "https://www.finance-ni.gov.uk/articles/land-registry-map",
+          "https://www.spatialni.gov.uk/about-keyfeatures.html"
+        ],
+        "method": "Independent local-language query followed by first-party source review.",
+        "scope": "Find safe public geometry and stable native parcel IDs only; no record-specific land-registration lookup was attempted."
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.finance-ni.gov.uk/articles/land-registry-map",
+      "operator": "Land & Property Services, Department of Finance, Northern Ireland",
+      "observation": "Official page states that the Land Registry map indicates the location of registered holdings and describes digital-map updates and folio boundaries; it also cautions that boundaries are not guaranteed.",
+      "scope": "Local/national Northern Ireland registry custodian and map documentation; not an open vector endpoint."
+    },
+    {
+      "url": "https://www.nidirect.gov.uk/articles/searching-land-registry",
+      "operator": "Land & Property Services / nidirect",
+      "observation": "Official public guidance identifies LPS as responsible for the Northern Ireland Land Registry and says online searching is not possible at present; searches are requested by email, telephone or in person.",
+      "scope": "Public access procedure and registry custody; no parcel geometry response."
+    },
+    {
+      "url": "https://www.spatialni.gov.uk/?page_id=2",
+      "operator": "Ordnance Survey of Northern Ireland / Spatial NI",
+      "observation": "Official Spatial NI page links the free public map viewer and identifies OSNI as the official producer of Northern Ireland mapping.",
+      "scope": "Public mapping platform; viewer configuration was followed, but no parcel layer with safe full geometry was verified."
+    },
+    {
+      "url": "https://osni-spatialni.hub.arcgis.com/",
+      "operator": "Spatial NI / OSNI ArcGIS Hub",
+      "observation": "Anonymous public GET returned the current Hub HTML/configuration. It exposed the public Hub and general map-viewer entry point, but no anonymous Belfast parcel feature service, schema, CRS, or stable parcel-ID response was identified.",
+      "scope": "Public viewer entry point and configuration inspection; not verified parcel geometry."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.finance-ni.gov.uk/articles/land-registry-map",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Official Land Registry map documentation returned successfully; it describes registry holdings and digital map detail but does not expose a public parcel API."
+    },
+    {
+      "url": "https://www.nidirect.gov.uk/articles/searching-land-registry",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Official guidance returned successfully and explicitly states that online Land Registry searching is not currently available. No authenticated or record-specific search was attempted."
+    },
+    {
+      "url": "https://www.spatialni.gov.uk/?page_id=2",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Official Spatial NI page returned successfully and linked the public map viewer at osni-spatialni.hub.arcgis.com."
+    },
+    {
+      "url": "https://osni-spatialni.hub.arcgis.com/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Current ArcGIS Hub HTML/configuration returned successfully. Bounded inspection found public basemap/site configuration and no verified parcel feature service or safe ID+geometry response."
+    }
+  ],
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "Northern Ireland Land Registry / Spatial NI",
+    "url": "https://www.finance-ni.gov.uk/articles/land-registry-map",
+    "operator": "Land & Property Services, Department of Finance, Northern Ireland; OSNI Spatial NI for public mapping",
+    "serviceType": "Official local registry/map documentation and public mapping viewer reviewed; no anonymous source-native full parcel polygon endpoint verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "LPS registry custody is evidenced, but public online searching is stated to be unavailable; Spatial NI viewer access does not establish an open parcel-vector service."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Northern Ireland Land Registry and official OSNI/Spatial NI public mapping documentation and current public Hub entry point were reviewed.",
+    "verifiedOpenScope": "No anonymous full parcel geometry with stable native IDs, schema, CRS, exact-point response, or citywide completeness was verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "The official public guidance says online Land Registry searching is not currently available, and bounded inspection of the public Spatial NI/OSNI viewer entry point did not expose an anonymous parcel feature service with safe ID+geometry.",
+  "remainingUncertainty": "A restricted LandWeb/LPS service or a viewer layer available only through an interactive session may exist. No login, credentials, private token, CAPTCHA/Cloudflare bypass, or unsafe property-record query was used; no absence claim is made.",
+  "nextStep": "Continue only if a current first-party anonymous parcel-vector endpoint is published; independently verify schema, CRS, stable native IDs, bounded geometry response and coverage before adapter qualification.",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "LPS is officially identified as responsible for the Northern Ireland Land Registry, and the official Land Registry map page describes registered holdings and digital map detail. The public guidance says online searching is not currently available; this establishes registry custody, not open parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://www.finance-ni.gov.uk/articles/land-registry-map",
+    "https://www.nidirect.gov.uk/articles/searching-land-registry"
+  ],
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "No verified anonymous parcel geometry and stable native ID response; runtime admission remains held pending independent serial qualification."
+  },
+  "cohort": "overnight-next-1201-1300-2026-10-09",
+  "cohortState": "research_complete_pending_serial_review",
+  "integrationState": "not_integrated"
+}

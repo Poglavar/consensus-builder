@@ -1,0 +1,15 @@
+{
+  "taskId": "city:682",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-queue-extension-1301-2300-verification-2026-10-09.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-682-kumba.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/kumba-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T14:14:17.040941Z",
+  "reason": "MINDCAF establishes national cadastral mandate, but no original Kumba parcel response or native ID/full polygon is provided. The ArcGIS candidate is described as administrative and its bounded request timed out; local custody stays unresolved. Adapter paging, 13 cells, metric GEOS checks, source binding and headed Details check are unevidenced. Timeout is not citywide absence.",
+  "sourceUrlsChecked": [
+    "https://mindcaf.gov.cm/fr/docs/"
+  ]
+}

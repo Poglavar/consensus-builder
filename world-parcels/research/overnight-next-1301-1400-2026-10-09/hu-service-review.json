@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5059-hu.json",
+  "cityCode": 5059,
+  "purpose": "Document first-party discovery, current public map/service routes, bounded anonymous access review, and evidence limits.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "unsafeFieldsRequested": false, "citywideCompletenessAsserted": false},
+  "assessment": "Huế's official GIS host exposes an anonymous ArcGIS FeatureServer layer named coCauPhanLo_update. The layer returns polygon geometry and native OID fid, but its name and attributes describe planned subdivision/plot structure rather than cadastral registration. Three bounded geometries were retained with only canonical id properties.",
+  "registryAssessment": "Official Huế procedure pages evidence a local land-information service/procedure, while the public GIS layer is not enough to prove a cadastral registry feed. registryFound is therefore null.",
+  "safeFieldAllowlist": ["safe native object ID fid", "geometry", "CRS", "non-personal layer/schema metadata", "HTTP status/content type"],
+  "queries": [
+    {"language": "English", "query": "Hue Vietnam official cadastral parcel map GIS land registration natural resources public map", "outcome": "Official Huế GIS viewer, land-data procedure, and planning map found; no public cadastral schema was evidenced.", "actualResultUrls": ["https://gishue.hue.gov.vn/portal/apps/mapviewer/index.html?layers=3494c725fdb344b2bcb08a81d1c2363d", "https://tthc.hue.gov.vn/Content/Thutuc/chitiet.aspx?iThuTuc=24622", "https://quyhoach.hue.gov.vn/tong-hop-quy-hoach"]},
+    {"language": "native/local", "script": "Vietnamese", "query": "Huế bản đồ địa chính thửa đất GIS đăng ký đất đai Sở Tài nguyên và Môi trường chính thức", "outcome": "Nguồn chính thức xác nhận thủ tục cung cấp dữ liệu đất đai và GIS Huế; chưa chứng minh lớp phân lô công khai là cơ sở dữ liệu địa chính.", "actualResultUrls": ["https://gishue.hue.gov.vn/portal/apps/mapviewer/index.html?layers=3494c725fdb344b2bcb08a81d1c2363d", "https://tthc.hue.gov.vn/Content/Thutuc/chitiet.aspx?iThuTuc=24622", "https://quyhoach.hue.gov.vn/ban-do/0019-7d1c-b2ae-91f6-39c9"]}
+  ],
+  "attempts": [
+    {"url": "https://gishue.hue.gov.vn/server/rest/services?f=pjson", "method": "GET", "httpStatus": 200, "result": "Anonymous ArcGIS directory loaded; Hosted folder listed."},
+    {"url": "https://gishue.hue.gov.vn/server/rest/services/Hosted/coCauPhanLo_update/FeatureServer?f=pjson", "method": "GET", "httpStatus": 200, "result": "Service metadata loaded: 1 polygon layer, maxRecordCount 2000, query capability, 314-record layer extent, EPSG:3857."},
+    {"url": "https://gishue.hue.gov.vn/server/rest/services/Hosted/coCauPhanLo_update/FeatureServer/0?f=pjson", "method": "GET", "httpStatus": 200, "result": "Schema loaded; native objectIdField is fid. Native source fields include objectid, mahoso, dientich, kyhieuloda, solo, trangthaiq, madoituong, manhandang and planning/building fields. No owner/address/title fields requested or retained."},
+    {"url": "https://gishue.hue.gov.vn/server/rest/services/Hosted/coCauPhanLo_update/FeatureServer/0/query", "method": "GET", "httpStatus": 200, "result": "Bounded where=1=1 query requested only fid and geometry, resultRecordCount=3, outSR=4326; three safe polygons returned and retained in hu-parcel-samples.geojson."},
+    {"url": "https://gishue.hue.gov.vn/server/rest/services/Hosted/coCauPhanLo_update/FeatureServer/0/query", "method": "GET", "httpStatus": 200, "result": "Exact WUP-point intersects query returned zero features; no coordinate shift was made and no absence inference was drawn."}
+  ],
+  "geometryEvidence": {"source": "https://gishue.hue.gov.vn/server/rest/services/Hosted/coCauPhanLo_update/FeatureServer/0", "nativeIdField": "fid", "sourceCrs": "EPSG:3857", "sampleFile": "hu-parcel-samples.geojson", "sampleIds": ["fid:1", "fid:2", "fid:3"]},
+  "geometryDecision": {"verified": true, "sourceId": "coCauPhanLo_update", "nativeIdField": "fid", "sampleCount": 3, "sampleFile": "hu-parcel-samples.geojson", "exactWupPointTest": "Zero exact-point hit; this is not evidence of citywide cadastral absence."},
+  "remainingUncertainty": "The layer's cadastral status, business identity semantics, citywide coverage, current viewer configuration, and any separate land-registration service remain unverified.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any cadastral adapter"
+}

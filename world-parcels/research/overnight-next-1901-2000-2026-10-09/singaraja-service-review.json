@@ -1,0 +1,35 @@
+{
+  "cityRecord": "city-8031-singaraja.json",
+  "cityCode": 8031,
+  "queueRank": 1908,
+  "city": "Singaraja",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "ATR/BPN BHUMI and ATLAS national geospatial portal",
+  "serviceUrl": "https://bhumi.atrbpn.go.id/bhumigs/umum",
+  "scope": "Published national Bidang Tanah layer configured as Geoserver layer umum:Persil; Singaraja-specific geometry coverage was not verified.",
+  "schemaAndCrs": "Layer metadata exposes safe display fields penggunaan, tipehak, luas, nib, akurasibidang. CRS and geometry type were not confirmed because the public OWS route returned application HTML/unusable output.",
+  "nativeIdentity": "nib (Nomor Identifikasi Bidang) is the documented preferred native identity. No synthetic identity, OBJECTID, or composite key was used.",
+  "fieldMapping": {
+    "nib": "canonical native parcel identity if independently retrieved",
+    "geometry": "parcel polygon geometry if independently retrieved"
+  },
+  "requestOutcome": "Official landing, map, catalog, and anonymous published-layer metadata requests succeeded. Anonymous WFS capabilities and bounded geometry requests did not yield usable service responses. Exact WUP point was not treated as a negative result.",
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON retained because no safe native-ID-plus-geometry response was obtained.",
+  "safeFieldAllowlist": ["nib", "geometry"],
+  "unsafeDataPolicy": "Owner, address, contact, titleholder, tax/account, legal-description, and rights-detail fields were not requested or retained.",
+  "officialCustodyEvidence": "ATR/BPN official BHUMI/ATLAS documentation and live published layer metadata evidence a national cadastral map service. A distinct local Kantor Pertanahan Buleleng custodian/API was not located.",
+  "limits": [
+    "National layer metadata does not prove complete Singaraja coverage.",
+    "No exact-point feature response was available; this is not evidence of citywide absence.",
+    "The public OWS route may be UI-proxied, changed, or require a map-session route; no login, credentials, private tokens, CAPTCHA bypass, or TLS exception was used.",
+    "No raw source attribute set or parcel polygon was retained.",
+    "RuntimeReadiness remains held pending independent serial review."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "Independent review must confirm the current anonymous feature endpoint, CRS handling, Singaraja coverage, NIB stability, and adapter safety before admission."
+}

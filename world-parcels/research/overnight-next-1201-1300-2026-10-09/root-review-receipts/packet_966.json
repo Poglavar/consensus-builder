@@ -1,0 +1,14 @@
+{
+  "taskId": "packet:966",
+  "decision": "held",
+  "reason": "Chimoio rank 1228, Mozambique, unchanged point and 453521 persons match the immutable roster. English and Portuguese executed-search records are present. The cached exact-point result is one administrative feature, not a parcel. MOZGIS Matola parcel service cannot be assigned to Chimoio. Local registry custody and parcel geometry remain unresolved (registryFound=null), not false absence. No live adapter admission gates are evidenced.",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-966-chimoio.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/chimoio-service-review.json",
+    "tmp/valhalla-parcel-research/chimoio-admin-point-correct-axis.json"
+  ],
+  "checkedAt": "2026-10-09T13:03:22.983203Z"
+}

@@ -1,0 +1,20 @@
+{
+  "taskId": "city:9643",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-9643-tanur.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/tanur-service-review.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/runs/20261010T131305-a0acb0b3/stdout.jsonl",
+    "tmp/valhalla-parcel-research/tanur/entebhoomi.headers",
+    "tmp/valhalla-parcel-research/tanur/ilms-map.html",
+    "tmp/valhalla-parcel-research/tanur/villages-tirur.json",
+    "tmp/valhalla-parcel-research/tanur/bhunaksha-new.headers"
+  ],
+  "checkedAt": "2026-10-10T13:18:43Z",
+  "registryFound": true,
+  "reason": "Kerala first-party portal and map routes are evidenced, but the Bhu-Naksha host returned 403 and no Tanur location code or bounded parcel feature response was established. No native parcel ID or polygon was verified.",
+  "admission": "No independent live adapter qualification: fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, and headed Details verification are not evidenced. No runtime or catalog admission."
+}

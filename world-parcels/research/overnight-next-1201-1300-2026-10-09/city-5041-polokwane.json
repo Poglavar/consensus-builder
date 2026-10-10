@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300-2026-10-09",
+  "cityId": "wup2025:5041",
+  "cityCode": 5041,
+  "queueRank": 1233,
+  "rank": 1233,
+  "name": "Polokwane",
+  "country": "South Africa",
+  "countryCode": "ZA",
+  "iso2": "ZA",
+  "iso3": "ZAF",
+  "point": [-23.8681459171116, 29.4132145590407],
+  "centerLatLon": [-23.8681459171116, 29.4132145590407],
+  "pointBasis": "Immutable WUP 2025 queue point copied unchanged in latitude/longitude order; no coordinate adjustment.",
+  "population2025": 451786,
+  "population2025k": 451.786,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official City of Polokwane GIS portal and municipal ArcGIS services expose public property/erven polygon layers. This evidences a local municipal GIS custodian, not legal-title authority or complete citywide coverage.",
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "held_quality_review",
+  "blocker": "Public polygon geometry is evidenced, but runtime remains held pending independent serial adapter qualification.",
+  "resultCategory": "official_city_gis_public_parcel_geometry_verified",
+  "source": {
+    "operator": "City of Polokwane GIS",
+    "viewerUrl": "https://gis.polokwane.gov.za/polokwanewebpage/",
+    "serviceUrl": "https://gis.polokwane.gov.za/server/rest/services/Land_Information_Management/Polokwane_SDF/FeatureServer/14",
+    "layer": "Polokwane Properties (ID 14)",
+    "geometryType": "esriGeometryPolygon",
+    "serviceCrs": "Layer metadata reports D_HARTEBEESTHOEK_1994 geographic coordinates; requests explicitly used inSR=4326 and outSR=4326, with GeoJSON coordinates observed in [longitude, latitude] order."
+  },
+  "sampleFile": "polokwane-parcel-samples.geojson",
+  "verifiedSample": true,
+  "coverageAssessment": {
+    "claimedScope": "Official City of Polokwane GIS discovery, layer metadata inspection, unchanged WUP point lookup, and bounded envelope lookups against municipal and national public services.",
+    "verifiedOpenScope": "A bounded municipal envelope returned 999 Polygon features and a bounded national cadastre envelope returned 2000 Polygon features; three municipal polygons were retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "safeFieldAllowlist": ["geometry", "OBJECTID", "SG21", "SG32", "PARCEL_NO", "PORTION", "ERF_NUMBER", "PORTION_NUMBER", "PARCEL_TYPE"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Polokwane cadastral parcel map official South Africa GIS viewer",
+        "result": "Found the first-party City of Polokwane GIS Applications portal, municipal Polokwane Data/Polokwane SDF ArcGIS services, and a South African national planning cadastre ArcGIS service.",
+        "actualResultUrls": ["https://gis.polokwane.gov.za/polokwanewebpage/", "https://gis.polokwane.gov.za/server/rest/services/Polokwane_Data/MapServer", "https://gis.polokwane.gov.za/server/rest/services/Land_Information_Management/Polokwane_SDF/FeatureServer", "https://screening.environment.gov.za/server/rest/services/Corp/Planning_Cadastre/MapServer"]
+      },
+      {
+        "language": "native/local",
+        "query": "Polokwane kadastrale kaart erwe amptelike Suid-Afrika GIS",
+        "result": "Afrikaans-language discovery returned the same first-party municipal GIS and national cadastre sources; the municipal viewer and REST metadata are English-only in the observed public interface.",
+        "actualResultUrls": ["https://gis.polokwane.gov.za/polokwanewebpage/", "https://gis.polokwane.gov.za/server/rest/services/Land_Information_Management/Polokwane_SDF/FeatureServer", "https://screening.environment.gov.za/server/rest/services/Corp/Planning_Cadastre/MapServer"]
+      }
+    ]
+  },
+  "requests": [
+    {"url": "https://gis.polokwane.gov.za/polokwanewebpage/", "method": "GET; anonymous; TLS verification enabled", "httpStatus": 200, "outcome": "First-party GIS applications landing page returned; it identifies municipal land-information, valuation, billing, and town-planning applications."},
+    {"url": "https://gis.polokwane.gov.za/server/rest/services/Land_Information_Management/Polokwane_SDF/FeatureServer/14?f=pjson", "method": "GET; anonymous; TLS verification enabled", "httpStatus": 200, "outcome": "Municipal Polokwane Properties layer metadata returned; polygon geometry, service CRS, safe parcel schema, and GeoJSON-capable query route were observed."},
+    {"url": "https://gis.polokwane.gov.za/server/rest/services/Land_Information_Management/Polokwane_SDF/FeatureServer/14/query", "method": "GET; anonymous; TLS verification enabled", "params": {"geometry": "-23.8681459171116,29.4132145590407", "geometryType": "esriGeometryPoint", "inSR": 4326, "spatialRel": "esriSpatialRelIntersects", "distance": 500, "units": "esriSRUnit_Meter", "outFields": "OBJECTID,PARCEL_NO,PORTION,ERF_NUMBER,PORTION_NUMBER,SG21,SG32,PARCEL_TYPE", "returnGeometry": true, "outSR": 4326, "f": "geojson"}, "httpStatus": 200, "outcome": "Returned an empty FeatureCollection at the unchanged WUP point; this is not evidence of citywide absence."},
+    {"url": "https://gis.polokwane.gov.za/server/rest/services/Land_Information_Management/Polokwane_SDF/FeatureServer/14/query", "method": "GET; anonymous; TLS verification enabled", "params": {"geometry": "29.35,-23.92,29.48,-23.82", "geometryType": "esriGeometryEnvelope", "inSR": 4326, "spatialRel": "esriSpatialRelIntersects", "outFields": "OBJECTID,PARCEL_NO,PORTION,ERF_NUMBER,PORTION_NUMBER,SG21,SG32,PARCEL_TYPE", "returnGeometry": true, "outSR": 4326, "f": "geojson"}, "httpStatus": 200, "outcome": "Returned 999 Polygon features in the bounded envelope; response was bounded and not treated as citywide completeness evidence."},
+    {"url": "https://screening.environment.gov.za/server/rest/services/Corp/Planning_Cadastre/MapServer/0?f=pjson", "method": "GET; anonymous; TLS verification enabled", "httpStatus": 200, "outcome": "National South Africa Planning Cadastre layer metadata returned; polygon geometry, EPSG:4326, and safe identifiers including UniqueID/SG_CODE were observed."},
+    {"url": "https://screening.environment.gov.za/server/rest/services/Corp/Planning_Cadastre/MapServer/0/query", "method": "GET; anonymous; TLS verification enabled", "params": {"geometry": "-23.8681459171116,29.4132145590407", "geometryType": "esriGeometryPoint", "inSR": 4326, "spatialRel": "esriSpatialRelIntersects", "distance": 500, "units": "esriSRUnit_Meter", "outFields": "OID,UniqueID,PropSrc,SG_CODE,PARCEL_NO,PORTION,MINREG_FRMNM,MAJ_REGION", "returnGeometry": true, "outSR": 4326, "f": "geojson"}, "httpStatus": 200, "outcome": "Returned an empty FeatureCollection at the unchanged WUP point; this is not evidence of citywide absence."},
+    {"url": "https://screening.environment.gov.za/server/rest/services/Corp/Planning_Cadastre/MapServer/0/query", "method": "GET; anonymous; TLS verification enabled", "params": {"geometry": "29.35,-23.92,29.48,-23.82", "geometryType": "esriGeometryEnvelope", "inSR": 4326, "spatialRel": "esriSpatialRelIntersects", "outFields": "OID,UniqueID,PropSrc,SG_CODE,PARCEL_NO,PORTION,MINREG_FRMNM,MAJ_REGION", "returnGeometry": true, "outSR": 4326, "f": "geojson"}, "httpStatus": 200, "outcome": "Returned 2000 Polygon features, the service max-record count; response was bounded/transfer-limited and not retained as a sample."}
+  ],
+  "geometryEvidence": {"verified": true, "sampleCount": 3, "sampleFile": "polokwane-parcel-samples.geojson", "nativeId": "SG21 from the municipal layer; OBJECTID was not retained in sample properties", "exactWupPointTest": "Unchanged point request returned zero records; nearby bounded request returned polygons, so no absence inference was made."},
+  "remainingUncertainty": "Municipal and national responses were bounded, the national response reached max-record count, exact-point queries were empty, legal-title authority and data vintage/freshness are not established, and runtime adapter semantics remain unqualified. No owner, address, contact, titleholder, tax/account, personal, credential, or private-token fields were requested or retained.",
+  "checkedAt": "2026-10-09",
+  "researchAttempt": 1,
+  "integrationState": "not_integrated",
+  "adapterReady": false,
+  "sampleRetention": {"retainedFeatureProperties": ["id"], "fullGeometryChanged": false, "featureReferencesChanged": false}
+}

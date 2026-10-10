@@ -1,0 +1,193 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7835-vladivostok.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Review public Vladivostok cadastral-map channels and qualify bounded anonymous parcel evidence.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "wupPointPreserved": [
+      43.1274390055063,
+      131.920391588581
+    ]
+  },
+  "assessment": "The public Vladivostok interactive map exposes an Участки ЕГРН layer backed by GeoServer WFS. A bounded anonymous query around the unchanged WUP point returned 182 features; three safe cadastral-number/geometry samples are retained in the linked GeoJSON file.",
+  "registryAssessment": "Local map/procedure evidence is present through the Vladivostok viewer and its configured EGRN parcel layer. Rosreestr is the national custodian; local viewer evidence does not establish municipal ownership of the cadastral register.",
+  "coverageAssessment": {
+    "claimedScope": "Public viewer configuration and one 500 m bounded WFS query.",
+    "verifiedOpenScope": "182 returned features near the WUP point; three polygons retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "officialPrimarySources": [
+    {
+      "url": "https://vladivostok.itpgrad.ru/",
+      "operator": "Vladivostok ITPGrad public interactive map",
+      "scope": "Local public viewer; configuration lists Участки ЕГРН."
+    },
+    {
+      "url": "https://gs.itpgrad.ru/geoserver/wfs",
+      "operator": "GeoServer configured by the public viewer",
+      "scope": "Anonymous WFS parcel response; EPSG:3857 geometry."
+    },
+    {
+      "url": "https://rosreestr.gov.ru/",
+      "operator": "Rosreestr",
+      "scope": "National cadastral custodian reference; bounded request timed out."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Vladivostok official cadastral parcel map public viewer Rosreestr cadastral map",
+      "result": "Found the local public viewer and national/NSPD references.",
+      "actualResultUrls": [
+        "https://vladivostok.itpgrad.ru/",
+        "https://nspd.gov.ru/map?thematic=PKK",
+        "https://rosreestr.gov.ru/"
+      ]
+    },
+    {
+      "language": "Russian",
+      "query": "Владивосток официальная кадастровая карта публичная кадастровая карта Росреестр",
+      "result": "Found the Vladivostok viewer and Rosreestr Primorsky regional channel; viewer configuration confirmed the EGRN parcel layer.",
+      "actualResultUrls": [
+        "https://vladivostok.itpgrad.ru/",
+        "https://t.me/rosreestr25_news",
+        "https://nspd.gov.ru/map?thematic=PKK"
+      ]
+    }
+  ],
+  "attempts": [
+    "GET viewer HTML: HTTP 200.",
+    "GET /getProjectData: HTTP 200; inspected current GeoServer host and layer schema.",
+    "GET WFS GetFeature with EPSG:3857 DWITHIN 500 m around transformed immutable WUP point: HTTP 200; 182 features returned.",
+    "GET NSPD map: bounded 20-second timeout; no bypass attempted.",
+    "GET pkk.rosreestr.ru: bounded timeout; no TLS exception or private route used.",
+    "Safe allowlist retained only public layer feature IDs, cadastral numbers, source label, and geometry; address, use, area, owner, titleholder, contact, personal, tax/account, and credential fields were not retained.",
+    "No citywide or countrywide completeness claim; runtime remains held for serial review."
+  ],
+  "geometryEvidence": {
+    "verified": true,
+    "sampleCount": 3,
+    "sampleFile": "vladivostok-parcel-samples.geojson",
+    "responseCrs": "EPSG:3857",
+    "sampleCrs": "EPSG:4326",
+    "exactWupPointTest": "The query center was the unchanged WUP point after CRS transformation; nearby parcel features returned. No coordinate shift was used."
+  },
+  "nextStep": "Root/serial review should independently qualify adapter behavior and coverage before admission.",
+  "remainingUncertainty": "The bounded map response proves local open coverage only; it does not prove citywide completeness or long-term endpoint stability.",
+  "researchAttempt": 3,
+  "rootReview": null,
+  "rootReviewedAt": null,
+  "attempt2Verification": {
+    "searches": [
+      {
+        "language": "English",
+        "query": "Vladivostok official cadastral parcel map public viewer Rosreestr cadastral map",
+        "outcome": "Viewer and NSPD/Rosreestr references reconfirmed.",
+        "actualResultUrls": [
+          "https://vladivostok.itpgrad.ru/",
+          "https://nspd.gov.ru/map?thematic=PKK",
+          "https://rosreestr.gov.ru/"
+        ]
+      },
+      {
+        "language": "Russian",
+        "query": "Владивосток официальная кадастровая карта публичная карта Росреестр кадастровые участки",
+        "outcome": "Russian-language discovery reconfirmed the Vladivostok viewer and public cadastral-map references.",
+        "actualResultUrls": [
+          "https://vladivostok.itpgrad.ru/",
+          "https://nspd.gov.ru/map?thematic=PKK",
+          "https://rosreestr.gov.ru/"
+        ]
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://vladivostok.itpgrad.ru/",
+        "method": "GET",
+        "status": 200,
+        "tls": "verified",
+        "outcome": "Current public viewer HTML; Участки_ЕГРН visible."
+      },
+      {
+        "url": "https://vladivostok.itpgrad.ru/getProjectData",
+        "method": "GET",
+        "status": 200,
+        "tls": "verified",
+        "outcome": "Current configuration exposed GeoServer and Vladivostok:Участки_ЕГРН_1."
+      },
+      {
+        "url": "https://gs.itpgrad.ru/geoserver/wfs",
+        "method": "GET",
+        "status": 200,
+        "tls": "verified",
+        "outcome": "Bounded anonymous query returned 182 features, GeoJSON and EPSG:3857; no unsafe properties retained."
+      }
+    ],
+    "result": "Attempt 2 confirms prior bounded evidence and does not expand coverage claims; runtime remains held."
+  },
+  "attempt3Verification": {
+    "searches": [
+      {
+        "language": "English",
+        "query": "Vladivostok official cadastral parcel map public viewer Rosreestr cadastral map",
+        "outcome": "Attempt 3 web discovery again returned the public viewer and official NSPD/Rosreestr references.",
+        "actualResultUrls": [
+          "https://vladivostok.itpgrad.ru/",
+          "https://nspd.gov.ru/map?thematic=PKK",
+          "https://rosreestr.gov.ru/"
+        ]
+      },
+      {
+        "language": "Russian",
+        "query": "Владивосток официальная кадастровая карта публичная карта Росреестр кадастровые участки",
+        "outcome": "Attempt 3 Russian-language discovery again found the public viewer and cadastral-map references.",
+        "actualResultUrls": [
+          "https://vladivostok.itpgrad.ru/",
+          "https://nspd.gov.ru/map?thematic=PKK",
+          "https://rosreestr.gov.ru/"
+        ]
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://vladivostok.itpgrad.ru/",
+        "method": "GET",
+        "status": 200,
+        "tls": "verified",
+        "outcome": "Current public viewer HTML obtained."
+      },
+      {
+        "url": "https://vladivostok.itpgrad.ru/getProjectData",
+        "method": "GET",
+        "status": 200,
+        "tls": "verified",
+        "outcome": "Current configuration exposed GeoServer and Vladivostok:Участки_ЕГРН_1."
+      },
+      {
+        "url": "https://gs.itpgrad.ru/geoserver/wfs",
+        "method": "GET",
+        "status": 200,
+        "tls": "verified",
+        "outcome": "Bounded query returned 182 features, GeoJSON and EPSG:3857; unsafe response properties were not retained."
+      }
+    ],
+    "result": "Attempt 3 independently reconfirms bounded local coverage; runtime remains held and no citywide claim is made."
+  },
+  "sampleRetention": {
+    "retainedFeatureProperties": [
+      "id"
+    ],
+    "fullGeometryChanged": false,
+    "featureReferencesChanged": false,
+    "fullGeometrySha256": "ee5306b3a9bf6b493ef502de19d781e6b35ca048371cb1547ccef4f2a76f21e7"
+  }
+}

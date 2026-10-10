@@ -1,0 +1,12 @@
+{
+  "taskId": "city:3767",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-3767-gonder.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/gonder-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T17:03:21.635103Z",
+  "reason": "City administration context is evidenced but Gonder-specific cadastral custody remains unresolved. No Gonder vector service, native-ID polygon read, or adapter qualification."
+}

@@ -1,0 +1,16 @@
+{
+  "taskId": "city:5063",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-5063-tucson.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/tucson-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/tucson-review-linkage-repair.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-09T14:54:12.838219Z",
+  "reason": "Immutable Tucson identity matches the ranked and pending queue. Two English/US-local-English searches are recorded. The official Pima County regional polygon layer metadata and PARCEL field were independently visible, but no bounded feature response or retained sample exists; the worker recorded HTTP 403 for the direct query and a Cloudflare challenge for the map route. Fresh native-ID reads, forced paging, thirteen bounded cells, metric GEOS validity/overlap checks, source binding, and headed Details-panel verification are unevidenced. Registry custody may remain true; citywide geometry and runtime admission remain unverified.",
+  "firstPartyLayerMetadataUrl": "https://gisdata.pima.gov/arcgis1/rest/services/GISOpenData/LandRecords/MapServer/12?f=pjson"
+}

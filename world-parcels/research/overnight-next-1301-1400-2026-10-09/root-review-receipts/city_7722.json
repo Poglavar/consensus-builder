@@ -1,0 +1,16 @@
+{
+  "taskId": "city:7722",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-7722-dere.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/dere-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-09T14:19:14.656505Z",
+  "reason": "Rivers State process page confirms land administration, while the application route is a login flow. No anonymous native-ID polygon response or admission checks; registry custody for Dere remains unresolved, not absent.",
+  "firstPartyPagesChecked": [
+    "https://rsipa.riversstateapps.ng/lands-and-survey/"
+  ],
+  "admissionGates": "No verified full parcel geometry or safe native ID; fresh ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are not evidenced."
+}

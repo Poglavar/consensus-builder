@@ -1,0 +1,15 @@
+{
+  "taskId": "city:4936",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-4936-biskra.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/biskra-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T18:28:12.801759Z",
+  "reason": "The official Biskra cadastral-directorate page grounds local custody. The attempted e-service and guide routes yielded no usable parcel feature; native ID, polygon geometry, CRS, and adapter qualification remain unverified. Timeout is not parcel absence.",
+  "firstPartySourceUrls": [
+    "https://a.dgdn.dz/biskra.html"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "taskId": "packet:9903",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-9903-anantapur.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/anantapur-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T13:40:14Z",
+  "identityReview": "Anantapur, WUP 9903, rank 1261, India IN/IND, point [14.6733011278587,77.5918898198689], 442201 persons matches roster, queue, and ledger.",
+  "sourceReview": "Separate English and Telugu executed queries and official result URLs are recorded. Official AP cadastral service and district land-record link support registry custody. Bhunaksha timed out before a retained parcel response; no native ID, schema, CRS, or polygon was verified. The timeout is unresolved access, not citywide absence.",
+  "admissionReview": "Zero durable sample polygons. Fresh exact native-ID reads, forced paging, 13 bounded cells, independent metric GEOS validity and overlap checks, source binding, and headed Details verification are missing; runtime remains held."
+}

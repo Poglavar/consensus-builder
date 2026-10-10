@@ -1,0 +1,12 @@
+{
+  "taskId": "city:9407",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-9407-shivamogga.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/shivamogga-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-09T14:22:47Z",
+  "reason": "No anonymous safe native-ID/full-polygon response; official portal requests timed out. Fresh ID reads, paging, 13 cells, metric GEOS checks, source binding, and headed Details verification are absent. Registry custody remains unresolved, not absent."
+}

@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11601-raiganj.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Document Raiganj's first-party West Bengal cadastral entry points, live anonymous request outcomes, scope limits, and runtime qualification boundary.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "assessment": "Official Uttar Dinajpur district pages and the District Land & Land Reforms Office establish local/state cadastral-service custody and link Banglarbhumi. The state portal and service routes timed out during anonymous requests, so no schema, CRS, safe parcel ID, or polygon geometry was verified. The packet is complete as a research attempt; runtime readiness remains held.",
+  "registryAssessment": "Official local district administration and district land-reforms office evidence supports registryFound=true for the Raiganj/Uttar Dinajpur cadastral service chain. This does not establish title, ownership, citywide coverage, or an accessible vector download.",
+  "coverageAssessment": {"claimedScope": "Official Uttar Dinajpur and West Bengal land-record links, including Raiganj district-office custody evidence.", "verifiedOpenScope": "Service custody and public entry points only; no live anonymous parcel response.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "safeFieldAllowlist": ["cityCode", "queueRank", "WUP point", "public service URLs", "HTTP status/content type", "service/operator descriptions"],
+  "searchQueries": [
+    {"language": "English", "query": "Raiganj Uttar Dinajpur official cadastral map land records GIS Banglarbhumi", "actualResultUrls": ["https://uttardinajpur.gov.in/service/land-records/", "https://banglarbhumi.gov.in/", "https://www.dllroud.in/departments"]},
+    {"language": "Bengali", "query": "রায়গঞ্জ উত্তর দিনাজপুর সরকারি ভূমি মানচিত্র খতিয়ান বাংলা ভূমি", "actualResultUrls": ["https://uttardinajpur.gov.in/bn/service/%E0%A6%9C%E0%A6%AE%E0%A6%BF%E0%A6%B0-%E0%A6%B0%E0%A7%87%E0%A6%95%E0%A6%B0%E0%A7%8D%Eড/", "https://banglarbhumi.gov.in/"]}
+  ],
+  "attempts": [
+    "Opened the official Uttar Dinajpur English land-record page; it directs land/plot information to Banglarbhumi and identifies the BL&LRO office.",
+    "Opened the official Uttar Dinajpur Bengali land-record page; it provides the same Banglarbhumi land-record entry point in Bengali.",
+    "Opened the official District Land & Land Reforms Office portal; it identifies the Raiganj office, links Banglarbhumi (RoR), and publishes public mouza-map application forms.",
+    "GET https://banglarbhumi.gov.in/ with TLS verification and no credentials; timed out after 30 seconds before HTML/JavaScript/configuration was returned.",
+    "GET https://banglarbhumi.gov.in/BanglarBhumi/Home.action with TLS verification and no credentials; timed out after 12 seconds.",
+    "GET https://banglarbhumi.gov.in/BanglarBhumi/ with TLS verification and no credentials; timed out after 12 seconds.",
+    "Did not log in, submit credentials, defeat CAPTCHA/Cloudflare, disable TLS verification, request owner/address/title/account/tax/contact fields, or shift/test the exact WUP point against a local map.",
+    "No sample GeoJSON was created because no full parcel polygon response was verified."
+  ],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "nativeCrs": null, "exactWupPointTest": "Not run; exact WUP point [25.6229296944296,88.137637673296] preserved unchanged.", "polygonResponse": "None; official Banglarbhumi routes timed out before viewer/API schema inspection."},
+  "nextStep": "Independent serial review should retry the official Banglarbhumi viewer and qualify any public safe geometry response before adapter/runtime consideration.",
+  "remainingUncertainty": "Portal availability, current JavaScript/API routes, native CRS, parcel identifiers, vector export capability, and citywide Raiganj coverage remain unverified. Timeout is an access limitation, not evidence of absence.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

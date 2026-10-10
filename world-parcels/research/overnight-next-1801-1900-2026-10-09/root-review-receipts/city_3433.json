@@ -1,0 +1,20 @@
+{
+  "taskId": "city:3433",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-3433-juliaca.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/juliaca-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/3433/pdu-service.json",
+    "tmp/valhalla-parcel-research/3433/pdu-layer.json",
+    "tmp/valhalla-parcel-research/3433/pdu-query.json",
+    "tmp/valhalla-parcel-research/3433/exact-point-zoning-count.json",
+    "tmp/valhalla-parcel-research/3433/bbox-zoning-count.json",
+    "tmp/valhalla-parcel-research/runs/20261010T172405-3de9761b/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-10T17:29:23Z",
+  "reason": "SUNARP has a Juliaca land registry office, but the only cached polygon service is municipal zoning; its lot and block fields are blank in the bounded response. The SUNARP viewer timed out. No native parcel ID with full polygon or independent adapter, 13-cell, metric geometry, source-binding, and headed Details qualification exists. The zoning point count of zero is not cadastral absence.",
+  "registryFound": true
+}

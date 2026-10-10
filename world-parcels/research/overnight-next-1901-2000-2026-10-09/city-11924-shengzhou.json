@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-10",
+  "wupCityCode": 11924,
+  "cityCode": 11924,
+  "cityId": "wup2025:11924",
+  "name": "Shengzhou",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "centerLatLon": [29.590075250083, 120.83779911649],
+  "point": [29.590075250083, 120.83779911649],
+  "queueRank": 1937,
+  "population2025": 297906,
+  "population2025k": 297.906,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Shengzhou China official cadastral parcel map land registration natural resources bureau",
+        "result": "Found first-party Shengzhou Real Estate Registration Service Center and Shengzhou Natural Resources and Planning Bureau material. No anonymous safe parcel ID-plus-polygon response was verified.",
+        "actualResultUrls": [
+          "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3063/site/attach/0/5a375c82ea91451fb6c6d9d092838e7a.pdf",
+          "https://www.szzj.gov.cn/attach/0/7bc22d179ff74992ab31ca31db50cf8f.pdf",
+          "https://data.sx.gov.cn/kf/map",
+          "https://ditu.zjzwfw.gov.cn/platform-main/index.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "嵊州市 官方 不动产登记 地籍图 宗地 自然资源和规划局",
+        "result": "First-party Shengzhou government and official Zhejiang-hosted material identifies the local registration center, its cadastral/registration information duties, and basic surveying work. The public map pages inspected provide general map/search functions, not an open cadastral parcel geometry service.",
+        "actualResultUrls": [
+          "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3063/site/attach/0/5a375c82ea91451fb6c6d9d092838e7a.pdf",
+          "https://www.szzj.gov.cn/art/2022/7/21/art_1229763067_59060563.html",
+          "https://www.szzj.gov.cn/attach/0/7bc22d179ff74992ab31ca31db50cf8f.pdf",
+          "https://data.sx.gov.cn/kf/map"
+        ]
+      }
+    ],
+    "officialViewerInspection": "Requested the current official Shaoxing data map and Zhejiang geographic-information platform pages over HTTPS and inspected their JavaScript/configuration. The Shaoxing map bundle points to a Tianditu/general search and route service; the Zhejiang platform describes vector-tile/general geographic-information services. No public cadastral layer, safe parcel identity field, CRS/schema response, or bounded parcel geometry endpoint was exposed. No login, CAPTCHA bypass, credential, private token, or unsafe owner/address/titleholder field was used."
+  },
+  "registryFound": true,
+  "registryBasis": "First-party official Shengzhou government/hosted material identifies the Shengzhou Real Estate Registration Service Center as responsible for citywide natural-resource and real-estate registration information collection, sharing, and cadastral investigation/registration work; official Shengzhou Natural Resources and Planning Bureau material confirms the local bureau. This establishes a local registry custodian, not open parcel-vector access.",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Local Shengzhou registry custodian and official Zhejiang/Shaoxing public map-service discovery.",
+    "verifiedOpenScope": "Local registry/procedure evidence and general public map services only; parcel geometry access unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "resultCategory": "local_registry_procedure_no_verified_open_parcel_geometry",
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No bounded anonymous request returned a safe native parcel identity and full polygon geometry. The exact WUP point was not shifted, and lack of a public parcel endpoint is not treated as citywide absence."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "technicalBlocker": "The inspected official public map applications expose general basemap, geocoding/search, route, and geographic-information platform functions but no anonymous cadastral parcel layer/API with safe ID, CRS, schema, and geometry response. A local registration system may exist behind a separate procedure or authentication boundary.",
+  "remainingUncertainty": "Exact-point parcel coverage, current cadastral service URL, CRS/schema, native parcel ID field, and citywide completeness remain unknown. No absence inference is made from the map extent or endpoint discovery failure.",
+  "nextStep": "A serial reviewer may independently qualify a first-party Shengzhou parcel adapter only after confirming a current public route, CRS/schema, safe native ID, and bounded geometry response."
+}

@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 938,
+  "queueRank": 1936,
+  "name": "Graz",
+  "country": "Austria",
+  "countryCode": "AT",
+  "iso3": "AUT",
+  "point": [47.0617474696398, 15.4356256864632],
+  "population2025": 298021,
+  "population2025k": 298.021,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Graz Austria official cadastral map parcel GIS official",
+        "result": "Found the official Graz Geoportal pages and the official geodaten.graz.at ArcGIS REST folder/service for cadastral parcels.",
+        "actualResultUrls": [
+          "https://www.graz.at/cms/ziel/8034284/DE/",
+          "https://geodaten.graz.at/server/rest/services/GBG"
+        ]
+      },
+      {
+        "language": "German",
+        "query": "Graz offizielles Grundstückskataster GIS Kataster Grundstücke ArcGIS REST",
+        "result": "Found the official Stadt Graz Geoportal and the GBG/KATASTER_und_Städtische_Grundstücke service exposing the municipal cadastral parcel layer.",
+        "actualResultUrls": [
+          "https://www.graz.at/cms/beitrag/10295945/8115447/Stadtplan_Graz.html",
+          "https://geodaten.graz.at/server/rest/services/GBG/KATASTER_und_Städtische_Grundstücke/FeatureServer"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.graz.at/cms/ziel/8034284/DE/",
+      "operator": "Stadt Graz, Stadtvermessungsamt / Geoportal",
+      "evidence": "Official city page identifies the Geoportal, online maps, geodata and the Stadtvermessungsamt as the municipal geoinformation custodian."
+    },
+    {
+      "url": "https://geodaten.graz.at/server/rest/services/GBG/KATASTER_und_Städtische_Grundstücke/FeatureServer",
+      "operator": "Stadt Graz / GBG ArcGIS service",
+      "evidence": "First-party REST service is titled KATASTER und Städtische Grundstücke and exposes polygon layers Haus Graz Grundstücke LINIEN and Haus Graz Grundstücke."
+    },
+    {
+      "url": "https://geodaten.graz.at/server/rest/services/Kataster_Graz_und_GU/MapServer",
+      "operator": "Stadt Graz Geoportal",
+      "evidence": "First-party map service identifies the broader Kataster Graz und GU map and a Grundstücke sublayer in EPSG:31256."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://geodaten.graz.at/server/rest/services/GBG/KATASTER_und_Städtische_Grundstücke/FeatureServer?f=pjson",
+      "method": "GET",
+      "status": "success",
+      "summary": "Anonymous TLS GET returned service metadata, currentVersion 11.3, polygon layer IDs 1 and 2, Query capability, and service CRS EPSG:31256."
+    },
+    {
+      "url": "https://geodaten.graz.at/server/rest/services/GBG/KATASTER_und_Städtische_Grundstücke/FeatureServer/2?f=pjson",
+      "method": "GET",
+      "status": "success",
+      "summary": "Anonymous TLS GET returned layer schema: polygon geometry, OBJECTID object-id field, KG and GRSTNR cadastral fields, EPSG:31256 source/extent, and GeoJSON query support."
+    },
+    {
+      "url": "https://geodaten.graz.at/server/rest/services/GBG/KATASTER_und_Städtische_Grundstücke/FeatureServer/2/query",
+      "method": "GET",
+      "status": "success_exact_point",
+      "summary": "Point intersects query used the exact immutable WUP point in EPSG:4326, requested only OBJECTID, KG_GNR, KG and GRSTNR plus geometry, and returned one polygon: OBJECTID 17411, KG 63106, GRSTNR 59/12. Geometry was converted by the service to GeoJSON EPSG:4326 for the retained sample."
+    },
+    {
+      "url": "https://geodaten.graz.at/server/rest/services/GBG/KATASTER_und_Städtische_Grundstücke/FeatureServer/2/query",
+      "method": "GET",
+      "status": "timeout_after_exact_query",
+      "summary": "A bounded nearby-envelope query was attempted with a three-record limit but did not complete within the request window. This does not affect the successful exact-point response and is not evidence of absence."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": "OBJECTID",
+    "fallbackOidField": "OBJECTID",
+    "compositeKey": "KG + ':' + GRSTNR",
+    "exampleNativeIdentity": "63106:59/12",
+    "fieldMapping": {"KG": "cadastral municipality code", "GRSTNR": "parcel number", "OBJECTID": "ArcGIS object identifier"},
+    "crs": "EPSG:31256 (MGI / Austria GK West), service source and extent; query output requested EPSG:4326",
+    "geometryType": "esriGeometryPolygon"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal Graz cadastral and city-property parcel service.",
+    "verifiedOpenScope": "The official service metadata and one exact-point parcel response were verified; citywide completeness was not independently enumerated.",
+    "countrywideVerified": false,
+    "targetPointHit": true,
+    "targetPointHitInterpretation": "The exact WUP point intersects the returned polygon; no coordinate shift was used."
+  },
+  "verifiedSample": true,
+  "sampleFile": "graz-parcels-sample.geojson",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "tax", "account", "legal description", "ownership or rights details"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_municipal_cadastral_feature_service_verified_exact_point_geometry",
+  "remainingUncertainty": "The returned service is a municipal/GBG parcel layer rather than proof of the Austrian nationwide cadastral system; layer coverage, update cadence and long-term stability require independent serial qualification. The retained composite key uses native cadastral fields KG and GRSTNR; OBJECTID is also recorded in evidence but not retained in the sample properties.",
+  "nextStep": "Serial reviewer should independently qualify a bounded adapter, verify coverage and identity stability, and keep runtime readiness held until that review."
+}

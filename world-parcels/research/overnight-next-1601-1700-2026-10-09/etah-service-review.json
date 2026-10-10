@@ -1,0 +1,33 @@
+{
+  "cityRecord": "city-9109-etah.json",
+  "cityCode": 9109,
+  "queueRank": 1664,
+  "city": "Etah",
+  "country": "India",
+  "countryCode": "IN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Uttar Pradesh Bhu-Naksha/Bhulekh services, the Etah district site, and the Etah cadastral digitization dashboard evidence a local/state cadastral custodian and public map procedure. Current anonymous level/GIS-code requests succeeded, but the Etah route returned zero map extent and no parcel geometry, native ID, or CRS was verified; no sample GeoJSON is retained and runtime remains held.",
+  "queryOutcomes": "Separate English and Hindi discovery queries, outcomes, and actual first-party URLs are recorded in city-9109-etah.json.",
+  "requestOutcomes": "TLS verification remained enabled. Official district, Bhulekh, Bhu-Naksha, and digitization-dashboard pages loaded except the Revenue Board homepage request, which timed out. The current Bhu-Naksha API returned public hierarchy and Etah lookup data; the selected map extent returned all-zero bounds. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe lookup, or TLS exception was used.",
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no usable parcel geometry response",
+  "geometryQuality": "not evaluated; no parcel geometry retained",
+  "retainedSample": null,
+  "scopeLimits": [
+    "Exact WUP point [27.5586728433935, 78.6571573849774] was preserved in latitude/longitude order; it was not shifted and no exact-point presence/absence conclusion was drawn.",
+    "Etah district/tehsil dashboard counts evidence digitization and linkage status, not complete city polygon coverage or an accessible parcel feature feed.",
+    "The zero extent response, timeout, and JavaScript viewer behavior are not evidence of citywide parcel absence.",
+    "No source-specific raw attribute set, owner/address/contact information, or synthetic parcel identity was retained.",
+    "No GeoJSON was retained because no safe native ID plus full polygon response was verified.",
+    "This packet is not source integration/admission; serial reviewer qualification remains pending."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current public service route, selected Etah GIS code, parcel layer schema, CRS, stable native identity, anonymous geometry access, and citywide coverage remain unresolved."
+}

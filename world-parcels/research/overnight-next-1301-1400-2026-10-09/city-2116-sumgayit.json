@@ -1,0 +1,81 @@
+{
+  "cityCode": 2116,
+  "queueRank": 1323,
+  "name": "Sumgayit",
+  "country": "Azerbaijan",
+  "countryCode": "AZ",
+  "iso3": "AZE",
+  "point": [40.5791845695678, 49.6512940887851],
+  "population2025": 422836,
+  "population2025k": 422.836,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": true,
+  "registryAssessment": "Azerbaijan's State Property Service under the Ministry of Economy publishes an official interactive map and TEKUIS electronic land-cadastre materials. First-party Azerbaijani material explicitly states that a detailed electronic real-estate cadastral database and digital cadastral map were created for Sumgayit. This evidences a local/city-specific cadastral map context, but not anonymous public parcel-vector access or complete current citywide coverage.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sumgayit Azerbaijan official cadastral parcel map land registry GIS",
+        "result": "Found the official State Property Service interactive map, official TEKUIS electronic land-cadastre information-system page, official service pages, and an official State Urban Planning and Architecture Committee interactive map. The official Azerbaijani cadastral publication states that Sumgayit's detailed electronic real-estate cadastral database and digital cadastral map were created.",
+        "actualResultUrls": [
+          "https://emlak.gov.az/mapmodule",
+          "https://emlak.gov.az/az/page/view/32",
+          "https://www.dedkr.gov.az/en/services",
+          "https://www.arxkom.gov.az/en/sehersalma/interaktiv-xerite"
+        ]
+      },
+      {
+        "language": "Azerbaijani",
+        "query": "Sumqayıt Azərbaycan rəsmi kadastr xəritəsi torpaq xəritəsi daşınmaz əmlak",
+        "result": "Found the official ƏMDX interactive map; official Azerbaijani TEKUIS material describing electronic land accounting; and a first-party publication explicitly reporting that Sumqayıt şəhəri üzrə müfəssəl elektron kadastr məlumat bazası və rəqəmsal kadastr xəritələri yaradılıb. An official territorial-office page also lists the Sumqayıt office.",
+        "actualResultUrls": [
+          "https://emlak.gov.az/mapmodule",
+          "https://kitkm.gov.az/az/news/view/161",
+          "https://emlak.gov.az/az/page/view/32",
+          "https://www.emlak.gov.az/az/page/view/218"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://emlak.gov.az/mapmodule",
+      "role": "ƏMDX official interactive map",
+      "observation": "First-party page title identifies the interactive map of the State Property Service under Azerbaijan's Ministry of Economy. Search/open evidence returned the public viewer page, but direct anonymous curl retrieval of the live page timed out before JavaScript/configuration or service endpoints could be inspected. No credentials, private tokens, or unsafe fields were used."
+    },
+    {
+      "url": "https://kitkm.gov.az/az/news/view/161",
+      "role": "official Azerbaijani cadastral-system publication",
+      "observation": "The publication states that detailed electronic cadastral databases and digital cadastral maps were created for Baku and Sumgayit, with parcel/real-estate spatial, area and land-use information in the system. This is source evidence of the cadastral project, not proof of an open downloadable parcel API."
+    },
+    {
+      "url": "https://emlak.gov.az/az/page/view/32",
+      "role": "official TEKUIS information-system page",
+      "observation": "Describes the Electronic Land Cadastre Accounting Information System (TEKUIS) used for electronic land accounting, land balance, boundaries and preparation of city and other maps. No parcel response was exposed in the retrieved page."
+    },
+    {
+      "url": "https://www.emlak.gov.az/az/page/view/218",
+      "role": "official territorial office directory",
+      "observation": "Lists the Sumgayit territorial office of the State Property Service, establishing a local administrative custodian/service presence."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No safe stable native parcel identity plus unchanged full parcel polygon was obtained from an anonymous public response. The official viewer could not be directly retrieved within the bounded request timeout, and no exact-point parcel query was completed. The exact WUP point was preserved; this timeout and lack of an exact hit are not evidence of citywide absence."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Azerbaijan electronic land-cadastre and real-estate cadastral mapping, with Sumgayit explicitly included in first-party project evidence.",
+    "verifiedOpenScope": "Official viewer existence, Sumgayit-specific cadastral-project evidence, TEKUIS scope, and local territorial-office custodianship verified. Current anonymous parcel-vector endpoint, schema, CRS, stable public parcel ID, exact-point parcel inclusion, and complete citywide public coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 7061,
+  "queueRank": 1909,
+  "cityId": "wup2025:7061",
+  "name": "Shaistaganj",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "iso3": "BGD",
+  "point": [24.2250223929895, 91.3673178164947],
+  "population2025": 300465,
+  "population2025k": 300.465,
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted",
+  "nativeIdReadiness": "not_applicable_no_verified_parcel_geometry",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Shaistaganj Bangladesh official land records cadastral map parcel GIS",
+        "result": "Search found the official Bangladesh Settlement/DLRS map viewer, the Shaistaganj Upazila Land Office, and national land-map references. No indexed city parcel API or downloadable parcel layer was found.",
+        "actualResultUrls": [
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://acl.shayestaganj.habiganj.gov.bd/",
+          "https://dlrs.gov.bd/"
+        ]
+      },
+      {
+        "language": "Bengali",
+        "query": "শায়েস্তাগঞ্জ ভূমি রেকর্ড ক্যাডাস্ট্রাল মানচিত্র সরকারি",
+        "result": "Search found the same official Settlement/DLRS map service and the local Upazila Land Office. It did not establish a public Shaistaganj parcel geometry service.",
+        "actualResultUrls": [
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://acl.shayestaganj.habiganj.gov.bd/",
+          "https://map.land.gov.bd/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official Shaistaganj Upazila Land Office identifies a local land-services custodian, and the official DLRS Settlement map viewer publishes survey-map search functionality. This is registry/service evidence only; it is not evidence of an open parcel geometry feed.",
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://settlement.gov.bd/Map/MapSearch",
+      "operator": "Bangladesh Department of Land Records and Surveys / Settlement",
+      "observation": "Current public map viewer; its JavaScript documents survey, mouza, sheet and dag selection, GeoJSON sheet retrieval, and parcel vector-tile routes."
+    },
+    {
+      "url": "https://acl.shayestaganj.habiganj.gov.bd/",
+      "operator": "Shaistaganj Upazila Land Office",
+      "observation": "Official local land-office site with land-record/map services."
+    },
+    {
+      "url": "https://dlrs.gov.bd/",
+      "operator": "Bangladesh Department of Land Records and Surveys",
+      "observation": "Official agency portal describing survey and map services."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://settlement.gov.bd/Map/MapSearch",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Public viewer HTML retrieved; current MapSearch.js inspected."
+    },
+    {
+      "url": "https://settlement.gov.bd/Map/GetDivisionList",
+      "method": "POST",
+      "payload": "empty form body",
+      "status": "HTTP 200; JSON list",
+      "summary": "Returned Sylhet division code 050000000."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise",
+      "method": "POST",
+      "payload": "divid=050000000",
+      "status": "HTTP 200; JSON list",
+      "summary": "Returned Habiganj district code 050300000 and component code 4146."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise",
+      "method": "POST",
+      "payload": "districtid=050300000&comcod=4146",
+      "status": "HTTP 200; empty JSON array",
+      "summary": "No survey entry was returned for Habiganj in this public map-search route; this does not prove that no cadastral records exist."
+    },
+    {
+      "url": "https://settlement.gov.bd/Map/GetallBoundaryJson",
+      "method": "POST",
+      "payload": "unitcode=050300000",
+      "status": "HTTP 200; JSON success",
+      "summary": "Returned Habiganj district boundary GeoJSON (administrative boundary, not parcels)."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap",
+      "method": "POST",
+      "payload": "comcod=4146&rsno=&districtid=050300000",
+      "status": "HTTP 200; empty JSON array",
+      "summary": "No upazila list was returned without a survey code."
+    }
+  ],
+  "sourceSchema": {
+    "observed": ["GeoJSON sheet response", "Mapbox vector-tile PBF parcel route", "JSON metadata route"],
+    "crs": "Not stated by the inspected JavaScript; no parcel response was obtained.",
+    "nativeFields": null,
+    "safeFieldAllowlist": ["stable native parcel/dag identity only", "geometry"],
+    "unsafeFieldsExcluded": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "khatian details"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Bangladesh survey/map viewer with administrative and survey-unit selectors; local Shaistaganj land-office service lead.",
+    "verifiedOpenScope": "Habiganj administrative boundary only; no parcel coverage verified.",
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_local_registry_and_public_map_viewer_no_verified_parcel_geometry",
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "sourceIds": [],
+  "remainingUncertainty": "The empty survey-list response may reflect route coverage, survey-state, or current portal data availability. Exact-point hits, map extent, and citywide parcel presence were not established.",
+  "nextStep": "Retry the official viewer when a Habiganj survey/mouza route is publicly enumerated, then request only a bounded Shaistaganj-area parcel geometry response and validate its native dag/parcel identity before any adapter qualification."
+}

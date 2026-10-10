@@ -1,0 +1,103 @@
+{
+  "cityCode": 6699,
+  "queueRank": 1616,
+  "name": "Bilbeis",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "iso3": "EGY",
+  "locId": 818,
+  "point": [30.4175894451434, 31.5695408853418],
+  "population2025": 353541,
+  "population2025k": 353.541,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bilbeis Egypt cadastral parcel map official land registry GIS",
+        "result": "Search identified the Egyptian Survey Authority (ESA) official digital-map, paper-map, historical-map and service pages, but no public Bilbeis parcel viewer/API or bounded parcel response.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://www.esa.gov.eg/egy_his_maps.aspx"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "بلبيس مصر خريطة كادسترية سجل عيني أراضي رسمي",
+        "result": "Search found ESA official map services and an official Sharqia Governorate bulletin mentioning Bilbeis land, but no anonymous city parcel map/API, parcel schema, native ID, or geometry.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://www.esa.gov.eg/paper_maps_search.aspx",
+          "https://www.sharkia.gov.eg/Info_services/bulletins/DocLib/%D9%86%D8%B4%D8%B1%D9%87%20%D9%8A%D9%86%D8%A7%D9%8A%D8%B1%202025.pdf"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "observation": "ESA states that digital maps can be requested with location, scale, layers, format and projection, followed by review and payment; this is a request/sales workflow, not an anonymous parcel API."
+    },
+    {
+      "url": "https://www.esa.gov.eg/services.aspx",
+      "observation": "ESA official service index lists paper, digital and historical maps plus surveying services. No parcel viewer or public feature endpoint was exposed in the fetched HTML/current scripts."
+    },
+    {
+      "url": "https://www.esa.gov.eg/egy_his_maps.aspx",
+      "observation": "ESA historical-map catalog is public, but the inspected catalog did not establish a current Bilbeis cadastral parcel layer or downloadable parcel geometry."
+    },
+    {
+      "url": "https://www.sharkia.gov.eg/Info_services/bulletins/DocLib/%D9%86%D8%B4%D8%B1%D9%87%20%D9%8A%D9%86%D8%A7%D9%8A%D8%B1%202025.pdf",
+      "observation": "Official Sharqia Governorate bulletin mentions Bilbeis industrial-area land counts; it is administrative prose/statistics, not a parcel registry or geometry service."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.esa.gov.eg/services.aspx",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Fetched successfully; service links only."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Fetched successfully; page documents manual digital-map requests and no anonymous parcel response."
+    },
+    {
+      "url": "https://www.esa.gov.eg/egy_his_maps.aspx",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Fetched successfully; public historical catalog, no Bilbeis parcel geometry/API verified."
+    },
+    {
+      "url": "https://www.esa.gov.eg/testmap.aspx",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Fetched successfully; ordinary ESA site page with no cadastral viewer or feature service."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "The national ESA is an evidenced map/survey custodian and Sharqia Governorate is an evidenced local administrative authority, but no public Bilbeis registry/map/API response with safe parcel identity and geometry was verified.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "resultCategory": "official_map_custodian_request_workflow_open_parcel_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "ESA public map/service catalog and Sharqia Governorate public bulletin material.",
+    "verifiedOpenScope": "No city-bounded Bilbeis parcel record, stable native parcel identity, schema, CRS, or geometry was retrieved.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "The existence, coverage, endpoint, schema, CRS and access policy of any Bilbeis cadastral layer remain unverified. The exact WUP point was not shifted and no exact-point hit/miss was used as an absence claim. No login, CAPTCHA bypass, private field, owner data, or unsafe request was attempted."
+}

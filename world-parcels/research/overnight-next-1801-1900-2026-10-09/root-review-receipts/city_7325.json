@@ -1,0 +1,18 @@
+{
+  "taskId": "city:7325",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-7325-golapganj.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/golapganj-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/7325/sylhet-districts.json",
+    "tmp/valhalla-parcel-research/7325/surveys.json",
+    "tmp/valhalla-parcel-research/7325/thanas.json",
+    "tmp/valhalla-parcel-research/7325/gis.headers",
+    "tmp/valhalla-parcel-research/7325/MapSearch.js"
+  ],
+  "checkedAt": "2026-10-10T17:33:02Z",
+  "reason": "Official DLRS hierarchy reaches Sylhet district and survey, but the next response is empty and the GIS host returned 503. No Golapganj full polygon with safe native ID, adapter qualification, or headed Details verification exists."
+}

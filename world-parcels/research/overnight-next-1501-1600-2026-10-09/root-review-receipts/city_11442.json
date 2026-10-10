@@ -1,0 +1,16 @@
+{
+  "taskId": "city:11442",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-11442-xuancheng.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/xuancheng-service-review.json",
+    "tmp/valhalla-parcel-research/11442/xuancheng-news.headers",
+    "tmp/valhalla-parcel-research/11442/xuancheng-news.html"
+  ],
+  "checkedAt": "2026-10-10T09:27:52.943495Z",
+  "reason": "Immutable WUP code/rank/country/point/population match the original archive. English and Chinese queries are recorded. Cached first-party Tianditu notice supports thematic map publication, but contains no verified parcel vector, schema, CRS or native ID. The cited local registration-center page was not cached and independent retrieval timed out, so local registryFound=true is not propagated from this review. Zero polygons retained. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed Details verification are absent. No admission or citywide absence claim.",
+  "sourceAdmission": "not_admitted"
+}

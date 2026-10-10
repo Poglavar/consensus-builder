@@ -1,0 +1,54 @@
+{
+  "cityCode": 6562,
+  "queueRank": 1469,
+  "country": "Egypt",
+  "countryCode": "EG",
+  "point": [31.3310644881072, 31.7251647525109],
+  "population2025": 387432,
+  "population2025k": 387.432,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Al Roda Egypt official cadastral parcel map land registry GIS",
+        "result": "Found the first-party Egyptian General Authority for Survey (ESA) site and its official map, digital-map, topographic-map, historic-map, and map-room service pages. The current public map page is a static Google Maps-backed ASP.NET page and does not expose an anonymous parcel feature service or parcel schema.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/egyptmap.aspx",
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "الروضة مصر خريطة كادسترية أراضي مساحية موقع رسمي",
+        "result": "Found the official الهيئة المصرية العامة للمساحة (ESA) pages describing the national survey/cadastral mandate, digital maps, topographic maps, historic cadastral maps, and map-room procedures. No local Al Roda public parcel viewer, anonymous parcel API, safe parcel identity, or full parcel geometry was verified.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/egy_his_maps.aspx",
+          "https://www.esa.gov.eg/zemam_maps.aspx"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registry": {
+    "custodian": "Egyptian General Authority for Survey (ESA) is evidenced as the national survey/cadastral map custodian.",
+    "localOffice": null,
+    "sourceScope": "National agency information and map-service procedures; no Al Roda-local registry/map endpoint was evidenced.",
+    "geometryAccess": "No anonymous parcel ID-plus-geometry response was obtained. No credentials, private tokens, unsafe owner/address fields, CAPTCHA bypass, or TLS weakening were used."
+  },
+  "geometry": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "The exact WUP point was preserved and was not shifted. No parcel query was available on the reviewed official pages, so zero exact-point hits must not be interpreted as citywide absence.",
+    "crs": null
+  },
+  "runtimeReadiness": {
+    "status": "held",
+    "reason": "First-party national cadastral custodian and public map/documentation routes were researched, but no independently usable anonymous parcel service, safe native parcel identity, or geometry was verified. This packet records source discovery only and does not imply source integration or admission.",
+    "adapterAdmission": false
+  }
+}

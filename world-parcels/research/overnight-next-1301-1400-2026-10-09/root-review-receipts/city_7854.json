@@ -1,0 +1,12 @@
+{
+  "taskId": "city:7854",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-7854-probolinggo.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/probolinggo-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-09T14:41:19.423873Z",
+  "reason": "Official Kota Probolinggo land office and BHUMI viewer are evidenced, but saved first-party shells and assets contain no bounded parcel feature response with safe native ID and full polygon; no adapter qualification."
+}

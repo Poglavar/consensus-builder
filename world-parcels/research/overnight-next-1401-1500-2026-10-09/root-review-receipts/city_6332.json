@@ -1,0 +1,16 @@
+{
+  "taskId": "city:6332",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-6332-mit-habib.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/mit-habib-service-review.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-09T16:44:52Z",
+  "reason": "ESA digital-map requests use a purchase/quotation workflow; CAPMAS timed out. Registry custody remains unresolved and no safe native-ID polygon or qualified adapter was evidenced.",
+  "firstPartyUrlsChecked": [
+    "https://www.esa.gov.eg/sellingmaproomdigital.aspx"
+  ],
+  "admissionAssessment": "No fresh native-ID geometry read, forced paging, 13 bounded cells, metric GEOS checks, source binding, or headed Details verification; no runtime admission."
+}

@@ -1,0 +1,52 @@
+{
+  "cityCode": 3109,
+  "queueRank": 1778,
+  "country": "Spain",
+  "countryCode": "ES",
+  "point": [41.6383171910057, -4.72828357608669],
+  "population2025": 323201,
+  "population2025k": 323.201,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Valladolid Spain official cadastral parcel map viewer catastro WMS",
+        "result": "Found the official Dirección General del Catastro Sede Electrónica, its public cadastral viewer, WMS page, INSPIRE services page, and Valladolid municipal GIS portal announcement.",
+        "actualResultUrls": [
+          "https://www.sedecatastro.gob.es/",
+          "https://www.catastro.hacienda.gob.es/es-ES/wms.html",
+          "https://www.catastro.hacienda.gob.es/webinspire/index_eng.html",
+          "https://www.valladolid.es/en/ciudad/urbanismo-vivienda/utilidad/noticias/nace-portal-gis-valladolid"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Valladolid España visor parcelas catastro mapa oficial Sede Electrónica Catastro",
+        "result": "Found the official Sede Electrónica del Catastro, Valladolid municipal electronic office, Catastro INSPIRE page, and the public municipal GIS portal announcement.",
+        "actualResultUrls": [
+          "https://www.sedecatastro.gob.es/",
+          "https://sede.valladolid.es/",
+          "https://www.catastro.hacienda.gob.es/webinspire/",
+          "https://www.valladolid.es/es/ciudad/urbanismo-vivienda/utilidad/noticias/nace-portal-gis-valladolid"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "parcelSource": {
+    "custodian": "Dirección General del Catastro, Ministerio de Hacienda",
+    "service": "INSPIRE Cadastral Parcels ATOM municipal predefined dataset",
+    "municipality": "47900-VALLADOLID",
+    "downloadUrl": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/47/47900-VALLADOLID/A.ES.SDGC.CP.47900.zip",
+    "sampleFile": "valladolid-parcel-sample.geojson",
+    "sampleFeatureCount": 1,
+    "nativeIdentity": "nationalCadastralReference",
+    "nativeCrs": "EPSG:25830",
+    "outputCrs": "EPSG:4326",
+    "safeFields": ["id", "geometry"],
+    "scope": "One bounded parcel sample near the WUP point; not a complete citywide admission."
+  },
+  "runtimeReadiness": "held"
+}

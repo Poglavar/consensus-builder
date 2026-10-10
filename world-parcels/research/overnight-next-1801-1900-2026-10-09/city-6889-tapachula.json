@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-10",
+  "cityCode": 6889,
+  "queueRank": 1871,
+  "name": "Tapachula",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "iso3": "MEX",
+  "point": [14.89697903262, -92.268743483956],
+  "population2025": 307334,
+  "population2025k": 307.334,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tapachula Chiapas municipal cadastre parcel map official GIS",
+        "result": "Official municipal Treasury cadastral-tax lookup and official Chiapas GeoWeb/GeoServer were found. No first-party public city parcel viewer was verified.",
+        "actualResultUrls": [
+          "https://tesoreria.tapachula.gob.mx/Home/Index",
+          "https://tesoreria.tapachula.gob.mx/Impuestos/BuscaCuenta/1",
+          "https://geoweb.chiapas.gob.mx/geoweb/",
+          "https://www.ceieg.chiapas.gob.mx/info-geografica/servicio-wms"
+        ]
+      },
+      {
+        "language": "Spanish (local)",
+        "query": "catastro municipal Tapachula Chiapas mapa predial sitio oficial",
+        "result": "The official municipal result identifies Dirección de Catastro Municipal and a public clave catastral/cuenta lookup. Official state map and GeoWeb results provide general cartography and WMS/WFS infrastructure, not a confirmed urban cadastral parcel layer.",
+        "actualResultUrls": [
+          "https://tesoreria.tapachula.gob.mx/Impuestos/BuscaCuenta/1",
+          "https://chiapas.gob.mx/mapas/",
+          "https://map.ceieg.chiapas.gob.mx/geoweb/index.php?t=619e67f6-bfcf-4e87-8229-e9e34e870b50",
+          "https://coesa.chiapas.gob.mx/noticias/capacitacion/item/457-sa"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Tapachula's official municipal Treasury identifies the Dirección de Catastro Municipal and provides a public lookup by clave catastral or cuenta única; this establishes a local cadastral custodian/service, but not public parcel geometry access.",
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://tesoreria.tapachula.gob.mx/Impuestos/BuscaCuenta/1",
+      "operator": "H. Ayuntamiento de Tapachula, Tesorería Municipal / Dirección de Catastro Municipal",
+      "scope": "Municipal cadastral-tax account lookup",
+      "observation": "Public page states lookup by clave catastral or cuenta única and names the municipal cadastral directorate. It is an attribute/payment workflow, not a safe geometry API. Direct request timed out in this environment."
+    },
+    {
+      "url": "https://geoweb.chiapas.gob.mx/geoweb/",
+      "operator": "Gobierno del Estado de Chiapas / CEIEG",
+      "scope": "Statewide thematic GIS viewer",
+      "observation": "Public JavaScript/configuration was reachable and exposes map layers; listed layers include urban blocks, settlements and a generic parcelas layer, but no verified Tapachula urban cadastral coverage."
+    },
+    {
+      "url": "https://mapas.siese.chiapas.gob.mx/geoserver/POSTGISSER/wms?service=WMS&request=GetCapabilities",
+      "operator": "Gobierno del Estado de Chiapas / state geospatial service",
+      "scope": "Published WMS/WFS layer catalog",
+      "observation": "Anonymous GetCapabilities succeeded. Catalog includes parcelas and ran_zonaparcelafeb2025; the catalog itself does not establish that either layer is a municipal urban cadastre."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://tesoreria.tapachula.gob.mx/Home/Index",
+      "method": "GET",
+      "status": "timeout after 20 seconds",
+      "summary": "No response body obtained from the municipal Treasury host in this environment. Search-indexed official page confirms municipal cadastral contact/context."
+    },
+    {
+      "url": "https://tesoreria.tapachula.gob.mx/Impuestos/BuscaCuenta/1",
+      "method": "GET",
+      "status": "timeout after 20 seconds",
+      "summary": "No response body obtained; no account lookup was attempted and no personal/property attributes were requested."
+    },
+    {
+      "url": "https://geoweb.chiapas.gob.mx/geoweb/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official viewer HTML and JavaScript references retrieved; no credentials or bypasses used."
+    },
+    {
+      "url": "https://mapas.siese.chiapas.gob.mx/geoserver/POSTGISSER/wms?service=WMS&request=GetCapabilities",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official GeoServer capabilities retrieved; CRS/layer metadata inspected."
+    },
+    {
+      "url": "https://mapas.siese.chiapas.gob.mx/geoserver/POSTGISSER/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=POSTGISSER:parcelas&outputFormat=application/json&srsName=EPSG:4326&bbox=-92.278,14.887,-92.258,14.907,EPSG:4326",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Bounded anonymous request returned a valid empty FeatureCollection (0 features). This is not evidence of citywide absence."
+    },
+    {
+      "url": "https://mapas.siese.chiapas.gob.mx/geoserver/POSTGISSER/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=POSTGISSER:ran_zonaparcelafeb2025&outputFormat=application/json&srsName=EPSG:4326&bbox=-92.278,14.887,-92.258,14.907,EPSG:4326",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Returned one MultiPolygon with safe fields nuc_poligo, zpar_zona, edo_clv, mun_clv, nuc_clv and programa. The returned geometry was outside the requested urban target extent and was not retained as a city sample."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Statewide Chiapas thematic GIS and published parcel/RAN layers plus Tapachula municipal cadastral-tax lookup.",
+    "verifiedOpenScope": "Anonymous GeoServer access and one bounded query response; no verified urban Tapachula parcel geometry.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["id", "nuc_poligo", "zpar_zona", "edo_clv", "mun_clv", "nuc_clv", "programa", "geometry"],
+  "nativeFieldMapping": {
+    "parcelLayer": "parcelas: native schema not exposed in returned empty response",
+    "ranLayer": "nuc_poligo is the apparent native polygon key; other returned fields are source attributes and are not retained in a sample"
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "remainingUncertainty": "The municipal service may have cadastral records behind its account workflow, but its map/API contract and urban parcel geometry coverage were not publicly verified. A zero bounded response from parcelas cannot establish absence.",
+  "nextStep": "Retry the municipal service when reachable and inspect only its public bootstrap/configuration for a documented geometry endpoint; if a safe urban parcel layer is confirmed, request a small bbox around the fixed WUP point and independently validate native identity and CRS before adapter qualification."
+}

@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "kind": "root_identity_decision_overlay",
+  "cohort": "overnight-next-1701-1800",
+  "recordedAt": "2026-10-10T13:12:47.803109Z",
+  "decisions": [
+    {
+      "wupCityCode": 434,
+      "rank": 1723,
+      "countryCode": "CY",
+      "name": "Lefkosia (Nicosia)",
+      "decision": "confirmed_attempt",
+      "effectiveAttemptState": "attempted",
+      "candidatePointLatLon": [
+        35.161924440207,
+        33.343586690067
+      ],
+      "populationPersons": 333008,
+      "priorCityId": "capital:CY:nicosia",
+      "priorPointLatLon": [
+        35.166666666666664,
+        33.366667
+      ],
+      "distanceKm": 2.16,
+      "reason": "The original WUP 2025 row explicitly names Lefkosia (Nicosia), Cyprus, and the prior capital roster names Nicosia, Cyprus with a locator 2.16 km from the WUP point. The earlier Cyprus DLS investigation explicitly queried a Nicosia city-area envelope and retained the original first-party ArcGIS parcel response containing three polygons there with native SBPI_ID_NO values. This is a prior investigation of the same city, so WUP434 is a confirmed prior attempt and stays excluded from the pending research queue. The WUP rank, point and 333008-person population remain unchanged. The bounded response does not prove citywide coverage or qualify a live adapter.",
+      "evidence": [
+        {
+          "path": "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+          "observation": "Immutable WUP code 434, rank 1723, Cyprus, 2025 population 333.008 thousand and point 35.161924440207,33.343586690067; checked against the original UN CSV whose compressed SHA-256 is e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114."
+        },
+        {
+          "path": "world-parcels/research/world-capitals-2026-10-08/roster.json",
+          "observation": "Previously checked Nicosia, Cyprus capital entry capital:CY:nicosia, with central-city locator and explicit manual evidence pointer to the Cyprus DLS investigation."
+        },
+        {
+          "path": "world-parcels/research/retry/countries/CY.json",
+          "observation": "Earlier Nicosia city-envelope ArcGIS query against the Cyprus Department of Lands and Surveys parcel layer records HTTP 200 and points to the retained source response."
+        },
+        {
+          "path": "world-parcels/research/retry/countries/CY-parcel-response.json",
+          "observation": "Original retained first-party nicosia_sample contains three full polygon features at about 35.1717 N, 33.3610 E with native SBPI_ID_NO values; the response reports a transfer limit, so it is a bounded sample only."
+        }
+      ]
+    }
+  ],
+  "scope": "Identity and prior-attempt classification only; no runtime admission or citywide parcel coverage conclusion."
+}

@@ -1,0 +1,54 @@
+{
+  "cityRecord": "city-4353-grenoble.json",
+  "cityCode": 4353,
+  "queueRank": 1587,
+  "attempt": 1,
+  "city": "Grenoble",
+  "country": "France",
+  "countryCode": "FR",
+  "wupPointLatLon": [45.1806156549356, 5.72378420259572],
+  "qualification": "complete",
+  "registryFound": true,
+  "officialService": {
+    "name": "IGN API Carto module Cadastre / Parcellaire Express",
+    "url": "https://apicarto.ign.fr/api/cadastre",
+    "custodianEvidence": "IGN's official API documentation describes the open cadastre service, its GeoJSON format, WGS84 output, parcel filters, and bounded geometry queries. The official City of Grenoble data.gouv.fr record independently documents a Grenoble parcel-boundary dataset derived from DGFiP PCI.",
+    "cityDatasetUrl": "https://www.data.gouv.fr/datasets/parcelles-grenoble",
+    "mapPage": {"status": "not opened; API and official catalog were sufficient", "contentType": "n/a"},
+    "javascript": {"status": "not applicable; direct official API documentation used"},
+    "wfsCapabilities": {"url": "https://data.geopf.fr/wfs/ows?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetCapabilities", "status": 200, "bytes": 5524324, "note": "Capabilities downloaded; Cadastral Parcels / Parcellaire Express namespace was visible."}
+  },
+  "attempts": [
+    {"route": "English web discovery", "outcome": "Found official City of Grenoble parcel dataset and IGN API Carto cadastre documentation; URLs recorded in the city record."},
+    {"route": "French web discovery", "outcome": "Found the same first-party city dataset plus official IGN and cadastre.gouv.fr cadastral service pages; URLs recorded in the city record."},
+    {"route": "GET https://apicarto.ign.fr/api/cadastre/commune?code_insee=38185", "outcome": "HTTP 200; returned the Grenoble commune geometry, 27,617-byte JSON response."},
+    {"route": "GET https://apicarto.ign.fr/api/cadastre/parcelle?code_insee=38185", "outcome": "Timed out at 30 seconds while attempting an unbounded municipal parcel response; no absence inference made and no bulk response retained."},
+    {"route": "GET https://data.geopf.fr/wfs/ows?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetCapabilities", "outcome": "HTTP 200; current official WFS capabilities downloaded to ignored scratch for schema/service inspection; no raw capabilities retained in cohort."},
+    {"route": "Exact WUP-point parcel query", "outcome": "HTTP 200; bounded _limit=3 Point query returned one Feature, native id parcelle.3218540, native parcel identity 38185000DN0001, one full MultiPolygon in EPSG:4326."}
+  ],
+  "queryDetails": {
+    "service": "IGN API Carto cadastre",
+    "candidateEndpoint": "https://apicarto.ign.fr/api/cadastre/parcelle",
+    "wupPoint": "POINT(5.72378420259572 45.1806156549356) in longitude/latitude request order; city record preserves latitude/longitude order",
+    "crs": "EPSG:4326 / WGS84, GeoJSON coordinates longitude,latitude",
+    "returnedFeatureIds": ["parcelle.3218540"],
+    "nativeIdentity": "idu=38185000DN0001; section=DN; numero=0001; code_insee=38185",
+    "sourceFieldMapping": {"idu": "stable cadastral parcel identity retained as sample properties.id", "gid": "source numeric feature field, not retained", "section": "cadastral section, metadata only", "numero": "parcel number, metadata only", "contenance": "area field, not retained"},
+    "compositeKeyProvenance": "The native idu 38185000DN0001 is the source parcel identity and encodes commune 38185, section DN, and parcel number 0001; no internal synthetic row number was used."
+  },
+  "safeFieldAllowlist": ["native stable parcel identity", "full parcel polygon geometry"],
+  "retainedGeoJsonPolicy": "grenoble-parcel-samples.geojson contains exactly one full native parcel polygon and properties with exactly one canonical identity key: id=38185000DN0001. Raw source attributes remain in this metadata only; no owner, address, contact, titleholder, personal, tax, account, or unsafe fields were requested or retained.",
+  "scopeLimits": [
+    "The city dataset is catalogued but was not bulk downloaded in this attempt.",
+    "The exact-point sample proves a usable public parcel response at the WUP point, not citywide completeness or legal cadastral authority.",
+    "The unbounded municipal parcel request timed out; timeout is not evidence of citywide absence.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, or TLS verification exception was used.",
+    "Runtime adapter readiness remains held pending independent serial review."
+  ],
+  "uncertainty": [
+    "Current parcel update vintage and parity between the city catalog and IGN response were not established.",
+    "The official WFS capabilities were inspected for service/schema context, but no direct bulk WFS parcel feature request was needed after the bounded API response succeeded.",
+    "No claim is made about owners, titles, tax records, or other restricted cadastral information."
+  ],
+  "runtimeReadiness": "held"
+}

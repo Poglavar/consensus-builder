@@ -1,0 +1,49 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; local registry evidence and public vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10T17:45:00Z",
+  "cityCode": 3234,
+  "queueRank": 1804,
+  "cityId": "wup:3234",
+  "name": "Sosnowiec",
+  "country": "Poland",
+  "countryCode": "PL",
+  "iso3": "POL",
+  "centerLatLon": [50.2922574419292, 19.1460205522405],
+  "point": [50.2922574419292, 19.1460205522405],
+  "population2025": 318955,
+  "population2025k": 318.955,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {"language": "English", "query": "Sosnowiec Poland official cadastral map parcels GIS geoportal ewidencja land registry WFS", "result": "Found the official municipal geodesy page, municipal WFS endpoint, and national GUGiK EGiB/KIEG documentation.", "actualResultUrls": ["https://www.sosnowiec.pl/2023/07/aktualnosci/teraz-wniosek-o-dane-zgromadzone-w-zasobie-geodezyjnym-zlozysz-przez-profil-zaufany-lub-konto-bankowe/", "https://sosnowiec.webewid.pl:9443/iip/ows", "https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/"]},
+      {"language": "Polish", "query": "Sosnowiec oficjalny geoportal mapa katastralna działki ewidencja gruntów WFS Wydział Geodezji i Kartografii", "result": "Znaleziono oficjalny serwis miasta wskazujący Wydział Geodezji i Kartografii oraz publiczną usługę WFS/WMS Sosnowca; dokumentacja GUGiK potwierdza krajowe usługi EGiB/KIEG.", "actualResultUrls": ["https://www.sosnowiec.pl/2023/07/aktualnosci/teraz-wniosek-o-dane-zgromadzone-w-zasobie-geodezyjnym-zlozysz-przez-profil-zaufany-lub-konto-bankowe/", "https://sosnowiec.webewid.pl:9443/iip/ows", "https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/"]}
+    ]
+  },
+  "officialSources": [
+    {"url": "https://www.sosnowiec.pl/2023/07/aktualnosci/teraz-wniosek-o-dane-zgromadzone-w-zasobie-geodezyjnym-zlozysz-przez-profil-zaufany-lub-konto-bankowe/", "operator": "Urząd Miejski w Sosnowcu, Wydział Geodezji i Kartografii", "observation": "Official city page identifies the municipal geodesy/cartography department and links the public e-usługi service."},
+    {"url": "https://sosnowiec.webewid.pl:9443/iip/ows", "operator": "Urząd Miejski w Sosnowcu public WMS/WFS", "observation": "Verified GetCapabilities identifies public WFS layer ms:dzialki (Działki), EPSG:2177 default CRS and EPSG:2180/EPSG:4326 alternatives."},
+    {"url": "https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/", "operator": "GUGiK", "observation": "Official documentation describes EGiB custody by counties/city counties and KIEG/ULDK national access services."}
+  ],
+  "registryFound": true,
+  "registryBasis": "The official city page identifies the Wydział Geodezji i Kartografii and the city-hosted public WFS; this evidences a local registry/cadastre custodian, not citywide completeness.",
+  "registryEvidenceUrls": ["https://www.sosnowiec.pl/2023/07/aktualnosci/teraz-wniosek-o-dane-zgromadzone-w-zasobie-geodezyjnym-zlozysz-przez-profil-zaufany-lub-konto-bankowe/", "https://sosnowiec.webewid.pl:9443/iip/ows"],
+  "requests": [
+    {"url": "https://sosnowiec.webewid.pl:9443/iip/ows?service=WFS&request=GetCapabilities&version=2.0.0", "method": "GET; anonymous; verified TLS", "httpStatus": 200, "outcome": "Capabilities retrieved; ms:dzialki parcel layer, CRS, public WFS operations and WGS84 extent inspected."},
+    {"url": "https://sosnowiec.webewid.pl:9443/iip/ows?service=WFS&request=DescribeFeatureType&version=2.0.0&typeNames=ms:dzialki", "method": "GET; anonymous; verified TLS", "httpStatus": 200, "outcome": "Schema retrieved. Safe geometry field is geometry; native identity candidate is ID_DZIALKI. Other returned fields were not retained."},
+    {"url": "https://sosnowiec.webewid.pl:9443/iip/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms:dzialki&count=3&bbox=5573500,6581600,5573700,6581800", "method": "GET; anonymous; bounded WFS GML response", "httpStatus": 200, "outcome": "Returned three polygon features, converted to a minimal GeoJSON sample with only canonical id properties. Service axis order required the bounded query order observed from the public response; WUP coordinates were not changed."},
+    {"url": "https://integracja.gugik.gov.pl/cgi-bin/KrajowaIntegracjaEwidencjiGruntow?SERVICE=WMS&REQUEST=GetCapabilities", "method": "GET; anonymous; verified TLS", "httpStatus": 200, "outcome": "National KIEG capabilities retrieved for contextual cross-check; no feature geometry was retained from this aggregate WMS."}
+  ],
+  "sourceCandidate": {"url": "https://sosnowiec.webewid.pl:9443/iip/ows", "kind": "Official municipal WFS parcel service", "publisher": "Urząd Miejski w Sosnowcu / Wydział Geodezji i Kartografii", "scope": "Public municipal cadastral parcel layer candidate; bounded anonymous geometry response verified.", "nativeFields": ["geometry", "ID_DZIALKI", "NUMER_DZIALKI", "NAZWA_OBREBU", "NUMER_OBREBU", "NUMER_JEDNOSTKI", "NAZWA_GMINY", "POLE_EWIDENCYJNE", "KLASOUZYTKI_EGIB", "GRUPA_REJESTROWA", "DATA"], "fieldMapping": {"nativeIdentity": "ID_DZIALKI", "geometry": "geometry", "excludedFields": ["owner", "address", "contact", "titleholder", "tax/account and personal fields"]}},
+  "geometryDecision": {"verified": true, "sourceId": "ID_DZIALKI", "sampleCount": 3, "sampleFile": "sosnowiec-parcel-samples.geojson", "exactWupPointTest": "A bounded query around the unchanged WUP point returned nearby parcels; the response is not treated as proof that the exact point lies in a parcel or that no exact-point hit exists.", "requestEvidence": ["Verified WFS GetCapabilities and DescribeFeatureType", "Three-feature bounded GML response converted to minimal GeoJSON"]},
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "coverageAssessment": {"claimedScope": "Municipal Sosnowiec WFS parcel layer and national GUGiK EGiB/KIEG context.", "verifiedOpenScope": "Anonymous bounded parcel response from the municipal service.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": true},
+  "safeFieldAllowlist": ["ID_DZIALKI as stable native parcel identity", "geometry", "CRS/layer metadata"],
+  "runtimeReadiness": "held_quality_review",
+  "resultCategory": "official_local_registry_and_verified_public_geometry",
+  "remainingUncertainty": "Only a bounded sample was requested and retained. The exact WUP point was preserved in latitude/longitude order and was not shifted. No citywide completeness, service freshness beyond the response timestamp, or adapter/runtime qualification is asserted. No unsafe fields were requested or retained."
+}

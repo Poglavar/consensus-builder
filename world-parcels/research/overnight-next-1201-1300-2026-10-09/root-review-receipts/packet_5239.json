@@ -1,0 +1,24 @@
+{
+  "taskId": "packet:5239",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-5239-sirajganj.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/sirajganj-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/root-review-receipts/city_5239.json"
+  ],
+  "checkedAt": "2026-10-09T13:25:36Z",
+  "identityAndSearchReview": "Sirajganj, Bangladesh/BD, WUP code 5239, rank 1245, point [24.4428147841435, 89.6972650570864], population 446632 persons. English/Bengali search queries and result URLs recorded; zero full polygons retained.",
+  "sourceReview": "Original cached DLRS JSON has Rajshahi division 030000000, Sirajganj district 031000000/comcod 4156, and active BDS survey 201901. The subsequent upazila/thana response is []; this supports district/survey custody only and cannot prove absence of city parcels. No native ID or geometry response was obtained.",
+  "firstPartyUrlsReviewed": [
+    "https://settlement.gov.bd/map/mapsearch"
+  ],
+  "originalCacheSha256": {
+    "tmp/valhalla-parcel-research/5239/divisions.json": "5ae86841eeb070a1d8dc5843a13af5472c1929dbe8bd1b905d82fc8984587d3c",
+    "tmp/valhalla-parcel-research/5239/rajshahi-districts.json": "615993a41ff0f197fbbe379eaeefbc15ae4256f23d8a40910bfa837ee75af3bc",
+    "tmp/valhalla-parcel-research/5239/surveys-rs.json": "80fc7b32ef89839bc34680975b8f70b6e13062643454e467fca40d8fc1c3d3f1",
+    "tmp/valhalla-parcel-research/5239/thanas.json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "admissionReview": "No verified safe native-ID full polygon response. Fresh exact ID reads, forced paging, 13 bounded cells, metric GEOS validity/duplicate/overlap/operation checks, source binding, and headed Details-panel verification are not evidenced. No runtime/catalog/report admission or absence claim."
+}

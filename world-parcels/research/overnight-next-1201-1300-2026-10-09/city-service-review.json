@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10466-city.json",
+  "purpose": "Document first-party Shizhong District registry context and bounded anonymous geometry-access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official district-government material evidences local natural-resources/real-estate-registration custody. No safe anonymous cadastral parcel-vector response, schema, CRS, or native parcel ID was verified.",
+  "registryAssessment": "The official 市中区人民政府公报 names 区自然资源局 for district-level real-estate-registration services, including lawful inquiry/copying of registration materials. This establishes local registry/procedure custody, not a public geometry source or integration.",
+  "safeFieldAllowlist": ["safe public parcel/source ID if available", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "officialPrimarySources": [
+    {
+      "url": "https://www.zzszq.gov.cn/zw/zwgkzt/zfgb/202012/P020201218339127617794.pdf",
+      "observation": "Official district government bulletin lists real-estate-registration service item 依法查询、复制不动产登记资料 and assigns the district natural-resources bureau as the district custodian. No parcel geometry payload or public map endpoint is provided."
+    },
+    {
+      "url": "https://www.zzszq.gov.cn/",
+      "observation": "Official district-government homepage was the target of an anonymous direct HTTPS GET; the research environment could not connect. No inference of source absence is made."
+    },
+    {
+      "url": "https://zaozhuang.sdnews.com.cn/zzxw/202503/t20250319_4504592.htm",
+      "observation": "Officially reported Zaozhuang natural-resources bureau work references map/electronic map production, but does not publish a public cadastral parcel-vector service."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Shizhong District Zaozhuang cadastral parcel map official GIS",
+      "result": "First-party district-government material was found for local registration custody; no verified anonymous parcel geometry route.",
+      "resultUrls": ["https://www.zzszq.gov.cn/zw/zwgkzt/zfgb/202012/P020201218339127617794.pdf"]
+    },
+    {
+      "language": "Chinese (Simplified)",
+      "query": "市中区 枣庄 不动产登记 地图 官方",
+      "result": "Official district-government material evidenced local registration custody; no verified anonymous cadastral geometry route.",
+      "resultUrls": ["https://www.zzszq.gov.cn/zw/zwgkzt/zfgb/202012/P020201218339127617794.pdf", "https://www.zzszq.gov.cn/"]
+    },
+    {
+      "language": "Chinese (Simplified)",
+      "query": "枣庄市自然资源和规划局 市中区 地籍图 宗地图 GIS 地图服务",
+      "result": "General natural-resources work was found, but no current public parcel map/API with safe ID and geometry response was verified.",
+      "resultUrls": ["https://zaozhuang.sdnews.com.cn/zzxw/202503/t20250319_4504592.htm"]
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not performed against a verified cadastral parcel endpoint; exact WUP point [34.862914136582, 117.543919330528] remains unchanged and no absence inference is made.",
+    "requestEvidence": []
+  },
+  "attempts": [
+    {
+      "url": "https://www.zzszq.gov.cn/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": "connection failed in research environment",
+      "result": "Direct curl could not connect to the official host within the bounded attempt. This is an environment/access failure; no source-absence conclusion was drawn."
+    },
+    {
+      "url": "https://www.zzszq.gov.cn/zw/zwgkzt/zfgb/202012/P020201218339127617794.pdf",
+      "method": "GET via first-party search result",
+      "httpStatus": "web result available; direct fetch timed out",
+      "result": "Search-indexed official bulletin was reviewed as institutional evidence; no geometry payload or public parcel API was exposed."
+    },
+    {
+      "url": "https://zaozhuang.sdnews.com.cn/zzxw/202503/t20250319_4504592.htm",
+      "method": "GET via official/first-party reported result",
+      "httpStatus": "web result available",
+      "result": "Natural-resources map-production context reviewed; no safe parcel geometry route was exposed."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official Shizhong District government registry material, Zaozhuang natural-resources reporting, and bounded anonymous homepage retrieval attempt.",
+    "verifiedOpenScope": "Local registry/procedure custody only; parcel geometry access unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "A separately published municipal/provincial or authenticated cadastral service may exist; current public URL, access model, CRS/schema, safe parcel identity, exact-point coverage, and citywide completeness are unknown.",
+  "runtimeAssessment": "held: no independently qualified public geometry adapter",
+  "integrationState": "not_integrated"
+}

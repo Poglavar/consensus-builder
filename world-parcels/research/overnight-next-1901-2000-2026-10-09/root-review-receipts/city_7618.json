@@ -1,0 +1,13 @@
+{
+  "taskId": "city:7618",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/valhalla-queue-extension-1301-2300-verification-2026-10-09.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-7618-novokuznetsk.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/novokuznetsk-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T18:47:30.754673Z",
+  "reason": "Novokuznetsk: immutable WUP identity matched original 2025 source and queue. English and Russian queries and official municipal NSPD notice reviewed. Live NSPD viewer timed out; no native parcel ID, full polygon, safe response, forced paging, 13 bounded cells, metric GEOS check, source binding or headed details-panel verification. Timeout is not citywide absence; runtime held."
+}

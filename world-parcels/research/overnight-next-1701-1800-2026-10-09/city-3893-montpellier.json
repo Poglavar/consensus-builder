@@ -1,0 +1,111 @@
+{
+  "cityCode": 3893,
+  "queueRank": 1772,
+  "city": "Montpellier",
+  "country": "France",
+  "countryCode": "FR",
+  "countryCode3": "FRA",
+  "locId": 250,
+  "point": [43.6153701485296, 3.86647003777739],
+  "population2025": 324059,
+  "population2025k": 324.059,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Montpellier France official cadastral parcel map GIS API",
+        "result": "Found the official Montpellier Méditerranée Métropole open-data cadastre dataset and the official French DGFiP/INSPIRE cadastral WMS. The municipal dataset provides geographic cadastral data only; no literal/ownership data was used.",
+        "actualResultUrls": [
+          "https://data.montpellier3m.fr/dataset/cadastre-de-montpellier",
+          "https://inspire.cadastre.gouv.fr/scpc/34172.wms?service=WMS&request=GetCapabilities"
+        ]
+      },
+      {
+        "language": "French",
+        "query": "Montpellier cadastre parcelles carte officielle API données ouvertes",
+        "result": "La recherche a confirmé le jeu de données cadastral officiel de Montpellier Méditerranée Métropole et le service WMS cadastral DGFiP/INSPIRE pour la commune INSEE 34172; les données géographiques sont diffusées sans données littérales.",
+        "actualResultUrls": [
+          "https://data.montpellier3m.fr/dataset/cadastre-de-montpellier",
+          "https://www.cadastre.gouv.fr/scpc/afficherServiceWMS.do",
+          "https://inspire.cadastre.gouv.fr/scpc/34172.wms?service=WMS&request=GetCapabilities"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "The municipal open-data catalog identifies Montpellier Méditerranée Métropole as producer/owner of the Montpellier cadastre compilation sourced from the DGFiP PCI vecteur plan. The official DGFiP/INSPIRE WMS exposes vector cadastral plan layers for commune code 34172. This is local/municipal and national cadastral-source evidence, not runtime adapter admission.",
+  "attemptedRoutes": [
+    {
+      "route": "Montpellier Méditerranée Métropole cadastre dataset page",
+      "url": "https://data.montpellier3m.fr/dataset/cadastre-de-montpellier",
+      "outcome": "HTTP 200; dataset scope is Ville de Montpellier, annual frequency, Open Licence, RGF93 Lambert-93 metadata, and geographic cadastral data only."
+    },
+    {
+      "route": "Municipal parcel ZIP resource",
+      "url": "https://data.montpellier3m.fr/sites/default/files/ressources/MMM_Montpellier_Cadastre.zip",
+      "outcome": "HTTP 200; downloaded and inspected the ZIP. parcelle_Layer.shp contains 39,518 Polygon features, source CRS EPSG:2154, DBF update 2023-10-11, and native fields including Codeident, Ident, Sect_cad and Parcelle."
+    },
+    {
+      "route": "DGFiP/INSPIRE Montpellier WMS GetCapabilities",
+      "url": "https://inspire.cadastre.gouv.fr/scpc/34172.wms?service=WMS&request=GetCapabilities",
+      "outcome": "HTTP 200; capabilities identify Cadastre WMS - 34172 - MONTPELLIER, vector cadastral plan sheets, EPSG:2154 and EPSG:4326 support, and a geographic extent covering Montpellier."
+    },
+    {
+      "route": "Bounded municipal parcel extraction near exact WUP point",
+      "url": "https://data.montpellier3m.fr/sites/default/files/ressources/MMM_Montpellier_Cadastre.zip",
+      "outcome": "Local bounded spatial filter around [43.6153701485296, 3.86647003777739] returned three full parcel polygons; source identity was retained as Codeident values 340172   BV0156, 340172   BV0151 and 340172   BV0069."
+    }
+  ],
+  "requestsAndEndpointChecks": {
+    "tls": "Default certificate verification used; no TLS exception.",
+    "authentication": "No login, credentials, private token, CAPTCHA/Cloudflare bypass, or unsafe field request used.",
+    "safeFieldsRequested": ["stable native parcel identifier", "full parcel polygon geometry", "source layer metadata", "CRS metadata"],
+    "parcelResponse": "Municipal ZIP shapefile parcel layer; bounded extraction converted to GeoJSON EPSG:4326.",
+    "parcelEndpointVerified": true,
+    "parcelGeometryRetrieved": true,
+    "nativeParcelId": "Codeident",
+    "crs": "Source EPSG:2154 (RGF93 / Lambert-93); retained sample GeoJSON is EPSG:4326 / CRS84 coordinates."
+  },
+  "scopeLimits": [
+    "Exact WUP point [43.6153701485296, 3.86647003777739] was preserved in latitude/longitude order; no coordinate shift or parcel-forcing was attempted.",
+    "The municipal dataset is a city-scoped compilation, but the retained bounded sample is not proof of complete current citywide coverage beyond the source metadata and feature count.",
+    "Codeident is a source composite identity containing commune code, section and parcel reference; it is recorded in metadata and normalized as the sole sample feature id.",
+    "The WMS is a display service and does not implement GetFeatureInfo according to its documentation; geometry was therefore retained from the municipal download, not fabricated from raster output.",
+    "No owner, address, contact, titleholder, tax/account, personal or other unsafe fields were requested or retained.",
+    "Packet completion records research and sample evidence only; serial reviewer qualification and runtime integration remain pending."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier", "full parcel polygon geometry", "geometry CRS", "source layer/service metadata"],
+  "nativeFieldMapping": {
+    "sourceLayer": "parcelle_Layer",
+    "nativeIdField": "Codeident",
+    "identityConstruction": "Source-provided Codeident value, e.g. 340172   BV0156; no synthetic row number used.",
+    "excludedSourceFields": ["Ccoarp", "Ccocom", "Ccodep", "Ccosec", "Codcomm", "Cprsecr", "Dnupla", "Feuille", "Figplan", "Ident", "Parcelle", "Sect_cad", "Surface", "Shape_Leng", "Shape_Area"]
+  },
+  "compositeKeyProvenance": "The source Codeident field is the native composite parcel reference observed in the shapefile schema; its values combine commune code 340172, section and parcel reference. The exact source values are retained only as the canonical id in sample features.",
+  "geometryDecision": {
+    "verified": true,
+    "sampleCount": 3,
+    "sampleFile": "montpellier-parcels-sample.geojson",
+    "nativeIdField": "Codeident",
+    "exactWupPointTest": "Bounded spatial filter around the exact point returned three polygons; this is local sample evidence, not a citywide completeness test.",
+    "sourceId": "MMM_MTP_Cadastre / parcelle_Layer"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Montpellier municipal cadastral compilation and DGFiP/INSPIRE commune WMS for INSEE 34172.",
+    "verifiedOpenScope": "Municipal city-scoped parcel download with 39,518 polygon features plus official commune WMS capabilities.",
+    "citywideVerified": true,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Municipal download metadata is dated 2023-10/2023-10-12 and currentness relative to 2026 is not independently established. Adapter contract, update workflow, and production integration remain unresolved.",
+  "retainedSample": {
+    "file": "montpellier-parcels-sample.geojson",
+    "featureCount": 3,
+    "propertiesPolicy": "Exactly one canonical native identity property: id."
+  }
+}

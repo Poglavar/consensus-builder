@@ -1,0 +1,96 @@
+{
+  "cityCode": 6066,
+  "queueRank": 1792,
+  "name": "Quảng Ngãi",
+  "country": "Viet Nam",
+  "countryCode": "VN",
+  "iso3": "VNM",
+  "locId": 704,
+  "point": [15.1182549299497, 108.803234138844],
+  "population2025": 320907,
+  "population2025k": 320.907,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Quang Ngai Vietnam official cadastral parcel map GIS land registry public viewer",
+        "result": "Search identified the official Quảng Ngãi provincial land-information portal and the official Quảng Ngãi city urban-planning GIS viewer. The viewer advertises parcel lookup by map sheet and parcel number, but no anonymous parcel feature response or public API was verified.",
+        "actualResultUrls": [
+          "https://quangngai.gov.vn/thong-tin-dat-dai",
+          "https://quyhoach.thanhpho.quangngai.gov.vn/",
+          "https://play.google.com/store/apps/details?hl=vi&id=com.viettel.gis.qni"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "Quảng Ngãi bản đồ địa chính tra cứu thửa đất hệ thống thông tin đất đai quy hoạch GIS",
+        "result": "Official Vietnamese-language results identify provincial land-information material, the city planning GIS, and current cadastral measurement/database work. The public viewer host was not reachable for route/configuration inspection, so no safe anonymous ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://quangngai.gov.vn/thong-tin-dat-dai",
+          "https://quangngai.gov.vn/tin-tuc/hoat-dong-lanh-dao-tinh/day-nhanh-cong-tac-do-dac-lap-ban-do-dia-chinh-lap-ho-so-dia-chinh-tai-40-xa-phia-tay.html",
+          "https://quyhoach.thanhpho.quangngai.gov.vn/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Official provincial and city sources evidence local land-information, cadastral-map/database, and planning-GIS custody in Quảng Ngãi. This establishes local registry/cadastral custody and an advertised public planning viewer, not an open parcel geometry API.",
+  "officialSources": [
+    {
+      "url": "https://quangngai.gov.vn/thong-tin-dat-dai",
+      "observation": "Official provincial land-information page with land-price, land-use-planning and land-regulation sections; local land access/procedure custodian evidence, but no parcel feature endpoint in the page content."
+    },
+    {
+      "url": "https://quyhoach.thanhpho.quangngai.gov.vn/",
+      "observation": "Official Quảng Ngãi city urban-planning and technical-infrastructure GIS portal; advertises parcel-plan lookup by map-sheet and parcel number and map-based information access. The host was not reachable from this request environment."
+    },
+    {
+      "url": "https://quangngai.gov.vn/tin-tuc/hoat-dong-lanh-dao-tinh/day-nhanh-cong-tac-do-dac-lap-ban-do-dia-chinh-lap-ho-so-dia-chinh-tai-40-xa-phia-tay.html",
+      "observation": "Official provincial report describes cadastral surveying, cadastral-map preparation, land-registration records and land-database construction; it is institutional/progress evidence, not a downloadable public parcel layer."
+    },
+    {
+      "url": "https://play.google.com/store/apps/details?hl=vi&id=com.viettel.gis.qni",
+      "observation": "Public app listing describes the Quảng Ngãi planning application and parcel-plan lookup by coordinates or map-sheet/parcel number; listing is supporting discovery evidence and does not expose a safe public feature service."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://quangngai.gov.vn/thong-tin-dat-dai",
+      "method": "GET via first-party web search/open discovery",
+      "outcome": "Search result and page content available; official land-information sections identified; no public parcel geometry endpoint exposed."
+    },
+    {
+      "url": "https://quyhoach.thanhpho.quangngai.gov.vn/",
+      "method": "GET",
+      "outcome": "Direct curl failed with DNS resolution error in the request environment; first-party web fetch returned HTTP 502 Bad Gateway. Viewer route, JavaScript/configuration, schema, CRS and anonymous feature response could not be inspected."
+    },
+    {
+      "url": "https://quangngai.gov.vn/tin-tuc/hoat-dong-lanh-dao-tinh/day-nhanh-cong-tac-do-dac-lap-ban-do-dia-chinh-lap-ho-so-dia-chinh-tai-40-xa-phia-tay.html",
+      "method": "GET via first-party web search/open discovery",
+      "outcome": "Official report content available; cadastral/database work and custodianship evidenced; no safe parcel geometry response."
+    },
+    {
+      "url": "https://play.google.com/store/apps/details?hl=vi&id=com.viettel.gis.qni",
+      "method": "GET via first-party web search/open discovery",
+      "outcome": "Public listing available; application capability described, but no public API, schema, CRS or parcel response obtained."
+    }
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Quảng Ngãi provincial land-information/cadastral custody and Quảng Ngãi city planning-GIS viewer.",
+    "verifiedOpenScope": "Official custody/progress evidence and an advertised planning viewer only; no open parcel geometry scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": "Exact WUP point preserved in latitude/longitude order. No exact-point hit/miss test was used. No parcel geometry or native parcel identity was retained. No owner, address, contact, titleholder, personal, tax or account fields were requested. A map extent miss, timeout, login wall or unusable UI is not treated as evidence of citywide absence. Packet completion is not source integration/admission; serial reviewer qualification remains required."
+}

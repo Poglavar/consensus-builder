@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6437-shashamane.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Document Shashemene's local land-service evidence and bounded anonymous public-source/API checks without treating an unverified configured layer as cadastral coverage.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Shashemene City Administration portal advertises a local Land Management service for parcel search, title verification, and cadastral-request follow-up. The official e-Land viewer exposes a public configuration aimed at Addis (AA-ADS) with a registered-parcel WFS target, but anonymous API access returned 401 and the WFS host timed out. No safe parcel identifier, schema response, or geometry was verified.",
+  "registryAssessment": "Local municipal land-service/procedure evidence is present on the official city portal. No open registry database, Shashamane parcel identifier schema, or cadastral geometry endpoint was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Official Shashemene city portal, Ethiopian e-Land viewer assets/configuration, Oromia planning prose, and bounded public API/WFS attempts.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "officialPrimarySources": [
+    {
+      "url": "https://www.shashecity.gov.et/",
+      "operator": "Shashemene City Administration",
+      "observation": "Official local portal; Land Management service text advertises parcel/title/cadastral-request services, but no public parcel layer or query was exposed in the reviewed page."
+    },
+    {
+      "url": "https://eland.addiscadaster.gov.et/maps",
+      "operator": "Ethiopian Land Holding Registration and Information Agency",
+      "observation": "Official e-Land viewer shell; public configuration is Addis-focused (AA-ADS) and no anonymous Shashamane parcel response was verified."
+    },
+    {
+      "url": "https://www.oromiaplan.gov.et/om/content/xillannoo-fi-imaammataa",
+      "operator": "Oromia Planning and Development Bureau",
+      "observation": "Official GIS-data preparation prose; no parcel feature service or Shashamane geometry was supplied."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Shashamane Ethiopia cadastral parcel map official land registry GIS",
+      "method": "English-language discovery followed by first-party municipal, e-Land, and Oromia government review.",
+      "actualResultUrls": [
+        "https://www.shashecity.gov.et/",
+        "https://eland.addiscadaster.gov.et/maps",
+        "https://www.oromiaplan.gov.et/om/content/xillannoo-fi-imaammataa"
+      ],
+      "scope": "Find local registry/cadastral custody and safe anonymous parcel geometry; retain no owner, address, titleholder, contact, tax, or account fields."
+    },
+    {
+      "language": "Amharic",
+      "query": "ሻሸመኔ ካዳስተር መሬት ካርታ ኦፊሴላዊ",
+      "method": "Separate Amharic-language discovery followed by first-party review.",
+      "actualResultUrls": [
+        "https://www.shashecity.gov.et/",
+        "https://eland.addiscadaster.gov.et/maps",
+        "https://www.oromiaplan.gov.et/om/content/xillannoo-fi-imaammataa"
+      ],
+      "scope": "የመሬት ምዝገባ/ካዳስተር አገልግሎት እና ደህንነታማ የፓርሴል ጂኦሜትሪ ብቻ መፈለግ፤ የባለቤት፣ አድራሻ፣ የርዕስ ባለቤት፣ የግንኙነት፣ የግብር ወይም የመለያ መረጃ አለመያዝ።"
+    }
+  ],
+  "attempts": [
+    "Official Shashemene municipal homepage fetched anonymously; its Land Management card advertises parcel/title/cadastral-request services, but no public parcel API or map layer was identified in the reviewed HTML.",
+    "Official e-Land viewer shell and public api.config.json fetched anonymously; configuration identified an Addis-focused AA-ADS registered-parcel WFS target and API host. Sensitive-looking configuration values were not retained.",
+    "Anonymous e-Land app-location request for cityCode OR-SHA returned HTTP 401; no login, credentials, or token was used.",
+    "Anonymous WFS GetCapabilities and bounded GetFeature request around [7.19972406980754,38.6017855741764] timed out during DNS resolution; no schema, CRS, safe native ID, geometry, or absence conclusion was obtained.",
+    "Official Oromia planning page reviewed; it describes GIS-data preparation at administrative levels but does not provide a Shashamane parcel service.",
+    "No login, private token, CAPTCHA/Cloudflare bypass, unsafe owner/address/titleholder field, or TLS-verification exception was used."
+  ],
+  "geometryEvidence": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "A bounded WFS request was attempted around exact WUP point [7.19972406980754, 38.6017855741764] but timed out before response. The coordinate was preserved unchanged and no hit/miss inference was made.",
+    "requestEvidence": [
+      {
+        "url": "https://elandapi.addiscadaster.gov.et/api/e-services/app-location?cityCode=OR-SHA",
+        "method": "GET; anonymous public read",
+        "httpStatus": 401,
+        "contentType": "text/html",
+        "assessment": "Unauthorized; no parcel response."
+      },
+      {
+        "url": "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=GetCapabilities",
+        "method": "GET; anonymous WFS metadata attempt",
+        "httpStatus": 0,
+        "contentType": null,
+        "assessment": "DNS-resolution timeout; no capabilities/schema response."
+      },
+      {
+        "url": "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=ncrprs_cadaster:v_1_registered_parcel&outputFormat=application/json&srsname=EPSG:4326&bbox=38.58,7.18,38.62,7.22,EPSG:4326&maxFeatures=3",
+        "method": "GET; bounded anonymous WFS geometry attempt",
+        "httpStatus": 0,
+        "contentType": null,
+        "assessment": "DNS-resolution timeout; no feature response or geometry."
+      }
+    ]
+  },
+  "safeFieldAllowlist": ["id", "geometry", "geometryType", "spatialReference"],
+  "nextStep": "Hold for serial review. A real adapter requires independent verification of an anonymous Shashamane cadastral parcel service, a stable safe native ID, schema/CRS, and bounded geometry response.",
+  "remainingUncertainty": "A separate Oromia or Shashemene registry/map service may exist outside the reviewed public pages; its public accessibility and parcel schema are unknown.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

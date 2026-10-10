@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "1.0",
+  "cityCode": 10152,
+  "queueRank": 1632,
+  "name": "Xinyang",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "point": [32.1273754888133, 114.078662959171],
+  "population2025": 351064,
+  "population2025k": 351.064,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Xinyang China official cadastral parcel map land registry GIS natural resources bureau",
+        "result": "First-party discovery identified the official Xinyang government portal, Xinyang Natural Resources and Planning Bureau registration pages, and the Xinyang online property-registration service. The service advertises cadastral-map publicity, but no anonymous parcel feature endpoint or safe ID-plus-geometry response was identified.",
+        "actualResultUrls": [
+          "https://www.xinyang.gov.cn/2025/07-11/670182.html",
+          "https://zrzyghj.xinyang.gov.cn/ztzl/bdcdjyshjzl/bsznsfbz/",
+          "https://www.xysbdcdjzx.cn/Home/Index_New4"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "信阳市 不动产登记 地籍图 宗地图 自然资源和规划局 官方",
+        "result": "中文 first-party discovery found the Xinyang government notice describing online visual consistency and cadastral-map inquiry, the city natural-resources registration guidance, and the official Xinyang property-registration portal with a 地籍图公示 (cadastral map publicity) entry. Direct anonymous access to the linked map route redirected to a malformed HTTP login URL; no public geometry response was obtained.",
+        "actualResultUrls": [
+          "https://www.xinyang.gov.cn/2025/07-11/670182.html",
+          "https://zrzyghj.xinyang.gov.cn/ztzl/bdcdjyshjzl/bsznsfbz/",
+          "https://www.xysbdcdjzx.cn/Home/Index_New4"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.xinyang.gov.cn/2025/07-11/670182.html",
+      "observation": "Official Xinyang government notice says online services provide visual cadastral/property consistency and access to natural-condition and cadastral-map information through the natural-resources authority. It is institutional/procedure evidence, not an open parcel API."
+    },
+    {
+      "url": "https://zrzyghj.xinyang.gov.cn/ztzl/bdcdjyshjzl/bsznsfbz/",
+      "observation": "Official Xinyang Natural Resources and Planning Bureau registration section documents the local registration center and service procedures. No anonymous parcel layer, schema or CRS was exposed in the accessible content."
+    },
+    {
+      "url": "https://www.xysbdcdjzx.cn/Home/Index_New4",
+      "observation": "Official Xinyang property-registration portal loaded and visibly exposes a 地籍图公示 cadastral-map publicity service. The linked map route is access-controlled and did not yield public parcel geometry."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.xinyang.gov.cn/2025/07-11/670182.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official city notice was fetched through public web access; it described cadastral-map inquiry procedures but exposed no feature service or safe parcel response."
+    },
+    {
+      "url": "https://zrzyghj.xinyang.gov.cn/ztzl/bdcdjyshjzl/bsznsfbz/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official city bureau registration guidance was available; no anonymous map/API configuration, parcel schema or CRS was exposed."
+    },
+    {
+      "url": "https://www.xysbdcdjzx.cn/Home/Index_New4",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official registration portal loaded. Its HTML exposed a CadastralMap route for the 地籍图公示 service."
+    },
+    {
+      "url": "https://www.xysbdcdjzx.cn/YWBL/CadastralMap",
+      "method": "GET",
+      "httpStatus": 302,
+      "outcome": "Anonymous map-route request redirected to http://www.xysbdcdjzx.cnhttp/www.xysbdcdjzx.cn/Home/Login, a malformed login-wall URL. No redirect was followed to authenticate or bypass access controls; no map JavaScript/configuration, parcel ID, geometry, schema or CRS was obtained."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Official Xinyang government and natural-resources/registration-center pages establish a local property-registration custodian and cadastral-map inquiry service. This evidences local custody and procedure, not an open parcel geometry service.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Xinyang municipal property-registration and cadastral-map publicity services.",
+    "verifiedOpenScope": "Local institutional custody and a named cadastral-map service were verified; no anonymous parcel feature response, native parcel ID, schema or CRS was retrieved.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "excludedFields": [
+    "owner or titleholder names",
+    "addresses and contact data",
+    "tax/account/registration details beyond a safe native parcel ID",
+    "credentials and private tokens"
+  ],
+  "nativeIdentityPolicy": "No native parcel identity was observed; no synthetic identity was created. A future retained sample must use exactly one stable native identity in GeoJSON properties and document source field mapping in review metadata.",
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "remainingUncertainty": "The current authenticated viewer/API route, access controls, parcel schema, CRS, stable native parcel identity and citywide coverage remain unresolved. The exact WUP point was preserved and was not shifted; no exact-point hit/miss or citywide-absence inference was made.",
+  "retainedSample": null
+}

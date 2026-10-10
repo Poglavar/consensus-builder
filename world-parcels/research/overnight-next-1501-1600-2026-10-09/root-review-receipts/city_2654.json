@@ -1,0 +1,17 @@
+{
+  "taskId": "city:2654",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-2654-kuantan.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/kuantan-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T08:58:39.777545Z",
+  "reason": "JUPEM Pahang and Eastern Pahang District Survey Office establish cadastral custody. MyLot config identifies Pahang routes but there is no verified anonymous native-ID polygon response or adapter qualification evidence. Reported 401 and timeout do not prove citywide absence.",
+  "independentlyCheckedFirstPartyUrls": [
+    "https://www.jupem.gov.my/ebiz/info-korp",
+    "https://jupem2u.kul.jupem.gov.my/MyLot/index.html"
+  ],
+  "sourceAdmission": "not_admitted"
+}

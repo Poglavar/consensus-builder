@@ -1,0 +1,63 @@
+{
+  "cityRecord": "city-6767-xichang.json",
+  "schemaVersion": "1.0",
+  "cityCode": 6767,
+  "queueRank": 1862,
+  "city": "Xichang",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official first-party evidence establishes Xichang Natural Resources Bureau and local real-estate registration custody, and the official Sichuan Tianditu viewer was inspected. No anonymous parcel ID-plus-geometry response was verified; no sample GeoJSON is retained and runtime remains held.",
+  "queryOutcomes": "Separate English and Simplified-Chinese discovery queries, outcomes, and actual URLs are recorded in city-6767-xichang.json.",
+  "requestOutcomes": "The official Sichuan Government Services page and Sichuan Tianditu viewer/configuration loaded. A malformed alternate official Natural Resources URL returned 404. No parcel schema, CRS, safe native identity, or geometry response was exposed.",
+  "attemptedRoutes": [
+    "Sichuan Government Services Xichang Natural Resources Bureau service page",
+    "Sichuan Natural Resources report on Liangshan/Xichang real-estate registration",
+    "Sichuan Tianditu public viewer and current JavaScript/configuration",
+    "Malformed alternate Sichuan Natural Resources URL (404)"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [27.8911641146497, 102.255058658345] was preserved in latitude/longitude order and never shifted; no exact-point hit/miss inference was made.",
+    "No Xichang city boundary or complete citywide coverage was established for an open parcel geometry service.",
+    "No parcel geometry, stable native parcel identity, source schema or parcel CRS was retrieved or retained.",
+    "Local registry custody and public basemap services are not proof of an open vector parcel API.",
+    "A zero exact-point hit, map extent miss, timeout, login wall or unusable UI is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, personal or other unsafe fields were requested or retained.",
+    "Packet completion is research evidence only and does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No parcel geometry query reached a usable public service. The exact WUP point was preserved but no hit/miss inference was made.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Xichang City local natural-resources and real-estate-registration administration under Liangshan, Sichuan, plus Sichuan public geospatial basemap services.",
+    "verifiedOpenScope": "Local custodial/procedure evidence and public basemap viewer only; anonymous parcel geometry and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current local cadastral viewer/API route, access controls, parcel schema, CRS, stable native parcel identity, update currency, legal access conditions and citywide coverage remain unresolved. No claim is made about parcel absence, legal title, ownership, tax records or completeness of any Chinese cadastral dataset.",
+  "retainedSample": null
+}

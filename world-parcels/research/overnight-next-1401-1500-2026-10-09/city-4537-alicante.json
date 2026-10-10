@@ -1,0 +1,61 @@
+{
+  "cityCode": 4537,
+  "queueRank": 1428,
+  "country": "Spain",
+  "countryCode": "ES",
+  "point": [38.3645764288393, -0.476811353862035],
+  "population2025": 397948,
+  "population2025k": 397.948,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Alicante Spain official cadastral parcel map API Catastro parcela",
+        "result": "Found the first-party Sede Electrónica del Catastro and its public INSPIRE Cadastral Parcel WFS catalogue entry. The Ayuntamiento de Alicante page also documents its municipal urban map with a Catastro parcel layer.",
+        "actualResultUrls": [
+          "https://www.sedecatastro.gob.es/",
+          "https://datos.gob.es/en/catalogo/e0dat0002-cadastral-parcels-of-dg-cadastre-spain.xml",
+          "https://www.alicante.es/es/noticias/mapa-interactivo-informacion-urbanistica"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Alicante España mapa parcelas catastrales oficial API Sede Catastro",
+        "result": "La Sede Electrónica del Catastro ofrece consulta libre de cartografía y datos catastrales; el Ayuntamiento de Alicante documenta una capa Catastro en su mapa urbanístico municipal. El servicio INSPIRE WFS de parcelas de la Dirección General del Catastro está catalogado como público.",
+        "actualResultUrls": [
+          "https://www.sedecatastro.gob.es/",
+          "https://www.catastro.hacienda.gob.es/es-ES/sede.html",
+          "https://datos.gob.es/es/catalogo/e0dat0002-spanish-general-directorate-for-cadastre-cadastral-parcel-inspire-download-service-wfs1",
+          "https://www.alicante.es/es/noticias/mapa-interactivo-informacion-urbanistica"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "custodian": "Dirección General del Catastro, Ministerio de Hacienda, Spain; Alicante municipal urban-map material is a secondary local custodian/viewer reference.",
+    "localityEvidence": "The Ayuntamiento de Alicante first-party page explicitly identifies a Catastro layer in its Alicante urban-information map. The national Catastro service covers Alicante and publishes province 03 municipality resources.",
+    "sourceScope": "Public Spanish cadastral parcel/cartographic services; national INSPIRE coverage is described as Spain except the foral territories. This packet does not assert citywide response completeness.",
+    "geometryAccess": "Anonymous public GET attempts only; no login, credentials, private tokens, owner, address, titleholder, tax, or personal fields requested."
+  },
+  "geometry": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "No parcel geometry was retained. The exact point was used unchanged; failure of the current WFS/WMS requests is not interpreted as citywide absence.",
+    "crs": "INSPIRE/WFS documentation identifies an OGC WFS 2.0.0 service; no successful Alicante feature response was available to verify the returned feature CRS or coordinate order.",
+    "nativeIdentity": null,
+    "nativeFieldMapping": {
+      "nativeIdentity": null,
+      "nativeSourceFields": [],
+      "safeRetainedFields": []
+    }
+  },
+  "runtimeReadiness": {
+    "status": "held",
+    "reason": "A real first-party cadastral source is evidenced, but no bounded parcel feature response was successfully qualified and serial adapter admission is required.",
+    "adapterAdmission": false
+  }
+}

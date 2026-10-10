@@ -1,0 +1,193 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300-2026-10-09",
+  "cityId": "wup2025:632",
+  "cityCode": 632,
+  "queueRank": 1226,
+  "rank": 1226,
+  "name": "Surrey",
+  "country": "Canada",
+  "countryCode": "CA",
+  "iso2": "CA",
+  "iso3": "CAN",
+  "point": [
+    49.1578411996007,
+    -122.842214202135
+  ],
+  "centerLatLon": [
+    49.1578411996007,
+    -122.842214202135
+  ],
+  "pointBasis": "Immutable WUP 2025 queue point copied unchanged in latitude/longitude order; no coordinate adjustment.",
+  "population2025": 454230,
+  "population2025k": 454.23,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official City of Surrey GIS ArcGIS REST service exposes a lots polygon layer and returned parcel polygons from anonymous bounded queries. This is city GIS evidence, not a claim that it is the legal land-title authority or that all city parcels are covered.",
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "held_quality_review",
+  "blocker": "Public geometry is evidenced, but runtime remains held pending independent serial adapter qualification.",
+  "resultCategory": "official_city_gis_public_parcel_geometry_verified",
+  "source": {
+    "operator": "City of Surrey GIS / Engineering Department",
+    "viewerUrl": "https://cosmos.surrey.ca/",
+    "serviceUrl": "https://gisservices.surrey.ca/arcgis/rest/services/ICI_Data/MapServer/1",
+    "layer": "lots (ID 1)",
+    "geometryType": "esriGeometryPolygon",
+    "serviceCrs": "Current layer metadata reports NAD_1983_UTM_Zone_10N (NAD83 CSRS/GVRD), while bounded requests explicitly used inSR=4326 and outSR=4326; GeoJSON coordinates were observed in [longitude, latitude] order."
+  },
+  "sampleFile": "surrey-parcel-samples.geojson",
+  "verifiedSample": true,
+  "coverageAssessment": {
+    "claimedScope": "Official City of Surrey COSMOS/GIS discovery, layer metadata inspection, one exact-point lookup at the immutable WUP point, and one bounded envelope lookup near that point.",
+    "verifiedOpenScope": "Three safe polygon features returned from a bounded envelope; the exact-point request returned two records with identical geometry and MSLINK, one with a null FOLIO and one with FOLIO 6283000009.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "safeFieldAllowlist": [
+    "geometry",
+    "OBJECTID",
+    "MSLINK",
+    "FOLIO",
+    "PID",
+    "LTSA_LOT",
+    "LTSA_BLOCK",
+    "LTSA_PLAN",
+    "LTSA_PARCEL",
+    "ACCURACY",
+    "METHOD"
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Surrey British Columbia official cadastral parcel map GIS property parcels ArcGIS",
+        "result": "Attempt 3 first-party discovery re-found the City of Surrey Maps & COSMOS and GIS pages, public viewer, and official ArcGIS REST lots layer; current metadata identifies polygon geometry, safe parcel fields, and NAD83/UTM Zone 10N source CRS.",
+        "actualResultUrls": [
+          "https://www.surrey.ca/services-payments/online-services/maps-cosmos",
+          "https://www.surrey.ca/city-government/city-departments/engineering/geographic-information-system-gis",
+          "https://cosmos.surrey.ca/",
+          "https://gisservices.surrey.ca/arcgis/rest/services/ICI_Data/MapServer/1"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "Surrey BC carte cadastrale parcelles SIG officiel",
+        "result": "Attempt 3 French-language discovery returned the same official City of Surrey COSMOS/GIS sources; the city's public source is English and no separate French local registry source was found.",
+        "actualResultUrls": [
+          "https://www.surrey.ca/services-payments/online-services/maps-cosmos",
+          "https://www.surrey.ca/city-government/city-departments/engineering/geographic-information-system-gis",
+          "https://cosmos.surrey.ca/",
+          "https://gisservices.surrey.ca/arcgis/rest/services/ICI_Data/MapServer/1"
+        ]
+      }
+    ]
+  },
+  "requests": [
+    {
+      "url": "https://www.surrey.ca/services-payments/online-services/maps-cosmos",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 403,
+      "outcome": "Direct first-party page fetch was denied by the research environment; this is a route limitation, not evidence of source absence. Search discovery and prior retained first-party response identify the page."
+    },
+    {
+      "url": "https://cosmos.surrey.ca/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Current public viewer shell returned; bootstrap.js is the Sencha application entrypoint and ArcGIS JS API 4.21 is referenced. No login or credential wall encountered."
+    },
+    {
+      "url": "https://gisservices.surrey.ca/arcgis/rest/services/ICI_Data/MapServer/1",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Current ArcGIS layer metadata returned; lots layer is polygon, supports GeoJSON, exposes safe parcel identifiers plus geometry, and reports NAD83/UTM Zone 10N source CRS."
+    },
+    {
+      "url": "https://gisservices.surrey.ca/arcgis/rest/services/ICI_Data/MapServer/1/query",
+      "method": "GET; anonymous; TLS verification enabled",
+      "params": {
+        "geometry": "-122.842214202135,49.1578411996007",
+        "geometryType": "esriGeometryPoint",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "where": "1=1",
+        "outFields": "OBJECTID,MSLINK,FOLIO,PID,LTSA_LOT,LTSA_BLOCK,LTSA_PLAN,LTSA_PARCEL,ACCURACY,METHOD",
+        "returnGeometry": true,
+        "outSR": 4326,
+        "resultRecordCount": 3,
+        "f": "geojson"
+      },
+      "httpStatus": 200,
+      "outcome": "Returned two records with identical Polygon geometry and MSLINK 3551 at the unchanged WUP point; only safe fields were requested. No absence inference is made."
+    },
+    {
+      "url": "https://gisservices.surrey.ca/arcgis/rest/services/ICI_Data/MapServer/1/query",
+      "method": "GET; anonymous; TLS verification enabled",
+      "params": {
+        "geometry": "-122.85,49.15,-122.83,49.17",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "where": "1=1",
+        "outFields": "OBJECTID,MSLINK,FOLIO,PID,LTSA_LOT,LTSA_BLOCK,LTSA_PLAN,LTSA_PARCEL,ACCURACY,METHOD",
+        "returnGeometry": true,
+        "outSR": 4326,
+        "resultRecordCount": 3,
+        "f": "geojson"
+      },
+      "httpStatus": 200,
+      "outcome": "Returned three Polygon features and exceededTransferLimit=true; three unchanged safe samples retained. This bounded response is not citywide completeness evidence."
+    }
+  ],
+  "geometryEvidence": {
+    "verified": true,
+    "sampleCount": 3,
+    "sampleFile": "surrey-parcel-samples.geojson",
+    "exactWupPointTest": "Returned a local polygon response at the unchanged WUP coordinate; duplicate records were observed and not treated as two distinct parcels."
+  },
+  "remainingUncertainty": "Current layer metadata reports NAD83/UTM Zone 10N; requests explicitly requested EPSG:4326 output and returned plausible WGS84 GeoJSON coordinates. The envelope response was transfer-limited, the service's legal-authority status is not established, and freshness, complete citywide coverage, and stable adapter semantics remain unverified. No owner, address, contact, titleholder, tax/account, or personal fields were requested or retained.",
+  "checkedAt": "2026-10-09",
+  "attempt3": {
+    "checkedAt": "2026-10-09",
+    "requests": [
+      {
+        "url": "https://www.surrey.ca/city-government/city-departments/engineering/geographic-information-system-gis",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "outcome": "First-party GIS page identifies the City's ArcGIS Enterprise/COSMOS GIS function."
+      },
+      {
+        "url": "https://cosmos.surrey.ca/",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 302,
+        "outcome": "Redirected to https://cosmos.surrey.ca/external/; no login wall or CAPTCHA encountered."
+      },
+      {
+        "url": "https://gisservices.surrey.ca/arcgis/rest/services/ICI_Data/MapServer/1?f=pjson",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "outcome": "Confirmed lots polygon layer, GeoJSON support, maxRecordCount 2000, and NAD83/UTM Zone 10N metadata; no unsafe values were requested or retained."
+      },
+      {
+        "url": "https://gisservices.surrey.ca/arcgis/rest/services/ICI_Data/MapServer/1/query",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "outcome": "Unchanged WUP point returned two Polygon records with identical geometry and MSLINK 3551; duplicate records were not counted as two parcels."
+      }
+    ],
+    "scopeLimit": "Existing sample remains three full polygons maximum; no new polygon was needed. This does not establish citywide coverage, legal-title authority, freshness, or adapter readiness."
+  },
+  "researchAttempt": 3,
+  "integrationState": "not_integrated",
+  "adapterReady": false,
+  "sampleRetention": {
+    "retainedFeatureProperties": [
+      "id"
+    ],
+    "fullGeometryChanged": false,
+    "featureReferencesChanged": false,
+    "fullGeometrySha256": "fd9bceebb1d2aec253607edce090b4338b92f125f044348ffe45da4639168189"
+  }
+}

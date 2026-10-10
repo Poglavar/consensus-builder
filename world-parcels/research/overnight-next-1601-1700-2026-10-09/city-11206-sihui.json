@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-10",
+  "wupCityCode": 11206,
+  "queueRank": 1694,
+  "name": "Sihui",
+  "country": "China",
+  "countryCode": "CN",
+  "cityId": "wup2025:11206",
+  "point": [23.3489476405903, 112.70204051422],
+  "population2025": 337299,
+  "population2025k": 337.299,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sihui China official cadastral map parcel land registry GIS Sihui Natural Resources Bureau",
+        "result": "Search identified the official Guangdong government-services portal scoped to Sihui, the Sihui Natural Resources Bureau information-request portal, and an official Guangdong natural-resources map PDF containing Sihui. No public anonymous parcel feature service was identified.",
+        "actualResultUrls": [
+          "https://www.gdzwfw.gov.cn/portal/index?region=441284",
+          "https://ysqgk.gd.gov.cn/758173/apply?type=3",
+          "https://nr.gd.gov.cn/attachment/0/567/567798/4616845.pdf"
+        ]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "四会市 不动产登记 地籍图 地图 服务 官方 自然资源局",
+        "result": "First-party results confirmed the Sihui government-services portal lists 不动产登记资料查询 and identifies 市自然资源局; the official Sihui Natural Resources Bureau disclosure portal provides a formal information-request route requiring identity/contact verification. The Guangdong official map PDF is a natural-resource registration-unit map, not a parcel API or parcel polygon dataset.",
+        "actualResultUrls": [
+          "https://www.gdzwfw.gov.cn/portal/index?region=441284",
+          "https://ysqgk.gd.gov.cn/758173/apply?type=3",
+          "https://nr.gd.gov.cn/attachment/0/567/567798/4616845.pdf"
+        ]
+      }
+    ],
+    "officialLeads": [
+      {
+        "url": "https://www.gdzwfw.gov.cn/portal/index?region=441284",
+        "operator": "Guangdong Government Services Network, Sihui subportal",
+        "evidence": "The page is scoped to 肇庆市四会市, lists 市自然资源局 among county-level departments, and lists 不动产登记资料查询 as a public service entry."
+      },
+      {
+        "url": "https://ysqgk.gd.gov.cn/758173/apply?type=3",
+        "operator": "Sihui Natural Resources Bureau",
+        "evidence": "The page is titled 肇庆市四会市自然资源局政府信息依申请公开系统 and provides a formal disclosure-request workflow; it requires identity/contact and verification fields."
+      },
+      {
+        "url": "https://nr.gd.gov.cn/attachment/0/567/567798/4616845.pdf",
+        "operator": "Guangdong Provincial Department of Natural Resources",
+        "evidence": "Official map titled 绥江登记单元（440000231000004）自然资源登记单元图; it includes 四会市 labels and registration-unit boundaries, but is not a cadastral parcel feature response."
+      }
+    ]
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.gdzwfw.gov.cn/portal/index?region=441284",
+      "method": "GET via public web discovery; bounded curl retry",
+      "status": "web page found; curl returned HTTP status 000 / empty reply",
+      "summary": "The official portal was readable through web access. No viewer JavaScript, parcel layer URL, schema, CRS, or anonymous geometry endpoint was exposed in the inspected result."
+    },
+    {
+      "url": "https://ysqgk.gd.gov.cn/758173/apply?type=3",
+      "method": "GET",
+      "status": "HTTP 200 text/html",
+      "summary": "Formal information-request page loaded. It is identity/contact and verification gated; no request was submitted and no cadastral records or unsafe fields were requested."
+    },
+    {
+      "url": "https://nr.gd.gov.cn/attachment/0/567/567798/4616845.pdf",
+      "method": "GET via public web discovery; bounded curl retry",
+      "status": "official PDF found via web; curl returned HTTP status 000 / empty reply",
+      "summary": "The PDF was readable through web access and documents a regional natural-resource registration unit. It contains no machine-readable parcel geometry response or stable parcel identity suitable for retention."
+    },
+    {
+      "url": "https://www.gdzwfw.gov.cn/portal/index?region=441284",
+      "method": "anonymous viewer/API follow-up",
+      "status": "not verified",
+      "summary": "No current public map/API route could be followed from the available page result; no login, credentials, private token, CAPTCHA/Cloudflare bypass, or TLS disablement was used."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Sihui municipal public-services and natural-resources registration procedures; the Guangdong PDF covers a regional natural-resource registration unit.",
+    "verifiedOpenScope": "Official institutional custody/procedure and a regional registration-unit map only; no open Sihui parcel geometry coverage verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "resultCategory": "official_local_registry_custodian_no_verified_open_parcel_geometry",
+  "sourceFields": null,
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel geometry response obtained",
+  "verifiedSample": false,
+  "sourceIds": [],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "scopeLimits": [
+    "The exact WUP point [23.3489476405903, 112.70204051422] was preserved; no exact-point hit or miss inference was made.",
+    "A formal information-request workflow and a regional registration-unit map do not establish an anonymous parcel API or citywide parcel coverage.",
+    "No parcel polygon, stable native parcel identity, parcel schema, or CRS was retrieved or retained.",
+    "A timeout, empty reply, inaccessible viewer, map extent miss, login/verification wall, or absent public endpoint is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, personal, or other unsafe fields were requested or retained.",
+    "Packet completion is research evidence only and does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current public viewer/API route, whether one exists for Sihui, parcel-layer schema, CRS, stable native parcel identity, citywide coverage, and anonymous runtime accessibility remain unresolved. The official registration and disclosure routes may require authenticated or formal procedures. No claim is made about parcel absence, legal title, ownership, or completeness of any Chinese cadastral dataset.",
+  "retainedSample": null
+}

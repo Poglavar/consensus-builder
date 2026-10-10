@@ -1,0 +1,17 @@
+{
+  "taskId": "city:1056",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-1056-matadi.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/matadi-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T08:28:41.294898Z",
+  "reason": "Official Matadi land district and formal register consultation support registry custody. No verified anonymous native parcel ID plus complete polygon; fresh reads, forced paging, 13 cells, metric GEOS checks, source binding, and headed Details remain unproved. Public geometry remains unverified, not absent.",
+  "independentlyCheckedFirstPartyUrls": [
+    "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+    "https://servicepublic.gouv.cd/service/4671"
+  ],
+  "sourceAdmission": "not_admitted"
+}

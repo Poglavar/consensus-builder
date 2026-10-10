@@ -1,0 +1,120 @@
+{
+  "schemaVersion": "1.0",
+  "cityCode": 10540,
+  "queueRank": 1611,
+  "name": "Yongzhou",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "point": [26.4500537656399, 111.589910945635],
+  "population2025": 354335,
+  "population2025k": 354.335,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Yongzhou China official cadastral parcel map land registry GIS natural resources bureau",
+        "result": "First-party discovery identified the Yongzhou government portal, Yongzhou Natural Resources and Planning Department service pages, the Hunan government service listing for Yongzhou property-registration records, and the Hunan unified property-registration portal. No public anonymous Yongzhou parcel feature endpoint was identified.",
+        "actualResultUrls": [
+          "https://yzcity.gov.cn/",
+          "https://zwfw-new.hunan.gov.cn/onething/service/serviceguideck.jsp?approve_id=DDAFBB5D0A15ED97E053681515AC6AF3&cscjwt=&dghy=&type=xndtbm",
+          "https://portal.hunanbdc.cn/home",
+          "https://zrzyt.hunan.gov.cn/zrzyt/xxgk/gzdt/sxxx/202412/t20241230_33548116.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "永州 不动产登记 地籍图 宗地图 自然资源和规划局 官方",
+        "result": "中文 first-party discovery found Hunan Natural Resources Department reporting that Yongzhou and its counties had entered the unified property-registration platform, the Yongzhou government property-registration procedure page, the Hunan online service page for local property-registration-record queries, and the Hunan portal URL. The results describe registration and query procedures but expose no anonymous parcel polygon API or safe parcel-ID-plus-geometry response.",
+        "actualResultUrls": [
+          "https://zrzyt.hunan.gov.cn/zrzyt/xxgk/gzdt/sxxx/202412/t20241230_33548116.html",
+          "https://www.yzcity.gov.cn/cnyz/msfw/201812/caed8b16c3644be6a60fc0d5346ddf5b.shtml",
+          "https://zwfw-new.hunan.gov.cn/onething/service/serviceguideck.jsp?approve_id=DDAFBB5D0A15ED97E053681515AC6AF3&cscjwt=&dghy=&type=xndtbm",
+          "https://portal.hunanbdc.cn/home"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://zrzyt.hunan.gov.cn/zrzyt/xxgk/gzdt/sxxx/202412/t20241230_33548116.html",
+      "observation": "Official Hunan Natural Resources Department report says Yongzhou city and nine county-level areas had gone live on the unified property-registration one-database/one-platform system. This evidences the registration system and local administrative coverage, not a public parcel geometry endpoint."
+    },
+    {
+      "url": "https://zwfw-new.hunan.gov.cn/onething/service/serviceguideck.jsp?approve_id=DDAFBB5D0A15ED97E053681515AC6AF3&cscjwt=&dghy=&type=xndtbm",
+      "observation": "Official Hunan government service page identifies the service as local property-registration-record inquiry, with Yongzhou Natural Resources and Planning Department as implementing authority. It describes application conditions and an inquiry service; it does not expose anonymous parcel geometry."
+    },
+    {
+      "url": "https://www.yzcity.gov.cn/cnyz/msfw/201812/caed8b16c3644be6a60fc0d5346ddf5b.shtml",
+      "observation": "Official Yongzhou government procedure page identifies the Yongzhou property-registration center and registration procedures. It is a procedure page, not an open cadastral map/API."
+    },
+    {
+      "url": "https://yzcity.gov.cn/",
+      "observation": "Official Yongzhou government portal loaded and links to the city natural-resources/planning and Hunan government service areas. No parcel viewer or public feature-service URL was found in the accessible page content."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://yzcity.gov.cn/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official Yongzhou government portal was fetched through public web access. It provided government navigation and service links but no exposed parcel layer, API configuration, schema or CRS."
+    },
+    {
+      "url": "https://portal.hunanbdc.cn/home",
+      "method": "GET",
+      "httpStatus": 0,
+      "outcome": "Direct anonymous fetch timed out after 20 seconds. No retry with credentials, private tokens, CAPTCHA bypass or altered TLS settings was attempted. This is an access limitation, not evidence of parcel absence."
+    },
+    {
+      "url": "https://gtzy.yzcity.gov.cn/",
+      "method": "GET",
+      "httpStatus": 0,
+      "outcome": "Direct anonymous fetch of the Yongzhou natural-resources host timed out after 20 seconds. No login or credentialed retry was attempted; no map/API configuration was retrieved. This is not evidence of citywide cadastral absence."
+    },
+    {
+      "url": "https://zwfw-new.hunan.gov.cn/onething/service/serviceguideck.jsp?approve_id=DDAFBB5D0A15ED97E053681515AC6AF3&cscjwt=&dghy=&type=xndtbm",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official Hunan service page was returned in search inspection and documents a Yongzhou property-registration-record inquiry service. No anonymous parcel geometry, native parcel ID, schema or CRS response was obtained."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "A local registry custodian is evidenced by the official Hunan service page naming Yongzhou Natural Resources and Planning Department and by official Yongzhou/Hunan reports describing Yongzhou's unified property-registration platform. This establishes institutional custody/procedure, not an open parcel geometry service.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Yongzhou municipal and Hunan unified property-registration services.",
+    "verifiedOpenScope": "Official custody and inquiry procedures were verified; no anonymous city-bounded parcel feature response, native parcel ID, schema or CRS was retrieved.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "excludedFields": [
+    "owner or titleholder names",
+    "addresses and contact data",
+    "tax/account/registration details beyond a safe native parcel ID",
+    "credentials and private tokens"
+  ],
+  "nativeIdentityPolicy": "No native parcel identity was observed; no synthetic identity was created. A future retained sample must use exactly one stable native identity in GeoJSON properties and document source field mapping in review metadata.",
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "remainingUncertainty": "The current Hunan/Yongzhou viewer configuration, anonymous access behavior, map/API endpoint, parcel schema, CRS, stable native parcel identity and exact-point coverage remain unknown. The exact WUP point was preserved and was not shifted or used to infer presence/absence.",
+  "retainedSample": null
+}

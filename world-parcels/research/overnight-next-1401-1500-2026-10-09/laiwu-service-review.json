@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10178-laiwu.json",
+  "purpose": "Document first-party Laiwu cadastral-source discovery and bounded anonymous public-service attempts.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Laiwu district and Jinan natural-resources/planning material is available, and the Shandong first-party geospatial platform exposes public map/API documentation and a JavaScript viewer. The inspected public material describes basemap, WMS/WMIS, place search, imagery metadata, and feature-map services, but no anonymous cadastral parcel layer, safe native parcel identity, geometry schema, CRS, or bounded parcel response was verified. No geometry sample is retained; runtime remains held.",
+  "registryAssessment": "registryFound remains null: a local planning/natural-resources custodian is evidenced, but a local open cadastral/land-registry map, procedure, or parcel record was not actually retrieved.",
+  "officialPrimarySources": [
+    {"url": "https://www.laiwu.gov.cn/resources/public/20250903/68b80520795b9abfd152bc8c.pdf", "observation": "Official Laiwu district spatial-planning publication; planning and natural-resource content, not a parcel feature service."},
+    {"url": "https://nrp.jinan.gov.cn/gsarchive/control___rJrUzdEHz", "observation": "Official Jinan Natural Resources and Planning public-announcement index containing Laiwu district planning publications; not a cadastral parcel response."},
+    {"url": "https://www.sdmap.gov.cn/mapAPI.html", "observation": "Official Shandong Geographic Information Public Service Platform API page. It documents public map, WMS/WMIS, place-search, imagery-metadata, and feature-map service categories; cadastral parcel access was not identified."},
+    {"url": "https://lbs.sdmap.gov.cn/", "observation": "Official Shandong public geospatial viewer homepage; public HTML loads JavaScript configuration and viewer bundles."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Laiwu Shandong cadastral parcel map official GIS API", "result": "Official Shandong platform and Jinan/Laiwu planning sources found; no public parcel geometry endpoint verified.", "actualResultUrls": ["https://www.sdmap.gov.cn/mapAPI.html", "https://nrp.jinan.gov.cn/gsarchive/control___rJrUzdEHz", "https://www.laiwu.gov.cn/resources/public/20250903/68b80520795b9abfd152bc8c.pdf"]},
+    {"language": "Chinese", "query": "莱芜 不动产 登记 地籍图 宗地 地图 官方", "result": "Official planning/geospatial sources found; no open local cadastral registry or parcel feature response verified.", "actualResultUrls": ["https://www.laiwu.gov.cn/resources/public/20250903/68b80520795b9abfd152bc8c.pdf", "https://nrp.jinan.gov.cn/gsarchive/control___rJrUzdEHz", "https://www.sdmap.gov.cn/mapAPI.html"]}
+  ],
+  "attempts": [
+    {"url": "https://www.sdmap.gov.cn/mapAPI.html", "method": "GET", "httpStatus": 200, "result": "Public HTML fetched; page is JavaScript-rendered and documents general map/API categories, not a parcel response."},
+    {"url": "https://www.sdmap.gov.cn/Config_url.v002.js", "method": "GET", "httpStatus": 200, "result": "Viewer configuration bundle fetched and inspected; no cadastral layer or parcel schema was exposed."},
+    {"url": "https://www.sdmap.gov.cn/js/mapAPI.0d8777c2.js", "method": "GET", "httpStatus": 200, "result": "Current map API JavaScript bundle fetched; it exposes documentation links and a public service token call, but no Laiwu parcel feature request or safe parcel geometry response."},
+    {"url": "https://lbs.sdmap.gov.cn/", "method": "GET", "httpStatus": 200, "result": "Public viewer HTML fetched; current JavaScript/configuration assets identified."},
+    {"url": "https://lbs.sdmap.gov.cn/Config_url.v002.js", "method": "GET", "httpStatus": 200, "result": "Viewer configuration bundle fetched; no cadastral layer or parcel schema was exposed."},
+    {"url": "https://lbs.sdmap.gov.cn/js/index.1ae17165.js", "method": "GET", "httpStatus": 200, "result": "Viewer JavaScript bundle fetched; public content references general natural-resource applications, not an anonymous Laiwu parcel endpoint."},
+    {"url": "https://nrp.jinan.gov.cn/gsarchive/control___rJrUzdEHz", "method": "GET", "httpStatus": 403, "result": "Public search result opened to HTTP 403; no login, CAPTCHA, or bypass attempted."},
+    {"url": "https://www.laiwu.gov.cn/resources/public/20250903/68b80520795b9abfd152bc8c.pdf", "method": "GET", "outcome": "Search/open fetch timed out; no parcel data inferred from timeout."}
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": {"sourceFieldsObserved": [], "retainedIdentity": null, "retainedIdentityProvenance": null, "note": "No parcel feature response was obtained; no source-specific field mapping or composite key is asserted."},
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Not executed against a usable public cadastral endpoint; exact WUP point [36.2213377893534,117.665645927572] was preserved and not shifted.", "requestEvidence": []},
+  "coverageAssessment": {"claimedScope": "Shandong/Jinan/Laiwu public natural-resource, planning, and geospatial platform material.", "verifiedOpenScope": "General public map/API documentation and viewer assets only; no open cadastral parcel response.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "A controlled or separately published cadastral service may exist behind a different local workflow, authorization, or non-indexed endpoint. No statement about parcel absence, completeness, CRS, update cadence, or adapter compatibility is made.",
+  "runtimeAssessment": "held; no adapter admission or source integration implied"
+}

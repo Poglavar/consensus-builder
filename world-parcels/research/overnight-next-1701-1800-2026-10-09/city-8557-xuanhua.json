@@ -1,0 +1,59 @@
+{
+  "cityCode": 8557,
+  "queueRank": 1718,
+  "name": "Xuanhua",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [40.6060170279236, 115.050639261261],
+  "population2025": 333650,
+  "population2025k": 333.65,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Xuanhua cadastral parcel map official service Zhangjiakou China",
+        "result": "Search results identified Xuanhua as an urban district of Zhangjiakou and found public land-use notices from the Xuanhua branch of the Zhangjiakou Natural Resources and Planning Bureau, but no first-party anonymous parcel viewer or parcel feature endpoint.",
+        "actualResultUrls": ["https://ggzyfw.beijing.gov.cn/xtgghbcrgg/20260821/5679107.html", "https://www.zjkxuanhua.gov.cn/"]
+      },
+      {
+        "language": "native/local",
+        "query": "宣化 区 不动产 登记 地图 官方 查询",
+        "result": "Search results found the official Xuanhua district government portal and its linked government-services portal, plus general Chinese official explanations of real-estate registration and cadastral-map services. No Xuanhua-specific anonymous parcel ID plus geometry service was exposed.",
+        "actualResultUrls": ["https://www.zjkxuanhua.gov.cn/", "http://zjkxh.hbzwfw.gov.cn/", "https://rerc.com.cn/"]
+      },
+      {
+        "language": "native/local",
+        "query": "张家口 宣化 自然资源 规划 局 不动产 登记 官方",
+        "result": "Search results identified public Xuanhua branch land-use notices and local-government references to the Natural Resources and Planning bureau, but did not expose a public cadastral map/API route or safe parcel geometry response.",
+        "actualResultUrls": ["https://ggzyfw.beijing.gov.cn/xtgghbcrgg/20260821/5679107.html", "https://www.zjkxuanhua.gov.cn/"]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryBasis": "Local government custody is evidenced by the official Xuanhua district portal and public notices naming the Xuanhua branch of the Zhangjiakou Natural Resources and Planning Bureau, but no public local cadastral map/API response was verified.",
+  "officialSources": [
+    {"url": "https://www.zjkxuanhua.gov.cn/", "observation": "Official Xuanhua district government portal; HTTPS request failed certificate hostname validation and was not bypassed. The same host served a landing page over HTTP, which linked to the district government-service portal."},
+    {"url": "http://zjkxh.hbzwfw.gov.cn/", "observation": "Linked Hebei government-service landing page fetched successfully over HTTP. Page exposed general service navigation and a map coordinate, but no cadastral layer, parcel schema, or anonymous geometry route."},
+    {"url": "https://ggzyfw.beijing.gov.cn/xtgghbcrgg/20260821/5679107.html", "observation": "Public land-use notice names the Xuanhua branch of Zhangjiakou Natural Resources and Planning Bureau; it is an administrative land-use notice, not a parcel feature service."},
+    {"url": "https://rerc.com.cn/", "observation": "National Real Estate Registration Center public informational site; general institutional context only, not a Xuanhua parcel service."}
+  ],
+  "requests": [
+    {"url": "https://www.zjkxuanhua.gov.cn/", "method": "GET", "outcome": "TLS certificate hostname validation failed; no certificate exception was authorized or used."},
+    {"url": "http://www.zjkxuanhua.gov.cn/", "method": "GET", "outcome": "HTTP 200 landing page; no parcel viewer/configuration/API route found in bounded HTML inspection."},
+    {"url": "http://zjkxh.hbzwfw.gov.cn/", "method": "GET", "outcome": "HTTP 200 service landing page; general services and map widget only, no parcel layer/schema/CRS or anonymous parcel response."}
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {"claimedScope": "Xuanhua district government and local natural-resources/property-registration administrative context.", "verifiedOpenScope": "Government landing pages and public administrative notice only; no open parcel geometry service.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": "Exact WUP point preserved in latitude/longitude order. No exact-point hit/miss inference was made. Timeout, certificate failure, map extent miss, inaccessible viewer, or absent public endpoint is not evidence of citywide cadastral absence. No credentials, private tokens, CAPTCHA bypass, unsafe fields, or global TLS disable was used. Packet completion is not source integration or runtime admission."
+}

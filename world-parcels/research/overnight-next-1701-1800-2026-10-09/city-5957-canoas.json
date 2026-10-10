@@ -1,0 +1,153 @@
+{
+  "cityCode": 5957,
+  "queueRank": 1766,
+  "name": "Canoas",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "iso3": "BRA",
+  "point": [-29.9203077033793, -51.1761573452709],
+  "population2025": 325022,
+  "population2025k": 325.022,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Canoas Brazil official cadastral parcel map GIS municipal geoprocessing property lots",
+        "result": "First-party discovery identified the official GeoCanoas municipal ArcGIS REST catalog and public polygon services named Lotes_portal and Lote_GeoCanoas. The municipal procurement material also documents GeoCanoas as the city geoprocessing/SIG platform. No parcel geometry was assumed from search results alone.",
+        "actualResultUrls": [
+          "https://geo.canoas.rs.gov.br/server/rest/services?f=pjson",
+          "https://geo.canoas.rs.gov.br/server/rest/services/Lotes_portal/FeatureServer/0",
+          "https://geo.canoas.rs.gov.br/server/rest/services/Lote_GeoCanoas/FeatureServer/0",
+          "https://www.canoas.rs.gov.br/wp-content/uploads/2021/09/EDITAL-227.2021.pdf"
+        ]
+      },
+      {
+        "language": "Portuguese (Brazil)",
+        "query": "Canoas mapa cadastral lotes cadastro imobiliário geoprocessamento prefeitura GeoCanoas",
+        "result": "First-party/local-language discovery confirmed the Prefeitura de Canoas GeoCanoas public geoprocessing service and municipal cadastral terminology. Search also found official procurement text describing cadastro imobiliário and lot/quadra/sector coding, but that document is not an open parcel feature response.",
+        "actualResultUrls": [
+          "https://geo.canoas.rs.gov.br/server/rest/services/Lotes_portal/FeatureServer/0",
+          "https://geo.canoas.rs.gov.br/server/rest/services/Lote_GeoCanoas/FeatureServer/0",
+          "https://www.canoas.rs.gov.br/wp-content/uploads/2021/10/EDITAL-266.2021-PROC-61218.2021.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": "Prefeitura Municipal de Canoas; municipal GeoCanoas geoprocessing/SIG service",
+  "registryEvidence": {
+    "serviceCatalogUrl": "https://geo.canoas.rs.gov.br/server/rest/services?f=pjson",
+    "observation": "The official municipal host exposes public ArcGIS FeatureServer and MapServer services, including polygon layers named GISADMIN.lote_portal and GISADMIN.lote. This evidences a local municipal cadastral/geospatial service, not a land-registry title database.",
+    "officialProcurementEvidenceUrl": "https://www.canoas.rs.gov.br/wp-content/uploads/2021/09/EDITAL-227.2021.pdf"
+  },
+  "sourceReview": {
+    "service": "GeoCanoas municipal ArcGIS REST FeatureServer",
+    "baseUrl": "https://geo.canoas.rs.gov.br/server/rest/services",
+    "officialAssetsInspected": [
+      "/server/rest/services?f=pjson",
+      "/server/rest/services/Lotes_portal/FeatureServer/0?f=pjson",
+      "/server/rest/services/Lote_GeoCanoas/FeatureServer/0?f=pjson",
+      "/server/rest/services/centroide_lotes_06102025/FeatureServer/0?f=pjson",
+      "/server/rest/services/lote_atualizacao_portal/FeatureServer/0?f=pjson",
+      "/server/rest/services/Quadras/FeatureServer/0?f=pjson"
+    ],
+    "nativeFieldMapping": {
+      "stableNativeIdentity": "OBJECTID (OID) on Lotes_portal; OBJECTID (OID) on Lote_GeoCanoas",
+      "geometry": "ArcGIS feature geometry",
+      "sourceCrs": "EPSG:31982 / SIRGAS 2000 UTM zone 22S",
+      "geometryLayers": ["Lotes_portal/0", "Lote_GeoCanoas/0", "lote_atualizacao_portal/0"]
+    },
+    "compositeKeyProvenance": "Lote_GeoCanoas layer metadata exposes SETOR, QUADRA and LOTE as native fields, but no composite identity was used because no feature response was successfully obtained. These fields were not retained in any sample.",
+    "crs": "EPSG:31982 confirmed by layer metadata; outSR=4326 was requested only for a bounded test and did not return a successful feature response.",
+    "safeFieldAllowlist": [
+      "stable native parcel identifier only: OBJECTID, if independently confirmed on a returned feature",
+      "full parcel polygon geometry",
+      "geometry CRS / coordinate reference metadata",
+      "public service, layer, and schema metadata"
+    ],
+    "unsafeFieldsNotRequestedOrRetained": [
+      "owner or titleholder",
+      "address or contact details",
+      "CPF/CNPJ or personal identifiers",
+      "tax/account or registration-detail fields"
+    ]
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://geo.canoas.rs.gov.br/server/rest/services?f=pjson",
+      "outcome": "200; official municipal ArcGIS service catalog returned. Catalog includes Lotes_portal, Lote_GeoCanoas, lote_atualizacao_portal, centroide_lotes_06102025, Quadras and related services."
+    },
+    {
+      "method": "GET",
+      "url": "https://geo.canoas.rs.gov.br/server/rest/services/Lotes_portal/FeatureServer/0?f=pjson",
+      "outcome": "200; polygon layer GISADMIN.lote_portal; EPSG:31982; fields inspected. Safe OID field OBJECTID is present."
+    },
+    {
+      "method": "GET",
+      "url": "https://geo.canoas.rs.gov.br/server/rest/services/Lote_GeoCanoas/FeatureServer/0?f=pjson",
+      "outcome": "200; polygon layer GISADMIN.lote; EPSG:31982; fields inspected. Safe OID field OBJECTID is present. Layer also exposes native sector/quadra/lote fields, but no records were retained."
+    },
+    {
+      "method": "GET",
+      "url": "https://geo.canoas.rs.gov.br/server/rest/services/centroide_lotes_06102025/FeatureServer/0?f=pjson",
+      "outcome": "200; point centroid layer metadata returned; not used as a parcel polygon source."
+    },
+    {
+      "method": "GET",
+      "url": "https://geo.canoas.rs.gov.br/server/rest/services/lote_atualizacao_portal/FeatureServer/0?f=pjson",
+      "outcome": "200; polygon layer metadata returned; EPSG:31982; schema inspected without requesting unsafe attributes."
+    },
+    {
+      "method": "GET",
+      "url": "https://geo.canoas.rs.gov.br/server/rest/services/Lotes_portal/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&resultRecordCount=1",
+      "outcome": "Timed out at 20 seconds with no response; no feature or geometry retained."
+    },
+    {
+      "method": "GET",
+      "url": "https://geo.canoas.rs.gov.br/server/rest/services/Lote_GeoCanoas/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&resultRecordCount=3",
+      "outcome": "HTTP 400; ArcGIS returned Unable to complete operation. No feature or geometry retained."
+    },
+    {
+      "method": "GET",
+      "url": "https://geo.canoas.rs.gov.br/server/rest/services/Lotes_portal/FeatureServer/0/query?where=OBJECTID%3D1&outFields=OBJECTID&returnGeometry=false",
+      "outcome": "Timed out at 20 seconds with no response; no exact-point or parcel hit/miss inference made."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed against returned parcel geometry; the exact WUP point was preserved and not shifted.",
+    "requestEvidence": [
+      "Layer metadata confirms parcel polygon services and CRS, but bounded anonymous feature retrieval was unsuccessful."
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Public municipal GeoCanoas parcel/lote polygon layers for Canoas.",
+    "verifiedOpenScope": "Municipal ArcGIS catalog and parcel-layer schemas only; parcel features were not verified in an anonymous response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": [
+    "A public municipal service and layer schema do not prove that all city parcels are anonymously queryable.",
+    "Query timeout and HTTP 400 are service-response failures, not evidence of parcel absence.",
+    "No owner, address, titleholder, contact, tax/account, personal or unsafe fields were requested or retained.",
+    "No raw source-specific attribute set and no GeoJSON sample were retained.",
+    "Packet completion is not source integration or adapter admission; serial reviewer qualification remains required."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Anonymous feature-query behavior, stable parcel identity in returned records, and usable parcel geometry remain unresolved despite confirmed official municipal layer metadata.",
+  "retainedSample": null
+}

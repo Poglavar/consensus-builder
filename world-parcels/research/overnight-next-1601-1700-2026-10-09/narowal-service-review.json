@@ -1,0 +1,41 @@
+{
+  "cityRecord": "city-8329-narowal.json",
+  "cityCode": 8329,
+  "queueRank": 1641,
+  "name": "Narowal",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "sourceReview": "The official PULSE viewer's current JavaScript identifies the Punjab_Cdastral_Maps ArcGIS service and explicitly maps Narowal to layer 24. First-party layer metadata and a bounded exact-point query returned one polygon with native OBJECTID 5921642. District Narowal revenue/LRMIS evidence was recorded separately; this is map-source evidence, not title or ownership evidence.",
+  "queryReview": {
+    "englishDiscovery": "Completed; official PULSE, PLRA, and District Narowal sources found.",
+    "localLanguageDiscovery": "Completed in Urdu; official Punjab land-record and District Narowal results found.",
+    "exactPoint": [32.1018299788328, 74.874087134035],
+    "returned": 1,
+    "ids": [5921642],
+    "geometry": "One full polygon returned as GeoJSON after requesting output in WGS 84 longitude/latitude coordinates.",
+    "mapExtentOrPointMiss": false
+  },
+  "requestOutcomes": "PULSE HTML returned HTTP 200 and was inspected for current service configuration. The public token route returned HTTP 200 and was used only as the viewer's public application-token flow. Narowal layer 24 metadata returned HTTP 200 with polygon schema and EPSG 3857/WKID 102100 source CRS. The bounded ArcGIS query returned HTTP 200 with one feature. No login, CAPTCHA bypass, private token, or unsafe attribute request was used.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": {
+    "id": "OBJECTID",
+    "geometry": "polygon geometry",
+    "compositeKey": null
+  },
+  "compositeKeyProvenance": null,
+  "retainedSample": null,
+  "scopeLimits": [
+    "Only one bounded exact-point intersection response was observed; it is not a citywide coverage test.",
+    "The public viewer states complete parcel details require login; no complete parcel details were requested.",
+    "The bounded response was not retained as GeoJSON in this attempt; source field names and observed mapping are documented here rather than copied into retained properties.",
+    "No owner, address, contact, titleholder, personal, tax, account, legal-description, value, or other unsafe fields were requested or retained.",
+    "A single hit does not establish freshness, legal validity, ownership, or complete cadastral coverage.",
+    "Runtime readiness remains held pending independent serial adapter review."
+  ],
+  "uncertainty": "The public ArcGIS layer is strong evidence of an official Narowal cadastral map endpoint and one safe parcel geometry, but does not prove citywide completeness or production adapter suitability. No claim is made about parcel absence, ownership, title, tax records, or completeness of PLRA/PULSE/internal datasets.",
+  "runtimeReadiness": "held_serial_review"
+}

@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:366",
+  "cityCode": 366,
+  "wupCityCode": 366,
+  "name": "Santa Cruz de Tenerife",
+  "country": "Spain",
+  "countryCode": "ES",
+  "iso2": "ES",
+  "iso3": "ESP",
+  "rank": 1592,
+  "queueRank": 1592,
+  "point": [28.4612489687242, -16.2877420011637],
+  "centerLatLon": [28.4612489687242, -16.2877420011637],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 357753,
+  "population2025k": 357.753,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Santa Cruz de Tenerife municipal sede identifies a Punto de Información Catastral (PIC) operated by the Ayuntamiento and offers consultation of non-protected cadastral data and digital cartography. The national Dirección General del Catastro is the cadastral custodian and publishes the municipality parcel download.",
+  "registryEvidenceUrls": [
+    "https://sede.santacruzdetenerife.es/sede/tramite/t370",
+    "https://www.catastro.hacienda.gob.es/webinspire/",
+    "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/38/ES.SDGC.CP.atom_38.xml",
+    "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/38/38900-SANTA%20CRUZ%20DE%20TENERIFE/A.ES.SDGC.CP.38900.zip"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sourceIds": ["ES.SDGC.CP.000100100CS75D", "ES.SDGC.CP.000100100CS85C", "ES.SDGC.CP.000100100CS85D"],
+  "sampleFile": "santa-cruz-de-tenerife-parcel-sample.geojson",
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The municipality ATOM download is a complete first-party bulk dataset, but this packet does not independently qualify a runtime adapter. Bounded anonymous WFS GetCapabilities probes to the published INSPIRE WFS URL returned HTTP 400; no credentials, CAPTCHA, private token, or protected fields were requested.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_verified_bulk_download",
+  "coverageAssessment": {
+    "claimedScope": "Municipality 38900 Santa Cruz de Tenerife in the official province-38 Cadastral Parcels INSPIRE download.",
+    "verifiedOpenScope": "First-party ZIP advertises 44,304 parcel features; three unchanged parcel polygons were transformed from EPSG:32628 to EPSG:4326 for the retained sample.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Santa Cruz de Tenerife cadastral parcels official Spain cadastral viewer",
+        "result": "Search located the official national Catastro viewer/INSPIRE documentation and the official municipal PIC service. The Catastro INSPIRE documentation exposes WFS and municipality-level ATOM downloads.",
+        "actualResultUrls": [
+          "https://www.sedecatastro.gob.es/",
+          "https://www.catastro.hacienda.gob.es/webinspire/",
+          "https://sede.santacruzdetenerife.es/sede/tramite/t370"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "Santa Cruz de Tenerife parcelas catastrales catastro visor oficial",
+        "result": "Search located the official Spanish municipal PIC procedure and Spanish Catastro service documentation. The municipal service states that non-protected cadastral information and digital cartography can be consulted through the PIC; the national Catastro site publishes the INSPIRE parcel services.",
+        "actualResultUrls": [
+          "https://sede.santacruzdetenerife.es/sede/tramite/t370",
+          "https://www.catastro.hacienda.gob.es/ayuda/servicios_web.htm",
+          "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/38/ES.SDGC.CP.atom_38.xml"
+        ]
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "The sample is a bounded evidence extract, not proof that every parcel in the municipal download is suitable for application runtime. Native INSPIRE identity is established by nationalCadastralReference/localId in the source GML; the retained GeoJSON intentionally contains only canonical id properties.",
+  "nextStep": "Serial reviewer should independently inspect the current Catastro download/API contract and qualify any adapter; keep runtime held from this packet alone."
+}

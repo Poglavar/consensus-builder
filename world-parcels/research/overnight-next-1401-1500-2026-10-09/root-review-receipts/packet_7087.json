@@ -1,0 +1,20 @@
+{
+  "taskId": "packet:7087",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-7087-joharabad.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/joharabad-service-review.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/joharabad-gpc-sample.geojson",
+    "tmp/valhalla-parcel-research/7087/pulse.html",
+    "tmp/valhalla-parcel-research/7087/gpc-0.json",
+    "tmp/valhalla-parcel-research/7087/exact.geojson",
+    "tmp/valhalla-parcel-research/7087/extent.geojson",
+    "tmp/valhalla-parcel-research/runs/20261009T155933-59b9bca2/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-10T07:56:01Z",
+  "finding": "WUP identity and executed English/Urdu searches verified. Original official GPC response contains three nearby native-ID polygons matching the safe sample; exact point returned zero. Sample polygons are metric-valid and nonoverlapping. Fresh exact-ID/paged/13-cell adapter, source binding and headed Details qualification absent; held."
+}

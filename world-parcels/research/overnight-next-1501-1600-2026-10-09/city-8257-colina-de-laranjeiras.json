@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:8257",
+  "cityCode": 8257,
+  "wupCityCode": 8257,
+  "name": "Colina de Laranjeiras",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "iso2": "BR",
+  "iso3": "BRA",
+  "rank": 1568,
+  "queueRank": 1568,
+  "point": [-20.2029906373717, -40.2605205020785],
+  "centerLatLon": [-20.2029906373717, -40.2605205020785],
+  "pointBasis": "Exact immutable WUP2025 settlement point; not shifted to force a parcel hit and not a municipal-boundary or coverage claim.",
+  "population2025": 365960,
+  "population2025k": 365.96,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "The Serra municipal GeoSerra portal and official service description evidence a local municipal geospatial custodian and a parcel/lots map layer. The anonymous layer queries failed with ArcGIS error 500, so no usable local parcel response or native identity-plus-geometry sample was verified.",
+  "registryEvidenceUrls": [
+    "https://mapas.serra.es.gov.br/portal/apps/sites/#/portal-serra-em-mapas",
+    "https://mapas.serra.es.gov.br/server/rest/services/Hosted/BaseMap_SerraES/MapServer",
+    "https://www.serra.es.gov.br/noticias/conhecer-a-serra-ficou-mais-facil-mapas-e-informacoes-do-municipio-ganham-nova-versao",
+    "https://homologacaoportal.serra.es.gov.br/servicos/detalhes/402"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The first-party ArcGIS REST service exposes Parcelamento de Solo polygon layers and layer metadata, but anonymous query requests returned HTTP 200 with ArcGIS error code 500 for exact-point, nonspatial bounded, and neighboring map layers. No safe ID-plus-complete-geometry response was obtained.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "official_parcel_layer_query_failed_no_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "Serra municipal GeoSerra portal and its public Hosted/BaseMap_SerraES ArcGIS service.",
+    "verifiedOpenScope": "First-party service metadata for parcel/lots layers; no successful feature query.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Colina de Laranjeiras Serra ES cadastral parcel map viewer land registry Brazil official municipal GIS",
+        "scope": "Find an official local cadastral custodian and a safe public parcel-geometry route.",
+        "result": "Found the official Serra GeoSerra portal and municipal publication describing layers for lots, streets, buildings, zoning, and other territorial information. The linked ArcGIS service exposes Parcelamento de Solo layers; anonymous feature queries failed with ArcGIS error 500.",
+        "actualResultUrls": [
+          "https://www.serra.es.gov.br/noticias/conhecer-a-serra-ficou-mais-facil-mapas-e-informacoes-do-municipio-ganham-nova-versao",
+          "https://mapas.serra.es.gov.br/portal/apps/sites/#/portal-serra-em-mapas",
+          "https://mapas.serra.es.gov.br/server/rest/services/Hosted/BaseMap_SerraES/MapServer"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "Portuguese (Brazil)",
+        "query": "Colina de Laranjeiras Serra ES cadastro imobiliário mapa parcelas prefeitura geoserver",
+        "scope": "Independent local-language discovery for municipal cadastral mapping and parcel geometry.",
+        "result": "Found the official Serra municipal GeoSerra service, its municipal service description, and the BaseMap_SerraES ArcGIS REST directory. Parcelamento de Solo is identified as a polygon layer, but no anonymous feature response was returned.",
+        "actualResultUrls": [
+          "https://homologacaoportal.serra.es.gov.br/servicos/detalhes/402",
+          "https://mapas.serra.es.gov.br/server/rest/services/Hosted/BaseMap_SerraES/MapServer/213",
+          "https://mapas.serra.es.gov.br/server/rest/services/Hosted/BaseMap_SerraES/MapServer/208",
+          "https://mapas.serra.es.gov.br/server/rest/services/Hosted/BaseMap_SerraES/MapServer/203"
+        ],
+        "executionMethod": "Separate Portuguese-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "The service metadata confirms a municipal parcel-layer endpoint, but its current anonymous query behavior, access policy, native stable identity field, and actual feature coverage remain unresolved. A failed exact-point query or service error is not evidence of citywide absence. No coordinate was shifted.",
+  "nextStep": "Serial reviewer may independently retry the first-party service or qualify another municipal route; do not enable runtime from this packet alone."
+}

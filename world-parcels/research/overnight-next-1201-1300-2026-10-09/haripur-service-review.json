@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6914-haripur.json",
+  "purpose": "Document first-party local registry/procedure evidence and bounded anonymous geometry-access review for Haripur.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Khyber Pakhtunkhwa Revenue & Estate Department pages establish Haripur-specific land-record digitization context and Board of Revenue service custody. The public e-Fard/CLRMIS workflow is identity-gated and the public KPLR page is procedural; neither exposed an anonymous safe parcel ID-plus-geometry response. No GeoJSON sample is retained.",
+  "registryAssessment": "Local/provincial registry procedure is evidenced by the Haripur row in the official Phase II computerization page and the official Board of Revenue digital property-record service. This is registry custody/procedure evidence, not proof of legal title scope, complete city coverage, or a public vector cadastre.",
+  "queryAndRequestLink": "See city-6914-haripur.json freshResearch.queries and requests for the complete executed query/request record.",
+  "safeFieldAllowlist": ["safe parcel/cadastral identifier only if exposed", "geometry"],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not run against a returned parcel layer. A zero hit was not inferred; the exact point remained [33.9992678950979, 72.9293728128631]."
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Haripur district digitization/procedure context only; no anonymous city parcel vector layer.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "technicalFindings": {
+    "officialViewerConfiguration": "No public JavaScript/configuration-backed parcel map viewer was exposed by the fetched first-party pages.",
+    "schemaAndCrs": "Not available because no anonymous parcel feature response was returned.",
+    "authentication": "The e-Fard page explicitly requires account registration and NADRA biometric verification for ownership-record search. No login, credentials, private token, CAPTCHA bypass, or unsafe field request was attempted.",
+    "termsHandling": "Informational only; no licence or terms gate applied.",
+    "tls": "TLS verification remained enabled; no certificate exception was used."
+  },
+  "runtimeReadiness": "held_quality_review",
+  "remainingUncertainty": "The official 90% figure is a district/mauza operational-progress measure and cannot be translated into citywide parcel coverage. Public pages did not expose safe native parcel IDs, field schema, CRS, or geometry."
+}

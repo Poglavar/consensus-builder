@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1301-1400",
+  "cityRecord": "city-3588-batangas-city.json",
+  "cityFile": "city-3588-batangas-city.json",
+  "cityCode": 3588,
+  "queueRank": 1357,
+  "name": "Batangas City",
+  "country": "Philippines",
+  "countryCode": "PH",
+  "point": [13.7711568084999, 121.034906155156],
+  "attempt": 2,
+  "reviewStatus": "complete",
+  "outcome": "Local City Assessor/tax-mapping custody evidenced; no verified anonymous parcel geometry or public cadastral API.",
+  "queryOutcomes": {
+    "english": "Official city assessor, city map, Citizen's Charter, and Philippine FOI results found; no safe open parcel-vector route.",
+    "filipino": "No separate Filipino-language local parcel API found; official city assessor and raster barangay-map workflow confirmed."
+  },
+  "requestOutcomes": "The official city map and assessor profile returned HTTP 200 HTML. The map page references a raster barangay map and no WMS/WFS/ArcGIS/GeoJSON route. FOI-indexed official pages describe DENR cadastral custody and City Assessor tax-map request procedures; no parcel file or geometry was obtained.",
+  "officialCustodians": [
+    {
+      "name": "Batangas City Government City Assessor's Office / Taxmapping & Real Property Identification Division",
+      "url": "https://batangascity.gov.ph/web/caoprofile",
+      "scope": "Local real-property assessment and tax-map identification service for Batangas City; documentary/request workflow, not verified open vector access."
+    },
+    {
+      "name": "DENR Land Management Bureau",
+      "url": "https://www.foi.gov.ph/agencies/denrlmb/batangas-city-cadastral-map-in-shp/",
+      "scope": "National cadastral-map custodian named in official FOI material; the indexed Batangas City shapefile request was pending and supplied no usable geometry in this attempt."
+    }
+  ],
+  "scopeLimits": [
+    "No citywide parcel coverage claim.",
+    "No countrywide parcel coverage claim.",
+    "Exact WUP point was preserved and not shifted; no exact-point miss was used as absence evidence.",
+    "Raster barangay map is not parcel geometry and was not retained as GeoJSON."
+  ],
+  "safeFieldAllowlist": ["stable native parcel ID", "full native parcel polygon geometry"],
+  "unsafeFieldsExcluded": ["owner", "address", "contact", "titleholder", "personal data", "tax/account details"],
+  "geometry": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeIdField": null,
+    "crs": null,
+    "reason": "No bounded anonymous response contained both a safe native parcel identity and full polygon geometry."
+  },
+  "runtimeReadiness": "held",
+  "adapterAdmission": "not admitted; requires independent serial review",
+  "uncertainty": "A non-indexed, request-only, or separately hosted official cadastral service may exist. Current public API availability, parcel schema/CRS, and coverage around the WUP point remain unresolved.",
+  "reviewedAt": "2026-10-09"
+}

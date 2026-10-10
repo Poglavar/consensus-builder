@@ -1,0 +1,16 @@
+{
+  "taskId": "city:4295",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-4295-sri-ganganagar.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/sri-ganganagar-service-review.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/runs/20261010T131855-20727ca2/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-10T13:24:17Z",
+  "registryFound": true,
+  "reason": "Official Rajasthan BhuNaksha and Ganganagar district plot-report evidence support cadastral custody; viewer requests timed out and no city-bounded native ID or polygon was obtained.",
+  "admission": "Held: no verified parcel geometry or stable native ID; fresh adapter native-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, and headed Details-panel verification are not independently evidenced. No runtime, catalog, configuration, or coverage admission."
+}

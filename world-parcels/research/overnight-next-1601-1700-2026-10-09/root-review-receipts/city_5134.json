@@ -1,0 +1,17 @@
+{
+  "taskId": "city:5134",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-5134-augsburg.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/augsburg-service-review.json",
+    "tmp/valhalla-parcel-research/augsburg/wfs-query.headers",
+    "tmp/valhalla-parcel-research/augsburg/od-wms-cap.body",
+    "tmp/valhalla-parcel-research/augsburg/od-wms-map2.body",
+    "tmp/valhalla-parcel-research/augsburg/https___geodatenonline_bayern_de_geodatenonline_seiten_dienste_rest_flurstueck_html.body"
+  ],
+  "checkedAt": "2026-10-10T12:17:39Z",
+  "reason": "The packet matches the immutable WUP rank 1662 Augsburg identity and records English and German searches. Original official response cache shows the vector WFS query returned HTTP 401, while the open WMS advertises raster portrayal without parcel numbers and returned a PNG. The official coordinate service requires a personal token. No full polygon with safe native ID or independent adapter qualification exists; authentication does not prove parcel absence.",
+  "runtimeAdmission": false
+}

@@ -1,0 +1,102 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2513-pematang-siantar.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Document Pematangsiantar local registry custody and bounded anonymous BHUMI/ATLAS checks without treating viewer configuration or failed proxy responses as parcel geometry evidence.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "A local registry custodian is evidenced by official ATR/BPN and city-government sources. The official BHUMI help material documents parcel layers and ATLAS integration, and current public configuration names a PersilHak WMS route with NIB as a safe identity-like displayed property. Anonymous public proxy attempts returned the BHUMI shell/404, not capabilities or feature geometry, so the packet is complete for research but held for runtime qualification.",
+  "registryAssessment": "Local registry custody is evidenced by the official ATR/BPN listing of Kantor Pertanahan Kota Pematangsiantar and official city-government reporting of its land-registration/certificate work. No open local parcel database or verified parcel API response was obtained.",
+  "coverageAssessment": {
+    "claimedScope": "Official ATR/BPN BHUMI/ATLAS help and public shell/configuration, official ATR/BPN news, and official Pematangsiantar city-government material.",
+    "verifiedOpenScope": "Local registry custodian and national public viewer existence/configuration; no verified anonymous parcel feature response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "officialPrimarySources": [
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+      "operator": "Kementerian ATR/BPN",
+      "observation": "Official help page says the interactive map is integrated with ATLAS, the ATR/BPN geospatial portal."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/katalog_data",
+      "operator": "Kementerian ATR/BPN",
+      "observation": "Official help page describes parcel layers as a main dataset and ATLAS as the centralized geospatial platform."
+    },
+    {
+      "url": "https://www.atrbpn.go.id/berita/tepat-di-momen-hantaru-2026-implementasi-perintis-10-hari-diperluas-hingga-ke-95-kantah",
+      "operator": "Kementerian ATR/BPN",
+      "observation": "Official news lists Kantor Pertanahan Kota Pematangsiantar among local offices."
+    },
+    {
+      "url": "https://pematangsiantar.go.id/artikel/wesly-diwakili-herlina-terima-audiensi-kepala-kantor-pertanahan-pematangsiantar",
+      "operator": "Pemerintah Kota Pematangsiantar",
+      "observation": "Official city report describes cooperation with the local land office on certificates and land registration."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Pematangsiantar Indonesia official cadastral map land registry GIS parcel map ATR BPN",
+      "method": "English-language discovery followed by first-party ATR/BPN and city-government review.",
+      "actualResultUrls": ["https://bhumi.atrbpn.go.id/", "https://bhumi.atrbpn.go.id/bantuan/peta", "https://www.atrbpn.go.id/berita/tepat-di-momen-hantaru-2026-implementasi-perintis-10-hari-diperluas-hingga-ke-95-kantah", "https://pematangsiantar.go.id/artikel/wesly-diwakili-herlina-terima-audiensi-kepala-kantor-pertanahan-pematangsiantar"],
+      "scope": "Find official local custody and safe anonymous parcel geometry; retain no owner, address, contact, titleholder, tax, or account fields."
+    },
+    {
+      "language": "Indonesian",
+      "query": "Pematangsiantar peta bidang tanah ATR BPN resmi Kantor Pertanahan Kota Pematangsiantar",
+      "method": "Separate Indonesian-language discovery followed by first-party review.",
+      "actualResultUrls": ["https://bhumi.atrbpn.go.id/bantuan/landing", "https://bhumi.atrbpn.go.id/bantuan/katalog_data", "https://bhumi.atrbpn.go.id/bantuan/fitur_toolbox", "https://pematangsiantar.go.id/artikel/wesly-diwakili-herlina-terima-audiensi-kepala-kantor-pertanahan-pematangsiantar"],
+      "scope": "Cari hanya sumber resmi peta bidang tanah/pendaftaran tanah; jangan menyimpan data pemilik, alamat, kontak, hak milik, pajak, atau akun."
+    }
+  ],
+  "attempts": [
+    "Official BHUMI landing shell fetched anonymously; it delegates the map to a separate official console iframe.",
+    "Official BHUMI help pages fetched anonymously; they document ATLAS integration and parcel-layer datasets, but do not publish a stable direct feature API in the reviewed text.",
+    "Current public viewer-related configuration was inspected from publicly reachable assets/search-indexed configuration; it names PersilHak, WMS, EPSG:3857, and NIB as a displayed property. This was not treated as a returned parcel schema.",
+    "Anonymous GetCapabilities attempt through the documented BHUMI proxy path returned the BHUMI HTML shell and a final 404, not WMS XML.",
+    "Anonymous GetCapabilities attempt through the observed _addr proxy form returned the BHUMI HTML shell and a final 404, not WMS XML.",
+    "No exact-point parcel query was run because no usable cadastral service endpoint was verified. The exact WUP point [2.9699913021302,99.0743292415551] was preserved unchanged.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe owner/address/titleholder field, or TLS-verification exception was used."
+  ],
+  "geometryEvidence": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not run: no usable cadastral parcel feature endpoint was verified. Exact WUP point [2.9699913021302,99.0743292415551] was preserved unchanged.",
+    "requestEvidence": [
+      {
+        "url": "https://bhumi.atrbpn.go.id/proxy/http://10.20.20.142:80/geoserver/umum/wms?service=WMS&request=GetCapabilities&version=1.1.1",
+        "method": "GET; anonymous public proxy attempt",
+        "httpStatus": 404,
+        "contentType": "text/html",
+        "responseBytes": 12140,
+        "assessment": "Returned the BHUMI HTML shell after redirect; no WMS capabilities or geometry."
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/proxy/?_addr=https%3A%2F%2Fbhumi.atrbpn.go.id%2Fproxy%2Fhttp%3A%2F%2F10.20.20.142%3A80%2Fgeoserver%2Fumum%2Fwms%3Fservice%3DWMS%26request%3DGetCapabilities%26version%3D1.1.1",
+        "method": "GET; anonymous public proxy attempt",
+        "httpStatus": 404,
+        "contentType": "text/html",
+        "responseBytes": 12140,
+        "assessment": "Returned the BHUMI HTML shell after redirect; no WMS capabilities or geometry."
+      }
+    ]
+  },
+  "safeFieldAllowlist": ["NIB", "geometryType", "spatialReference"],
+  "nextStep": "Hold for serial review. Only a separately verified anonymous cadastral parcel service with safe ID and geometry should advance runtime qualification.",
+  "remainingUncertainty": "The current BHUMI interactive flow may still expose parcel geometry after client-side map initialization, and ATLAS may have a separate public endpoint; neither was verified through the bounded direct requests recorded here.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

@@ -1,0 +1,13 @@
+{
+  "taskId": "city:7408",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-7408-bugama.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/bugama-service-review.json",
+    "tmp/valhalla-parcel-research/7408/sgriv.html"
+  ],
+  "checkedAt": "2026-10-10T18:42:29.563204Z",
+  "reason": "Queue identity matches rank 1923, Nigeria, point and 299022 persons. English and Kalabari-labeled searches are documented, but the latter uses a land term not evidenced as Kalabari. The first-party SGRIV landing cache describes account access and C-of-O requests, with no parcel polygon or native ID response. No runtime qualification gates are evidenced; custody remains unresolved rather than absent."
+}

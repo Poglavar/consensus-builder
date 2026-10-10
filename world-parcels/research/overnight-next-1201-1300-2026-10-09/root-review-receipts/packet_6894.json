@@ -1,0 +1,17 @@
+{
+  "taskId": "packet:6894",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-6894-al-abbasa-al-sharqiya.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/al-abbasa-al-sharqiya-service-review.json",
+    "tmp/valhalla-parcel-research/6894/esa-egyptmap.html",
+    "tmp/valhalla-parcel-research/6894/esa-testmap.html",
+    "tmp/valhalla-parcel-research/6894/sharkia-submit.js"
+  ],
+  "checkedAt": "2026-10-09T11:57:37Z",
+  "reason": "Held. Queue code 6894, rank 1214, Egypt, point and 457678 persons match the packet; English and Arabic searches are recorded. Cached first-party ESA pages show general maps, and the saved Sharqia script is a login-form submit handler, not a parcel API. Local parcel custody remains unresolved (registryFound null); no anonymous full polygon, safe native ID or independent adapter, metric, binding or headed Details qualification exists. A login wall and no exact-point query do not establish absence."
+}

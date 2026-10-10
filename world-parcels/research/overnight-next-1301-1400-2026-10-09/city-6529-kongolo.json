@@ -1,0 +1,44 @@
+{
+  "cityCode": 6529,
+  "queueRank": 1375,
+  "name": "Kongolo",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "iso3": "COD",
+  "point": [-5.37850227970108, 26.9999262774553],
+  "population2025": 410371,
+  "population2025k": 410.371,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": null,
+  "registryAssessment": "Official DRC national land-affairs and cadastral-service evidence was found, plus an official territorial map for Kongolo, but no Kongolo-specific local registry custodian, public parcel map, or open local parcel lookup was evidenced. National-agency prose is not treated as local registry evidence.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kongolo Democratic Republic of the Congo official cadastral map parcel registry",
+        "result": "Found the official DRC Ministry of Land Affairs, the official public-service description for consulting cadastral/land registers, the official Kongolo territorial map, and the BIC cadastral portal. No Kongolo-specific open parcel layer or local registry map was found.",
+        "actualResultUrls": ["https://affairesfoncieres.gouv.cd/", "https://servicepublic.gouv.cd/service/4671", "https://www.caid.cd/cartes/downloads/96.pdf", "https://bic.cd/"]
+      },
+      {
+        "language": "French",
+        "query": "Kongolo RDC cadastre parcelles carte foncière service officiel",
+        "result": "La recherche a trouvé le Ministère des Affaires Foncières, le service public officiel de consultation des registres fonciers, la carte administrative officielle du territoire de Kongolo et le portail BIC. Aucun registre local ni service public ouvert ne fournissait une parcelle Kongolo avec identité native et géométrie.",
+        "actualResultUrls": ["https://affairesfoncieres.gouv.cd/", "https://servicepublic.gouv.cd/service/4671", "https://www.caid.cd/cartes/downloads/96.pdf", "https://bic.cd/cadastral-map"]
+      }
+    ]
+  },
+  "officialSources": [
+    {"url":"https://affairesfoncieres.gouv.cd/", "role":"National Ministry of Land Affairs official site", "observation":"Identifies the national cadastral administration and a pilot digitization project; no public Kongolo parcel layer was exposed."},
+    {"url":"https://servicepublic.gouv.cd/service/4671", "role":"Official DRC public-service catalogue", "observation":"Describes consultation of cadastral and land registers through the Conservateur des Titres Immobiliers or Chef de Division du Cadastre; it is a central-government service description, not evidence of a local Kongolo public endpoint."},
+    {"url":"https://www.caid.cd/cartes/downloads/96.pdf", "role":"Official Kongolo territorial administrative map", "observation":"Maps territorial boundaries, roads and localities around Kongolo; it is not a parcel/cadastral polygon dataset."},
+    {"url":"https://bic.cd/", "role":"Bureau d'Informations Cadastrales public portal", "observation":"Current JavaScript exposed a public Supabase cadastral_parcels route and safe field names, but bounded anonymous requests returned no rows for the tested Kongolo extents."}
+  ],
+  "geometryDecision": {"verified":false,"sampleCount":0,"sampleFile":null,"reason":"No safe native parcel ID plus full polygon was obtained from an anonymous public response. The exact WUP point [-5.37850227970108, 26.9999262774553] was preserved and not shifted. Zero bounded responses and the absence of an open local viewer are not evidence of citywide absence."},
+  "coverageAssessment": {"claimedScope":"Official DRC national cadastral portals, Kongolo territorial map, and the BIC public route reviewed for Kongolo applicability.","verifiedOpenScope":"National cadastral administration context, territorial mapping, and bounded anonymous BIC table queries only; Kongolo-specific parcel-vector access, CRS, native identity, exact-point containment, and citywide coverage were not verified.","citywideVerified":false,"countrywideVerified":false,"geometryVerified":false},
+  "runtimeReadiness":"held",
+  "researchAttempt":1,
+  "checkedAt":"2026-10-09"
+}

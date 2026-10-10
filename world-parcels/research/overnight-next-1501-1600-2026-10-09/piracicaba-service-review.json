@@ -1,0 +1,40 @@
+{
+  "cityRecord": "city-6861-piracicaba.json",
+  "cityCode": 6861,
+  "queueRank": 1590,
+  "city": "Piracicaba",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "reviewedAt": "2026-10-10",
+  "disposition": "hold",
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "summary": "Piracicaba has a first-party municipal cadastral-information service and public geoprocessing viewer configured with an official WMS and a Lotes layer, but anonymous layer requests were empty and WMS capabilities timed out. The research packet is complete; no geometry sample or source admission is claimed.",
+  "queryAndRequestOutcomes": "See city-6861-piracicaba.json requestsAndEndpointChecks. Separate English and Portuguese discovery queries were executed and their actual first-party URLs recorded. The municipal service page and current viewer/configuration were observed; anonymous layer-tree/map requests returned empty bodies and the WMS capabilities request timed out.",
+  "scopeLimits": [
+    "The municipal page establishes a local Piracicaba cadastral custodian and describes property location and cadastral quadra/lote plans, but does not itself provide a machine-readable parcel geometry response.",
+    "The current viewer configuration establishes an official Lotes map route and WMS endpoint, but no native parcel identity, CRS, or feature geometry was returned.",
+    "The exact WUP point [-22.7253874086848, -47.653078712206] was preserved and was not shifted. Timeout/empty responses are not evidence of citywide absence.",
+    "No owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested or retained.",
+    "No GeoJSON sample was retained because no unchanged native polygon response was obtained."
+  ],
+  "safeFieldAllowlist": ["native parcel/lot identity when documented", "geometry"],
+  "nativeIdentityReview": {
+    "preferredIdentity": null,
+    "fallback": null,
+    "compositeKeyProvenance": null,
+    "syntheticIdentityUsed": false,
+    "finding": "No feature response exposed a native identity field; do not infer one from viewer/internal row numbering."
+  },
+  "uncertainty": [
+    "The official map backend may be transiently unavailable or may require a public profile/session not established in this attempt.",
+    "The configured WMS and Lotes theme are relevant official leads, not proof of a usable anonymous parcel API or citywide geometry coverage.",
+    "CRS, polygon validity, native identifiers, and bounded parcel response behavior remain unverified."
+  ],
+  "qualification": {
+    "verifiedGeometrySample": false,
+    "adapterQualified": false,
+    "serialReviewerRequired": true,
+    "packetCompletionIsNotSourceAdmission": true
+  }
+}

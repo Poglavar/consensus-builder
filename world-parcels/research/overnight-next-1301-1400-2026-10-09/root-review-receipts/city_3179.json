@@ -1,0 +1,33 @@
+{
+  "taskId": "city:3179",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-3179-u-ge.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/u-ge-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/uige-3179/frontoffice.html",
+    "tmp/valhalla-parcel-research/uige-3179/consultar-patrimonio.html"
+  ],
+  "checkedAt": "2026-10-09T15:37:00.284926Z",
+  "reason": "Official MINFIN property forms and searches were corroborated against saved first-party HTML. They expose taxpayer/property workflows, not a safe anonymous parcel polygon and native ID. No geometry sample, adapter source, or qualification evidence exists; registry custody remains unresolved rather than false.",
+  "firstPartyPagesChecked": [
+    "https://frontoffice.minfin.gov.ao/frontoffice/cadastrar-patrimonio?operation=01&patrimonyTypeV3=03",
+    "https://frontoffice.minfin.gov.ao/frontoffice/consultar-patrimonio"
+  ],
+  "identityCheck": {
+    "cityCode": 3179,
+    "queueRank": 1381,
+    "country": "Angola",
+    "point": [
+      -7.60700348087086,
+      15.0520154227901
+    ],
+    "populationPersons": 408927,
+    "matches2025WupRow": true
+  },
+  "searchCheck": "Two separately recorded English and local-language queries with actual result URLs in packet and paired review; Makurdi local-language search used Hausa and did not establish a Tiv/Idoma source.",
+  "polygonCheck": "Zero full polygons retained; no safe source-native parcel ID plus complete polygon response.",
+  "admissionGates": "Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed Details-panel verification are not independently evidenced."
+}

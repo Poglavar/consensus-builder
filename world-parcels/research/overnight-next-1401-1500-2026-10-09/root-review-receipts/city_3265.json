@@ -1,0 +1,16 @@
+{
+  "taskId": "city:3265",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-3265-pohang-si.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pohang-si-service-review.json",
+    "tmp/valhalla-parcel-research/3265/pohang.html",
+    "tmp/valhalla-parcel-research/3265/search.js",
+    "tmp/valhalla-parcel-research/3265/resp-https___pohang_go_kr_phgis_gs_gate_wfs_SERVICE_WFS_REQUEST_GetCapabilities.txt",
+    "tmp/valhalla-parcel-research/3265/resp-https___pohang_go_kr_phgis_system_map_get_feature_by_addr_query_lm.txt"
+  ],
+  "checkedAt": "2026-10-09T17:57:59.592242Z",
+  "reason": "Immutable rank 1487 identity and English/Korean searches checked. First-party portal cache exposes continuous cadastral UI and WFS capabilities advertising uis:LP_PA_CBND, while the cached parcel-address attempt is HTTP 400. No safe native-ID feature response, forced paging, 13-cell check, metric qualification, source binding, or headed details-panel proof; public geometry and citywide coverage remain unresolved."
+}

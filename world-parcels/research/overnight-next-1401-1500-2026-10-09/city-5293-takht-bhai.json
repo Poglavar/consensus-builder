@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 5293,
+  "cityId": "wup2025:5293",
+  "name": "Takht Bhai",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "centerLatLon": [34.3316778911344, 71.9114148180407],
+  "point": [34.3316778911344, 71.9114148180407],
+  "queueRank": 1456,
+  "population2025": 390608,
+  "population2025k": 390.608,
+  "populationUnit": "persons",
+  "cohorts": ["overnight-next-1401-1500-2026-10-09"],
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Takht Bhai Pakistan official cadastral land records map parcel viewer",
+        "result": "First-party results identified the Government of Khyber Pakhtunkhwa Revenue & Estate Department SDC directory and the KP land-record portal. The SDC directory documents a Takht Bhai service center; no public anonymous parcel viewer or parcel API was identified.",
+        "actualResultUrls": [
+          "https://revenue.kp.gov.pk/sdcs/",
+          "https://kplr.gkp.pk/",
+          "https://kplr.gkp.pk/SDCCenters",
+          "https://revenue.kp.gov.pk/wp-content/uploads/2020/08/Establishment-of-SDCs.pdf"
+        ]
+      },
+      {
+        "language": "Urdu (local/native)",
+        "query": "خیبر پختونخوا تخت بھائی زمین ریکارڈ نقشہ کادسترال",
+        "result": "Search surfaced the same official KP Revenue & Estate Department land-record and SDC materials, including the Takht Bhai SDC. No first-party Urdu-language public parcel map/API or safe anonymous ID-plus-geometry response was found.",
+        "actualResultUrls": [
+          "https://kplr.gkp.pk/SDCCenters",
+          "https://revenue.kp.gov.pk/sdcs/",
+          "https://efard.kplr.gkp.pk/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official KP Revenue & Estate Department SDC directory identifies SDC Takht Bhai at Main Tehsil Building, Malakand Road, Takht Bhai, District Mardan, with contact 0937-553304. The official KP land-record portal also lists Tekht Bhai/Takht Bhai among SDC centers. This evidences a local registry/service custodian, not an open parcel geometry service.",
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://revenue.kp.gov.pk/sdcs/",
+      "operator": "Revenue & Estate Department, Government of Khyber Pakhtunkhwa",
+      "observation": "Official SDC directory describes computerized land-record service centers and lists SDC Takht Bhai at Main Tehsil Building, Malakand Road, Takht Bhai, District Mardan; contact 0937-553304. The page describes Fard and land-record workflows but publishes no parcel layer or map API."
+    },
+    {
+      "url": "https://kplr.gkp.pk/SDCCenters",
+      "operator": "Revenue & Estate Department, Government of Khyber Pakhtunkhwa",
+      "observation": "Official SDC appointment page lists Tekht Bhai/Takht Bhai in Mardan. It is a service-center/appointment interface, not an anonymous parcel viewer."
+    },
+    {
+      "url": "https://kplr.gkp.pk/",
+      "operator": "Revenue & Estate Department, Government of Khyber Pakhtunkhwa",
+      "observation": "Official KP land-record portal exposes service-center and appointment navigation. Its SearchLandRecord route was followed to the current admin login page; no public map/configuration endpoint was exposed."
+    },
+    {
+      "url": "https://revenue.kp.gov.pk/wp-content/uploads/2020/08/Establishment-of-SDCs.pdf",
+      "operator": "Revenue & Estate Department, Government of Khyber Pakhtunkhwa",
+      "observation": "Official SDC establishment document lists SDC Takht Bhai under District Mardan as completed. It provides administrative evidence only, with no parcel geometry or public service schema."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://revenue.kp.gov.pk/sdcs/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official SDC directory loaded. Takht Bhai address and telephone were visible. Page text describes land-record service-center functions; no JavaScript map viewer, parcel endpoint, schema, or CRS was advertised."
+    },
+    {
+      "url": "https://kplr.gkp.pk/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official portal loaded. Current HTML and linked scripts were inspected; navigation exposed SDC, appointment, and land-record routes but no public parcel map/configuration."
+    },
+    {
+      "url": "https://kplr.gkp.pk/SDCCenters",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official SDC page loaded and listed Tekht Bhai/Takht Bhai under Mardan. Inline JavaScript was inspected; requests support appointments/center data, not anonymous parcel geometry."
+    },
+    {
+      "url": "https://kplr.gkp.pk/SearchLandRecord",
+      "method": "GET",
+      "status": "HTTP 200 login page",
+      "summary": "Route redirected/rendered the current 'LRMIS | Log in' Admin Portal Access form. No login was attempted; no credentials, private token, owner, address, or other unsafe field was requested."
+    },
+    {
+      "url": "https://efard.kplr.gkp.pk/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official e-Fard service page describes account, biometric verification, ownership search, and payment workflow. It requires personal identity/biometric inputs and is not a public parcel geometry service; no query was submitted."
+    },
+    {
+      "url": "https://revenue.kp.gov.pk/wp-content/uploads/2020/08/Establishment-of-SDCs.pdf",
+      "method": "GET",
+      "status": "HTTP 200 PDF",
+      "summary": "Official SDC establishment PDF retrieved and inspected; Takht Bhai is listed as a completed SDC under Mardan. No map layer, endpoint, schema, or CRS."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official KP Revenue & Estate Department local SDC and land-record service evidence for Takht Bhai.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "geometryDecision": "No GeoJSON retained. No qualifying anonymous response containing a safe native parcel ID and full polygon geometry was available. The exact WUP point [34.3316778911344, 71.9114148180407] was preserved and was not used to infer absence.",
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "safeFieldAllowlist": ["stable native parcel or survey identity if publicly exposed", "geometry", "source CRS", "service layer name"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax/account", "private credentials or tokens"],
+  "remainingUncertainty": "A public parcel map/API may exist behind an ordinary official workflow or outside the pages reviewed. The local registry custodian is evidenced, but public parcel-layer availability, schema, CRS, exact-point inclusion, and citywide coverage remain unverified.",
+  "nextStep": "A serial reviewer should independently check whether KP Revenue & Estate Department or its land-record system exposes a current anonymous geometry-only service, then qualify a small native-ID-plus-geometry sample before any adapter consideration."
+}

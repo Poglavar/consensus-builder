@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-60-geneva.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Review official Geneva cadastral channels and qualify bounded anonymous parcel geometry evidence.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "wupPointPreserved": [46.2017520971079, 6.13622539632436]
+  },
+  "assessment": "The official SITG viewer/configuration and Canton of Geneva ArcGIS parcel layer were identified and queried anonymously. The exact transformed WUP point returned a safe parcel identity, and a bounded envelope returned three full parcel polygons. This is local public geometry evidence, not a citywide completeness claim.",
+  "registryAssessment": "A local/cantonal registry and cadastral map custodian is evidenced: République et canton de Genève - Département du territoire publishes SITG cadastral/mensuration data and the parcel service. This is distinct from general national agency prose.",
+  "coverageAssessment": {
+    "claimedScope": "Official SITG viewer/configuration discovery, parcel schema inspection, exact transformed-point identity query, and one bounded envelope query around the immutable WUP point.",
+    "verifiedOpenScope": "Exact point identity CH576384326540 / parcel 78; three safe Polygon features returned from the bounded envelope.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "officialPrimarySources": [
+    {
+      "url": "https://sitg.ge.ch/cartes/cadastre",
+      "operator": "République et canton de Genève - Département du territoire / SITG",
+      "scope": "Official catalog page for official-survey and cadastral data, including parcels."
+    },
+    {
+      "url": "https://map.sitg.ge.ch/app/",
+      "operator": "SITG",
+      "scope": "Current official interactive map viewer."
+    },
+    {
+      "url": "https://thematic.sitg.ge.ch/arcgis/rest/services/CADASTRE_RDPPF/MapServer/4",
+      "operator": "SITG",
+      "scope": "Parcel polygon layer schema, safe fields, native EPSG:2056, and GeoJSON query capability."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Geneva Switzerland official cadastral map parcel viewer GIS parcelles cadastre Genève official",
+      "result": "Found the official SITG map, cadastral catalog, and ArcGIS parcel layer.",
+      "actualResultUrls": [
+        "https://sitg.ge.ch/cartes/cadastre",
+        "https://sitg.ge.ch/applications/interface-cartographique",
+        "https://thematic.sitg.ge.ch/arcgis/rest/services/CADASTRE_RDPPF/MapServer/4"
+      ]
+    },
+    {
+      "language": "French",
+      "query": "Genève carte cadastrale officielle parcelles géoportail SITG",
+      "result": "La recherche a trouvé le catalogue officiel SITG de la mensuration, la carte interactive et le service cantonal des parcelles.",
+      "actualResultUrls": [
+        "https://sitg.ge.ch/cartes/cadastre",
+        "https://sitg.ge.ch/applications/cadastre-mensuration-officielle",
+        "https://thematic.sitg.ge.ch/arcgis/rest/services/CADASTRE_RDPPF/MapServer/4"
+      ]
+    }
+  ],
+  "attempts": [
+    "Fetched current official SITG viewer HTML anonymously; HTTP 200; identified versioned JavaScript/configuration assets.",
+    "Fetched current viewer configuration anonymously; HTTP 200; observed official CADASTRE resource and EPSG:2056 map context.",
+    "Fetched official CADASTRE_RDPPF parcel layer metadata anonymously; HTTP 200; observed Polygon geometry, native EPSG:2056, GeoJSON support, and safe cadastral fields.",
+    "Sent an anonymous TLS-verified exact point-intersection request using only the unchanged WUP point transformed to EPSG:2056; requested safe identity fields without geometry; HTTP 200; returned EGRID CH576384326540 / parcel 78.",
+    "Sent an anonymous TLS-verified bounded envelope query around the transformed WUP point; requested safe fields and GeoJSON geometry in EPSG:4326; HTTP 200; returned three retained polygons and indicated exceededTransferLimit for additional intersecting features.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, TLS exception, owner, address, contact, titleholder, tax/account, personal, or unsafe registry field was used or retained."
+  ],
+  "safeFieldAllowlist": ["geometry", "EGRID", "NO_PARCELLE", "IDEDDP"],
+  "geometryEvidence": {
+    "verified": true,
+    "sampleCount": 3,
+    "sampleFile": "geneva-parcel-samples.geojson",
+    "nativeIdentity": "EGRID",
+    "nativeIdFields": ["EGRID"],
+    "exactWupPointTest": "An exact transformed-point request returned a parcel identity; the point was not shifted to force a hit and the result is not an absence or completeness test.",
+    "requestEvidence": [
+      {
+        "url": "https://thematic.sitg.ge.ch/arcgis/rest/services/CADASTRE_RDPPF/MapServer/4/query",
+        "method": "GET; anonymous; TLS verified; safe outFields; returnGeometry=false",
+        "httpStatus": 200,
+        "assessment": "Exact point returned one safe parcel identity."
+      },
+      {
+        "url": "https://thematic.sitg.ge.ch/arcgis/rest/services/CADASTRE_RDPPF/MapServer/4/query",
+        "method": "GET; anonymous; TLS verified; bounded LV95 envelope; safe outFields; outSR=4326; f=geojson",
+        "httpStatus": 200,
+        "assessment": "Three full Polygon features returned and retained with only canonical EGRID properties."
+      }
+    ]
+  },
+  "nextStep": "Root/serial review should independently qualify the public route, CRS/order, EGRID identity stability, rate limits, and bounded coverage before any adapter admission. Keep runtime held until then.",
+  "remainingUncertainty": "The tested envelope is bounded and the response reported more intersecting features than retained; no citywide completeness or freshness claim is made.",
+  "researchAttempt": 1,
+  "rootReview": null,
+  "rootReviewedAt": null
+}

@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-1755-li-ge.json",
+  "purpose": "Document first-party registry/map discovery, viewer/service evidence, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "The official Walloon Geoportal and SPF Finances pages establish cadastral custody/provenance, and the official ArcGIS REST service returned safe parcel identity plus polygon geometry for a bounded envelope around the exact Liège WUP point. This is evidence of a public regional map service, not a citywide completeness or runtime-adapter qualification.",
+  "registryAssessment": "Regional/local-in-scope registry/map custody is evidenced by the Service public de Wallonie Geoportal parcel page and catalogue record; the underlying cadastral source is attributed to the Administration Générale de la Documentation Patrimoniale (SPF Finances). No separate Liège municipal cadastral office was inferred.",
+  "officialPrimarySources": [
+    {"url": "https://geoportail.wallonie.be/home/ressources/georeferentiel-de-la-wallonie/parcellaire-cadastral.html", "observation": "Official French Wallonia Geoportal page says the cadastral parcel plan visualizes private parcels and buildings throughout Wallonia, is available through WalOnMap or GIS software, and contains no owner/private-life information."},
+    {"url": "https://geoportail.wallonie.be/catalogue/2aec918f-d04a-4c9b-9407-42825ab482f0.html", "observation": "Official catalogue record identifies the current cadastral parcel plan, regional Wallonia scope, EPSG:31370, AGDP/SPF Finances provenance, and the ArcGIS REST service URL."},
+    {"url": "https://geoservices.wallonie.be/arcgis/rest/services/PLAN_REGLEMENT/CADMAP_PARCELLES/MapServer", "observation": "Official ArcGIS REST service metadata exposes one polygon parcel layer, maxRecordCount 2000, and JSON/GeoJSON/PBF query formats."},
+    {"url": "https://finances.belgium.be/fr/experts-partenaires/donnees-ouvertes-patrimoine/jeux-donnees/plan-cadastral", "observation": "Official SPF Finances page describes the Belgian cadastral parcel plan and open-data provenance."}
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://geoportail.wallonie.be/",
+    "observedTechnology": "Official Wallonia Geoportal catalogue linked to an ArcGIS REST MapServer.",
+    "observedControls": ["WalOnMap/map visualization", "GIS web service", "ArcGIS REST layer query"],
+    "schemaAndCrs": "Layer 0 is esriGeometryPolygon in EPSG:31370 (Belgian Lambert 72). Fields included OBJECTID, CAPAKEY, CAPATY, COMMUNE, NOM_COMMUNE, CODE_DIV, DIV_NOM, SECT, RADICAL, BIS, EXPOSANT, PUISSANCE, VER, LASTUPDDTS, and geometry. Only CAPAKEY and geometry were requested for the bounded query.",
+    "nativeFieldNames": "CAPAKEY is the native stable cadastral parcel identity used for this packet; source fields were not retained in GeoJSON.",
+    "safeFieldAllowlist": ["CAPAKEY", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "personal or legal data"]
+  },
+  "attempts": [
+    {"url": "https://geoportail.wallonie.be/home/ressources/georeferentiel-de-la-wallonie/parcellaire-cadastral.html", "method": "GET via first-party web search/open", "normalTlsVerification": true, "result": "Official page retrieved; regional parcel-map scope and safety/provenance statements observed."},
+    {"url": "https://geoportail.wallonie.be/catalogue/2aec918f-d04a-4c9b-9407-42825ab482f0.html", "method": "GET via first-party web search/open", "normalTlsVerification": true, "result": "Official catalogue record retrieved; ArcGIS service URL, EPSG:31370, scope, and AGDP/SPF Finances provenance observed."},
+    {"url": "https://geoservices.wallonie.be/arcgis/rest/services/PLAN_REGLEMENT/CADMAP_PARCELLES/MapServer?f=pjson", "method": "GET", "normalTlsVerification": true, "result": "HTTP JSON metadata retrieved; one polygon layer, full extent, max record count, and supported formats verified."},
+    {"url": "https://geoservices.wallonie.be/arcgis/rest/services/PLAN_REGLEMENT/CADMAP_PARCELLES/MapServer/0?f=pjson", "method": "GET", "normalTlsVerification": true, "result": "HTTP JSON layer metadata retrieved; EPSG:31370 polygon schema and CAPAKEY field verified."},
+    {"url": "https://geoservices.wallonie.be/arcgis/rest/services/PLAN_REGLEMENT/CADMAP_PARCELLES/MapServer/0/query", "method": "GET with ArcGIS query parameters", "normalTlsVerification": true, "result": "Anonymous bounded envelope query in EPSG:31370, intersects, where=1=1, outFields=CAPAKEY, returnGeometry=true, outSR=4326 returned a GeoJSON FeatureCollection with 71 polygon features near the exact WUP point. No owner/address/private fields requested."}
+  ],
+  "geometryDecision": "No full polygon retained in the cohort artifact; bounded geometry and representative native IDs were inspected and documented, while raw unchanged response remains under ignored tmp/valhalla-parcel-research/.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 71, "query": "200 m envelope [234757.22,148185.00,234957.22,148385.00] in EPSG:31370 around transformed exact WUP point [234857.22,148285.00], returned as GeoJSON EPSG:4326."},
+  "identityEvidence": {"field": "CAPAKEY", "examples": ["62813E0483/00B000", "62813E0481/00D000", "62813E0482/00A000"], "provenance": "Native field documented in official layer metadata; not a synthetic row number."},
+  "coverageAssessment": {"claimedScope": "Official Wallonia cadastral parcel map/service covering Wallonia.", "verifiedOpenScope": "Bounded anonymous parcel feature response near Liège exact WUP point.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": true},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "No city boundary query or complete city inventory was attempted; exact parcel freshness and service version are bounded by the official metadata observed at research time. A successful local query is not evidence of absence elsewhere, and no login, CAPTCHA, Cloudflare bypass, private token, or unsafe field request was used.",
+  "runtimeAssessment": {"status": "held", "reason": "A real anonymous ID-plus-geometry response was verified, but runtime adapter qualification remains reserved for the serial reviewer."}
+}

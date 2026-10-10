@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 10047,
+  "wupCityCode": 10047,
+  "queueRank": 1901,
+  "name": "Jigani",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [12.8114516677821, 77.6717921889568],
+  "centerLatLon": [12.8114516677821, 77.6717921889568],
+  "population2025": 301763,
+  "population2025k": 301.763,
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted",
+  "nativeIdReadiness": "not_applicable_no_verified_parcel_response",
+  "registryFound": true,
+  "registryBasis": "Karnataka Government land-records documentation and the official Bengaluru South district land-records page identify Bhoomi/SSLR as the state land-records system with taluk land-records offices. This establishes relevant official registry custody/procedure, but no Jigani parcel geometry or local map response was verified.",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jigani Karnataka official cadastral parcel map Bhoomi land records survey map",
+        "result": "Found official Karnataka Bhoomi/SSLR land-records references and Bengaluru South district land-records page; no verified anonymous Jigani parcel geometry response.",
+        "actualResultUrls": [
+          "https://bengalurusouth.nic.in/en/service/land-records/",
+          "https://landrecords.karnataka.gov.in/"
+        ]
+      },
+      {
+        "language": "Kannada",
+        "query": "ಜಿಗಣಿ ಕರ್ನಾಟಕ ಅಧಿಕೃತ ಭೂ ನಕ್ಷೆ ಸರ್ವೆ ನಕ್ಷೆ ಭೂಮಿ",
+        "result": "Found Karnataka Government Sujala/LRI Kannada portal and official land-records context, but no verified Jigani cadastral parcel-vector response.",
+        "actualResultUrls": [
+          "https://sujala3lri.karnataka.gov.in/",
+          "https://landrecords.karnataka.gov.in/"
+        ]
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Karnataka state Bhoomi/SSLR land-records and revenue-map procedures, with Bengaluru South district land-records custody context.",
+    "verifiedOpenScope": "Registry/procedure context only; anonymous parcel geometry access unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "resultCategory": "official_registry_and_map_procedure_evidenced_no_anonymous_geometry",
+  "blocker": "The documented Karnataka land-records and map hosts timed out on bounded anonymous HTTPS GET attempts from this environment. No login, CAPTCHA, token bypass, or TLS-disabling workaround was used.",
+  "remainingUncertainty": "A working public viewer, downloadable village map, or separate Jigani/Anekal service may exist. Exact-point parcel hit testing, CRS/schema inspection, and citywide completeness remain unknown; the unchanged WUP point is not an absence finding.",
+  "nextStep": "Retry the official Karnataka map services when reachable, follow their public JavaScript/configuration, and retain only safe native parcel IDs with geometry after geographic qualification. Keep runtime admission held pending independent serial review."
+}

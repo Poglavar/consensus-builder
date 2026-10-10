@@ -1,0 +1,106 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5767-caxias-do-sul.json",
+  "purpose": "Document first-party municipal discovery and bounded anonymous cadastral/map-service review for Caxias do Sul, Rio Grande do Sul, Brazil.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official municipal DIGEO/GeoCaxias portal and ArcGIS Cadastro_Territorial service evidence a local cadastral custodian. Service metadata identifies a Lotes polygon layer (ID 3), EPSG:31982, and public JSON/GeoJSON support. The exact-point anonymous query timed out, so no parcel hit or absence inference is made.",
+  "registryAssessment": "registryFound=true because the municipal cadastral custodian, local cadastral office, and public territorial map service are directly evidenced. This is not evidence of citywide completeness or adapter admission.",
+  "officialPrimarySources": [
+    {
+      "url": "https://caxias.rs.gov.br/servicos/planejamento/diretoria-de-informacoes-geoespaciais",
+      "observation": "Official DIGEO page identifies GeoCaxias, the municipal geospatial-data portal, and the Gerência de Cadastro Técnico Multifinalitário, which registers municipal properties and relates tax data to the cadastral map."
+    },
+    {
+      "url": "https://caxias.rs.gov.br/servicos/planejamento/gerencia-de-cadastro-multifinalitario",
+      "observation": "Official service page documents municipal cadastral registration and says approved areas are entered into the municipal cadastro multifinalitário and GeoCaxias."
+    },
+    {
+      "url": "https://gis.caxias.rs.gov.br/server/rest/services/Cadastro_Territorial/MapServer",
+      "observation": "Official ArcGIS REST service metadata names Cadastro Territorial, publishes EPSG:31982, and lists Lotes, Quadras, Sublotes, and related municipal layers with JSON/GeoJSON support."
+    },
+    {
+      "url": "https://gis.caxias.rs.gov.br/server/rest/services/Cadastro_Territorial/MapServer/3",
+      "observation": "Official Lotes layer metadata identifies polygon geometry, public query support, native EPSG:31982, and the layer display field inscricaoloteponto. Unsafe source attributes were not retained."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Caxias do Sul Brazil official cadastral parcel map land registry GIS",
+      "result": "Official DIGEO/GeoCaxias and Cadastro_Territorial sources found; the Lotes polygon layer and service CRS were verified, but the bounded anonymous point query timed out.",
+      "actualResultUrls": [
+        "https://caxias.rs.gov.br/servicos/planejamento/diretoria-de-informacoes-geoespaciais",
+        "https://gis.caxias.rs.gov.br/server/rest/services/Cadastro_Territorial/MapServer"
+      ]
+    },
+    {
+      "language": "Portuguese (Brazil)",
+      "query": "Caxias do Sul mapa cadastral oficial cadastro imobiliário geoprocessamento lotes prefeitura",
+      "result": "Official municipal cadastral procedure and GeoCaxias service found; no parcel geometry was retained after the bounded API timeout.",
+      "actualResultUrls": [
+        "https://caxias.rs.gov.br/servicos/planejamento/gerencia-de-cadastro-multifinalitario",
+        "https://caxias.rs.gov.br/noticias/2018/03/sistema-geocaxias-fornece-informacoes-urbanisticas-para-a-comunidade",
+        "https://gis.caxias.rs.gov.br/server/rest/services/Cadastro_Territorial/MapServer/3"
+      ]
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://gis.caxias.rs.gov.br/server/rest/services/Cadastro_Territorial/MapServer",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official service metadata was retrieved through first-party indexed documentation. It identified EPSG:31982, public JSON/GeoJSON support, and the municipal territorial layers."
+    },
+    {
+      "url": "https://gis.caxias.rs.gov.br/server/rest/services/Cadastro_Territorial/MapServer/3",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official Lotes layer metadata was retrieved through first-party indexed documentation. It identifies polygon geometry and the display field inscricaoloteponto; no raw source attribute set was retained."
+    },
+    {
+      "url": "https://gis.caxias.rs.gov.br/server/rest/services/Cadastro_Territorial/MapServer/3/query",
+      "method": "GET",
+      "httpStatus": null,
+      "result": "Bounded anonymous ArcGIS query attempted with where=1=1, outFields limited to a safe ID/geometry review, exact WUP point [-51.184877368516,-29.1674971448072] as an EPSG:4326 point, spatialRel=esriSpatialRelIntersects, outSR=4326, and resultRecordCount=3. Connection timed out before a response. No absence conclusion was drawn."
+    }
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": {
+    "nativeIdentityField": "inscricaoloteponto (published display field; no returned feature identity observed)",
+    "nativeIdentityObserved": null,
+    "geometryEvidence": "Layer metadata proves polygon geometry capability; no feature geometry response was obtained."
+  },
+  "compositeKeyProvenance": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": "Cadastro_Territorial/3",
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Performed against the unchanged WUP point; timeout only, not a zero-hit result.",
+    "requestEvidence": [
+      {
+        "serviceCrs": "EPSG:31982",
+        "wupPointLatLon": [-29.1674971448072, -51.184877368516],
+        "returnedSafeId": null,
+        "returnedGeometry": false
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official municipal Cadastro_Territorial / GeoCaxias Lotes layer.",
+    "verifiedOpenScope": "Public service metadata and query capability; no feature-level response or bulk completeness was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "Feature-level native ID schema, exact-point hit status, full polygon retrieval, request reliability, freshness, pagination, and citywide completeness remain unverified. The published display field is recorded as source metadata only; no unsafe values were retained.",
+  "runtimeAssessment": "held; no adapter admission or source integration implied"
+}

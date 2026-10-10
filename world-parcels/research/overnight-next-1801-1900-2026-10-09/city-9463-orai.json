@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 9463,
+  "queueRank": 1899,
+  "cityId": "queue:1899",
+  "name": "Orai",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [25.9924440827383, 79.4526482218284],
+  "centerLatLon": [25.9924440827383, 79.4526482218284],
+  "population2025": 301946,
+  "population2025k": 301.946,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "searchedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Orai Uttar Pradesh official cadastral parcel map land records GIS plot map Jalaun",
+        "result": "First-party discovery found the official Jalaun district land-records page, which identifies UP Bhulekh as the state land-records portal and identifies the land-record officer location as Orai. It also found the official UP Bhunaksha map portal and the UP registration department map-service entry points.",
+        "actualResultUrls": [
+          "https://jalaun.nic.in/service/land-records/",
+          "https://upbhulekh.gov.in/",
+          "https://upbhunaksha.gov.in/",
+          "https://igrsup.gov.in/igrsup/defaultAction.action/defaultAction"
+        ]
+      },
+      {
+        "language": "native/local (Hindi)",
+        "query": "ओरई जालौन उत्तर प्रदेश आधिकारिक भू नक्शा खसरा नक्शा भूमि अभिलेख",
+        "result": "Hindi first-party discovery found the UP Revenue Board Hindi service page describing Bhulekh khatauni/khasra and Bhulekh bhu-naksha/shajra services, and the official Hindi Jalaun district land-records page.",
+        "actualResultUrls": [
+          "https://bor.up.nic.in/?search_key=HOMECENTER",
+          "https://jalaun.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+          "https://upbhulekh.gov.in/",
+          "https://upbhunaksha.gov.in/"
+        ]
+      }
+    ],
+    "method": "Separate English and Hindi first-party discovery followed by bounded TLS-verified GETs and inspection of the public Bhunaksha JavaScript/configuration. No credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe-field request, or TLS disablement was used."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "portalsFound": [
+    {
+      "url": "https://jalaun.nic.in/service/land-records/",
+      "operator": "Jalaun District Administration, Government of Uttar Pradesh",
+      "observation": "Official district service page directs users to UP Bhulekh and describes computerized land-record services; it gives the Land Record Officer location as Collectorate, Orai. This evidences the local/district land-record custodian, not an open parcel geometry response."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/",
+      "operator": "Revenue Council, Government of Uttar Pradesh / NIC",
+      "observation": "Official public map viewer loaded and its current JavaScript exposed level metadata plus MapInfo plot-at-coordinate, plot-by-number, plot-info, and v1/khasramap/plot routes. No successful anonymous plot response was obtained."
+    },
+    {
+      "url": "https://igrsup.gov.in/igrsup/defaultAction.action/defaultAction",
+      "operator": "Stamp and Registration Department, Government of Uttar Pradesh",
+      "observation": "Official department page exposes rural property/land map and urban property/land GIS map service links; no parcel geometry response was verified."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://jalaun.nic.in/service/land-records/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "TLS-verified fetch succeeded; official page and its Hindi counterpart were inspected."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "TLS-verified fetch succeeded. Current CSP/configuration was inspected; it advertises public land-record services and external service hosts, but no parcel request was made because no bounded Orai village/gis-code was established safely."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "TLS-verified fetch succeeded. Viewer HTML referenced the current main JavaScript bundle."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/main-76RVRF3Z.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/javascript",
+      "assessment": "Current public bundle inspected. It defines https://upbhunaksha.gov.in/bhunakshaserver and safe plot/map routes including Levels/stateCode, Levels/getStateName, Levels/mapLevelCount, Levels/levelLabels, MapInfo/getPlotAtXY, MapInfo/getPlotByPlotNo, MapInfo/getPlotInfo, and v1/khasramap/plot."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/stateCode",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Bounded anonymous TLS-verified request timed out after 20 seconds with no response. This is not evidence of map extent miss, login wall, or citywide absence; no retry with disabled verification was attempted."
+    },
+    {
+      "url": "https://igrsup.gov.in/igrsup/defaultAction.action/defaultAction",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "TLS-verified fetch succeeded; service labels were inspected. A session cookie was returned by the public site and was not used for authenticated or unsafe requests."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Orai city / Jalaun district land-record custody and the statewide UP Bhulekh/Bhunaksha public map services.",
+    "verifiedOpenScope": "Official district custody, public portal availability, and current viewer route/schema hints only; no anonymous Orai parcel feature response was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel or plot id if verified", "full parcel polygon or multipolygon geometry if verified", "service/layer metadata", "CRS metadata"],
+  "sourceFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": {"retainedSample": null, "officialViewerCrs": "not returned by a successful map/plot response"},
+  "geometryQuality": "No parcel geometry verified or retained.",
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not completed as a parcel-containing test; no exact-point hit or miss inference was made.", "requestEvidence": "tmp/valhalla-parcel-research/orai/"},
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review remains required",
+  "remainingUncertainty": "The public viewer's anonymous bootstrap availability, required district/tehsil/village codes, parcel schema, stable native plot identity, CRS, geometry response, update currency, and citywide completeness remain unresolved. The exact WUP point was preserved and never shifted.",
+  "nextStep": "Retry the official Bhunaksha bootstrap when reachable, resolve the Orai/Jalaun administrative codes through ordinary public level metadata, then request only safe plot identity and geometry in a bounded extent or coordinate test before any sample retention."
+}

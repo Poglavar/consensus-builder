@@ -1,0 +1,18 @@
+{
+  "taskId": "packet:11339",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-11339-saharsa.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/saharsa-service-review.json",
+    "tmp/valhalla-parcel-research/11339/extent.body",
+    "tmp/valhalla-parcel-research/11339/plotxy.body",
+    "tmp/valhalla-parcel-research/11339/scalar.body",
+    "tmp/valhalla-parcel-research/runs/20261009T104320-abea029d/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-09T12:01:39.204330Z",
+  "reason": "Queue identity and English/Hindi executed searches checked. Original Bihar BhuNaksha response shows one Saharsa sheet extent and opaque plot ID, but no full parcel polygon. WUP point and citywide presence remain unresolved. Independent adapter admission gates and headed Details evidence are absent."
+}

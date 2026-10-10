@@ -1,0 +1,15 @@
+{
+  "taskId": "city:3039",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-3039-escondido.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/escondido-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/escondido-parcel-samples.geojson"
+  ],
+  "checkedAt": "2026-10-09T15:04:54.646593Z",
+  "reason": "WUP city code 3039, rank 1356, United States point and 415167 persons match the original source. English and Spanish-text searches are recorded, though the second language label says English. Three safe APN polygon samples match fresh public City of Escondido object-ID attributes, but forced paging, 13 bounded cells, metric GEOS validity/overlap, full-parcel source binding, and headed Details verification are not evidenced. Exact-point zero is not citywide absence."
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9407-shivamogga.json",
+  "cityCode": 9407,
+  "purpose": "Document first-party discovery, current public land-record/map routes, bounded anonymous access review, and evidence limits.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "unsafeFieldsRequested": false, "citywideCompletenessAsserted": false},
+  "assessment": "Shivamogga district government and Karnataka Bhoomi/Bhu-Naksha references were found. The official Karnataka land-records host timed out and the DILRMP/NIC pages did not yield a bounded anonymous parcel ID-plus-geometry response. No sample is retained.",
+  "registryAssessment": "The evidence establishes a state/district land-record context, but not a city-scoped cadastral registry endpoint or public parcel-vector service; registryFound remains null.",
+  "safeFieldAllowlist": ["safe parcel or survey identifier only if publicly exposed and non-personal", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "queries": [
+    {"language": "English", "query": "Shivamogga Karnataka official cadastral parcel map Bhu Naksha Bhoomi survey map", "outcome": "Official Shivamogga district, DILRMP, and NIC Bhu-Naksha references found; no safe public parcel response.", "actualResultUrls": ["https://shivamogga.nic.in/", "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/570", "https://www.bhunaksha.nic.in/bhunaksha/customization.jsp"]},
+    {"language": "Kannada", "query": "ಶಿವಮೊಗ್ಗ ಕರ್ನಾಟಕ ಅಧಿಕೃತ ಭೂ ನಕ್ಷೆ ಪಹಣಿ ಸರ್ವೆ ನಕ್ಷೆ Bhoomi", "outcome": "Official district/Bhoomi references were returned, without a public anonymous parcel API or geometry response.", "actualResultUrls": ["https://shivamogga.nic.in/", "https://www.bhunaksha.nic.in/bhunaksha/customization.jsp"]}
+  ],
+  "attempts": [
+    {"url": "https://landrecords.karnataka.gov.in/", "method": "GET", "httpStatus": "timeout", "result": "Anonymous HTTPS request timed out after 20 seconds; no current JavaScript/configuration or API route was inspected."},
+    {"url": "https://bhoomi.karnataka.gov.in/", "method": "GET", "httpStatus": "timeout/incomplete client attempt", "result": "The sequential anonymous fetch did not produce a usable response before the bounded request window; no endpoint or geometry inferred."},
+    {"url": "https://shivamogga.nic.in/", "method": "GET", "httpStatus": "timeout (web fetch)", "result": "Search result identified the official district portal and Bhoomi link; direct page retrieval did not complete."},
+    {"url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/570", "method": "GET/open", "httpStatus": "502 (web fetch)", "result": "Search result showed Shivamogga district cadastral-map/ULPIN status fields; no parcel feature response."},
+    {"url": "https://www.bhunaksha.nic.in/bhunaksha/customization.jsp", "method": "GET/open", "httpStatus": "502 (web fetch)", "result": "Search result confirmed Karnataka customization in the general NIC reference; no current viewer configuration or geometry."}
+  ],
+  "geometryEvidence": null,
+  "geometryDecision": {"verified": false, "sourceId": null, "nativeIdField": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "No exact-point parcel containment test was completed. The WUP point [13.9367090537284,75.5664297271675] was preserved exactly; timeout/failed viewer retrieval is not evidence of citywide absence."},
+  "remainingUncertainty": "The current Bhoomi/Bhu-Naksha JavaScript/configuration, public service endpoints, CRS, native parcel identity, exact-point parcel, and citywide open coverage remain unverified. No login, credentials, unsafe fields, CAPTCHA bypass, or TLS verification bypass was used.",
+  "runtimeAssessment": "not enabled; serial reviewer must independently qualify any adapter"
+}

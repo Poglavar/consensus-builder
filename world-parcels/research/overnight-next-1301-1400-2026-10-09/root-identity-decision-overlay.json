@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "kind": "root_identity_decision_overlay",
+  "cohort": "overnight-next-1301-1400",
+  "recordedAt": "2026-10-09T13:57:18.220156Z",
+  "decisions": [
+    {
+      "wupCityCode": 11726,
+      "rank": 1354,
+      "countryCode": "CN",
+      "name": "Fuyang",
+      "decision": "different_settlement",
+      "effectiveAttemptState": "pending",
+      "candidatePointLatLon": [
+        30.0487792622136,
+        119.946255782194
+      ],
+      "priorCityCode": 10440,
+      "priorCityName": "Fuyang",
+      "priorPointLatLon": [
+        32.893547722873,
+        115.823161424229
+      ],
+      "distanceKm": 502.95,
+      "reason": "WUP11726 is the Fuyang/富阳 area of Hangzhou, Zhejiang; the previously researched WUP10440 is Fuyang/阜阳, Anhui. Official Hangzhou material locates 富阳 at 29°44′–30°11′ N and 119°25′–120°09′ E, containing the candidate point. The two WUP points are about 503 km apart and have distinct source City_Codes. The Anhui city packet therefore is not an attempt on WUP11726. Its WUP name, point, rank, and 415492-person population remain unchanged; local parcel custody and public geometry are unverified.",
+      "evidence": [
+        {
+          "path": "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+          "observation": "Official WUP 2025 roster records candidate code 11726, rank 1354, point 30.0487792622136,119.946255782194 and Pop 415.492 thousand; derived from the locally retained official bulk CSV."
+        },
+        {
+          "path": "world-parcels/research/overnight-cities-2026-10-08/city-10440-fuyang.json",
+          "observation": "Prior Anhui Fuyang investigation is specifically WUP10440 at 32.893547722873,115.823161424229, with no verified public parcel geometry."
+        },
+        {
+          "url": "https://epb.hangzhou.gov.cn/module/download/downfile.jsp?classid=0&filename=8bc14d192950411782a9ff9b0a925cff.pdf",
+          "observation": "Official Hangzhou environmental publication states 富阳区 is in Zhejiang and gives its latitude and longitude range. Public search index exposed this passage; direct PDF fetch was too large for the web reader."
+        }
+      ]
+    },
+    {
+      "wupCityCode": 5323,
+      "rank": 1372,
+      "countryCode": "BD",
+      "name": "Belkuchi",
+      "decision": "different_settlement",
+      "effectiveAttemptState": "pending",
+      "candidatePointLatLon": [
+        24.1558909100762,
+        89.6088819200885
+      ],
+      "priorCityCode": 5431,
+      "priorCityName": "Belkuchi",
+      "priorPointLatLon": [
+        24.2698075545558,
+        89.6857818853253
+      ],
+      "distanceKm": 14.88,
+      "reason": "The two records have distinct WUP City_Codes and population-weighted points about 14.88 km apart. The previously reviewed WUP5431 packet scoped its local custody finding to the Belkuchi Upazila land office. The official Belkuchi Upazila page gives 24°13′–24°22′ N and 89°37′–89°47′ E; WUP5431 is inside this envelope, whereas WUP5323 at 24.1558909100762,89.6088819200885 is south and slightly west of it. The earlier local-office review therefore does not establish an attempt at the candidate point. Keep WUP5323 pending for point-scoped research; its precise administrative attribution and parcel coverage remain unresolved, and its source name, point, rank, and 410861-person population remain unchanged.",
+      "evidence": [
+        {
+          "path": "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+          "observation": "Official WUP 2025 roster records candidate code 5323, rank 1372, point 24.1558909100762,89.6088819200885 and Pop 410.861 thousand; derived from the locally retained official bulk CSV."
+        },
+        {
+          "path": "world-parcels/research/overnight-followon-2026-10-09/city-5431-belkuchi.json",
+          "observation": "Prior WUP5431 investigation is tied to Belkuchi Upazila land office at 24.2698075545558,89.6857818853253; it did not verify public parcel geometry."
+        },
+        {
+          "url": "https://belkuchi.sirajganj.gov.bd/pages/static-pages/697fbb1335ce18e1c06cbe5f",
+          "observation": "Direct official Belkuchi Upazila page returned HTTP 200 and states the 24°13′–24°22′ N, 89°37′–89°47′ E coordinate range."
+        },
+        {
+          "url": "https://shahjadpur.sirajganj.gov.bd/pages/static-pages/697fbb0b35ce18e1c06cbaf9",
+          "observation": "Official adjacent Shahjadpur Upazila page lists Belkuchi to its north, supporting a separate area south of Belkuchi; exact candidate jurisdiction is not asserted."
+        },
+        {
+          "path": "world-parcels/research/overnight-next-1301-1400-2026-10-09/identity-5323-official-geography-response.json",
+          "observation": "Original first-party HTML response hash and the relevant geographic sentence were retained after direct fetch."
+        }
+      ]
+    }
+  ],
+  "scope": "Two identity holds resolved as different prior-attempt scopes. The immutable WUP roster is preserved; both codes enter the pending investigation queue. No parcel source or runtime admission is implied."
+}

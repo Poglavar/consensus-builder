@@ -1,0 +1,102 @@
+{
+  "cityCode": 5847,
+  "queueRank": 1755,
+  "name": "Baoshan",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [25.1261289113243, 99.182253649597],
+  "population2025": 327416,
+  "population2025k": 327.416,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Baoshan Yunnan China official cadastral parcel map land registry GIS Natural Resources Bureau",
+        "result": "First-party discovery identified the Baoshan Natural Resources and Planning Bureau government portal, its real-estate registration information pages, the Baoshan Real Estate Registration Center, and the official Yunnan Natural Resources / Tianditu references. No anonymous Baoshan parcel feature service with a safe native parcel ID and full geometry was identified.",
+        "actualResultUrls": [
+          "https://www.baoshan.gov.cn/bmym/bsszrzyhghj/zfxxgkpt.htm",
+          "https://www.baoshan.gov.cn/bmym/bsszrzyhghj/zfxxgkpt/fdzdgknr/zrzygz/bdcdjxx/1.htm",
+          "https://www.baoshan.gov.cn/info/3535/10282844.htm",
+          "https://dnr.yn.gov.cn/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "保山市 不动产登记 地籍图 查询 官方 自然资源局",
+        "result": "First-party discovery identified the Baoshan Natural Resources and Planning Bureau information-disclosure portal, the municipal real-estate registration information index, an official Baoshan service list naming online real-estate-registration-material queries, and Yunnan’s official public geospatial-service references. The inspected results evidence local registration custody and public service channels, but no anonymous parcel vector response, safe native parcel identity, or parcel schema was found.",
+        "actualResultUrls": [
+          "https://www.baoshan.gov.cn/bmym/bsszrzyhghj/zfxxgkpt.htm",
+          "https://www.baoshan.gov.cn/bmym/bsszrzyhghj/zfxxgkpt/fdzdgknr/zrzygz/bdcdjxx/1.htm",
+          "https://www.baoshan.gov.cn/info/4341/9868494.htm",
+          "https://dnr.yn.gov.cn/html/2024/tongzhigonggao_0905/4047492.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Official Baoshan government pages identify the municipal Natural Resources and Planning Bureau as responsible for real-estate registration information and publish a Baoshan Real Estate Registration Center annual decision report. This is local custodial evidence, not evidence of an open parcel geometry API.",
+  "officialSources": [
+    {
+      "url": "https://www.baoshan.gov.cn/bmym/bsszrzyhghj/zfxxgkpt.htm",
+      "observation": "Baoshan municipal government Natural Resources and Planning Bureau disclosure page lists real-estate registration information as an actively disclosed category, identifies the bureau and its disclosure channels, and names the Baoshan Real Estate Registration Center WeChat service." 
+    },
+    {
+      "url": "https://www.baoshan.gov.cn/info/3535/10282844.htm",
+      "observation": "Official Baoshan Real Estate Registration Center 2024 annual decision report identifies the center as a subordinate unit of the municipal Natural Resources and Planning Bureau, with a cadastral-information section and city registration/query operations." 
+    },
+    {
+      "url": "https://www.baoshan.gov.cn/bmym/bsszrzyhghj/zfxxgkpt/fdzdgknr/zrzygz/bdcdjxx/1.htm",
+      "observation": "Official municipal registration-information index exposes historical registration notices/results but no public parcel feature layer, schema, CRS, or anonymous geometry query." 
+    },
+    {
+      "url": "https://dnr.yn.gov.cn/html/2024/tongzhigonggao_0905/4047492.html",
+      "observation": "Official Yunnan Natural Resources notice points users to Tianditu Yunnan for public standard maps; it does not publish a Baoshan cadastral parcel feature endpoint." 
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.baoshan.gov.cn/bmym/bsszrzyhghj/zfxxgkpt.htm",
+      "method": "GET",
+      "outcome": "HTTP 200; current HTML fetched and inspected. It linked the municipal real-estate-registration information category and identified public disclosure/service channels; no parcel API or viewer route was exposed in the page." 
+    },
+    {
+      "url": "https://www.baoshan.gov.cn/bmym/bsszrzyhghj/zfxxgkpt/fdzdgknr/zrzygz/bdcdjxx/1.htm",
+      "method": "GET",
+      "outcome": "HTTP 200; registration-information index fetched. It listed public registration notices/results, including a historical cadastral-registration result entry, but no anonymous parcel ID-plus-geometry service or schema." 
+    },
+    {
+      "url": "https://www.baoshan.gov.cn/info/3535/10282844.htm",
+      "method": "GET",
+      "outcome": "HTTP 200; official Registration Center annual report fetched. It describes the local registration custodian and internal cadastral-information/query work, not a public vector parcel response." 
+    },
+    {
+      "url": "https://dnr.yn.gov.cn/",
+      "method": "GET",
+      "outcome": "HTTP 200; official Yunnan Natural Resources portal fetched. The inspected current page did not expose a Baoshan cadastral endpoint." 
+    },
+    {
+      "url": "https://dnr.yn.gov.cn/html/2024/tongzhigonggao_0905/4047492.html",
+      "method": "GET via official search/open",
+      "outcome": "Official Yunnan notice was readable and points to Tianditu Yunnan/public standard maps. No parcel feature schema, safe native parcel ID, CRS, or full polygon response was obtained." 
+    }
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Baoshan municipal Natural Resources and Planning Bureau / Real Estate Registration Center custody and Yunnan public geospatial-service references.",
+    "verifiedOpenScope": "Local registration custody, public registration-information index, and general provincial geospatial-map references only; no open parcel geometry scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": "Exact WUP point preserved in latitude/longitude order. No exact-point parcel hit/miss test was made. A zero exact-point hit, map extent miss, inaccessible viewer, timeout, route miss, or absent public endpoint is not evidence of citywide cadastral absence. No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS-disabling action was used. No GeoJSON sample retained. Packet completion records executed attempts only; it does not qualify or admit a runtime adapter."
+}

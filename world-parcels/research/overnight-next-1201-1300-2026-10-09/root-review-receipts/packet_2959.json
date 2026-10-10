@@ -1,0 +1,15 @@
+{
+  "taskId": "packet:2959",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-2959-ardabil.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ardabil-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T13:48:53Z",
+  "reason": "Ardabil WUP code 2959, rank 1274, Iran, point [38.245604918789,48.2877089979808], 437757 persons matches the immutable queue. English and Persian executed searches are recorded in both paired files. The SSAA, My.SSAA and Shamim reads timed out; Rasa DNS failed; no first-party Ardabil local registry page or public parcel response was verified. Preserve registryFound null and zero geometry as unresolved access, not absence.",
+  "qualificationCheck": "No safe native-ID polygon read, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. Hold unintegrated and unenabled."
+}

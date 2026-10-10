@@ -1,0 +1,56 @@
+{
+  "cityCode": 1926,
+  "queueRank": 1413,
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "point": [8.66129179356854, 3.39373440435801],
+  "population2025": 400875,
+  "population2025k": 400.875,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Saki Nigeria official cadastral parcel map Oyo land registry GIS",
+        "result": "Found the official Oyo State Geographic Information System Service (OyoGISS), the Oyo State Geographic & Spatial Information Service (OSGSIS), and the Digital Land Survey Plan Registry operated through the Office of the Surveyor General. Official material identifies Saki as an Oyo State city and describes state-wide land/spatial administration, but no anonymous parcel feature response was verified.",
+        "actualResultUrls": [
+          "https://lands.oyostate.gov.ng/oyo-giss.html",
+          "https://oyogsis.oysglands.com/",
+          "https://lands.oyostate.gov.ng/survey-search.html",
+          "https://oyostate.gov.ng/bureau-of-physical-planning-dev-control-unit/"
+        ]
+      },
+      {
+        "language": "Yoruba",
+        "query": "Saki Nigeria maapu kadastre osise, iforukọsilẹ ilẹ ati GIS Oyo",
+        "result": "The Yoruba-language discovery query did not surface a separate Yoruba-first-party cadastral endpoint. The official Oyo State English-language land and spatial-information services remain the relevant local sources; no anonymous parcel geometry or safe native parcel ID was verified.",
+        "actualResultUrls": [
+          "https://lands.oyostate.gov.ng/oyo-giss.html",
+          "https://oyogsis.oysglands.com/",
+          "https://lands.oyostate.gov.ng/survey-search.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "custodian": "Oyo State Government, Ministry of Lands, Housing & Urban Development, through OyoGISS and the Office of the Surveyor General",
+    "localOffice": "Office of the Surveyor General / Oyo State Ministry of Lands, Housing & Urban Development; Saki is also explicitly named in official Oyo planning and land material",
+    "localOfficeEvidenceUrl": "https://lands.oyostate.gov.ng/survey-search.html",
+    "sourceScope": "Oyo State land administration, spatial information, property reference/addressing, and digital survey-plan verification. OyoGISS states that its property digitisation covers all 33 LGAs; this does not by itself establish open parcel geometry coverage.",
+    "geometryAccess": "The official OSGSIS landing page links to an OYSG PGP map service at https://maps-server.oysglands.com. Anonymous GET returned HTTP 200 with an empty response and Refresh redirect to the OSGSIS landing page. The official survey registry links to https://las.oysglands.com/; anonymous GET returned HTTP 403. No credentials or private tokens were used."
+  },
+  "geometry": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not performed against a public feature service. The exact WUP point was not used as evidence of absence; no coordinate shift was attempted.",
+    "crs": null
+  },
+  "runtimeReadiness": {
+    "status": "held",
+    "reason": "A local Oyo State land/spatial registry custodian and public service routes were verified, but no anonymous safe-ID parcel geometry response, schema/CRS, or independently qualified adapter was found.",
+    "adapterAdmission": false
+  }
+}

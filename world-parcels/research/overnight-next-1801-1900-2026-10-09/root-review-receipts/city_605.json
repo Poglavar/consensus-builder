@@ -1,0 +1,14 @@
+{
+  "taskId": "city:605",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-605-nukus.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/nukus-service-review.json",
+    "tmp/valhalla-parcel-research/nukus/ngis.headers"
+  ],
+  "checkedAt": "2026-10-10T17:43:15Z",
+  "reason": "WUP code 605, rank 1885, Uzbekistan point and 304362 persons match the original archive and queue. English and Uzbek searches are recorded; official cadastre sources support custody. The saved NGIS header artifact is empty after timeout; no parcel layer, polygon, safe native ID, or independent adapter and headed Details qualification is evidenced. Timeout does not establish citywide absence."
+}

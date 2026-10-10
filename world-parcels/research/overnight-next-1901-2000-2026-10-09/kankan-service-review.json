@@ -1,0 +1,46 @@
+{
+  "cityRecord": "city-2075-kankan.json",
+  "cityCode": 2075,
+  "queueRank": 1957,
+  "city": "Kankan",
+  "country": "Guinea",
+  "countryCode": "GN",
+  "reviewStatus": "complete",
+  "registryFound": null,
+  "provider": "No verified city-specific provider; Guinea Ministry cadastre ArcGIS services and official land-registration pages were discovery leads only",
+  "serviceUrl": "https://cadastre.mines.gov.gn/arcgis/rest/services/SSRSMaps_SOE/MapServer",
+  "discoveryUrls": [
+    "https://cadastre.mines.gov.gn/arcgis/rest/services/SSRSMaps_SOE/MapServer",
+    "https://cadastre.mines.gov.gn/arcgis/rest/services/MapPortal/GuineaPortal_ApplicationLayer/MapServer?f=jsapi",
+    "https://service-public.gov.gn/ova_sev/certificat-dimmatriculation-de-titre-foncier/",
+    "https://foncierguinee.org/"
+  ],
+  "attemptedRoutes": [
+    {"route":"GET ArcGIS REST service catalog","outcome":"succeeded; public catalog listed SSRSMaps_SOE, two Landfolio GP services, and ExportWebMap"},
+    {"route":"GET SSRSMaps_SOE MapServer and layer 0 metadata","outcome":"succeeded; only the polygon country layer Pays was exposed, with OBJECTID/ISO_CTRY/Shape fields"},
+    {"route":"GET/Query SSRSMaps_SOE layer 0 at unchanged WUP point [10.363689994973,-9.29409424959834]","outcome":"succeeded; one GN country feature returned with geometry suppressed; not a parcel query and no absence inference made"},
+    {"route":"GET GuineaPortal_ApplicationLayer MapServer metadata","outcome":"ArcGIS 499 Token Required; no token or login attempted"},
+    {"route":"GET Landfolio GP service metadata","outcome":"succeeded; only BulkProjectShapes task metadata visible; no task submitted"},
+    {"route":"GET official Service Public Guinea title-registration procedure and Foncier Guinée platform","outcome":"succeeded; procedure/governance context only, no public parcel geometry or schema"}
+  ],
+  "scope": "Public first-party discovery and anonymous ArcGIS metadata/query inspection covered Guinea national cadastral entry points. No citywide or countrywide parcel coverage was verified.",
+  "schemaAndCrs": "No parcel schema or CRS response. The accessible country layer uses source WKID 104257/latestWkid 8999.",
+  "nativeIdentity": "Unavailable for parcels; no feature retained.",
+  "fieldMapping": {"country_layer_only": {"OBJECTID":"country-layer identifier, not parcel identity","ISO_CTRY":"country code","Shape":"country polygon geometry","Shape.area":"country-layer area","Shape.len":"country-layer length"}},
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON sample retained; no safe full parcel polygon was obtained.",
+  "safeFieldAllowlist": ["geometry", "stable native parcel id if later exposed"],
+  "unsafeDataPolicy": "No owner, address, contact, titleholder, personal, tax/account, legal-description, or ownership fields were requested. No login, credentials, private token, CAPTCHA bypass, or certificate exception was used.",
+  "officialCustodyEvidence": "The Ministry-hosted cadastre ArcGIS service and Guinea public-service land-title procedure evidence national cadastral/land-conservation custody. They do not evidence an open Kankan parcel registry. Foncier Guinée is a national governance-information platform, not a verified parcel data custodian for Kankan.",
+  "limits": [
+    "No anonymous public parcel geometry or parcel schema was available.",
+    "The exact-point request addressed only the country layer and cannot establish parcel presence or absence.",
+    "A token wall, unavailable UI, or map extent limitation is not evidence of citywide cadastral absence.",
+    "No GeoJSON sample was retained because no safe native parcel identity and full parcel polygon were available.",
+    "General national agency/procedure prose is not local registry evidence.",
+    "RuntimeReadiness remains held pending independent serial review."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "A token-controlled national cadastre or local Kankan/commune registry may exist; further work requires an independently evidenced anonymous public parcel endpoint or authorized source-integration review."
+}

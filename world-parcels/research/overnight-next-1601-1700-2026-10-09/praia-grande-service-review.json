@@ -1,0 +1,32 @@
+{
+  "cityRecord": "city-7457-praia-grande.json",
+  "cityCode": 7457,
+  "queueRank": 1627,
+  "city": "Praia Grande",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Praia Grande has evidenced local municipal GeoPG and cadastral/fiscal mapping custody. The current public GeoPG map route is authentication-gated, and no anonymous parcel ID+geometry response, schema, CRS, or native identity was verified. Runtime readiness remains held.",
+  "queryOutcomes": "Separate English and Portuguese first-party discovery queries and actual result URLs are recorded in city-7457-praia-grande.json.",
+  "requestOutcomes": "Official municipal pages were inspected; the GeoPG viewer route reached an ASP.NET login wall. A direct command-line GET to the service-card route timed out at DNS resolution. No API, schema, CRS, parcel geometry, or safe native ID was invented or retained.",
+  "scopeLimits": [
+    "The municipal GeoPG description and fiscal/cadastral map pages establish local map custody, not a public parcel feature service.",
+    "A login wall, timeout, or unavailable anonymous UI is not evidence of citywide parcel absence.",
+    "The exact WUP point [-24.0112734460701, -46.4707057551489] was preserved and was not shifted; no exact-point hit/miss was used.",
+    "No geometry sample is retained because no bounded anonymous parcel response was available.",
+    "No owner, address, contact, titleholder, tax/account, personal, or other unsafe fields were requested or retained."
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeIdentityPolicy": "No native parcel identity was exposed. If a future anonymous service is qualified, retain exactly one stable source-provided parcel identity as properties.id and document all source field mapping in metadata.",
+  "nativeFieldMapping": null,
+  "crs": "unknown; no parcel response",
+  "geometryQuality": "unverified; no parcel geometry response",
+  "runtimeReadiness": "held_authentication_gated_no_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification remain required",
+  "uncertainty": "The municipality clearly operates a local geoprocessing/cadastral mapping context, but current anonymous parcel access and technical source details remain unresolved. Packet completion does not mean source integration/admission.",
+  "retainedSample": null
+}

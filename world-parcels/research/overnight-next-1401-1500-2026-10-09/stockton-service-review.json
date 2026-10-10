@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "kind": "parcel_service_review",
+  "checkedAt": "2026-10-09",
+  "cityCode": 3536,
+  "cityRecord": "city-3536-stockton.json",
+  "queueRank": 1419,
+  "city": "Stockton",
+  "country": "United States of America",
+  "countryCode": "US",
+  "source": {
+    "service": "San Joaquin County/City of Stockton ArcGIS FeatureServer",
+    "layerUrl": "https://services3.arcgis.com/nUD9ady1mS8uVvoJ/ArcGIS/rest/services/Diesel_WFL1/FeatureServer/1",
+    "layerName": "Parcels",
+    "sourceAttribution": "San Joaquin County CD/GIS & City of Stockton IT/GIS; data steward: San Joaquin County Assessor's Office",
+    "nativeFields": {
+      "APN_CHR": "text assessor parcel number; canonical identity selected",
+      "APN": "integer assessor parcel number duplicate",
+      "POLY_CODE": "parcel class code",
+      "FID": "service object ID; not selected as identity"
+    },
+    "sourceCrs": "WKID 102100, latest WKID 3857",
+    "responseCrs": "EPSG:4326"
+  },
+  "queryAndRequestOutcomes": [
+    {
+      "request": "layer metadata",
+      "method": "GET",
+      "url": "https://services3.arcgis.com/nUD9ady1mS8uVvoJ/ArcGIS/rest/services/Diesel_WFL1/FeatureServer/1?f=pjson",
+      "outcome": "HTTP 200; polygon layer, schema, extent and supported GeoJSON format verified."
+    },
+    {
+      "request": "exact WUP point intersection",
+      "method": "GET",
+      "url": "https://services3.arcgis.com/nUD9ady1mS8uVvoJ/ArcGIS/rest/services/Diesel_WFL1/FeatureServer/1/query",
+      "parameters": {
+        "geometry": [-121.30363247299, 37.9838255374783],
+        "geometryType": "esriGeometryPoint",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "outFields": ["APN", "APN_CHR", "POLY_CODE"],
+        "returnGeometry": true,
+        "outSR": 4326,
+        "resultRecordCount": 3
+      },
+      "outcome": "HTTP 200 GeoJSON; one polygon returned, canonical APN_CHR 11512305."
+    },
+    {
+      "request": "official Assessor parcel-map page",
+      "method": "GET",
+      "url": "https://www.sjgov.org/department/assessor/property-information/homeowners/parcel-maps",
+      "outcome": "HTTP 200; confirms online Assessor parcel maps and links the GIS interactive map and parcel information."
+    },
+    {
+      "request": "official Surveyor Land Records System page",
+      "method": "GET",
+      "url": "https://www.sjgov.org/department/pwk/surveyor/land-records-system",
+      "outcome": "HTTP 200; confirms public parcel-map, survey and subdivision-map records."
+    }
+  ],
+  "scopeLimits": [
+    "Only a bounded exact-point intersection was queried; no citywide completeness claim is made.",
+    "The layer extent covers the Stockton region but was not treated as proof of every municipal boundary or current parcel update.",
+    "Official map disclaimers mean this research sample is not a legal survey or title record."
+  ],
+  "safeFieldAllowlist": ["APN_CHR", "APN", "POLY_CODE", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax", "account", "assessment details"],
+  "sample": {
+    "file": "stockton-parcel-sample.geojson",
+    "featureCount": 1,
+    "propertiesPolicy": "exactly one canonical native identity only: id=11512305",
+    "nativeIdentityProvenance": "APN_CHR returned by the public Parcels layer; FID was not used."
+  },
+  "registryFound": true,
+  "verifiedSample": true,
+  "runtimeReadiness": "held",
+  "uncertainty": "A successful point hit and official parcel/GIS custody establish a relevant public source, but independent serial review is still required for adapter qualification, coverage, update behavior and legal accuracy."
+}

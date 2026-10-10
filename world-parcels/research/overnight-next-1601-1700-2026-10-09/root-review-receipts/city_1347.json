@@ -1,0 +1,28 @@
+{
+  "taskId": "city:1347",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-1347-chimbote.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/chimbote-service-review.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-10T11:35:25Z",
+  "reason": "Municipal/COFOPRI Catastro Virtual custody and SUNARP BGR access requirement are confirmed; no anonymous native parcel ID or full polygon response is evidenced.",
+  "firstPartyChecks": [
+    {
+      "url": "https://www.gob.pe/institucion/munisanta/noticias/618677-municipalidad-del-santa-y-cofopri-firman-convenio-para-diagnostico-saneamiento-de-pueblos-y-titulacion",
+      "httpStatus": 200,
+      "finding": "Municipal/COFOPRI agreement and Catastro Virtual access confirmed in fresh HTTP 200 HTML."
+    },
+    {
+      "url": "https://www.gob.pe/institucion/sunarp/noticias/983798-red-de-la-oea-destaca-que-6-millones-de-peruanos-acceden-por-1ra-vez-a-imagenes-de-predios-gracias-a-base-grafica-de-la-sunarp",
+      "httpStatus": 200,
+      "finding": "Official SUNARP page confirms BGR and DNI/date-of-issue access in fresh HTML."
+    }
+  ],
+  "qualification": "No fresh native-ID feature read, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification; runtime admission remains unqualified.",
+  "polygonSampleCount": 0,
+  "custody": "true: first-party institutional evidence; public geometry and citywide coverage unresolved, not absent",
+  "identity": "2025 code, rank, country, point, and persons checked against cohort queue and original WUP archive; English and local-language query records checked."
+}

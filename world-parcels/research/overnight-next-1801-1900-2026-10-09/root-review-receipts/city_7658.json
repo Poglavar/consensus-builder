@@ -1,0 +1,21 @@
+{
+  "taskId": "city:7658",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-7658-rajon-swerdlowski.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/rajon-swerdlowski-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T17:55:37Z",
+  "registryFound": true,
+  "reason": "Krasnoyarsk/Rosreestr custody evidenced; NSPD viewer timed out and no native-ID polygon response or independent adapter qualification exists.",
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

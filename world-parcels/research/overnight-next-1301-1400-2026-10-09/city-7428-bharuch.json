@@ -1,0 +1,80 @@
+{
+  "cityCode": 7428,
+  "queueRank": 1371,
+  "name": "Bharuch",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [21.7116033025565, 72.9969026348176],
+  "population2025": 411095,
+  "population2025k": 411.095,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": null,
+  "registryAssessment": "Official Bharuch district pages establish Gujarat land-records administration, including cadastral survey basis, E-Dhara records, District Inspector Land Records, and City Survey offices. No anonymous safe public parcel geometry response with a stable native identity was verified in this attempt, so local registry presence is not converted into an admitted runtime source.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bharuch India official cadastral map land parcels GIS Gujarat government",
+        "result": "Found the official Bharuch district Land Records/E-Dhara page, SLR page, Gujarat Revenue Department online-services page, and national map-service references. The official material describes land records and cadastral administration but does not expose a safe anonymous parcel-vector response.",
+        "actualResultUrls": [
+          "https://bharuch.nic.in/service/land-records/",
+          "https://bharuch.nic.in/slr/",
+          "https://revenuedepartment.gujarat.gov.in/iora-service",
+          "https://mapservice.gov.in/"
+        ]
+      },
+      {
+        "language": "Gujarati",
+        "query": "ભરૂચ ગુજરાત સત્તાવાર જમીન નકશો કેડાસ્ટ્રલ પાર્સલ સરકારી",
+        "result": "Found the official Gujarati Bharuch district portal, whose navigation identifies Superintendent Land Records, District Inspector Land Records, City Survey Office, and land-record services. No public anonymous parcel ID-plus-geometry response was exposed by the reviewed first-party pages.",
+        "actualResultUrls": [
+          "https://bharuch.nic.in/gu/",
+          "https://bharuch.nic.in/service/land-records/",
+          "https://revenuedepartment.gujarat.gov.in/iora-service"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://bharuch.nic.in/service/land-records/",
+      "role": "Official Bharuch district land-records page",
+      "observation": "States that cadastral survey was completed for Gujarat and forms the basis of land records; describes E-Dhara services and links AnyRoR for VF6, VF7 survey-number, and VF8A records. No parcel-vector API was exposed in the page content."
+    },
+    {
+      "url": "https://bharuch.nic.in/slr/",
+      "role": "Official Bharuch Superintendent Land Records page",
+      "observation": "Names District Inspector Land Records Bharuch, City Survey Officer Bharuch, and City Survey Superintendent Office Ankleshwar; establishes local cadastral custodial context without exposing parcel geometry."
+    },
+    {
+      "url": "https://bharuch.nic.in/gu/",
+      "role": "Official Bharuch Gujarati-language district portal",
+      "observation": "Gujarati navigation identifies land-record and local land-record offices, including Superintendent Land Records, District Inspector Land Records, and City Survey Office."
+    },
+    {
+      "url": "https://revenuedepartment.gujarat.gov.in/iora-service",
+      "role": "Official Gujarat Revenue Department service index",
+      "observation": "Lists Gujarat government links for AnyRoR rural records, E-Milkat property cards, Land Records, and IORA revenue applications. No anonymous parcel geometry response was provided by the index page."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No safe native parcel ID plus full polygon was obtained from an anonymous bounded response. AnyRoR and E-Milkat were not reachable within the request timeout from this environment; no login, CAPTCHA, credential, unsafe property lookup, or TLS bypass was attempted."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Gujarat land-record and cadastral administration, with Bharuch district and city-survey offices identified by official district sources.",
+    "verifiedOpenScope": "Official local custodial context and public service links were verified; citywide parcel-vector access, native schema/identity, CRS, exact-point containment, and open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

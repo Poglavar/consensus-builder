@@ -1,0 +1,15 @@
+{
+  "taskId": "city:4458",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-4458-maturin.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/maturin-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261009T114700-1f790333/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-09T11:51:28Z",
+  "review": "No verified fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel check. No adapter admission.",
+  "reason": "Immutable code 4458, rank 1231, Venezuela, [9.73302840745386,-63.1841133113144], 452835 persons match roster and queue. English and Spanish web searches are recorded as executed. The ordinance is hosted by a mirror and municipal office reporting is secondary; no first-party municipal response, native ID, or polygon was saved, so the packet’s registryFound=true requires stronger first-party corroboration before reliance. Worker command used curl -k although packet/review state TLS verification enabled; no success metric rests on those failed probes. Timeout/DNS failure is not citywide absence."
+}

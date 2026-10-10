@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:1023",
+  "cityCode": 1023,
+  "wupCityCode": 1023,
+  "name": "Boa Vista",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "iso2": "BR",
+  "iso3": "BRA",
+  "rank": 1585,
+  "queueRank": 1585,
+  "point": [2.81557899522809, -60.7186704603058],
+  "centerLatLon": [2.81557899522809, -60.7186704603058],
+  "pointBasis": "Exact immutable WUP2025 settlement point; not shifted to force a parcel hit and not a municipal-boundary or coverage claim.",
+  "population2025": 360361,
+  "population2025k": 360.361,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official municipal organizational page identifies the Departamento de Cadastro Imobiliário (DCI) under the municipal planning, finance and information-technology secretariat. Official citizen-service pages document cadastro imobiliário, cadastral-limits certificates, and lot registration. This is local custody evidence, not open citywide parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://boavista.rr.gov.br/prefeitura/secretarias-e-orgaos-municipais/secretaria-municipal-de-planejamento-orcamento-financas-e-tecnologia-da-informacao",
+    "https://cidadao.boavista.rr.gov.br/servicos/certidao-de-cadastro-com-limites-e-metragens/show",
+    "https://cidadao.boavista.rr.gov.br/servicos/cadastramento-de-lote/show"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The current official municipal cartographic page exposes only 2016 and 2020 base-cartography PDF downloads. The municipal cadastral services are request/certificate workflows and do not expose a safe anonymous parcel feature response. The linked Matricula Online application is an education-enrollment application, not a cadastral viewer; its public shell exposes an authentication API and no parcel route was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "local_cadastral_custody_no_public_parcel_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "Official Boa Vista municipal cadastral custodian, citizen-service pages, municipal cartographic page, and linked public application shell.",
+    "verifiedOpenScope": "Municipal administrative custody and downloadable base-cartography PDFs only; no anonymous complete-polygon parcel response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Boa Vista Roraima official cadastral parcel map GIS real estate cadastre municipal",
+        "scope": "Find an official local cadastral custodian and a safe public parcel-geometry route.",
+        "result": "Search found the official Boa Vista municipal map page, municipal cadastral service pages, the DCI organizational page, and the linked Matricula Online application. No official public parcel viewer or anonymous parcel ID-plus-geometry endpoint was verified.",
+        "actualResultUrls": [
+          "https://boavista.rr.gov.br/mapa-cartografico",
+          "https://boavista.rr.gov.br/prefeitura/secretarias-e-orgaos-municipais/secretaria-municipal-de-planejamento-orcamento-financas-e-tecnologia-da-informacao",
+          "https://cidadao.boavista.rr.gov.br/servicos/certidao-de-cadastro-com-limites-e-metragens/show",
+          "https://boavista.rr.gov.br/matriculaonline"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "Portuguese (Brazil)",
+        "query": "Boa Vista Roraima cadastro imobiliário mapa parcelário geoprocessamento prefeitura",
+        "scope": "Independent local-language discovery for municipal cadastral mapping and parcel geometry.",
+        "result": "Search found the official Departamento de Cadastro Imobiliário, cadastro imobiliário service catalog, certificate-with-limits service, lot-registration service, and official Mapa Cartográfico. The map page links only BASE_GERAL_2016.pdf and BASE_GERAL_2020.pdf; no parcel feature service or safe anonymous ID-plus-geometry response was exposed.",
+        "actualResultUrls": [
+          "https://boavista.rr.gov.br/prefeitura/secretarias-e-orgaos-municipais/secretaria-municipal-de-planejamento-orcamento-financas-e-tecnologia-da-informacao",
+          "https://cidadao.boavista.rr.gov.br/?grupo=3",
+          "https://cidadao.boavista.rr.gov.br/servicos/cadastramento-de-lote/show",
+          "https://boavista.rr.gov.br/mapa-cartografico",
+          "https://boavista.rr.gov.br/storage/paginas/mapa-cartografico/BASE_GERAL_2016.pdf",
+          "https://boavista.rr.gov.br/storage/paginas/mapa-cartografico/BASE_GERAL_2020.pdf"
+        ],
+        "executionMethod": "Separate Brazilian-Portuguese web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "The municipal cadastral database, native parcel identity field, schema, CRS, API access policy, and citywide coverage remain unverified. A map extent miss, unavailable UI, login/authentication route, or absent public feature endpoint is not evidence of citywide absence. No coordinate was shifted.",
+  "nextStep": "Serial reviewer may independently qualify a public municipal parcel service or adapter; do not enable runtime from this packet alone."
+}

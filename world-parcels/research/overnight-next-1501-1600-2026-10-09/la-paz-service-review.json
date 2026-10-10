@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-1122-la-paz.json",
+  "purpose": "Document first-party municipal registry/map discovery, current viewer configuration, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "The official Ayuntamiento site establishes municipal Dirección General de Catastro custody. The current Visor Urbano JavaScript configures GeoServer layer cartografia:predios2 at geoserverb.lapaz.gob.mx. A bounded anonymous WFS request returned three Polygon features with safe numeric id and complete geometry in EPSG:4326.",
+  "registryAssessment": "Local municipal cadastral custody found. The municipal viewer is distinct from general national agency prose; its public WFS geometry establishes an open local map route, not citywide completeness.",
+  "officialPrimarySources": [
+    {"url": "https://www.lapaz.gob.mx/catalogo-tramites-servicios/0034", "observation": "Official Ayuntamiento catalog lists Dirección General de Catastro and cadastral registration, certificates, surveying, and parcel-key procedures."},
+    {"url": "https://noticias.lapaz.gob.mx/milena-quiroga-presenta-el-visor-urbano-una-herramienta-digital-de-transparencia-y-desarrollo-urbano/", "observation": "Official municipal news page describes Visor Urbano as a public geospatial map including cadastral information."},
+    {"url": "https://visorurbano.lapaz.gob.mx/", "observation": "Current public viewer inspected; JavaScript configuration names the cadastral layer and GeoServer endpoint."}
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://visorurbano.lapaz.gob.mx/",
+    "observedLayer": "cartografia:predios2",
+    "observedServiceUrl": "https://geoserverb.lapaz.gob.mx/geoserver/cartografia/ows",
+    "observedVendor": "GeoServer",
+    "observedLayerDescription": "Municipal cadastral parcel layer rendered by the Visor Urbano public map.",
+    "schemaAndCrs": "DescribeFeatureType returned geom plus source fields; the bounded GetFeature response requested srsName=EPSG:4326 and returned GeoJSON geometry in longitude/latitude order.",
+    "nativeFieldNames": ["geom", "id", "clave_catastral", "clave_anterior", "num_de_folio", "vialidad_principal", "lote", "manzana", "colonia", "poblacion"],
+    "sourceFieldMapping": {"id": "stable numeric source parcel id", "geom": "complete parcel polygon geometry"},
+    "compositeKeyProvenance": "Not used; source numeric id was present in the bounded response and retained as the sole canonical sample identity.",
+    "safeFieldAllowlist": ["stable numeric native parcel id", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://visorurbano.lapaz.gob.mx/", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200; public viewer HTML returned."},
+    {"url": "https://visorurbano.lapaz.gob.mx/build/assets/Welcome-DHIWGiLJ.js", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200; current JavaScript inspected and cartografia:predios2 plus GeoServer WMS/feature-info configuration identified."},
+    {"url": "https://geoserverb.lapaz.gob.mx/geoserver/cartografia?service=WFS&request=GetCapabilities", "method": "GET", "normalTlsVerification": true, "result": "HTTP 404 HTML; workspace-root capabilities route unavailable."},
+    {"url": "https://geoserverb.lapaz.gob.mx/geoserver/cartografia/ows?service=WFS&request=GetCapabilities", "method": "GET", "normalTlsVerification": true, "result": "Not used for retention after the working OWS route was identified; no capability document retained."},
+    {"url": "https://geoserverb.lapaz.gob.mx/geoserver/cartografia/ows?service=WFS&version=1.0.0&request=DescribeFeatureType&typename=cartografia:predios2&outputFormat=application/json", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 JSON; schema returned geom and source attributes. No raw schema payload retained in the cohort packet."},
+    {"url": "https://geoserverb.lapaz.gob.mx/geoserver/cartografia/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=cartografia:predios2&outputFormat=application/json&srsName=EPSG:4326&bbox=-110.31200709561,24.1194845987258,-110.30800709561001,24.1234845987258,EPSG:4326&maxFeatures=3&propertyName=id,geom", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 GeoJSON; numberReturned=3; complete Polygon geometries and ids 78376, 78377, and 77368 returned. The bbox encloses the exact WUP point without moving it; only id and geom were requested."}
+  ],
+  "geometryDecision": "Retain one sample GeoJSON with exactly three full Polygon features and exactly one canonical property per feature: id as a string.",
+  "geometryEvidence": {"sampleFile": "la-paz-parcel-samples.geojson", "featureCount": 3, "query": "Bounded EPSG:4326 bbox around the exact WUP point; maxFeatures=3; propertyName=id,geom."},
+  "coverageAssessment": {"claimedScope": "Municipal La Paz cadastral viewer and bounded local WFS response.", "verifiedOpenScope": "Three parcel polygons returned from cartografia:predios2 near the WUP point.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": true},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "The successful sample does not establish full municipal coverage, update date, or adapter semantics. Source schema includes sensitive descriptive fields, but the retained request and sample excluded them.",
+  "runtimeAssessment": {"status": "held", "reason": "Serial reviewer must independently qualify the adapter and safe field mapping before runtime admission."}
+}

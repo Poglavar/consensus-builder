@@ -1,0 +1,14 @@
+{
+  "taskId": "city:10978",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-10978-gaozhou.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/gaozhou-service-review.json",
+    "tmp/valhalla-parcel-research/10978/index.js",
+    "tmp/valhalla-parcel-research/10978/ggdt.html"
+  ],
+  "checkedAt": "2026-10-09T13:07:01Z",
+  "reason": "Queue identity matches. Paired English and Chinese searches and cached official viewer/config evidence expose a general public map and administrative VectorTileServer, without a verified Gaozhou parcel layer or native-ID polygon. Registry custody remains unresolved; adapter qualification is absent."
+}

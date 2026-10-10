@@ -1,0 +1,19 @@
+{
+  "taskId": "packet:8617",
+  "decision": "held",
+  "checkedAt": "2026-10-09T13:08:40Z",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-8617-jiangyang.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/jiangyang-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261009T114700-4de8711c/stdout.jsonl",
+    "tmp/valhalla-parcel-research/8617/luzhou.headers",
+    "tmp/valhalla-parcel-research/8617/jiangyang.headers",
+    "tmp/valhalla-parcel-research/8617/luzhou.html",
+    "tmp/valhalla-parcel-research/8617/jiangyang.html"
+  ],
+  "reason": "WUP code 8617, rank 1232, China, exact point [28.9293929790689,105.441729966685] and 452500 persons match the immutable roster and pending queue. The worker log confirms executed English and Simplified Chinese searches. Official government-service references support local registration custody, but original direct municipal and district responses are CloudWAF HTTP 418 access blocks. No anonymous parcel feature response, safe native ID, or full polygon was saved. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are absent. The access block and lack of an exact-point read cannot establish citywide parcel absence; no admission."
+}

@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-5163-batna.json",
+  "purpose": "Document first-party discovery, local registry context, official map-viewer review, and bounded anonymous parcel geometry access.",
+  "assessment": "Batna has a locally named Wilaya cadastre directorate, but the bounded review did not verify a public parcel vector endpoint, viewer schema, CRS, safe native parcel identity, or geometry. The official ASGA viewer is general 1:200,000 cartography rather than an evidenced parcel layer.",
+  "registryAssessment": "Local custodian evidence is the Batna Wilaya cadastre directorate listing. The Algerian cadastre authority domain was identified, while the official national ASGA map viewer provides general cartography. No local Batna parcel API or public cadastral map layer was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.an-cadastre.dz/",
+      "observation": "National cadastre authority domain surfaced in the Batna local directorate listing; ordinary HTTPS DNS resolution from the research host failed, so no current JavaScript/configuration or API route could be inspected."
+    },
+    {
+      "url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+      "observation": "Official ASGA InfoGéolAlgérie viewer identified by search as Cartographie à 1/200 000, with Wilaya and Communes layers. It is general cartography, not a verified cadastral parcel layer; the ordinary request timed out."
+    },
+    {
+      "url": "https://www.africabizinfo.com/ar-DZ/%D9%85%D8%AF%D9%8A%D8%B1%D9%8A%D8%A9-%D9%85%D8%B3%D8%AD-%D8%A7%D9%84%D8%A3%D8%B1%D8%A7%D8%B6%D9%8A-%D9%84%D9%88%D9%84%D8%A7%D9%8A%D8%A9-%D8%A8%D8%A7%D8%AA%D9%86%D8%A9",
+      "observation": "Directory listing names the Direction de مسح الأراضي لولاية باتنة, gives a Batna location and phone, and links an-cadastre.dz. Used only as local custodian evidence; no parcel data retained."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Batna Algeria official cadastral map parcel cadastre service",
+      "result": "Found the national cadastre domain, a local Batna cadastre-directorate listing, and the ASGA general map viewer; no public parcel vector response was found.",
+      "method": "Separate English discovery search followed by official-source review.",
+      "actualResultUrls": ["https://www.an-cadastre.dz/", "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx", "https://www.africabizinfo.com/ar-DZ/%D9%85%D8%AF%D9%8A%D8%B1%D9%8A%D8%A9-%D9%85%D8%B3%D8%AD-%D8%A7%D9%84%D8%A3%D8%B1%D8%A7%D8%B6%D9%8A-%D9%84%D9%88%D9%84%D8%A7%D9%8A%D8%A9-%D8%A8%D8%A7%D8%AA%D9%86%D8%A9"]
+    },
+    {
+      "language": "French/Arabic",
+      "query": "Algérie Batna cadastre carte parcellaire service officiel / باتنة الجزائر مسح الأراضي خريطة عقارية موقع رسمي",
+      "result": "Les résultats ont confirmé la direction locale du cadastre et le visualiseur national général; aucune géométrie parcellaire anonyme sûre n'a été vérifiée.",
+      "method": "Separate French/Arabic discovery search followed by official-source review.",
+      "actualResultUrls": ["https://www.an-cadastre.dz/", "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx", "https://www.africabizinfo.com/ar-DZ/%D9%85%D8%AF%D9%8A%D8%B1%D9%8A%D8%A9-%D9%85%D8%B3%D8%AD-%D8%A7%D9%84%D8%A3%D8%B1%D8%A7%D8%B6%D9%8A-%D9%84%D9%88%D9%84%D8%A7%D9%8A%D8%A9-%D8%A8%D8%A7%D8%AA%D9%86%D8%A9"]
+    }
+  ],
+  "attempts": [
+    {"url": "https://www.an-cadastre.dz/", "method": "GET", "result": "Failed before HTTP response because the research host could not resolve www.an-cadastre.dz; no retry, login, credentials, or TLS bypass used."},
+    {"url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx", "method": "GET", "result": "Ordinary anonymous HTTPS request timed out; search-rendered viewer description identifies only 1:200,000 general cartography. No viewer JavaScript, service URL, schema, CRS, ID, or geometry response obtained."},
+    {"url": "https://www.africabizinfo.com/ar-DZ/%D9%85%D8%AF%D9%8A%D8%B1%D9%8A%D8%A9-%D9%85%D8%B3%D8%AD-%D8%A7%D9%84%D8%A3%D8%B1%D8%A7%D8%B6%D9%8A-%D9%84%D9%88%D9%84%D8%A7%D9%8A%D8%A9-%D8%A8%D8%A7%D8%AA%D9%86%D8%A9", "method": "GET/search review", "result": "Local office listing reviewed for custodian evidence only; no data request made."}
+  ],
+  "requests": [
+    {"url": "https://www.an-cadastre.dz/", "requestType": "anonymous GET", "outcome": "DNS resolution failure"},
+    {"url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx", "requestType": "anonymous GET", "outcome": "timeout"}
+  ],
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Not performed because no parcel-capable public service was reached; exact-point miss is not inferred as citywide absence.", "requestEvidence": []},
+  "coverageAssessment": {
+    "claimedScope": "The local Batna cadastre directorate is evidenced, while the inspected ASGA viewer is general 1:200,000 cartography. No citywide parcel coverage is claimed.",
+    "verifiedOpenScope": "No safe anonymous parcel ID-plus-geometry response was verified. No parcel attributes, owner/address data, or raw source attribute sets were retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier only", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "The official cadastral authority's current public interfaces, parcel layer availability, CRS, schema, and Batna city coverage remain unverified because the authority domain failed DNS resolution and the general ASGA viewer timed out.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter.",
+  "geometryEvidence": null
+}

@@ -1,0 +1,11 @@
+{
+  "taskId": "city:3427",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-3427-sandakan.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/sandakan-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T16:14:53.914128Z",
+  "reason": "Sabah JTU and Sandakan survey office custody are supported; JTUWMA Pro requires sign-in, with no anonymous polygon or native ID read."
+}

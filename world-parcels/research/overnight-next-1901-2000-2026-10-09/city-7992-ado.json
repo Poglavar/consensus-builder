@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 7992,
+  "queueRank": 1907,
+  "name": "Ado",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "iso3": "NGA",
+  "point": [9.01318520398413, 7.609646857001],
+  "population2025": 300622,
+  "population2025k": 300.622,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ado Nasarawa Nigeria official cadastral parcel GIS land registry map",
+        "result": "Found the official Nasarawa Geographic Information Service (NAGIS), which states that it is the state’s official GIS data source and hosts digital land administration; its official site lists a Karo service office in Ado, Nasarawa. No public parcel viewer or downloadable parcel geometry endpoint was identified.",
+        "actualResultUrls": [
+          "https://nagis.na.gov.ng/",
+          "https://www.nagis.na.gov.ng/about-us",
+          "https://nasarawastate.gov.ng/map-of-nasarawa-state/"
+        ]
+      },
+      {
+        "language": "Hausa (local-language discovery query; Nigeria’s federal official language is English)",
+        "query": "Ado Nasarawa taswirar filaye cadastral rajistar fili na hukuma",
+        "result": "The discovery results again led to the official NAGIS Nasarawa GIS/land-administration site and did not identify a separate Hausa-language parcel service or public geometry endpoint.",
+        "actualResultUrls": [
+          "https://nagis.na.gov.ng/",
+          "https://www.nagis.na.gov.ng/about-us"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.nagis.na.gov.ng/about-us",
+      "operator": "Nasarawa Geographic Information Service (NAGIS), Nasarawa State Government",
+      "evidence": "NAGIS describes itself as a Nasarawa State Government agency, the only official GIS data source for the state, and the host of digital land-administration matters."
+    },
+    {
+      "url": "https://nagis.na.gov.ng/",
+      "operator": "Nasarawa Geographic Information Service (NAGIS)",
+      "evidence": "Official site describes a GIS/Land Administration System and lists the NAGIS Karo service office at Mararaban Gurku, Abuja–Keffi Expressway, Ado, Nasarawa."
+    },
+    {
+      "url": "https://nagis.na.gov.ng/how-to-register-land",
+      "operator": "Nasarawa Geographic Information Service (NAGIS)",
+      "evidence": "Official registration procedure says survey data are captured in the GIS cadastral system and allocated to the land-information system; it is procedural evidence, not an open parcel API."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {"url": "https://nagis.na.gov.ng/", "method": "GET", "status": 200, "summary": "Official NAGIS homepage retrieved over verified TLS."},
+    {"url": "https://www.nagis.na.gov.ng/about-us", "method": "GET", "status": 200, "summary": "Official custody and GIS/land-administration description retrieved."},
+    {"url": "https://nagis.na.gov.ng/how-to-register-land", "method": "GET", "status": 200, "summary": "Official property-registration procedure retrieved; no public geometry request route exposed."},
+    {"url": "https://nagis.na.gov.ng/SRO-application", "method": "GET", "status": 200, "summary": "Public registration page retrieved; it embeds a Google Form and is not an anonymous parcel viewer/API."},
+    {"url": "https://nagis.na.gov.ng/robots.txt", "method": "GET", "status": 200, "summary": "Robots file retrieved; no parcel service endpoint identified."},
+    {"url": "https://nagis.na.gov.ng/sitemap.xml", "method": "GET", "status": 404, "summary": "No sitemap endpoint."},
+    {"url": "https://nagis.na.gov.ng/api", "method": "GET", "status": 404, "summary": "No public API route at this path."},
+    {"url": "https://nagis.na.gov.ng/map", "method": "GET", "status": 404, "summary": "No public map route at this path."},
+    {"url": "https://nagis.na.gov.ng/viewer", "method": "GET", "status": 404, "summary": "No public viewer route at this path."},
+    {"url": "https://nagis.na.gov.ng/gis", "method": "GET", "status": 404, "summary": "No public GIS route at this path."}
+  ],
+  "sourceIdentity": {
+    "nativeIdField": null,
+    "fallbackOidField": null,
+    "compositeKey": null,
+    "fieldMapping": {},
+    "crs": null,
+    "geometryType": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Nasarawa State digital land administration and GIS, with an official NAGIS service office listed in Ado.",
+    "verifiedOpenScope": "Official custodian and cadastral workflow were verified; no open parcel geometry response was available for Ado.",
+    "countrywideVerified": false,
+    "targetPointHit": null,
+    "targetPointHitInterpretation": "No parcel query was available; no exact-point hit or absence is claimed."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRetained": ["owner", "address", "contact", "titleholder", "tax", "account", "legal description", "application records"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_local_custodian_no_public_parcel_endpoint_verified",
+  "remainingUncertainty": "NAGIS may provide parcel geometry or identifiers through authenticated, staff-mediated, or unlinked internal systems; none were accessed. Ado’s WUP point was not shifted and no citywide absence is inferred.",
+  "nextStep": "Serial reviewer should independently verify whether NAGIS can expose a safe anonymous parcel service, its native identity field, CRS, Ado coverage, and current access policy before any adapter admission."
+}

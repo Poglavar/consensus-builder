@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10133-pratapgarh.json",
+  "purpose": "Independent first-party registry/map discovery and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "exactPointMissNotInterpretedAsAbsence": true
+  },
+  "assessment": "Uttar Pradesh has a first-party BhuNaksha cadastral viewer and Bhulekh land-record/digitization services. The live viewer exposes public hierarchy and plot routes, but the city-named Pratapgarh village records were marked without map data; the city extent was zero and anonymous point/plot responses were empty. No polygon was retained and runtime remains held.",
+  "registryAssessment": "Local/state custody is evidenced by the Government of Uttar Pradesh BhuNaksha viewer, Bhulekh dashboard and Pratapgarh district administration portal. The Bhulekh dashboard specifically reports Pratapgarh tehsil linked Bhunaksha villages and mapsheet digitization. This is registry/map-program evidence, not proof of an open city parcel feature service.",
+  "officialPrimarySources": [
+    {
+      "url": "https://upbhunaksha.gov.in/",
+      "operator": "Board of Revenue / Government of Uttar Pradesh",
+      "observation": "HTTP 200 current public Angular BhuNaksha viewer; its bundle exposed the observed public hierarchy, extent and plot routes."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=173",
+      "operator": "Government of Uttar Pradesh, Board of Revenue",
+      "observation": "Public digitization report lists Pratapgarh tehsil and linked Bhunaksha villages/mapsheets."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/bhulekh/",
+      "operator": "Government of Uttar Pradesh, Board of Revenue",
+      "observation": "Official Bhulekh land-record portal; no unsafe personal/property lookup was submitted."
+    },
+    {
+      "url": "https://pratapgarh.nic.in/hi/",
+      "operator": "District Pratapgarh, Government of Uttar Pradesh",
+      "observation": "Official district administration portal confirms Pratapgarh district and headquarters context."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Pratapgarh Uttar Pradesh official cadastral parcel map GIS Bhulekh",
+      "result": "Official BhuNaksha, Bhulekh dashboard, Bhulekh portal and district administration sources found; no verified open city parcel geometry was found.",
+      "actualResultUrls": ["https://upbhunaksha.gov.in/", "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=173", "https://upbhulekh.gov.in/bhulekh/", "https://pratapgarh.nic.in/hi/"]
+    },
+    {
+      "language": "Hindi",
+      "query": "प्रतापगढ़ उत्तर प्रदेश आधिकारिक भू नक्शा खसरा नक्शा",
+      "result": "Hindi discovery confirmed the same official services and Pratapgarh cadastral digitization references; no verified open city parcel geometry was found.",
+      "actualResultUrls": ["https://upbhunaksha.gov.in/", "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=173", "https://bor.up.nic.in/?search_key=HOMECENTER", "https://pratapgarh.nic.in/hi/"]
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": "Current official BhuNaksha viewer and bundle inspection",
+      "result": "HTTP 200. Public JavaScript identified hierarchy, map-extent, point and plot-number POST routes. No credentials, token, CAPTCHA or unsafe field request used.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    },
+    {
+      "attempt": "Public administrative hierarchy lookup",
+      "result": "District 173 Pratapgarh and tehsil 00882 प्रतापगढ़ returned. Village lookup returned 158800 प्रतापगढ़ सिटी (अ०) and 216228 प्रतापगढ़ सिटी बाहर; both had hasData=false.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    },
+    {
+      "attempt": "City-named village map extent",
+      "result": "gisLevels=173,00882,158800 returned gisCode 17300882158800, attribution, and zero xmin/ymin/xmax/ymax.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    },
+    {
+      "attempt": "Exact WUP point and bounded plot lookup",
+      "result": "Point request at exact [25.9152575987023,81.98769878421] and plot-number request both returned empty JSON objects. This was recorded as an unusable response, not citywide absence.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    },
+    {
+      "attempt": "Bhulekh dashboard and district custody check",
+      "result": "Official dashboard and district portal were inspected; Pratapgarh tehsil cadastral-map linkage and local government custody were evidenced. No geometry endpoint was inferred from dashboard prose.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    }
+  ],
+  "requests": [
+    {"url": "https://upbhunaksha.gov.in/", "method": "GET", "outcome": "HTTP 200; current HTML and JS cached only under ignored tmp/"},
+    {"url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/levelLabels", "method": "GET", "outcome": "HTTP 200; District/Tehsil/Village"},
+    {"url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue", "method": "POST", "outcome": "HTTP 200 for district, tehsil and village hierarchy requests"},
+    {"url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref", "method": "POST", "outcome": "HTTP 200; zero extent for city-named village 158800"},
+    {"url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotAtXY", "method": "POST", "outcome": "HTTP 200; empty JSON object"},
+    {"url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotByPlotNo", "method": "POST", "outcome": "HTTP 200; empty JSON object"},
+    {"url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=173", "method": "GET", "outcome": "First-party public report found by web search; Pratapgarh tehsil digitization/linkage reported"},
+    {"url": "https://upbhulekh.gov.in/bhulekh/", "method": "GET", "outcome": "First-party Bhulekh portal found; no property lookup attempted"},
+    {"url": "https://pratapgarh.nic.in/hi/", "method": "GET", "outcome": "First-party district portal found"}
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": false,
+    "sampleFile": null,
+    "details": "No safe full parcel polygon and no verified stable native parcel identity were obtained. No exact-point hit or miss was used to infer coverage."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Uttar Pradesh BhuNaksha, Bhulekh cadastral digitization dashboard, Bhulekh portal and Pratapgarh district administration sources.",
+    "verifiedOpenScope": "Official hierarchy, public map routes, city-named village no-data flags, zero extent and empty anonymous plot responses; no parcel geometry, schema or CRS.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel or survey identifier", "geometry", "CRS", "source layer/service metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax/account", "registration or encumbrance details"],
+  "remainingUncertainty": "Coverage may vary by revenue village and the city-named records may be administrative/no-map entries. The service may expose geometry through another official village code or after map-data publication; this review did not infer absence from the zero extent or exact-point miss.",
+  "runtimeDecision": "held_not_enabled_no_verified_public_geometry"
+}

@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10819,
+  "cityId": "wup2025:10819",
+  "queueRank": 1483,
+  "name": "Eluru",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [16.7087221660549, 81.1059717333012],
+  "centerLatLon": [16.7087221660549, 81.1059717333012],
+  "population2025": 383068,
+  "population2025k": 383.068,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted",
+  "nativeIdReadiness": "not_ready_no_verified_parcel_response",
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Eluru Andhra Pradesh official cadastral parcel map GIS land records survey parcels",
+        "result": "Official Andhra Pradesh Bhunaksha, Eluru district land-records page, DILRMP Eluru district cadastral status, official Eluru municipal GIS page, and APSAC GIS lead found. No anonymous parcel feature response was established.",
+        "actualResultUrls": [
+          "https://bhunaksha.ap.gov.in/",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/805",
+          "https://eluru.ap.gov.in/service/land-records/",
+          "https://eluru.cdma.ap.gov.in/ulbprofile/eluru/gis-map/",
+          "https://apsac.ap.gov.in/"
+        ]
+      },
+      {
+        "language": "Telugu",
+        "query": "ఏలూరు ఆంధ్రప్రదేశ్ భూ నక్షా కడాస్ట్రల్ పార్సెల్ మ్యాప్ భూమి రికార్డులు",
+        "result": "Search returned the official Andhra Pradesh Bhunaksha cadastral-mapping site and official Eluru district portal; no city-scoped anonymous parcel geometry endpoint was found.",
+        "actualResultUrls": [
+          "https://bhunaksha.ap.gov.in/",
+          "https://eluru.ap.gov.in/",
+          "https://eluru.ap.gov.in/service/land-records/"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://bhunaksha.ap.gov.in/",
+      "operator": "Government of Andhra Pradesh, Department of Survey, Settlements and Land Records",
+      "observation": "Official portal describes Bhunaksha as Andhra Pradesh cadastral mapping software integrated with land records and geo-referenced spatial data. Direct GET timed out during this attempt, so no current JavaScript/configuration or parcel response could be inspected."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/805",
+      "operator": "Government of India, Department of Land Resources",
+      "observation": "Search-indexed official page is scoped to Andhra Pradesh, Eluru district and reports cadastral-map, digitization, geo-referencing and land-parcel status fields. It is district/tehsil status evidence, not proof of an open Eluru-city geometry service."
+    },
+    {
+      "url": "https://eluru.ap.gov.in/service/land-records/",
+      "operator": "Eluru District Administration / NIC",
+      "observation": "Official local district land-records route exists, but the current page is a placeholder pointing to example.com and provides no usable map or API."
+    },
+    {
+      "url": "https://eluru.cdma.ap.gov.in/ulbprofile/eluru/gis-map/",
+      "operator": "Andhra Pradesh Commissioner & Director of Municipal Administration",
+      "observation": "Official Eluru municipal GIS page exposes a city map and Sachivalayam list UI. It does not advertise a cadastral/parcel layer in the HTML."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://bhunaksha.ap.gov.in/",
+      "method": "GET",
+      "status": "timeout after 20 seconds",
+      "summary": "TLS/HTTP response was not obtained; timeout is not treated as absence of coverage."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/805",
+      "method": "GET via official search result/open",
+      "status": "official search result found; direct open timed out",
+      "summary": "Search result identifies Andhra Pradesh / Eluru district cadastral-map and land-parcel status fields; no geometry was requested or copied."
+    },
+    {
+      "url": "https://eluru.ap.gov.in/service/land-records/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official page returned a placeholder link to example.com; no land-record service endpoint was usable."
+    },
+    {
+      "url": "https://eluru.cdma.ap.gov.in/ulbprofile/eluru/gis-map/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Current JavaScript/configuration inspected. UI is a municipal base-map/Sachivalayam locator, not a parcel viewer."
+    },
+    {
+      "url": "https://apcmms.ap.gov.in/apiv1/open/ulbs",
+      "method": "GET",
+      "status": "HTTP 200 JSON",
+      "summary": "Anonymous public catalog returned Eluru as ulb_id 89, display name ELURU, Telugu name ఏలూరు, and municipality center 16.71011,81.09464. This is municipal metadata, not parcel geometry."
+    },
+    {
+      "url": "https://apcmms.ap.gov.in/apiv1/external/ulb/89/fetch/sachivalayam/data",
+      "method": "GET",
+      "status": "HTTP 404 JSON",
+      "summary": "Anonymous current municipal map data route returned Requested data file not found. No geometry or fields were retained."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Andhra Pradesh state cadastral mapping platform and Eluru district land-record modernization status; municipal map coverage is limited to the published city-map/Sachivalayam UI.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "citywideParcelGeometryVerified": false
+  },
+  "safeFieldAllowlist": ["id", "geometry", "source", "crs", "layer", "retrievedAt"],
+  "sourceFields": null,
+  "crs": null,
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "No anonymous, city-scoped parcel geometry and native parcel identity were verified. The official state cadastral portal timed out; the official local land-record page is a placeholder; and the municipal map endpoint exposes only a Sachivalayam locator whose current data route returned 404.",
+  "remainingUncertainty": "Eluru district cadastral maps and land parcels are evidenced by official DILRMP status material, and Andhra Pradesh operates an official Bhunaksha platform, but city-level public geometry availability, schema, CRS and native IDs remain unverified. No absence of cadastral records is inferred.",
+  "nextStep": "Retry the official Bhunaksha portal when reachable, follow its current anonymous viewer configuration, and request only a bounded Eluru-area geometry-plus-safe-ID response. Validate CRS and location before considering adapter qualification.",
+  "identityPolicy": "Retain only stable native parcel identities; never substitute internal row numbers. No GeoJSON sample is retained because no safe native parcel identity and geometry were verified.",
+  "registryBasis": "Official Andhra Pradesh Bhunaksha identifies the state cadastral-mapping custodian, the official Eluru district land-records route identifies the local district administration, and DILRMP provides Eluru-district cadastral status evidence. These establish relevant registry/cadastral custody, not an open city parcel API."
+}

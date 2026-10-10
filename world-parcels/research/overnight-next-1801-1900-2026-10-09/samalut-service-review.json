@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-4657-samalut.json",
+  "cohort": "overnight-next-1801-1900-2026-10-09",
+  "purpose": "Document Samalut cadastral/mapping custody discovery and bounded anonymous official-service checks without treating unavailable or non-parcel responses as citywide absence.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Egypt has an official national cadastral/mapping custodian in the Egyptian Survey Authority, and an official national ArcGIS service was reachable. The inspected ArcGIS service exposes Building/CITY/CENTER/STATE/Equipments rather than parcels; a bounded Building query returned an ArcGIS 400 error. No Samalut parcel response, safe native parcel identity, parcel schema, CRS, or citywide open coverage was verified. registryFound remains null because no city/local parcel registry, cadastral map, or procedure specifically evidencing Samalut was established; general national-agency prose is not local custody evidence. Runtime readiness remains held.",
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Samalut Egypt official cadastral map parcels GIS land registry Egyptian Survey Authority",
+      "actualResultUrls": ["https://www.esa.gov.eg/main.aspx", "https://www.esa.gov.eg/services.aspx", "https://www.esa.gov.eg/sellingmaproomdigital.aspx", "https://www.egis.idsc.gov.eg/server/rest/services/Map/FeatureServer"]
+    },
+    {
+      "language": "Arabic",
+      "query": "سمالوط مصر خريطة كادسترية أراضي جهاز المساحة والسجل العيني بوابة جغرافية رسمية",
+      "actualResultUrls": ["https://www.esa.gov.eg/main2.aspx", "https://www.esa.gov.eg/benya.aspx", "https://www.esa.gov.eg/files/Topographic_Maps.pdf", "https://www.alamiria.com/Sec/TashTxt?id=qq4AnZSMTIE%3D"]
+    }
+  ],
+  "attempts": [
+    "Performed separate English and Arabic discovery queries and recorded actual result URLs.",
+    "Retrieved the official ESA landing page and digital-map service page; these describe mapping/cadastral-record services but expose no anonymous parcel API in the inspected pages.",
+    "Retrieved official Egyptian national ArcGIS FeatureServer metadata; layers were Building, CITY, CENTER, STATE and Equipments, with no parcel layer.",
+    "Retrieved Building layer metadata; it is polygon geometry but not a cadastral parcel layer. No source fields were retained.",
+    "Issued one bounded anonymous geometry query around the unchanged WUP point against the official Building layer with outFields=OBJECTID and returnGeometry=true; HTTP 200 contained an ArcGIS error 400.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, coordinate shift, TLS disablement, or contact was used."
+  ],
+  "geometryEvidence": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No parcel request reached a usable response. The unchanged WUP point [28.3124570979132, 30.7227808637348] was preserved; no exact-point hit, miss, map-extent miss, or citywide absence is inferred.",
+    "identityProvenance": null
+  },
+  "safeFieldAllowlist": ["native parcel ID if later exposed", "geometry", "CRS/layer metadata"],
+  "sourceFieldMapping": null,
+  "nextStep": "Hold for serial review; inspect a later official Samalut/Minya parcel route if identified, and independently qualify any adapter before runtime admission.",
+  "runtimeReadiness": "held_quality_review",
+  "remainingUncertainty": "Samalut-specific local registry custody, current official parcel viewer/API route, parcel schema, CRS, stable native identity, response availability and citywide coverage remain unresolved. A non-parcel national GIS layer and its failed bounded query are not evidence of cadastral absence."
+}

@@ -1,0 +1,67 @@
+{
+  "cityCode": 10388,
+  "queueRank": 1311,
+  "name": "Hanchuan",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [30.6505972534677, 113.840623778221],
+  "population2025": 426922,
+  "population2025k": 426.922,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": true,
+  "registryAssessment": "Official Hubei Natural Resources sources identify Hanchuan Natural Resources and Planning Bureau as the local custodian and describe an existing Hanchuan real-estate registration management platform and a citywide one-map system. No anonymous public parcel ID+geometry endpoint was verified in this attempt.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hanchuan China official cadastral map parcel GIS Hanchuan land registration natural resources",
+        "result": "Search did not identify an English-language Hanchuan parcel API. First-party Hubei results identify the local bureau, an existing registration management platform, and citywide one-map/three-dimensional natural-resource mapping.",
+        "actualResultUrls": ["https://zrzyt.hubei.gov.cn/fbjd/zhengce/qtzdgkwj/202509/t20250923_5777770.shtml", "https://zrzyt.hubei.gov.cn/bmdt/sxdt/202609/t20260911_6012201.shtml"]
+      },
+      {
+        "language": "Chinese",
+        "script": "Simplified Chinese",
+        "query": "汉川市 不动产登记 地图 地籍图 自然资源局",
+        "result": "First-party Hubei results identify 汉川市自然资源和规划局, 汉川市不动产登记中心, and an existing Hanchuan real-estate registration management platform; the sources describe cadastral/registration work but expose no anonymous parcel geometry service.",
+        "actualResultUrls": ["https://zrzyt.hubei.gov.cn/fbjd/zhengce/qtzdgkwj/202509/t20250923_5777770.shtml", "https://zrzyt.hubei.gov.cn/zdwwgk/Zdgk/nzdgzs/150544/z20250421_6845623.aspx?AreaCode=420900", "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdczcjd/202512/t20251212_5832680.shtml"]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://zrzyt.hubei.gov.cn/fbjd/zhengce/qtzdgkwj/202509/t20250923_5777770.shtml",
+      "role": "Hubei Natural Resources official source",
+      "observation": "Names the Hanchuan rivers/lakes registration project, the Hanchuan Natural Resources and Planning Bureau, and use of Hanchuan's existing real-estate registration management platform; this establishes local registry custody but does not publish a public parcel API."
+    },
+    {
+      "url": "https://zrzyt.hubei.gov.cn/bmdt/sxdt/202609/t20260911_6012201.shtml",
+      "role": "Hubei Natural Resources official report",
+      "observation": "Reports Hanchuan's citywide one-map/three-dimensional natural-resource monitoring system and its 1,663 km² coverage; this is non-cadastral monitoring evidence, not an anonymous parcel geometry endpoint."
+    },
+    {
+      "url": "https://zrzyt.hubei.gov.cn/zdwwgk/Zdgk/nzdgzs/150544/z20250421_6845623.aspx?AreaCode=420900",
+      "role": "Hubei official land-acquisition notice issued by Hanchuan Natural Resources and Planning Bureau",
+      "observation": "Confirms the local bureau's land/cadastral procedure context and references survey boundary maps; no downloadable parcel geometry or safe native parcel identity was exposed."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No safe native parcel ID plus full polygon was returned by an anonymous public request. The Hanchuan and bureau hosts reset or failed DNS in the available client; Tianditu public hosts returned HTTP 418 and no parcel schema or geometry. No TLS bypass, credentials, private token, or unsafe owner/address/title fields were used."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Hanchuan local natural-resources/real-estate registration custody and official Hubei-described one-map systems.",
+    "verifiedOpenScope": "Local registry/platform existence and procedural context only; public viewer JavaScript/configuration, parcel layer, CRS, native identity, exact-point containment, and citywide open coverage remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

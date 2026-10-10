@@ -1,0 +1,16 @@
+{
+  "taskId": "city:2098",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-2098-vinnytsia.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/vinnytsia-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/valhalla-parcel-research/vinnytsia/e-land.html",
+    "tmp/valhalla-parcel-research/vinnytsia/kadastr.html",
+    "tmp/valhalla-parcel-research/runs/20261010T100248-b2b04a71/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-10T10:07:16Z",
+  "reason": "Queue code, rank, Ukraine identity, exact point, and 363466-person population match. The worker trace records English and Ukrainian searches. Official municipal and national cadastral services support custody; saved first-party electronic-services HTML links the public cadastral map. Bounded map requests timed out or failed DNS, and no native parcel ID or full polygon was received or retained. Fresh ID reads, paging, 13 cells, metric GEOS checks, source binding, and headed Details verification are unevidenced. Access failures do not establish citywide absence.",
+  "sourceAdmission": "not_admitted"
+}

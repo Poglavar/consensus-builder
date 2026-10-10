@@ -1,0 +1,127 @@
+{
+  "cityCode": 7306,
+  "queueRank": 1608,
+  "name": "Balyana",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "point": [26.2042385877924, 32.0018089946504],
+  "population2025": 354769,
+  "population2025k": 354.769,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Balyana Egypt official cadastral parcel map GIS land registry",
+        "result": "Found the official Egyptian General Survey Authority (ESA) website and its public descriptions of cadastral mapping, digital maps, and land/property records. No Balyana-specific public parcel viewer or parcel API was identified.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/",
+          "https://www.esa.gov.eg/segel.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://www.egis.idsc.gov.eg/server/rest/services/MOC_DELayer/MapServer/1?f=pjson"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "باليانا سوهاج خريطة كادسترية قطع الأراضي هيئة المساحة بوابة رسمية",
+        "result": "Found ESA pages describing official cadastral/digital-map services and a government service page for requesting a survey statement, but no public Balyana parcel layer or anonymous parcel endpoint. Search results also included non-custodial map content, which was not used as evidence.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://psm.gov.eg/Services/233?serviceName=-%D8%B7%D9%84%D8%A8-%D8%A8%D9%8A%D8%A7%D9%86-%D9%85%D8%B3%D8%A7%D8%AD%D9%8A-%D8%B9%D9%86-%D9%82%D8%B7%D8%B9%D8%A9-%D8%A7%D9%84%D8%A3%D8%B1%D8%B6"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryBasis": "The national ESA is evidenced as a general cadastral/survey custodian, but no local Balyana registry, cadastre, parcel viewer, or parcel geometry service was verified. The official IDSC GIS response tested below is an administrative polygon layer, not parcel evidence.",
+  "officialSources": [
+    {
+      "url": "https://www.esa.gov.eg/",
+      "observation": "Official Egyptian General Survey Authority site; describes cadastral mapping, property-map records, digital maps, and surveying services."
+    },
+    {
+      "url": "https://www.esa.gov.eg/segel.aspx",
+      "observation": "Official ESA page describing the national urban real-property cadastre project; this is agency/project prose, not a public Balyana parcel endpoint."
+    },
+    {
+      "url": "https://www.egis.idsc.gov.eg/server/rest/services/MOC_DELayer/MapServer/1?f=pjson",
+      "observation": "Official IDSC Egypt GIS ArcGIS layer metadata; layer `Egy` is polygonal and administrative/general, with fields including NAME, E_NAME, CODE, and loc_id, not a parcel schema."
+    }
+  ],
+  "source": {
+    "sourceId": "egis-idsc-moc-delayer-mapserver-1",
+    "name": "Egy",
+    "operator": "Egypt Information and Decision Support Center (IDSC) GIS portal",
+    "endpoint": "https://www.egis.idsc.gov.eg/server/rest/services/MOC_DELayer/MapServer/1",
+    "method": "GET ArcGIS REST metadata and point-intersection query",
+    "responseFormat": "ArcGIS JSON",
+    "nativeCrs": "EPSG:4326",
+    "queryOutputCrs": "EPSG:4326",
+    "nativeIdentity": "OBJECTID (administrative-layer object identity; not a parcel identity)",
+    "nativeFieldMapping": {
+      "id": "OBJECTID",
+      "geometry": "Shape"
+    },
+    "compositeKeyProvenance": null,
+    "scope": "Broad official Egypt/administrative GIS layer only; not evidence of citywide cadastral or parcel coverage."
+  },
+  "requests": [
+    {
+      "url": "https://www.esa.gov.eg/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official ESA home page returned. It exposed general surveying, cadastral-map, digital-map, and land-record service descriptions; no public parcel API was discovered."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official digital-map sales/service page returned. It describes requesting digital GIS/CAD/PDF/JPG maps through ESA; it is not an anonymous parcel query service."
+    },
+    {
+      "url": "https://www.egis.idsc.gov.eg/server/rest/services?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official ArcGIS service inventory returned. No service name or published service metadata matching parcel/cadastral/land-plot terms was identified in the returned inventory."
+    },
+    {
+      "url": "https://www.egis.idsc.gov.eg/server/rest/services/MOC_DELayer/MapServer?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Service metadata returned. It contains point `Entities` and polygon `Egy` layers; no parcel layer was exposed."
+    },
+    {
+      "url": "https://www.egis.idsc.gov.eg/server/rest/services/MOC_DELayer/MapServer/1?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Layer schema returned as polygon `Egy`, EPSG:4326, with administrative/general fields including OBJECTID, NAME, E_NAME, CODE, and loc_id. No parcel-specific identity or cadastral fields were evidenced. Full response retained under ignored tmp/valhalla-parcel-research/balyana/egis-layer-1.json."
+    },
+    {
+      "url": "https://www.egis.idsc.gov.eg/server/rest/services/MOC_DELayer/MapServer/1/query",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Bounded anonymous point-intersection query at the exact WUP point returned one broad administrative feature with OBJECTID 20 and no geometry requested. This is not parcel geometry and no GeoJSON sample was retained. Full response retained under ignored tmp/valhalla-parcel-research/balyana/egis-point-query.json."
+    },
+    {
+      "url": "https://www.egis.idsc.gov.eg/server/rest/services/MOC_DELayer/MapServer?f=html",
+      "method": "GET",
+      "httpStatus": 403,
+      "outcome": "ArcGIS HTML services directory explicitly reported that the administrator disabled the directory; direct REST JSON endpoints remained usable."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "safeFieldAllowlist": ["OBJECTID", "geometry"],
+  "unsafeFieldsNotRequested": ["NAME", "E_NAME", "CODE", "code_new", "loc_id", "DBO.MOC_Egy.AREA", "PERIMETER"],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Official ESA/IDSC national or administrative mapping channels investigated; no local Balyana parcel service verified.",
+    "verifiedOpenScope": "One administrative polygon intersected the exact point in the IDSC layer. This does not establish parcel presence or absence.",
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_public_parcel_geometry",
+  "runtimeReadiness": "held_serial_review",
+  "remainingUncertainty": "The exact-point administrative hit is not cadastral evidence. No claim is made about parcel absence, citywide coverage, legal title, ownership, address, tax records, or ESA/internal datasets. ESA digital-map services may require a formal request or paid/manual fulfillment. Packet completion is not source integration or admission."
+}

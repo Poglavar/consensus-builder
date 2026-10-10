@@ -1,0 +1,36 @@
+{
+  "cityRecord": "city-4264-lucena.json",
+  "cityCode": 4264,
+  "queueRank": 1777,
+  "name": "Lucena",
+  "country": "Philippines",
+  "countryCode": "PH",
+  "point": [13.9426847834823, 121.624034793322],
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "verifiedSample": false,
+  "sampleGeoJSON": null,
+  "queryOutcomes": "English and Tagalog discovery queries were executed and recorded in the city record. Official Quezon assessor, Lucena city, Geoportal Philippines, and DENR-LMB FOI pages were inspected. No Lucena parcel viewer/API or bounded anonymous ID-plus-geometry response was verified.",
+  "requestOutcomes": "Public HTTPS GET requests to the official assessor, city, Geoportal and lot-plotter pages returned usable page evidence. A bounded ArcGIS catalog search returned no verified Lucena parcel service. No credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe attributes, or TLS exceptions were used.",
+  "officialCustodian": "Quezon Provincial Assessor's Office is evidenced as a local/provincial cadastral and tax-map custodian. Its page states that the Tax Mapping Operations Division prepares and maintains cadastral/tax/index maps, scans cadastral maps, assigns Property Index Numbers, and provides tax-map verification/issuance. This is not source integration or admission.",
+  "scopeLimits": [
+    "No public Lucena parcel layer or API was identified.",
+    "No exact-point hit or map extent was tested because no usable parcel endpoint was established.",
+    "The official lot-plotter is a survey-input visualization tool, not evidence of parcel coverage.",
+    "Search/catalog non-discovery does not establish citywide absence."
+  ],
+  "safeFieldAllowlist": ["stable native parcel/map identity", "geometry", "source CRS", "source URL", "retrieval timestamp"],
+  "excludedFields": ["owner", "address", "contact", "titleholder", "personal", "tax/account and assessment details"],
+  "uncertainty": "No geometry was retained. Runtime remains held pending independent serial qualification of a real open adapter and geographically scoped native IDs.",
+  "artifactsWritten": ["city-4264-lucena.json", "lucena-service-review.json"],
+  "artifactsNotWritten": ["no GeoJSON sample; no verified parcel polygon"],
+  "sourceUrls": [
+    "https://quezon.gov.ph/pao/",
+    "https://lucenacity.gov.ph/home/",
+    "https://www.geoportal.gov.ph/",
+    "https://www.geoportal.gov.ph/gpapps/lotplotter",
+    "https://www.foi.gov.ph/agencies/denrlmb/SUCCESSFUL/?page=5/"
+  ]
+}

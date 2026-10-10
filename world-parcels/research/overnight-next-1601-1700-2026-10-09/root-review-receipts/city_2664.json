@@ -1,0 +1,14 @@
+{
+  "taskId": "city:2664",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-2664-monter-a.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/monter-a-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T12:53:46Z",
+  "reason": "Immutable rank 1685 identity, Colombia, exact point and 339380 persons agree with queue. English and Spanish source searches are recorded. First-party IGAC U_TERRENO metadata independently returned polygon schema, EPSG:4686 and candidate CODIGO/GLOBALID_S fields; local municipal publication supports cadastral custody. The corrected bounded geometry queries timed out in the packet and no original parcel response or full polygon is retained. No fresh native-ID read, forced paging, 13 cells, metric GEOS audit, source binding or headed Details verification is evidenced. Timeout is unresolved access, not citywide absence.",
+  "runtimeAdmission": false
+}

@@ -1,0 +1,21 @@
+{
+  "taskId": "city:2827",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-2827-oryol.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/oryol-service-review.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/root-review-receipts/source-evidence/city_2827-root-live-check.json"
+  ],
+  "checkedAt": "2026-10-10T19:53:40.723200Z",
+  "reason": "Oryol: fresh official city page confirms cadastral/map-plan publication; no native parcel ID-plus-geometry response or adapter evidence was established. Earlier NSPD timeout is not evidence of absence.",
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

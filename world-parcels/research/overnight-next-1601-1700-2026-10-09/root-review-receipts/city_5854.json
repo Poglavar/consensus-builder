@@ -1,0 +1,12 @@
+{
+  "taskId": "city:5854",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-5854-mcallen.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/mcallen-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T10:54:07Z",
+  "reason": "McAllen: original bounded GeoJSON contains three full Polygon features with OBJECTID only; a fresh official layer response confirms polygon/query metadata. Exact-ID stability, forced paging, 13 cells, metric GEOS checks, source binding, and headed Details verification remain unproven.",
+  "runtimeAdmission": false
+}

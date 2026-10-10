@@ -1,0 +1,16 @@
+{
+  "taskId": "packet:5505",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-5505-penza.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/penza-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/root-review-receipts/city_5505.json"
+  ],
+  "checkedAt": "2026-10-09T13:20:32Z",
+  "reason": "Penza code 5505, rank 1239, Russian Federation/RU, immutable WUP point [53.194404977765,44.9930989111174] and 449851 persons match the roster. English and Russian executed searches are recorded. Official map hosts timed out; no original parcel response, safe native ID, or full polygon exists in this packet. National custody is identified but usable local custody remains unresolved, so registryFound stays null. Timeout does not establish citywide absence.",
+  "qualificationCheck": "No independent evidence of fresh exact native-ID reads, forced paging, 13 aligned bounded cells, metric GEOS validity/duplicates/overlap and operation checks, full-parcel source binding, or headed pointer/Details-panel verification. Research completion does not mean integration or admission; leave held and unenabled."
+}

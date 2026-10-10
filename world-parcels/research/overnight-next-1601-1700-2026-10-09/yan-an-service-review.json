@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-7514-yan-an.json",
+  "cityCode": 7514,
+  "queueRank": 1687,
+  "city": "Yan'an",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Yan'an and Shaanxi sources establish a local natural-resources/real-estate-registration custodian, but no anonymous parcel ID plus geometry response was verified. The Yan'an government service route returned HTTP 403 and the public geospatial portal exposed no parcel endpoint in the inspected response. No sample GeoJSON is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Chinese first-party discovery queries are recorded in city-7514-yan-an.json, with actual official URLs and outcomes.",
+  "requestOutcomes": "The official Yan'an bureau homepage and Shaanxi registration directory returned HTTP 200. The Yan'an government service route returned HTTP 403 to an anonymous HEAD request. Shaanxi Tianditu returned HTTP 200 but no parcel layer/API was exposed in the inspected public response. No credentials, private tokens, CAPTCHA bypass, unsafe fields or TLS-disable action was used.",
+  "scopeLimits": [
+    "Exact WUP point [36.596597477057, 109.496049793642] was preserved; no exact-point hit/miss inference was made.",
+    "No Yan'an city boundary or complete city coverage was established for an open geometry service.",
+    "No parcel geometry, stable native parcel identity, source schema or CRS was retrieved or retained.",
+    "Local registration custody and a general public map portal are not treated as proof of an open vector parcel API.",
+    "A 403, inaccessible service route, or absent public endpoint is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, personal, tax/account, legal-description, or value fields were requested or retained.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains pending."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No parcel geometry query reached a usable public service. The exact WUP point was preserved but no hit/miss inference was made.",
+    "requestEvidence": [
+      "GET https://zrzy.yanan.gov.cn/ returned HTTP 200 but no public parcel layer/API was exposed.",
+      "HEAD http://zwfw.yanan.gov.cn/bsdt/workService/list.do?nav=2&serviceObject=bm&itemType=&ssqdDeptCode=61061012000000000000 returned HTTP 403.",
+      "HEAD https://shaanxi.tianditu.gov.cn/ returned HTTP 200 but no parcel feature response was identified."
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Yan'an municipal natural-resources and real-estate-registration services, plus the Shaanxi public geospatial portal.",
+    "verifiedOpenScope": "Institutional custody and general public map portal only; anonymous parcel geometry and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current viewer/API route, access controls, layer schema, CRS, stable native parcel identity and citywide coverage remain unresolved. No claim is made about parcel absence, legal title, ownership, tax records or completeness of any Chinese cadastral dataset.",
+  "retainedSample": null
+}

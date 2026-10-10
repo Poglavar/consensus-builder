@@ -1,0 +1,27 @@
+{
+  "taskId": "city:7965",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-7965-jaranwala.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/jaranwala-service-review.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T13:29:00Z",
+  "reviewReason": "Urdu and English searches executed. The municipal map is static and no native-ID polygon response or independent adapter qualification exists. The cited jamabandi.punjab.gov.in service is expressly Government of Punjab, India and cannot evidence Jaranwala, Pakistan.",
+  "firstPartyUrlsOpened": [
+    "https://mcjaranwala.lgpunjab.org.pk/map/",
+    "https://lis.pulse.gop.pk/",
+    "https://jamabandi.punjab.gov.in/CadastralMap.aspx"
+  ],
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "samplePolygonCount": 0
+}

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09T00:00:00Z",
+  "cityRecord": "city-3231-bremen.json",
+  "cohort": "overnight-next-1301-1400-2026-10-09",
+  "purpose": "Independent service review for Bremen official cadastral and parcel-oriented map sources.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "assessment": "Bremen has an evidenced official local cadastral custodian and a public ALKIS WMS configured by the official Flurstücksviewer. Capabilities and CRS/schema were verified anonymously; the bounded exact-point feature-info response was empty, so no geometry sample is retained and runtime readiness remains held.",
+  "registryAssessment": "The Landesamt GeoInformation Bremen publishes the Liegenschaftskataster/ALKIS, identifies the official GeoDatenService, and lists Bremen-wide open-data availability. This is cadastral/map evidence, not title or ownership evidence.",
+  "coverageAssessment": {"claimedScope": "Bremen ALKIS WMS cadastral map, with official product documentation stating citywide availability.", "verifiedOpenScope": "Anonymous viewer configuration, capabilities, and one bounded GetFeatureInfo request; zero returned features.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "officialPrimarySources": [
+    {"url": "https://www.geo.bremen.de/produkte/katasterprodukte/auszuege-aus-dem-liegenschaftskataster-12272", "operator": "Landesamt GeoInformation Bremen", "scope": "Official ALKIS/Liegenschaftskataster description, products, and GeoDatenService."},
+    {"url": "https://www.geo.bremen.de/produkte/open-data-produktuebersicht-15654", "operator": "Landesamt GeoInformation Bremen", "scope": "Official open-data product catalogue listing ALKIS FHB."},
+    {"url": "https://geoportal.bremen.de/flurstuecksviewer/", "operator": "Landesamt GeoInformation Bremen", "scope": "Official public Flurstücksviewer."},
+    {"url": "https://opendata.lgln.niedersachsen.de/doorman/noauth/alkishb_wms", "operator": "Configured official ALKIS WMS endpoint", "scope": "Public WMS HB ALKIS capabilities and map service."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Bremen official cadastral parcel map ALKIS viewer public API", "result": "Official Bremen cadastral/open-data pages and viewer found.", "actualResultUrls": ["https://www.geo.bremen.de/produkte/katasterprodukte/auszuege-aus-dem-liegenschaftskataster-12272", "https://www.geo.bremen.de/produkte/open-data-produktuebersicht-15654", "https://geoportal.bremen.de/flurstuecksviewer/"]},
+    {"language": "German", "query": "Bremen amtliche Liegenschaftskarte Flurstücke Geoportal ALKIS", "result": "Official Bremen ALKIS/open-data documentation and configured public service found.", "actualResultUrls": ["https://www.geo.bremen.de/produkte/katasterprodukte/auszuege-aus-dem-liegenschaftskataster-12272", "https://www.geo.bremen.de/produkte/open-data-produktuebersicht-15654", "https://geoportal.bremen.de/flurstuecksviewer/"]}
+  ],
+  "attempts": [
+    "Ran separate English and German first-party discovery queries.",
+    "Fetched the official Bremen Flurstücksviewer shell and current config.js/config.json anonymously.",
+    "Fetched the viewer's services.json and identified the ALKIS WMS endpoint, layer ALKIS, safe configured parcel fields, and EPSG:25832.",
+    "Fetched anonymous WMS 1.3.0 GetCapabilities and verified service title, ALKIS layer, parcel scope, and CRS.",
+    "Executed a bounded anonymous GetFeatureInfo request centered on the exact immutable WUP point; after supplying required FORMAT and STYLES parameters, the service returned an empty GML FeatureCollection.",
+    "Did not log in, use credentials or private tokens, defeat access controls, request owner/titleholder/personal/tax data, shift the WUP coordinate, or retain source-specific attributes."
+  ],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": "flurstueckskennzeichen is exposed in viewer configuration but was not returned in this response", "exactWupPointTest": "Bounded exact-point GetFeatureInfo returned an empty collection; this is not evidence of citywide presence or absence.", "requestEvidence": [{"url": "https://opendata.lgln.niedersachsen.de/doorman/noauth/alkishb_wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0", "method": "GET; anonymous", "httpStatus": 200, "assessment": "Capabilities expose ALKIS and EPSG:25832."}, {"url": "https://opendata.lgln.niedersachsen.de/doorman/noauth/alkishb_wms", "method": "GET; anonymous bounded GetFeatureInfo", "httpStatus": 200, "assessment": "Empty GML FeatureCollection at the WUP-centered query pixel; no geometry retained."}]},
+  "safeFieldAllowlist": ["safe native parcel identity if returned", "geometry only if returned", "CRS/layer metadata", "request status/content type"],
+  "nextStep": "Serial reviewer should independently re-run and qualify WMS scale/pixel behavior, current coverage, update semantics, stable native identity, and any public geometry download; keep runtime held.",
+  "remainingUncertainty": "WMS feature-info behavior at the selected scale and point was inconclusive; citywide completeness, update currency, public geometry-download availability, and adapter suitability were not established."
+}

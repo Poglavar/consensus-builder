@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:2358",
+  "cityCode": 2358,
+  "wupCityCode": 2358,
+  "name": "Shihezi",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "rank": 1552,
+  "queueRank": 1552,
+  "point": [44.3214660405686, 86.0293797189704],
+  "centerLatLon": [44.3214660405686, 86.0293797189704],
+  "pointBasis": "Exact WUP2025 point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 367883,
+  "population2025k": 367.883,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "First-party Xinjiang Production and Construction Corps Natural Resources Bureau reporting identifies the Eighth Division Shihezi Real Estate Registration Center, established in 2016, and discusses its registration operations. The Xinjiang Natural Resources Department's official guidance confirms cadastral-map and real-estate-registration inquiry as a natural-resources registration function. This establishes a local registry custodian, not open parcel geometry availability.",
+  "registryEvidenceUrls": [
+    "https://zrzy.xjbt.gov.cn/c/2022-01-14/8189887.shtml",
+    "https://zrzyt.xinjiang.gov.cn/xjgtzy/c114961/202405/7c6c2647f8a24055aa8c0f00836d07c9.shtml"
+  ],
+  "verifiedSample": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "No current official Shihezi parcel viewer/API with anonymous safe ID-plus-complete-polygon response was identified. The official pages located document registration custody and general cadastral-map inquiry practice, but expose no current JavaScript/configuration, parcel endpoint, schema, CRS or feature response. No credentials, CAPTCHA bypass, certificate exception or unsafe property query was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "The local registration center is evidenced by a first-party Bingtuan natural-resources report; Xinjiang official guidance discusses cadastral-map inquiry generally.",
+    "verifiedOpenScope": "Local registry custodian and general cadastral-map service context verified; current public Shihezi parcel layer, schema, CRS, native identity and anonymous geometry response were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Shihezi China official cadastral parcel map GIS land registration public service",
+        "scope": "Identify the local registry custodian and an official public cadastral or geospatial map route.",
+        "result": "Search located the first-party Xinjiang Production and Construction Corps Natural Resources Bureau report on the Eighth Division Shihezi Real Estate Registration Center and the first-party Xinjiang Natural Resources Department cadastral-map inquiry guidance. No current anonymous Shihezi parcel feature endpoint was identified.",
+        "actualResultUrls": [
+          "https://zrzy.xjbt.gov.cn/c/2022-01-14/8189887.shtml",
+          "https://zrzyt.xinjiang.gov.cn/xjgtzy/c114961/202405/7c6c2647f8a24055aa8c0f00836d07c9.shtml"
+        ],
+        "executionMethod": "Separate English web search followed by first-party page inspection."
+      },
+      {
+        "language": "native/local",
+        "query": "石河子市 官方 不动产登记 地籍图 GIS 宗地 地图",
+        "scope": "Independent Chinese-language discovery for a local official registry or cadastral-map route.",
+        "result": "Chinese-language search located the same first-party Bingtuan report identifying the Shihezi Real Estate Registration Center and official Xinjiang cadastral-map inquiry guidance. Results did not expose a current Shihezi parcel map/API or safe anonymous feature response.",
+        "actualResultUrls": [
+          "https://zrzy.xjbt.gov.cn/c/2022-01-14/8189887.shtml",
+          "https://zrzyt.xinjiang.gov.cn/xjgtzy/c114961/202405/7c6c2647f8a24055aa8c0f00836d07c9.shtml"
+        ],
+        "executionMethod": "Separate Chinese-language web search followed by first-party page inspection."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "first_attempt",
+    "attemptEvidence": []
+  },
+  "remainingUncertainty": "The absence of a discovered endpoint is an access/discovery limitation only and does not support citywide cadastral absence. Current viewer URL, service route, parcel schema, CRS, stable native identity, geometry availability, safe fields and citywide completeness remain unverified.",
+  "nextStep": "Serial reviewer may independently qualify a current official Shihezi/Eighth Division cadastral or Tianditu service. Do not enable runtime from this packet alone."
+}

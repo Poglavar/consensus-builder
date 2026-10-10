@@ -1,0 +1,33 @@
+{
+  "cityRecord": "city-10475-tiruvannamalai.json",
+  "cityCode": 10475,
+  "queueRank": 1669,
+  "city": "Tiruvannamalai",
+  "country": "India",
+  "countryCode": "IN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Tiruvannamalai district and Tamil Nadu Survey and Settlement/TNGIS sources establish a local/state cadastral custodian and public land-record procedure. The current public TamilNilam route was discovered but returned 502 through the research fetcher; no safe anonymous parcel ID plus geometry response was obtained. No GeoJSON sample is retained and runtime remains held.",
+  "queryOutcomes": "Separate English and Tamil discovery queries, actual search outcomes and first-party URLs are recorded in city-10475-tiruvannamalai.json.",
+  "requestOutcomes": "The official district survey page and TNGIS directory loaded. The TamilNilam route returned 502 through the web research fetcher; a local bounded request failed DNS resolution. The indexed government service description redirected to the current services index. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe lookup or TLS exception was used.",
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no usable parcel geometry response",
+  "geometryQuality": "not evaluated; no parcel geometry retained",
+  "retainedSample": null,
+  "scopeLimits": [
+    "Exact WUP point [12.2340004698616, 79.0705806848255] was preserved in latitude/longitude order; it was not shifted and no exact-point presence/absence conclusion was drawn.",
+    "District/state service pages and a named Assistant Director of Survey office do not prove complete Tiruvannamalai city parcel coverage.",
+    "A 502, DNS failure, redirect or absent feature response is not evidence of citywide absence.",
+    "No source-specific raw attribute set was retained and no synthetic parcel identity was created.",
+    "No owner, address, titleholder, contact, personal, tax/account or other unsafe fields were requested or retained.",
+    "This packet is not source integration/admission; serial reviewer qualification remains pending."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current viewer JavaScript/configuration, parcel layer schema, CRS, stable native identity, anonymous geometry access and citywide coverage remain unresolved. Future work should continue through public viewer routes only and retain at most three full polygons with exactly one canonical native identity per feature if safe geometry is independently verified."
+}

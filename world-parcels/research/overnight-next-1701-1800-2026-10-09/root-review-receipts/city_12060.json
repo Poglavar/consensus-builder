@@ -1,0 +1,26 @@
+{
+  "taskId": "city:12060",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-12060-hui-an.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/hui-an-service-review.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T13:47:45Z",
+  "reviewReason": "Official county material confirms registration custody. The inspected government convenience map serves service points, and no verified public parcel ID/full polygon response or adapter qualification is evidenced. Open geometry remains unresolved.",
+  "firstPartyUrlsOpened": [
+    "https://www.huian.gov.cn/zwgk/zdxxgk/jgzn/202012/t20201215_2480587.htm",
+    "https://www.huian.gov.cn/wsbs/ztifw/bmfwdt/"
+  ],
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "samplePolygonCount": 0
+}

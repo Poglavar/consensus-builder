@@ -1,0 +1,14 @@
+{
+  "taskId": "city:2520",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/valhalla-queue-extension-1301-2300-verification-2026-10-09.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-2520-gold-coast.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/gold-coast-service-review.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/gold-coast-parcels-sample.geojson"
+  ],
+  "checkedAt": "2026-10-10T18:47:30.754673Z",
+  "reason": "Gold Coast: immutable WUP identity matched original 2025 source and queue. English/Australian-English queries were recorded, but they are not distinct languages. Live official point query returned nine LOTPLAN features; retained three safe full polygons are GEOS-valid but have identical 377.146 m2 footprints and complete pairwise overlap. Forced paging, 13 bounded cells, source binding and headed details-panel verification are absent; runtime held."
+}

@@ -1,0 +1,27 @@
+{
+  "taskId": "city:10152",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-10152-xinyang.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/xinyang-service-review.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-10T11:28:48Z",
+  "reason": "Official registration portal advertises cadastral-map publicity, but anonymous map route redirects to a malformed login URL; no native parcel ID or polygon response is evidenced.",
+  "firstPartyChecks": [
+    {
+      "url": "https://www.xysbdcdjzx.cn/Home/Index_New4",
+      "httpStatus": 200,
+      "finding": "Portal contains 地籍图公示 cadastral-map entry."
+    },
+    {
+      "url": "https://www.xysbdcdjzx.cn/YWBL/CadastralMap",
+      "httpStatus": 302,
+      "finding": "Redirects to malformed HTTP login URL."
+    }
+  ],
+  "qualification": "No fresh native-ID geometry read, forced paging, 13 bounded cells, metric GEOS checks, source binding, or headed Details verification; runtime admission remains unqualified.",
+  "polygonSampleCount": 0,
+  "custody": "true: first-party institutional evidence; no claim of public parcel coverage or citywide absence"
+}

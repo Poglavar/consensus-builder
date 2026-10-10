@@ -1,0 +1,12 @@
+{
+  "taskId": "city:2957",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-2957-fallujah.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/fallujah-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T10:25:24.918108Z",
+  "reason": "The first-party Ministry lists the Fallujah real-estate registration directorate. The Ur service is a request workflow and its current page did not expose parcel features. No safe native-ID/full-polygon response or adapter admission checks were verified."
+}

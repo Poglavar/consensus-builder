@@ -1,0 +1,21 @@
+{
+  "taskId": "city:12018",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-12018-ningde.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ningde-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T16:14:05Z",
+  "registryFound": true,
+  "reason": "Queue identity and bilingual searches checked. First-party Fujian page supports Ningde institutional custody, but no safe anonymous native-ID polygon response or independent adapter qualification.",
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "cityCode": 7097,
+  "queueRank": 1697,
+  "name": "Sidfa",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "iso3": "EGY",
+  "locId": 818,
+  "point": [26.9777312751515, 31.409472351581],
+  "population2025": 336659,
+  "population2025k": 336.659,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sidfa Egypt cadastral parcel map official GIS land registry",
+        "result": "Discovery found the Egyptian Survey Authority (ESA) first-party site and its digital-map service. The accessible service describes a request-and-purchase workflow for a specified location, scale, layers, format and projection; no public Sidfa parcel viewer/API or bounded parcel response was exposed.",
+        "actualResultUrls": ["https://www.esa.gov.eg/main.aspx", "https://www.esa.gov.eg/services.aspx", "https://www.esa.gov.eg/sellingmaproomdigital.aspx"]
+      },
+      {
+        "language": "Arabic",
+        "query": "صدفا أسيوط خريطة كادسترية سجل عيني أراضي رسمي",
+        "result": "Discovery found ESA official map/service pages and the Egyptian public-services listing for a land-survey statement. The ESA pages are procedural/service prose only; no anonymous Sidfa parcel layer, schema, CRS, stable native ID or safe geometry response was available.",
+        "actualResultUrls": ["https://www.esa.gov.eg/main.aspx", "https://www.esa.gov.eg/sellingmaproomdigital.aspx", "https://psm.gov.eg/Services/233?serviceName=-طلب_بيان_مساحي_عن_قطعة_الأرض"]
+      }
+    ]
+  },
+  "registryFound": null,
+  "parcelSource": null,
+  "runtimeReadiness": "held",
+  "evidenceSummary": "No safe parcel source was admitted. ESA is evidenced as the national survey/cadastral custodian, but its public site exposes map-purchase/service workflows rather than an anonymous parcel feature service. This is not evidence of citywide cadastral absence.",
+  "sampleGeoJSON": null,
+  "notes": [
+    "The WUP point is preserved exactly in latitude/longitude order and was not shifted.",
+    "No parcel polygon or source-specific attribute set was retained.",
+    "This packet records research completion only; it is not source integration or admission."
+  ]
+}

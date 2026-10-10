@@ -1,0 +1,13 @@
+{
+  "taskId": "city:7729",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-7729-hammond.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/hammond-service-review.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/hammond-parcels-sample.geojson"
+  ],
+  "checkedAt": "2026-10-10T18:13:59.283138Z",
+  "reason": "The immutable queue identity and English/Spanish executed searches agree. A fresh official Lake County layer read returned three Hammond-filtered polygons with the same PARCELID values as the safe three-feature sample. Forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification remain unevidenced."
+}

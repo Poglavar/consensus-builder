@@ -1,0 +1,69 @@
+{
+  "cityRecord": "city-7625-taubat.json",
+  "schemaVersion": "1.0",
+  "cityCode": 7625,
+  "queueRank": 1857,
+  "city": "Taubaté",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Taubaté municipal sources evidence a local cadastral custodian and cadastral/georeferenced SIG responsibilities, but no anonymous public parcel ID-plus-geometry response was verified. The SEPLAN map/property page returned a Cloudflare 403 on bounded GET. No sample GeoJSON is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Brazilian-Portuguese discovery queries, outcomes, and actual URLs are recorded in city-7625-taubat.json.",
+  "requestOutcomes": "The official SEPLAN na Mão route returned HTTP 403 with Cloudflare headers. First-party indexed municipal Planning, Finance, and cadastral-service material was inspected. No JavaScript/configuration, public map/API service, parcel schema, CRS, or safe anonymous geometry response was exposed.",
+  "attemptedRoutes": [
+    "Taubaté SEPLAN na Mão official map/property-information page",
+    "Taubaté Planning and Housing Secretariat official page",
+    "Taubaté Finance Secretariat official page",
+    "Taubaté official cadastral-service documentation"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [-23.0183922105621, -45.561567466541] was preserved in latitude/longitude order and never shifted; no exact-point hit/miss inference was made.",
+    "No Taubaté municipal boundary or complete citywide coverage was established for an open geometry service.",
+    "No parcel geometry, stable native parcel identity, source schema, or CRS was retrieved or retained.",
+    "Official local custody and cadastral-service descriptions are not proof of an open vector parcel API.",
+    "Cloudflare denial and the absence of an endpoint in indexed portal material are access/inspection limits, not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, or other personal/sensitive fields were requested or retained.",
+    "Packet completion is research evidence only and does not qualify or admit a runtime adapter; serial reviewer qualification remains pending."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No parcel geometry query reached a usable public service. The exact WUP point was preserved but no hit/miss inference was made.",
+    "requestEvidence": [
+      {
+        "url": "https://taubate.sp.gov.br/secretarias-municipais/planejamento-urbano-e-habitacao/seplan-na-mao",
+        "status": 403,
+        "result": "Cloudflare access wall; no bypass attempted."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Taubaté municipal Planning/Technical Cadastre and Finance/Property Cadastre services.",
+    "verifiedOpenScope": "Local registry/cadastral custody evidence only; anonymous parcel geometry and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current viewer/API route, access controls, layer schema, CRS, stable native parcel identity, update currency, legal status, and citywide coverage remain unresolved. No claim is made about parcel absence, legal title, ownership, tax records, or completeness of any Brazilian cadastral dataset.",
+  "retainedSample": null
+}

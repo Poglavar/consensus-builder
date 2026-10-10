@@ -1,0 +1,37 @@
+{
+  "cityRecord": "city-5397-saransk.json",
+  "cityCode": 5397,
+  "queueRank": 1920,
+  "city": "Saransk",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "Rosreestr / National Spatial Data System public cadastral map, with official Saransk municipal cadastral-custodian evidence",
+  "serviceUrl": "https://nspd.gov.ru/map",
+  "scope": "Federal public cadastral-map route, with official regional evidence that cadastral quarters in the Saransk urban district are covered by cadastral work; citywide parcel completeness was not verified.",
+  "schemaAndCrs": "Not retrievable in this attempt. The official viewer GET and bounded search API GET both timed out before returning configuration or features. A secondary technical lead describes WMS layer 36048 and EPSG:3857 responses, but it was not treated as first-party verification.",
+  "nativeIdentity": "Not observed; no synthetic identity used.",
+  "fieldMapping": {
+    "id": "Not available because no native parcel feature response returned.",
+    "geometry": "Not available because no native parcel feature response returned.",
+    "sourceAttributes": "No source attributes requested or retained."
+  },
+  "requestOutcome": "English and Russian first-party discovery succeeded. Official local and regional cadastral evidence was found. The current official NSPD viewer and a bounded parcel search request timed out from this workspace; no parcel polygon, schema, CRS, or native ID was obtained.",
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON retained; no safe ID-plus-geometry response was returned.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeDataPolicy": "Owner, address, contact, titleholder, tax/account, legal-description, and ownership/rights fields were not requested or retained.",
+  "officialCustodyEvidence": "The official Saransk city portal identifies the municipal enterprise Kadastr; official Mordovia government material identifies the current NSPD public cadastral map and reports Saransk cadastral-quarter work. These are custodian/viewer evidence, not a verified adapter endpoint.",
+  "limits": [
+    "No exact-point parcel hit was obtained; the official viewer/API timed out.",
+    "A timeout is not evidence of citywide absence.",
+    "No parcel polygon, native ID, field schema, CRS, or completeness result was verified.",
+    "No login, credentials, private tokens, CAPTCHA bypass, or TLS exception was used.",
+    "No raw source-specific attribute set was retained.",
+    "RuntimeReadiness remains held pending independent serial review."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "Current official source integration is plausible but unverified at the feature-response level because the NSPD host was unreachable by timeout during both viewer and bounded API attempts."
+}

@@ -1,0 +1,12 @@
+{
+  "taskId": "city:10047",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-10047-jigani.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/jigani-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T18:13:59.282387Z",
+  "reason": "The immutable queue identity and English/Kannada executed searches agree. Official district custody is corroborated, but the land-records host timed out again and no native-ID polygon response or admission checks exist."
+}

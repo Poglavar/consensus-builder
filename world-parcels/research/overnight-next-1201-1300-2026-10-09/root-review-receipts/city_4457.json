@@ -1,0 +1,15 @@
+{
+  "taskId": "city:4457",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-4457-santa-marta.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/santa-marta-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T12:25:49Z",
+  "identityReview": "Immutable roster and queue match rank 1259, code 4457, Colombia/CO/COL, point [11.2345904677867, -74.1864107381004], and 442455 persons.",
+  "searchReview": "Paired packet and service review record executed English and Spanish searches with first-party result URLs.",
+  "sourceReview": "The official Santa Marta district cadastral authority is evidenced. IGAC U_TERRENO returned zero at the exact WUP point, the bounded envelope timed out, and the municipal map faced a challenge; no city parcel feature was verified.",
+  "admissionReview": "Zero full parcel polygons retained, so safe feature ID attributes cannot be demonstrated. No independent fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/duplicate/overlap checks, source binding, or headed Details-panel verification. Runtime and catalog remain unadmitted; unresolved access is not citywide absence."
+}

@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:2654",
+  "cityCode": 2654,
+  "wupCityCode": 2654,
+  "name": "Kuantan",
+  "country": "Malaysia",
+  "countryCode": "MY",
+  "iso2": "MY",
+  "iso3": "MYS",
+  "rank": 1527,
+  "queueRank": 1527,
+  "point": [3.8120664604539, 103.305658093593],
+  "centerLatLon": [3.8120664604539, 103.305658093593],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 373353,
+  "population2025k": 373.353,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official JUPEM material identifies JUPEM Pahang in Kuantan and the Eastern Pahang District Survey Office in Kuantan; JUPEM's mandate and service material identify cadastral products and digital lot data. This establishes local cadastral custody and public product channels, not anonymous citywide parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://www.jupem.gov.my/ebiz/info-korp",
+    "https://www.jupem.gov.my/jupem18a/assets/uploads/images/contents/20210329091423-585c7-pspk.jupem.01-profil-sistem-pengurusan-kualiti-jupem.pdf",
+    "https://jupem2u.kul.jupem.gov.my/MyLot/index.html",
+    "https://ebiz.jupem.gov.my/PetaInteraktif?c=pl&jenis=Pemetaan&no=7991&type=MY701T"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The current official MyLot configuration exposes the Pahang host, projection EPSG:3379, and parcel table names, but bounded anonymous requests to the Pahang data service returned HTTP 401 TokenNotFoundException. The coordinate helper was unavailable on the Pahang host and timed out on the Kuala Lumpur host. No login, credential, private token, CAPTCHA, or challenge bypass was attempted.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "JUPEM national cadastral mandate, JUPEM Pahang and Eastern Pahang District Survey Office custody, and the official MyLot/eBiz product channels.",
+    "verifiedOpenScope": "No anonymous complete-polygon parcel response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "site:gov.my Kuantan cadastral map parcel official Malaysia JUPEM eKadaster",
+        "scope": "Identify first-party local cadastral custody and the current public parcel-map or survey-information route.",
+        "result": "Search located official JUPEM Pahang material, the official MyLot application, JUPEM digital cadastral product information, and the official PLANMalaysia i-Plan viewer. JUPEM Pahang and the Eastern Pahang District Survey Office are in Kuantan; no anonymous parcel feature response was identified.",
+        "actualResultUrls": [
+          "https://www.jupem.gov.my/ebiz/info-korp",
+          "https://jupem2u.kul.jupem.gov.my/MyLot/index.html",
+          "https://ebiz.jupem.gov.my/PetaInteraktif?c=pl&jenis=Pemetaan&no=7991&type=MY701T",
+          "https://iplan.planmalaysia.gov.my/site/mdyan/geoportal"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "native/local",
+        "query": "Kuantan Pahang tanah kadaster peta lot rasmi JUPEM",
+        "scope": "Independent Malay-language discovery of Kuantan land/cadastral custody and public parcel geometry.",
+        "result": "Search located official Malay JUPEM pages identifying Jabatan Ukur dan Pemetaan Pahang at Kuantan and the Eastern Pahang District Survey Office. Official eKadaster/eBiz material indicates access or purchase workflows; no anonymous complete parcel geometry was obtained.",
+        "actualResultUrls": [
+          "https://www.jupem.gov.my/ebiz/info-korp",
+          "https://www.jupem.gov.my/jupem18a/assets/uploads/images/contents/20210329091423-585c7-pspk.jupem.01-profil-sistem-pengurusan-kualiti-jupem.pdf",
+          "https://ekadaster.jupem.gov.my/Account/Login",
+          "https://ebiz.jupem.gov.my/PetaInteraktif?c=pl&jenis=Pemetaan&no=7991&type=MY701T"
+        ],
+        "executionMethod": "Separate Malay-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "The exact MyLot query shape, native parcel identity field, returned schema, anonymous access policy, and Kuantan city coverage remain unverified. A 401, timeout, login wall, or zero exact-point response is not evidence of cadastral absence.",
+  "nextStep": "Serial reviewer may independently qualify a current JUPEM Pahang parcel route or geometry-only extract; do not enable runtime from this packet alone."
+}

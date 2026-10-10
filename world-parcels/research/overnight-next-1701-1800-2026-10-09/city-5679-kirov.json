@@ -1,0 +1,57 @@
+{
+  "cityCode": 5679,
+  "queueRank": 1782,
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso3": "RUS",
+  "name": "Kirov",
+  "aliases": ["kirov"],
+  "point": [58.600079267144, 49.6384622204951],
+  "population2025": 322377,
+  "population2025k": 322.377,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kirov Russia official cadastral map public parcel map Rosreestr Kirov official",
+        "result": "Search identified Rosreestr/NSPD as the national cadastral custodian and the Kirov regional GISOGD portal; direct Rosreestr/NSPD requests timed out from this environment.",
+        "actualResultUrls": ["https://rosreestr.gov.ru/", "https://nspd.gov.ru/", "https://gisogd-portal.kirovreg.ru/"]
+      },
+      {
+        "language": "Russian",
+        "query": "Киров официальный публичная кадастровая карта земельные участки Росреестр",
+        "result": "Search identified the official Rosreestr public-map reference and the Kirov regional GISOGD portal. The regional portal was reachable and yielded a public map/API service.",
+        "actualResultUrls": ["https://rosreestr.gov.ru/", "https://gisogd-portal.kirovreg.ru/", "https://gisogd-portal.kirovreg.ru/agate_kirovcity/map"]
+      }
+    ],
+    "viewer": {
+      "url": "https://gisogd-portal.kirovreg.ru/agate_kirovcity/map",
+      "custodian": "Kirov Oblast GISOGD portal; cadastral layer identifies Roskadastr Kirov Oblast in public metadata",
+      "projectSchema": "agate_kirovcity",
+      "mapBounds": [48.677657527659, 58.19618647786993, 49.94291538861731, 58.79204440133951],
+      "crs": "EPSG:4326 for requested GeoJSON response; viewer tile route is EPSG:3857",
+      "parcelLayer": "agate_kirovcity:agate_kirovcity_geo_gkn_parcel_exist_949615e4",
+      "nativeIdentityField": "kn",
+      "nativeFieldsObserved": ["kn", "key", "full_name", "area", "centroid", "gkn_parcel_status_key_ref", "gkn_address_ref", "gkn_cadastralblocks_ref", "info_set_key_ref"],
+      "fieldMapping": {"kn": "stable native cadastral number / retained sample id", "geoloc": "native parcel geometry", "area": "source area; not retained", "full_name": "display label; not retained"}
+    },
+    "boundedResponse": {
+      "request": "GET https://gisogd-portal.kirovreg.ru/map/tiles/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=agate_kirovcity:agate_kirovcity_geo_gkn_parcel_exist_949615e4&outputFormat=application/json&srsName=EPSG:4326&bbox=49.60,58.57,49.68,58.63,EPSG:4326&maxFeatures=3",
+      "outcome": "HTTP 200; FeatureCollection with 3 polygon features; retained in kirov-parcel-samples.geojson after reducing properties to canonical native ids only",
+      "compositeKeyProvenance": "WFS feature ids were synthetic server feature identifiers; canonical native identity was taken from the source kn field (Russian cadastral number), not from WFS fid."
+    },
+    "pointQuery": {
+      "request": "GET /api/v1/spatialsearch/agate_kirovcity/docs/49.6384622204951/58.600079267144",
+      "outcome": "HTTP 200 with gisogdDocGeoFeatures=[] and orphanGeoFeatures=null; this is an empty document search at the exact point, not a cadastral absence determination."
+    }
+  },
+  "registryFound": true,
+  "registryEvidence": "Public Kirov Oblast GISOGD city map/API exposes the existing-land-parcels layer and public WFS geometry; Roskadastr Kirov Oblast is named in returned public metadata.",
+  "sampleGeoJSON": "kirov-parcel-samples.geojson",
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "Research packet only; no adapter qualification or runtime admission performed."
+}

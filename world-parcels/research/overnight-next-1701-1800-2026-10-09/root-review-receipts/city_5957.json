@@ -1,0 +1,24 @@
+{
+  "taskId": "city:5957",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-5957-canoas.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/canoas-service-review.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/canoas/services.json",
+    "tmp/valhalla-parcel-research/canoas/Lotes_portal-layer.json",
+    "tmp/valhalla-parcel-research/canoas/Lote_GeoCanoas-layer.json",
+    "tmp/valhalla-parcel-research/canoas/Lote_GeoCanoas-query.geojson"
+  ],
+  "checkedAt": "2026-10-10T14:38:07Z",
+  "reason": "First-party municipal catalog and polygon-layer schema establish a public GIS source, but the retained feature query is HTTP 400 and contains no features. Native-ID reads, forced paging, 13 cells, metric geometry checks, source binding, and headed Details verification are absent.",
+  "checks": {
+    "immutableQueueIdentity": "matched WUP 2025 source and both cohort rosters",
+    "bilingualQueries": "English and local-language queries with recorded outcomes and URLs inspected",
+    "retainedFullPolygons": 0,
+    "adapterQualified": false,
+    "runtimeAdmission": false
+  }
+}

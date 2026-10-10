@@ -1,0 +1,40 @@
+{
+  "cityRecord": "city-1907-barinas.json",
+  "cityCode": 1907,
+  "queueRank": 1965,
+  "city": "Barinas",
+  "country": "Venezuela (Bolivarian Republic of)",
+  "countryCode": "VE",
+  "reviewStatus": "complete",
+  "registryFound": null,
+  "provider": "IGVSB national cartographic/cadastral authority was verified; no reachable city-specific public parcel provider was verified",
+  "serviceUrl": "https://igvsb.gob.ve/",
+  "discoveryUrls": ["https://igvsb.gob.ve/", "https://igvsb.gob.ve/servicios_cartograficos", "https://igvsb.gob.ve/servicio_api_mapoteca", "https://alcaldiabarinas.gob.ve/"],
+  "attemptedRoutes": [
+    {"route": "GET https://igvsb.gob.ve/", "outcome": "succeeded; official national agency homepage inspected"},
+    {"route": "GET https://igvsb.gob.ve/servicios_cartograficos", "outcome": "succeeded; current JavaScript/configuration inspected; general cartography only, no parcel layer"},
+    {"route": "GET https://igvsb.gob.ve/servicio_api_mapoteca", "outcome": "succeeded; mapoteca API route identified, but no parcel schema or geometry"},
+    {"route": "GET http://igvsb.geoportalsb.gob.ve/cgi-bin/mapserv?SERVICE=WMS&REQUEST=GetCapabilities", "outcome": "DNS failure; no response"},
+    {"route": "HEAD https://alcaldiabarinas.gob.ve/", "outcome": "bounded DNS/transport timeout; no municipal service inspection"},
+    {"route": "Barinas exact-point query at [8.61788659564614, -70.2225811075378]", "outcome": "not run because no usable anonymous parcel endpoint was identified; no absence inference made"}
+  ],
+  "scope": "Public first-party discovery and reachable IGVSB cartographic/mapoteca pages were covered. No citywide or countrywide open parcel coverage was verified.",
+  "schemaAndCrs": "Unavailable for parcels; no anonymous parcel response was obtained.",
+  "nativeIdentity": "Unavailable; no parcel feature was retained.",
+  "fieldMapping": {},
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON sample retained.",
+  "safeFieldAllowlist": ["geometry", "stable native parcel id if later exposed"],
+  "unsafeDataPolicy": "No owner, address, contact, titleholder, personal, tax/account, legal-description, or ownership fields were requested or retained. No login, CAPTCHA bypass, private token, or certificate exception was used.",
+  "officialCustodyEvidence": "IGVSB first-party materials establish the national authority and expose general cartographic services. A local Alcaldía Barinas domain was discovered but unavailable during the bounded request. General national authority evidence is not treated as local registry evidence.",
+  "limits": [
+    "No anonymous public parcel geometry or schema was available.",
+    "No exact-point query was possible and no absence inference was made.",
+    "The WMS hostname failed DNS resolution and the municipal domain timed out.",
+    "General agency prose and general map layers are not city parcel coverage.",
+    "RuntimeReadiness remains held pending independent serial review."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "A non-public or temporarily unavailable Barinas municipal cadastral service may exist; further work requires an independently evidenced public endpoint or authorized source-integration review."
+}

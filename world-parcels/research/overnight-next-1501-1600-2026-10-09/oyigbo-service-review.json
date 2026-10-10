@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-7553-oyigbo.json",
+  "purpose": "Document separate English/local-language discovery, first-party registry custody, anonymous request outcomes, safe-field limits, and geometry uncertainty.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Rivers State Ministry of Lands and Survey / Office of the Surveyor General custody is evidenced, including a digital filing workflow, but no public parcel geometry service was verified for Oyigbo.",
+  "registryAssessment": "registryFound=true is limited to evidenced state/local land-administration custody and procedure scope. It is not a claim that a public cadastral layer exists or that Oyigbo is fully covered.",
+  "officialPrimarySources": [
+    {
+      "url": "https://rsipa.riversstateapps.ng/lands-and-survey/",
+      "operator": "Rivers State Investment Promotion Agency portal describing the Rivers State Ministry of Lands and Survey",
+      "scope": "Identifies state land administration, surveying and land-use management; describes RIVLANDS filing, charting, survey review, C-of-O and deed-registration workflow; no public parcel layer is exposed."
+    },
+    {
+      "url": "https://www.sgriv.com/",
+      "operator": "Office of the Surveyor General, Rivers State (portal branding)",
+      "scope": "Public landing page advertises digital C-of-O filing and account/register routes; no parcel map, schema or geometry endpoint is exposed."
+    },
+    {
+      "url": "https://riversstate.gov.ng/",
+      "operator": "Rivers State Government",
+      "scope": "Official state government portal; used as government provenance context, not as evidence of a parcel service."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Oyigbo official cadastral parcel map land registry GIS Rivers State Nigeria",
+      "result": "Found first-party Rivers State land-ministry workflow and Surveyor-General digital filing pages; no public parcel API, viewer configuration, vector schema or geometry response.",
+      "actualResultUrls": ["https://rsipa.riversstateapps.ng/lands-and-survey/", "https://www.sgriv.com/", "https://riversstate.gov.ng/"]
+    },
+    {
+      "language": "Igbo/local",
+      "query": "Oyigbo Igbo ala ndebanye aha map cadastral Rivers State Nigeria",
+      "result": "No first-party Igbo-language cadastral viewer or parcel service located; English official material was the available procedural source.",
+      "actualResultUrls": ["https://rsipa.riversstateapps.ng/lands-and-survey/", "https://www.sgriv.com/"]
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://rsipa.riversstateapps.ng/lands-and-survey/",
+      "method": "Anonymous HTTPS GET and HTML/source review",
+      "result": "HTTP 200. Page describes RIVLANDS account-based e-filing, survey-plan upload, charting, survey-officer review, C-of-O processing and deed registration. No public map, JavaScript viewer configuration, parcel layer, CRS or safe ID+geometry endpoint found."
+    },
+    {
+      "url": "https://www.sgriv.com/",
+      "method": "Anonymous HTTPS GET and bundled-page/source review",
+      "result": "HTTP 200. Public landing page exposes register/login routes and digital filing language. No public parcel map or safe anonymous geometry endpoint found; no login or registration was attempted."
+    },
+    {
+      "url": "https://riversstate.gov.ng/",
+      "method": "Anonymous HTTPS/search-index review",
+      "result": "Official government portal identified, but direct fetch returned HTTP 403 in this worker. No parcel service was inferred from that outcome."
+    }
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier", "geometry", "source CRS", "service metadata"],
+  "nativeFieldMapping": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed against a verified parcel layer; unchanged WUP point retained exactly.",
+    "requestEvidence": "No safe anonymous ID+geometry response was obtained. Login/account routes, 403, or unavailable public UI do not establish citywide absence."
+  },
+  "coverageAssessment": {
+    "claimedScope": "State land-registration, surveying and digital filing custody for Oyigbo is evidenced through Rivers State sources.",
+    "verifiedOpenScope": "No public parcel polygon, native ID, CRS, or citywide coverage was verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "remainingUncertainty": "Current public availability, schema, native parcel key, CRS and WUP-point coverage of any RIVLANDS/Rivers GIS backend.",
+  "nextStep": "Locate an official public viewer configuration or vector service, then inspect metadata and request only safe ID+geometry fields before any adapter qualification.",
+  "runtimeAssessment": "held_not_enabled_no_verified_public_geometry",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1
+}

@@ -1,0 +1,100 @@
+{
+  "cityCode": 10250,
+  "queueRank": 1739,
+  "name": "Dashiqiao",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [40.6276626653022, 122.513739751326],
+  "population2025": 330302,
+  "population2025k": 330.302,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dashiqiao China official cadastral parcel map land registry GIS",
+        "result": "Search identified the official Yingkou Natural Resources Bureau website, which carries Dashiqiao natural-resources notices and links to Liaoning's public geographic-information platform. No public Dashiqiao parcel feature service, safe parcel identity schema, or anonymous geometry response was exposed.",
+        "actualResultUrls": [
+          "https://zrzyj.yingkou.gov.cn/",
+          "https://liaoning.tianditu.gov.cn/",
+          "https://www.yingkou.gov.cn/govxxgk/ykszf/2022-11-03/9766dda8-a54e-40fb-b803-0901c19e9b99.html"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "大石桥市 不动产登记 地籍图 查询 官方",
+        "result": "Search identified official Yingkou government service material listing Dashiqiao Natural Resources Bureau as the custodian for collective-land, state-owned construction-land, and building/land integrated registration services, with a public consultation number. It did not expose an anonymous cadastral map, parcel endpoint, safe parcel ID, or geometry response.",
+        "actualResultUrls": [
+          "https://zwfw.yingkou.gov.cn/web/uploadfile/b6ddc81a-1878-440d-98d3-59ecfbdf7c0d/4.%E8%90%A5%E5%8F%A3%E5%B8%82%E5%A4%A7%E7%9F%B3%E6%A1%A5%E5%B8%82%E7%9B%B8%E5%85%B3%E6%94%BF%E5%8A%A1%E6%9C%8D%E5%8A%A1%E4%BA%8B%E9%A1%B9%E5%92%A8%E8%AF%A2%E7%BB%9F%E8%AE%A1%E8%A1%A8.pdf",
+          "https://zwfw.yingkou.gov.cn/web/uploadfile/b6ddc81a-1878-440d-98d3-59ecfbdf7c0d/4.%E5%A4%A7%E7%9F%B3%E6%A1%A5%E5%B8%82%E7%BB%BC%E5%90%88%E7%AA%97%E5%8F%A3%E8%81%94%E7%BB%9C%E4%BA%BA%E7%94%B5%E8%AF%9D%E7%B0%BF.pdf",
+          "https://zrzyj.yingkou.gov.cn/"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryBasis": "Dashiqiao Natural Resources Bureau is evidenced as the local registration custodian in official Yingkou service material, but no public local cadastral viewer/API response with safe parcel identity and geometry was verified.",
+  "officialSources": [
+    {
+      "url": "https://zrzyj.yingkou.gov.cn/",
+      "observation": "Official Yingkou Natural Resources Bureau site fetched successfully. It links to the Liaoning geographic-information public service platform and a general site map, but no cadastral parcel service was exposed in the inspected HTML."
+    },
+    {
+      "url": "https://zwfw.yingkou.gov.cn/web/uploadfile/b6ddc81a-1878-440d-98d3-59ecfbdf7c0d/4.%E8%90%A5%E5%8F%A3%E5%B8%82%E5%A4%A7%E7%9F%B3%E6%A1%A5%E5%B8%82%E7%9B%B8%E5%85%B3%E6%94%BF%E5%8A%A1%E6%9C%8D%E5%8A%A1%E4%BA%8B%E9%A1%B9%E5%92%A8%E8%AF%A2%E7%BB%9F%E8%AE%A1%E8%A1%A8.pdf",
+      "observation": "Official Yingkou government service table lists Dashiqiao Natural Resources Bureau and multiple land/property registration procedures; it is custodian/procedure evidence, not an open parcel geometry service."
+    },
+    {
+      "url": "https://liaoning.tianditu.gov.cn/",
+      "observation": "Official Liaoning geographic-information public service portal was identified by the official bureau page, but the direct HTTPS fetch failed certificate verification in this environment. No certificate exception was used."
+    },
+    {
+      "url": "https://www.yingkou.gov.cn/govxxgk/ykszf/2022-11-03/9766dda8-a54e-40fb-b803-0901c19e9b99.html",
+      "observation": "Official Yingkou planning document describes a planned/ongoing natural-resources one-map and online map-service capability, without publishing a Dashiqiao parcel feature schema or public anonymous query."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://zrzyj.yingkou.gov.cn/",
+      "method": "GET",
+      "outcome": "HTTP page fetched; current HTML inspected. It exposed general government links and a link to Liaoning Tian地图, but no parcel layer or API endpoint."
+    },
+    {
+      "url": "https://zrzyj.yingkou.gov.cn/dynamic/map/webmap.html",
+      "method": "GET",
+      "outcome": "HTTP page fetched; it is the bureau's general website map and references ordinary site JavaScript, not a cadastral viewer."
+    },
+    {
+      "url": "https://zrzyj.yingkou.gov.cn/dynamic/map/js/webmap.js",
+      "method": "GET",
+      "outcome": "Request timed out during DNS resolution after 20 seconds; no endpoint or schema evidence obtained."
+    },
+    {
+      "url": "https://liaoning.tianditu.gov.cn/",
+      "method": "GET",
+      "outcome": "TLS certificate verification failed because the certificate was expired; request stopped without disabling verification or using a certificate exception."
+    },
+    {
+      "url": "https://zwfw.yingkou.gov.cn/web/uploadfile/b6ddc81a-1878-440d-98d3-59ecfbdf7c0d/4.%E8%90%A5%E5%8F%A3%E5%B8%82%E5%A4%A7%E7%9F%B3%E6%A1%A5%E5%B8%82%E7%9B%B8%E5%85%B3%E6%94%BF%E5%8A%A1%E6%9C%8D%E5%8A%A1%E4%BA%8B%E9%A1%B9%E5%92%A8%E8%AF%A2%E7%BB%9F%E8%AE%88%E8%A1%A8.pdf",
+      "method": "GET via public search/open",
+      "outcome": "Official indexed PDF text was readable and confirmed Dashiqiao Natural Resources Bureau registration custody and procedures; no parcel geometry or safe parcel identity was present."
+    }
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Dashiqiao local natural-resources/property-registration custody and Liaoning/Yingkou public geographic-information planning and map-service platforms.",
+    "verifiedOpenScope": "Local custodian/procedure evidence and general official map-platform references only; no parcel geometry scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": "Exact WUP point retained in latitude/longitude order. No exact-point hit/miss inference was made. A map extent miss, TLS failure, timeout, inaccessible viewer or absent public endpoint is not evidence of citywide cadastral absence. No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields or global TLS-disable action was used. Packet completion is not source integration or runtime admission."
+}

@@ -1,0 +1,14 @@
+{
+  "taskId": "city:5349",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-5349-pathankot.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pathankot-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-10T16:09:43Z",
+  "reason": "Punjab BhuNaksha custody and a bounded native plot lookup are evidenced, but only owner-bearing lookup metadata/extent and raster WMS were observed; no safe full polygon, declared CRS, or qualified adapter.",
+  "admissionGates": "Fresh safe native-ID polygon reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are not independently evidenced; city remains excluded.",
+  "registryFound": true
+}

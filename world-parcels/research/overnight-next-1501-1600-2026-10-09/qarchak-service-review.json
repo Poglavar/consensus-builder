@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-5455-qarchak.json",
+  "purpose": "Document first-party registry/map discovery, bounded anonymous request outcomes, safe-field limits, and uncertainty.",
+  "assessment": "Qarchak local registration custody and the Iranian national cadastral service lead were evidenced, but no public parcel viewer/API or safe geometry response was obtained.",
+  "registryAssessment": "Search results identify اداره ثبت اسناد و املاک قرچک as the local registration office and the national Organization for Registration of Deeds and Properties as custodian. This is local custody/procedure evidence, not source integration evidence.",
+  "viewerConfiguration": {"homeUrl": "https://shamim.ssaa.ir", "observedTechnology": "Not retrieved because first-party hosts timed out.", "observedControls": [], "schemaAndCrs": "Not verified.", "nativeFieldNames": "Not retained; no feature response."},
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "query": "No parcel query was submitted because the public service route and safe request shape were not verified."},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "citywideCompletenessAsserted": false},
+  "safeFieldAllowlist": ["safe public parcel/source ID", "complete parcel geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"],
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."},
+  "uncertainty": "Direct first-party requests timed out. The municipal map was a Google Maps location embed, not cadastral data. The unavailable UI and zero obtained geometry do not establish citywide absence, coverage failure, or exact-point absence.",
+  "completion": "All executed discovery and request attempts are recorded; no successful parcel query or geometry is claimed."
+}

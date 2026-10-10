@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-2375-armenia.json",
+  "cohort": "overnight-next-1801-1900-2026-10-09",
+  "purpose": "Document Armenia local cadastral custody and bounded anonymous official-service checks without treating TLS failure or unavailable feature responses as parcel absence.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "assessment": "Armenia has evidenced local cadastral custody through the official Alcaldía Subsecretaría de Catastro and linked municipal geovisor. The viewer's current configuration identifies a public WFS parcel layer in EPSG:9377, but the geoservice certificate failed verified TLS in this environment; no parcel geometry was retained and runtime qualification remains held.",
+  "searchQueries": [
+    {"language": "English", "query": "Armenia Quindío Colombia official cadastral map parcel viewer GIS cadastre Alcaldía IGAC", "actualResultUrls": ["https://www.armenia.gov.co/armenia/subsecretaria-de-catastro", "https://apps.nazcacatastro.com/public/63001/", "https://www.igac.gov.co/datos-abiertos/datos-abiertos-geoespaciales"]},
+    {"language": "Spanish", "query": "Armenia Quindío Colombia mapa catastral oficial predios visor geográfico catastro Alcaldía IGAC", "actualResultUrls": ["https://www.armenia.gov.co/armenia/subsecretaria-de-catastro", "https://apps.nazcacatastro.com/public/63001/", "https://pruebassig.igac.gov.co/server/rest/services/SIG_QUINDIO/Cartografia_basica/MapServer/76"]}
+  ],
+  "attempts": [
+    "Retrieved the official municipal catastro page and confirmed its linked Geovisor Catastral de Armenia.",
+    "Retrieved the current viewer HTML and config_armenia.js over verified TLS; identified ws011_armenia, WFS, EPSG:9377, and PrediosConsulta.",
+    "Attempted anonymous verified-TLS WFS GetCapabilities; certificate verification failed. No insecure or source-specific TLS exception was used.",
+    "Did not issue a feature query after the verified-TLS failure; no geometry or raw attributes were retained.",
+    "Inspected official IGAC Catastro Armenia group metadata; no parcel feature response was obtained.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, coordinate shift, or contact was used."
+  ],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Not completed because the current municipal WFS host failed verified TLS; unchanged point preserved.", "identityProvenance": "If a future safe feature response is independently verified, prefer CODIGO_NUMERO_PREDIAL or CODIGO_TERRENO as returned by the service; use T_ID only if shown to be a stable native service identity. Never use a synthetic row number."},
+  "safeFieldAllowlist": ["CODIGO_NUMERO_PREDIAL", "CODIGO_TERRENO", "T_ID only as verified stable native identity", "GEOMETRIA", "CRS/layer metadata"],
+  "nextStep": "Hold for serial review. A separately verified anonymous feature response with safe native ID and geometry is required before runtime qualification.",
+  "runtimeReadiness": "held_quality_review",
+  "remainingUncertainty": "Verified TLS failure prevented a bounded public feature response. This is an access limitation, not evidence of zero exact-point hits, map extent miss, or citywide absence."
+}

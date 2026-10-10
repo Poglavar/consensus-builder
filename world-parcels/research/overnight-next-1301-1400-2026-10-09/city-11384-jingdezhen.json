@@ -1,0 +1,75 @@
+{
+  "cityCode": 11384,
+  "queueRank": 1321,
+  "name": "Jingdezhen",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [29.2989078251208, 117.192681771754],
+  "population2025": 423386,
+  "population2025k": 423.386,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": true,
+  "registryAssessment": "Jingdezhen municipal first-party sources identify the Jingdezhen Real Estate Registration Center as a public institution managed by the Municipal Natural Resources and Planning Bureau and describe a cadastral-map/real-estate information visualization service. The official service page is public, but its query workflow requires identity verification; no anonymous parcel vector endpoint was verified.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jingdezhen China official cadastral map parcel GIS land registration natural resources",
+        "result": "First-party Jingdezhen results identified the municipal real-estate registration center, its Natural Resources and Planning Bureau custody, and an online cadastral-map visualization service. No anonymous public parcel ID+geometry API was found.",
+        "actualResultUrls": [
+          "https://jdz.gov.cn/zwgk/fdzdgknr/zcwj/zcjd/t977888.shtml",
+          "https://bdc.jdz.gov.cn/wx/WX/App/WFW.aspx",
+          "https://jdz.gov.cn/zwgk/fdzdgknr/zcwj/zfwj/szfbgswj/t364178.shtml"
+        ]
+      },
+      {
+        "language": "native/local",
+        "script": "Simplified Chinese",
+        "query": "景德镇市 不动产登记 地籍图 地图 自然资源局",
+        "result": "景德镇市政府官方材料确认市不动产登记中心由市自然资源和规划局管理，并说明不动产登记信息及地籍图可视化查询；官方服务页面显示查询入口，但业务查询要求身份验证，未取得匿名安全宗地编号和完整几何。",
+        "actualResultUrls": [
+          "https://jdz.gov.cn/zwgk/fdzdgknr/zcwj/zcjd/t977888.shtml",
+          "https://www.jdz.gov.cn/zwgk/fdzdgknr/zcwj/zfwj/szfbgswj/t920879.shtml",
+          "https://bdc.jdz.gov.cn/wx/WX/App/WFW.aspx"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://jdz.gov.cn/zwgk/fdzdgknr/zcwj/zcjd/t977888.shtml",
+      "role": "Jingdezhen Municipal Government official interview",
+      "observation": "Names the Jingdezhen Real Estate Registration Center as a public institution managed by the Municipal Natural Resources and Planning Bureau and describes online cadastral-map visualization; the described query is identity-verified and not an open parcel-vector feed."
+    },
+    {
+      "url": "https://bdc.jdz.gov.cn/wx/WX/App/WFW.aspx",
+      "role": "Jingdezhen Real Estate Registration Center official service portal",
+      "observation": "Public service landing page exposes registration/query navigation and service configuration paths. The registration-information query is a protected business workflow; no public parcel layer, CRS, safe native parcel identity, or anonymous geometry response was exposed."
+    },
+    {
+      "url": "https://www.jdz.gov.cn/zwgk/fdzdgknr/zcwj/zfwj/szfbgswj/t920879.shtml",
+      "role": "Jingdezhen Municipal Government official policy notice",
+      "observation": "Assigns the Natural Resources and Planning Bureau responsibility for expanding real-estate registration information and cadastral-map visualization queries; this is policy/service evidence, not an open parcel dataset."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No safe native parcel ID plus full polygon was returned by an anonymous public request. The official portal routes to identity-verified registration workflows and exposes no anonymous parcel schema/CRS/geometry response. The WUP point [29.2989078251208,117.192681771754] was preserved exactly and was not shifted; no exact-point hit or miss was asserted."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Jingdezhen municipal real-estate registration and cadastral-map visualization service under the Municipal Natural Resources and Planning Bureau.",
+    "verifiedOpenScope": "Local registry custody and existence of a protected cadastral-map visualization service only; public viewer configuration, parcel layer, CRS, native identity, exact-point containment, and citywide open coverage remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

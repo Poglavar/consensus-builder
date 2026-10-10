@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-6053-hull.json",
+  "cityCode": 6053,
+  "queueRank": 1783,
+  "city": "Hull",
+  "country": "United Kingdom",
+  "countryCode": "GB",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": null,
+  "summary": "Official HM Land Registry INSPIRE publication and Hull City Council public My Hull viewer were evidenced. Hull is listed for local-authority GML download, but the direct download was challenge-gated and no parcel geometry or native identity was retrieved. The local viewer exposed public Astun/iShare configuration but no bounded parcel response. Runtime remains held.",
+  "queryOutcomes": "Separate English and native/local-language (English) discovery queries are recorded in city-6053-hull.json with actual URLs. The local-language route used English because Hull is in England and English is the relevant local/statutory service language.",
+  "requestOutcomes": "Hull My Hull GET returned 200; current HTML/loader configuration was inspected. getdata.aspx returned a missing-RequestType error, and a bounded MapSource probe returned MapSource not found. HM Land Registry documentation and indexed download page were inspected; direct download access returned a Cloudflare challenge. HMLR API documentation states account/licence/API-key requirements; no credentialed request was attempted.",
+  "scopeLimits": [
+    "Exact WUP point [53.7628896052307, -0.354103477578705] was preserved in latitude/longitude order; no exact-point hit or miss inference was made.",
+    "HMLR INSPIRE polygons are indicative registered freehold extents, not definitive ownership boundaries or a complete cadastral substitute.",
+    "Hull My Hull themes are local information/property/asset mapping; no legal parcel-layer completeness was established.",
+    "No current Hull GML bytes, feature schema, feature CRS or native parcel identity was retrieved.",
+    "Cloudflare challenge, missing map-source route and absent anonymous geometry are access/verification limits, not evidence of citywide absence.",
+    "No owner, address, titleholder, contact, tax/account or personal fields were requested or retained.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains pending."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": "Expected HMLR INSPIRE identity: Land Registry-INSPIRE ID; not verified from a retrieved feature. Hull viewer source fields were not retained.",
+  "compositeKeyProvenance": null,
+  "crs": "Unverified; no parcel feature response retrieved.",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable parcel geometry endpoint was reached; exact-point absence is not inferred."
+  },
+  "coverageAssessment": {
+    "claimedScope": "HMLR INSPIRE local-authority downloads for registered freehold property extents in England and Wales; Hull City Council My Hull thematic mapping.",
+    "verifiedOpenScope": "Official publication/listing and public viewer bootstrap only; anonymous parcel geometry not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Retry the official HMLR Hull GML download through ordinary public access when available, parse only safe parcel ID and geometry fields, verify CRS and bounded Hull coverage, then seek independent serial qualification. Do not interpret the current access failure as absence.",
+  "retainedSample": null
+}

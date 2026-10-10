@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "cityCode": 6013,
+  "wupCityCode": 6013,
+  "queueRank": 1436,
+  "name": "Colorado Springs",
+  "country": "United States of America",
+  "countryCode": "US",
+  "iso2": "US",
+  "iso3": "USA",
+  "point": [38.8771089520909, -104.758837050009],
+  "centerLatLon": [38.8771089520909, -104.758837050009],
+  "population2025": 394888,
+  "population2025k": 394.888,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": true,
+  "sampleFile": "colorado-springs-parcel-sample.geojson",
+  "serviceReview": "colorado-springs-service-review.json",
+  "sourceIds": ["colorado-public-parcel-composite-el-paso"],
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Colorado Springs official parcel map GIS El Paso County Colorado parcels ArcGIS REST FeatureServer",
+        "result": "Found City of Colorado Springs SpringsView references and the public Colorado GIS parcel service; the El Paso County parcel service is also documented by ArcGIS metadata.",
+        "actualResultUrls": [
+          "https://coloradosprings.gov/lurdre",
+          "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0",
+          "https://services6.arcgis.com/BdgJMGQ8tO6sUTY0/ArcGIS/rest/services/PLSD_GIS/FeatureServer/43"
+        ]
+      },
+      {
+        "language": "English (United States local language)",
+        "query": "site:coloradosprings.gov GIS parcel map SpringsView Colorado Springs; site:elpasocountyco.gov parcel GIS map assessor Colorado Springs",
+        "result": "City first-party pages identify SpringsView as the map for searching/viewing City map information and property lines; the City’s official guide points users to the El Paso County Assessor parcel search and SpringsView. A direct Colorado public parcel composite query returned one El Paso polygon at the exact WUP point.",
+        "actualResultUrls": [
+          "https://coloradosprings.gov/public-works/page/city-engineering-references-and-research-tools",
+          "https://coloradosprings.gov/system/files/2024-02/res_easement_brochure_2024-final.pdf",
+          "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0"
+        ]
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Colorado statewide public parcel composite with county attribution; the returned sample is in El Paso County at the Colorado Springs WUP point.",
+    "verifiedOpenScope": "Layer metadata reports a statewide EPSG:4326 extent; one bounded exact-point intersection was queried and returned an El Paso polygon.",
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": {
+    "sourceUrl": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0",
+    "layer": "Colorado_Public_Parcel_Composite (ID 0)",
+    "queryType": "point intersection",
+    "queryPoint": [38.8771089520909, -104.758837050009],
+    "featureCount": 1,
+    "nativeIdField": "parcel_id",
+    "nativeId": "6334100000",
+    "geometryType": "MultiPolygon",
+    "responseCrs": "EPSG:4326",
+    "sourceCrs": "EPSG:4326",
+    "sampleFile": "colorado-springs-parcel-sample.geojson",
+    "safeFieldsRequested": ["parcel_id", "countyName"],
+    "safeFieldMapping": {
+      "parcel_id": "public parcel identifier; canonical native identity retained as id",
+      "countyName": "county attribution used to verify El Paso County; not retained in sample properties"
+    }
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://coloradosprings.gov/lurdre",
+      "operator": "City of Colorado Springs Planning Department",
+      "observation": "Official City page lists SpringsView and El Paso County Parcel Search under Planning Tools."
+    },
+    {
+      "url": "https://gis.coloradosprings.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0",
+      "operator": "Colorado statewide public GIS service; returned countyName El Paso for the sample",
+      "observation": "Public polygon FeatureServer layer exposes parcel_id and county attribution, supports GeoJSON, and returned one MultiPolygon for the exact WUP point."
+    },
+    {
+      "url": "https://services6.arcgis.com/BdgJMGQ8tO6sUTY0/ArcGIS/rest/services/PLSD_GIS/FeatureServer/43",
+      "operator": "El Paso County / Colorado Springs Utilities parcel publication",
+      "observation": "Official ArcGIS metadata describes a dynamic El Paso County parcel dataset published weekly; its extent did not cover the exact WUP point in this request, so it was not used for the retained sample."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "status": "HTTP 200 JSON",
+      "summary": "Layer metadata returned polygon geometry, statewide extent, EPSG:4326, parcel_id/countyName fields and GeoJSON support."
+    },
+    {
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query",
+      "method": "GET",
+      "parameters": {
+        "geometry": [-104.758837050009, 38.8771089520909],
+        "geometryType": "esriGeometryPoint",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "outFields": ["parcel_id", "countyName"],
+        "returnGeometry": true,
+        "outSR": 4326,
+        "resultRecordCount": 3
+      },
+      "status": "HTTP 200 GeoJSON",
+      "summary": "Anonymous exact-point query returned one full MultiPolygon with parcel_id 6334100000 and countyName El Paso; no owner, address, titleholder, tax, account or contact fields were requested."
+    },
+    {
+      "url": "https://services6.arcgis.com/BdgJMGQ8tO6sUTY0/ArcGIS/rest/services/PLSD_GIS/FeatureServer/43?f=pjson",
+      "method": "GET",
+      "status": "HTTP 200 metadata",
+      "summary": "El Paso County parcel layer schema/extent reviewed; bounded exact-point and small surrounding-envelope requests returned zero features because the published layer extent is north of the WUP point. This is a map extent miss, not evidence of parcel absence."
+    },
+    {
+      "url": "https://gis.coloradosprings.gov/Html5Viewer/?viewer=springsview",
+      "method": "GET",
+      "status": "timeout/unusable from this worker",
+      "summary": "Viewer host did not complete within the bounded request window; no login or bypass was attempted. Official City documentation was used for the viewer lead."
+    }
+  ],
+  "qualityAssessment": {
+    "geometryQuality": "one valid non-empty native MultiPolygon returned in EPSG:4326; retained sample is unchanged geometry from the bounded response",
+    "identityReadiness": "native parcel_id is present in the public source schema and retained as the sole sample identity; runtime admission remains held pending independent serial review",
+    "attributesRequested": ["parcel_id", "countyName"]
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "Research packet is complete and contains a safe geometry sample, but this parallel researcher does not qualify or admit a runtime adapter.",
+  "remainingUncertainty": "The exact-point hit establishes one parcel and the statewide layer metadata establishes open service scope, not complete Colorado Springs municipal coverage, update cadence, legal survey accuracy, or boundary equivalence between the WUP settlement point and city limits.",
+  "nextStep": "Serial reviewer should independently confirm source custody, El Paso County coverage, parcel_id identity semantics, CRS handling, geometry validity and update behavior before any adapter qualification.",
+  "identityPolicy": "Retained GeoJSON uses exactly one canonical native identity, parcel_id. Source field names and mapping are documented here and in the service review, not in feature properties."
+}

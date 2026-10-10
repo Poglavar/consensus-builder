@@ -1,0 +1,13 @@
+{
+  "taskId": "city:9119",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-9119-jalna.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/jalna-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T15:46:22Z",
+  "reason": "Jalna WUP identity matches the original 2025 row and immutable rank 1388 queue: India, exact point, 406973 persons. English and Marathi searches are recorded; official Maharashtra pages identify Jalna land-record offices and map services. The viewer retrieval timed out in worker evidence; no bounded native-ID parcel polygon response or positive original cache exists. Adapter qualification, forced paging, 13 cells, metric geometry checks, source binding, and headed Details verification are absent. Registry custody stays unresolved/null; timeout is not citywide absence."
+}

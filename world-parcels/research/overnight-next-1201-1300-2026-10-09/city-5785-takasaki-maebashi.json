@@ -1,0 +1,90 @@
+{
+  "cityCode": 5785,
+  "queueRank": 1295,
+  "name": "Takasaki [Maebashi]",
+  "country": "Japan",
+  "countryCode": "JP",
+  "iso3": "JPN",
+  "point": [36.3622938663979, 139.038838162225],
+  "population2025": 431687,
+  "population2025k": 431.687,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": true,
+  "registryAssessment": "Takasaki City is the first-party local cadastral/map custodian evidenced here: its Asset Tax Division publishes the city's parcel-number map data and its official map system exposes the parcel-number map. The public data is explicitly reference-only and not a legal boundary or survey record.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Takasaki City Japan official cadastral map parcel GIS public map",
+        "result": "Found Takasaki City's official cadastral-map/parcel-number information page, open-data catalogue, map system, and downloadable parcel-polygon Shapefile. The official source states the parcel-number map covers Takasaki City and is reference-only.",
+        "actualResultUrls": [
+          "https://www.city.takasaki.gunma.jp/page/5424.html",
+          "https://www.city.takasaki.gunma.jp/page/3130.html",
+          "https://www.city.takasaki.gunma.jp/page/5423.html",
+          "https://www.sonicweb-asp.jp/takasaki2/"
+        ]
+      },
+      {
+        "language": "Japanese",
+        "query": "高崎市 地籍図 公開 GIS 公式",
+        "result": "高崎市公式ページで地籍図・地番図を確認。高崎市オープンデータに筆ポリゴンのシェープファイルが公開され、座標系は世界測地系2011・平面直角座標第9系と明記されている。まっぷdeたかさきの地番図も確認した。",
+        "actualResultUrls": [
+          "https://www.city.takasaki.gunma.jp/page/5424.html",
+          "https://www.city.takasaki.gunma.jp/page/3130.html",
+          "https://www.city.takasaki.gunma.jp/page/5423.html",
+          "https://www.sonicweb-asp.jp/takasaki2/map?theme=th_66"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.city.takasaki.gunma.jp/page/3130.html",
+      "role": "Takasaki City official open-data catalogue",
+      "observation": "Lists citywide 地番図 Shapefile downloads, including 筆ポリゴン_地番図, and identifies Asset Tax Division as the responsible department. Notes say the data shows parcel-number arrangement for reference, does not represent parcel boundaries or rights, is not for applications, and may differ from measurements."
+    },
+    {
+      "url": "https://www.city.takasaki.gunma.jp/uploaded/attachment/42714.zip",
+      "role": "Official Takasaki City parcel-polygon download",
+      "observation": "Anonymous HTTPS GET succeeded. ZIP contains 筆ポリゴン_地番図.shp/.shx/.dbf/.prj; 577,988 polygon features. The polygon attribute schema is FUDEID, documented as a parcel geometry management number."
+    },
+    {
+      "url": "https://www.city.takasaki.gunma.jp/uploaded/attachment/42707.pdf",
+      "role": "Official Takasaki City data specification",
+      "observation": "Documents the dataset extent as Takasaki City, creation date 2026-01-01, CRS JGD2011 Japan Plane Rectangular CS IX, polygon file 筆ポリゴン_地番図.shp, and FUDEID as the parcel geometry management number."
+    },
+    {
+      "url": "https://www.city.takasaki.gunma.jp/page/5424.html",
+      "role": "Official local cadastral-map procedure page",
+      "observation": "States that Takasaki cadastral maps show land shape and parcel number without owner names, and directs users to the city open-data site and まっぷdeたかさき for parcel-number maps."
+    },
+    {
+      "url": "https://www.sonicweb-asp.jp/takasaki2/map?theme=th_66",
+      "role": "Official-linked public map viewer",
+      "observation": "Anonymous GET succeeded. Current viewer HTML/config exposes the 地番図 theme and map.js configuration with the public API base https://www.sonicweb-asp.jp/takasaki2/api/; no login was used. The downloadable Shapefile was used for safe bounded geometry verification."
+    }
+  ],
+  "serviceReview": "takasaki-maebashi-service-review.json",
+  "geometryDecision": {
+    "verified": true,
+    "sourceId": "FUDEID:299414",
+    "sampleCount": 1,
+    "sampleFile": "takasaki-maebashi-parcel-sample.geojson",
+    "exactWupPointTest": "Exact WUP point [36.3622938663979, 139.038838162225] is inside FUDEID 299414 after transforming the source JGD2011 Japan Zone 9 coordinates to WGS84. The point was not shifted.",
+    "crs": "Source JGD2011 / Japan Plane Rectangular CS IX (EPSG:6677); retained sample is WGS84 GeoJSON (EPSG:4326).",
+    "nativeIdentity": "FUDEID:299414"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Takasaki City parcel-number map/polygon dataset published by Takasaki City.",
+    "verifiedOpenScope": "The official ZIP and specification identify a Takasaki City-wide polygon dataset; one bounded exact-point hit was verified.",
+    "citywideVerified": true,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

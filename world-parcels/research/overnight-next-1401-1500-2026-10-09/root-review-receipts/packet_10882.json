@@ -1,0 +1,14 @@
+{
+  "taskId": "packet:10882",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-10882-wuzhou.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/wuzhou-service-review.json",
+    "tmp/valhalla-parcel-research/wuzhou-10882/guangxi-index.js"
+  ],
+  "checkedAt": "2026-10-10T08:04:52Z",
+  "reason": "Code 10882, rank 1418, China, exact point and 398593 persons match the immutable roster and queue. English and Chinese executed searches are recorded in both paired files. Guangxi official guidance supports the Wuzhou natural-resources bureau as cadastral custodian, so registry custody remains true. The cached public Guangxi JavaScript exposes no identified anonymous parcel route; expired local-site TLS and timeouts leave access unresolved, not citywide absence. No polygon or independent adapter and headed Details qualification is evidenced.",
+  "admission": false
+}

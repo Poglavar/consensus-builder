@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 9340,
+  "queueRank": 1931,
+  "name": "Baochi",
+  "country": "China",
+  "countryCode": "CN",
+  "cityId": "wup2025:9340",
+  "point": [39.7184651310975, 117.295266642559],
+  "population2025": 298433,
+  "population2025k": 298.433,
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "registryFound": null,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Baochi China cadastral parcel map official GIS Tianjin Baodi",
+        "result": "Search found the official Tianjin Tianditu public geospatial portal, whose page identifies the Tianjin Planning and Natural Resources Bureau as sponsor and advertises map, data and web-service API resources. It did not expose a Baochi-specific cadastral result or parcel layer in the search results.",
+        "actualResultUrls": ["https://tianjin.tianditu.gov.cn/"]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "宝坻区 自然资源和规划局 地籍图 不动产登记 地图",
+        "result": "Search did not return a Baochi-specific public parcel service. It returned the official Tianjin Tianditu portal and general/other-city cadastral information pages; the official Tianjin portal was inspected as the relevant first-party lead.",
+        "actualResultUrls": ["https://tianjin.tianditu.gov.cn/", "https://www.tjbd.gov.cn/zwgk/zcwj/qjwj/QZFBGS/202312/W020231227732100822863.pdf"]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://tianjin.tianditu.gov.cn/",
+      "operator": "Tianjin Planning and Natural Resources Bureau / Tianjin Surveying and Mapping Geographic Information Research Center",
+      "scope": "Tianjin municipality public geospatial portal; Baodi is listed in its standard-map resources.",
+      "observation": "The public page advertises map services, online map, data/API and service-center resources. It does not itself establish an anonymous cadastral parcel geometry endpoint or Baochi parcel coverage. This is a municipal geospatial lead, not proof of a local registry record."
+    },
+    {
+      "url": "https://www.tjbd.gov.cn/zwgk/zcwj/qjwj/QZFBGS/202312/W020231227732100822863.pdf",
+      "operator": "Baodi District Government",
+      "scope": "Baodi District official planning document.",
+      "observation": "Official Baodi geographic/planning document found in native-language search; it is not a cadastral parcel dataset and was not used as geometry evidence."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://tianjin.tianditu.gov.cn/",
+      "method": "GET via first-party web inspection",
+      "status": "HTTP page fetched by web inspection",
+      "contentType": "text/html",
+      "observation": "Page identifies Tianjin Planning and Natural Resources Bureau as sponsor, Tianjin Surveying and Mapping Geographic Information Research Center as operator, and Tianjin Surveying Institute as technical unit. Visible services include online maps, map/data/API resources and standard maps. No parcel feature response was returned."
+    },
+    {
+      "url": "https://tianjin.tianditu.gov.cn/static/help/note.html",
+      "method": "GET via first-party web inspection",
+      "status": "timeout / failed fetch",
+      "observation": "The public help page could not be fetched within the web-inspection timeout; no inference about service absence was made."
+    },
+    {
+      "url": "https://tianjin.tianditu.gov.cn/",
+      "method": "GET via local curl with default TLS verification",
+      "status": "not completed; certificate verification failed because the presented certificate was expired",
+      "observation": "No certificate bypass was attempted. This is recorded as a transport failure, not evidence of portal or parcel absence."
+    },
+    {
+      "url": "https://tianjin.tianditu.gov.cn/static/html/bzmap.html",
+      "method": "GET via first-party web search/open",
+      "status": "official page found",
+      "observation": "The standard-map page lists Baodi District map resources, but only standard map imagery/catalog entries were observed; no cadastral polygon or safe native parcel identity was obtained."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Tianjin municipality public geospatial portal and its Baodi standard-map catalog.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "citywideParcelCoverage": "unverified",
+    "note": "A zero exact-point result was not obtained and is not treated as absence. No map extent, anonymous feature service, schema, CRS, or bounded parcel geometry response was verified."
+  },
+  "sourceFields": null,
+  "crs": null,
+  "safeFieldAllowlist": ["native parcel identifier", "geometry", "source CRS", "service URL", "retrieval timestamp"],
+  "nativeIdReadiness": "not_applicable_no_verified_parcel_response",
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_municipal_geospatial_portal_found_no_verified_open_parcel_endpoint",
+  "blocker": "The official Tianjin public geospatial portal was identified, but its accessible public page and bounded checks did not yield a parcel-layer schema or anonymous ID-plus-geometry response for Baochi/Baodi. One direct local GET was blocked by expired TLS validation; no TLS exception was used.",
+  "remainingUncertainty": "The portal may expose additional map/API services through client-side configuration or access controls not reachable in this bounded anonymous attempt. No citywide absence is inferred, and no parcel polygon is retained.",
+  "nextStep": "On a future attempt, inspect the portal's current JavaScript/configuration through a working TLS path and test only documented anonymous map/API endpoints for a small Baodi-area geometry-plus-safe-ID response. Keep runtime held until independent serial qualification."
+}

@@ -1,0 +1,17 @@
+{
+  "taskId": "packet:6839",
+  "decision": "held",
+  "checkedAt": "2026-10-09T12:14:01.549766Z",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-6839-sadiqabad.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/sadiqabad-service-review.json",
+    "tmp/valhalla-parcel-research/6839/map.html",
+    "tmp/valhalla-parcel-research/6839/base-map.txt",
+    "tmp/valhalla-parcel-research/6839/pulse.html"
+  ],
+  "reason": "Rank 1225, WUP 6839, Pakistan, unchanged point and 454465 persons match the immutable roster. English and Urdu search attempts are documented in the paired packet. First-party cached municipal map and PDF text support a local parcel-boundary map; cached PULSE HTML advertises cadastral layers and requires login for complete details. The paired packet reports ArcGIS code 499, but no original feature response or native-ID polygon is retained. Registry/map context is supported; public vector access and citywide absence remain unresolved. No fresh ID read, forced paging, 13-cell scan, metric topology checks, source binding or headed Details proof exists. No admission."
+}

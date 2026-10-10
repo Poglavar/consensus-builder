@@ -1,0 +1,128 @@
+{
+  "cityCode": 10475,
+  "queueRank": 1669,
+  "name": "Tiruvannamalai",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "point": [12.2340004698616, 79.0705806848255],
+  "population2025": 342795,
+  "population2025k": 342.795,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tiruvannamalai cadastral parcel map official Tamil Nadu land records GIS survey map",
+        "result": "First-party results identified the Tiruvannamalai district administration's scanned town-correlation route, Tamil Nadu TNGIS, the TamilNilam Geo-Info land-record map service, and the official Tamil Nadu land-record service description. No safe anonymous city-bounded parcel ID plus geometry response was obtained.",
+        "actualResultUrls": [
+          "https://tiruvannamalai.nic.in/service/scanned-correlation-statement-details/",
+          "https://www.tngis.tn.gov.in/apps.html",
+          "https://tngis.tnega.org/tamil_nilam/",
+          "https://services.india.gov.in/service/detail/view-land-records-of-patta--chitta--fmb-rural-tamil-nadu"
+        ]
+      },
+      {
+        "language": "Tamil",
+        "query": "திருவண்ணாமலை பட்டா நில வரைபடம் அதிகாரப்பூர்வம் நில அளவை",
+        "result": "Tamil-language discovery returned the same official Tamil Nadu land-record/GIS routes and district survey-office evidence. The public TamilNilam route was not available as a usable parcel geometry response in this attempt.",
+        "actualResultUrls": [
+          "https://tngis.tnega.org/tamil_nilam/",
+          "https://tiruvannamalai.nic.in/service/scanned-correlation-statement-details/",
+          "https://www.tngis.tn.gov.in/apps.html"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://tiruvannamalai.nic.in/service/scanned-correlation-statement-details/",
+      "operator": "Tiruvannamalai District Administration / Assistant Director of Survey",
+      "observation": "The official district page directs users to tnlandsurvey.tn.gov.in/index.php/Scanned and identifies the Assistant Director of Survey at the Collectorate in Tiruvannamalai, with a district office contact. This is local survey-office/custodian evidence, but the linked route did not produce parcel geometry in this attempt."
+    },
+    {
+      "url": "https://tngis.tnega.org/tamil_nilam/",
+      "operator": "Tamil Nadu Department of Survey and Settlement / TNeGA",
+      "observation": "The indexed first-party TamilNilam Geo-Info route exposes District, Taluk, Village and Survey/Subdivision navigation and FMB Sketch functionality. Search indexing showed a live example for Thiruvannamalai district, but no city-targeted safe parcel geometry response was retrieved."
+    },
+    {
+      "url": "https://www.tngis.tn.gov.in/apps.html",
+      "operator": "Tamil Nadu Geographical Information System / TNeGA",
+      "observation": "Official TNGIS application directory lists Tiruvannamalai among supported districts and states that the portal data are informational and subject to source-agency ownership and maintenance. It is a state GIS lead, not proof of an open cadastral feature endpoint."
+    },
+    {
+      "url": "https://tn.gov.in/",
+      "operator": "Government of Tamil Nadu",
+      "observation": "General state-government host identified during discovery; no direct city parcel feature service was established from it."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://tngis.tnega.org/tamil_nilam/",
+      "method": "GET via first-party web research fetch",
+      "httpStatus": "502 Bad Gateway",
+      "outcome": "The public TamilNilam route was discovered in search, but the live page could not be fetched by the research web client. No JavaScript/configuration or parcel schema was available from this request."
+    },
+    {
+      "url": "https://www.tngis.tn.gov.in/apps.html",
+      "method": "GET via first-party web research fetch",
+      "httpStatus": 200,
+      "outcome": "Official TNGIS application directory loaded; Tiruvannamalai appeared in the district list. No anonymous parcel feature endpoint was exposed in the retrieved page."
+    },
+    {
+      "url": "https://tiruvannamalai.nic.in/service/scanned-correlation-statement-details/",
+      "method": "GET via first-party web research fetch",
+      "httpStatus": 200,
+      "outcome": "Official district page loaded and linked the Tamil Nadu land-survey scanned correlation service, while identifying the local Assistant Director of Survey office. The linked service itself was not queried with credentials or CAPTCHA bypass."
+    },
+    {
+      "url": "https://tnlandsurvey.tn.gov.in/index.php/Scanned",
+      "method": "GET through linked first-party route",
+      "httpStatus": "not obtained",
+      "outcome": "The route was recorded from the official district page but did not return a usable parcel geometry/schema response in the bounded attempt."
+    },
+    {
+      "url": "https://services.india.gov.in/service/detail/view-land-records-of-patta--chitta--fmb-rural-tamil-nadu",
+      "method": "GET via first-party government service index",
+      "httpStatus": "redirected to current services index",
+      "outcome": "Indexed service description establishes Tamil Nadu rural/urban land-record lookup by district and survey identifiers, including FMB/TSLR concepts, but no city-bounded geometry API was retrieved."
+    },
+    {
+      "url": "https://tngis.tnega.org/tamil_nilam/",
+      "method": "GET from local bounded request environment",
+      "httpStatus": "DNS resolution failure",
+      "outcome": "The local request environment could not resolve the host. No TLS bypass or alternate unsafe route was attempted."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The official Tiruvannamalai district administration identifies a local Assistant Director of Survey office and links the state survey service; official Tamil Nadu land-record/GIS routes are city/district relevant. This establishes a local/state cadastral custodian and public procedure, but not an open city-bounded parcel API or exact-point coverage.",
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel feature response retrieved",
+  "geometryQuality": "not evaluated; no parcel geometry retrieved",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": "tamil-nadu-tamilnilam-tngis-tnlandsurvey",
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Tamil Nadu Department of Survey and Settlement TamilNilam/FMB and TNGIS services, plus Tiruvannamalai district survey-office route.",
+    "cityCoverage": "Tiruvannamalai is named by official district/state sources, but the city boundary, parcel layer, CRS, anonymous feature schema and exact WUP-point parcel coverage were not verified.",
+    "exactPointChecked": false,
+    "note": "The exact WUP point [12.2340004698616, 79.0705806848255] was preserved in latitude/longitude order and was not shifted. No exact-point hit/miss inference was made."
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "retainedSample": null,
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The live viewer configuration, parcel layer schema, CRS, stable native identity, anonymous geometry access and citywide coverage remain unresolved. No raw source-specific attributes, owner/address/contact information or synthetic identity was retained. This packet is not source integration/admission."
+}

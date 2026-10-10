@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2049-biratnagar.json",
+  "cityCode": 2049,
+  "queueRank": 1420,
+  "purpose": "Document first-party discovery, current public land-record routes, bounded anonymous access review, scope limits, and uncertainty.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Survey Department MeroKitta portal exposes anonymous administrative and mapsheet metadata for the Morang/Biratnagar survey office. Its current JavaScript exposes public GET routes for office, district, local-level, ward, and mapsheet lookup. The tested routes returned no parcel geometry or parcel-ID response. The portal's service application requires landowner certificate/citizenship documents and submission, which was not attempted.",
+  "registryAssessment": "Local custodian evidence is present: Survey Department's Morang office is listed for Biratnagar, and the Department of Land Management and Archive has a Biratnagar office. This does not prove an anonymous citywide cadastral vector registry, so registryFound is null.",
+  "queries": [
+    {
+      "language": "English",
+      "query": "Biratnagar Nepal official cadastral parcel map land records GIS service Department of Survey",
+      "outcome": "Official Survey Department, MeroKitta, Morang survey-office, Biratnagar land-administration, and municipal GIS-map references found; no anonymous parcel-vector service found.",
+      "actualResultUrls": ["https://dos.gov.np/pages/napi-offices/", "https://morang.dos.gov.np/", "https://merokitta.dos.gov.np/", "https://biratnagar.dolma.gov.np/office/biratnagar", "https://biratnagarmun.gov.np/ne/image-types/%E0%A4%AD%E0%A5%82-%E0%A4%B8%E0%A5%82%E0%A4%9A%E0%A4%A8%E0%A4%BE-%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A4%A3%E0%A4%BE%E0%A4%B2%E0%A5%80-%E0%A4%A8%E0%A4%95%E0%A5%8D%E0%A4%B8%E0%A4%BE"]
+    },
+    {
+      "language": "Nepali",
+      "query": "विराटनगर नेपाल सरकारी कित्ता नक्सा भू-अभिलेख क्याडस्ट्रल नक्सा",
+      "outcome": "Official Nepali-language municipal GIS, Survey Department, MeroKitta, and Biratnagar land-office references found; no anonymous parcel geometry or stable native parcel-ID response found.",
+      "actualResultUrls": ["https://biratnagarmun.gov.np/ne/image-types/%E0%A4%AD%E0%A5%82-%E0%A4%B8%E0%A5%82%E0%A4%9A%E0%A4%A8%E0%A4%BE-%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A4%A3%E0%A4%BE%E0%A4%B2%E0%A5%80-%E0%A4%A8%E0%A4%95%E0%A5%8D%E0%A4%B8%E0%A4%BE", "https://biratnagar.dolma.gov.np/office/biratnagar", "https://dos.gov.np/pages/napi-offices/", "https://merokitta.dos.gov.np/"]
+    }
+  ],
+  "attempts": [
+    {"url": "https://dos.gov.np/pages/napi-offices/", "method": "GET", "httpStatus": 200, "result": "Official Survey Department office directory listed Morang survey office, morang@dos.gov.np, and https://morang.dos.gov.np/."},
+    {"url": "https://morang.dos.gov.np/", "method": "GET", "httpStatus": null, "result": "First-party route identified from the official directory; local fetch timed out. No TLS bypass or retry with credentials."},
+    {"url": "https://merokitta.dos.gov.np/", "method": "GET", "httpStatus": 200, "result": "Official NeLIS Public Access Portal loaded. Page states that service applications require a landowner certificate and landowner citizenship scan; no application was submitted."},
+    {"url": "https://merokitta.dos.gov.np/static/js/custom.js", "method": "GET", "httpStatus": 200, "result": "Current JavaScript was inspected; it exposes public administrative/mapsheet routes and no parcel geometry route."},
+    {"url": "https://merokitta.dos.gov.np/api/load/so/merokitta/active", "method": "GET", "httpStatus": 200, "request": {}, "result": "Anonymous office metadata returned Morang/Biratnagar Survey Office soid=501."},
+    {"url": "https://merokitta.dos.gov.np/api/load/districts", "method": "GET", "httpStatus": 200, "request": {}, "result": "Anonymous district metadata returned Morang districtid=5 (Nepali name मोरङ्ग)."},
+    {"url": "https://merokitta.dos.gov.np/api/load/locallevels/districtwise/5", "method": "GET", "httpStatus": 200, "request": {"districtid": 5}, "result": "Anonymous local-level metadata included Biratnagar metropolitan local unit vdcid=53073."},
+    {"url": "https://merokitta.dos.gov.np/api/load/vdc/officewise/501", "method": "GET", "httpStatus": 200, "request": {"soid": 501}, "result": "Anonymous office coverage metadata included Biratnagar local unit vdcid=53073; response contained administrative names only."},
+    {"url": "https://merokitta.dos.gov.np/api/load/wards/vdcwise/53073", "method": "GET", "httpStatus": 200, "request": {"vdcid": 53073}, "result": "Anonymous ward metadata returned wards 10 and 13 for this MeroKitta local-unit record."},
+    {"url": "https://merokitta.dos.gov.np/api/load/mapsheets/53073/10", "method": "GET", "httpStatus": 200, "request": {"vdcid": 53073, "wardno": "10"}, "result": "Anonymous mapsheet metadata returned 23 mapsheet IDs, names equal to IDs; no geometry or parcel attributes."},
+    {"url": "https://merokitta.dos.gov.np/api/load/mapsheets/53073/13", "method": "GET", "httpStatus": 200, "request": {"vdcid": 53073, "wardno": "13"}, "result": "Anonymous mapsheet metadata returned 32 mapsheet IDs, names equal to IDs; no geometry or parcel attributes."},
+    {"url": "https://merokitta.dos.gov.np/api/load/mapsheets/53073/1", "method": "GET", "httpStatus": 200, "request": {"vdcid": 53073, "wardno": "1"}, "result": "Empty anonymous response; not treated as evidence of missing cadastral coverage."},
+    {"url": "https://merokitta.dos.gov.np/api/load/wards/vdcwise/501", "method": "GET", "httpStatus": 200, "request": {"vdcid": 501}, "result": "Empty response; office ID was not treated as a local-unit ID."},
+    {"url": "https://merokitta.dos.gov.np/api/load/vdc/officewise/parcels/501", "method": "GET", "httpStatus": 200, "request": {"soid": 501}, "result": "Administrative local-unit list, including Biratnagar vdcid=53073; despite the route name, no parcel IDs or geometry were returned."},
+    {"url": "https://biratnagar.dolma.gov.np/office/biratnagar", "method": "GET", "httpStatus": null, "result": "First-party Biratnagar land-administration office route identified in discovery; automated fetch returned an internal error. No private route or login attempted."},
+    {"url": "https://biratnagarmun.gov.np/ne/image-types/%E0%A4%AD%E0%A5%82-%E0%A4%B8%E0%A5%82%E0%A4%9A%E0%A4%A8%E0%A4%BE-%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A4%A3%E0%A4%BE%E0%A4%B2%E0%A5%80-%E0%A4%A8%E0%A4%95%E0%A5%8D%E0%A4%B8%E0%A4%BE", "method": "GET", "httpStatus": 200, "result": "Biratnagar Metropolitan City GIS-map page loaded; the page presents thematic map references, not an anonymous cadastral parcel API."}
+  ],
+  "geometryEvidence": {"sourceUrl": null, "sampleFile": null, "nativeIdField": null, "nativeFieldMapping": {}, "compositeKeyProvenance": null, "sampleCount": 0, "crs": null, "queryExtent": null},
+  "geometryDecision": {"verified": false, "sourceId": null, "nativeIdField": null, "sampleCount": 0, "exactWupPointTest": "No anonymous parcel layer/query returned geometry; exact point [26.5093824807541, 87.2780030619981] was not shifted or used as an absence test.", "retentionNote": "No sample retained."},
+  "safeFieldAllowlist": ["native parcel ID if publicly exposed", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "remainingUncertainty": "The official MeroKitta service may provide parcel map prints or other land records after document-backed service submission, and the Morang survey-office site may expose additional routes when available. Those flows are outside anonymous safe research because they require landowner documents, mobile/OTP or institutional access, and potentially personal or title data. The administrative/mapsheet responses do not establish citywide parcel coverage or absence.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter",
+  "researchAttempt": 1
+}

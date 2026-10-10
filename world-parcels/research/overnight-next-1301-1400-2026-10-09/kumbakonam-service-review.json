@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10653-kumbakonam.json",
+  "cityCode": 10653,
+  "queueRank": 1393,
+  "purpose": "Document first-party discovery, public land-record/map route attempts, safe-field limits, and uncertainty.",
+  "assessment": "Official Tamil Nadu sources evidence an urban land-record procedure using town/block/ward/survey/subdivision keys and the TamilNilam Geo-Info map service operated by the Department of Survey and Settlement. Official Kumbakonam corporation and municipal property-search pages establish local municipal procedure context. The current TamilNilam/e-services and ward/property viewer routes did not return within bounded anonymous requests, while the TN-GIS-NIC page was generic. No safe native parcel ID plus geometry was verified, so no parcel sample is retained.",
+  "registryAssessment": "registryFound is true because official Tamil Nadu land-record/cadastral procedure and the Department of Survey and Settlement map service were evidenced, with Kumbakonam's official corporation/property-search context separately identified. This is not evidence of an open parcel-vector API or citywide coverage.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "queries": [
+    {"language":"English","query":"Kumbakonam official cadastral parcel map GIS Tamil Nadu land records public map","outcome":"Official Kumbakonam corporation, Tamil Nadu land-record e-services, TamilNilam Geo-Info, TNGIS and municipal property-search sources found; no anonymous parcel geometry response.","actualResultUrls":["https://www.tnurbantree.tn.gov.in/kumbakonam/","https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu","https://play.google.com/store/apps/details?hl=en-US&id=org.tnega.tamil.nilam","https://www.tngis.tn.gov.in/apps.html","https://tnurbanepay.tn.gov.in/PT_PropertySearch.aspx"]},
+    {"language":"Tamil","query":"கும்பகோணம் அதிகாரப்பூர்வ நில அளவை வரைபடம் பட்டா நிலப்பதிவு GIS","outcome":"Official Tamil Nadu/Kumbakonam land-record map, municipal property-search and corporation sources found; no directly accessible anonymous parcel-vector endpoint.","actualResultUrls":["https://www.tnurbantree.tn.gov.in/kumbakonam/","https://tamilnilam.tn.gov.in/citizen","https://tnurbanepay.tn.gov.in/PT_PropertySearch.aspx","https://www.tnurbantree.tn.gov.in/kumbakonam/ward-map/"]}
+  ],
+  "attempts": [
+    {"url":"https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu","method":"GET/search review","httpStatus":200,"result":"Urban TSLR/FMB/Chitta procedure and cadastral lookup keys recorded; no record-specific request made."},
+    {"url":"https://play.google.com/store/apps/details?hl=en-US&id=org.tnega.tamil.nilam","method":"GET/search review","httpStatus":200,"result":"TamilNilam Geo-Info map/FMB/patta capability and operator recorded; no API schema exposed."},
+    {"url":"https://www.tnurbantree.tn.gov.in/kumbakonam/","method":"GET/search review","httpStatus":200,"result":"Official local corporation context retrieved; no parcel endpoint exposed."},
+    {"url":"https://tamilnilam.tn.gov.in/citizen","method":"GET; anonymous curl","httpStatus":"timeout after 12s","result":"Viewer unavailable within bound; no endpoint or geometry inferred."},
+    {"url":"https://eservices.tn.gov.in/eservicesnew/","method":"GET; anonymous curl","httpStatus":"timeout after 20s","result":"Viewer unavailable within bound; no record-specific or unsafe query attempted."},
+    {"url":"https://www.tnurbantree.tn.gov.in/kumbakonam/ward-map/","method":"GET; anonymous curl","httpStatus":"timeout after 12s","result":"Ward-map page unavailable within bound; timeout is not evidence of parcel absence."},
+    {"url":"https://gisnic.tn.nic.in/","method":"GET; anonymous curl","httpStatus":200,"result":"Generic TN-GIS-NIC landing page; no parcel layer, schema, CRS or geometry."},
+    {"url":"https://www.tngis.tn.gov.in/apps.html","method":"GET; anonymous curl","httpStatus":"timeout after 12s","result":"Official application directory found but not fetched in bounded curl; no endpoint inferred."},
+    {"url":"https://tnurbanepay.tn.gov.in/PT_PropertySearch.aspx","method":"GET; anonymous curl","httpStatus":"timeout after 12s","result":"Official property-search form found, but no geometry endpoint or safe parcel response was obtained."}
+  ],
+  "geometryEvidence": null,
+  "geometryDecision": {"verified":false,"sourceId":null,"nativeIdField":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"Not completed; exact WUP point [10.964569185515, 79.3852902968803] preserved and not shifted."},
+  "safeFieldAllowlist": ["safe native parcel identifier if publicly returned","geometry","CRS","non-personal schema/service metadata","HTTP status/content type"],
+  "remainingUncertainty": "Viewer JavaScript/configuration, backend routes, parcel schema, CRS, native identity, exact-point containment, and citywide open coverage remain unverified. No owner, address, contact, titleholder, personal, tax/account or other unsafe fields were requested.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter",
+  "runtimeReadiness": "held",
+  "adapterReady": false,
+  "sampleFile": null,
+  "citywideVerified": false,
+  "countrywideVerified": false,
+  "geometryVerified": false,
+  "researchAttempt": 1,
+  "nextStep": "Serial review of the live official TamilNilam/e-services viewer may continue without authentication; admit no runtime adapter without bounded safe native-ID-plus-geometry evidence."
+}

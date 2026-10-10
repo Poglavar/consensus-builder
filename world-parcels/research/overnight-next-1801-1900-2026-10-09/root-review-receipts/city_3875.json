@@ -1,0 +1,15 @@
+{
+  "taskId": "city:3875",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-3875-dumai.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/dumai-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T15:49:51Z",
+  "reviewNotes": "WUP 2025 source archive, ranked roster, queue and packet agree on Dumai code 3875, rank 1807, Indonesia, exact point and 317280 persons. English and Indonesian searches are recorded. The first-party Dumai ATR/BPN land office supports registry custody, and saved first-party BHUMI client code names a parcel layer and authenticated retrieval path. No anonymous native-ID polygon response or retained polygon exists. A 404 service route, login requirement or Cloudflare challenge does not establish absence.",
+  "admissionGate": "Held: no fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding or headed Details verification. Registry, catalog, city configuration and generated reports were not changed."
+}

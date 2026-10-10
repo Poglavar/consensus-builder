@@ -1,0 +1,14 @@
+{
+  "taskId": "city:8987",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-8987-sambhal.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/sambhal-service-review.json",
+    "tmp/valhalla-parcel-research/8987/upbhulekh.html",
+    "tmp/valhalla-parcel-research/8987/gata_seq.out"
+  ],
+  "checkedAt": "2026-10-09T13:07:01Z",
+  "reason": "Queue identity matches. The paired packet explicitly says English and Hindi queries were not executed in its validation retry, and the inspected first-party cache contains a portal shell and unsuccessful GET attempt, not a qualified parcel response. Registry custody remains unresolved; no native-ID polygons or adapter qualification exist."
+}

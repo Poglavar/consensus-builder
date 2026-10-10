@@ -1,0 +1,33 @@
+{
+  "cityRecord": "city-8999-thakurdwara.json",
+  "cityCode": 8999,
+  "queueRank": 1696,
+  "attempt": 1,
+  "reviewStatus": "complete_packet_held_for_serial_review",
+  "service": "Uttar Pradesh Board of Revenue Bhu-Naksha public cadastral viewer",
+  "serviceUrl": "https://upbhunaksha.gov.in/",
+  "apiBase": "https://upbhunaksha.gov.in/bhunakshaserver",
+  "administrativePath": {"districtCode": "135", "district": "Moradabad", "tehsilCode": "00717", "tehsil": "Thakurdwara", "villageCode": "220917", "village": "Thakurdwara", "gisCode": "13500717220917"},
+  "mapExtent": {"xmin": 290917.0139367361, "ymin": 3230351.2349705785, "xmax": 292057.10039685504, "ymax": 3231706.902661109, "crs": "EPSG:32644"},
+  "nativeFieldMapping": {"id": "opaque native plot id from lookup", "kide": "native plot/gata number", "minx/miny/maxx/maxy": "native bounding-box fields"},
+  "compositeKeyProvenance": "gisCode is the official service's concatenated administrative navigation code; no synthetic parcel identity was created.",
+  "requestOutcomes": [
+    {"route": "masterdata/levelvalue", "status": 200, "outcome": "Administrative levels resolved anonymously."},
+    {"route": "MapInfo/getVVVVExtentGeoref", "status": 200, "outcome": "Village extent, attribution, gisCode, and EPSG:32644 returned."},
+    {"route": "MapInfo/getPlotAtXY", "status": 200, "outcome": "Safe native plot id/number and bounding box returned for bounded probe coordinate."},
+    {"route": "MapInfo/getPlotByPlotNo", "status": 200, "outcome": "Safe native plot id/number and bounding box returned for plot 1."},
+    {"route": "v1/khasramap/plot", "status": 401, "outcome": "Full plot route required Authorization; no authentication or bypass attempted."}
+  ],
+  "scopeLimits": [
+    "The exact WUP point was preserved and not shifted.",
+    "The point is outside the selected same-named revenue-village map extent; that extent miss is not evidence of citywide absence.",
+    "Anonymous responses exposed IDs and bounding boxes, not full parcel polygons.",
+    "No owner, address, contact, titleholder, personal, tax/account, or other unsafe fields were requested or retained.",
+    "No retained GeoJSON sample was created because no full polygon was safely obtained.",
+    "Packet completion does not mean source integration or admission; serial qualification is required."
+  ],
+  "safeFieldAllowlist": ["native parcel identity when qualified", "full polygon geometry", "CRS", "public service metadata"],
+  "geometrySample": null,
+  "runtimeReadiness": "held_pending_serial_review",
+  "uncertainty": "Public registry/service evidence is strong, but citywide coverage and anonymous full geometry remain unverified."
+}

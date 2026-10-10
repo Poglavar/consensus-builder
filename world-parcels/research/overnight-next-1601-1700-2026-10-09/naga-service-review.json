@@ -1,0 +1,37 @@
+{
+  "cityRecord": "city-4417-naga.json",
+  "cityCode": 4417,
+  "queueRank": 1689,
+  "name": "Naga",
+  "country": "Philippines",
+  "countryCode": "PH",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "sourceReview": "Official Naga City pages evidence the City Assessor/Taxmapping office as the local cadastral/assessment custodian. The official Geoportal Philippines configuration exposes LMB parcel data as denr_parcel_data through GeoServer WMS, but the layer is not marked for download; bounded anonymous exact-point and capabilities requests timed out. No parcel geometry, schema, CRS, or stable native identity was verified.",
+  "queryReview": {
+    "englishDiscovery": "Completed; official Naga City Assessor, city maps, City Assessor budget evidence, Geoportal, LMB parcel-layer, and current frontend configuration sources found.",
+    "localLanguageDiscovery": "Completed with Filipino cadastral/lot/assessor terminology; no separate public local-language parcel viewer found, while official English administrative sources evidence the local custodian.",
+    "exactPoint": [13.6290026335439, 123.191974140904],
+    "bboxLonLat": [123.1915, 13.6285, 123.1925, 13.6295],
+    "returned": 0,
+    "ids": [],
+    "geometry": null,
+    "mapExtentOrPointMiss": null
+  },
+  "requestOutcomes": "Official Naga City pages, Geoportal HTML, current layer JSON, and current frontend JavaScript returned successfully and identified the local custodian, LMB parcel layer, and WMS route. Anonymous WMS GetFeatureInfo for the exact WUP-point vicinity and WMS GetCapabilities both exceeded bounded timeouts; no retry, login, credential, private token, CAPTCHA/Cloudflare interaction, TLS exception, or bypass was used. No restricted parcel download was attempted.",
+  "safeFieldAllowlist": ["native parcel identity if later documented", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "retainedSample": null,
+  "scopeLimits": [
+    "Local City Assessor/Taxmapping custody is evidenced, but no open local parcel API or public parcel feature response was verified.",
+    "Geoportal LMB parcel data is cataloged and wired to WMS, but current configuration does not mark it as downloadable; schema, CRS, and identity were not obtained.",
+    "No owner, titleholder, address, contact, tax/account, legal/title, or personal fields were requested or retained.",
+    "The exact-point vicinity timeout and capabilities timeout do not establish parcel absence, map extent, or citywide coverage.",
+    "No GeoJSON sample was retained because no safe native parcel ID plus full polygon was verified.",
+    "Runtime readiness remains held pending independent serial adapter review."
+  ],
+  "uncertainty": "No claim is made about exact-point parcel presence, citywide parcel coverage, map extent, geometry availability, native IDs, or legal/title completeness."
+}

@@ -1,0 +1,13 @@
+{
+  "taskId": "city:12121",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-12121-zhanghua-city.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/zhanghua-city-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T10:29:18.511738Z",
+  "reason": "Official Changhua Land Office links the cadastral services; original NLSC point responses contain a no-land-number message or an empty body. No full polygon, native parcel ID, or adapter qualification. Point-zero is not citywide absence.",
+  "primarySourceUrl": "https://landoffice.chcg.gov.tw/changhua/05links/links01.aspx"
+}

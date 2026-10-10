@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 11257,
+  "queueRank": 1812,
+  "cityId": "queue:1812",
+  "name": "Hazaribagh",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [23.9952991688034, 85.3602411525146],
+  "centerLatLon": [23.9952991688034, 85.3602411525146],
+  "population2025": 316861,
+  "population2025k": 316.861,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hazaribagh Jharkhand cadastral parcel map official land records GIS",
+        "result": "First-party discovery identified the Hazaribag district administration land-records page, Jharkhand JharBhoomi, the Government of India JharBhuNaksha service description, and the official Jharkhand State GIS gateway. The district page identifies the local revenue custodian and directs users to JharBhoomi; no open Hazaribagh parcel feature endpoint was exposed in the inspected pages.",
+        "actualResultUrls": [
+          "https://hazaribag.nic.in/service/land-records/",
+          "https://jharbhoomi.jharkhand.gov.in/newhome2",
+          "https://services.india.gov.in/service/detail/jharbhunaksha-is-an-digitized-maps-of-the-plots-to-the-citizens-jharkhand-1",
+          "https://gis.jharkhand.gov.in/"
+        ]
+      },
+      {
+        "language": "native/local (Hindi)",
+        "query": "हजारीबाग झारखंड भू नक्शा भू-अभिलेख सरकारी",
+        "result": "Hindi-language first-party discovery was represented by the official Hazaribag district page's Hindi link and Hindi-labelled district context; the same official land-records service directs citizens to JharBhoomi. No anonymous parcel geometry or public schema response was obtained.",
+        "actualResultUrls": [
+          "https://hazaribag.nic.in/service/land-records/",
+          "https://jharbhoomi.jharkhand.gov.in/newhome2"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "First-party web discovery followed by TLS-verified bounded GET requests with a standard HTTP client. Direct JharBhoomi retrieval timed out after 20 seconds; no credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS disablement were used."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://hazaribag.nic.in/service/land-records/",
+      "custodian": "Hazaribag District Administration / District Revenue Department",
+      "observation": "Official district page states that the Department of Revenue and Land Reforms of Jharkhand provides digitized land-record services and directs citizens to JharBhoomi; it lists the district revenue department at Collectorate Campus, Hazaribag."
+    },
+    {
+      "url": "https://jharbhoomi.jharkhand.gov.in/newhome2",
+      "custodian": "Jharkhand Department of Revenue, Registration and Land Reforms",
+      "observation": "Official land-record portal route identified by the district administration, but direct anonymous retrieval timed out during this attempt; current public API/configuration and parcel schema were not inspected."
+    },
+    {
+      "url": "https://services.india.gov.in/service/detail/jharbhunaksha-is-an-digitized-maps-of-the-plots-to-the-citizens-jharkhand-1",
+      "custodian": "Government of India service directory / Jharkhand DILRMP service",
+      "observation": "Official service description says JharBhuNaksha provides digitized maps of plots in Jharkhand; it does not expose a verified anonymous Hazaribagh geometry endpoint in the inspected response."
+    },
+    {
+      "url": "https://gis.jharkhand.gov.in/",
+      "custodian": "Jharkhand Space Applications Center / Government of Jharkhand",
+      "observation": "Official GIS gateway lists state, district, urban and thematic GIS applications. No cadastral parcel layer or Hazaribagh parcel API was verified from the gateway page."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://hazaribag.nic.in/service/land-records/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Loaded official district land-records page; it names the local District Revenue Department and links to JharBhoomi."
+    },
+    {
+      "url": "https://jharbhoomi.jharkhand.gov.in/newhome2",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Timed out after 20 seconds. No map shell, JavaScript/configuration, API route, schema, CRS, parcel identity or geometry was obtained."
+    },
+    {
+      "url": "https://services.india.gov.in/service/detail/jharbhunaksha-is-an-digitized-maps-of-the-plots-to-the-citizens-jharkhand-1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official service-directory route was discovered, but it redirected to the generic services page during inspection; the indexed official description establishes service existence only, not parcel geometry access."
+    },
+    {
+      "url": "https://gis.jharkhand.gov.in/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Loaded official GIS gateway and application directory; no verified cadastral parcel API was exposed in the page."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official Hazaribag district land-record information, Jharkhand state land-record/map portals, and the state GIS gateway.",
+    "verifiedOpenScope": "Official service and portal discovery only; no open Hazaribagh parcel geometry scope or city boundary coverage was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The current JharBhoomi/JharBhuNaksha viewer route, Hazaribagh map-unit identifiers, parcel schema, native stable identity, CRS, update currency, legal status and citywide completeness remain unresolved. The exact WUP point was preserved but was not queried against parcel geometry. A timeout, unusable UI or absent exposed endpoint is not evidence of citywide cadastral absence.",
+  "nextStep": "A later attempt may inspect the official JharBhoomi viewer's current JavaScript/configuration when reachable and request only bounded anonymous ID-plus-geometry data. Serial reviewer qualification remains required; runtime readiness stays held."
+}

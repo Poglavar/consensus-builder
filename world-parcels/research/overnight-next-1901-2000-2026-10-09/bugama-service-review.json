@@ -1,0 +1,44 @@
+{
+  "cityRecord": "city-7408-bugama.json",
+  "cityCode": 7408,
+  "queueRank": 1923,
+  "city": "Bugama",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "reviewStatus": "complete",
+  "registryFound": null,
+  "provider": "No verified city-specific provider; Rivers State Surveyor-General platform and national Surveyor-General service pages were discovery leads only",
+  "serviceUrl": "https://www.sgriv.com/",
+  "discoveryUrls": [
+    "https://www.sgriv.com/",
+    "https://osgof.gov.ng/",
+    "https://osgof.gov.ng/services/",
+    "https://riversstate.gov.ng/",
+    "https://nico.gov.ng/languages-in-nigeria/"
+  ],
+  "attemptedRoutes": [
+    {"route":"GET https://www.sgriv.com/","outcome":"succeeded; landing page and current public JavaScript inspected, no anonymous parcel/map API exposed"},
+    {"route":"GET https://osgof.gov.ng/ and /services/","outcome":"succeeded; general national cadastral/map request services only; not a local Bugama registry"},
+    {"route":"GET https://riversstate.gov.ng/","outcome":"succeeded; official state portal inspected, no public cadastral route located"},
+    {"route":"Bugama/Buguma exact-point query","outcome":"not run; no public parcel endpoint was identified, so no point-hit or absence claim was made"}
+  ],
+  "scope": "Research covered public first-party discovery and the Rivers Surveyor-General landing page. No citywide or countrywide parcel coverage was verified.",
+  "schemaAndCrs": "Unavailable; no anonymous parcel response was obtained.",
+  "nativeIdentity": "Unavailable; no parcel feature was retained.",
+  "fieldMapping": {},
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON sample retained.",
+  "safeFieldAllowlist": ["geometry", "stable native parcel id if later exposed"],
+  "unsafeDataPolicy": "No owner, address, contact, titleholder, personal, tax/account, legal-description, or ownership fields were requested. No login or private access was attempted.",
+  "officialCustodyEvidence": "Rivers State government materials identify state land/survey administration context, while the national Surveyor-General site describes general cadastral services. Neither source evidenced an open Bugama parcel registry or public geometry service.",
+  "limits": [
+    "Bugama/Buguma spelling and locality aliases may affect indexing.",
+    "No anonymous public parcel geometry or schema was available.",
+    "No exact-point query was possible and no absence inference was made.",
+    "General agency prose is not local registry evidence.",
+    "RuntimeReadiness remains held pending independent serial review."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "A non-public or account-gated Rivers registry may exist; further work requires an independently evidenced public endpoint or authorized source integration review."
+}

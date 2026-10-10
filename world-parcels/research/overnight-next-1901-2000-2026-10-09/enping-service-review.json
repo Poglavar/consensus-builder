@@ -1,0 +1,89 @@
+{
+  "cityRecord": "city-11268-enping.json",
+  "cityCode": 11268,
+  "queueRank": 1961,
+  "city": "Enping",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "outcome": "complete_no_verified_parcel_source",
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "point": [22.1838497417146, 112.311245398831],
+  "queryOutcomes": [
+    {
+      "language": "English",
+      "query": "Enping China official cadastral parcel map GIS natural resources land registry",
+      "outcome": "Official Enping government material and a local-government registration notice were found; no public Enping parcel geometry service was verified."
+    },
+    {
+      "language": "Chinese (Simplified)",
+      "query": "恩平市 自然资源局 不动产登记中心 地籍图 宗地图 地图",
+      "outcome": "Official Enping/Jiangmen sources document local natural-resources and real-estate registration custodians plus cadastral survey procedure; no public cadastral viewer/API or safe anonymous parcel response was verified."
+    }
+  ],
+  "requestOutcomes": [
+    {
+      "url": "https://www.enping.gov.cn/",
+      "method": "GET",
+      "outcome": "TLS negotiation failed with OpenSSL error 'tlsv1 alert internal error' before any HTTP response; not treated as absence."
+    },
+    {
+      "url": "https://www.enping.gov.cn/gzjg/epszrzyj/ghgs/content/post_2737983.html",
+      "method": "GET",
+      "outcome": "Direct anonymous request hit the same TLS failure; first-party indexed result confirms an Enping Natural Resources Bureau planning notice, but no parcel vector endpoint."
+    },
+    {
+      "url": "https://www.enping.gov.cn/zwgk/xxgkml/epsrmzfbgs/bmwj/content/post_2036861.html",
+      "method": "GET/search-index inspection",
+      "outcome": "First-party indexed government notice documents citywide rural real-estate registration and cadastral survey outputs; no public geometry payload."
+    },
+    {
+      "url": "https://www.enping.gov.cn/jmepszrj/gkmlpt/content/3/3314/post_3314205.html",
+      "method": "GET/search-index inspection",
+      "outcome": "First-party indexed registration notice identifies the local registration/natural-resources custodian; unsafe certificate-holder details were not requested or retained."
+    },
+    {
+      "url": "https://www.jiangmen.gov.cn/bmpd/jmszrzyj/zwdt/tzgg/content/post_3292026.html",
+      "method": "GET/search-index inspection",
+      "outcome": "Official Jiangmen notice identifies an Enping administrative-service registration window; procedure evidence only, no parcel geometry."
+    },
+    {
+      "url": "https://rerc.com.cn/",
+      "method": "GET",
+      "outcome": "DNS resolution failed in this environment; national registration portal not used as evidence of Enping geometry."
+    },
+    {
+      "url": "https://www.webmap.cn/main.do?method=index1",
+      "method": "GET",
+      "outcome": "HTTP 502 from this environment; national geographic-resource catalog page was not a parcel response."
+    }
+  ],
+  "scopeLimits": [
+    "No exact-point hit or miss, map extent miss, timeout, TLS failure, login wall, or unusable UI was used as a citywide absence conclusion.",
+    "No parcel geometry, safe native parcel identifier, source schema, CRS, or bounded feature response was verified; no sample GeoJSON was written.",
+    "Local registry/procedure custodians are evidenced by first-party government material, so registryFound is true; this does not establish an open cadastral map/API.",
+    "No owner, address, contact, titleholder, personal, tax, account, certificate-holder, or other unsafe fields were requested or retained.",
+    "The packet is complete as a research record only; it is not source integration/admission."
+  ],
+  "safeFieldAllowlist": [
+    "native parcel identifier",
+    "geometry",
+    "source CRS",
+    "service URL",
+    "retrieval timestamp"
+  ],
+  "uncertainty": "A separate provincial/local registration application or access-controlled map service may exist. The bounded anonymous attempts did not prove absence or citywide coverage.",
+  "evidenceUrls": [
+    "https://www.enping.gov.cn/zwgk/xxgkml/epsrmzfbgs/bmwj/content/post_2036861.html",
+    "https://www.enping.gov.cn/jmepszrj/gkmlpt/content/3/3314/post_3314205.html",
+    "https://www.jiangmen.gov.cn/bmpd/jmszrzyj/zwdt/tzgg/content/post_3292026.html",
+    "https://www.enping.gov.cn/gzjg/epszrzyj/ghgs/content/post_2737983.html"
+  ],
+  "qualification": {
+    "verifiedSample": false,
+    "nativeIdReadiness": "not_applicable_no_verified_parcel_response",
+    "runtimeEligible": false
+  }
+}

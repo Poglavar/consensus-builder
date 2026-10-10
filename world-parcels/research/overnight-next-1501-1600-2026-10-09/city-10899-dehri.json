@@ -1,0 +1,50 @@
+{
+  "cityCode": 10899,
+  "queueRank": 1548,
+  "country": "India",
+  "countryCode": "IN",
+  "point": [24.9138194772029, 84.1792268507342],
+  "population2025": 368750,
+  "population2025k": 368.75,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dehri Bihar official cadastral map land records parcel map",
+        "result": "Found the official Bihar BhuNaksha cadastral viewer and Bihar Revenue & Land Reforms land-records portal. The viewer is a local/state cadastral map service, not merely national-agency prose.",
+        "actualResultUrls": [
+          "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "https://land.bihar.gov.in/landbihar/Default.aspx"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "डेहरी बिहार आधिकारिक भू नक्शा खसरा नक्शा",
+        "result": "Found the same official Bihar BhuNaksha viewer and Bihar land portal; search results describe भू-नक्शा/राजस्व मानचित्र access. This is discovery evidence only; the live API checks below are the service evidence.",
+        "actualResultUrls": [
+          "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "https://biharbhumi.bihar.gov.in/Biharbhumi/default/UserRegister"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "name": "BhuNaksha Bihar",
+    "custodian": "Directorate of Land Records & Survey, Department of Revenue and Land Reforms, Government of Bihar",
+    "viewerUrl": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+    "localityEvidence": "Anonymous live API navigation returned district 32 ROHTAS, subdivision 02 डिहरी, circle 07 Dehri, and village 1104 डिहरी(161).",
+    "serviceScope": "Bihar cadastral maps where uploaded; the viewer exposes survey type, map instance, and sheet selections."
+  },
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "No independently qualified production adapter; this packet is source research only.",
+  "parcelSamples": [],
+  "uncertainty": [
+    "The exact WUP point was not shifted and was not used as evidence of absence.",
+    "The Dehri cadastral selection returned a null extent, so no geometry or parcel ID was safely retained.",
+    "The revisional-map extent request returned an empty response; this may be a route or map-publication limitation.",
+    "The viewer's hierarchy is cadastral locality/map based and does not establish complete citywide coverage."
+  ]
+}

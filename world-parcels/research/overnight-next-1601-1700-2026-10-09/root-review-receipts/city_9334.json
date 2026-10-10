@@ -1,0 +1,19 @@
+{
+  "taskId": "city:9334",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-9334-bo-ai.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/bo-ai-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T12:48:16Z",
+  "reason": "Immutable WUP identity and English/Chinese searches agree with the roster. Saved first-party responses show a 403 at the county portal and a Jiaozuo/Henan public map with a Bo'ai center, but no parcel layer, native ID, or polygon. The packet's registryFound=true is only a worker custody claim; the inspected first-party artifacts establish an official general map route, not cadastral-record custody, so that value is not propagated to registry state. HTTP restrictions and absent discovery do not establish citywide parcel absence.",
+  "firstPartyArtifactsInspected": [
+    "tmp/valhalla-parcel-research/9334/boai.headers",
+    "tmp/valhalla-parcel-research/9334/henan.headers",
+    "tmp/valhalla-parcel-research/9334/jiaozuo.headers",
+    "tmp/valhalla-parcel-research/9334/jiaozuo.html"
+  ],
+  "admissionGates": "No fresh parcel native-ID read, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. Runtime remains held."
+}

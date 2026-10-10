@@ -1,0 +1,12 @@
+{
+  "taskId": "city:8836",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-8836-zheba.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/zheba-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T17:10:55Z",
+  "reason": "Identity matches rank 1454, China, immutable point and 390709 persons. English and Chinese executed searches agree across paired files. First-party Qijiang bureau page supports registration functions, while registryFound remains unresolved/null for a local parcel source. No native-ID polygon response or retained polygon; adapter qualification and headed Details are unproved. No citywide absence is inferred."
+}

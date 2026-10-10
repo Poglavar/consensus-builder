@@ -1,0 +1,123 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:1481",
+  "cityCode": 1481,
+  "wupCityCode": 1481,
+  "name": "Bamenda",
+  "country": "Cameroon",
+  "countryCode": "CM",
+  "iso3": "CMR",
+  "rank": 1442,
+  "queueRank": 1442,
+  "point": [5.96409086426512, 10.1574283794588],
+  "centerLatLon": [5.96409086426512, 10.1574283794588],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 394155,
+  "population2025k": 394.155,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "Bamenda City Council documents a local urban-development role that develops city cartographic projects and monitors cadastre operations in coordination with cadastre services. MINDCAF is the national cadastral/land-tenure authority and its published organization describes regional and departmental cadastral services, but a Bamenda-specific public registry/map endpoint was not verified.",
+  "registryEvidenceUrls": [
+    "https://www.bamendacitycouncil.cm/urban-development/",
+    "https://www.mindcaf.gov.cm/en/docs/",
+    "https://mindcaf.gov.cm/fr/docs/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No safe anonymous first-party parcel feature service, schema, CRS, or geometry-only response for the unchanged WUP point was verified. The city council page was behind a Cloudflare challenge; the official MINMIDT cadastral-map page timed out in web fetch and the ordinary curl request to the city page returned a TLS certificate-chain error, neither of which is evidence of absence.",
+  "scopeLimits": "No citywide completeness is asserted. No owner, address, contact, titleholder, personal, tax, or account data was requested or retained.",
+  "resultCategory": "no_verified_public_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Cameroon’s MINDCAF has the national cadastral and land-tenure remit; Bamenda City Council has a documented urban-development/cartographic coordination role.",
+    "verifiedOpenScope": "Official institutional remit was verified, but no anonymous public parcel geometry or city-specific cadastral map service was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No qualifying safe-ID geometry response was obtained; root may perform independent adapter qualification."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bamenda Cameroon official cadastral map land registry parcel GIS cadastre",
+        "scope": "Independent fresh city-specific registry and anonymous parcel-geometry search.",
+        "result": "Search identified the official Bamenda City Council urban-development page and MINDCAF official materials. The city page states that the council develops and monitors Bamenda cartographic projects and cadastre operations in coordination with cadastre services. No public parcel feature endpoint or safe geometry response was identified.",
+        "actualResultUrls": [
+          "https://www.bamendacitycouncil.cm/urban-development/",
+          "https://www.mindcaf.gov.cm/en/docs/"
+        ],
+        "executionMethod": "Executed web search; first-party source pages inspected."
+      },
+      {
+        "language": "French",
+        "query": "Bamenda Cameroun cadastre carte parcelles registre foncier officiel",
+        "scope": "Independent fresh local-language registry and anonymous parcel-geometry search.",
+        "result": "Search identified the official MINDCAF documents page and the official MINMIDT announcement for the online Cameroon mining cadastral map. MINDCAF materials describe national, regional, and departmental cadastral functions, but no Bamenda-specific public land-parcel feature service or safe geometry response was verified. The MINMIDT map is mining cadastre, not evidence of ordinary land-parcel coverage.",
+        "actualResultUrls": [
+          "https://mindcaf.gov.cm/fr/docs/",
+          "https://www.minmidt.cm/carte-cadastrale-du-cameroun/"
+        ],
+        "executionMethod": "Executed web search; first-party source pages inspected."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.bamendacitycouncil.cm/urban-development/",
+        "method": "GET",
+        "result": "HTTP response was a Cloudflare interactive challenge requiring JavaScript/cookies. No challenge was solved or bypassed; no map/API request was attempted.",
+        "httpStatus": 403,
+        "contentType": "text/html"
+      },
+      {
+        "url": "https://www.minmidt.cm/carte-cadastrale-du-cameroun/",
+        "method": "GET",
+        "result": "Web fetch timed out; ordinary curl attempt also did not obtain page content. No retry, login, token, or TLS bypass was used.",
+        "httpStatus": null
+      },
+      {
+        "url": "https://www.bamendacitycouncil.cm/urban-development/",
+        "method": "GET",
+        "result": "Local curl request failed TLS certificate-chain verification (curl error 60). No certificate exception was authorized or used.",
+        "httpStatus": null
+      },
+      {
+        "url": "https://www.mindcaf.gov.cm/en/docs/",
+        "method": "GET",
+        "result": "HTTP 200 official MINDCAF page reviewed. It describes cadastral responsibilities and regional/departmental services, but exposes no public parcel feature endpoint or geometry schema.",
+        "httpStatus": 200,
+        "contentType": "text/html"
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://www.bamendacitycouncil.cm/urban-development/",
+        "observation": "Official Bamenda City Council page assigns urban development responsibility for city cartographic projects and monitoring cadastre operations with relevant services; it does not expose a public parcel API in the reviewed response."
+      },
+      {
+        "url": "https://www.mindcaf.gov.cm/en/docs/",
+        "observation": "Official MINDCAF materials describe the Ministry’s cadastral remit and regional/departemental service structure; no Bamenda-specific anonymous map/vector route was linked."
+      },
+      {
+        "url": "https://www.minmidt.cm/carte-cadastrale-du-cameroun/",
+        "observation": "Official MINMIDT announcement concerns the National Mining Cadastre Map, which is not ordinary land-parcel cadastre evidence for this task; page fetch timed out during this attempt."
+      }
+    ]
+  },
+  "remainingUncertainty": "A Bamenda-specific cadastral dataset or viewer may exist behind an unavailable public route or may require authenticated/local workflows. The failed challenge, timeout, and TLS verification failure do not establish citywide absence.",
+  "nextStep": "Root may perform independent source/adapter qualification; no runtime enablement is implied.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  }
+}

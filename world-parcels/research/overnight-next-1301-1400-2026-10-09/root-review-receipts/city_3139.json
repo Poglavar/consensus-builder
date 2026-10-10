@@ -1,0 +1,14 @@
+{
+  "taskId": "city:3139",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-3139-burao.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/burao-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-09T14:09:42Z",
+  "reason": "Immutable rank 1310/Somalia/point/427013 persons match queue and roster. English and Somali search records are present. First-party Burao local-government registration procedure supports registry custody, but the applicant workflow and endpoint failures yielded no anonymous native-ID plus full-polygon response. No adapter qualification or headed Details proof exists. Unavailable access is not citywide absence; held.",
+  "admission": "not_integrated"
+}

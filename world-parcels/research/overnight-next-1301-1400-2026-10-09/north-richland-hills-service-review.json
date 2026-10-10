@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6363-north-richland-hills.json",
+  "cityCode": 6363,
+  "purpose": "Document first-party discovery, current public GIS service review, bounded anonymous access, safe-field handling, and uncertainty.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The City of North Richland Hills official NRH Maps ArcGIS EnerGov service exposes a public Parcels polygon layer. Metadata, safe-field exact-point query, bounded envelope geometry query, and CRS/output behavior were inspected anonymously. One safe polygon sample was retained with only its native ParcelId identity.",
+  "registryAssessment": "registryFound=true is supported by the official municipal GIS service and its public Parcels layer. The service metadata says TAD Parcels; this is local public GIS evidence, not a claim that every parcel is current or legally authoritative.",
+  "safeFieldAllowlist": ["ParcelId", "OBJECTID", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "queries": [
+    {
+      "language": "English",
+      "query": "North Richland Hills official GIS parcel map property map",
+      "outcome": "Found the official City Maps page and official NRH Maps ArcGIS service.",
+      "actualResultUrls": ["https://www.nrhtx.com/265/Maps", "https://nrhmaps.nrhtx.com/arcgis/rest/services/Tyler/EnerGov/MapServer"]
+    },
+    {
+      "language": "English (United States local usage)",
+      "query": "North Richland Hills mapa parcelas catastro oficial Texas",
+      "outcome": "No distinct non-English official source found; official English municipal GIS was used.",
+      "actualResultUrls": ["https://www.nrhtx.com/265/Maps", "https://nrhmaps.nrhtx.com/arcgis/rest/services/Tyler/EnerGov/MapServer/15"]
+    }
+  ],
+  "attempts": [
+    {"url":"https://www.nrhtx.com/265/Maps","method":"GET","httpStatus":403,"result":"Official City Maps page was discovered but direct fetch was blocked; this is not treated as a map/service absence."},
+    {"url":"https://nrhmaps.nrhtx.com/arcgis/rest/services/Tyler/EnerGov/MapServer","method":"GET","parameters":"f=pjson","httpStatus":200,"result":"Official service metadata loaded; CRS 102738, public layers, and Parcels layer 15 confirmed."},
+    {"url":"https://nrhmaps.nrhtx.com/arcgis/rest/services/Tyler/EnerGov/MapServer/15","method":"GET","parameters":"f=pjson","httpStatus":200,"result":"Official Parcels layer metadata loaded; polygon geometry, public Query capability, GeoJSON support, safe identity fields OBJECTID and ParcelId, and unsafe fields observed but not requested."},
+    {"url":"https://nrhmaps.nrhtx.com/arcgis/rest/services/Tyler/EnerGov/MapServer/15/query","method":"GET","parameters":"f=pjson; point -97.1985157079356,32.8621940092415; inSR=4326; intersects; outFields=OBJECTID,ParcelId; returnGeometry=false","httpStatus":200,"result":"One exact-point feature returned: OBJECTID 21343 and ParcelId P21485. The WUP point was preserved exactly; no coordinate shift was made."},
+    {"url":"https://nrhmaps.nrhtx.com/arcgis/rest/services/Tyler/EnerGov/MapServer/15/query","method":"GET","parameters":"f=geojson; envelope -97.205,32.855,-97.19,32.87; inSR=4326; intersects; outFields=OBJECTID,ParcelId; returnGeometry=true; outSR=4326; resultRecordCount=3","httpStatus":200,"result":"Three polygon features returned with safe native identities P00005, P00125, and P00127; response indicated exceededTransferLimit=true. One full polygon was retained after property minimization."}
+  ],
+  "geometryEvidence": {
+    "sampleFile": "north-richland-hills-parcel-samples.geojson",
+    "sampleCount": 1,
+    "nativeIdentityField": "ParcelId",
+    "serviceObjectField": "OBJECTID",
+    "requestedFields": ["OBJECTID", "ParcelId", "geometry"],
+    "retainedProperties": ["id"]
+  },
+  "geometryDecision": {
+    "verified": true,
+    "sourceId": "https://nrhmaps.nrhtx.com/arcgis/rest/services/Tyler/EnerGov/MapServer/15",
+    "nativeIdField": "ParcelId",
+    "sampleCount": 1,
+    "sampleFile": "north-richland-hills-parcel-samples.geojson",
+    "exactWupPointTest": "One exact-point feature returned; point preserved exactly."
+  },
+  "remainingUncertainty": "The attempt did not independently validate complete current citywide coverage, parcel currency, legal-cadastre status, or adapter readiness. The city service metadata identifies the data as TAD Parcels, and the bounded response exceeded its transfer limit; neither fact was used to infer completeness.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter"
+}

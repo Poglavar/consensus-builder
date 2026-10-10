@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4484-kushtia.json",
+  "cityCode": 4484,
+  "queueRank": 1374,
+  "purpose": "Document first-party discovery, current public land-record routes, bounded anonymous access review, scope limits, and uncertainty.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Smart Bhumi Naksha page exposes a public map UI and its current JavaScript/configuration identifies POST routes /getAdminByCode and /getGeomByCode, with GeoServer WMS layers. The anonymous division response returned seven divisions; the Khulna district response returned only Bagerhat and Khulna, not Kushtia. The official settlement map search loaded as an admin-login panel. No anonymous Kushtia parcel geometry, schema, CRS, or native parcel ID was obtained.",
+  "registryAssessment": "National custodian evidence: Department of Land Records and Surveys/Ministry of Land. Local evidence: Kushtia district land-service pages and a Kushtia project office. No current public Kushtia-specific cadastral registry/map endpoint was proven; registryFound is null.",
+  "queries": [
+    {"language": "English", "query": "Kushtia Bangladesh official cadastral parcel map land records GIS service", "outcome": "Found official Ministry of Land/DLRS Smart Bhumi Naksha, settlement search, DLRS Digital BRS, Kushtia district, and Kushtia project-office references; no anonymous Kushtia parcel-vector service found.", "actualResultUrls": ["https://map.land.gov.bd/", "https://settlement.gov.bd/Map/MapSearch", "https://map.settlement.gov.bd/track-order", "https://dlrs.gov.bd/site/page/359236ae-4c8a-49e0-b2ab-1e9b13994908/Digital-BRS-%28Search-Map/", "https://kushtia.gov.bd/en", "https://edlms.gov.bd/pages/office-contents/6922d89c933eb65569df922a"]},
+    {"language": "Bengali", "query": "কুষ্টিয়া বাংলাদেশ সরকারি ভূমি রেকর্ড মৌজা মানচিত্র ক্যাডাস্ট্রাল", "outcome": "সরকারি ভূমি নকশা, DLRS এবং কুষ্টিয়া জেলা/প্রকল্প অফিসের রেফারেন্স পাওয়া গেছে; কুষ্টিয়ার জন্য বেনামী পার্সেল জ্যামিতি বা স্থিতিশীল আইডি প্রতিক্রিয়া পাওয়া যায়নি।", "actualResultUrls": ["https://map.land.gov.bd/", "https://kushtia.gov.bd/pages/static-pages/6980fbe5a31054345f1d199b", "https://srdiro.kushtia.gov.bd/pages/static-pages/69813c9b35ce18e1c06fe899", "https://edlms.gov.bd/pages/office-contents/6922d89c933eb65569df922a"]}
+  ],
+  "attempts": [
+    {"url": "https://map.land.gov.bd/", "method": "GET", "httpStatus": 200, "result": "Official Smart Bhumi Naksha page loaded. Current JS/config was inspected in ignored scratch evidence; it uses POST /getAdminByCode and POST /getGeomByCode, plus GeoServer WMS layers."},
+    {"url": "https://map.land.gov.bd/getAdminByCode", "method": "POST", "httpStatus": 200, "request": {"level": "forDiv"}, "result": "Anonymous response listed divisions Barishal, Chattogram, Dhaka, Khulna, Rajshahi, Rangpur, and Sylhet."},
+    {"url": "https://map.land.gov.bd/getAdminByCode", "method": "POST", "httpStatus": 200, "request": {"level": "forDist", "division_code": "40"}, "result": "Anonymous Khulna-division response listed only Bagerhat (4001) and Khulna (4047); Kushtia was not present, so no Kushtia child route could be followed."},
+    {"url": "https://settlement.gov.bd/Map/MapSearch", "method": "GET", "httpStatus": 200, "result": "Official settlement map search loaded, but the page presents an administrator login panel. No login, credentials, CAPTCHA, or private route was attempted."},
+    {"url": "https://map.settlement.gov.bd/track-order", "method": "GET", "httpStatus": 200, "result": "Official DLRS map/document order page loaded; it describes ordering survey documents, not an anonymous parcel geometry API."},
+    {"url": "https://kushtia.gov.bd/en", "method": "GET", "httpStatus": null, "result": "TLS verification failed in the local curl trust store; no certificate exception was used. Search-result evidence was recorded, but this route was not treated as fetched locally."},
+    {"url": "https://dlrs.gov.bd/site/page/359236ae-4c8a-49e0-b2ab-1e9b13994908/Digital-BRS-%28Search-Map/", "method": "GET", "httpStatus": null, "result": "TLS verification failed in the local curl trust store; no certificate exception was used. Search-result evidence was recorded, but this route was not treated as fetched locally."},
+    {"url": "https://edlms.gov.bd/pages/office-contents/6922d89c933eb65569df922a", "method": "GET", "httpStatus": null, "result": "Connection failed from this environment; no retry with credentials or TLS bypass."}
+  ],
+  "geometryEvidence": {"sourceUrl": null, "sampleFile": null, "nativeIdField": null, "nativeFieldMapping": {}, "compositeKeyProvenance": null, "sampleCount": 0, "crs": null, "queryExtent": null},
+  "geometryDecision": {"verified": false, "sourceId": null, "nativeIdField": null, "sampleCount": 0, "exactWupPointTest": "No parcel query route was available; exact point [23.9047181101836, 89.1257862359532] was not shifted or used as an absence test.", "retentionNote": "No sample retained."},
+  "safeFieldAllowlist": ["native parcel ID if publicly exposed", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "remainingUncertainty": "The Smart Bhumi Naksha project may have broader coverage or authenticated/mobile routes not exposed by the current anonymous web response. Settlement/DLRS services may provide documents or search after administrative selection, but login, personal identity, owner, address, titleholder, tax, and contact fields are out of scope. The results do not establish citywide absence or completeness.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter",
+  "researchAttempt": 1
+}

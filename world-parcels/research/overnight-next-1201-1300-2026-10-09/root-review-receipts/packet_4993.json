@@ -1,0 +1,12 @@
+{
+  "taskId": "packet:4993",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-4993-t-y-ninh.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/t-y-ninh-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T13:45:22Z",
+  "reason": "Immutable WUP code 4993, rank 1273, Viet Nam, point and 437816 persons match the queue. English and Vietnamese searches are recorded. The packet cites an indexed official provincial planning-map page naming a Land Registration Office, but direct access failed at DNS resolution and no original first-party response cache, public parcel API, safe native ID or geometry is available here. Planning-map custody is limited evidence, not cadastral geometry or citywide absence; no independent runtime qualification exists."
+}

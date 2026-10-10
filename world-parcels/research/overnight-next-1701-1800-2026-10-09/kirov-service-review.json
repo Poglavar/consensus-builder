@@ -1,0 +1,24 @@
+{
+  "cityRecord": "city-5679-kirov.json",
+  "cityCode": 5679,
+  "queueRank": 1782,
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "scope": "Kirov city project in the Kirov Oblast GISOGD public portal; bounded anonymous parcel discovery only.",
+  "attempts": [
+    {"route": "Rosreestr public site https://rosreestr.gov.ru/", "method": "GET", "outcome": "timeout after 15 seconds; no login or bypass attempted"},
+    {"route": "NSPD https://nspd.gov.ru/", "method": "GET", "outcome": "timeout after 15 seconds; no login or bypass attempted"},
+    {"route": "GISOGD landing page https://gisogd-portal.kirovreg.ru/", "method": "GET", "outcome": "HTTP 200; current JS bundle and portal configuration identified"},
+    {"route": "/api/agateprojects", "method": "GET", "outcome": "HTTP 200; city project agate_kirovcity identified"},
+    {"route": "/api/mapconfig/agate_kirovcity", "method": "GET", "outcome": "HTTP 200; city bounds and viewer settings returned"},
+    {"route": "/api/catalogs/agate_kirovcity", "method": "GET", "outcome": "HTTP 200; existing-parcels layer identified"},
+    {"route": "/api/v1/spatialsearch/agate_kirovcity/docs/49.6384622204951/58.600079267144", "method": "GET", "outcome": "HTTP 200; empty document result at exact point"},
+    {"route": "/map/tiles/wfs?…&maxFeatures=3", "method": "GET", "outcome": "HTTP 200; three parcel polygons and native cadastral numbers returned in EPSG:4326"}
+  ],
+  "safeFieldAllowlist": ["kn", "geometry"],
+  "unsafeFieldsNotRetained": ["gkn_address", "gkn_address_ref", "gkn_cadastral_cost", "gkn_reg_date", "info_set_key", "gkn_location", "gkn_use_kind_by_doc", "ownership/rights/encumbrances and any personal/contact data"],
+  "nativeIdentity": {"field": "kn", "meaning": "Russian cadastral number", "why": "Stable source identity; WFS fid was an internal generated feature id and was not used."},
+  "uncertainty": ["Rosreestr and NSPD were unreachable by timeout from this environment.", "The exact WUP point returned no GISOGD document features; this does not establish citywide absence.", "The WFS bbox is a bounded sample near the city point, not a complete citywide extract.", "No owner, title, address, tax, account, or private fields were requested or retained."],
+  "runtimeReadiness": "held",
+  "runtimeNote": "No source adapter was changed or admitted; serial review remains required."
+}

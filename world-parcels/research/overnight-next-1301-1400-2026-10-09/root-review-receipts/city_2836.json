@@ -1,0 +1,17 @@
+{
+  "taskId": "city:2836",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-2836-sareyn.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/sareyn-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-09T15:08:37.875685Z",
+  "reason": "English and Persian searches are recorded, but cited SSAA routes timed out or need authorized access. Registry custody for this city remains unresolved (null), and there is no original parcel response, native ID/full polygon, or independent adapter qualification. Timeout is not citywide absence.",
+  "runtimeAdmission": false,
+  "sourceUrlsConsidered": [
+    "https://ssaa.ir",
+    "https://shamim.ssaa.ir"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "cityRecord": "city-3531-py-ngs-ng.json",
+  "cityCode": 3531,
+  "queueRank": 1679,
+  "city": "Pyŏngsŏng",
+  "country": "Dem. People's Republic of Korea",
+  "countryCode": "KP",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": null,
+  "summary": "No DPRK/Pyŏngsŏng local registry or safe anonymous parcel service was verified. South Korean cadastral viewers and general North Korea geospatial research are not treated as local registry evidence.",
+  "queryOutcomes": "Separate English and Korean discovery queries are recorded in city-3531-py-ngs-ng.json. Results did not identify a first-party Pyŏngsŏng parcel viewer/API or city-bounded ID-plus-geometry response.",
+  "requestOutcomes": "K-GeoP returned 200 but is a South Korean service and was not queried for parcels; naenara.com.kp timed out after 15 seconds; dprkportal.org produced no response. No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS-disable operation was used.",
+  "scopeLimits": [
+    "No Pyŏngsŏng city boundary or complete DPRK cadastral coverage was established.",
+    "No exact-point hit or miss was used as an absence claim, and the WUP coordinate was not shifted.",
+    "No parcel geometry, native ID, source-specific attributes, schema, or CRS was retained.",
+    "General research describing North Korea datasets and South Korean official land services do not prove a DPRK local registry adapter.",
+    "No owner, address, contact, titleholder, personal, tax, or account fields were requested or retained."
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeIdentityPolicy": "No native parcel identity was observed; no synthetic identity was created. A future retained GeoJSON sample may contain only one stable native identity in properties, with native field mapping and composite-key provenance documented here.",
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "DPRK cadastral information may exist in restricted or non-public systems. Search gaps, timeout, and connection failure are not evidence of citywide absence.",
+  "retainedSample": null
+}

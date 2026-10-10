@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:1363",
+  "cityCode": 1363,
+  "queueRank": 1461,
+  "wupCityCode": 1363,
+  "name": "Sikasso",
+  "country": "Mali",
+  "countryCode": "ML",
+  "iso3": "MLI",
+  "centerLatLon": [11.3136054897523, -5.66973498556137],
+  "point": [11.3136054897523, -5.66973498556137],
+  "population2025": 389804,
+  "population2025k": 389.804,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sikasso Mali official cadastral map parcel land registry GIS cadastre",
+        "result": "The first-party Direction Générale des Domaines et du Cadastre (DGDC/DNDC) portal and its regional-services page were found. The current public cadastre API catalog exposes six layers, all bounded to Bamako/Kati, and no Sikasso layer or Sikasso parcel geometry was verified.",
+        "actualResultUrls": [
+          "https://dndc.gouv.ml/",
+          "https://dndc.gouv.ml/cadastre/",
+          "https://dndc.gouv.ml/services-regionaux-et-subregionaux/",
+          "https://dgi.gouv.ml/du-ninacad-adresse-bientot-disponible-au-mali/"
+        ]
+      },
+      {
+        "language": "French",
+        "query": "Sikasso Mali cadastre carte parcellaire registre foncier service officiel",
+        "result": "Les sources officielles DGDC/DNDC documentent le cadastre communal et listent une DRDC/Sikasso. Une annonce officielle de la DGI indique que le projet NINACAD-ADRESSE couvre Sikasso, mais aucun accès public anonyme à une couche de parcelles de Sikasso n'a été vérifié dans cette tentative.",
+        "actualResultUrls": [
+          "https://dndc.gouv.ml/cadastre/",
+          "https://dndc.gouv.ml/services-regionaux-et-subregionaux/",
+          "https://dgi.gouv.ml/du-ninacad-adresse-bientot-disponible-au-mali/",
+          "https://demarchesadministratives.gouv.ml/titre-foncier/"
+        ]
+      }
+    ]
+  },
+  "verifiedSample": false,
+  "sourceIds": [],
+  "research": {
+    "officialEvidence": [
+      {
+        "url": "https://dndc.gouv.ml/services-regionaux-et-subregionaux/",
+        "observation": "The official DGDC regional-services page lists DRDC/SIKASSO and phone 21 62 17 51.",
+        "coverage": "Local/regional DGDC custody is evidenced; this page is not a parcel data feed."
+      },
+      {
+        "url": "https://dndc.gouv.ml/cadastre/",
+        "observation": "The official DGDC cadastre page states that cadastral records are organized at communal, local, regional and national levels and that each parcel receives a unique NINACAD identifier.",
+        "coverage": "Mali national cadastral mandate and data model; not proof of open Sikasso coverage."
+      },
+      {
+        "url": "https://dgi.gouv.ml/du-ninacad-adresse-bientot-disponible-au-mali/",
+        "observation": "The official DGI article says the NINACAD-ADRESSE project covers Sikasso among the cities in its then-current phase.",
+        "coverage": "Project coverage claim for Sikasso; no public parcel geometry endpoint was provided."
+      }
+    ],
+    "observedServices": [
+      {
+        "url": "https://dndc.gouv.ml/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Anonymous official portal loaded and exposed current JavaScript configuration dgdcPortail.apiUrl=https://dndc.gouv.ml/wp-json/dgdc/v1."
+      },
+      {
+        "url": "https://dndc.gouv.ml/wp-content/plugins/dgdc-portail/assets/js/portail.js?ver=2.5.10.1788797613",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/javascript",
+        "observation": "Current public JavaScript references GET cadastre layer metadata, parcels/{parcel_id}, and GeoJSON routes. It uses safe parcel fields for the public parcel form, but no Sikasso-specific layer was referenced."
+      },
+      {
+        "url": "https://dndc.gouv.ml/wp-json/dgdc/v1/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Anonymous REST route discovery returned cadastre/layers, layer metadata, parcels/{parcel_id}, and GeoJSON routes."
+      },
+      {
+        "url": "https://dndc.gouv.ml/wp-json/dgdc/v1/cadastre/layers",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Returned six published layers: aci2000, aci2000v1, aci2000v3, medina-coura, couche-007 (parcelles_kati_2024), and recette-commune-iv. Their reported bounds are in Bamako/Kati; no Sikasso layer appeared."
+      },
+      {
+        "url": "https://dndc.gouv.ml/wp-json/dgdc/v1/cadastre/layers/aci2000/metadata",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Metadata returned featureCount 2994, bounds [-8.038598563,12.618790098,-8.012116044,12.64273048], and no explicit CRS field."
+      },
+      {
+        "url": "https://dndc.gouv.ml/wp-json/dgdc/v1/cadastre/layers/aci2000/geojson?bbox=-5.68,11.30,-5.66,11.33&limit=3",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Bounded request using the unchanged WUP Sikasso vicinity returned an empty FeatureCollection for the Bamako-bounded aci2000 layer. This is a layer/extent observation only and is not evidence of citywide absence."
+      },
+      {
+        "url": "https://dndc.gouv.ml/wp-json/dgdc/v1/cadastre/layers/aci2000/geojson?limit=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "A bounded anonymous sample from an existing non-Sikasso layer returned GeoJSON MultiPolygon with native id/parcelleId and parcel metadata. Native schema was inspected in ignored scratch only; no foreign geometry or source attributes were retained."
+      },
+      {
+        "url": "https://dndc.gouv.ml/wp-json/dgdc/v1/cadastre/layers/aci2000/parcels?bbox=-5.68,11.30,-5.66,11.33&limit=3",
+        "method": "GET",
+        "httpStatus": 400,
+        "contentType": "application/json",
+        "observation": "Endpoint responded that a parcel number is required; no broad parcel listing was attempted."
+      }
+    ],
+    "safeFieldAllowlist": ["stable native parcel identity", "geometry", "non-personal layer metadata", "CRS if explicitly supplied"],
+    "nativeFieldMapping": {
+      "observedOnNonSikassoSample": {"feature.id": "stable native parcel identity", "properties.parcelleId": "stable native parcel identity", "geometry": "GeoJSON geometry"},
+      "retainedForSikasso": null
+    },
+    "crs": "Not explicitly supplied by the GeoJSON response; coordinate order observed as [longitude, latitude] in the non-Sikasso sample.",
+    "compositeKeyProvenance": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "DGDC/DNDC national cadastre with regional/local custody; official page lists DRDC/Sikasso and DGI describes NINACAD-ADRESSE project coverage including Sikasso.",
+    "verifiedOpenScope": "Official local custody and national API routes were verified, but the live public layer catalog exposed only Bamako/Kati layers and no Sikasso parcel feature layer.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false,
+    "registryExistenceScope": "Local/regional DGDC Sikasso custody is evidenced; public citywide parcel accessibility and completeness are not established."
+  },
+  "qualityAssessment": {
+    "geometryQuality": "no Sikasso parcel geometry sampled",
+    "identityReadiness": "not ready; no Sikasso native parcel identity retained",
+    "attributesRequested": ["layer catalog metadata", "safe parcel identity and geometry only"],
+    "unsafeFieldsRequested": false
+  },
+  "blocker": "The current anonymous DGDC cadastre catalog contains no Sikasso layer. The API's non-Sikasso sample demonstrates a parcel identity/geometry schema, but cannot be used as Sikasso evidence.",
+  "remainingUncertainty": "Sikasso cadastral records may exist in unpublished, offline, authenticated, or future NINACAD layers. The exact WUP point was preserved and not shifted; the bounded empty response does not support a citywide absence claim.",
+  "nextStep": "If a later attempt is authorized, recheck the first-party DGDC catalog and any explicitly public Sikasso/NINACAD layer; retain no geometry unless a bounded Sikasso response provides a stable native parcel identity and polygon.",
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "local_registry_custody_found_no_verified_open_city_parcel_endpoint"
+}

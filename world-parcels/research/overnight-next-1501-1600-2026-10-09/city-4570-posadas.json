@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:4570",
+  "cityCode": 4570,
+  "wupCityCode": 4570,
+  "name": "Posadas",
+  "country": "Argentina",
+  "countryCode": "AR",
+  "iso2": "AR",
+  "iso3": "ARG",
+  "rank": 1513,
+  "queueRank": 1513,
+  "point": [-27.4017726669095, -55.9108766976171],
+  "centerLatLon": [-27.4017726669095, -55.9108766976171],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 375741,
+  "population2025k": 375.741,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Dirección General de Catastro de la Provincia de Misiones is headquartered in Posadas and provides an official cadastral self-query/viewer route. The municipal IDE Posadas separately publishes the city geospatial portal and cadastral/parcel layers. This establishes official local/provincial custody and public service availability, not citywide completeness.",
+  "registryEvidenceUrls": [
+    "https://catastro.misiones.gov.ar/",
+    "https://www.catastro.misiones.gov.ar/contactus",
+    "https://www.ide.posadas.gob.ar/",
+    "https://www.ide.posadas.gob.ar/services/?limit=5"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sampleFile": "posadas-parcel-samples.geojson",
+  "sourceIds": ["0459009022700080003", "0459009022700080007", "0459009022700080010"],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBasis": "The official municipal IDE GeoServer WFS returned anonymous GeoJSON MultiPolygon features from geonode:mae_29_publico in EPSG:4326 for a bounded bbox around the exact WUP point. The layer schema exposes fid, geometry, AdMapKey, and IDGIS; IDGIS was retained as the canonical native parcel identity. No owner, address, contact, titleholder, tax/account, or personal fields were requested or retained.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_verified_sample",
+  "coverageAssessment": {
+    "claimedScope": "Dirección General de Catastro de Misiones is the provincial cadastral custodian; IDE Posadas is the municipal geospatial portal; its public GeoServer WFS exposes a cadastral parcel layer.",
+    "verifiedOpenScope": "Anonymous bounded WFS response with three complete MultiPolygon parcel geometries and stable-looking IDGIS identities near the WUP point.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Posadas Argentina cadastral parcels official map IDE cadastral GeoServer WFS",
+        "scope": "Identify first-party cadastral custody and a safe public parcel geometry route.",
+        "result": "Search found the official Dirección General de Catastro de Misiones, official IDE Posadas, its Planning Cadastre catalog, and the municipal remote GeoServer service listing.",
+        "actualResultUrls": [
+          "https://catastro.misiones.gov.ar/",
+          "https://www.ide.posadas.gob.ar/",
+          "https://www.ide.posadas.gob.ar/layers/ideposadas_data%3Ageonode%3Asecciones",
+          "https://www.ide.posadas.gob.ar/services/?limit=5"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "Spanish",
+        "query": "Posadas Misiones catastro parcelas mapa oficial visor catastral IDE",
+        "scope": "Independent local-language discovery of the local/provincial registry custodian and public cadastral service.",
+        "result": "Search confirmed the official provincial Catastro Misiones viewer/contact route, the municipal IDE Posadas portal, cadastral section data, and municipal GIS publication history.",
+        "actualResultUrls": [
+          "https://www.catastro.misiones.gov.ar/contactus",
+          "https://www.mapa.catastro.misiones.gov.ar/mapaCatastro/",
+          "https://www.ide.posadas.gob.ar/",
+          "https://posadas.gov.ar/planurbano/la-municipalidad-puso-en-marcha-un-sistema-de-informacion-geografica-de-posadas/"
+        ],
+        "executionMethod": "Separate Spanish web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "The three retained polygons are a bounded sample near the exact WUP point, not proof of a point hit, citywide parcel coverage, current completeness, or production readiness. The municipal IDE layer's stable native identity is represented by IDGIS; fid and AdMapKey were observed but not retained in the sample properties. The provincial viewer's internal API/configuration was not needed after the municipal WFS provided a safe public response.",
+  "nextStep": "Serial reviewer may independently qualify the WFS route, layer semantics, update cadence, and citywide coverage; do not enable runtime from this packet alone."
+}

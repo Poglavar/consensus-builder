@@ -1,0 +1,15 @@
+{
+  "taskId": "city:2919",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-2919-colima.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/colima-service-review.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/colima-parcels-sample.geojson",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/root-review-receipts/source-evidence/city_2919-colima-cic.txt",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/root-review-receipts/source-evidence/city_2919-colima-bpc.json"
+  ],
+  "checkedAt": "2026-10-10T19:36:52Z",
+  "reason": "Official IRTEC custody and a fresh exact-point native-ID/full-polygon read are evidenced. One safe retained sample matches the source geometry, but no independently qualified forced paging, 13 bounded cells, metric multi-parcel overlap checks, source binding, or headed Details verification exists."
+}

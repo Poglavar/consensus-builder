@@ -1,0 +1,56 @@
+{
+  "cityRecord": "city-620-sungai-petani.json",
+  "cityCode": 620,
+  "queueRank": 1852,
+  "city": "Sungai Petani",
+  "country": "Malaysia",
+  "countryCode": "MY",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "reviewedAt": "2026-10-10T00:00:00Z",
+  "discovery": {
+    "english": "Official Kedah results identify the Kuala Muda District and Land Office in Sungai Petani. A first-party municipal ArcGIS REST directory identifies a cadastral service with JUPEM NDCDB lot layers and JSON query support.",
+    "native": "Malay-language official results identify JUPEM Kedah eKadaster and JUPEM eBiz digital cadastral-lot products. eKadaster has an authentication/agency boundary; eBiz is a product/purchase workflow, not a verified anonymous feature API."
+  },
+  "custodian": {
+    "name": "Pejabat Daerah dan Tanah Kuala Muda; Jabatan Ukur dan Pemetaan Malaysia (JUPEM) Kedah",
+    "role": "Local district land administration custodian and national/state cadastral survey custodian",
+    "evidenceUrls": [
+      "https://www.kedah.gov.my/index.php/pejabat-daerah-tanah-kuala-muda/",
+      "https://spgis.mbsp.gov.my/geoportal/rest/services/Kadaster/KADASTER/FeatureServer",
+      "https://ekadaster.kdh.jupem.gov.my/Account/Login"
+    ]
+  },
+  "attemptedRoutes": [
+    {"route": "Kedah official Kuala Muda District and Land Office", "url": "https://www.kedah.gov.my/index.php/pejabat-daerah-tanah-kuala-muda/", "result": "HTTP 200; local Sungai Petani office and land-administration custodian evidenced."},
+    {"route": "MBSP ArcGIS KADASTER service directory", "url": "https://spgis.mbsp.gov.my/geoportal/rest/services/Kadaster/KADASTER/FeatureServer", "result": "HTTP 200 in public directory evidence; service lists Lot Sementara, Lot Kadaster 2018, and Lot Kadaster 2009, with JUPEM/GDM2000 description."},
+    {"route": "MBSP ArcGIS layer metadata", "url": "https://spgis.mbsp.gov.my/geoportal/rest/services/Kadaster/KADASTER/FeatureServer/3?f=pjson", "result": "Direct GET timed out; no schema or CRS response."},
+    {"route": "MBSP ArcGIS bounded point-radius query", "url": "https://spgis.mbsp.gov.my/geoportal/rest/services/Kadaster/KADASTER/FeatureServer/3/query", "result": "Direct anonymous query around the exact WUP point, 250 m, inSR/outSR 4326, geometry=true and result limit 3, timed out; not treated as absence evidence."},
+    {"route": "JUPEM Kedah eKadaster", "url": "https://ekadaster.kdh.jupem.gov.my/Account/Login", "result": "Login/agency-restricted route discovered; no credentials or protected access attempted."},
+    {"route": "JUPEM eBiz interactive digital cadastral products", "url": "https://ebiz.jupem.gov.my/PetaInteraktif?c=pl&jenis=Pemetaan&no=7991&type=MY701T", "result": "HTTP 200; product purchase/login workflow, no anonymous parcel feature response."}
+  ],
+  "fieldPolicy": {
+    "allowlist": ["safe stable native parcel identity if publicly returned", "parcel polygon geometry", "source field names and mapping in metadata only", "CRS/format and request metadata"],
+    "notRequested": ["owner/right-holder", "address/contact", "titleholder/certificate", "tax/account/identity/application data"]
+  },
+  "geometryReview": {
+    "publicGeometryFound": false,
+    "sampleFile": null,
+    "parcelCount": 0,
+    "reason": "The relevant public service was discovered, but live layer metadata and the bounded geometry response timed out. No polygon or raw source attributes are retained."
+  },
+  "scopeLimits": [
+    "Exact WUP point [5.64241915779604, 100.508074182137] was preserved and was not shifted to force a hit.",
+    "No exact-point hit, map-extent miss, login wall, or timeout was used as evidence of citywide absence.",
+    "No login, CAPTCHA bypass, private token, or protected owner/property query was attempted.",
+    "National JUPEM service prose was kept distinct from the local Kuala Muda land-office custodian evidence.",
+    "Packet completion records research execution only; it is not source integration/admission."
+  ],
+  "qualification": {
+    "registryFound": true,
+    "publicParcelGeometryFound": false,
+    "runtimeReadiness": "held",
+    "serialReviewerRequired": true,
+    "uncertainty": "Live schema, CRS, safe native identity field, query response, and citywide coverage remain unverified."
+  }
+}

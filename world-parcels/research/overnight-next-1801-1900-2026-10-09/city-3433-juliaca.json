@@ -1,0 +1,108 @@
+{
+  "cityCode": 3433,
+  "queueRank": 1875,
+  "name": "Juliaca",
+  "country": "Peru",
+  "countryCode": "PE",
+  "iso3": "PER",
+  "point": [-15.4856868775125, -70.1314128671308],
+  "population2025": 306990,
+  "population2025k": 306.99,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Juliaca Peru official cadastral parcel map GIS land registry",
+        "result": "First-party results identified SUNARP's official Base Gráfica Registral viewer, the official SUNARP Juliaca registry office evidence, and the Municipalidad Provincial de San Román PDU page with a public ArcGIS zoning service. No public anonymous parcel layer was established.",
+        "actualResultUrls": [
+          "https://visor-bgr.sunarp.gob.pe/",
+          "https://www.gob.pe/institucion/sunarp/normas-legales/4933002-190-2023-sunarp-zrnxiii-jef",
+          "https://munisanroman.gob.pe/web/pdu-plan-de-desarrollo-urbano-juliaca/",
+          "https://services5.arcgis.com/bHvzrGGxW8wP6Utm/arcgis/rest/services/p_211101_zonificacion_levobs_18052026/FeatureServer"
+        ]
+      },
+      {
+        "language": "Spanish (local/native administrative language)",
+        "query": "Juliaca Perú catastro parcelas mapa oficial municipalidad SUNARP",
+        "result": "First-party results identified SUNARP's BGR service and the Municipalidad Provincial de San Román PDU/Visor de zonificación. The exposed ArcGIS layer is urban zoning, not a cadastral parcel service; no anonymous parcel ID-plus-geometry response was verified.",
+        "actualResultUrls": [
+          "https://visor-bgr.sunarp.gob.pe/",
+          "https://www.gob.pe/institucion/sunarp/noticias/1359152-visor-bgr-sunarp-supera-los-3-millones-de-consultas-de-mas-de-360-mil-ciudadanos",
+          "https://munisanroman.gob.pe/web/pdu-plan-de-desarrollo-urbano-juliaca/",
+          "https://services5.arcgis.com/bHvzrGGxW8wP6Utm/arcgis/rest/services/p_211101_zonificacion_levobs_18052026/FeatureServer/0"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "localCustodian": "Municipalidad Provincial de San Román–Juliaca is evidenced by its official PDU page and public zoning viewer; SUNARP's official Juliaca registry office is evidenced by its 2023 resolution.",
+    "nationalService": "https://visor-bgr.sunarp.gob.pe/",
+    "basis": "Official sources establish local planning and registry custody, but the public BGR viewer currently presents an access flow requiring DNI and date of issue. No anonymous cadastral parcel geometry API was verified.",
+    "urls": [
+      "https://munisanroman.gob.pe/web/pdu-plan-de-desarrollo-urbano-juliaca/",
+      "https://www.gob.pe/institucion/sunarp/normas-legales/4933002-190-2023-sunarp-zrnxiii-jef",
+      "https://visor-bgr.sunarp.gob.pe/"
+    ]
+  },
+  "requests": [
+    {
+      "route": "https://munisanroman.gob.pe/web/pdu-plan-de-desarrollo-urbano-juliaca/",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Official municipal PDU page returned HTML and linked the public zoning viewer/ArcGIS material. It describes planning and land-use regulation, not a parcel registry endpoint."
+    },
+    {
+      "route": "https://visor-bgr.sunarp.gob.pe/",
+      "method": "GET",
+      "status": "timeout",
+      "outcome": "Official SUNARP BGR viewer did not complete within 20 seconds. No login, DNI, credentials, private token, CAPTCHA/Cloudflare bypass, or TLS-verification bypass was attempted. Search results describe a DNI/date-of-issue access flow; no parcel request was made."
+    },
+    {
+      "route": "https://services5.arcgis.com/bHvzrGGxW8wP6Utm/arcgis/rest/services/p_211101_zonificacion_levobs_18052026/FeatureServer?f=pjson",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Official/public ArcGIS service metadata returned one polygon layer, p_211101_zonificacion, in EPSG:32719. Service description identifies it as Juliaca urban zoning, not cadastral parcels."
+    },
+    {
+      "route": "https://services5.arcgis.com/bHvzrGGxW8wP6Utm/arcgis/rest/services/p_211101_zonificacion_levobs_18052026/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Layer schema returned OBJECTID as the system-maintained unique ID plus fields including id_lote and id_manzana; the bounded response showed those lot/block fields blank. The layer is zoning geometry, so its IDs were not treated as parcel identities."
+    },
+    {
+      "route": "https://services5.arcgis.com/bHvzrGGxW8wP6Utm/bounded-zoning-query",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Anonymous where=1=1 query with returnGeometry=false and resultRecordCount=3 returned three zoning attributes. No parcel geometry was retained."
+    },
+    {
+      "route": "https://services5.arcgis.com/bHvzrGGxW8wP6Utm/arcgis/rest/services/p_211101_zonificacion_levobs_18052026/FeatureServer/0/query?geometry=-70.1314128671308,-15.4856868775125&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Exact WUP-point query against the zoning layer returned count 0. This is not a parcel hit/miss and is not evidence of citywide cadastral absence; the exact point was preserved and not shifted."
+    },
+    {
+      "route": "https://services5.arcgis.com/bHvzrGGxW8wP6Utm/arcgis/rest/services/p_211101_zonificacion_levobs_18052026/FeatureServer/0/query?geometry=-70.25,-15.60,-70.00,-15.35&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Broad bounded Juliaca-area query returned 10,415 zoning features. This establishes only zoning coverage in the queried extent, not parcel coverage or citywide completeness."
+    }
+  ],
+  "safeFieldAllowlist": ["stable native parcel id only if independently confirmed", "full polygon or multipolygon geometry", "public service/layer metadata", "CRS metadata"],
+  "nativeFieldMapping": {"sourceLayer": "p_211101_zonificacion", "sourceIdFieldObserved": "OBJECTID", "lotFieldObserved": "id_lote", "retainedProperties": null, "note": "Not a cadastral parcel layer; no native parcel identity was retained."},
+  "compositeKeyProvenance": null,
+  "crs": {"source": "EPSG:32719 (ArcGIS layer metadata)", "retainedSample": null},
+  "verifiedSample": {"count": 0, "sampleFile": null, "exactWupPointQuery": true, "result": "No parcel geometry sample retained. The only anonymous geometry service verified was a municipal zoning layer, not cadastral parcels."},
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {"claimedScope": "SUNARP BGR official registry map viewer and Municipalidad Provincial de San Román PDU zoning service.", "verifiedOpenScope": "Public Juliaca zoning layer returned bounded polygon responses; anonymous cadastral parcel geometry, citywide parcel completeness, and countrywide coverage were not verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent adapter qualification remains required",
+  "scopeLimits": ["Exact WUP latitude/longitude [-15.4856868775125, -70.1314128671308] preserved; no coordinate shift applied.", "The exact-point zero was against zoning, not a parcel layer, and is not an absence claim.", "No owner, address, titleholder, contact, tax/account, personal, or unsafe fields were requested or retained.", "No raw source attribute sets or GeoJSON samples were retained.", "Packet completion records research only and does not admit source integration.", "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS-verification bypass was used."],
+  "remainingUncertainty": "SUNARP registry custody and Juliaca municipal planning evidence are established, but the current BGR viewer/API route, anonymous parcel schema, CRS for any parcel response, stable parcel identity, legal parcel semantics, update currency, and citywide completeness remain unresolved."
+}

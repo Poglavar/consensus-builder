@@ -1,0 +1,12 @@
+{
+  "taskId": "city:3436",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-3436-corrientes.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/corrientes-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T17:06:55Z",
+  "reason": "First-party municipal procedure and indexed viewer support local cadastral custody. The GIS origin was inaccessible to the worker, with no safe feature, native ID, CRS, or polygon response. The packet omits its 2025 population value, although the immutable queue and WUP source agree on 392082 persons. Adapter, paging, 13-cell, GEOS, binding, and headed Details gates are unevidenced."
+}

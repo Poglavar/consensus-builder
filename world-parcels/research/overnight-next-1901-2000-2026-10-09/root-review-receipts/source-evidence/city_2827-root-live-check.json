@@ -1,0 +1,10 @@
+{
+  "checkedAt": "2026-10-10T19:53:04.801550Z",
+  "url": "https://www.orel-adm.ru/ru/activity/karty-plany/",
+  "httpStatus": 200,
+  "responseSha256": "d1d4d9c0717b19fcb33ac6215d24e1079493ef74c5f5edd24cc0c2a257bc5ece",
+  "responseBytes": 1293933,
+  "mentionsCadastral": true,
+  "mentionsMapsPlans": true,
+  "observation": "Official municipal publication page observed; no parcel ID/geometry response verified."
+}

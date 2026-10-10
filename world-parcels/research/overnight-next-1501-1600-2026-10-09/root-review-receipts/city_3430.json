@@ -1,0 +1,20 @@
+{
+  "taskId": "city:3430",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-3430-riverside.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/riverside-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/riverside-exact-point-sample.geojson",
+    "tmp/valhalla-parcel-research/riverside/city-parcel-layer.json",
+    "tmp/valhalla-parcel-research/riverside/city-point-query-no-pagination.json",
+    "tmp/valhalla-parcel-research/riverside/city-point-query.geojson",
+    "tmp/valhalla-parcel-research/riverside/county-parcel-layer.json",
+    "tmp/valhalla-parcel-research/riverside/county-point-query.geojson"
+  ],
+  "checkedAt": "2026-10-10T09:43:22Z",
+  "reason": "Queue code, rank, country, point and 367336-person population match; two English/local searches are recorded. One full City polygon matches the original response exactly and retains only native OBJECTID 44648. The County response instead has OBJECTID 816856, so the city packet's County attribution for 44648 is erroneous. City metadata says pagination is unsupported and the attempted paged response returned an error. Fresh exact-ID reads, forced paging, thirteen cells, independent metric GEOS checks, source binding and headed Details verification are not evidenced; runtime admission remains held. The exact-point hit does not prove citywide coverage.",
+  "independentFirstPartySources": [
+    "https://mapriverside.riversideca.gov/server/rest/services/Cadastral/Cadastral_Public/MapServer/86"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "taskId": "city:8923",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-8923-dewas.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/dewas-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T09:22:47.055983Z",
+  "reason": "WUP 2025 archive, ranked roster and queue agree on code 8923, rank 1541, India, point [22.9585792125082, 76.0429922836721], and 370472 persons. Packet records separate English and Hindi searches; official district revenue page and national parcel-map service listing support registry custody. Official MP viewer requests timed out and no safe anonymous native-ID plus complete-polygon response was retained. Zero polygons retained. Fresh exact ID reads, forced paging, 13 cells, metric GEOS checks, source binding and headed Details-panel verification are absent; timeout is not citywide absence.",
+  "independentlyCheckedFirstPartyUrls": [
+    "https://dewas.nic.in/en/revenue-administration/",
+    "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/443",
+    "https://services.india.gov.in/service/detail/check-dissemination-of-naksha-parcel-map-of-madhya-pradesh-online-1"
+  ],
+  "sourceAdmission": "not_admitted"
+}

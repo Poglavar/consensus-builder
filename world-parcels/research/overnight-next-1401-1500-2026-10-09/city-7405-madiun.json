@@ -1,0 +1,55 @@
+{
+  "cityCode": 7405,
+  "queueRank": 1430,
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "point": [-7.62352571140906, 111.508211846148],
+  "population2025": 397871,
+  "population2025k": 397.871,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Madiun Indonesia official cadastral parcel map GIS land registry BPN ATR",
+        "result": "Official ATR/BPN BHUMI documentation describes a public interactive land-information map with bidang tanah (parcel) layers and searches by NIB, HAK or NIBEL. The official Kantor Pertanahan Kota Madiun site confirms the local land-office custodian. No safe anonymous machine-readable Madiun parcel ID-plus-geometry response was verified.",
+        "actualResultUrls": [
+          "https://bhumi.atrbpn.go.id/bantuan/peta",
+          "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+          "https://kot-madiun.atrbpn.go.id/berita/rapat-fasilitasi-penyelesaian-perbedaan-luas-tanah-di-sppt-pbb-letter-c"
+        ]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Madiun peta bidang tanah kadaster resmi ATR BPN Kantor Pertanahan Kota Madiun",
+        "result": "Sumber resmi berbahasa Indonesia mengidentifikasi BHUMI ATR/BPN sebagai peta interaktif yang menyajikan informasi spasial bidang tanah, serta Kantor Pertanahan Kota Madiun sebagai pelaksana urusan pengukuran dan pemetaan kadastral. Portal SmartMap Kota Madiun is described as a PBB/P2 tax map with BPN land-price basemap, not an open cadastral parcel-vector service. No safe anonymous parcel geometry response was verified.",
+        "actualResultUrls": [
+          "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+          "https://kot-madiun.atrbpn.go.id/berita/rapat-fasilitasi-penyelesaian-perbedaan-luas-tanah-di-sppt-pbb-letter-c",
+          "https://smartmap.madiunkota.go.id/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "custodian": "Kantor Pertanahan Kota Madiun, Kementerian Agraria dan Tata Ruang/Badan Pertanahan Nasional (ATR/BPN)",
+    "localOffice": "Kantor Pertanahan Kota Madiun",
+    "localOfficeEvidenceUrl": "https://kot-madiun.atrbpn.go.id/berita/rapat-fasilitasi-penyelesaian-perbedaan-luas-tanah-di-sppt-pbb-letter-c",
+    "sourceScope": "Local land-office evidence covers cadastral measurement and mapping activity in Kota Madiun; BHUMI is the national ATR/BPN public spatial-information viewer.",
+    "geometryAccess": "BHUMI is publicly documented, but the reviewed anonymous route did not expose a verified safe parcel feature response. No login, credentials, private token, owner, address, titleholder or tax fields were requested."
+  },
+  "geometry": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "The exact WUP point was preserved but not treated as an absence test; no parcel hit or miss was used as evidence of citywide coverage.",
+    "crs": null
+  },
+  "runtimeReadiness": {
+    "status": "held",
+    "reason": "A real local registry custodian and public viewer documentation were verified, but no bounded anonymous response containing a stable native parcel identity plus geometry was obtained and no adapter was independently qualified.",
+    "adapterAdmission": false
+  }
+}

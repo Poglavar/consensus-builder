@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "cityCode": 3536,
+  "wupCityCode": 3536,
+  "queueRank": 1419,
+  "name": "Stockton",
+  "country": "United States of America",
+  "countryCode": "US",
+  "iso2": "US",
+  "iso3": "USA",
+  "point": [37.9838255374783, -121.30363247299],
+  "centerLatLon": [37.9838255374783, -121.30363247299],
+  "population2025": 398470,
+  "population2025k": 398.47,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": true,
+  "sampleFile": "stockton-parcel-sample.geojson",
+  "serviceReview": "stockton-service-review.json",
+  "sourceIds": ["san-joaquin-county-diesel-wfl1-parcels"],
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Stockton California official parcel map GIS San Joaquin County cadastral parcels",
+        "result": "Found the official San Joaquin County Assessor parcel-map page, County GIS/property viewer, Surveyor Land Records System, and a public ArcGIS FeatureServer Parcels layer credited to San Joaquin County CD/GIS, City of Stockton IT/GIS, and the County Assessor.",
+        "actualResultUrls": [
+          "https://www.sjgov.org/department/assessor/property-information/homeowners/parcel-maps",
+          "https://www.sjgov.org/commdev/cgi-bin/cdyn.exe?prt=yes",
+          "https://www.sjgov.org/department/pwk/surveyor/land-records-system",
+          "https://services3.arcgis.com/nUD9ady1mS8uVvoJ/ArcGIS/rest/services/Diesel_WFL1/FeatureServer/1"
+        ]
+      },
+      {
+        "language": "English (US local/native language)",
+        "query": "San Joaquin County GIS parcel viewer official Stockton APN parcel map",
+        "result": "Confirmed the County Assessor page links the interactive GIS map and parcel information, and the official layer metadata identifies a polygon Parcels layer with APN/APN_CHR fields and County Assessor stewardship.",
+        "actualResultUrls": [
+          "https://www.sjgov.org/department/assessor/property-information/homeowners/parcel-maps",
+          "https://services3.arcgis.com/nUD9ady1mS8uVvoJ/ArcGIS/rest/services/Diesel_WFL1/FeatureServer/1"
+        ]
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "San Joaquin County GIS/Assessor parcel mapping; the public layer extent covers the Stockton area and the County page identifies Stockton as the Assessor Mapping Department location.",
+    "verifiedOpenScope": "The layer metadata extent covers the Stockton region; only a bounded point-intersection request was queried.",
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": {
+    "sourceUrl": "https://services3.arcgis.com/nUD9ady1mS8uVvoJ/ArcGIS/rest/services/Diesel_WFL1/FeatureServer/1",
+    "layer": "Parcels (ID 1)",
+    "queryType": "point intersection",
+    "queryPoint": [37.9838255374783, -121.30363247299],
+    "featureCount": 1,
+    "nativeIdField": "APN_CHR",
+    "nativeId": "11512305",
+    "geometryType": "Polygon",
+    "responseCrs": "EPSG:4326",
+    "sourceCrs": "ESRI WKID 102100 / latest WKID 3857",
+    "sampleFile": "stockton-parcel-sample.geojson",
+    "safeFieldsRequested": ["APN", "APN_CHR", "POLY_CODE"],
+    "safeFieldMapping": {
+      "APN_CHR": "assessor parcel number text, used as the canonical native identity",
+      "APN": "assessor parcel number integer duplicate; not retained in sample properties",
+      "POLY_CODE": "parcel classification; not retained in sample properties"
+    }
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.sjgov.org/department/assessor/property-information/homeowners/parcel-maps",
+      "operator": "San Joaquin County Assessor-Recorder County Clerk",
+      "observation": "Official page states Assessor parcel maps are available online and links the GIS interactive map and parcel information."
+    },
+    {
+      "url": "https://services3.arcgis.com/nUD9ady1mS8uVvoJ/ArcGIS/rest/services/Diesel_WFL1/FeatureServer/1",
+      "operator": "San Joaquin County CD/GIS and City of Stockton IT/GIS; data steward listed as San Joaquin County Assessor's Office",
+      "observation": "Public polygon Parcels layer; metadata exposes APN/APN_CHR/POLY_CODE, extent, CRS and GeoJSON query support."
+    },
+    {
+      "url": "https://www.sjgov.org/department/pwk/surveyor/land-records-system",
+      "operator": "San Joaquin County Public Works Surveyor Division",
+      "observation": "Official public records system documents parcel maps, records of survey and final subdivision maps; it is a complementary records source, not the geometry endpoint used here."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://services3.arcgis.com/nUD9ady1mS8uVvoJ/ArcGIS/rest/services/Diesel_WFL1/FeatureServer/1?f=pjson",
+      "method": "GET",
+      "status": "HTTP 200 JSON",
+      "summary": "Layer metadata returned polygon geometry, source CRS WKID 102100/3857, extent, APN/APN_CHR/POLY_CODE fields, GeoJSON support and County/City attribution."
+    },
+    {
+      "url": "https://services3.arcgis.com/nUD9ady1mS8uVvoJ/ArcGIS/rest/services/Diesel_WFL1/FeatureServer/1/query",
+      "method": "GET",
+      "status": "HTTP 200 GeoJSON",
+      "summary": "Anonymous point-intersection query at the exact WUP coordinate returned one full polygon with APN_CHR 11512305. Requested only safe parcel identity/classification fields and geometry; no owner, address, tax, titleholder or contact fields were requested."
+    },
+    {
+      "url": "https://www.sjgov.org/commdev/cgi-bin/cdyn.exe?prt=yes",
+      "method": "GET",
+      "status": "HTTP 200 page",
+      "summary": "Official Community Development page identifies GIS Mapping and a public GIS District Viewer/property-information entry point."
+    },
+    {
+      "url": "https://www.sjgov.org/department/pwk/surveyor/land-records-system",
+      "method": "GET",
+      "status": "HTTP 200 page",
+      "summary": "Official Surveyor page documents public parcel-map and survey-record retrieval; no private session or login used."
+    }
+  ],
+  "qualityAssessment": {
+    "geometryQuality": "one valid non-empty polygon returned in EPSG:4326; retained sample is unchanged native geometry from the bounded response",
+    "identityReadiness": "native APN_CHR is present and stable in the source schema; runtime admission remains held pending independent serial review",
+    "attributesRequested": ["APN", "APN_CHR", "POLY_CODE"]
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "Research packet is complete and contains a safe geometry sample, but this parallel researcher does not qualify or admit a runtime adapter.",
+  "remainingUncertainty": "The point hit verifies one parcel and the layer's Stockton-area extent, not complete citywide coverage, update cadence, or legal survey accuracy. Exact-point intersection is not used as a citywide absence test.",
+  "nextStep": "Serial reviewer should independently confirm source ownership, geographic scope, native APN identity semantics, CRS handling and bounded geometry quality before any adapter qualification.",
+  "identityPolicy": "Retained GeoJSON uses exactly one canonical native identity, APN_CHR. Source field names and mapping are documented here and in the service review, not in feature properties."
+}

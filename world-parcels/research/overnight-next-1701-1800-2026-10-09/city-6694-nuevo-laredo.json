@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 6694,
+  "queueRank": 1733,
+  "cityId": "wup2025:6694",
+  "name": "Nuevo Laredo",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "point": [27.4828177336529, -99.5431008277629],
+  "centerLatLon": [27.4828177336529, -99.5431008277629],
+  "population2025": 331195,
+  "population2025k": 331.195,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Nuevo Laredo Tamaulipas cadastral parcels GIS land registry official",
+        "result": "First-party results identified the Nuevo Laredo municipal government, the Tamaulipas Instituto Registral y Catastral, and official state cadastral/cartographic references. No public parcel feature service or geometry download was found.",
+        "actualResultUrls": [
+          "https://nld.gob.mx/",
+          "https://tamaulipas.gob.mx/secretariageneral/instituto-registral-y-catastral/",
+          "https://www.tamaulipas.gob.mx/datosabiertos/tag/ubicacion/?post_type=datos_abiertos",
+          "https://www.congresotamaulipas.gob.mx/TrabajoLegislativo/Decretos/VerDictamen.asp?IdDecreto=28964"
+        ]
+      },
+      {
+        "language": "Spanish (local/official)",
+        "query": "Nuevo Laredo Tamaulipas catastro mapa parcelario sitio oficial",
+        "result": "La búsqueda en fuentes oficiales confirmó el Instituto Registral y Catastral estatal, referencias oficiales a cartografía catastral municipal y el portal municipal de Consulta y Pago Predial; no expuso un visor parcelario público ni una respuesta anónima de geometría con identificador nativo seguro.",
+        "actualResultUrls": [
+          "https://nld.gob.mx/",
+          "https://tamaulipas.gob.mx/secretariageneral/instituto-registral-y-catastral/",
+          "https://www.tamaulipas.gob.mx/datosabiertos/tag/ubicacion/?post_type=datos_abiertos",
+          "https://po.tamaulipas.gob.mx/wp-content/uploads/2019/11/036_Laredo_Catastro.pdf",
+          "https://www.congresotamaulipas.gob.mx/TrabajoLegislativo/Decretos/VerDictamen.asp?IdDecreto=28964"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://nld.gob.mx/",
+      "operator": "Gobierno de Nuevo Laredo; municipal government",
+      "observation": "The official municipal site links Consulta y Pago Predial. Its current JavaScript identifies the public service base https://nld.gob.mx/predial_ws/Predial and the predial route requires a cadastral account key; no parcel geometry layer is advertised."
+    },
+    {
+      "url": "https://tamaulipas.gob.mx/secretariageneral/instituto-registral-y-catastral/",
+      "operator": "Instituto Registral y Catastral del Estado de Tamaulipas",
+      "observation": "The state institute says it integrates the state's real-estate inventory and supports consultation of current and historical digital cartography for urban and rural properties, in support of municipalities. This evidences a cadastral custodian, not an open parcel API."
+    },
+    {
+      "url": "https://po.tamaulipas.gob.mx/wp-content/uploads/2019/11/036_Laredo_Catastro.pdf",
+      "operator": "Periódico Oficial del Estado de Tamaulipas / municipal Nuevo Laredo catastro regulation",
+      "observation": "The official regulation describes municipal cadastral block plans and their required parcel/lot content, but provides no machine-readable layer, safe parcel identifiers, or public service endpoint."
+    },
+    {
+      "url": "https://www.congresotamaulipas.gob.mx/TrabajoLegislativo/Decretos/VerDictamen.asp?IdDecreto=28964",
+      "operator": "Congreso del Estado de Tamaulipas",
+      "observation": "The official 2026 valuation decree explicitly covers urban, suburban, ejidal-origin population-center, locality, and rural properties in Nuevo Laredo; it is cadastral/valuation evidence only and contains no parcel geometry service."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://nld.gob.mx/",
+      "method": "GET; official HTML and linked JavaScript inspection",
+      "status": "HTTP 200",
+      "summary": "Current site assets were inspected. The site exposes the /predial route and its JavaScript names the public predial service base https://nld.gob.mx/predial_ws/Predial. No map, WMS, WFS, ArcGIS, GeoServer, parcel, schema, CRS, or geometry route was exposed."
+    },
+    {
+      "url": "https://nld.gob.mx/predial",
+      "method": "GET",
+      "status": "HTTP 403 Forbidden",
+      "summary": "The municipal predial page was blocked to the anonymous request. This was recorded as a UI/request limitation, not evidence of citywide parcel absence."
+    },
+    {
+      "url": "https://nld.gob.mx/predial_ws/Predial/publicidad",
+      "method": "GET",
+      "status": "HTTP 200; JSON",
+      "summary": "Public predial advertising metadata returned. It contains image paths only; no parcel identifiers or geometry."
+    },
+    {
+      "url": "https://nld.gob.mx/predial_ws/Predial/mostrar",
+      "method": "GET",
+      "status": "HTTP 200; JSON",
+      "summary": "Public predial display/status response returned. It exposed service status metadata only; no parcel identifiers, geometry, schema, or CRS. The account consultation route was not queried because it is cadastral-account oriented and could expose unsafe property fields."
+    },
+    {
+      "url": "https://tamaulipas.gob.mx/secretariageneral/instituto-registral-y-catastral/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official state institute page read; its cartography and registry mandate was recorded. No anonymous parcel viewer/API link was exposed."
+    },
+    {
+      "url": "https://www.tamaulipas.gob.mx/datosabiertos/tag/ubicacion/?post_type=datos_abiertos",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official open-data index read. It lists a municipal Nuevo Laredo geographic-location PDF and registry-office addresses, but no parcel layer or geometry endpoint."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Municipal predial/catastro services and state registral-cadastral cartography custodian are evidenced.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "citywideParcelCoverageVerified": false
+  },
+  "qualityAssessment": {
+    "geometryQuality": "not sampled",
+    "identityReadiness": "not ready; no safe native parcel feature response was retrieved",
+    "attributesRequested": "none beyond public service/schema discovery; no owner, address, contact, titleholder, tax, account, or personal fields requested",
+    "safeFieldAllowlist": ["native parcel identifier if publicly exposed", "geometry", "source layer name", "CRS", "service metadata"]
+  },
+  "sourceFields": null,
+  "crs": null,
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_registry_custodian_documented_no_open_geometry",
+  "blocker": "No anonymous first-party parcel viewer, API, schema/CRS response, or geometry-only extract was verified after bounded English and Spanish discovery.",
+  "remainingUncertainty": "Municipal and state cadastral cartography may be available through an offline/request procedure or an unlinked authenticated/internal viewer. Search failure, the 403 predial page, and lack of an exact-point hit do not establish citywide absence.",
+  "nextStep": "On a later attempt, locate a documented public Nuevo Laredo or Tamaulipas cadastral viewer/API, inspect its current JavaScript/configuration, and request only a small anonymous geometry-plus-native-ID response before considering adapter qualification.",
+  "registryBasis": "The municipal government exposes a predial service, the official municipal catastro regulation describes cadastral plans, and the state Instituto Registral y Catastral explicitly maintains and supports consultation of current and historical urban/rural cadastral cartography.",
+  "registryEvidenceUrls": [
+    "https://nld.gob.mx/",
+    "https://tamaulipas.gob.mx/secretariageneral/instituto-registral-y-catastral/",
+    "https://po.tamaulipas.gob.mx/wp-content/uploads/2019/11/036_Laredo_Catastro.pdf"
+  ],
+  "identityPolicy": "No GeoJSON retained because no safe native parcel identity and geometry response was verified."
+}

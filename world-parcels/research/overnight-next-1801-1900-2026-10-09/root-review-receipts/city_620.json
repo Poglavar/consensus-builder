@@ -1,0 +1,40 @@
+{
+  "taskId": "city:620",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-620-sungai-petani.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/sungai-petani-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T16:55:08Z",
+  "identityCheck": {
+    "rank": 1852,
+    "country": "Malaysia",
+    "pointLatLon": [
+      5.64241915779604,
+      100.508074182137
+    ],
+    "populationPersons": 310566,
+    "source": "WUP 2025 compressed archive; SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114"
+  },
+  "bilingualSearches": "English and local-language queries with outcomes/URLs are recorded in the packet and were independently repeated during review.",
+  "registryFound": true,
+  "firstPartyUrlsChecked": [
+    "https://www.kedah.gov.my/index.php/pejabat-daerah-tanah-kuala-muda/",
+    "https://spgis.mbsp.gov.my/geoportal/rest/services/Kadaster/KADASTER/FeatureServer",
+    "https://www.mbsp.gov.my/index.php/ms/hubungi-kami/lokasi"
+  ],
+  "reason": "Kedah Kuala Muda land office establishes local custody. The discovered MBSP cadastral FeatureServer belongs to Seberang Perai, Pulau Pinang, and its Sungai Petani scope is unproven; direct layer metadata/geometry timed out. Its service description cannot establish city coverage.",
+  "parcelSampleCount": 0,
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "admitted": false,
+  "absenceFinding": null
+}

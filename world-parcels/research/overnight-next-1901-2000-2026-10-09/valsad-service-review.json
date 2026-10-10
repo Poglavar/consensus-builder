@@ -1,0 +1,29 @@
+{
+  "cityRecord": "city-7690-valsad.json",
+  "cityCode": 7690,
+  "city": "Valsad",
+  "country": "India",
+  "countryCode": "IN",
+  "reviewedAt": "2026-10-10",
+  "attempt": 1,
+  "outcome": "held_no_verified_geometry",
+  "registryFound": true,
+  "custodian": "Valsad District Inspector Land Records / Gujarat Revenue Department",
+  "scope": "Local Valsad DILR and Gujarat state land-record/city-survey custody evidenced; no open parcel layer admitted.",
+  "queries": [
+    {"language": "English", "query": "Valsad Gujarat official cadastral parcel map land records GIS site:gov.in", "outcome": "Official DILR, Revenue Department, and DILRMP pages found; no public vector parcel endpoint found.", "urls": ["https://valsad.nic.in/d-i-l-r/", "https://revenuedepartment.gujarat.gov.in/branch/h-branch", "https://dilrmp.gov.in/physicalProgressReports/map/district-level/24"]},
+    {"language": "Gujarati", "query": "વલસાડ જમીન રેકોર્ડ નકશો કેડસ્ટ્રલ ગુજરાત સરકાર", "outcome": "Official Valsad district land-record/settlement map and district portal found; no anonymous parcel API identified.", "urls": ["https://valsad.nic.in/d-i-l-r/", "https://revenuedepartment.gujarat.gov.in/downloads/valsad_district.pdf", "https://gujarat.s3waas.gov.in/"]}
+  ],
+  "requestOutcomes": [
+    {"url": "https://e-milkat.gujarat.gov.in/", "method": "GET", "outcome": "20-second timeout; no response"},
+    {"url": "https://anyror.gujarat.gov.in/", "method": "GET", "outcome": "15-second timeout; no response"},
+    {"url": "https://landrecords.gujarat.gov.in/", "method": "GET", "outcome": "15-second timeout; no response"},
+    {"url": "https://naksha.dolr.gov.in/NakshaPortal/", "method": "GET", "outcome": "JavaScript loader only; no usable Valsad endpoint"}
+  ],
+  "safeFieldAllowlist": ["native parcel identifier", "geometry", "source CRS", "source layer/service identifier"],
+  "excludedFields": ["owner", "titleholder", "address", "contact", "personal", "tax", "account", "private credentials/tokens"],
+  "sampleGeoJSON": null,
+  "runtimeReadiness": "held",
+  "uncertainty": "No exact-point hit or map timeout is treated as absence. Public geometry may require portal recovery or a documented anonymous service; no login, CAPTCHA/Cloudflare bypass, or TLS exception was used.",
+  "reviewDisposition": "Keep packet complete as a research record, but hold runtime integration pending independent serial qualification."
+}

@@ -1,0 +1,60 @@
+{
+  "cityCode": 1496,
+  "queueRank": 1417,
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "point": [38.6210645399539, 27.3994264175019],
+  "population2025": 399014,
+  "population2025k": 399.014,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Manisa Turkey official cadastral parcel map TKGM Parsel Sorgu MEGSIS",
+        "result": "First-party TKGM material identifies Parsel Sorgu as the official public parcel-query service. The current viewer is parselsorguv2.tkgm.gov.tr; its public MEGSİS API route was identified and returned a safe parcel feature for the exact WUP coordinate.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://parselsorguv2.tkgm.gov.tr/",
+          "https://tkgm.gov.tr/projeler/tamamlanan-projeler/megsis"
+        ]
+      },
+      {
+        "language": "Turkish",
+        "query": "Manisa Türkiye resmi kadastro parsel sorgu haritası TKGM MEGSİS",
+        "result": "Resmî TKGM sayfası Parsel Sorgu'yu il, ilçe, mahalle ve ada/parsel ile temel konum/geometri bilgilerini sunan hizmet olarak açıklıyor. Manisa exact-point anonymous coordinate request returned Yenimahalle, Yunusemre, ada 1380, parsel 1.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://parselsorguv2.tkgm.gov.tr/",
+          "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/38.6210645399539/27.3994264175019/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "custodian": "Tapu ve Kadastro Genel Müdürlüğü (TKGM), through the MEGSİS / Parsel Sorgu public service",
+    "localityEvidence": "The returned feature is explicitly identified as Manisa province, Yunusemre district, Yenimahalle neighborhood, ada 1380, parsel 1.",
+    "sourceScope": "Public cadastral parcel query for Turkey; the exact-point response establishes a Manisa parcel record, not citywide completeness.",
+    "geometryAccess": "Anonymous coordinate lookup; no login, token, owner, address, titleholder, tax, or personal fields requested."
+  },
+  "geometry": {
+    "verified": true,
+    "sampleCount": 1,
+    "sampleFile": "manisa-parcel-sample.geojson",
+    "exactWupPointTest": "Exact WUP point [38.6210645399539, 27.3994264175019] returned one polygon feature.",
+    "crs": "WGS84 geographic coordinates, GeoJSON coordinate order longitude,latitude as returned by the endpoint",
+    "nativeIdentity": "TR-67-6166-149943-1380-1",
+    "nativeFieldMapping": {
+      "nativeIdentity": "Composite of ilId=67, ilceId=6166, mahalleId=149943, adaNo=1380, parselNo=1",
+      "nativeSourceFields": ["ilId", "ilceId", "mahalleId", "adaNo", "parselNo"],
+      "safeRetainedFields": ["id", "geometry"]
+    }
+  },
+  "runtimeReadiness": {
+    "status": "held",
+    "reason": "A real public parcel response was verified, but adapter admission requires independent serial qualification.",
+    "adapterAdmission": false
+  }
+}

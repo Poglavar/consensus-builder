@@ -1,0 +1,137 @@
+{
+  "cityCode": 7697,
+  "queueRank": 1695,
+  "name": "Mandi Bahauddin",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "locId": 586,
+  "capital": false,
+  "point": [32.5807897110688, 73.4859193391159],
+  "population2025": 337161,
+  "population2025k": 337.161,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pakistan official cadastral map parcel GIS Mandi Bahauddin Punjab land records",
+        "result": "First-party results identified the Punjab Land Records Authority, the PULSE public cadastral map viewer, the Mandi Bahauddin district administration revenue page, and a municipal Mandi Bahauddin map page. PULSE explicitly lists Mandi Bahauddin among its map areas and exposes a cadastral-map layer, but anonymous parcel feature access was not available in this attempt.",
+        "actualResultUrls": [
+          "https://www.punjab-zameen.gov.pk/",
+          "https://lis.pulse.gop.pk/",
+          "https://d2d.pulse.gop.pk/map-qc.html",
+          "https://mandibahauddin.punjab.gov.pk/administration",
+          "https://mcmandibahauddin.lgpunjab.org.pk/map/"
+        ]
+      },
+      {
+        "language": "Urdu",
+        "query": "پاکستان منڈی بہاؤالدین سرکاری کادستر نقشہ اراضی ریکارڈ پنجاب",
+        "result": "Search results identified the official Punjab land-record service and the Mandi Bahauddin district revenue administration. The Urdu/native-language search did not expose a separate city-bounded public parcel API; the same first-party Punjab/PULSE routes remain the relevant public map procedure.",
+        "actualResultUrls": [
+          "https://www.punjab-zameen.gov.pk/",
+          "https://mandibahauddin.punjab.gov.pk/administration",
+          "https://lis.pulse.gop.pk/",
+          "https://onlinefard.punjab-zameen.gov.pk/Client/Index"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://lis.pulse.gop.pk/",
+      "observation": "Official Punjab PULSE public viewer says its digital map is based on Mussavie maps and is for indicative visualization only. Its current JavaScript configuration exposes a Punjab cadastral map service and lists a Parcels layer, but the ArcGIS service required a token when queried anonymously."
+    },
+    {
+      "url": "https://d2d.pulse.gop.pk/map-qc.html",
+      "observation": "Official PULSE map-QC page lists Mandi Bahauddin as a supported district/map area and provides parcel, mauza, download, and survey-status routes. Its public hierarchy request returned HTTP 401 Bearer authentication; no token was requested or used."
+    },
+    {
+      "url": "https://mandibahauddin.punjab.gov.pk/administration",
+      "observation": "Official district administration page identifies revenue administration duties including maintenance/updating of land records, tehsil offices, patwari records, and land transactions. This establishes the local district revenue custodian, not an open parcel geometry API."
+    },
+    {
+      "url": "https://www.punjab-zameen.gov.pk/",
+      "observation": "Official Punjab Land Records Authority portal describes digitized, GIS-linked land records and public land-record services. It establishes the provincial cadastral/land-record authority, not anonymous city-bounded parcel geometry access."
+    },
+    {
+      "url": "https://mcmandibahauddin.lgpunjab.org.pk/map/",
+      "observation": "Official municipal page provides an updated Mandi Bahauddin base map, but it does not expose a parcel feature schema or downloadable safe parcel geometry in the bounded inspection."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://lis.pulse.gop.pk/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Viewer HTML loaded. Current JavaScript/configuration was inspected and identified the public ArcGIS service https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer and its Parcels layer."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer?f=pjson",
+      "method": "GET",
+      "httpStatus": 499,
+      "outcome": "ArcGIS service metadata returned Token Required. No token, login, private credential, or bypass was attempted; schema, CRS, and safe native identity therefore remain unverified."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/0/query",
+      "method": "GET with bounded envelope and outFields=OBJECTID, returnGeometry=true, outSR=4326, resultRecordCount=3",
+      "httpStatus": 499,
+      "outcome": "Bounded anonymous query returned Token Required. No geometry or parcel row was retained. The envelope was a technical probe, not an exact-point absence test."
+    },
+    {
+      "url": "https://d2d.pulse.gop.pk/api/LandHierarchy/GetDivisionsList",
+      "method": "GET",
+      "httpStatus": 401,
+      "outcome": "Public page route returned Bearer authentication required before hierarchy discovery. No token was requested or used."
+    },
+    {
+      "url": "https://d2d.pulse.gop.pk/map-qc.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Page loaded and exposed parcel download/API route names, but the current parcel route requires a bearer token and was not called with credentials."
+    },
+    {
+      "url": "https://mandibahauddin.punjab.gov.pk/administration",
+      "method": "GET via first-party web access",
+      "httpStatus": 200,
+      "outcome": "District revenue-administration scope was confirmed; no parcel geometry endpoint was exposed."
+    },
+    {
+      "url": "https://mcmandibahauddin.lgpunjab.org.pk/map/",
+      "method": "GET via first-party web access",
+      "httpStatus": 200,
+      "outcome": "Municipal base-map page loaded; no safe parcel identity plus full polygon response was exposed."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The official Mandi Bahauddin district revenue administration is the local land-record custodian, while Punjab Land Records Authority/PULSE provides the provincial public cadastral-map procedure. This is registry/custodian evidence only; no open city-bounded parcel API was admitted.",
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; ArcGIS service metadata and feature response were token-gated",
+  "geometryQuality": "not evaluated; no parcel geometry retrieved",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": "punjab-pulse-punjab-cadastral-maps",
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Punjab PULSE cadastral-map viewer and Mandi Bahauddin district revenue/municipal map services.",
+    "cityCoverage": "Mandi Bahauddin is explicitly listed by the PULSE public map route, but city polygon coverage and exact WUP-point parcel coverage were not verified.",
+    "exactPointChecked": false,
+    "note": "The exact WUP point [32.5807897110688, 73.4859193391159] was preserved in latitude/longitude order and was not shifted. Token-required and authentication-required responses are not evidence of citywide parcel absence."
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "retainedSample": null,
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current public service's schema, CRS, stable native identity, anonymous geometry access, and citywide coverage remain unresolved because current ArcGIS and parcel API routes are token/authentication gated. No raw source-specific attributes, owner/address/contact information, or synthetic identity was retained. This packet is not source integration/admission."
+}

@@ -1,0 +1,19 @@
+{
+  "taskId": "city:8557",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-8557-xuanhua.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/xuanhua-service-review.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "tmp/valhalla-parcel-research/xuanhua/xuanhua-http.html",
+    "tmp/valhalla-parcel-research/xuanhua/service-home.html",
+    "tmp/valhalla-parcel-research/xuanhua/http-headers.txt",
+    "tmp/valhalla-parcel-research/xuanhua/service-headers.txt",
+    "tmp/valhalla-parcel-research/runs/20261010T133319-5c35dc7a/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-10T13:39:14Z",
+  "registryFound": null,
+  "reason": "Cached first-party government and linked service pages show public administrative portals but no cadastral layer, native parcel identity, CRS, or full polygon. The HTTPS certificate failure and the portal login notice do not establish parcel absence; registry custody remains unresolved (null).",
+  "admission": "Held: no verified full native parcel polygon and ID; independent fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, and headed Details-panel verification are missing. Runtime, catalog, city configuration and generated coverage remain unchanged."
+}

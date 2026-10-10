@@ -1,0 +1,14 @@
+{
+  "taskId": "city:1122",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-1122-la-paz.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/la-paz-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/la-paz-parcel-samples.geojson",
+    "tmp/valhalla-parcel-research/la-paz/bbox-id-geom.json"
+  ],
+  "checkedAt": "2026-10-10T09:04:58.291254Z",
+  "reason": "Queue identity and Spanish/English search records checked. Original WFS cache has three full Polygon features with numeric id only; retained geometry is unchanged. Fresh exact native-ID reads, forced paging, 13 bounded cells, independent full adapter geometry/overlap checks, source binding, and headed Details verification are not evidenced."
+}

@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3427-sandakan.json",
+  "purpose": "Document first-party local registry context and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Sabah's official Lands and Surveys Department identifies a Sandakan District Surveyor office and provides land/survey services. Its JTUWMA Pro service advertises access to land parcel information and geometrical cadastral information, but the public route terminates at a sign-in page. No login, private token, owner lookup, address lookup, or unsafe attribute request was attempted.",
+  "registryAssessment": "Local registry/cadastre custodian verified: Jabatan Tanah dan Ukur Negeri Sabah, with Pejabat Juruukur Daerah Sandakan and Pejabat Penolong Pemungut Hasil Tanah Sandakan listed in official administration material.",
+  "officialPrimarySources": [
+    {
+      "url": "https://jtu.sabah.gov.my/index.cfm?section=Home",
+      "observation": "Official JTU portal lists JTUWMA Pro as a registered-user system for geometrical cadastral-related information and identifies the department as Sabah's land and survey authority."
+    },
+    {
+      "url": "https://jtu.sabah.gov.my/homepage3/index.cfm?action=section2&id=0AA7301E24DC3709&lang=BM&section=administration",
+      "observation": "Official Malay-language administration page names Pejabat Juruukur Daerah Sandakan, its address, district, and telephone."
+    },
+    {
+      "url": "https://jtu.sabah.gov.my/homepage3/index.cfm?action=jtu2&lang=bm&section=administration",
+      "observation": "Official organization material lists Sandakan under district land-revenue and district survey administration."
+    },
+    {
+      "url": "https://pro.jtuwma.net/account/login",
+      "observation": "Official JTUWMA Pro sign-in page describes a geospatial mapping application providing land parcel information in Sabah; anonymous access stops at authentication."
+    },
+    {
+      "url": "https://sites.google.com/jupem.gov.my/jupemgeospatialwebservices/home",
+      "observation": "Official JUPEM geospatial-services catalog lists cadastral products and states that the listed NDCDB cadastral product covers Peninsular Malaysia and Labuan, not Sabah."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Sandakan Malaysia official cadastral map parcel land registry Sabah JUPEM eKadaster",
+      "result": "Found official JTU state custodian material, a Sandakan district survey office, and a JTUWMA Pro cadastral-information sign-in route. No anonymous geometry endpoint was verified.",
+      "actualResultUrls": [
+        "https://jtu.sabah.gov.my/index.cfm?section=Home",
+        "https://pro.jtuwma.net/account/login",
+        "https://www.jupem.gov.my/ebiz/info-korp",
+        "https://sites.google.com/jupem.gov.my/jupemgeospatialwebservices/home"
+      ]
+    },
+    {
+      "language": "Malay",
+      "query": "Sandakan Sabah peta kadaster rasmi lot tanah JUPEM pejabat tanah",
+      "result": "Found official JTU pages naming the Sandakan district survey and land-revenue offices. No anonymous safe-ID parcel geometry response was verified.",
+      "actualResultUrls": [
+        "https://jtu.sabah.gov.my/homepage3/index.cfm?action=section2&id=0AA7301E24DC3709&lang=BM&section=administration",
+        "https://jtu.sabah.gov.my/homepage3/index.cfm?action=jtu2&lang=bm&section=administration",
+        "https://pro.jtuwma.net/account/login",
+        "https://www.jupem.gov.my/orang-awam/peta-laman"
+      ]
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://jtu.sabah.gov.my/index.cfm?section=Home",
+      "result": "HTTP 200 official portal review; JTUWMA Pro is listed as a registered-user system for geometrical cadastral-related information."
+    },
+    {
+      "url": "https://pro.jtuwma.net/account/login",
+      "httpStatus": 200,
+      "result": "Anonymous GET returned the sign-in page. The page metadata describes a geospatial mapping application for Sabah land parcel information. No credentials or authenticated requests were used."
+    },
+    {
+      "url": "https://smartkadaster.jupem.gov.my/smartkadaster",
+      "result": "Anonymous GET timed out after 15 seconds in the bounded request. No retry with credentials, CAPTCHA bypass, or TLS weakening was attempted."
+    },
+    {
+      "url": "https://sites.google.com/jupem.gov.my/jupemgeospatialwebservices/home",
+      "result": "Official JUPEM catalog reviewed. The exposed cadastral product is described for Peninsular Malaysia and Labuan; it does not establish Sabah parcel geometry coverage."
+    }
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed against a public feature service; a zero hit, timeout, or sign-in wall is not treated as citywide absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "JTUWMA Pro describes Sabah land parcel information and geometrical cadastral information; JTU is the state land and survey custodian and lists a Sandakan district survey office.",
+    "verifiedOpenScope": "Local custodian and service existence verified, but anonymous parcel geometry, schema/CRS, and citywide completeness were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "The public availability, endpoint structure, schema/CRS, and exact-point parcel coverage of Sabah's cadastral data remain unknown without authenticated or separately published access.",
+  "runtimeAssessment": "held; no adapter admission or source integration implied"
+}

@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:3825",
+  "cityCode": 3825,
+  "wupCityCode": 3825,
+  "name": "Lalpur",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "iso2": "BD",
+  "iso3": "BGD",
+  "rank": 1512,
+  "queueRank": 1512,
+  "point": [24.1461076231779, 89.0286546655489],
+  "centerLatLon": [24.1461076231779, 89.0286546655489],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 375833,
+  "population2025k": 375.833,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Lalpur Upazila Land Office page identifies the local land office and describes record-maintenance, survey/records supervision, and mouza/plot-based services. This establishes a local land-record custodian, not public parcel geometry or citywide digital coverage.",
+  "registryEvidenceUrls": [
+    "https://acl.lalpur.natore.gov.bd/pages/static-pages/697f6dcf35ce18e1c06b18fd",
+    "https://acl.lalpur.natore.gov.bd/pages/static-pages/697ffd8235ce18e1c06e09ab",
+    "https://settlement.gov.bd/Map/MapSearch"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The official DLRS viewer's current JavaScript exposed anonymous hierarchy endpoints, a GeoJSON sheet endpoint, and parcel vector-tile/meta routes. The Natore district BDS branch returned an empty thana list, and no bounded anonymous response containing a safe native parcel ID plus complete polygon was obtained. No login, credentials, CAPTCHA bypass, or unsafe fields were used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Lalpur Upazila Land Office is the evidenced local custodian; DLRS Online Land Records and Survey Management is the national public map/search channel.",
+    "verifiedOpenScope": "Official viewer configuration and anonymous administrative discovery were inspected; no complete parcel feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Lalpur Bangladesh cadastral map parcel land records official map",
+        "scope": "Identify a first-party local registry custodian and a safe public parcel-geometry route.",
+        "result": "Search located the official Lalpur Upazila Land Office, the official DLRS map-search viewer, and the official national land-zoning viewer. The local office establishes custody/procedure; no safe parcel geometry was found in search results.",
+        "actualResultUrls": [
+          "https://acl.lalpur.natore.gov.bd/pages/static-pages/697f6dcf35ce18e1c06b18fd",
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://map.land.gov.bd/"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "Bengali",
+        "query": "লালপুর বাংলাদেশ মৌজা মানচিত্র খতিয়ান ভূমি অফিস সরকারি",
+        "scope": "Independent local-language discovery of Lalpur land-record custody and public cadastral map/API.",
+        "result": "Bengali search confirmed the official Lalpur Upazila Land Office, DLRS map search, and the national mouza/plot land-zoning project. The land-zoning page lists digitization scope but does not provide a verified Lalpur parcel feature response.",
+        "actualResultUrls": [
+          "https://acl.lalpur.natore.gov.bd/pages/static-pages/697f6dcf35ce18e1c06b18fd",
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://map.land.gov.bd/"
+        ],
+        "executionMethod": "Separate Bengali web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "The exact WUP point was preserved. No point-hit, map-extent miss, empty administrative response, timeout, or unavailable UI was treated as evidence of citywide absence. Native parcel identity, schema, CRS, parcel coverage, and citywide completeness remain unverified.",
+  "nextStep": "Serial reviewer may independently qualify the DLRS route or another first-party Bangladesh cadastral adapter; do not enable runtime from this packet alone."
+}

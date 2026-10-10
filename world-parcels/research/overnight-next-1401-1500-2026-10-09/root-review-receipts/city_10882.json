@@ -1,0 +1,16 @@
+{
+  "taskId": "city:10882",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-10882-wuzhou.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/wuzhou-service-review.json",
+    "tmp/valhalla-parcel-research/wuzhou-10882/guangxi-index.js"
+  ],
+  "checkedAt": "2026-10-09T16:22:17Z",
+  "reason": "Immutable WUP code/rank/country/point/398593 persons match the archive and queue. English and Chinese searches were executed. Guangxi first-party cadastral guidance identifies the municipal natural-resources bureau and cadastral work, grounding registry custody, while the original public map JavaScript yielded no safe anonymous native-ID polygon route. An expired local-site certificate and timed-out pages leave access unresolved; they do not establish citywide absence. No polygon or independent adapter admission and headed Details evidence exists.",
+  "registryFoundReviewed": true,
+  "retainedFullPolygonCount": 0,
+  "admission": false
+}

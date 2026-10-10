@@ -1,0 +1,67 @@
+{
+  "checkedAt": "2026-10-09T11:36:51.764414+00:00",
+  "purpose": "Discard non-ID sample attributes while preserving every full polygon and original feature reference unchanged.",
+  "cities": [
+    {
+      "cityCode": 6730,
+      "city": "batman",
+      "polygons": 1,
+      "discardedPropertyFieldNames": [
+        "adaNo",
+        "il",
+        "ilId",
+        "ilce",
+        "ilceId",
+        "mahalle",
+        "mahalleId",
+        "pafta",
+        "parselNo",
+        "safeParcelKey",
+        "source"
+      ],
+      "retainedFeatureProperties": [
+        "id"
+      ],
+      "fullGeometryChanged": false,
+      "featureReferencesChanged": false,
+      "fullGeometrySha256": "d3627a290164f13dfa943376c5fca37b3fd913631c475797babe6e88332a0358"
+    },
+    {
+      "cityCode": 7835,
+      "city": "vladivostok",
+      "polygons": 3,
+      "discardedPropertyFieldNames": [
+        "safeParcelKey",
+        "source"
+      ],
+      "retainedFeatureProperties": [
+        "id"
+      ],
+      "fullGeometryChanged": false,
+      "featureReferencesChanged": false,
+      "fullGeometrySha256": "ee5306b3a9bf6b493ef502de19d781e6b35ca048371cb1547ccef4f2a76f21e7"
+    },
+    {
+      "cityCode": 632,
+      "city": "surrey",
+      "polygons": 3,
+      "discardedPropertyFieldNames": [
+        "ACCURACY",
+        "FOLIO",
+        "LTSA_LOT",
+        "LTSA_PARCEL",
+        "LTSA_PLAN",
+        "METHOD",
+        "MSLINK",
+        "OBJECTID",
+        "PID"
+      ],
+      "retainedFeatureProperties": [
+        "id"
+      ],
+      "fullGeometryChanged": false,
+      "featureReferencesChanged": false,
+      "fullGeometrySha256": "fd9bceebb1d2aec253607edce090b4338b92f125f044348ffe45da4639168189"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "cityRecord": "city-6180-sumedang.json",
+  "cityCode": 6180,
+  "queueRank": 1767,
+  "city": "Sumedang",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "reviewedAt": "2026-10-10",
+  "disposition": "hold",
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "summary": "A local official Sumedang geospatial portal is evidenced, but it was unavailable as a Cloudflare error page. ATR/BPN's public catalog was reachable and exposed no Sumedang parcel layer; the advertised GeoServer host failed DNS resolution. No geometry sample was retained and no adapter was qualified.",
+  "queryAndRequestOutcomes": "English and Indonesian discovery queries were executed with actual URLs recorded in the city record. Local SIGEOL GET returned a Cloudflare 5xx page. Anonymous ATLAS resource listing returned seven datasets without a Sumedang parcel layer. Advertised WFS metadata requests failed DNS before any response.",
+  "scopeLimits": [
+    "The exact WUP point [-6.82984799316414, 107.937736915745] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point or bbox parcel hit was obtained; timeout, login/UI unavailability, DNS failure, or absent catalog entry is not evidence of citywide absence.",
+    "The local portal's indexed 'Persil yang sudah dipetakan' table is evidence of a relevant local mapping program, not evidence of a usable open parcel API or citywide geometry coverage.",
+    "No owner, address, contact, titleholder, tax, account, NIB, rights-status, or other unsafe attributes were requested or retained."
+  ],
+  "safeFieldAllowlist": ["native parcel ID if publicly exposed", "geometry"],
+  "nativeIdentityReview": {
+    "preferredIdentity": "Not established",
+    "fallback": null,
+    "compositeKeyProvenance": null,
+    "syntheticIdentityUsed": false
+  },
+  "uncertainty": [
+    "SIGEOL's current JavaScript/configuration, service endpoint, CRS, and parcel schema could not be inspected from this environment.",
+    "ATLAS's anonymous catalog did not expose a Sumedang parcel dataset, but catalog absence is not proof that the national service has no such data.",
+    "The remote GeoServer hostname published in ATLAS metadata may be transiently unresolvable."
+  ],
+  "qualification": {
+    "verifiedGeometrySample": false,
+    "adapterQualified": false,
+    "serialReviewerRequired": true,
+    "packetCompletionIsNotSourceAdmission": true
+  }
+}

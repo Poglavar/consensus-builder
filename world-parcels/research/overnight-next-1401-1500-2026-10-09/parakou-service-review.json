@@ -1,0 +1,120 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2317-parakou.json",
+  "purpose": "Document first-party registry context and bounded anonymous parcel-geometry access review for Parakou, Benin.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "ANDF is the evidenced national cadastral custodian and its official notice names Parakou among communes integrated into e-Foncier from 1 January 2025. The Mairie de Parakou separately reports municipal land-management and parceling activity. No anonymous parcel geometry, safe native ID, schema, CRS, or citywide coverage was verified.",
+  "registryAssessment": "Local/national registry context verified: ANDF is the national land-and-property agency, while the official Mairie de Parakou report evidences the municipal land-management office and parceling activity. This is not evidence that parcel geometry is publicly downloadable.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.cadastre.bj/",
+      "observation": "Official Benin National Cadastre viewer. A direct curl GET with normal TLS verification failed because the certificate chain was not trusted in this environment; no certificate exception was used. The web fetch also timed out. No JavaScript/configuration, schema/CRS, or parcel response was retained."
+    },
+    {
+      "url": "https://andf.bj/formalisation-fonciere-12-communes-desormais-integrees-a-la-plateforme-e-foncier-benin-des-janvier-2025/",
+      "observation": "Official ANDF notice dated 2 December 2024 explicitly lists Parakou among 12 communes integrated into the e-Foncier digital cadastral database from 1 January 2025. Administrative coverage evidence, not an open feature service."
+    },
+    {
+      "url": "https://andf.bj/",
+      "observation": "Official ANDF site identifies the agency and advertises online cadastral services including cadastral-plan and parcel-plan extracts. No anonymous parcel geometry response was exposed in the fetched result."
+    },
+    {
+      "url": "https://www.parakou.bj/actualite/premiere-seance-de-reddition-de-comptes-de-2026-le-maire-de-parakou-zul-kifly-zakarie-fait-le-point-sur-la-gestion-fonciere",
+      "observation": "Official Mairie de Parakou report says 35 zones had completed parcel application, 3 remained in progress, and the commune counted 161,934 parcels as of 23 April 2026; it also mentions strengthening the communal e-Foncier system. No downloadable parcel layer or safe ID endpoint was provided."
+    },
+    {
+      "url": "https://catis.xroad.bj/publicservices/PS00066",
+      "observation": "Official CatIS listing for ANDF's cadastral-plan extract service. It describes an e-service requiring a user request and does not expose parcel geometry or a public feature API."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Parakou Benin cadastre parcel map official",
+      "result": "Found the official cadastre.bj viewer, ANDF national agency, and the ANDF notice covering Parakou; no anonymous parcel feature endpoint was found.",
+      "actualResultUrls": [
+        "https://www.cadastre.bj/",
+        "https://andf.bj/",
+        "https://andf.bj/formalisation-fonciere-12-communes-desormais-integrees-a-la-plateforme-e-foncier-benin-des-janvier-2025/"
+      ]
+    },
+    {
+      "language": "French (native/local)",
+      "query": "Parakou Bénin cadastre parcellaire carte site officiel",
+      "result": "Found the official Mairie de Parakou land-management report, the ANDF e-Foncier notice, and the national cadastre viewer; no anonymous parcel feature endpoint was found.",
+      "actualResultUrls": [
+        "https://www.parakou.bj/actualite/premiere-seance-de-reddition-de-comptes-de-2026-le-maire-de-parakou-zul-kifly-zakarie-fait-le-point-sur-la-gestion-fonciere",
+        "https://andf.bj/formalisation-fonciere-12-communes-desormais-integrees-a-la-plateforme-e-foncier-benin-des-janvier-2025/",
+        "https://www.cadastre.bj/"
+      ]
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://www.cadastre.bj/",
+      "method": "GET",
+      "httpStatus": null,
+      "result": "TLS certificate verification failed in the local curl environment; request was not retried with verification disabled or a certificate exception."
+    },
+    {
+      "url": "https://www.cadastre.bj/",
+      "method": "GET",
+      "httpStatus": "timeout",
+      "result": "Independent web fetch timed out. No login was attempted and no absence inference was made."
+    },
+    {
+      "url": "https://andf.bj/",
+      "method": "GET",
+      "httpStatus": "timeout",
+      "result": "Independent web fetch timed out; the official search result exposed the service context but no parcel endpoint."
+    },
+    {
+      "url": "https://andf.bj/formalisation-fonciere-12-communes-desormais-integrees-a-la-plateforme-e-foncier-benin-des-janvier-2025/",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official ANDF article fetched; Parakou is explicitly listed among the 12 integrated communes."
+    },
+    {
+      "url": "https://www.parakou.bj/actualite/premiere-seance-de-reddition-de-comptes-de-2026-le-maire-de-parakou-zul-kifly-zakarie-fait-le-point-sur-la-gestion-fonciere",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official municipal article fetched; parcel-count and land-management statements recorded."
+    },
+    {
+      "url": "https://catis.xroad.bj/publicservices/PS00066",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official CatIS service listing found; service is a request workflow and exposes no anonymous parcel geometry."
+    }
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed against a public feature service. TLS failure and timeouts are not evidence of citywide absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official ANDF national e-Foncier/cadastre program explicitly including Parakou, with municipal land-management reporting.",
+    "verifiedOpenScope": "Registry/cadastre custodian and Parakou program coverage verified, but anonymous parcel geometry, schema, CRS, native identity, and citywide completeness were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "The current cadastre.bj JavaScript/configuration, public service endpoints, access policy, schema/CRS, native parcel identity, and exact-point coverage remain unknown. No credentials or private access were used.",
+  "runtimeAssessment": "held; no adapter admission or source integration implied"
+}

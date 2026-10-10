@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "1.0",
+  "cityCode": 7514,
+  "queueRank": 1687,
+  "name": "Yan'an",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "point": [36.596597477057, 109.496049793642],
+  "population2025": 338883,
+  "population2025k": 338.883,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Yan'an China official cadastral parcel map land registry GIS natural resources bureau",
+        "result": "First-party discovery identified the official Yan'an Natural Resources Bureau website, the Shaanxi Natural Resources Department's official Yan'an bureau link, the Yan'an government services portal, and the Shaanxi Tianditu public geospatial portal. The accessible first-party material establishes local natural-resources and registration custody, but no anonymous parcel feature service or safe ID-plus-geometry response was found.",
+        "actualResultUrls": [
+          "https://zrzy.yanan.gov.cn/",
+          "https://zrzyt.shaanxi.gov.cn/zrzygz/bdcdj/index_2.html",
+          "http://zwfw.yanan.gov.cn/bsdt/workService/list.do?nav=2&serviceObject=bm&itemType=&ssqdDeptCode=61061012000000000000",
+          "https://shaanxi.tianditu.gov.cn/"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "延安市 自然资源局 不动产登记 地籍图 宗地图 查询 官方",
+        "result": "中文 first-party discovery confirmed the official Yan'an Natural Resources Bureau site and the Shaanxi department's official city-bureau directory. Yan'an's site exposes current 不动产权证书登记证明遗失声明 and other registration notices, while the provincial page identifies 延安市自然资源局 as the city-level authority. No public parcel viewer, layer schema, CRS, or anonymous parcel geometry endpoint was exposed.",
+        "actualResultUrls": [
+          "https://zrzy.yanan.gov.cn/",
+          "https://zrzyt.shaanxi.gov.cn/zrzygz/bdcdj/index_2.html",
+          "https://zwfw.shaanxi.gov.cn/sx/open/service/houseService",
+          "https://shaanxi.tianditu.gov.cn/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://zrzy.yanan.gov.cn/",
+      "observation": "Official Yan'an Natural Resources Bureau website; page metadata identifies the bureau, site domain and government site code. Its public HTML includes local real-estate-registration notices and land/planning sections, but no anonymous parcel feature service was exposed."
+    },
+    {
+      "url": "https://zrzyt.shaanxi.gov.cn/zrzygz/bdcdj/index_2.html",
+      "observation": "Official Shaanxi Natural Resources Department page lists 延安市自然资源局 as a city-level natural-resources department under the unified real-estate-registration section."
+    },
+    {
+      "url": "https://shaanxi.tianditu.gov.cn/",
+      "observation": "Official Shaanxi geographic-information public-service portal loaded and advertises map/resource services, but the accessible response did not expose a Yan'an cadastral parcel layer or public parcel API."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://zrzy.yanan.gov.cn/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official local bureau homepage fetched over TLS. HTML was inspected for 不动产, 地籍, 地图, 宗地, 登记 and script/configuration references; only notices and general land/planning content were found, with no public parcel layer/API."
+    },
+    {
+      "url": "https://zrzyt.shaanxi.gov.cn/zrzygz/bdcdj/index_2.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official provincial registration page fetched; it linked the Yan'an bureau and provided institutional context, not anonymous parcel geometry."
+    },
+    {
+      "url": "http://zwfw.yanan.gov.cn/bsdt/workService/list.do?nav=2&serviceObject=bm&itemType=&ssqdDeptCode=61061012000000000000",
+      "method": "HEAD",
+      "httpStatus": 403,
+      "outcome": "Yan'an government service route denied anonymous access. No login, credential, CAPTCHA or access-control bypass was attempted."
+    },
+    {
+      "url": "https://shaanxi.tianditu.gov.cn/",
+      "method": "HEAD",
+      "httpStatus": 200,
+      "outcome": "Official public geospatial portal responded, but no parcel layer or safe ID-plus-geometry response was identified from the public landing response."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The official Yan'an Natural Resources Bureau and Shaanxi Natural Resources Department city-directory page establish a local natural-resources/real-estate-registration custodian. This is local institutional evidence, not proof of an open parcel geometry service.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Yan'an municipal natural-resources and real-estate-registration services, with the Shaanxi public geospatial portal as a possible broader map host.",
+    "verifiedOpenScope": "Local institutional custody and public general map portal only; no anonymous parcel feature response, native parcel ID, schema or CRS was retrieved.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "excludedFields": [
+    "owner or titleholder names",
+    "addresses and contact data",
+    "tax/account/registration details beyond a safe native parcel ID",
+    "credentials and private tokens"
+  ],
+  "nativeIdentityPolicy": "No native parcel identity was observed; no synthetic identity was created. Any future retained sample must use exactly one stable native identity in GeoJSON properties and document source field mapping in review metadata.",
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "remainingUncertainty": "The current authenticated viewer/API route, access controls, parcel schema, CRS, stable native parcel identity and citywide coverage remain unresolved. The exact WUP point was preserved and was not shifted; no exact-point hit/miss or citywide-absence inference was made.",
+  "retainedSample": null
+}

@@ -1,0 +1,31 @@
+{
+  "cityRecord": "city-7488-ankleshwar.json",
+  "cityCode": 7488,
+  "queueRank": 1951,
+  "city": "Ankleshwar",
+  "country": "India",
+  "countryCode": "IN",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "Revenue Department / Settlement Commissioner and Director of Land Records, Government of Gujarat",
+  "serviceUrl": "https://e-milkat.gujarat.gov.in/",
+  "scope": "Official Gujarat urban and rural land-record entry points relevant to Ankleshwar; no city-specific open parcel geometry service was verified.",
+  "schemaAndCrs": "Unavailable: inspected public landing pages and bounded anonymous requests did not return a parcel feature schema, CRS metadata, or geometry.",
+  "nativeIdentity": "Unavailable; no parcel feature response was obtained and no synthetic identity was created.",
+  "fieldMapping": {},
+  "requestOutcome": "Official first-party pages were retrieved through verified-TLS web discovery. Direct curl requests to AnyRoR and e-Milkat timed out within 20 seconds; AnyRoR requires JavaScript for interactive use. No login, CAPTCHA bypass, unsafe records, or private token was used.",
+  "retainedSample": null,
+  "retainedProperties": null,
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeDataPolicy": "No owner, address, contact, titleholder, tax/account, legal-description, application, or other personal/property-record fields were requested or retained.",
+  "officialCustodyEvidence": "The Gujarat Revenue Department’s official H Branch page assigns survey, settlement, and city-survey matters to the department and links AnyRoR and e-Milkat. e-Milkat identifies the Settlement Commissioner and Director of Land Records and exposes urban land-record access. This is official state-level custody, not evidence of a separately verified Ankleshwar local registry endpoint.",
+  "limits": [
+    "Official custody evidence does not equal open parcel-service integration.",
+    "No parcel geometry, native ID, schema, CRS, or bounded anonymous feature response was obtained.",
+    "No exact-point query was possible; no absence conclusion is drawn.",
+    "RuntimeReadiness remains held pending independent serial qualification."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "The official Gujarat land-record services may provide parcel-level records or maps after interactive selection, but this attempt could not safely verify a current anonymous geometry route or Ankleshwar coverage."
+}

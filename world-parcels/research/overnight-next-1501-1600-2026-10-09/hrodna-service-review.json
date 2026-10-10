@@ -1,0 +1,48 @@
+{
+  "cityRecord": "city-96-hrodna.json",
+  "cityCode": 96,
+  "queueRank": 1522,
+  "attempt": 1,
+  "city": "Hrodna",
+  "country": "Belarus",
+  "countryCode": "BY",
+  "wupPointLatLon": [53.6796751398206, 23.8287909682828],
+  "qualification": "complete",
+  "registryFound": true,
+  "officialService": {
+    "name": "Public Cadastral Map of Belarus",
+    "url": "https://map.nca.by/",
+    "custodianEvidence": "The official map page identifies itself as the Public Cadastral Map; its current app configuration uses the public GeoServer endpoint under the same host. Hrodna local agency was found in discovery, but no local agency API was separately qualified.",
+    "mapPage": {"status": 200, "contentType": "text/html; charset=utf-8"},
+    "javascript": {"url": "https://map.nca.by/js/app.9ad00b1f.js", "status": 200, "bytes": 4725319},
+    "config": {"url": "https://map.nca.by/api/config/2/", "status": 200, "result": "Returned basemap configuration; no credentials were used."},
+    "wfs": "https://map.nca.by/geoserver/pcm/ows"
+  },
+  "attempts": [
+    {"route": "English web discovery", "outcome": "Found official map and Hrodna agency references; search results alone were not treated as parcel evidence."},
+    {"route": "Russian/local-language web discovery", "outcome": "Found official Belarus public cadastral map and Hrodna agency references; search results alone were not treated as parcel evidence."},
+    {"route": "GET https://map.nca.by/", "outcome": "HTTP 200; SPA shell returned."},
+    {"route": "GET https://map.nca.by/js/app.9ad00b1f.js", "outcome": "HTTP 200; current configuration revealed workspace pcm and /geoserver/pcm/ows WFS routes."},
+    {"route": "GET /geoserver/pcm/ows service=WFS request=DescribeFeatureType typeName=pcm:294b19b9-3259-44e5-b8e8-5314b0adf928", "outcome": "HTTP 200; parcel schema returned native object_id, cad_num, and geom plus other source fields."},
+    {"route": "GET /geoserver/pcm/ows WFS GetFeature exact-point DWITHIN", "outcome": "HTTP 200; zero features. This is only an exact-point result, not evidence of citywide absence."},
+    {"route": "GET /geoserver/pcm/ows WFS GetFeature BBOX(23.80,53.65,23.86,53.71), maxFeatures=3, EPSG:4326", "outcome": "HTTP 200; three parcel polygons returned with stable feature IDs and geometry."},
+    {"route": "GET https://gismap.by/", "outcome": "HTTP 403; unusable anonymous route; not treated as absence."}
+  ],
+  "queryDetails": {
+    "service": "WFS 1.0.0",
+    "typeName": "pcm:294b19b9-3259-44e5-b8e8-5314b0adf928",
+    "boundedRequest": "BBOX(geom,23.80,53.65,23.86,53.71), maxFeatures=3, propertyName=object_id,cad_num,geom, srsName=EPSG:4326",
+    "exactPointRequest": "DWITHIN(geom,Point(23.8287909683 53.6796751398),0.01,meters)",
+    "crs": "EPSG:4326 in retained response; source schema exposes geom.",
+    "returnedFeatureIds": [
+      "294b19b9-3259-44e5-b8e8-5314b0adf928.2617324",
+      "294b19b9-3259-44e5-b8e8-5314b0adf928.2617822",
+      "294b19b9-3259-44e5-b8e8-5314b0adf928.2625615"
+    ]
+  },
+  "safeFieldAllowlist": ["native WFS feature id", "object_id as native source identity", "cad_num as native cadastral number", "geom polygon"],
+  "retainedGeoJsonPolicy": "Retained sample properties contain exactly one canonical native identity, the WFS feature id. Native field names and object_id/cad_num mapping are documented here, not in GeoJSON properties.",
+  "scopeLimits": ["Three polygons are a bounded sample, not citywide coverage.", "The BBOX is near but does not contain the exact WUP point; the exact-point query returned zero.", "No owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested or retained.", "No login, CAPTCHA bypass, private token, or TLS verification exception was used."],
+  "uncertainty": ["The public map is national and Hrodna coverage is evidenced by returned polygons, but the service's complete citywide extent and update cadence were not independently established.", "Runtime adapter readiness remains held pending serial reviewer qualification."],
+  "runtimeReadiness": "held"
+}

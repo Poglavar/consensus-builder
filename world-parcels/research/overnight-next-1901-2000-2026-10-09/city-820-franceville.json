@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 820,
+  "queueRank": 1969,
+  "name": "Franceville",
+  "country": "Gabon",
+  "countryCode": "GA",
+  "iso3": "GAB",
+  "point": [-1.62542030954792, 13.5921823103518],
+  "population2025": 294863,
+  "population2025k": 294.863,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Franceville Gabon official cadastral parcel map land registry GIS",
+        "result": "Found the official Conservation Foncière / Ministère de l'Economie public service. Its current site exposes a public search for Franceville terrain records, but no parcel geometry viewer or geometry API was verified.",
+        "actualResultUrls": ["https://info.cpfh-gabon.com/", "https://interieur.gouv.ga/decoupage-administratif/"]
+      },
+      {
+        "language": "French (local/official language)",
+        "query": "Franceville Gabon cadastre parcelles carte registre foncier officiel",
+        "result": "Found the official Conservation Foncière service and the official administrative page identifying Franceville as the Haut-Ogooué provincial capital and Mpassa (Franceville) department. No public parcel polygon or CRS endpoint was found.",
+        "actualResultUrls": ["https://info.cpfh-gabon.com/", "https://interieur.gouv.ga/decoupage-administratif/", "https://mines.gouv.ga/object.getObject.do?id=978&mime=file-mime&object=file"]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://info.cpfh-gabon.com/",
+      "operator": "Conservation de la Propriété Foncière et des Hypothèques, Ministère de l'Economie, République Gabonaise",
+      "evidence": "Current first-party site lists Franceville under province G2 Haut-Ogooué with ville_id 4 and provides the public terrain-search application. Anonymous search returned 1,112 Franceville terrain records."
+    },
+    {
+      "url": "https://interieur.gouv.ga/decoupage-administratif/",
+      "operator": "Ministère de l'Intérieur, République Gabonaise",
+      "evidence": "Official administrative page identifies Franceville as the Haut-Ogooué provincial capital and Franceville/Mpassa administrative area; this supports local scope but is not a parcel service."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://info.cpfh-gabon.com/",
+      "method": "GET",
+      "status": 200,
+      "summary": "Verified-TLS homepage returned current JavaScript/configuration and province/city metadata; Franceville was present as ville_id 4 in G2."
+    },
+    {
+      "url": "https://info.cpfh-gabon.com/recherche?ville_id=4",
+      "method": "GET",
+      "status": 200,
+      "summary": "Anonymous Inertia JSON search returned 15 records on page 1 of 75 and total=1112. Safe observed fields included native database id, num_ri, section, parcelle, ville_id and dates; no geometry or CRS was returned."
+    },
+    {
+      "url": "https://info.cpfh-gabon.com/terrain/58",
+      "method": "GET",
+      "status": 200,
+      "summary": "Anonymous detail response returned the same terrain record and cadastral reference fields (id=58, num_ri=7449, section=BC, parcelle=14); no geometry or CRS was returned."
+    },
+    {
+      "url": "https://info.cpfh-gabon.com/terrain/{id}",
+      "method": "GET",
+      "status": "inspected route pattern",
+      "summary": "Current JavaScript uses /terrain/{id} for record details; no separate map, tile, WMS, WFS, GeoJSON or geometry route was exposed by the inspected bundle."
+    },
+    {
+      "url": "https://mines.gouv.ga/object.getObject.do?id=978&mime=file-mime&object=file",
+      "method": "GET via first-party search result",
+      "status": 200,
+      "summary": "Official journal PDF search result mentions a Franceville operation/procedure entry, but does not expose parcel geometry."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": "id",
+    "fallbackOidField": null,
+    "compositeKey": null,
+    "fieldMapping": {
+      "native identity": "id is the public terrain record's database identity; num_ri, section and parcelle are source reference fields retained only as metadata.",
+      "geometry": "Not available: no parcel feature geometry response was returned.",
+      "crs": "Not available: no geometry service or CRS metadata was exposed."
+    },
+    "geometryType": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Conservation Foncière public terrain registry includes Franceville records and identifies the city in the G2 province hierarchy.",
+    "verifiedOpenScope": "Franceville registry-record search coverage verified (1,112 records); parcel polygon coverage, map extent, CRS and spatial completeness were not verified.",
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "No exact-point query was available. This is not evidence of citywide parcel absence; the WUP point was preserved unchanged."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "tax", "account", "legal description", "rights/title details"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "remainingUncertainty": "The official service is a real local/city-scoped property-registry custodian and provides stable-looking terrain record IDs, but anonymous public geometry, CRS, spatial query, and broader parcel coverage could not be established.",
+  "nextStep": "Serial reviewer should independently qualify the current public application and any documented map/API route, confirm whether id is stable for parcel identity, determine CRS and geometry coverage, and only then consider adapter admission."
+}

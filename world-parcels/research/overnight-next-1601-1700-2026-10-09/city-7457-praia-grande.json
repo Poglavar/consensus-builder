@@ -1,0 +1,103 @@
+{
+  "cityCode": 7457,
+  "queueRank": 1627,
+  "name": "Praia Grande",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "iso3": "BRA",
+  "locId": 76,
+  "point": [-24.0112734460701, -46.4707057551489],
+  "population2025": 352067,
+  "population2025k": 352.067,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Praia Grande SP Brazil official cadastral map parcel GIS municipal geoprocessing",
+        "result": "First-party discovery found the municipality's official GeoPG map service, municipal map downloads, and an official planning page describing the cadastral/real-estate registry context. The public GeoPG route was then found to redirect to a login page; no anonymous parcel service was exposed.",
+        "actualResultUrls": [
+          "https://geopg.praiagrande.sp.gov.br/ServicosOnline/GeoProcessamento/Mapas/ConsultaGeo.aspx",
+          "https://www.praiagrande.sp.gov.br/atendimento/Seplan/Mapacidade.asp",
+          "https://www2.praiagrande.sp.gov.br/servicos-online/planejamento/planta-generica-de-valores"
+        ]
+      },
+      {
+        "language": "Portuguese",
+        "query": "Praia Grande cadastro imobiliário mapa cadastral geoprocessamento GeoPG prefeitura",
+        "result": "A Prefeitura's Portuguese service page describes GeoPG as a public georeferenced municipal information system, and its official planning pages expose the municipal map and fiscal-sector/quadra map. Current direct access reaches the GeoPG authentication wall; no public parcel schema or bounded ID+geometry response was obtained.",
+        "actualResultUrls": [
+          "https://www.praiagrande.sp.gov.br/cartaservicos/?id_descricao=347",
+          "https://www2.praiagrande.sp.gov.br/noticia/id/52240",
+          "https://www.praiagrande.sp.gov.br/atendimento/Seplan/SistemaCartografico1972.asp"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.praiagrande.sp.gov.br/cartaservicos/?id_descricao=347",
+      "observation": "Municipal service card identifies GeoPG as the city's georeferenced information system, says it is online and available to any citizen, and links the public map route. The listed layers are general municipal/planning and service layers; it does not expose a parcel API schema in the page text."
+    },
+    {
+      "url": "https://geopg.praiagrande.sp.gov.br/ServicosOnline/GeoProcessamento/Mapas/ConsultaGeo.aspx",
+      "observation": "Official GeoPG map URL attempted as the current public viewer route. The current response resolved to the GeoPG ASP.NET login route with required Login and Senha fields, so anonymous JavaScript/configuration and parcel requests could not be inspected."
+    },
+    {
+      "url": "https://www2.praiagrande.sp.gov.br/servicos-online/planejamento/planta-generica-de-valores",
+      "observation": "Official municipal planning page publishes the Planta Genérica de Valores and a map of fiscal sectors, subsectors, and fiscal blocks. This evidences local cadastral/tax-mapping custody but not an anonymous parcel polygon endpoint."
+    },
+    {
+      "url": "https://www.praiagrande.sp.gov.br/atendimento/Seplan/Mapacidade.asp",
+      "observation": "Official Secretaria de Planejamento page publishes city map PDF, DWG, and KML downloads. These are city/cartographic products, not a verified parcel feature service."
+    },
+    {
+      "url": "https://www.praiagrande.sp.gov.br/atendimento/Seplan/SistemaCartografico1972.asp",
+      "observation": "Official municipal page documents digitized 1972 cartographic sheets from the Cadastro Técnico da Baixada Santista at 1:1,000 scale. It provides historical map sheets rather than a current parcel API."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://geopg.praiagrande.sp.gov.br/ServicosOnline/GeoProcessamento/Mapas/ConsultaGeo.aspx",
+      "method": "GET",
+      "outcome": "The public viewer route was attempted. Current first-party discovery/fetch evidence resolves to an ASP.NET authentication page requiring Login and Senha; no anonymous map JavaScript, service URL, schema, CRS, or ID+geometry response was available."
+    },
+    {
+      "url": "https://www.praiagrande.sp.gov.br/cartaservicos/?id_descricao=347",
+      "method": "GET",
+      "outcome": "Official service-card page was discovered and inspected. The page identifies GeoPG and its scope but does not provide machine-readable parcel fields or geometry. A direct command-line GET timed out during DNS resolution; this was not interpreted as source absence."
+    },
+    {
+      "url": "https://www2.praiagrande.sp.gov.br/servicos-online/planejamento/planta-generica-de-valores",
+      "method": "GET",
+      "outcome": "Official planning page was inspected successfully through first-party web discovery. It exposes a fiscal-sector/subsector/quadra map link, but no anonymous parcel feature response was retained or claimed."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Praia Grande's own Secretaria de Planejamento and municipal service pages evidence a local GeoPG geoprocessing/map system and municipal cadastral/fiscal mapping. This is local custodian evidence, distinct from general national-agency prose; it does not establish a public parcel geometry API.",
+  "publicParcelGeometryFound": false,
+  "verifiedParcelResponse": null,
+  "sourceCandidate": {
+    "name": "Praia Grande municipal GeoPG / cadastral and fiscal mapping",
+    "url": "https://geopg.praiagrande.sp.gov.br/ServicosOnline/GeoProcessamento/Mapas/ConsultaGeo.aspx",
+    "format": "unknown; current anonymous route is authentication-gated",
+    "nativeIdentity": "unknown; no safe native parcel identity was exposed",
+    "coverage": "Municipal map system is described as covering Praia Grande; parcel coverage was not verified",
+    "crs": "unknown"
+  },
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": null,
+  "sourceIds": [],
+  "resultCategory": "official_local_cadastral_map_found_anonymous_parcel_service_unavailable",
+  "coverageAssessment": {
+    "claimedScope": "Municipal GeoPG and related planning/cadastral map products for Praia Grande.",
+    "verifiedOpenScope": "Local map/procedure evidence was verified, but no anonymous parcel layer, schema, CRS, bounded response, or exact-point result was verified.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_authentication_gated_no_parcel_adapter",
+  "remainingUncertainty": "The authentication wall and command-line DNS timeout prevented safe inspection of current viewer JavaScript/configuration and any public API. No login, credentials, private token, CAPTCHA/Cloudflare bypass, owner/address lookup, unsafe field request, coordinate shift, or exact-point absence inference was used. This packet is not source integration or admission.",
+  "retainedSample": null
+}

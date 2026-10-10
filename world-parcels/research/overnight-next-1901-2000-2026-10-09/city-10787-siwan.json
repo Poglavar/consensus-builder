@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-10",
+  "wupCityCode": 10787,
+  "cityCode": 10787,
+  "cityId": "wup2025:10787",
+  "name": "Siwan",
+  "country": "India",
+  "countryCode": "IN",
+  "iso2": "IN",
+  "iso3": "IND",
+  "centerLatLon": [26.2218095676118, 84.3593324414747],
+  "point": [26.2218095676118, 84.3593324414747],
+  "queueRank": 1905,
+  "population2025": 300919,
+  "population2025k": 300.919,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Siwan Bihar official cadastral map land records parcel map government",
+        "result": "First-party Siwan district land-records page directs users to Bihar land records. First-party Bihar BhuNaksha is a public cadastral-map viewer. DILRMP reports digitized cadastral-map coverage for Siwan district. No safe parcel polygon response was retained.",
+        "actualResultUrls": [
+          "https://siwan.nic.in/service/land-records/",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/218"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "सीवान बिहार आधिकारिक भू नक्शा खसरा नक्शा भूमि अभिलेख",
+        "result": "First-party Hindi Siwan district page points to Bihar land records; Bihar government land-records material identifies भू-मानचित्र/Bhu-Naksha as the revenue-map service. No safe parcel polygon response was retained.",
+        "actualResultUrls": [
+          "https://siwan.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+          "https://biharbhumi.bihar.gov.in/Biharbhumi/default/UserRegister",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp"
+        ]
+      }
+    ],
+    "officialViewerInspection": "Fetched the current BhuNaksha Bihar index, indexmain.jsp, config.js, and index.js over HTTPS. The live JS exposes public REST routes for hierarchy, map extent, point lookup, and WMS rendering. The hierarchy resolved Bihar state code 10, Siwan district code 16, Siwan Sadar code 01, Siwan circle code 05, urban Siwan village code 0397, Revisional Survey, RS Map, sheet 01. getVVVVExtentGeoref returned CRS EPSG:32645 and gisCode RS16010503972310701. Point lookup and ScalarDatahandler attempts did not return a parcel record; WMS returned a raster image rather than a safe vector response. No login, CAPTCHA bypass, credential, private token, or unsafe owner/address/titleholder field was used."
+  },
+  "registryFound": true,
+  "registryBasis": "The official Siwan district government land-records page identifies the district Revenue Section and links to the Bihar land-records system. The official Bihar BhuNaksha viewer is a cadastral map service and its public hierarchy contains Siwan district and urban map selections. This evidences a local/district cadastral custodian and public viewer, not successful parcel admission.",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Siwan district land-records custodian and Bihar BhuNaksha public cadastral viewer; one urban Siwan map hierarchy path inspected.",
+    "verifiedOpenScope": "Public hierarchy and map extent metadata verified for Siwan urban map sheet; safe parcel ID plus full polygon not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "resultCategory": "local_cadastral_viewer_no_verified_open_parcel_geometry",
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No bounded anonymous request returned both a safe stable native parcel identity and full polygon geometry. The exact WUP point was not shifted, and the point-lookup miss/empty response is not treated as citywide absence."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "technicalBlocker": "The viewer exposed public hierarchy and extent metadata (EPSG:32645; gisCode RS16010503972310701), but getPlotAtXY at a bounded test coordinate returned an empty response, ScalarDatahandler routes returned an error page for tested plot numbers, and WMS returned raster PNG rather than a safe vector parcel response. Native parcel identity field and polygon geometry therefore remain unverified.",
+  "remainingUncertainty": "The map may contain parcels accessible through interactive coordinates or a route not discovered from the current JS. Exact-point coverage, parcel schema/identity, and citywide completeness remain unknown. DILRMP statistics are coverage metadata, not parcel geometry.",
+  "nextStep": "A serial reviewer may independently qualify a Bihar BhuNaksha adapter only after confirming a current public route that returns safe native parcel IDs and bounded full geometry, with CRS transformation and citywide scope independently checked."
+}

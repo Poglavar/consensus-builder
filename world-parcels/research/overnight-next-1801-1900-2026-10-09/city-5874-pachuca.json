@@ -1,0 +1,74 @@
+{
+  "cityCode": 5874,
+  "queueRank": 1846,
+  "name": "Pachuca",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "iso3": "MEX",
+  "point": [20.1045916685925, -98.7389475491326],
+  "population2025": 310805,
+  "population2025k": 310.805,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "attempt": 1,
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pachuca Hidalgo official cadastral parcel map GIS catastro predial service WFS",
+        "result": "Found the official Instituto Catastral del Estado de Hidalgo, the municipal Pachuca predial/cadastre portal, the SITEP territorial viewer, and the state geoportal. The sources establish cadastral custodians and public map portals, but no anonymous parcel feature endpoint returning a safe native ID and polygon was verified.",
+        "actualResultUrls": [
+          "https://catastro.hidalgo.gob.mx/",
+          "https://www.pachuca.gob.mx/portal/predial/",
+          "https://imip.pachuca.gob.mx/sitep/",
+          "https://geoportal.hidalgo.gob.mx/maps"
+        ]
+      },
+      {
+        "language": "Spanish (local)",
+        "query": "Pachuca Hidalgo catastro mapa predial oficial SIG parcelas predios servicio público",
+        "result": "Se confirmó al Instituto Catastral del Estado de Hidalgo como custodio estatal y al Ayuntamiento de Pachuca/IMIP como custodio y proveedor municipal de planos y SITEP. La consulta de predial requiere cuenta predial; el sistema de gestión catastral requiere usuario y contraseña; no se verificó una respuesta anónima de identificador nativo seguro más geometría parcelaria.",
+        "actualResultUrls": [
+          "https://catastro.hidalgo.gob.mx/",
+          "https://sigcatastro.hidalgo.gob.mx/sgche/",
+          "https://ruts.hidalgo.gob.mx/ver/3793",
+          "https://datos.pachuca.gob.mx/acciones/maps.php"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "source": {
+    "provider": "Instituto Catastral del Estado de Hidalgo and Ayuntamiento de Pachuca de Soto / Instituto Municipal de Investigación y Planeación",
+    "viewerUrls": [
+      "https://geoportal.hidalgo.gob.mx/maps",
+      "https://imip.pachuca.gob.mx/sitep/",
+      "https://datos.pachuca.gob.mx/acciones/maps.php"
+    ],
+    "serviceType": "Official state cadastral authority and municipal territorial/cadastral map portals; no public anonymous parcel feature service confirmed",
+    "parcelLayerConfirmed": false,
+    "nativeIdField": null,
+    "geometryField": null,
+    "safeFieldsRequested": ["stable native parcel ID if publicly exposed", "polygon geometry", "service/layer metadata", "CRS metadata"],
+    "crs": null,
+    "scopeNote": "Local/state custodians are evidenced. The municipal RUTS entry describes a paid/requested base plan containing boundaries, roads, neighborhoods and geographic elements, not parcel polygons. The state management system is login-gated and the public geoportal did not expose a parcel schema in the accessible response. No owner, address, titleholder, contact, tax/account or personal fields were requested or retained."
+  },
+  "verifiedSample": {
+    "count": 0,
+    "exactWupPointQuery": false,
+    "result": "No anonymous parcel ID-plus-geometry response was obtained; no GeoJSON sample retained. This is not evidence of citywide parcel absence.",
+    "requestEvidence": "tmp/valhalla-parcel-research/5874/"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Hidalgo state cadastral infrastructure and Pachuca municipal territorial/cadastral mapping services.",
+    "verifiedOpenScope": "Custodian identity and public portal existence verified; anonymous parcel schema, CRS, stable native identity and citywide polygon access unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; no independently verified parcel adapter candidate",
+  "notes": "Research evidence only; not source integration or runtime admission. Exact WUP point preserved in latitude/longitude order with no coordinate shift."
+}

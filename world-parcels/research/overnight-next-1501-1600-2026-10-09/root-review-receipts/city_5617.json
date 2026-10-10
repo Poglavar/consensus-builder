@@ -1,0 +1,17 @@
+{
+  "taskId": "city:5617",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-5617-wonsan.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/wonsan-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T08:58:39.776793Z",
+  "reason": "DPRK custody and public parcel geometry remain unverified; the observed K-GeoP service is Republic of Korea jurisdiction. No anonymous native-ID polygon response or adapter qualification evidence. TLS failure and discovery limits do not prove citywide absence.",
+  "independentlyCheckedFirstPartyUrls": [
+    "https://www.kgeop.go.kr/",
+    "https://www.naenara.com.kp/"
+  ],
+  "sourceAdmission": "not_admitted"
+}

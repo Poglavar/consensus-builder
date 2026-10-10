@@ -1,0 +1,13 @@
+{
+  "taskId": "city:3207",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-3207-nam-nh.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/nam-nh-service-review.json"
+  ],
+  "reviewNote": "2025 UN source and queue identity agree: rank 1620, Viet Nam, point [20.438526903149,106.173923306667], 353044 persons. English and Vietnamese searches are recorded. Official Nam Dinh provincial land-registration-office documentation supports local custody (registryFound true), but no anonymous native-ID polygon response was evidenced. TLS and timeout outcomes are access limits, not absence. No adapter qualification or headed Details check exists.",
+  "checkedAt": "2026-10-10T11:17:27Z",
+  "runtimeAdmission": "held; independent live adapter qualification not evidenced"
+}

@@ -1,0 +1,57 @@
+{
+  "cityRecord": "city-10245-sivakasi.json",
+  "schemaVersion": "1.0",
+  "cityCode": 10245,
+  "queueRank": 1896,
+  "city": "Sivakasi",
+  "country": "India",
+  "countryCode": "IN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Tamil Nadu official land-record, TNGIS, Sivakasi municipal and DILRMP evidence establishes local cadastral-service custody and digitization status, but bounded anonymous requests did not produce a parcel ID-plus-geometry response. No sample GeoJSON is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Tamil first-party queries, actual URLs and outcomes are recorded in city-10245-sivakasi.json.",
+  "requestOutcomes": "The official land-record and map endpoints were attempted with TLS verification. The land-record and TNGIS hosts timed out, the DILRMP host was not retried after an untrusted certificate-chain failure, the municipal host timed out, and the India services host reset the connection. Indexed first-party content confirms the services and Sivakasi tehsil digitization record, but no safe parcel feature was retrieved.",
+  "attemptedRoutes": [
+    "Tamil Nadu e-Services of Land Records",
+    "TNGIS current public map editor / Land Ownership UI",
+    "Sivakasi municipal official land-services page",
+    "DILRMP Sivakasi tehsil village-level map-digitization record",
+    "National Portal of India Tamil Nadu land-record service page",
+    "NAKSHA official programme portal"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [9.45546113293646, 77.7983530925445] was preserved in latitude/longitude order and never shifted.",
+    "Requests were bounded and did not establish a citywide parcel inventory.",
+    "No parcel geometry, stable native parcel identity, source attribute schema or authoritative CRS was retrieved or retained.",
+    "DILRMP digitization status and municipal/service custody do not prove complete citywide open-vector coverage.",
+    "Timeouts, certificate-chain refusal and unavailable UI are not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, personal or other unsafe fields were requested or retained.",
+    "Packet completion is research evidence only; serial reviewer qualification and runtime adapter admission remain pending."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable parcel response; no hit/miss inference.",
+    "requestEvidence": []
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The correct public feature route, current viewer configuration, stable native ID, CRS, update currency and citywide completeness remain unresolved."
+}

@@ -1,0 +1,14 @@
+{
+  "taskId": "city:3588",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-3588-batangas-city.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/batangas-city-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T15:04:54.647386Z",
+  "reason": "WUP city code 3588, rank 1357, Philippines point and 415103 persons match the original source. English and Filipino queries are recorded. Official City Assessor custody is evidenced, but the official map is raster and no safe anonymous native-ID polygon response or adapter qualification is evidenced. Public API availability and geometry remain unresolved."
+}

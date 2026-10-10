@@ -1,0 +1,12 @@
+{
+  "taskId": "city:7610",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-7610-navsari.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/navsari-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-09T14:41:19.422819Z",
+  "reason": "Official district land-record procedure and Gujarat custody are evidenced, but the referenced AnyRoR service yielded no usable anonymous parcel feature response; no safe native ID, full polygon, or adapter qualification."
+}

@@ -1,0 +1,106 @@
+{
+  "schemaVersion": "1.0",
+  "cityCode": 11274,
+  "queueRank": 1482,
+  "name": "Tongling",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [30.9329241034531, 117.812195878154],
+  "population2025": 383739,
+  "population2025k": 383.739,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tongling China official cadastral parcel map GIS natural resources bureau public service",
+        "result": "Search found the official Tongling Natural Resources and Planning Bureau, its real-estate-registration material, and an official notice about the Tongling geographic-information public-service platform. No anonymous parcel feature service, schema, CRS, or safe native parcel ID was verified.",
+        "actualResultUrls": [
+          "https://zrzyhghj.tl.gov.cn/",
+          "https://zrzyhghj.tl.gov.cn/tlszrzyhghj/dtgl/pc/content/content_1687371447390756864.html",
+          "https://zrzyhghj.tl.gov.cn/tlszrzyhghj/gjzc/pc/content/content_1770298861338931202.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "铜陵市 不动产登记 地籍图 自然资源和规划局 官方 地图 服务",
+        "result": "Official Chinese-language results identified the Tongling Natural Resources and Planning Bureau, municipal real-estate-registration administration, and the Tongling geographic-information public-service platform. The evidence describes imagery, topographic and geographic-information services, not an anonymously queryable parcel layer.",
+        "actualResultUrls": [
+          "https://zrzyhghj.tl.gov.cn/tlszrzyhghj/gjzc/pc/content/content_1770298861338931202.html",
+          "https://zrzyhghj.tl.gov.cn/tlszrzyhghj/dtgl/pc/content/content_1687371447390756864.html",
+          "https://zrzyhghj.tl.gov.cn/tlszrzyhghj/c00036/pc/content/content_1849747480831123456.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://zrzyhghj.tl.gov.cn/",
+    "https://zrzyhghj.tl.gov.cn/tlszrzyhghj/gjzc/pc/content/content_1770298861338931202.html",
+    "https://zrzyhghj.tl.gov.cn/tlszrzyhghj/dtgl/pc/content/content_1687371447390756864.html"
+  ],
+  "registryBasis": "The official Tongling Natural Resources and Planning Bureau identifies itself as the municipal natural-resources/planning authority and official material states that municipal real-estate registration is administered by the local natural-resources authority. A separate official notice documents the Tongling geographic-information public-service platform.",
+  "source": {
+    "sourceId": "CN-11274-TONGLING-GEOGRAPHIC-PLATFORM-REVIEW",
+    "name": "Tongling official geographic-information public-service platform / municipal natural-resources authority",
+    "url": "https://zrzyhghj.tl.gov.cn/tlszrzyhghj/dtgl/pc/content/content_1687371447390756864.html",
+    "operator": "铜陵市自然资源和规划局（铜陵市林业局）",
+    "serviceType": "Official local geographic-information platform and registry custodian; anonymous parcel geometry not verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "nativeFieldMapping": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official notice describes a Tongling geographic-information public-service platform with citywide imagery, topographic, place-name, and elevation datasets; official bureau material describes a broader authoritative geospatial resource-sharing platform.",
+    "verifiedOpenScope": "No anonymous parcel layer, feature endpoint, schema, CRS, or ID-plus-geometry response was verified. The cited public-service platform notice is evidence of a local GIS custodian, not of open cadastral parcel coverage.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "The current official bureau host returned HTTP 403 to a bounded ordinary GET, and the official 2017 notice's platform address http://59.203.206.77:8090/ timed out on bounded HTTP and HTTPS attempts. Search/open results exposed no current JavaScript/configuration or public parcel API. No login, credentials, CAPTCHA bypass, private token, TLS weakening, or unsafe fields were used.",
+  "requests": [
+    {
+      "url": "https://zrzyhghj.tl.gov.cn/",
+      "method": "GET",
+      "httpStatus": 403,
+      "assessment": "Official Tongling bureau host; ordinary request was blocked by the site administrator. Search index/open evidence still established the bureau identity and public navigation, but no service configuration was inferred from the block page."
+    },
+    {
+      "url": "https://zrzyhghj.tl.gov.cn/tlszrzyhghj/dtgl/pc/content/content_1687371447390756864.html",
+      "method": "GET via official indexed page",
+      "httpStatus": 200,
+      "assessment": "Official 2017 notice says the Tongling geographic-information public-service platform was at 59.203.206.77:8090 and describes imagery, topographic, place-name, and DEM datasets; it does not document a public parcel feature layer."
+    },
+    {
+      "url": "http://59.203.206.77:8090/",
+      "method": "GET",
+      "httpStatus": null,
+      "assessment": "Bounded anonymous request timed out after 8 seconds; no inference of citywide absence."
+    },
+    {
+      "url": "https://59.203.206.77:8090/",
+      "method": "GET",
+      "httpStatus": null,
+      "assessment": "Bounded anonymous HTTPS request timed out after 8 seconds; no TLS exception was attempted."
+    }
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "registration-rights"],
+  "remainingUncertainty": "A current browser-mediated public service or an authenticated/local data-sharing endpoint may exist, and the legacy platform may have moved. The 403, timeout, and absence of an indexed parcel API do not establish that Tongling lacks cadastral data or citywide parcel coverage.",
+  "nextStep": "Hold runtime integration. A later researcher may inspect a currently published Tongling map entry point only if it can be reached anonymously and independently verifies safe ID-plus-geometry output, schema, CRS, stable native identity, and bounded scope.",
+  "runtimeReadiness": "held_unqualified",
+  "adapterReady": false,
+  "centerLatLon": [30.9329241034531, 117.812195878154],
+  "pointBasis": "Exact immutable WUP 2025 population-weighted settlement point; not shifted to force a parcel hit.",
+  "sourceIds": [],
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "attempt": 1,
+  "priorCheck": {"attemptState": "pending", "attemptEvidence": [], "possiblePriorMatches": []}
+}

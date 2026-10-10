@@ -1,0 +1,112 @@
+{
+  "cityCode": 7965,
+  "queueRank": 1711,
+  "name": "Jaranwala",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "point": [31.3318118922774, 73.4190103497018],
+  "population2025": 335463,
+  "population2025k": 335.463,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jaranwala Pakistan cadastral map land records official GIS parcel map",
+        "result": "First-party discovery identified the official Municipal Committee Jaranwala services-map portal and its published base-map PDF, which describes parcel boundaries, but no anonymous vector parcel feature endpoint or stable parcel ID response was exposed. PLRA was identified as the Punjab land-record custodian; its public site describes digital land records and services but does not expose a city-bounded anonymous parcel geometry API.",
+        "actualResultUrls": [
+          "https://mcjaranwala.lgpunjab.org.pk/map/",
+          "https://mcjaranwala.lgpunjab.org.pk/wp-content/uploads/2022/08/Base-Map-Jaranwala.pdf",
+          "https://www.punjab-zameen.gov.pk/",
+          "https://jamabandi.punjab.gov.in/CadastralMap.aspx",
+          "https://lis.pulse.gop.pk/",
+          "https://pmdfc.punjab.gov.pk/gis-map-16_cities-pcp"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "جڑانوالہ پاکستان اراضی ریکارڈ نقشہ سرکاری",
+        "result": "Search results returned Punjab Land Records Authority and official Punjab municipal/land-record services, including an official Jaranwala base map. No public anonymous parcel ID plus full geometry service was exposed.",
+        "actualResultUrls": [
+          "https://www.punjab-zameen.gov.pk/",
+          "https://mcjaranwala.lgpunjab.org.pk/map/",
+          "https://jamabandi.punjab.gov.in/CadastralMap.aspx"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryBasis": "A local municipal mapping custodian is evidenced by the official Municipal Committee Jaranwala portal and its base map, and PLRA is the provincial land-record authority. However, no open anonymous cadastral feature service with a safe stable parcel identity and geometry was verified; registryFound remains null.",
+  "officialSources": [
+    {
+      "url": "https://mcjaranwala.lgpunjab.org.pk/map/",
+      "observation": "Official Municipal Committee Jaranwala services-map page. The page exposes a current Base Map PDF link and identifies the municipal map collection; it is a document/map publication, not a queryable parcel API."
+    },
+    {
+      "url": "https://mcjaranwala.lgpunjab.org.pk/wp-content/uploads/2022/08/Base-Map-Jaranwala.pdf",
+      "observation": "Official Jaranwala base-map PDF identified in discovery; search-readable description states that parcel boundaries are depicted. No native parcel IDs, machine-readable geometry, CRS metadata or feature-service endpoint were available from the bounded inspection."
+    },
+    {
+      "url": "https://www.punjab-zameen.gov.pk/",
+      "observation": "Official Punjab Land Records Authority site; it describes digitized land records, Arazi Record Centres and GIS-linked records, but no anonymous Jaranwala parcel response was obtained."
+    },
+    {
+      "url": "https://jamabandi.punjab.gov.in/CadastralMap.aspx",
+      "observation": "Official Punjab cadastral-map page identified; no safe anonymous feature response or public schema/CRS route was verified in this attempt."
+    },
+    {
+      "url": "https://lis.pulse.gop.pk/",
+      "observation": "Official Punjab PULSE land-information portal identified; public page presents login-gated parcel details and an indicative-map disclaimer, with no anonymous parcel geometry response retained."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://mcjaranwala.lgpunjab.org.pk/map/",
+      "method": "GET",
+      "outcome": "HTTP page retrieved successfully; HTML exposed official map links including the Base Map PDF. No JavaScript viewer, public GIS service URL, schema, CRS or queryable parcel layer was found."
+    },
+    {
+      "url": "https://mcjaranwala.lgpunjab.org.pk/wp-content/uploads/2022/08/Base-Map-Jaranwala.pdf",
+      "method": "GET",
+      "outcome": "Public PDF route identified from search; retained only as source evidence in ignored scratch context, not as GeoJSON. The published map is static cartography and does not provide safe native parcel identities or machine-readable polygons."
+    },
+    {
+      "url": "https://www.punjab-zameen.gov.pk/",
+      "method": "GET",
+      "outcome": "HTTP page retrieved successfully; public service descriptions were readable, but no anonymous city-bounded parcel feature request was exposed."
+    },
+    {
+      "url": "https://jamabandi.punjab.gov.pk/CadastralMap.aspx",
+      "method": "GET",
+      "outcome": "Public route identified by discovery; no bounded anonymous ID-plus-geometry response was verified."
+    },
+    {
+      "url": "https://lis.pulse.gop.pk/",
+      "method": "GET",
+      "outcome": "Public landing page retrieved; parcel details are login-gated and the public map is described as indicative. No anonymous safe parcel feature response was requested or retained."
+    },
+    {
+      "url": "https://pmdfc.punjab.gov.pk/gis-map-16_cities-pcp",
+      "method": "GET",
+      "outcome": "Bounded request did not complete within 20 seconds from this environment; discovery independently identified the official page as listing Jaranwala GIS municipal maps. No absence inference made."
+    }
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Jaranwala municipal base-map publication and Punjab land-record/cadastral services as described by official sources.",
+    "verifiedOpenScope": "Static municipal map publication and public institutional/service pages only; no open machine-readable parcel layer.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": "Exact WUP point preserved in latitude/longitude order. No exact-point hit or miss test was used. Static parcel-boundary cartography is not treated as parcel geometry integration. No owner, address, titleholder, contact, tax/account, personal or unsafe fields were requested or retained. Packet completion is not source integration or runtime admission; serial reviewer qualification remains pending."
+}

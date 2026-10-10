@@ -1,0 +1,74 @@
+{
+  "cityCode": 3265,
+  "queueRank": 1487,
+  "name": "Pohang-si",
+  "country": "Republic of Korea",
+  "countryCode": "KR",
+  "point": [36.0230093811178, 129.376100854545],
+  "population2025": 382368,
+  "population2025k": 382.368,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pohang-si official cadastral parcel map GIS Republic of Korea",
+        "result": "Search identified the official Pohang spatial-information portal, the Korean Ministry of Land cadastral WMS/WFS catalog, and K-GeoP. The local portal exposes a public cadastral map layer, but no anonymous safe parcel ID-plus-geometry response was verified.",
+        "actualResultUrls": [
+          "https://pohang.go.kr/phgis/system",
+          "https://www.data.go.kr/data/15057570/openapi.do",
+          "https://www.kgeop.go.kr/info/infoMap.do"
+        ]
+      },
+      {
+        "language": "Korean",
+        "query": "포항시 공식 지적도 토지정보 GIS 필지 지도",
+        "result": "검색 결과는 포항시 공식 공간정보포털을 확인했다. 포털에는 연속지적도 레이어와 지번 검색 UI가 공개되어 있으나, 익명 안전 필드(id와 geometry) 응답은 확인하지 못했다.",
+        "actualResultUrls": [
+          "https://pohang.go.kr/phgis/system"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidenceUrls": ["https://pohang.go.kr/phgis/system"],
+  "registryBasis": "The official Pohang city spatial-information portal is a local city GIS custodian and visibly exposes 연속지적도 (continuous cadastral map), parcel-number search, and local map services.",
+  "source": {
+    "sourceId": "KR-3265-POHANG-CITY-GIS-CADASTRAL-REVIEW",
+    "name": "Pohang City Spatial Information Portal",
+    "url": "https://pohang.go.kr/phgis/system",
+    "operator": "Pohang City",
+    "serviceType": "Official local GIS portal with continuous cadastral-map layer and parcel search",
+    "layer": "JIJUK / 연속지적도",
+    "geometryType": "Polygon layer indicated by the map service; feature response not verified",
+    "outputCrs": "EPSG:5187 in the portal configuration; no parcel response retained",
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "nativeFieldMapping": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "The portal presents Pohang city map services and cadastral/parcel search controls.",
+    "verifiedOpenScope": "Local portal configuration exposed a WMS gateway and EPSG:5187 map configuration. Bounded anonymous requests did not yield a safe parcel feature response, so citywide parcel coverage is not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "The official HTML/config exposed the local WMS gateway and a POST route /phgis/system/map/get-feature-by-addr-query.lm used after parcel-address search, but no safe anonymous parcel ID-plus-geometry response was available from bounded requests. WMS capability requests timed out. No login, credentials, CAPTCHA bypass, private token, or unsafe fields were used.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "registration-rights"],
+  "remainingUncertainty": "The public viewer may return parcel geometry through an interactive parcel search or a request requiring a valid parcel address context. A zero/timeout result is not evidence of citywide absence.",
+  "nextStep": "Hold runtime integration. A later researcher may qualify an anonymous first-party parcel endpoint by independently verifying native identity, schema, CRS, and safe ID-plus-geometry output.",
+  "runtimeReadiness": "held_unqualified",
+  "adapterReady": false,
+  "centerLatLon": [36.0230093811178, 129.376100854545],
+  "pointBasis": "Exact immutable WUP 2025 point; not shifted to force a parcel hit.",
+  "sourceIds": [],
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "attempt": 1,
+  "priorCheck": {"attemptState": "pending", "attemptEvidence": [], "possiblePriorMatches": []},
+  "schemaVersion": "1.0"
+}

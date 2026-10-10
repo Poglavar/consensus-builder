@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3265-pohang-si.json",
+  "purpose": "Document independent city-specific registry discovery and bounded anonymous geometry access investigation.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "assessment": "Fresh English and Korean searches found the official Pohang City Spatial Information Portal. Its public page exposes 연속지적도, parcel-number search, a local WMS gateway, and a JavaScript parcel-address feature route. No anonymous safe ID-plus-geometry response was verified.",
+  "registryAssessment": "Local city GIS custody is evidenced, so registryFound is true. Geometry access and runtime qualification remain held.",
+  "officialPrimarySources": [
+    {"title": "Pohang City Spatial Information Portal", "url": "https://pohang.go.kr/phgis/system", "observation": "Official local portal visibly exposes continuous cadastral map, parcel-number search, and map controls; configuration identifies local WMS gateway and EPSG:5187."},
+    {"title": "Korean Ministry of Land cadastral WMS/WFS catalog", "url": "https://www.data.go.kr/data/15057570/openapi.do", "observation": "Official national catalog describes cadastral GIS/WMS/WFS availability for Korea; it is general national agency evidence, not local Pohang custody."},
+    {"title": "K-GeoP information map", "url": "https://www.kgeop.go.kr/info/infoMap.do", "observation": "Official national land-information map entry point; no anonymous Pohang parcel geometry was retained."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Pohang-si official cadastral parcel map GIS Republic of Korea", "executionMethod": "Executed separate web search", "resultUrls": ["https://pohang.go.kr/phgis/system", "https://www.data.go.kr/data/15057570/openapi.do", "https://www.kgeop.go.kr/info/infoMap.do"]},
+    {"language": "Korean", "query": "포항시 공식 지적도 토지정보 GIS 필지 지도", "executionMethod": "Executed separate local-language web search", "resultUrls": ["https://pohang.go.kr/phgis/system"]}
+  ],
+  "attempts": [
+    {"attempt": "official local portal", "url": "https://pohang.go.kr/phgis/system", "result": "HTTP page fetched. Public UI includes 연속지적도 and parcel-number search; portal configuration identifies local WMS gateway and EPSG:5187.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "official JavaScript inspection", "url": "https://pohang.go.kr/phgis/resources/system/js/search.js", "result": "HTTP JavaScript fetched. Parcel-address selection calls POST /phgis/system/map/get-feature-by-addr-query.lm and parses GeoJSON with dataProjection SYSTEM_SRID into EPSG:4326; no safe response obtained without a valid parcel search context.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "local WMS capabilities", "url": "https://pohang.go.kr/phgis/gs-gate/wms?SERVICE=WMS&REQUEST=GetCapabilities", "result": "Bounded TLS GET timed out; no capability document or feature response retained.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "national cadastral catalog", "url": "https://www.data.go.kr/data/15057570/openapi.do", "result": "Official catalog confirms national cadastral WMS/WFS offering, but access credentials/API key and unsafe attribute fields were not requested; no geometry response retained.", "credentialsUsed": false, "personalPropertyFieldsRequested": false}
+  ],
+  "geometryDecision": {"publicParcelGeometryFound": false, "sampleFile": null, "details": "No anonymous safe parcel geometry response with stable native identity, schema, and CRS was found; no GeoJSON retained."},
+  "coverageAssessment": {"claimedScope": "Official city portal provides Pohang map services and cadastral/parcel search controls.", "verifiedOpenScope": "Local layer/configuration presence verified, anonymous feature coverage not verified.", "citywideVerified": false, "countrywideVerified": false},
+  "safeFieldAllowlist": ["id", "geometry"],
+  "remainingUncertainty": "Interactive parcel search may require a valid address/PNU context or a different public request sequence. No exact-point hit or absence inference is made.",
+  "runtimeReadiness": "held_unqualified"
+}

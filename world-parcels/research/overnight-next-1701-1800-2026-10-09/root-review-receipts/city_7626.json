@@ -1,0 +1,26 @@
+{
+  "taskId": "city:7626",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-7626-bonny.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/bonny-service-review.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T13:29:00Z",
+  "reviewReason": "No public Bonny native-ID polygon response or adapter qualification. The purported Ibani/Pidgin query is English-only in the packet and worker search log; bilingual-search gate remains open.",
+  "firstPartyUrlsOpened": [
+    "https://www.sgriv.com/",
+    "https://urban.riversstateapps.ng/"
+  ],
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "samplePolygonCount": 0
+}

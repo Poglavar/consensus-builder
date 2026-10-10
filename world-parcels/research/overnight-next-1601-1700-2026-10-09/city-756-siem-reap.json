@@ -1,0 +1,119 @@
+{
+  "cityCode": 756,
+  "queueRank": 1621,
+  "name": "Siem Reap",
+  "country": "Cambodia",
+  "countryCode": "KH",
+  "iso3": "KHM",
+  "locId": 116,
+  "point": [13.3579072325135, 103.862640114498],
+  "population2025": 352948,
+  "population2025k": 352.948,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Siem Reap Cambodia official cadastral map parcel land registry GIS site:gov.kh",
+        "result": "First-party discovery identified the Cambodian Ministry of Land Management, Urban Planning and Construction (MLMUPC) electronic cadastral-service page, its linked gdcg.mlmupc.gov.kh service host, and the official Cambodia Gazetteer entry for Siem Reap Municipality. No anonymous parcel feature response was established.",
+        "actualResultUrls": [
+          "https://mlmupc.gov.kh/services/",
+          "https://mlmupc.gov.kh/electronic-cadastral-services/",
+          "https://gdcg.mlmupc.gov.kh/",
+          "https://db.ncdd.gov.kh/gazetteer/view/district.castle?ds=1710"
+        ]
+      },
+      {
+        "language": "Khmer",
+  "query": "សៀមរាប ផែនទីសុរិយោដី ក្បាលដី គេហទំព័រផ្លូវការ",
+        "result": "Khmer-language discovery identified the official MLMUPC electronic land-information/cadastral service, the official Siem Reap Municipality gazetteer record (ខេត្តសៀមរាប / ក្រុងសៀមរាប), and an official Khmer cadastral-publication result. These establish official land-management and local administrative evidence, but not an anonymous parcel API or downloadable safe parcel geometry for Siem Reap city.",
+        "actualResultUrls": [
+          "https://mlmupc.gov.kh/services/",
+          "https://mlmupc.gov.kh/electronic-cadastral-services/",
+          "https://db.ncdd.gov.kh/gazetteer/view/district.castle?ds=1710",
+          "https://mlmupc.gov.kh/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://mlmupc.gov.kh/services/",
+      "observation": "Official MLMUPC services page lists electronic cadastral information, land-sale/gift, parcel subdivision/combination, and related land services. It is a service directory, not a public parcel feature response."
+    },
+    {
+      "url": "https://mlmupc.gov.kh/electronic-cadastral-services/",
+      "observation": "Official MLMUPC electronic cadastral-service page links to gdcg.mlmupc.gov.kh. The page exposes the first-party cadastral service route but no parcel schema or public geometry in the fetched HTML."
+    },
+    {
+      "url": "https://gdcg.mlmupc.gov.kh/",
+      "observation": "First-party cadastral-service host linked by MLMUPC; anonymous GET returned HTTP 403. No login was attempted and no bypass was used."
+    },
+    {
+      "url": "https://db.ncdd.gov.kh/gazetteer/view/district.castle?ds=1710",
+      "observation": "Official Cambodia Gazetteer identifies Siem Reap Municipality and lists its 12 sangkat administrative units. This is administrative reference evidence, not cadastral parcel geometry."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://mlmupc.gov.kh/services/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "outcome": "Fetched successfully; current page listed the electronic cadastral information service and linked service routes. No parcel geometry or API schema was present in the page."
+    },
+    {
+      "url": "https://mlmupc.gov.kh/electronic-cadastral-services/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "outcome": "Fetched successfully; page linked to https://gdcg.mlmupc.gov.kh/. No parcel geometry or safe field schema was present in the fetched page."
+    },
+    {
+      "url": "https://gdcg.mlmupc.gov.kh/",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html",
+      "outcome": "Anonymous request was forbidden by the first-party host. No credentials, private token, CAPTCHA/Cloudflare bypass, or TLS exception was used."
+    },
+    {
+      "url": "https://cadastral.mlmupc.gov.kh/",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html",
+      "outcome": "The related official cadastral service host listed by MLMUPC returned 403 to an anonymous GET. No login or bypass was attempted."
+    },
+    {
+      "url": "https://report-cis.mlmupc.gov.kh/",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html",
+      "outcome": "The official land-registration-progress service host listed by MLMUPC returned 403 to an anonymous GET; no private or owner-related fields were requested."
+    },
+    {
+      "url": "https://db.ncdd.gov.kh/gazetteer/view/district.castle?ds=1710",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Fetched official administrative gazetteer record for Siem Reap Municipality; no parcel geometry or parcel identity was returned."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "A Cambodian national land-management custodian and an official Siem Reap administrative record are evidenced, but no anonymous city-bounded cadastral map/API response, safe parcel identity, schema, CRS, or geometry was verified. The 403 responses do not establish absence.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "resultCategory": "official_land_management_custodian_open_parcel_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "MLMUPC electronic cadastral services and the NCDD official Siem Reap Municipality gazetteer record.",
+    "verifiedOpenScope": "No city-bounded Siem Reap parcel record, stable native parcel identity, schema, CRS, or geometry was retrieved.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "The cadastral service's current viewer/API route, access policy, city coverage, schema, CRS, and parcel identity remain unknown because linked first-party service hosts rejected anonymous GETs. A zero exact-point result, extent miss, timeout, or access denial was not used as evidence of citywide cadastral absence."
+}

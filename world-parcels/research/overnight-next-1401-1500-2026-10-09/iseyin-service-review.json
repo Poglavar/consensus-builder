@@ -1,0 +1,121 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2394-iseyin.json",
+  "purpose": "Document first-party registry context and bounded anonymous parcel-geometry access review for Iseyin, Nigeria.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Oyo State's official land/GIS and survey-registry pages establish a local state cadastral and land-administration context covering Iseyin, but no anonymous parcel geometry, safe native ID, schema, CRS, or citywide open coverage was verified.",
+  "registryAssessment": "Local registry/GIS procedure verified: OyoGISS describes state land administration and statewide property digitization, the Ministry land-use-charge page explicitly lists ISEYIN, and the Office of the Surveyor General documents a public survey-plan verification workflow. These pages do not expose an open parcel feature layer.",
+  "officialPrimarySources": [
+    {
+      "url": "https://lands.oyostate.gov.ng/oyo-giss.html",
+      "observation": "Official Oyo State OyoGISS page describes capturing, storing, managing and analyzing geographic data for land administration and says properties in all 33 LGAs were digitized and assigned property reference codes. It provides statewide context but no public parcel geometry endpoint or schema."
+    },
+    {
+      "url": "https://lands.oyostate.gov.ng/service-3.html",
+      "observation": "Official Ministry land-use-charge table includes an ISEYIN row with parcel-related land-use-charge statistics. This is administrative evidence for Iseyin, not a downloadable parcel layer or safe parcel identity source."
+    },
+    {
+      "url": "https://lands.oyostate.gov.ng/survey-search.html",
+      "observation": "Official Office of the Surveyor General page documents the Digital Land Survey Plan Registry and says public searches use a survey-plan name or number. It warns that a missing result is not proof that a survey plan is absent. No parcel polygon or public feature API is exposed in the page."
+    },
+    {
+      "url": "https://las.oysglands.com/search/survey-search",
+      "observation": "The official linked search application was requested anonymously with normal TLS verification and returned HTTP 403 from Cloudflare. No login was attempted, no challenge was bypassed, and no absence inference was made."
+    },
+    {
+      "url": "https://osgof.gov.ng/cadastral-legal-surveys/",
+      "observation": "Official Office of the Surveyor-General of the Federation page describes national cadastral/legal-survey and cadastral-GIS responsibilities. This is general national agency context, not proof of an Iseyin-local public geometry service."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Iseyin Nigeria official cadastral parcel map land registry GIS",
+      "result": "Found Oyo State Ministry/OyoGISS, the Iseyin land-use-charge row, the official survey-plan registry procedure, and the federal cadastral agency; no anonymous parcel feature endpoint was found.",
+      "actualResultUrls": [
+        "https://lands.oyostate.gov.ng/service-3.html",
+        "https://lands.oyostate.gov.ng/oyo-giss.html",
+        "https://lands.oyostate.gov.ng/survey-search.html",
+        "https://osgof.gov.ng/cadastral-legal-surveys/"
+      ]
+    },
+    {
+      "language": "Yoruba (native/local)",
+      "query": "Iseyin Nigeria Yoruba cadastral taswirar ilẹ̀ àti ìforúkọsílẹ̀ ilẹ̀ osise",
+      "result": "No separate Yoruba-language first-party parcel viewer was found; the official Oyo State pages above were the relevant local-source results and no anonymous parcel feature endpoint was found.",
+      "actualResultUrls": [
+        "https://lands.oyostate.gov.ng/oyo-giss.html",
+        "https://lands.oyostate.gov.ng/survey-search.html",
+        "https://lands.oyostate.gov.ng/service-3.html"
+      ]
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://lands.oyostate.gov.ng/",
+      "method": "GET/HEAD",
+      "httpStatus": 200,
+      "result": "Official Oyo State lands site fetched with normal TLS verification; navigation exposed OyoGISS, property search, and survey-plan registry pages. No parcel feature endpoint was exposed in the landing HTML."
+    },
+    {
+      "url": "https://lands.oyostate.gov.ng/oyo-giss.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official OyoGISS description fetched; it reports land-administration GIS and digitized properties in all 33 LGAs, but no public feature service, schema, CRS, or safe native parcel ID endpoint."
+    },
+    {
+      "url": "https://lands.oyostate.gov.ng/service-3.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official land-use-charge page fetched; ISEYIN row recorded. The page provides aggregate administrative statistics, not parcel geometry."
+    },
+    {
+      "url": "https://lands.oyostate.gov.ng/survey-search.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official survey-registry procedure fetched; it documents search by plan name or number and links to the public search application. No geometry or API configuration was exposed."
+    },
+    {
+      "url": "https://las.oysglands.com/search/survey-search",
+      "method": "GET",
+      "httpStatus": 403,
+      "result": "Anonymous request blocked by Cloudflare. No login, CAPTCHA bypass, Cloudflare defeat, retry with disabled TLS, or unsafe-field request was attempted."
+    },
+    {
+      "url": "https://osgof.gov.ng/cadastral-legal-surveys/",
+      "method": "GET/HEAD",
+      "httpStatus": 200,
+      "result": "Official federal cadastral/legal-survey responsibility page fetched; general national agency context only, without an Iseyin parcel response."
+    }
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed against a public feature service. The linked app's HTTP 403 and the lack of an exposed endpoint are not evidence of citywide absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "OyoGISS and related Oyo State land-administration/survey-registry services claim or describe state coverage; the official administrative page explicitly includes Iseyin.",
+    "verifiedOpenScope": "Local/state registry context verified, but anonymous parcel geometry, schema, CRS, native identity, and citywide completeness were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "The current linked search application's JavaScript/configuration, any public map/API endpoints behind its access control, parcel schema/CRS, native identity field, and exact-point coverage remain unknown. No credentials or private access were used.",
+  "runtimeAssessment": "held; no adapter admission or source integration implied"
+}

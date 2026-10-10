@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-12030-linhai.json",
+  "purpose": "Document first-party registry/map discovery, current viewer/configuration route outcomes, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Official Linhai sources evidence a local Natural Resources and Planning Bureau and official registration work. The official Zhejiang geospatial platform is current and publicly discoverable, but bounded anonymous requests did not produce a Linhai parcel feature response.",
+  "registryAssessment": "A local government natural-resources custodian is evidenced, but no Linhai-specific public cadastral parcel service or public real-estate-registration geometry route was verified; registryFound remains null.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.linhai.gov.cn/",
+      "observation": "Official Linhai government portal; direct GET returned HTTP 403/openresty during this attempt, while first-party search results established the portal and its Natural Resources and Planning Bureau context. No parcel geometry was exposed."
+    },
+    {
+      "url": "https://www.linhai.gov.cn/art/2024/5/27/art_1229777162_59066105.html",
+      "observation": "Official Linhai notice describing the city's water-conservancy real-estate registration work and the Natural Resources and Planning Bureau's role. It is administrative/procedural evidence, not an open parcel feature service."
+    },
+    {
+      "url": "https://www.linhai.gov.cn/art/2023/10/27/art_1229517351_3901162.html",
+      "observation": "Official Linhai Natural Resources and Planning Bureau notice on first registration of natural-resource ownership. It identifies registration scope and custodian but does not expose safe cadastral parcel geometry."
+    },
+    {
+      "url": "https://ditu.zjzwfw.gov.cn/",
+      "observation": "Official Zhejiang geographic-information public-service portal. Current HTML and JavaScript were retrieved; the portal exposes public map/site discovery routes."
+    },
+    {
+      "url": "https://zhejiang.tianditu.gov.cn/map",
+      "observation": "Province-level online map service URL returned HTTP 420 for a bounded request with areaCode=331082. No viewer configuration or parcel response was obtained."
+    }
+  ],
+  "viewerConfiguration": {
+    "documentedHomeUrl": "https://ditu.zjzwfw.gov.cn/",
+    "discoveredServiceUrl": "https://zhejiang.tianditu.gov.cn/map?areaCode=331082",
+    "observedServiceTypes": ["Zhejiang geographic-information public-service portal", "province-level online map service", "public site-discovery REST endpoint", "administrative division search endpoint"],
+    "schemaAndCrs": "Not verified from a successful parcel feature response.",
+    "nativeFieldNames": "Not retained; no successful feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {
+      "url": "https://www.linhai.gov.cn/",
+      "method": "GET/web search result inspection",
+      "normalTlsVerification": true,
+      "result": "Direct public GET returned HTTP 403 with openresty body. First-party search results and official notices still evidenced the local department. No geometry."
+    },
+    {
+      "url": "https://ditu.zjzwfw.gov.cn/",
+      "method": "GET followed by current JavaScript/configuration inspection",
+      "normalTlsVerification": true,
+      "result": "Returned HTTP 200. Current HTML referenced areaSystem.js; inspection identified public division-search and site-discovery route templates."
+    },
+    {
+      "url": "https://ditu.zjzwfw.gov.cn/ime-server/rest/xzqh_zj/division/search?withgeometry=false&withparents=true&fullname=浙江省台州市临海市",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "Returned JSON code 401 with message 未授权. No division geometry or parcel data."
+    },
+    {
+      "url": "https://ditu.zjzwfw.gov.cn/RSComplat/rest/site/getSiteByAreaCode?areaCode=331082",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "Returned HTTP 200 but only province-level (330000) service entries, including the official online map URL; no Linhai parcel layer or feature endpoint."
+    },
+    {
+      "url": "https://zhejiang.tianditu.gov.cn/map?areaCode=331082",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "Returned HTTP 420. No JavaScript/configuration or geometry response was obtained."
+    }
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous ID-plus-geometry response was verified.",
+  "geometryEvidence": {
+    "sampleFile": null,
+    "featureCount": 0,
+    "query": "No WUP-point parcel query submitted because no current public Linhai parcel endpoint or usable viewer configuration was identified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official local government and province-level geospatial-platform evidence cover custodian indication and public map-service discovery only.",
+    "verifiedOpenScope": "Official local notices and current public portal route evidence verified; no anonymous complete-polygon parcel response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "remainingUncertainty": "The 403, 401 and 420 responses are access/authorization limitations, not evidence of cadastral absence. Current service URL, parcel schema, CRS, native identity, geometry availability and citywide completeness remain unverified.",
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."
+  }
+}

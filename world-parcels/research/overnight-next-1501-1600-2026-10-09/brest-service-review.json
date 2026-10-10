@@ -1,0 +1,51 @@
+{
+  "cityRecord": "city-264-brest.json",
+  "cityCode": 264,
+  "queueRank": 1546,
+  "attempt": 1,
+  "city": "Brest",
+  "country": "Belarus",
+  "countryCode": "BY",
+  "wupPointLatLon": [52.1048113105078, 23.7148717432269],
+  "qualification": "complete",
+  "registryFound": true,
+  "officialService": {
+    "name": "Public Cadastral Map of Belarus",
+    "url": "https://map.nca.by/",
+    "custodianEvidence": "The official map SPA is hosted by the National Cadastral Agency domain. Its current JavaScript references the public GeoServer workspace `pcm` and WFS route `/geoserver/pcm/ows`. No credentials or private tokens were used.",
+    "mapPage": {"status": 200, "contentType": "text/html"},
+    "javascript": {"url": "https://map.nca.by/js/app.9ad00b1f.js", "status": 200, "bytes": 4725319},
+    "wfs": "https://map.nca.by/geoserver/pcm/ows"
+  },
+  "attempts": [
+    {"route": "English web discovery", "outcome": "Found the official national public cadastral map and a non-first-party Brest agency directory reference; search results alone were not treated as parcel evidence."},
+    {"route": "Russian/local-language web discovery", "outcome": "Found the official Belarus public cadastral map and National Cadastral Agency public-map reference; no Brest-specific first-party public API was separately evidenced."},
+    {"route": "GET https://map.nca.by/", "outcome": "HTTP 200; anonymous SPA shell returned."},
+    {"route": "GET https://map.nca.by/js/app.9ad00b1f.js", "outcome": "HTTP 200; current JavaScript exposed workspace `pcm` and `/geoserver/pcm/ows` WFS routes."},
+    {"route": "GET /geoserver/pcm/ows service=WFS request=GetCapabilities", "outcome": "HTTP 403 Forbidden; no capabilities or layer list retained."},
+    {"route": "GET /geoserver/pcm/ows service=WFS request=DescribeFeatureType typeName=pcm:294b19b9-3259-44e5-b8e8-5314b0adf928", "outcome": "HTTP 403 Forbidden; schema, CRS, and native fields could not be inspected on this attempt."},
+    {"route": "Exact WUP-point parcel query", "outcome": "Not executed because the service denied capabilities/schema access; no exact-point hit or miss is inferred."}
+  ],
+  "queryDetails": {
+    "service": "WFS route identified from official map JavaScript; anonymous access denied before qualification",
+    "candidateEndpoint": "https://map.nca.by/geoserver/pcm/ows",
+    "wupPoint": "POINT(23.7148717432269 52.1048113105078) in longitude/latitude order for a prospective EPSG:4326 request",
+    "crs": "Not qualified; no schema/capabilities response was available.",
+    "returnedFeatureIds": []
+  },
+  "safeFieldAllowlist": ["native WFS feature id if independently qualified", "geom polygon if independently qualified"],
+  "retainedGeoJsonPolicy": "No sample retained because no safe native parcel identity and no parcel geometry were returned. No raw source-specific attribute set was requested or retained.",
+  "scopeLimits": [
+    "The national map's public SPA and candidate WFS route were evidenced, but Brest-specific parcel coverage was not qualified.",
+    "WFS HTTP 403 is an access/UI limitation, not evidence of citywide parcel absence.",
+    "No owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested or retained.",
+    "No login, CAPTCHA bypass, private token, or TLS verification exception was used.",
+    "No local Brest API was claimed from the non-first-party directory result."
+  ],
+  "uncertainty": [
+    "The current public map may require a browser-origin or other request context for its WFS route; this was not bypassed.",
+    "Schema, CRS, native identity fields, and parcel geometry remain unverified for Brest.",
+    "Runtime adapter readiness remains held pending serial reviewer qualification."
+  ],
+  "runtimeReadiness": "held"
+}

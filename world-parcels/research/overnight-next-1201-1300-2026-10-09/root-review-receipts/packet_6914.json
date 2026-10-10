@@ -1,0 +1,17 @@
+{
+  "taskId": "packet:6914",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-6914-haripur.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/haripur-service-review.json",
+    "tmp/valhalla-parcel-research/haripur/efard.html",
+    "tmp/valhalla-parcel-research/haripur/kplr.html"
+  ],
+  "checkedAt": "2026-10-09T13:13:29Z",
+  "reason": "Haripur code 6914, rank 1234, Pakistan/PK, unchanged WUP point and 451578 persons match the immutable queue. English and Urdu searches are recorded. The first-party KP Revenue computerization page was independently read at https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/ and names Haripur with 366 notified, 366 computerized, 329 operational mauzas; this is district program custody, not WUP city parcel coverage. Original cached e-Fard page requires account registration and NADRA biometric verification. Zero polygons were retained and no anonymous safe native-ID geometry response is evidenced.",
+  "qualificationCheck": "No fresh native-ID polygon read, forced pagination, 13 bounded cells, metric GEOS checks, source binding, or headed Details-panel verification. Keep held and unenabled; authentication is not evidence of citywide absence."
+}

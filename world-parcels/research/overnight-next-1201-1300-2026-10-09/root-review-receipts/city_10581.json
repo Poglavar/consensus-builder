@@ -1,0 +1,15 @@
+{
+  "taskId": "city:10581",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-10581-thanjavur.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/thanjavur-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T12:21:47Z",
+  "identityReview": "Queue and roster agree on code 10581, rank 1255, India, point [10.7714485846302, 79.1313196204464], and 443736 persons.",
+  "searchReview": "Executed English and native/local language search queries and result URLs are recorded in the paired packet and service review.",
+  "geometryReview": "Zero retained polygons; no unsafe parcel attributes retained.",
+  "admissionReview": "Official district Survey & Land Records office independently confirmed; viewer timeouts yielded no native-ID parcel polygons. No adapter qualification."
+}

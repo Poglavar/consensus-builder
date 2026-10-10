@@ -1,0 +1,96 @@
+{
+  "cityCode": 9004,
+  "queueRank": 1293,
+  "name": "Huiminxiang",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 1293,
+  "point": [29.6215990570234, 107.202257668659],
+  "population2025": 432064,
+  "population2025k": 432.064,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Huiminxiang Chongqing China official cadastral parcel map land registry public map API",
+        "result": "First-party discovery identified Chongqing municipal cadastral-map query guidance and the Fuling District Natural Resources and Planning Bureau's Real Estate Registration Center as the local custodian. The published workflow describes map/cadastral access but no anonymous parcel-vector API was verified.",
+        "actualResultUrls": [
+          "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/yzzd/202003/t20200323_5980576.html",
+          "https://ghzrzyj.cq.gov.cn/zz/flq/zwgk/fdzdgknr/jgzn/xsdw/202408/t20240822_13543764.html",
+          "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/zcwj/202205/t20220512_10708940.html"
+        ],
+        "scope": "Find a first-party local registry/cadastre/map service and safe anonymous parcel IDs plus geometry; do not request owner, address, contact, titleholder, tax, account, or certificate data."
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "惠民乡 重庆 不动产登记 地籍图 宗地图 官方 地图 查询",
+        "result": "First-party Chinese-language discovery found the official Fuling district registration-center page and Chongqing cadastral-map query notices. The notices describe queries through the government service platform and, for visual map access, authorization/identity requirements; no anonymous parcel geometry response was verified.",
+        "actualResultUrls": [
+          "https://ghzrzyj.cq.gov.cn/zz/flq/zwgk/fdzdgknr/jgzn/xsdw/202408/t20240822_13543764.html",
+          "https://ghzrzyj.cq.gov.cn/zwgk_186/zczxwdk_378544/wdzt/ywyd/wap_1.html",
+          "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/zcwj/202107/t20210709_9462461_wap.html"
+        ],
+        "scope": "Verify local custody and any public source-native parcel geometry only; identity-authenticated property-record queries were not used."
+      }
+    ]
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "Fuling District Natural Resources and Planning Bureau / Fuling District Real Estate Registration Center",
+    "url": "https://ghzrzyj.cq.gov.cn/zz/flq/zwgk/fdzdgknr/jgzn/xsdw/202408/t20240822_13543764.html",
+    "operator": "Chongqing Fuling District Natural Resources and Planning Bureau; Fuling District Real Estate Registration Center",
+    "serviceType": "Official local registration custodian and procedure/map-query guidance; no anonymous parcel geometry service verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "The official Fuling page assigns the registration center responsibility for land, housing, and forest-land registration and registration-information security/access management. No credentials, CAPTCHA bypass, private token, or identity-gated property record was used."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Chongqing and Fuling first-party pages, independent English and Simplified-Chinese discovery, current public HTML retrieval, and bounded anonymous government-platform checks.",
+    "verifiedOpenScope": "Local registry custody and official cadastral-map procedure context are evidenced; anonymous parcel geometry, schema, CRS, native ID, exact-point hit, and citywide completeness remain unverified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No anonymously accessible cadastral geometry endpoint was identified. The municipal query workflow is service-platform/identity mediated, and the attempted government-service landing-page request timed out without a safe parcel payload.",
+  "remainingUncertainty": "A separately published municipal, district, or provincial map service may exist, but no current public anonymous parcel-vector URL, schema, CRS, or native parcel identity was verified. The exact unchanged WUP point was not tested against a verified cadastral endpoint and no absence inference is made.",
+  "nextStep": "If independently reviewing this city again, continue only from an official published anonymous map service or safe metadata endpoint; do not use identity-authenticated property-record queries.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 9004,
+  "cityId": "wup2025:9004",
+  "runtimeReadiness": "held_pending_independent_public_geometry_qualification",
+  "adapterReady": false,
+  "centerLatLon": [29.6215990570234, 107.202257668659],
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "Exact unchanged WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The official Fuling district bureau page identifies the Fuling District Real Estate Registration Center and assigns it land, housing, and forest-land registration responsibilities. This establishes local institutional custody, not admission of a public anonymous parcel source or runtime integration.",
+  "registryEvidenceUrls": [
+    "https://ghzrzyj.cq.gov.cn/zz/flq/zwgk/fdzdgknr/jgzn/xsdw/202408/t20240822_13543764.html",
+    "https://ghzrzyj.cq.gov.cn/zz/flq/zwgk/fdzdgknr/jgzn/",
+    "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/yzzd/202003/t20200323_5980576.html",
+    "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/zcwj/202205/t20220512_10708940.html"
+  ],
+  "runtimeAssessment": {
+    "status": "held_unknown_no_verified_public_geometry",
+    "reason": "No anonymous parcel geometry endpoint was verified or queried at the exact WUP point. The published map/query workflow has identity or authorization constraints; no absence claim is made."
+  },
+  "cohort": "overnight-next-1201-1300",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

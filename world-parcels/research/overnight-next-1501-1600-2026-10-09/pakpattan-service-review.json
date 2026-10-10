@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-8119-pakpattan.json",
+  "purpose": "Document first-party registry/map discovery, viewer configuration, bounded anonymous request outcomes, safe-field handling, and coverage limits.",
+  "assessment": "Punjab Land Records Authority and Pakpattan district administration establish official provincial/local land-record custody. The official PULSE viewer exposes Punjab cadastral maps and a Pakpattan layer. An exact-point anonymous query returned one safe ID-plus-complete-polygon response.",
+  "registryAssessment": "Local/provincial registry custody found through official PLRA, Pakpattan district administration revenue duties, and the PULSE cadastral viewer. This establishes a real registry/map route, not citywide geometry completeness.",
+  "officialPrimarySources": [
+    {"url": "https://www.punjab-zameen.gov.pk/", "observation": "Official Punjab Land Records Authority portal describes Punjab digital land-record services and Arazi Record Centres."},
+    {"url": "https://pakpattan.punjab.gov.pk/administration", "observation": "Official Pakpattan district administration page assigns maintenance/updating of revenue and land records to district revenue administration."},
+    {"url": "https://lis.pulse.gop.pk/", "observation": "Official PULSE viewer states its digital map is based on Mussavie maps, is indicative rather than a legal boundary, and exposes a Parcels/cadastral-map interface."},
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/26", "observation": "Official ArcGIS layer metadata names the layer Pakpattan, polygon geometry, OBJECTID as the OID field, and native spatial reference WKID 102100/latest 3857."}
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://lis.pulse.gop.pk/",
+    "observedTokenRoute": "/api/gis/token",
+    "observedMapService": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer",
+    "observedPakpattanLayer": {"id": 26, "name": "Pakpattan"},
+    "serviceCapabilities": ["Map", "Query", "Data"],
+    "schemaAndCrs": "Verified from layer metadata: esriGeometryPolygon; native WKID 102100/latest WKID 3857. Native fields were inspected but only OBJECTID was requested in the retained query.",
+    "nativeFieldNames": ["OBJECTID", "District", "Dist_ID", "Tehsil", "Tehsil_ID", "QH", "QH_ID", "PC", "PC_ID", "Mouza", "Mouza_ID", "Type", "M", "SK", "Label", "Karam", "Khasra_ID", "Join_Shp", "Remarks", "A", "Khewat_ID", "K", "Shape", "Shape.STArea()", "Shape.STLength()", "MN", "B", "propstatus"],
+    "safeFieldAllowlist": ["stable native parcel identifier (OBJECTID)", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"],
+    "sourceFieldMapping": {"GeoJSON properties.id": "OBJECTID"},
+    "compositeKeyProvenance": null
+  },
+  "attempts": [
+    {"url": "https://lis.pulse.gop.pk/", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 HTML retrieved. Current JavaScript/configuration exposed the Punjab cadastral service, Pakpattan layer id 26, and public token route."},
+    {"url": "https://lis.pulse.gop.pk/api/gis/token", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 JSON returned a short-lived public service token. Token value was used transiently for the bounded request and not retained in packet artifacts."},
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/26", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 layer metadata; layer name Pakpattan, polygon geometry, OBJECTID OID field, native WKID 102100/latest 3857, service capabilities Map/Query/Data."},
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/26/query", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 GeoJSON; exact WUP point intersect query returned one Polygon with OBJECTID 13944240. Requested outFields=OBJECTID only, returnGeometry=true, outSR=4326, resultRecordCount=3."}
+  ],
+  "geometryDecision": "Retain one full polygon because the official service returned a safe stable native OBJECTID and complete polygon geometry. No source-specific attributes beyond the canonical identity were retained.",
+  "geometryEvidence": {"sampleFile": "pakpattan-parcel-samples.geojson", "featureCount": 1, "nativeIdentity": "OBJECTID=13944240", "queryPointLatLon": [30.350024562134, 73.3863839725262]},
+  "coverageAssessment": {
+    "claimedScope": "Punjab PULSE publishes a Punjab cadastral-map service with a Pakpattan layer.",
+    "verifiedOpenScope": "Layer metadata and one exact-point anonymous ID-plus-polygon response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 1, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "The single exact-point hit does not establish citywide completeness. PULSE itself calls the map indicative and not a legal boundary. Update cadence, all-source coverage outside the returned neighborhood, and adapter/runtime behavior remain unverified.",
+  "runtimeAssessment": {"status": "held", "reason": "Serial reviewer must independently qualify the real adapter and broader coverage; this packet alone does not enable runtime."}
+}

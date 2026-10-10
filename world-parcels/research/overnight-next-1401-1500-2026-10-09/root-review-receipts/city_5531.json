@@ -1,0 +1,23 @@
+{
+  "taskId": "city:5531",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-5531-kassala.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/kassala-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T17:13:37Z",
+  "firstPartyUrlsChecked": [
+    "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+    "https://nic.gov.sd/public/projectDetails/3"
+  ],
+  "reason": "National custody documented; Kassala-specific custody unresolved. No native-ID polygon response or independent adapter qualification; public geometry remains unknown.",
+  "checks": {
+    "queueIdentity": "matched rank, code, country, point, population in persons against pending queue and ranked roster",
+    "bilingualSearches": "English and local-language executed searches documented in packet and paired review",
+    "fullPolygonsRetained": 0,
+    "runtimeAdmission": "not qualified; fresh exact ID reads, forced paging, 13 cells, metric GEOS checks, source binding and headed Details proof absent"
+  }
+}

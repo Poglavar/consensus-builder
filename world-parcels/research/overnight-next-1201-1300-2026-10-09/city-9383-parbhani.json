@@ -1,0 +1,158 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:9383",
+  "wupCityCode": 9383,
+  "queueRank": 1246,
+  "rank": 1246,
+  "name": "Parbhani",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [19.2662427703109, 76.7764897917506],
+  "centerLatLon": [19.2662427703109, 76.7764897917506],
+  "pointBasis": "Exact immutable WUP 2025 queue point in latitude/longitude order; not shifted to force a parcel hit.",
+  "population2025": 446508,
+  "population2025k": 446.508,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "aliases": ["parbhani"],
+  "status": "complete",
+  "resultCategory": "official_local_registry_entry_verified_but_geometry_unavailable",
+  "registryFound": true,
+  "registryBasis": "The official Parbhani district Land Records Department page identifies the District Superintendent of Land Records, Parbhani, with land and property survey responsibilities. The official Maharashtra land-records project page states that Bhu-Naksha provides digitized rural and city-survey maps, including municipal and city-survey areas, but does not expose a verified parcel response in this attempt.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_pending_serial_review",
+  "blocker": "Bounded anonymous access to the Maharashtra land-records service timed out before its current JavaScript/configuration or any public parcel API response could be inspected. No safe native parcel ID, schema, CRS, or polygon geometry was verified; timeout is not evidence of citywide absence.",
+  "source": {
+    "sourceId": null,
+    "name": "Maharashtra Land Records / Bhu-Naksha",
+    "url": "https://bhumiabhilekh.maharashtra.gov.in/Services",
+    "operator": "Land Records Department, Government of Maharashtra; district custodian: District Superintendent of Land Records, Parbhani",
+    "serviceType": "Official state land-records and cadastral-map service referenced by the Parbhani district administration",
+    "layer": null,
+    "geometryType": null,
+    "nativeIdField": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "sampleCount": 0,
+    "sampleFile": null
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Official Parbhani district land-records custodian and Maharashtra Bhu-Naksha/state land-records service.",
+    "verifiedOpenScope": "Official local custodian and state service identity only; no anonymous parcel response or geometry was obtained.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Parbhani Maharashtra official cadastral parcel map GIS property survey map",
+        "result": "Found the official Parbhani district Land Records Department page, the official district land-record service page, and an official Maharashtra project page describing Bhu-Naksha availability for rural and city-survey maps. No parcel geometry or safe native parcel identity was established by discovery alone.",
+        "actualResultUrls": [
+          "https://parbhani.gov.in/en/land-records-department/",
+          "https://parbhani.gov.in/en/service/land-records/",
+          "https://bhumiabhilekh.maharashtra.gov.in/SchemsAndProjects/Details?districtId=30"
+        ]
+      },
+      {
+        "language": "Marathi",
+        "query": "परभणी महाराष्ट्र अधिकृत कॅडस्ट्रल नकाशा भूखंड नकाशा GIS",
+        "result": "Found the official Maharashtra land-records service pages and the Parbhani Bhu-Naksha project description. The result describes survey/gat and city-survey map availability but no safe parcel identifier, schema, CRS, or polygon response was verified.",
+        "actualResultUrls": [
+          "https://bhumiabhilekh.maharashtra.gov.in/Services",
+          "https://bhumiabhilekh.maharashtra.gov.in/SchemsAndProjects/Details?districtId=30",
+          "https://parbhani.gov.in/en/land-records-department/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://parbhani.gov.in/en/land-records-department/",
+        "operator": "District Administration, Parbhani, Government of Maharashtra",
+        "scope": "Local district Land Records Department page; identifies the District Superintendent of Land Records, Parbhani, and land/property survey responsibilities."
+      },
+      {
+        "url": "https://bhumiabhilekh.maharashtra.gov.in/Services",
+        "operator": "Land Records Department, Government of Maharashtra",
+        "scope": "State service directory listing Bhu-Naksha, e-Maps, property-card and related land-record services."
+      },
+      {
+        "url": "https://bhumiabhilekh.maharashtra.gov.in/SchemsAndProjects/Details?districtId=30",
+        "operator": "Land Records Department, Government of Maharashtra",
+        "scope": "Parbhani-specific Bhu-Naksha project description; states that digitized rural and city-survey maps are available online."
+      },
+      {
+        "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/513",
+        "operator": "Department of Land Resources, Government of India",
+        "scope": "Parbhani district DILRMP map-digitization/ULPIN status page; national status/prose, not a local parcel geometry endpoint."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://parbhani.gov.in/en/land-records-department/",
+        "method": "GET; anonymous public page via first-party discovery",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Loaded and identified the local district land-records custodian and survey scope."
+      },
+      {
+        "url": "https://parbhani.gov.in/en/service/land-records/",
+        "method": "GET; anonymous public page via first-party discovery",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Loaded and linked the Maharashtra land-records service."
+      },
+      {
+        "url": "https://bhumiabhilekh.maharashtra.gov.in/SchemsAndProjects/Details?districtId=30",
+        "method": "GET; anonymous public page via first-party discovery",
+        "httpStatus": null,
+        "contentType": null,
+        "assessment": "Discovery result identified this official Parbhani Bhu-Naksha page; direct fetch timed out in the bounded request attempt, while indexed first-party content described the project."
+      },
+      {
+        "url": "https://bhumiabhilekh.maharashtra.gov.in/Services",
+        "method": "GET; anonymous public route",
+        "httpStatus": null,
+        "contentType": null,
+        "assessment": "Connection timed out after 30 seconds; no current JavaScript/configuration, API route, schema, CRS, ID, or geometry response retained."
+      },
+      {
+        "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/513",
+        "method": "GET; anonymous public page via first-party discovery",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Indexed official DILRMP status page for Parbhani district; treated as status evidence only, not as parcel geometry."
+      },
+      {
+        "url": "https://bhunaksha.nic.in/bhunaksha/",
+        "method": "GET; anonymous public national landing page",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "National Bhu-Naksha landing page states the tool is intended for authorized state/UT officials; no Parbhani public parcel response was obtained."
+      }
+    ],
+    "schemaCrs": {
+      "nativeCrs": null,
+      "geometryResponseSchema": "Not verified",
+      "viewerLayers": []
+    }
+  },
+  "safeFieldAllowlist": ["cityCode", "queueRank", "WUP point", "official service URLs", "HTTP status/content type", "public service metadata", "native CRS/ID only if returned safely", "geometry only if independently verified"],
+  "remainingUncertainty": "Whether Maharashtra Bhu-Naksha exposes anonymous parcel polygons for Parbhani city, which native identity field and CRS it uses, how city-survey and rural layers are selected, and the extent of citywide coverage remain unknown. No exact-point parcel query was run; the exact WUP point was preserved and not used as evidence of absence.",
+  "registryEvidenceUrls": ["https://parbhani.gov.in/en/land-records-department/", "https://bhumiabhilekh.maharashtra.gov.in/Services", "https://bhumiabhilekh.maharashtra.gov.in/SchemsAndProjects/Details?districtId=30"],
+  "checkedAt": "2026-10-09",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "sourceIds": [],
+  "adapterReady": false,
+  "adapterQualification": "held_pending_serial_review",
+  "nextStep": "Serial reviewer should independently qualify the current Maharashtra service, viewer configuration, and any public parcel geometry route; keep runtime held until safe native IDs and real polygon geometry are independently verified.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

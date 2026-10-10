@@ -1,0 +1,15 @@
+{
+  "taskId": "city:8606",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-8606-sorong.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/sorong-service-review.json",
+    "tmp/valhalla-parcel-research/8606/layers.json",
+    "tmp/valhalla-parcel-research/8606/geonode.json"
+  ],
+  "checkedAt": "2026-10-10T18:39:03.208931Z",
+  "reviewFinding": "UN 2025 source and immutable rank 1921 agree (Sorong, IDN, 299181 persons, exact point). English and Indonesian search records have queries and result URLs. Official Sorong city report names BPN and claims digital mapping; original BHUMI layer metadata advertises Bidang Tanah / umum:Persil and nib, while original ATLAS listing has seven resources but no parcel layer. Anonymous bounded WFS attempt returned HTML/404; no native-ID polygon, forced paging, 13 cells, metric GEOS checks, source binding, or headed Details proof. The city claim does not establish open feature access."
+}

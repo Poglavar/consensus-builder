@@ -1,0 +1,96 @@
+{
+  "cityCode": 3531,
+  "queueRank": 1679,
+  "name": "Pyŏngsŏng",
+  "country": "Dem. People's Republic of Korea",
+  "countryCode": "KP",
+  "iso3": "PRK",
+  "locId": 408,
+  "point": [39.252930703552, 125.865517829988],
+  "population2025": 340370,
+  "population2025k": 340.37,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pyongsong North Korea official cadastral parcel map land registry GIS",
+        "result": "No Pyŏngsŏng- or DPRK-specific first-party cadastral viewer, registry map, public API, or bounded ID-plus-geometry response was found. Results were general references or South Korean services, not evidence of DPRK coverage.",
+        "actualResultUrls": [
+          "https://journal.kci.go.kr/krihs/archive/articlePdf?artiId=ART002826171",
+          "https://www.kgeop.go.kr/",
+          "https://gadm.org/maps/PRK/pyongan-namdo/pyongsong.html"
+        ]
+      },
+      {
+        "language": "Korean",
+        "query": "평성시 북한 지적도 토지 등록 지도 공식",
+        "result": "No DPRK/Pyŏngsŏng first-party cadastral service or parcel response was found. Search results were South Korean cadastral services and general North Korea geospatial research; they do not evidence a DPRK local registry or public endpoint.",
+        "actualResultUrls": [
+          "https://www.kgeop.go.kr/info/infoMap.do",
+          "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000027",
+          "https://nationalatlas.cafe24.com/pages/download.php?dir=%2Fnationalatlas%2Fkor_1%2Fpdf&file=%28%EA%B5%AD%29%EC%84%9C%EB%AC%B8-%EC%98%81%ED%86%A0%ED%8E%B8.pdf"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.kgeop.go.kr/",
+      "observation": "South Korea Ministry of Land, Infrastructure and Transport K-GeoP viewer; direct GET returned 200, but the service is South Korean and is not evidence of DPRK/Pyŏngsŏng cadastral custody or coverage. No parcel request was made."
+    },
+    {
+      "url": "https://journal.kci.go.kr/krihs/archive/articlePdf?artiId=ART002826171",
+      "observation": "Research inventory describes North Korea geospatial datasets and a 2018 cadastral-map layer with partial construction, but it is not a public DPRK registry/viewer and does not expose a Pyŏngsŏng parcel API or safe native parcel identities."
+    },
+    {
+      "url": "https://gadm.org/maps/PRK/pyongan-namdo/pyongsong.html",
+      "observation": "Administrative-boundary reference for Pyŏngsŏng, not cadastral or parcel data and not a registry custodian."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.kgeop.go.kr/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "South Korean map service loaded, but country scope is wrong for this record; no parcel query or geometry was retained."
+    },
+    {
+      "url": "https://naenara.com.kp/",
+      "method": "GET",
+      "httpStatus": "timeout after 15 seconds",
+      "outcome": "Potential DPRK public portal did not respond within the bounded anonymous request. No retry escalation, login, CAPTCHA/Cloudflare bypass, or TLS exception was used."
+    },
+    {
+      "url": "https://www.dprkportal.org/",
+      "method": "GET",
+      "httpStatus": "000",
+      "outcome": "Connection did not produce a response in the bounded request; domain was not treated as an official cadastral source."
+    },
+    {
+      "url": "https://www.kgeop.go.kr/info/infoMap.do",
+      "method": "first-party search/open",
+      "httpStatus": "official viewer found",
+      "outcome": "Viewer documentation describes South Korean land layers only; no DPRK/Pyŏngsŏng layer, schema, CRS, or anonymous parcel response was verified."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "No local DPRK registry, cadastral custodian, official Pyŏngsŏng map, or public parcel endpoint was actually evidenced.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "resultCategory": "no_verified_dprk_public_parcel_service",
+  "coverageAssessment": {
+    "claimedScope": "Pyŏngsŏng city and DPRK cadastral-source discovery.",
+    "verifiedOpenScope": "No city-bounded parcel record, native identity, safe schema, CRS, or geometry was retrieved.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "DPRK cadastral records may exist in non-public, offline, restricted, or request-based systems. The timeout and non-response are access outcomes only and are not evidence of citywide cadastral absence. Exact-point coverage was not tested as an absence proxy.",
+  "identityPolicy": "No native parcel identity was observed; no synthetic identity was created. Any future sample must retain only one stable native parcel ID and geometry, with source field mapping documented in the service review."
+}

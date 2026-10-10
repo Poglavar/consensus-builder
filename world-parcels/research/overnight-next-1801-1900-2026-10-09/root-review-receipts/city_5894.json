@@ -1,0 +1,23 @@
+{
+  "taskId": "city:5894",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-5894-tagum.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/tagum-service-review.json",
+    "tmp/valhalla-parcel-research/5894/fetchlayers.json",
+    "tmp/valhalla-parcel-research/5894/script.js"
+  ],
+  "checkedAt": "2026-10-10T17:55:37Z",
+  "registryFound": true,
+  "reason": "Official LMB layer listing and Tagum tax-mapping custody evidence; no anonymous native-ID polygon response or independent adapter qualification.",
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

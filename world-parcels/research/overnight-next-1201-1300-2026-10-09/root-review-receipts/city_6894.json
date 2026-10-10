@@ -1,0 +1,16 @@
+{
+  "taskId": "city:6894",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-6894-al-abbasa-al-sharqiya.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/al-abbasa-al-sharqiya-service-review.json",
+    "tmp/valhalla-parcel-research/6894/esa-egyptmap.html",
+    "tmp/valhalla-parcel-research/6894/esa-testmap.html",
+    "tmp/valhalla-parcel-research/6894/sharkia-submit.js"
+  ],
+  "checkedAt": "2026-10-09T10:38:40.427341Z",
+  "reason": "Held. Exact WUP identity and English/Arabic search records checked. National survey/map pages are general mapping material; local parcel-registry custody remains unresolved. The Sharqia portal is login-gated, and no anonymous parcel endpoint, full polygon or safe native ID is evidenced. No point or citywide absence is inferred. Fresh native-ID reads and all remaining adapter, metric and headed Details gates are missing."
+}

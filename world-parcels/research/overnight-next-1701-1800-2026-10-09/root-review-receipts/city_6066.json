@@ -1,0 +1,20 @@
+{
+  "taskId": "city:6066",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-6066-qu-ng-ng-i.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/qu-ng-ng-i-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T15:23:10Z",
+  "reason": "WUP 2025 rank 1792, Viet Nam, exact point and 320907 persons match both rosters and the original source. English and Vietnamese searches are recorded. Local custody is evidenced, but the viewer returned DNS/502 failures and no original parcel response or full polygon was retained. Fresh ID reads, paging, 13 cells, metric GEOS checks, source binding and headed Details proof are absent. Hold without inferring citywide absence.",
+  "checks": {
+    "immutableQueueIdentity": "matched WUP 2025 and both cohort rosters",
+    "bilingualExecutedSearches": true,
+    "retainedFullPolygons": 0,
+    "independentLiveAdapterQualified": false,
+    "runtimeAdmission": false
+  }
+}

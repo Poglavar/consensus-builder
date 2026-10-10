@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "cityRecord": "city-8836-zheba.json",
+  "purpose": "Document first-party local registry context and bounded anonymous geometry access review.",
+  "cityCode": 8836,
+  "city": "Zheba",
+  "country": "China",
+  "countryCode": "CN",
+  "queueRank": 1454,
+  "checkedAt": "2026-10-09",
+  "reviewStatus": "complete_geometry_unverified",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "wupPointLatLon": [29.2760912955364, 106.245170674004],
+  "queryOutcomes": [
+    {
+      "language": "English",
+      "query": "Zheba China official cadastral parcel map land registry GIS Chongqing Qijiang",
+      "outcome": "First-party Qijiang/Chongqing registration and map pages identified; no anonymous parcel-vector endpoint or safe geometry-only schema found.",
+      "urls": ["https://www.cqqj.gov.cn/tszl/map/", "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/index.html", "https://www.cq.gov.cn/zt/yhyshj/zcjj/djcc/201912/t20191231_8740783.html"]
+    },
+    {
+      "language": "Chinese",
+      "query": "这坝 中国 官方 地籍图 不动产登记 地图 GIS",
+      "outcome": "First-party local custodian and cadastral-registration guidance identified; no anonymous parcel-vector endpoint or safe geometry-only schema found.",
+      "urls": ["https://cqqj.gov.cn/bm/qghzrzyj/", "https://www.cqqj.gov.cn/tszl/map/", "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/index.html"]
+    }
+  ],
+  "requests": [
+    {"method": "GET", "url": "https://www.cqqj.gov.cn/tszl/map/", "httpStatus": 200, "contentType": "text/html", "bytes": 77729, "outcome": "General Qijiang convenience map page; no parcel-vector schema verified."},
+    {"method": "GET", "url": "https://cqqj.gov.cn/bm/qghzrzyj/", "httpStatus": 200, "contentType": "text/html", "bytes": 85027, "outcome": "Local planning/natural-resources bureau page; custodian evidence only."},
+    {"method": "GET", "url": "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/index.html", "httpStatus": 200, "contentType": "text/html", "bytes": 102254, "outcome": "Municipal real-property registration portal/index; no safe anonymous geometry endpoint verified."}
+  ],
+  "officialCustodianEvidence": "Qijiang District Planning and Natural Resources Bureau pages describe the local bureau and its real-property registration functions. Chongqing municipal guidance describes cadastral-map access through government service channels, but this review did not submit a location or property lookup and did not treat general policy prose as a parcel API.",
+  "safeFieldAllowlist": ["stable native parcel id if independently exposed", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax", "account", "personal identity", "property-specific registration details"],
+  "schemaAndCrs": {"verified": false, "geometryType": null, "nativeCrs": null, "outputCrs": null, "nativeIdField": null, "fieldMapping": null},
+  "geometry": {"verified": false, "sampleCount": 0, "sampleFile": null, "exactWupPointHit": null},
+  "scopeLimits": "GET-only first-party discovery and page review. No browser login, credentials, private token, CAPTCHA/Cloudflare bypass, owner/address lookup, or parcel-specific query. A zero or missing route result is not evidence of citywide absence.",
+  "runtimeReadiness": "held_unqualified",
+  "uncertainty": "A current public geometry route may exist behind the Chongqing government service platform or an undocumented/local system; its access conditions and coverage for Zheba remain unverified.",
+  "reviewConclusion": "Keep registryFound null and runtime readiness held. Packet is complete for this attempt because all executed discovery and request outcomes are recorded; no geometry sample is retained."
+}

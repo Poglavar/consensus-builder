@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "cityFile": "city-1993-santiago-del-estero.json",
+  "cityRecord": "city-1993-santiago-del-estero.json",
+  "cityCode": 1993,
+  "queueRank": 1447,
+  "name": "Santiago del Estero",
+  "country": "Argentina",
+  "countryCode": "AR",
+  "exactWupPointLatLon": [-27.7856815392775, -64.2614257262865],
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "custodianAssessment": {
+    "localRegistry": "Dirección General de Catastro de la Provincia de Santiago del Estero",
+    "localEvidence": "Official DGC site identifies the authority, lists Servicios Catastrales Online, and links an Acceso GIS page plus Servicio WMS/WFS. Its current access page displays an en-construcción page.",
+    "generalAgencyLead": "Instituto Geográfico Nacional provincial office; useful corroboration, not the city parcel custodian.",
+    "urls": [
+      "https://app.dgcsantiago.gob.ar/index.html",
+      "https://app.dgcsantiago.gob.ar/page.construccion.html",
+      "https://www.ign.gob.ar/AreaInstitucional/OficinasProvinciales/SantiagodelEstero"
+    ]
+  },
+  "discoveryQueries": [
+    {
+      "language": "English",
+      "query": "Santiago del Estero Argentina official cadastral map parcel cadastre GIS",
+      "outcome": "Found official DGC, IGN provincial office, and DGC advertised GIS/WMS/WFS leads; no parcel response.",
+      "urls": ["https://www.ign.gob.ar/AreaInstitucional/OficinasProvinciales/SantiagodelEstero", "https://app.dgcsantiago.gob.ar/index.html"]
+    },
+    {
+      "language": "Spanish (local)",
+      "query": "Santiago del Estero catastro visor parcelas sitio oficial",
+      "outcome": "Found official DGC and IDE Santiago; DGC GIS page is under construction and IDE configuration had no cadastral parcel layer.",
+      "urls": ["https://app.dgcsantiago.gob.ar/page.construccion.html", "https://www.idesantiago.gob.ar/argenmap/"]
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://app.dgcsantiago.gob.ar/index.html",
+      "method": "GET",
+      "outcome": "HTTP 200; official landing page. It links Acceso Gis and advertises Servicio WMS/WFS, but both point to the under-construction page."
+    },
+    {
+      "url": "https://app.dgcsantiago.gob.ar/page.construccion.html",
+      "method": "GET",
+      "outcome": "HTTP 200; page explicitly says the GIS access is under construction."
+    },
+    {
+      "url": "http://dgcsantiago.gob.ar/Ing/login.aspx",
+      "method": "GET",
+      "outcome": "HTTP 404 from the current DGC WordPress site; no login attempted."
+    },
+    {
+      "url": "https://www.idesantiago.gob.ar/argenmap/",
+      "method": "GET",
+      "outcome": "HTTP 200; followed current JavaScript to src/config/default/data.json. The config exposes IGN national thematic WMS services, not parcel/cadastre geometry."
+    },
+    {
+      "url": "https://www.idesantiago.gob.ar/argenmap/src/config/default/data.json",
+      "method": "GET",
+      "outcome": "HTTP 200; configuration inspected for host, service, parcel, cadastre, WMS, and WFS entries. No local cadastral parcel layer found."
+    },
+    {
+      "url": "https://wms.ign.gob.ar/geoserver/asentamientos_humanos/wms?service=WMS&request=GetCapabilities",
+      "method": "GET",
+      "outcome": "HTTP 200; valid national IGN thematic WMS capabilities. Not a cadastral parcel service and not used as parcel evidence."
+    },
+    {
+      "url": "https://wms.ign.gob.ar/geoserver/industria-servicios/wms?service=WMS&request=GetCapabilities",
+      "method": "GET",
+      "outcome": "HTTP 200; valid national IGN thematic WMS capabilities. Not a cadastral parcel service and not used as parcel evidence."
+    },
+    {
+      "url": "http://dgcconsultasweb.sgis.com.ar/",
+      "method": "GET",
+      "outcome": "DNS resolution failed from the research environment; legacy CFC directory lead only, no inference made."
+    },
+    {
+      "url": "http://www.catastro-se.gov.ar/",
+      "method": "GET",
+      "outcome": "DNS resolution failed from the research environment; directory lead only, no inference made."
+    }
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier", "parcel geometry", "source CRS", "geometry quality/validity", "service layer name"],
+  "unsafeFieldsExcluded": ["owner", "titleholder", "address", "contact", "tax/account details", "personal data", "title or registry documents"],
+  "parcelResponse": null,
+  "retainedGeojson": null,
+  "sampleDecision": "No GeoJSON retained: no safe native parcel identity and no full parcel polygon were verified.",
+  "scopeLimits": [
+    "Exact-point miss or unavailable viewer does not establish citywide absence.",
+    "National IGN WMS layers are contextual/thematic and do not establish cadastral coverage.",
+    "No adapter qualification or source integration/admission is claimed."
+  ],
+  "runtimeReadiness": "held",
+  "uncertainty": "A real local cadastral custodian is evidenced, but current anonymous public parcel geometry access could not be verified."
+}

@@ -1,0 +1,118 @@
+{
+  "cityCode": 3792,
+  "queueRank": 1629,
+  "name": "Longueuil",
+  "country": "Canada",
+  "countryCode": "CA",
+  "point": [45.4995092536395, -73.4660080560164],
+  "population2025": 351819,
+  "population2025k": 351.819,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Longueuil official parcel cadastral GIS map lot parcels ArcGIS",
+        "result": "Found the City of Longueuil public GeoHub and its official municipal Cadastre FeatureServer. The service exposes a polygon Cadastre layer with safe native fields OBJECTID and NUMERO.",
+        "actualResultUrls": [
+          "https://geohub.longueuil.quebec/",
+          "https://geomatique.longueuil.quebec/public/rest/services/DonneesPubliques/CadastreEtEvaluation/FeatureServer/0"
+        ]
+      },
+      {
+        "language": "French",
+        "query": "Longueuil Québec données ouvertes cadastre parcelles carte SIG",
+        "result": "Found the Ville de Longueuil GéoHub, its interactive maps page, and the official municipal Cadastre service. Québec's official guidance separately identifies Infolot for the current Québec cadastre; no private or owner fields were requested.",
+        "actualResultUrls": [
+          "https://geohub.longueuil.quebec/",
+          "https://longueuil.quebec/fr/cartes-interactives",
+          "https://www.quebec.ca/habitation-territoire/information-fonciere/cadastre/consulter-cadastre",
+          "https://geomatique.longueuil.quebec/public/rest/services/DonneesPubliques/CadastreEtEvaluation/FeatureServer/0"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "A city-operated public GIS cadastral layer was directly verified at the official Longueuil geomatics host; this is municipal source evidence, not a claim of title/ownership registry access.",
+  "officialSources": [
+    {
+      "url": "https://geohub.longueuil.quebec/",
+      "observation": "Official GéoHub identifies the Ville de Longueuil public open-data and interactive-map platform."
+    },
+    {
+      "url": "https://geomatique.longueuil.quebec/public/rest/services/DonneesPubliques/CadastreEtEvaluation/FeatureServer/0",
+      "observation": "Official municipal ArcGIS FeatureServer layer named Cadastre; polygon geometry, native fields OBJECTID, NUMERO, and STATUT; service CRS EPSG:32188; GeoJSON supported."
+    },
+    {
+      "url": "https://www.quebec.ca/habitation-territoire/information-fonciere/cadastre/consulter-cadastre",
+      "observation": "Official Québec page directs users to the Infolot interactive map for the current Québec cadastre; it was contextual discovery, not used for the retained geometry."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://geohub.longueuil.quebec/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official GeoHub HTML loaded; current public ArcGIS Hub configuration was inspected."
+    },
+    {
+      "url": "https://geomatique.longueuil.quebec/public/rest/services/DonneesPubliques/CadastreEtEvaluation/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Layer metadata loaded. Geometry is polygon; native schema includes OBJECTID, NUMERO, STATUT; source CRS is EPSG:32188; supported query formats include JSON, geoJSON, and PBF."
+    },
+    {
+      "url": "https://geomatique.longueuil.quebec/public/rest/services/DonneesPubliques/CadastreEtEvaluation/FeatureServer/0/query",
+      "method": "GET",
+      "params": {
+        "geometry": "-73.4660080560164,45.4995092536395",
+        "geometryType": "esriGeometryPoint",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "outFields": "OBJECTID,NUMERO",
+        "returnGeometry": true,
+        "outSR": 4326,
+        "resultRecordCount": 3,
+        "f": "geojson"
+      },
+      "httpStatus": 200,
+      "outcome": "Anonymous bounded query returned one intersecting polygon. Native NUMERO was 2 798 557; geometry was returned in longitude/latitude GeoJSON. The service also reported exceededTransferLimit despite the one returned feature, so this is not a completeness claim."
+    }
+  ],
+  "source": {
+    "name": "Ville de Longueuil GéoHub municipal Cadastre FeatureServer",
+    "url": "https://geomatique.longueuil.quebec/public/rest/services/DonneesPubliques/CadastreEtEvaluation/FeatureServer/0",
+    "nativeIdentity": "NUMERO",
+    "nativeFieldMapping": {
+      "NUMERO": "stable cadastral lot number retained as sample id",
+      "OBJECTID": "ArcGIS object identifier observed but not retained",
+      "STATUT": "source status field observed but not requested/retained"
+    },
+    "compositeKeyProvenance": null,
+    "sourceCrs": "EPSG:32188",
+    "sampleFile": "longueuil-parcel-sample.geojson"
+  },
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sourceIds": ["2 798 557"],
+  "verifiedParcelResponse": {
+    "featureCount": 1,
+    "nativeId": "2 798 557",
+    "exactPointIntersection": true,
+    "geometryCrs": "EPSG:4326"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal Longueuil Cadastre layer extent reported by the service; exact authoritative maintenance scope and temporal completeness were not independently established.",
+    "verifiedOpenScope": "One bounded anonymous point-intersection response at the supplied WUP point.",
+    "countrywideVerified": false,
+    "limits": [
+      "The exact WUP point is a locator and was not shifted; one point hit does not establish citywide coverage.",
+      "No owner, address, contact, titleholder, tax, assessment, or other unsafe fields were requested or retained.",
+      "The query response indicated exceededTransferLimit; no broad extraction was attempted."
+    ]
+  },
+  "runtimeReadiness": "held_pending_serial_qualification",
+  "resultCategory": "primary_city_source_and_safe_geometry_verified"
+}

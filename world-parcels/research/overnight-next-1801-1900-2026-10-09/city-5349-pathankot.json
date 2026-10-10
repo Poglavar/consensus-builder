@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 5349,
+  "cityId": "queue:1819",
+  "queueRank": 1819,
+  "name": "Pathankot",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "centerLatLon": [32.2691414247988, 75.6476055120517],
+  "point": [32.2691414247988, 75.6476055120517],
+  "population2025": 315476,
+  "population2025k": 315.476,
+  "populationUnit": "persons",
+  "year": 2025,
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pathankot Punjab official cadastral parcel map GIS land records portal",
+        "result": "Found the official Punjab BhuNaksha viewer, Punjab Land Records, the Pathankot district portal, and a municipal draft cadastral-map PDF. The BhuNaksha viewer is the relevant public map route.",
+        "actualResultUrls": [
+          "https://gisbhunaksha.punjab.gov.in/index.jsp",
+          "https://jamabandi.punjab.gov.in/CadastralMap.aspx/AccessibilityOptions.aspx",
+          "https://pathankot.nic.in/",
+          "https://mcpathankot.gov.in/E_News/Draft_Cadastral_Format%20%28Pathankot%29.pdf"
+        ]
+      },
+      {
+        "language": "Punjabi (Gurmukhi)",
+        "query": "ਪਠਾਨਕੋਟ ਪੰਜਾਬ ਭੂ ਨਕਸ਼ਾ ਖਸਰਾ ਨਕਸ਼ਾ ਸਰਕਾਰੀ ਪੋਰਟਲ",
+        "result": "Found the official Punjab BhuNaksha viewer and Punjab district/land-record pages in Punjabi and bilingual presentation; no separate public vector endpoint was identified in search results.",
+        "actualResultUrls": [
+          "https://gisbhunaksha.punjab.gov.in/index.jsp",
+          "https://punjab.s3waas.gov.in/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "india-punjab-bhunaksha",
+    "name": "Punjab BhuNaksha",
+    "operator": "Director, Land Records, Punjab / Government of Punjab",
+    "scope": "Punjab village-wise cadastral map viewer; Pathankot district and village hierarchy were available",
+    "endpoint": "https://gisbhunaksha.punjab.gov.in/",
+    "method": "Public HTML/JavaScript viewer with POST/GET map and plot lookup routes",
+    "responseFormat": "JSON metadata and WMS raster map responses",
+    "crs": "Viewer coordinates observed in metre-based UTM-like coordinates; exact EPSG/CRS was not declared by the public response",
+    "reuseStatus": "viewer-only for this packet; no open vector polygon response verified"
+  },
+  "portalsFound": [
+    {"url": "https://gisbhunaksha.punjab.gov.in/index.jsp", "observation": "Official public BhuNaksha viewer; Pathankot district code 21 and Pathankot tehsil code 093 were discoverable through the viewer's own REST routes."},
+    {"url": "https://pathankot.nic.in/", "observation": "Official Pathankot district portal links to Punjab Land Records and identifies the district administration."},
+    {"url": "https://mcpathankot.gov.in/E_News/Draft_Cadastral_Format%20%28Pathankot%29.pdf", "observation": "Official municipal draft cadastral map PDF; map image only, with an information-only disclaimer."},
+    {"url": "https://jamabandi.punjab.gov.in/CadastralMap.aspx/AccessibilityOptions.aspx", "observation": "Official Punjab Land Records cadastral-map page; village-wise selection UI, no vector API exposed in the page result."}
+  ],
+  "requests": [
+    {"url": "https://gisbhunaksha.punjab.gov.in/index.jsp", "method": "GET", "httpStatus": 200, "contentType": "text/html;charset=UTF-8", "assessment": "Viewer loaded with browser-like headers and session cookie."},
+    {"url": "https://gisbhunaksha.punjab.gov.in/assets/misc/config.js", "method": "GET", "httpStatus": 200, "contentType": "application/javascript", "assessment": "Viewer configuration inspected; public routes use same-origin REST and WMS paths, with no private token observed."},
+    {"url": "https://gisbhunaksha.punjab.gov.in/index.js", "method": "GET", "httpStatus": 200, "contentType": "application/javascript", "assessment": "Current viewer JavaScript inspected; routes include Levels, MapInfo, ScalarDatahandler and WMS."},
+    {"url": "https://gisbhunaksha.punjab.gov.in/rest/Levels/count", "method": "POST", "httpStatus": 200, "contentType": "text/plain;charset=UTF-8", "assessment": "Punjab state code 03 returned five hierarchy levels."},
+    {"url": "https://gisbhunaksha.punjab.gov.in/rest/Levels/ListsAfterLevel", "method": "POST", "httpStatus": 200, "contentType": "application/json;charset=UTF-8", "assessment": "Pathankot district/tehsil/kanungo/patwar/village hierarchy returned; selected path was 21,093,035,361,27783."},
+    {"url": "https://gisbhunaksha.punjab.gov.in/rest/MapInfo/getVVVVExtentGeoref", "method": "POST", "httpStatus": 200, "contentType": "application/json;charset=UTF-8", "assessment": "Returned village extent and gisCode 2109303536127783 for the selected Pathankot village."},
+    {"url": "https://gisbhunaksha.punjab.gov.in/ScalarDatahandler?OP=4&state=03&levels=21%2C093%2C035%2C361%2C27783%2C&x=560500&y=3572500", "method": "GET", "httpStatus": 200, "contentType": "application/json;charset=UTF-8", "assessment": "Bounded coordinate lookup returned has_data=Y, native plotNo 8//8, native ID a3Sc1WDxSFi1Q2twc_ZCgw, and a small bounding extent. The response also included owner/property details; those fields were not retained."},
+    {"url": "https://gisbhunaksha.punjab.gov.in/WMS?SERVICE=WMS&REQUEST=GetCapabilities", "method": "GET", "httpStatus": 200, "contentType": "not reliably identified", "assessment": "No usable vector capabilities document was obtained."},
+    {"url": "https://gisbhunaksha.punjab.gov.in/WMS", "method": "GET", "httpStatus": 200, "contentType": "image/png", "assessment": "Viewer's VILLAGE_MAP route returned raster map imagery only; not retained as parcel geometry."}
+  ],
+  "coverageAssessment": {"claimedScope": "Punjab village-wise cadastral map viewer, including Pathankot district hierarchy", "verifiedOpenScope": "One bounded anonymous Pathankot village plot lookup and raster map display; no vector polygon sample", "citywideVerified": false, "countrywideVerified": false},
+  "remainingUncertainty": "The viewer proves public institutional custody and an anonymous plot lookup, but the current public route did not expose a safe vector polygon response or an explicitly declared CRS. The single selected village is not evidence of complete Pathankot city coverage. No inference is made from the exact WUP point, map extent, raster-only response, or lack of a vector endpoint.",
+  "nextStep": "Serial reviewer should independently assess whether a sanctioned vector or geometry-capable adapter exists behind the current viewer; do not use the owner-bearing ScalarDatahandler payload for runtime integration.",
+  "runtimeReadiness": "held_pending_serial_review"
+}

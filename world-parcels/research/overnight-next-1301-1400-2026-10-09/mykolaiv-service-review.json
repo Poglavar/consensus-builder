@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09T14:50:00Z",
+  "cityRecord": "city-3183-mykolaiv.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "exactWupPoint": [46.9596870954058, 32.0172558160937]
+  },
+  "assessment": "A first-party Mykolaiv City Council urban-cadastre geoportal was fetched successfully and its HTML exposed a named municipal land-parcel register. The linked register returned HTTP 404. Official Ukrainian NSDI documentation describes WFS and coordinate parcel routes, but bounded anonymous requests to the guessed public API base returned HTTP 404. No safe parcel ID, geometry, schema response, owner, address, titleholder, contact, tax, or account field was requested or retained.",
+  "registryAssessment": "Local registry/map custody is evidenced by the official Mykolaiv City Council urban-cadastre geoportal and its named land-parcel register link. Availability of the actual parcel dataset and city coverage remain unverified.",
+  "officialPrimarySources": [
+    {"url": "https://mbase.mkrada.gov.ua/home", "observation": "Official municipal geoportal; landing page returned 200 and exposed the land-parcel register link."},
+    {"url": "https://mkrada.gov.ua/content/geoportal-mistobudivnogo-kadastru.html", "observation": "Official city page describing the urban-cadastre GIS and its intended spatial-information functions."},
+    {"url": "https://nsdi.gov.ua/docs/api/v2/gis.html", "observation": "Official NSDI WFS documentation describing a parcels layer, EPSG:4326 and bbox/count/propertyName parameters; documentation example only, not a verified city response."},
+    {"url": "https://mykolaivska.land.gov.ua/kadastr-i-reiestratsiia/natsionalna-kadastrova-systema/", "observation": "Official regional StateGeoCadastre explanation of national cadastral-map and parcel-registration functions."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Mykolaiv Ukraine official cadastral map parcel GIS land cadastre public map", "result": "Official municipal geoportal, regional StateGeoCadastre and national NSDI documentation found; no verified parcel response.", "method": "Separate English-language web search and first-party source review.", "scope": "Identify official local custody and safe anonymous parcel geometry."},
+    {"language": "Ukrainian", "query": "Миколаїв офіційна кадастрова карта земельні ділянки геопортал", "result": "Official municipal geoportal and regional StateGeoCadastre pages found; municipal land-parcel register route returned 404.", "method": "Separate Ukrainian-language web search and first-party source review.", "scope": "Cross-check local registry custody and current public map route."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel identity if returned", "geometry", "CRS", "response count", "service/schema metadata"],
+  "attempts": [
+    {"url": "https://mbase.mkrada.gov.ua/home", "method": "GET", "httpStatus": 200, "result": "Municipal geoportal fetched; map config exposed EPSG:4326 export and city extent; named land-parcel register link identified."},
+    {"url": "https://mbase.mkrada.gov.ua/register/3262621605964022967", "method": "GET", "httpStatus": 404, "result": "Named municipal land-parcel register route returned portal 404; no fields or geometry."},
+    {"url": "https://nsdi.gov.ua/api/v2/wfs/default/parcels?REQUEST=GetCapabilities", "method": "GET", "httpStatus": 404, "result": "Documented-style public WFS route at guessed API base returned NSDI 404; no capabilities."},
+    {"url": "https://nsdi.gov.ua/api/v2/geo/parcel?lat=46.9596870954058&lon=32.0172558160937", "method": "GET", "httpStatus": 404, "result": "Exact immutable WUP-point coordinate route at guessed API base returned NSDI 404; not interpreted as absence."}
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying safe anonymous response was available.",
+  "coverageAssessment": {"claimedScope": "Municipal urban-cadastre portal for Mykolaiv and national cadastral/NSDI services as described by official sources.", "verifiedOpenScope": "Portal existence and register link only; parcel dataset, schema, response, and citywide completeness were not verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "The current municipal register/API route may differ from the link exposed in the landing page; no inference of parcel absence is made from the 404 responses.",
+  "packetStatus": "complete_research_only"
+}

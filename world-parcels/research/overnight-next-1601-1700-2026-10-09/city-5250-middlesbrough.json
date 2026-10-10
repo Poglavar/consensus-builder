@@ -1,0 +1,114 @@
+{
+  "cityCode": 5250,
+  "queueRank": 1637,
+  "name": "Middlesbrough",
+  "country": "United Kingdom",
+  "countryCode": "GB",
+  "point": [54.560753928282, -1.26260886474088],
+  "population2025": 349436,
+  "population2025k": 349.436,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "site:middlesbrough.gov.uk GIS map parcels cadastral Middlesbrough official; HM Land Registry INSPIRE Middlesbrough Borough Council download",
+        "result": "Found Middlesbrough Council's official publication scheme, which identifies local land-charges search procedures and says database/GIS mapping data is available by request. Found HM Land Registry's official INSPIRE download and dataset pages; the indexed download page lists a Middlesbrough Borough Council GML partition.",
+        "actualResultUrls": [
+          "https://www.middlesbrough.gov.uk/open-data-and-foi/publication-scheme/lists-and-registers/",
+          "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+          "https://use-land-property-data.service.gov.uk/datasets/inspire",
+          "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data"
+        ]
+      },
+      {
+        "language": "English (UK local-language attempt)",
+        "query": "Middlesbrough Council official local land charges register parcel search GIS mapping data; HM Land Registry index polygons Middlesbrough",
+        "result": "English is the United Kingdom's local/native research language. Separate wording again located the first-party Middlesbrough Council register/procedure page and HM Land Registry's first-party INSPIRE documentation.",
+        "actualResultUrls": [
+          "https://www.middlesbrough.gov.uk/open-data-and-foi/publication-scheme/lists-and-registers/",
+          "https://use-land-property-data.service.gov.uk/datasets/inspire",
+          "https://www.gov.uk/government/publications/hm-land-registry-data/public-data"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Middlesbrough Council is evidenced as the local land-charges registry/procedure custodian and states that database/GIS mapping data is available by request. This is a local registry/procedure indication, not evidence that the council publishes an anonymous cadastral parcel API. HM Land Registry is the national cadastral/land-registration custodian for England and Wales and publishes the relevant INSPIRE polygon partition.",
+  "officialSources": [
+    {
+      "url": "https://www.middlesbrough.gov.uk/open-data-and-foi/publication-scheme/lists-and-registers/",
+      "observation": "Official Middlesbrough Council page lists Local Land Charges register searches, and separately identifies database/GIS mapping data as available by application/request; no public parcel endpoint is exposed on the page."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+      "observation": "HM Land Registry download page lists separate INSPIRE GML files by local authority, including Middlesbrough Borough Council, according to the indexed first-party page."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire",
+      "observation": "HM Land Registry describes INSPIRE polygons as indicative extents/positions of registered freehold properties, with a unique Land Registry-INSPIRE ID, monthly publication, and GML delivery."
+    },
+    {
+      "url": "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data",
+      "observation": "GOV.UK guidance confirms the HM Land Registry INSPIRE dataset covers England and Wales, contains indicative registered-property polygons, and is accessed as GML through the current service."
+    }
+  ],
+  "source": {
+    "sourceId": "hm-land-registry-inspire-index-polygons-middlesbrough-borough-council",
+    "name": "INSPIRE Index Polygons",
+    "operator": "HM Land Registry",
+    "endpoint": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+    "method": "First-party web download page; GML partition by local authority",
+    "responseFormat": "GML",
+    "nativeCrs": "Not observed in an anonymous parcel response during this attempt; dataset documentation describes GIS/GML delivery.",
+    "queryOutputCrs": null,
+    "nativeIdentity": "Land Registry-INSPIRE ID (dataset-documented stable polygon identity); title number was not requested or retained.",
+    "nativeFieldMapping": {
+      "id": "Land Registry-INSPIRE ID",
+      "geometry": "INSPIRE polygon geometry"
+    },
+    "compositeKeyProvenance": null,
+    "scope": "England and Wales INSPIRE registered-freehold subset, partitioned by local authority; Middlesbrough Borough Council file is listed. Citywide completeness for the WUP city label and current parcel availability were not independently verified from a downloaded file."
+  },
+  "requests": [
+    {
+      "url": "https://www.middlesbrough.gov.uk/open-data-and-foi/publication-scheme/lists-and-registers/",
+      "method": "GET via first-party discovery",
+      "httpStatus": 200,
+      "outcome": "Official council page returned. It documents local land-charges registry searches and says database/GIS mapping data is available by request; no anonymous cadastral parcel API was exposed."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire",
+      "method": "GET via first-party discovery",
+      "httpStatus": 200,
+      "outcome": "Official HM Land Registry dataset documentation was available through indexed first-party content; it describes monthly GML INSPIRE polygon publication and the safe polygon identity concept."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+      "method": "GET anonymous",
+      "httpStatus": 302,
+      "outcome": "Direct fetch redirected to the same URL and reached a Cloudflare challenge/redirect loop after cookies; no login, CAPTCHA bypass, credentials, or private token was attempted. Indexed first-party content confirms the Middlesbrough Borough Council GML entry, but no unchanged GML or bounded geometry response was obtained."
+    },
+    {
+      "url": "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data",
+      "method": "GET via first-party discovery",
+      "httpStatus": 200,
+      "outcome": "GOV.UK guidance returned and confirmed the current HM Land Registry service and GML access route."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "safeFieldAllowlist": ["Land Registry-INSPIRE ID", "geometry"],
+  "unsafeFieldsNotRequested": ["title number", "owner", "address", "contact", "titleholder", "tax", "account", "price", "legal register contents"],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "sampleFile": null,
+  "coverageAssessment": {
+    "claimedScope": "HM Land Registry INSPIRE registered-freehold index polygons for England and Wales, with a Middlesbrough Borough Council local-authority partition listed by the official download service.",
+    "verifiedOpenScope": "Official documentation and indexed listing were verified, but no anonymous download or parcel geometry was retrieved in this attempt.",
+    "countrywideVerified": false
+  },
+  "resultCategory": "documented_public_source_no_geometry_retrieved",
+  "runtimeReadiness": "held_serial_review",
+  "remainingUncertainty": "The indexed listing is not a downloaded parcel response. The direct endpoint encountered a redirect/Cloudflare challenge, so CRS, exact native schema, polygon validity, and a safe bounded ID-plus-geometry response remain unverified. Middlesbrough Council's local land-charges/GIS procedure is evidenced, but no public local cadastral service was found. No inference is made from the absence of an exact-point or map query. Packet completion is not source integration or admission."
+}

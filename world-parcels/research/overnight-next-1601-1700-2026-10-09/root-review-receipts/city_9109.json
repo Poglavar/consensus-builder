@@ -1,0 +1,17 @@
+{
+  "taskId": "city:9109",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-9109-etah.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/etah-service-review.json",
+    "tmp/valhalla-parcel-research/etah/5c8c493669ea.html",
+    "tmp/valhalla-parcel-research/etah/Levels_stateCode.txt",
+    "tmp/valhalla-parcel-research/etah/Levels_levelLabels.txt",
+    "tmp/valhalla-parcel-research/etah/main-76RVRF3Z.js"
+  ],
+  "checkedAt": "2026-10-10T12:17:39Z",
+  "reason": "The packet matches the immutable WUP rank 1664 Etah identity and records English and Hindi searches. Cached official Etah district dashboard and Bhu-Naksha configuration substantiate custodian and public map routes. The reported selected map extent is zero, with no retained original polygon/ID response or independently qualified adapter. A zero extent is not citywide absence; native ID reads, paging, 13 cells, metric GEOS checks, source binding, and headed Details evidence are missing.",
+  "runtimeAdmission": false
+}

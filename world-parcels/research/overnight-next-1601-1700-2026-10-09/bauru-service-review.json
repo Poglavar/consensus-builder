@@ -1,0 +1,35 @@
+{
+  "cityRecord": "city-6033-bauru.json",
+  "cityCode": 6033,
+  "queueRank": 1630,
+  "name": "Bauru",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "sourceReview": "A first-party Prefeitura Municipal de Bauru geoprocessing page links the municipal Geopixel Cidades viewer, and the official SEPLAN digital-maps page identifies a cadastral map and the current platform. The viewer's public configuration exposed a Bauru-specific server, but anonymous service checks did not expose parcel schema or geometry.",
+  "queryReview": {
+    "englishDiscovery": "Completed; official municipal geoprocessing and cadastral-map pages found.",
+    "localLanguageDiscovery": "Completed in Brazilian Portuguese; the same first-party municipal GIS/cadastral sources and land-subdivision procedure page were found.",
+    "exactPoint": [-22.3181273663533, -49.074484645653],
+    "bboxLonLat": null,
+    "returned": 0,
+    "ids": [],
+    "geometry": null,
+    "mapExtentOrPointMiss": null
+  },
+  "requestOutcomes": "Official municipal page and viewer shell/configuration returned 200. Anonymous profile metadata returned 401. Anonymous public-login checks returned 500 for POST and GET. No parcel query was attempted after the service remained inaccessible without authentication; this is not evidence of parcel absence.",
+  "safeFieldAllowlist": ["native parcel identity if later documented", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "retainedSample": null,
+  "scopeLimits": [
+    "Municipal custody is evidenced, but no public parcel layer/schema/CRS/native identity was verified.",
+    "The official cadastral PDF is not a safe substitute for a bounded native parcel feature response and no polygon was retained.",
+    "No owner, titleholder, address, contact, tax/account, legal/title, or personal fields were requested or retained.",
+    "No authentication, credentials, private token, CAPTCHA/Cloudflare bypass, or TLS exception was used.",
+    "Runtime readiness remains held pending independent serial adapter review."
+  ],
+  "uncertainty": "No claim is made about exact-point parcel presence, citywide coverage, layer availability, legal authority, ownership, tax records, or service completeness. A public map extent miss or login wall would not establish absence.",
+  "runtimeReadiness": "held_serial_review"
+}

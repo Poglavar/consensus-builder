@@ -1,0 +1,35 @@
+{
+  "cityRecord": "city-1347-chimbote.json",
+  "cityCode": 1347,
+  "queueRank": 1635,
+  "name": "Chimbote",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "sourceReview": "First-party sources evidence Municipalidad Provincial del Santa/COFOPRI cadastral custody and the national SUNARP BGR parcel viewer. The BGR requires identity/CAPTCHA access and timed out anonymously; no public parcel geometry, schema, CRS, or stable native identity was verified. No sample GeoJSON was retained.",
+  "queryReview": {
+    "englishDiscovery": "Completed; official SUNARP, MEF, GeoPeru/IDEP, and BGR sources found.",
+    "localLanguageDiscovery": "Completed in Spanish; first-party Municipalidad Provincial del Santa and COFOPRI cadastral custody/procedure sources found.",
+    "exactPoint": [-9.09305568649011, -78.5620620979407],
+    "bboxLonLat": null,
+    "returned": 0,
+    "ids": [],
+    "geometry": null,
+    "mapExtentOrPointMiss": null
+  },
+  "requestOutcomes": "Official SUNARP service documentation and municipal pages returned 200. Anonymous GET to the official BGR viewer timed out after 20 seconds; anonymous SICAR GET timed out after 15 seconds. No login, credentials, CAPTCHA interaction, private token, TLS exception, or bypass was used. No parcel query was attempted after access remained unavailable; this is not evidence of citywide absence.",
+  "safeFieldAllowlist": ["native parcel identity if later documented", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "retainedSample": null,
+  "scopeLimits": [
+    "Local municipal/COFOPRI cadastral custody is evidenced, but no open parcel layer/schema/CRS/native identity was verified.",
+    "The official MEF cadastral plan is referential urban land-value cartography, not a bounded native parcel feature response, and was not converted into polygons.",
+    "No owner, titleholder, address, contact, tax/account, legal/title, or personal fields were requested or retained.",
+    "No authentication, credentials, private token, CAPTCHA/Cloudflare bypass, or TLS exception was used.",
+    "Runtime readiness remains held pending independent serial adapter review."
+  ],
+  "uncertainty": "No claim is made about exact-point parcel presence, citywide coverage, map extent, geometry availability, or legal/title completeness. A timeout, login wall, or unavailable UI does not establish absence.",
+  "runtimeReadiness": "held_serial_review"
+}

@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-8257-colina-de-laranjeiras.json",
+  "purpose": "Document first-party discovery, current viewer/service inspection, bounded anonymous requests, safe-field limits, and uncertainty.",
+  "assessment": "Serra's official GeoSerra portal is a current municipal map service. Its BaseMap_SerraES ArcGIS REST service exposes three Parcelamento de Solo polygon layers (IDs 213, 208, 203), but all tested anonymous queries returned ArcGIS error 500. No parcel geometry was retained.",
+  "registryAssessment": "A local municipal geospatial custodian is evidenced by Serra's official GeoSerra publication and service description. registryFound remains null because the evidence does not establish a successfully queryable public cadastral registry response or a qualifying parcel record.",
+  "officialPrimarySources": [
+    {"url": "https://mapas.serra.es.gov.br/portal/apps/sites/#/portal-serra-em-mapas", "observation": "Official Serra em Mapas/GeoSerra portal entry point."},
+    {"url": "https://mapas.serra.es.gov.br/server/rest/services/Hosted/BaseMap_SerraES/MapServer", "observation": "Official ArcGIS MapServer metadata lists Parcelamento de Solo layers 213, 208, and 203."},
+    {"url": "https://mapas.serra.es.gov.br/server/rest/services/Hosted/BaseMap_SerraES/MapServer/213", "observation": "Official layer metadata identifies a polygon Parcelamento de Solo layer; description says lot layers are divided by district for compatibility/performance with the former CTM-Geo system."},
+    {"url": "https://homologacaoportal.serra.es.gov.br/servicos/detalhes/402", "observation": "Municipal service description identifies the map portal as a municipal cartographic-information WebGIS and names the municipal geoprocessing department."},
+    {"url": "https://www.serra.es.gov.br/noticias/conhecer-a-serra-ficou-mais-facil-mapas-e-informacoes-do-municipio-ganham-nova-versao", "observation": "Official municipal announcement describes GeoSerra 2.1 and says the map includes lots and buildings."}
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://mapas.serra.es.gov.br/portal/apps/sites/#/portal-serra-em-mapas",
+    "observedTechnology": "ArcGIS Portal/REST; official announcement says GeoSerra 2.1 uses ArcGIS Experience Builder.",
+    "observedControls": ["municipal map portal", "cartographic layers", "lot/parcel layer metadata", "measurement tools described by municipality"],
+    "configurationEvidence": "https://mapas.serra.es.gov.br/server/rest/services/Hosted/BaseMap_SerraES/MapServer",
+    "nativeFieldNames": ["OBJECTID", "PROCESSO", "NUMERACAO_OFICIAL", "TX_LOTE_LOTEAMENTO_OLD", "TX_QUADRA_LOTEAMENTO_OLD"],
+    "sourceFieldMapping": "Layer 213 metadata exposed OBJECTID and cadastral/lot-label fields. No field was accepted as a retained stable native parcel identity because no feature response was obtained; the other fields were not retained as data.",
+    "compositeKeyProvenance": null,
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "CPF/CNPJ", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://www.google.com/search?q=Colina+de+Laranjeiras+Serra+ES+cadastral+parcel+map+viewer+land+registry+Brazil+official+municipal+GIS", "method": "SEARCH", "normalTlsVerification": true, "result": "English discovery located official GeoSerra and municipal parcel-layer references."},
+    {"url": "https://www.google.com/search?q=Colina+de+Laranjeiras+Serra+ES+cadastro+imobili%C3%A1rio+mapa+parcelas+prefeitura+geoserver", "method": "SEARCH", "normalTlsVerification": true, "result": "Portuguese discovery located the official municipal GeoSerra service and BaseMap_SerraES endpoint."},
+    {"url": "https://mapas.serra.es.gov.br/server/rest/services/Hosted/BaseMap_SerraES/MapServer?f=pjson", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200; service metadata returned currentVersion 11.1 and listed parcel/lots, quadra, bairro, and other layers."},
+    {"url": "https://mapas.serra.es.gov.br/server/rest/services/Hosted/BaseMap_SerraES/MapServer/213?f=pjson", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200; layer metadata returned polygon geometry, Web Mercator extent, maxRecordCount 1000, and native field names. No feature data retained."},
+    {"url": "https://mapas.serra.es.gov.br/server/rest/services/Hosted/BaseMap_SerraES/MapServer/213/query", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 with ArcGIS error 500 for where=1=1, returnGeometry=false, outFields=OBJECTID, resultRecordCount=1."},
+    {"url": "https://mapas.serra.es.gov.br/server/rest/services/Hosted/BaseMap_SerraES/MapServer/213/query", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 with ArcGIS error 500 for exact WUP point [-20.2029906373717,-40.2605205020785] submitted as a 4326 point with returnGeometry=true."},
+    {"url": "https://mapas.serra.es.gov.br/server/rest/services/Hosted/BaseMap_SerraES/MapServer/213/query", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 with ArcGIS error 500 for the same point converted to service Web Mercator WKID 102100."},
+    {"url": "https://mapas.serra.es.gov.br/server/rest/services/Hosted/BaseMap_SerraES/MapServer/208/query", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 with ArcGIS error 500 for a bounded nonspatial probe."},
+    {"url": "https://mapas.serra.es.gov.br/server/rest/services/Hosted/BaseMap_SerraES/MapServer/203/query", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 with ArcGIS error 500 for a bounded nonspatial probe."},
+    {"url": "https://mapas.serra.es.gov.br/server/rest/services/Hosted/BaseMap_SerraES/MapServer/212/query", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 with ArcGIS error 500 for neighboring Quadra layer probe; not treated as parcel absence."},
+    {"url": "https://mapas.serra.es.gov.br/server/rest/services/Hosted/BaseMap_SerraES/MapServer/211/query", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 with ArcGIS error 500 for neighboring Bairro layer probe; not treated as parcel absence."},
+    {"url": "https://mapas.serra.es.gov.br/server/rest/services/Hosted/BaseMap_SerraES/MapServer/214/query", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 with ArcGIS error 500 for neighboring Arruamento layer probe; not treated as parcel absence."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying anonymous parcel feature response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "query": "Exact-point and bounded/nonspatial ArcGIS queries were attempted against first-party layers and all returned ArcGIS error 500."},
+  "coverageAssessment": {"claimedScope": "Serra municipal GeoSerra portal and official BaseMap_SerraES service.", "verifiedOpenScope": "Service and layer metadata only; no successful feature response.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "uncertainty": "ArcGIS query failures may reflect current service configuration, source/database failure, request incompatibility, or access policy. They do not establish citywide absence. The exact WUP point was used without shifting.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous ID-plus-complete-geometry response; packet does not qualify an adapter or enable runtime."}
+}

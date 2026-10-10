@@ -1,0 +1,12 @@
+{
+  "taskId": "city:9067",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-9067-morena.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/morena-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T16:59:32Z",
+  "reason": "The first-party District Morena land-record page supports local administrative custody and identifies MP Bhulekh. Reported MP Bhulekh and Morena GIS timeouts leave public parcel geometry unresolved. No native-ID polygon response or independent adapter, paging, 13-cell, metric GEOS, binding, or headed Details proof exists. The Hindi URL in the review search list contains a transcription error; the city packet has the correct route."
+}

@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "parcel_service_review",
+  "checkedAt": "2026-10-09",
+  "cityCode": 11448,
+  "queueRank": 1380,
+  "cityRecord": "city-11448-dongtai.json",
+  "city": "Dongtai",
+  "country": "China",
+  "countryCode": "CN",
+  "wupPoint": [32.8479794794377, 120.316910289902],
+  "status": "held",
+  "registryFound": true,
+  "registryBasis": "A first-party Dongtai municipal government page identifies the local Natural Resources and Planning Bureau as the registration, cadastral-survey, real-estate-surveying, and public geographic-information custodian. An official procurement record identifies the Tianditu·Dongtai public geographic-information platform. These establish local custody and a public-platform reference, not open machine-readable parcel geometry.",
+  "assessment": "Dongtai's official registry and mapping responsibilities are evidenced, but current anonymous requests did not produce a parcel ID, schema, CRS, or polygon. No GeoJSON sample is retained and runtime readiness remains held.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false,
+    "exactPointHitTest": false
+  },
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Dongtai China official cadastral parcel map public GIS land registration natural resources",
+      "outcome": "Official Dongtai bureau page and official Tianditu·Dongtai procurement record found; no anonymous safe parcel response.",
+      "actualResultUrls": ["https://www.dongtai.gov.cn/art/2026/7/7/art_24447_4436513.html", "https://czj.yancheng.gov.cn/ycczjzfcg/tempfile/c757b88f5a774d07a01be95a76a10697.pdf"]
+    },
+    {
+      "language": "native/local",
+      "script": "Simplified Chinese",
+      "query": "东台市 地籍图 不动产登记 地图 GIS 自然资源和规划局 官方",
+      "outcome": "官方页面确认登记、权籍调查、测绘和公共地理信息职责；官方采购确认“天地图·东台”平台；未取得匿名安全宗地编号和几何。",
+      "actualResultUrls": ["https://www.dongtai.gov.cn/art/2026/7/7/art_24447_4436513.html", "https://czj.yancheng.gov.cn/ycczjzfcg/tempfile/c757b88f5a774d07a01be95a76a10697.pdf", "https://www.webmap.cn/store.do?method=store&storeId=1552"]
+    }
+  ],
+  "requestOutcomes": [
+    {"url": "https://www.dongtai.gov.cn/", "method": "GET; anonymous curl", "outcome": "HTTP 200; official portal HTML did not expose a parcel viewer or endpoint."},
+    {"url": "https://www.dongtai.gov.cn/art/2026/7/7/art_24447_4436513.html", "method": "GET via official search/open", "outcome": "HTTP 200; official custody and service responsibilities reviewed, no parcel schema or geometry."},
+    {"url": "https://czj.yancheng.gov.cn/ycczjzfcg/tempfile/c757b88f5a774d07a01be95a76a10697.pdf", "method": "GET via official search/open", "outcome": "HTTP 200; official Tianditu·Dongtai platform reference confirmed, no parcel response."},
+    {"url": "https://www.webmap.cn/store.do?method=store&storeId=1552", "method": "GET; anonymous curl", "outcome": "HTTP 502; viewer/configuration could not be inspected; no bypass or login attempted."}
+  ],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "crs": null, "exactWupPointTest": "Not completed; exact WUP point preserved and not shifted."},
+  "safeFieldAllowlist": ["safe native parcel identifier only if publicly returned", "geometry", "source CRS", "public layer/schema metadata", "HTTP status/content type"],
+  "coverageAssessment": {"claimedScope": "Official Dongtai Natural Resources and Planning Bureau and Tianditu·Dongtai platform reference.", "verifiedOpenScope": "Local registration/map custody and platform existence only; no anonymous parcel geometry.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "qualification": {"verifiedParcelGeometry": false, "verifiedNativeIdentity": false, "runtimeReadiness": "held"},
+  "uncertainty": "The current public platform may expose map features through a viewer or protected route, but this research did not log in and did not request owner, address, titleholder, tax, contact, or other unsafe data. Gateway failure and no anonymous response do not prove citywide absence.",
+  "conclusion": "No adapter qualification or GeoJSON sample is justified on attempt 1 of 3."
+}

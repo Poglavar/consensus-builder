@@ -1,0 +1,14 @@
+{
+  "taskId": "city:2433",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-queue-extension-1301-2300-verification-2026-10-09.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-2433-changji-sanji.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/changji-sanji-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T18:00:56.810355Z",
+  "reason": "Official Changji registration custody is independently supported by the Xinjiang Natural Resources article dated 2024-09-11 and its separately indexed 2024-07-09 platform article. The July URL recorded in the worker packet has the wrong article identifier; the actual official page is 3d5e0ef7e0bd46d5b873721b3726671c.shtml. This does not establish anonymous parcel geometry. No native-ID feature response, sample, forced paging, 13-cell proof, metric GEOS checks, source binding, or headed details-panel proof exists. Hold runtime admission; no citywide absence inference."
+}

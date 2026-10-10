@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-3234-sosnowiec.json",
+  "cohort": "overnight-next-1801-1900-2026-10-09",
+  "purpose": "Document Sosnowiec local cadastral custody and bounded anonymous official-service checks without treating a bounded response as citywide completeness.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "assessment": "Sosnowiec has evidenced local cadastral custody through the official municipal Wydział Geodezji i Kartografii and a city-hosted public WFS. The current service exposes ms:dzialki in EPSG:2177 with EPSG:4326 support; its schema exposes ID_DZIALKI and geometry, and a bounded anonymous response returned three polygons. Runtime qualification remains held.",
+  "searchQueries": [
+    {"language": "English", "query": "Sosnowiec Poland official cadastral map parcels GIS geoportal ewidencja land registry WFS", "actualResultUrls": ["https://www.sosnowiec.pl/2023/07/aktualnosci/teraz-wniosek-o-dane-zgromadzone-w-zasobie-geodezyjnym-zlozysz-przez-profil-zaufany-lub-konto-bankowe/", "https://sosnowiec.webewid.pl:9443/iip/ows", "https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/"]},
+    {"language": "Polish", "query": "Sosnowiec oficjalny geoportal mapa katastralna działki ewidencja gruntów WFS Wydział Geodezji i Kartografii", "actualResultUrls": ["https://www.sosnowiec.pl/2023/07/aktualnosci/teraz-wniosek-o-dane-zgromadzone-w-zasobie-geodezyjnym-zlozysz-przez-profil-zaufany-lub-konto-bankowe/", "https://sosnowiec.webewid.pl:9443/iip/ows", "https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/"]}
+  ],
+  "attempts": ["Retrieved official municipal page and confirmed the municipal geodesy/cartography custodian.", "Retrieved verified-TLS WFS GetCapabilities; identified ms:dzialki, EPSG:2177 and alternate EPSG:4326.", "Retrieved verified-TLS DescribeFeatureType; identified geometry and ID_DZIALKI while excluding unsafe fields from retention.", "Executed a bounded anonymous GetFeature request and retained exactly three full parcel polygons with only canonical native id properties.", "Retrieved official GUGiK KIEG capabilities for national context; did not retain WMS imagery or unsafe data.", "No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, coordinate shift, or contact was used."],
+  "geometryEvidence": {"verified": true, "sampleCount": 3, "sampleFile": "sosnowiec-parcel-samples.geojson", "nativeId": "ID_DZIALKI", "nativeIdField": "ID_DZIALKI", "exactWupPointTest": "The unchanged WUP point was used to define the bounded vicinity. The returned polygons are nearby sample evidence only; no exact-point hit/miss or citywide absence is inferred.", "identityProvenance": "ID_DZIALKI was returned by the official WFS schema and feature response; retained GeoJSON properties contain only id."},
+  "safeFieldAllowlist": ["ID_DZIALKI", "geometry", "CRS/layer metadata"],
+  "nextStep": "Hold for serial review; independently qualify any adapter before runtime admission.",
+  "runtimeReadiness": "held_quality_review",
+  "remainingUncertainty": "Bounded anonymous evidence does not establish citywide completeness or exact-point inclusion. The service response timestamp was 2026-10-10, but no independent freshness or adapter qualification was performed."
+}

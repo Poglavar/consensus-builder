@@ -1,0 +1,21 @@
+{
+  "taskId": "city:820",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-820-franceville.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/franceville-service-review.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/root-review-receipts/source-evidence/city_820-root-live-check.json"
+  ],
+  "checkedAt": "2026-10-10T19:53:40.721217Z",
+  "reason": "Franceville: packet reports city-filtered official terrain records, but the fresh first-party request returned HTTP 406 and no public parcel geometry, CRS, or adapter evidence was established.",
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

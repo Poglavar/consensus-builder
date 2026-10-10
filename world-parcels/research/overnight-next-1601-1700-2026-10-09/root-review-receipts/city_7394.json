@@ -1,0 +1,20 @@
+{
+  "taskId": "city:7394",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-7394-francisco-morato.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/francisco-morato-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T12:03:57Z",
+  "reason": "Municipal fiscal cadastre custody is evidenced, but no anonymous safe native-ID polygon response was retrieved. The municipal TLS failure and generic Sinter consultation shell do not establish citywide absence.",
+  "qualificationGaps": [
+    "fresh native-ID parcel reads",
+    "forced paging",
+    "13 bounded cells",
+    "metric GEOS validity and overlap checks",
+    "source binding",
+    "headed Details-panel verification"
+  ]
+}

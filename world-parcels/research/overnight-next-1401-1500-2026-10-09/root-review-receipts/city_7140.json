@@ -1,0 +1,14 @@
+{
+  "taskId": "city:7140",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-queue-extension-1301-2300-verification-2026-10-09.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-7140-bandar-abbas.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/bandar-abbas-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T18:00:56.811857Z",
+  "reason": "The first-party Iranian registration and Shamim endpoints timed out in the bounded worker checks and in independent review. The Hormozgan listing is third-party, so local registry custody remains unresolved. No parcel response or sample, native IDs, forced paging, 13-cell proof, metric GEOS checks, source binding, or headed details-panel proof exists. Hold runtime admission; timeout is not absence."
+}

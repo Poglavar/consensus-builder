@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-1245-gona-ves.json",
+  "purpose": "Document first-party registry/map discovery, viewer/service evidence, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "ONACA is evidenced as Haiti's national cadastral custodian. Public SIA and CNIGS/HaitiData routes were inspected, but only administrative/thematic geography was verified; no safe anonymous parcel ID-plus-polygon response was obtained.",
+  "registryAssessment": "MTPTC's official institutional page identifies ONACA and assigns it responsibility for establishing the general cadastre. This is national custody evidence, not proof of a Gonaïves local registry office or citywide digital parcel coverage.",
+  "officialPrimarySources": [
+    {"url": "https://mail.mtptc.gouv.ht/accueil/page_oast.html", "observation": "Official MTPTC page identifies ONACA and its responsibility for establishing Haiti's general cadastre."},
+    {"url": "https://www.mtptc.gouv.ht/media/upload/doc/publications/OFFICE%20NATIONAL%20DU%20CADASTRIE.pdf", "observation": "Official ONACA activity material describes cadastral production in intervention areas and limitations of national coverage; it does not provide a public Gonaïves parcel API."},
+    {"url": "https://cnigs.ht/haitidata/", "observation": "Official CNIGS page describes HaitiData as a public GeoNode-based geospatial data platform."},
+    {"url": "https://sia-haiti.ht/geo/carte/", "observation": "Official SIA Haïti map shell exposes department, commune, section, watershed, river, and city layers."},
+    {"url": "https://ihsi.gouv.ht/statistiques/banque_de_donnee_geographique", "observation": "Official IHSI geographic database page exposes thematic map images, including Artibonite, not parcel geometry."}
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://sia-haiti.ht/geo/carte/",
+    "observedTechnology": "Leaflet public map with JSON endpoints for administrative boundaries; CNIGS HaitiData advertises GeoNode and exposes a public GeoServer WFS capabilities document.",
+    "observedControls": ["OpenStreetMap", "openTopoMap", "Departement", "Commune", "Section", "Grand bassin versant", "Sous bassin versant", "Rivieres", "Ville"],
+    "schemaAndCrs": "SIA boundary endpoints return GeoJSON; returned geometry coordinates are longitude/latitude. HaitiData WFS capabilities advertise EPSG:4326 for relevant public layers. No parcel schema or parcel CRS was verified.",
+    "sourceFieldMapping": "SIA commune response uses properties.nom and feature id; Gonaives was feature id 104. These are administrative identifiers and were not retained as parcel identities.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://sia-haiti.ht/geo/carte/", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 public Leaflet viewer retrieved; current JavaScript inspected. It references /geo/geojson/departement, /geo/geojson/commune, and /geo/geojson/section only; no parcel route was present."},
+    {"url": "https://sia-haiti.ht/geo/geojson/commune", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 GeoJSON administrative response; Gonaives is feature id 104. This is a commune MultiPolygon, not a cadastral parcel response."},
+    {"url": "https://sia-haiti.ht/geo/geojson/departement", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 GeoJSON department boundaries; administrative only."},
+    {"url": "https://sia-haiti.ht/geo/geojson/section", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 GeoJSON section boundaries; administrative only."},
+    {"url": "https://haitidata.org/geoserver/ows?service=WFS&request=GetCapabilities", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 WFS capabilities; public feature list inspected. No layer name matching parcel, cadastre, lot, or parcelle was identified; no GetFeature request was made."},
+    {"url": "https://haitidata.org/api/v2/resources/", "method": "GET", "normalTlsVerification": true, "result": "HTTP 404; route not available."},
+    {"url": "https://ihsi.gouv.ht/statistiques/banque_de_donnee_geographique", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200; official thematic map page retrieved. It provides raster map links, not cadastral parcel geometry."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous cadastral parcel response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "query": "No parcel GetFeature query was submitted because the public WFS capabilities did not expose a parcel/cadastre layer and SIA exposed only administrative layers."},
+  "coverageAssessment": {"claimedScope": "National ONACA cadastral custody plus public CNIGS/HaitiData and SIA distribution channels.", "verifiedOpenScope": "Administrative boundaries and WFS service metadata only; no parcel geometry.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "A non-public, offline, or separately hosted ONACA/municipal dataset may exist. SIA administrative geometry and HTTP 404/absence of a WFS layer are not evidence of citywide cadastral absence.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous native parcel ID plus complete polygon response; packet does not qualify an adapter or enable runtime."}
+}

@@ -1,0 +1,115 @@
+{
+  "cityCode": 5854,
+  "queueRank": 1606,
+  "name": "McAllen",
+  "country": "United States of America",
+  "countryCode": "US",
+  "point": [26.2212316871423, -98.2340869585896],
+  "population2025": 355331,
+  "population2025k": 355.331,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "McAllen Texas official cadastral parcel GIS map ArcGIS Hidalgo County parcels site:hidalgocad.org OR site:co.hidalgo.tx.us OR site:mcallen.net",
+        "result": "Found the official City of McAllen GIS portal and its ParcelEditing ArcGIS service; the search result identified a McAllen parcel map and polygon layer.",
+        "actualResultUrls": [
+          "https://gismap.mcallen.net/",
+          "https://gismap.mcallen.net/publication/rest/services/ParcelEditing/MapServer/11",
+          "https://gismap.mcallen.net/publication/rest/services/ParcelEditing/MapServer/info/iteminfo"
+        ]
+      },
+      {
+        "language": "English (local-language attempt)",
+        "query": "Hidalgo County Texas official parcel viewer GIS property parcels McAllen",
+        "result": "Found the same official McAllen GIS portal and public parcel service; no separate Hidalgo County first-party parcel service was verified in this search.",
+        "actualResultUrls": [
+          "https://gismap.mcallen.net/",
+          "https://gismap.mcallen.net/publication/rest/services/ParcelEditing/MapServer/13"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The City of McAllen GIS Division's official public ArcGIS service exposes a McAllen Parcels polygon layer and returned bounded parcel geometry near the exact WUP point.",
+  "officialSources": [
+    {
+      "url": "https://gismap.mcallen.net/",
+      "observation": "Official City of McAllen GIS portal; its map gallery identifies a Tax Parcel Viewer and the site identifies the city GIS division."
+    },
+    {
+      "url": "https://gismap.mcallen.net/publication/rest/services/ParcelEditing/MapServer/11",
+      "observation": "Official McAllen Parcels Feature Layer; polygon geometry, GeoJSON query support, maxRecordCount 1000, service spatial reference WKID 102100/latestWkid 3857."
+    },
+    {
+      "url": "https://gismap.mcallen.net/publication/rest/services/ParcelEditing/MapServer/info/iteminfo",
+      "observation": "Official item metadata describes the City of McAllen Parcel Map and attributes it to McAllen GIS Division and Esri."
+    }
+  ],
+  "source": {
+    "sourceId": "mcallen-gis-parcelediting-mapserver-11",
+    "name": "McAllen Parcels",
+    "operator": "City of McAllen GIS Division",
+    "endpoint": "https://gismap.mcallen.net/publication/rest/services/ParcelEditing/MapServer/11",
+    "method": "GET ArcGIS REST query",
+    "responseFormat": "GeoJSON",
+    "nativeCrs": "WKID 102100 / latestWkid 3857",
+    "queryOutputCrs": "EPSG:4326",
+    "nativeIdentity": "OBJECTID (safe transport/object identity requested; parcel-owner and address fields were not requested)",
+    "nativeFieldMapping": {
+      "id": "OBJECTID",
+      "geometry": "SHAPE"
+    },
+    "compositeKeyProvenance": null,
+    "scope": "City of McAllen parcel layer; wider citywide completeness, update cadence, and legal/tax-record equivalence were not independently verified."
+  },
+  "requests": [
+    {
+      "url": "https://gismap.mcallen.net/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official GIS portal page was found and described the city's GIS mission and Tax Parcel Viewer."
+    },
+    {
+      "url": "https://gismap.mcallen.net/publication/rest/services/ParcelEditing/MapServer/info/iteminfo",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official item metadata returned; service identified as ParcelEditing and described parcel/address information."
+    },
+    {
+      "url": "https://gismap.mcallen.net/publication/rest/services/ParcelEditing/MapServer/11?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Layer schema returned as polygon Feature Layer with GeoJSON support. Safe schema inspection found OBJECTID, PROP_ID, GEO_ID, PIDN and many unsafe owner/address/value fields; only OBJECTID was requested in the sample query."
+    },
+    {
+      "url": "https://gismap.mcallen.net/publication/rest/services/ParcelEditing/MapServer/11/query?f=geojson&where=1%3D1&geometry=-98.2440869585896%2C26.2112316871423%2C-98.2240869585896%2C26.2312316871423&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&resultRecordCount=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Bounded anonymous query around the exact WUP point returned a GeoJSON FeatureCollection with 3 Polygon features and OBJECTIDs 4664292, 4664303, and 4664345. Full unchanged response is retained only in ignored tmp/valhalla-parcel-research/mcallen/query-11.geojson; no sample GeoJSON was retained in the cohort directory."
+    }
+  ],
+  "verifiedParcelResponse": {
+    "sourceId": "mcallen-gis-parcelediting-mapserver-11",
+    "parcelRecordCount": 3,
+    "geometryType": "Polygon",
+    "closedRings": true,
+    "idField": "OBJECTID",
+    "spatialTestAreaLonLat": [-98.2440869585896, 26.2112316871423, -98.2240869585896, 26.2312316871423],
+    "responseFile": "tmp/valhalla-parcel-research/mcallen/query-11.geojson"
+  },
+  "safeFieldAllowlist": ["OBJECTID", "geometry"],
+  "unsafeFieldsNotRequested": ["LAST_FIRST", "LAST_NAME", "FIRST_NAME", "ADRS_1", "ADRS_2", "OWNERADD_2", "OWNERCITY", "OWNERSTATE", "OWNERZIP", "LEGALDESCR", "LEGAL_2", "LANDVALUE", "IMPROVALUE", "SITUSADDRE", "ASSESSVALUE"],
+  "publicParcelGeometryFound": true,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Official City of McAllen parcel service; exact municipal coverage and completeness were not independently established.",
+    "verifiedOpenScope": "Three bounded parcel polygons were returned near the WUP point. This is local evidence, not a citywide completeness proof.",
+    "countrywideVerified": false
+  },
+  "resultCategory": "verified_public_geometry_city_service",
+  "runtimeReadiness": "held_serial_review",
+  "remainingUncertainty": "The public service is editable and exposes unsafe fields in its schema, so any adapter must request only the safe identity and geometry allowlist. Citywide coverage, refresh semantics, legal authority, and behavior outside the tested 0.02-degree envelope remain unverified. Packet completion is not source integration or admission."
+}

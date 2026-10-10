@@ -1,0 +1,16 @@
+{
+  "taskId": "city:5734",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-5734-elenga.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/elenga-service-review.json",
+    "tmp/valhalla-parcel-research/elenga/dists.json",
+    "tmp/valhalla-parcel-research/elenga/thanas-3093.json",
+    "tmp/valhalla-parcel-research/elenga/main.js"
+  ],
+  "checkedAt": "2026-10-09T10:38:40.427341Z",
+  "reason": "Held. Exact WUP identity and English/Bengali search records checked. Local land-record custody is reported by the official Kalihati/Tangail sources, but the cached viewer district response omits Tangail, tested thana responses are empty, and no Elenga polygon or native ID response exists. This limited route result is not citywide absence. Fresh ID reads, paging, 13 cells, GEOS checks, source binding and headed Details verification are all missing."
+}

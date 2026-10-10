@@ -1,0 +1,67 @@
+{
+  "cityCode": 6296,
+  "queueRank": 1833,
+  "name": "Girza",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "iso3": "EGY",
+  "point": [29.4502276806298, 31.2508723763762],
+  "population2025": 312801,
+  "population2025k": 312.801,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Egypt official cadastral parcel map GIS Girza Giza cadastral service",
+        "result": "Found the official Egyptian Survey Authority (ESA) website describing the authority's cadastral, digital-map, coordinate-certificate and urban cadastral-register work. Its digital-map page says requested GIS layers and projection are supplied through a paid/request procedure; no public anonymous parcel API was identified. An official ESA topographic-map guide includes Giza map coverage but is not parcel geometry.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://www.esa.gov.eg/files/Topographic_Maps.pdf"
+        ]
+      },
+      {
+        "language": "Arabic (local)",
+        "query": "مصر خريطة كادستر جيرزة الجيزة السجل العيني خريطة رسمية",
+        "result": "وجدت الهيئة المصرية العامة للمساحة كمصدر حكومي رسمي للخرائط الرقمية والخرائط الطبوغرافية والسجل العيني الحضري، مع إجراء رسمي لطلب خرائط GIS وتحديد الإسقاط والطبقات. لم أجد خدمة عامة مجهولة الهوية تعيد معرّف قطعة وهندستها لجيرزة؛ خدمة طلب البيان المساحي الحكومية لم تُفتح بسبب فشل التحقق من شهادة TLS.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main2.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://psm.gov.eg/Services/233?serviceName=%D8%B7%D9%84%D8%A8-%D8%A8%D9%8A%D8%A7%D9%86-%D9%85%D8%B3%D8%A7%D8%AD%D9%8A-%D8%B9%D9%86-%D9%82%D8%B7%D8%B9%D8%A9-%D8%A7%D9%84%D8%A3%D8%B1%D8%B6"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "source": {
+    "provider": "Egyptian General Survey Authority (ESA), official cadastral/cartographic authority",
+    "viewerUrl": "https://www.esa.gov.eg/main.aspx",
+    "serviceType": "Official map-production and digital-GIS request procedures; no public parcel feature service confirmed",
+    "parcelLayerConfirmed": false,
+    "nativeIdField": null,
+    "geometryField": null,
+    "safeFieldsRequested": ["stable native parcel ID if publicly exposed", "polygon geometry"],
+    "crs": null,
+    "scopeNote": "ESA is a national custodian. The official Giza map guide evidences map coverage, while the digital-map procedure requires a formal request and does not expose an anonymous parcel endpoint. No local Girza registry office or citywide open parcel layer was independently evidenced."
+  },
+  "verifiedSample": {
+    "count": 0,
+    "exactWupPointQuery": false,
+    "result": "No anonymous parcel ID-plus-geometry response was obtained; no GeoJSON sample retained. This is not evidence of citywide parcel absence.",
+    "requestEvidence": "tmp/valhalla-parcel-research/6296/"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Egyptian national cadastral/cartographic infrastructure with official Giza map references.",
+    "verifiedOpenScope": "Official ESA pages and Giza topographic-map guide retrieved; open parcel schema, CRS, stable ID and citywide geometry access unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; no independently verified parcel adapter candidate",
+  "notes": "Research evidence only; not source integration or runtime admission. Exact WUP point preserved in latitude/longitude order with no coordinate shift. No owner, address, titleholder, contact, tax/account, personal or other unsafe fields were requested or retained."
+}

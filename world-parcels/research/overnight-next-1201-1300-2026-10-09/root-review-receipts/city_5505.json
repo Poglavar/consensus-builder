@@ -1,0 +1,13 @@
+{
+  "taskId": "city:5505",
+  "decision": "held",
+  "reason": "Penza rank 1239, Russian Federation, immutable point and 449851 persons match the hashed WUP roster. The packet records English and Russian searches with result URLs. No original parcel response, native identifier or polygon was retained; bounded official map requests timed out. Registry custody remains unresolved (null), and timeout is not citywide absence. Fresh native-ID reads, forced paging, 13 bounded cells, metric topology checks, source binding and headed Details verification are unevidenced; no admission.",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-5505-penza.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/penza-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T12:04:22.939084Z"
+}

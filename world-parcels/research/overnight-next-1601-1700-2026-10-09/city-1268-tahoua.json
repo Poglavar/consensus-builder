@@ -1,0 +1,107 @@
+{
+  "cityCode": 1268,
+  "queueRank": 1672,
+  "name": "Tahoua",
+  "country": "Niger",
+  "countryCode": "NE",
+  "iso3": "NER",
+  "locId": 562,
+  "point": [14.8883531821617, 5.26348102817872],
+  "population2025": 342253,
+  "population2025k": 342.253,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tahoua Niger cadastral parcel map official cadastre land registry GIS",
+        "result": "First-party discovery identified Niger's Direction Générale des Impôts (DGI) land/cadastre mandate and an official DGI communiqué about a Conservation Foncière et des Hypothèques office in Tahoua. No public anonymous Tahoua parcel viewer, API, schema, CRS, or geometry response was found.",
+        "actualResultUrls": [
+          "https://www.dgi.gouv.ne/index.php/communiques-de-presse/657-communique-relatif-a-l-ouverture-de-bureaux-de-la-conservation-fonciere-et-des-hypotheques-a-maradi-tahoua-et-zinder",
+          "https://impots.gouv.ne/media/telech/PLAN%20STRATEGIQUE%202022-2024_221006_153627.pdf",
+          "https://salb.un.org/en/data/ner"
+        ]
+      },
+      {
+        "language": "French",
+        "query": "Tahoua Niger cadastre carte parcellaire registre foncier officiel",
+        "result": "La recherche en français a retrouvé le communiqué officiel de la DGI annonçant un bureau de la Conservation Foncière et des Hypothèques à Tahoua, ainsi que le plan stratégique de la DGI. Les sources décrivent la tutelle cadastrale et foncière, mais aucun service public anonyme de géométrie parcellaire n'a été vérifié.",
+        "actualResultUrls": [
+          "https://www.dgi.gouv.ne/index.php/communiques-de-presse/657-communique-relatif-a-l-ouverture-de-bureaux-de-la-conservation-fonciere-et-des-hypotheques-a-maradi-tahoua-et-zinder",
+          "https://impots.gouv.ne/media/telech/PLAN%20STRATEGIQUE%202022-2024_221006_153627.pdf",
+          "https://www.impots.gouv.ne/media/telech/ARRETE%20N528%20MF%20DGI%20du%2006%2012%202021.pdf"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.dgi.gouv.ne/index.php/communiques-de-presse/657-communique-relatif-a-l-ouverture-de-bureaux-de-la-conservation-fonciere-et-des-hypotheques-a-maradi-tahoua-et-zinder",
+      "observation": "Official DGI communiqué found by discovery search; its title and indexed result state that Conservation Foncière et des Hypothèques offices opened in Maradi, Tahoua and Zinder from 2019-08-28. The direct GET timed out during this pass, so no additional page content was copied."
+    },
+    {
+      "url": "https://impots.gouv.ne/media/telech/PLAN%20STRATEGIQUE%202022-2024_221006_153627.pdf",
+      "observation": "Official DGI strategic plan states that DGI implements government policy for fiscal, state-domain, cadastral and land matters and administers cadastre and land-conservation services. It also describes obsolete cadastral maps, incomplete land books, non-digitized cadastral plans, and a modernization program focused on Niamey; it does not provide Tahoua parcel geometry."
+    },
+    {
+      "url": "https://salb.un.org/en/data/ner",
+      "observation": "UN-hosted national geospatial information authority page identifies Niger's Institut Géographique National under the Ministry of Urbanism and Housing and exposes administrative-boundary datasets only; it is not evidence of a Tahoua cadastral parcel service."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.dgi.gouv.ne/index.php/communiques-de-presse/657-communique-relatif-a-l-ouverture-de-bureaux-de-la-conservation-fonciere-et-des-hypotheques-a-maradi-tahoua-et-zinder",
+      "method": "GET via web discovery; bounded direct GET",
+      "httpStatus": "search result found; direct web open timed out; curl TLS verification failed due hostname certificate mismatch",
+      "outcome": "The official indexed result was retained as institutional evidence. No TLS bypass was used and no viewer/API route was inferred from the timeout."
+    },
+    {
+      "url": "https://impots.gouv.ne/media/telech/PLAN%20STRATEGIQUE%202022-2024_221006_153627.pdf",
+      "method": "GET via web open",
+      "httpStatus": 200,
+      "outcome": "Official PDF opened and was inspected for DGI mandate and cadastral modernization scope. No parcel features or public map/API configuration were exposed."
+    },
+    {
+      "url": "https://www.impots.gouv.ne/media/telech/ARRETE%20N528%20MF%20DGI%20du%2006%2012%202021.pdf",
+      "method": "GET via web discovery result",
+      "httpStatus": "indexed official PDF; not used for geometry",
+      "outcome": "Search result identified an official DGI decree mentioning Tahoua tax/land-related administration. No parcel geometry or unsafe record fields were requested."
+    },
+    {
+      "url": "https://salb.un.org/en/data/ner",
+      "method": "GET via web discovery/open",
+      "httpStatus": "official page found; administrative datasets only",
+      "outcome": "National geospatial-authority metadata was checked as a discovery lead. No cadastral layer was advertised or queried."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The official Niger DGI identifies itself as responsible for cadastral and land-conservation administration, and its official communiqué specifically records a Conservation Foncière et des Hypothèques office in Tahoua. This establishes a relevant local registry custodian, not an open parcel geometry endpoint.",
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel feature response retrieved",
+  "geometryQuality": "not evaluated; no parcel geometry retrieved",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": "niger-dgi-conservation-fonciere-tahoua",
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "DGI cadastral and land-conservation mandate, with a specifically documented Tahoua conservation office; national geospatial authority metadata was checked only as a secondary lead.",
+    "cityCoverage": "Local registry custody is evidenced, but no public city-bounded parcel geometry, API extent, layer schema, native identity, or CRS was verified.",
+    "exactPointChecked": false,
+    "note": "The exact WUP point [14.8883531821617, 5.26348102817872] was preserved in latitude/longitude order and was not shifted. No exact-point hit/miss inference was made."
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "retainedSample": null,
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The Tahoua registry custodian and institutional mandate are evidenced, but the current public viewer/API route, layer schema, CRS, stable native parcel identity, and citywide geometry coverage remain unresolved. Timeouts and certificate problems were not treated as absence. No owner, address, titleholder, contact, tax/account or personal fields were requested or retained. This packet is not source integration/admission."
+}

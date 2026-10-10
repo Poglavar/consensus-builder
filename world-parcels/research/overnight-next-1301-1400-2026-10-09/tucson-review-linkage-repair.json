@@ -1,0 +1,13 @@
+{
+  "checkedAt": "2026-10-09T14:52:39.172794+00:00",
+  "cityCode": 5063,
+  "city": "Tucson",
+  "rank": 1329,
+  "change": "Added canonical cityRecord linkage to the existing correctly identified paired review; cityFile retained.",
+  "beforeReviewSha256": "e07b97d2e547d84b71c25fe9ccc9e6195ae669f8c5c49ac90ac2f75fd2511001",
+  "afterReviewSha256": "3fd8365024c7aa2ca3c5bea2ec4660bc50d1897eb60e8c7ba79b8cf7e2529b6e",
+  "packetValidationPassed": true,
+  "geometryChanged": false,
+  "researchRepeated": false,
+  "liveCheckpointEdited": false
+}

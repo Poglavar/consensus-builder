@@ -1,0 +1,30 @@
+{
+  "cityRecord": "city-3921-vinh.json",
+  "cityCode": 3921,
+  "queueRank": 1602,
+  "city": "Vinh",
+  "country": "Viet Nam",
+  "countryCode": "VN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": null,
+  "summary": "Official Nghệ An land-information procedure and national geospatial/land systems were investigated. No anonymous, city-bounded parcel ID plus geometry response was verified. This is not evidence of citywide cadastral absence.",
+  "queryOutcomes": "English and Vietnamese discovery queries are recorded in city-3921-vinh.json. Search results were limited to official procedure, national geospatial portal, and restricted land-information system pages.",
+  "requestOutcomes": "DOSM GET 200; current scripts exposed base-map/administrative service references but no parcel layer. Nghệ An procedure GET 200; procedural text only. VBDLIS GET 200; login/restricted page, no login attempted.",
+  "scopeLimits": [
+    "No city boundary or complete Vinh coverage was established.",
+    "No exact-point hit/miss was used as an absence claim.",
+    "No parcel geometry or source-specific attributes were retained.",
+    "National/general agency prose is not treated as proof of a local open registry adapter."
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeIdentityPolicy": "No native parcel identity was observed; no synthetic identity was created. If a future public response is found, retain only one stable native identity in GeoJSON properties and document native field mapping here.",
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The official custodian and possible cadastral database are evidenced, but anonymous map/API access, city scope, schema, CRS, and parcel geometry remain unknown. Do not infer absence from login wall or missing search results.",
+  "retainedSample": null
+}

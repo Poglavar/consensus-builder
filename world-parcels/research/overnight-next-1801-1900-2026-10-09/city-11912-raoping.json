@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 11912,
+  "queueRank": 1829,
+  "cityId": "queue:1829",
+  "name": "Raoping",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [23.6727942367985, 116.973712339095],
+  "centerLatLon": [23.6727942367985, 116.973712339095],
+  "population2025": 313705,
+  "population2025k": 313.705,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Raoping China official cadastral parcel map natural resources real estate registration GIS Chaozhou",
+        "result": "First-party results identified the official Raoping County government site and Chaozhou Natural Resources Bureau material describing cadastral and real-estate registration custody. No public anonymous parcel ID-plus-geometry endpoint was exposed in the indexed results or inspected pages.",
+        "actualResultUrls": [
+          "https://www.raoping.gov.cn/",
+          "https://www.chaozhou.gov.cn/zwgk/szfgz/zrzy/content/mpost_3898737.html",
+          "https://www.chaozhou.gov.cn/sqgm/xzqh/content/post_3887921.html"
+        ]
+      },
+      {
+        "language": "native/local (Simplified Chinese)",
+        "query": "饶平县 不动产登记 地籍图 宗地图 自然资源 官方 潮州",
+        "result": "Native-language discovery found an official Raoping Natural Resources Bureau first-registration announcement, the Chaozhou Natural Resources Bureau FAQ describing digital cadastral-map and registration databases and unified real-estate unit identifiers, and official administrative context placing Raoping under Chaozhou. These establish local custody and procedure evidence, not an open parcel feature service.",
+        "actualResultUrls": [
+          "https://www.raoping.gov.cn/zwgk/zfqzqd/gsgg/content/post_3913301.html",
+          "https://www.chaozhou.gov.cn/zwgk/szfgz/zrzy/content/mpost_3898737.html",
+          "https://www.chaozhou.gov.cn/sqgm/xzqh/content/post_3887921.html"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "First-party web discovery followed by TLS-verified bounded GETs; no credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe-field request, or TLS disablement."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.raoping.gov.cn/zwgk/zfqzqd/gsgg/content/post_3913301.html",
+      "observation": "Official Raoping County government page publishes a Raoping Natural Resources Bureau first-registration announcement and gives the bureau's public office address and telephone. It evidences the local registry custodian and registration process, not an anonymous parcel geometry endpoint."
+    },
+    {
+      "url": "https://www.chaozhou.gov.cn/zwgk/szfgz/zrzy/content/mpost_3898737.html",
+      "observation": "Official Chaozhou Natural Resources Bureau FAQ states that Chaozhou cadastral maps are stored digitally in a GIS database, linked with the real-estate registration database, and that the unified real-estate unit number is used as the identifier. It does not publish a safe anonymous parcel feature response."
+    },
+    {
+      "url": "https://www.chaozhou.gov.cn/sqgm/xzqh/content/post_3887921.html",
+      "observation": "Official Chaozhou government administrative-division page identifies Raoping County as one of Chaozhou's jurisdictions."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.raoping.gov.cn/zwgk/zfqzqd/gsgg/content/post_3913301.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "Official page returned HTML; inspection found registration-announcement content but no viewer configuration, parcel layer, schema, CRS, or anonymous geometry API."
+    },
+    {
+      "url": "https://www.chaozhou.gov.cn/zwgk/szfgz/zrzy/content/mpost_3898737.html",
+      "method": "GET via first-party web reader",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official FAQ loaded; relevant lines describe digital cadastral/registration databases and the unified real-estate unit identifier, but no public parcel feature response was exposed."
+    },
+    {
+      "url": "https://www.chaozhou.gov.cn/sqgm/xzqh/content/post_3887921.html",
+      "method": "GET via indexed first-party result",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Official administrative context was inspected from the first-party result; no parcel geometry response."
+    },
+    {
+      "url": "https://www.raoping.gov.cn/",
+      "method": "GET via first-party search result",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Official county host identified; no parcel viewer/API route was exposed in the discovery result."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Raoping County local natural-resources and real-estate-registration administration under Chaozhou, Guangdong, China.",
+    "verifiedOpenScope": "Local registry custody and municipal cadastral-database procedure evidence only; anonymous parcel geometry and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "The current Raoping/Chaozhou public viewer or API route, access controls, parcel schema, CRS, stable native parcel identity, update currency, geometry quality, and citywide coverage remain unresolved. The exact WUP point was preserved and never shifted; no exact-point hit or miss inference was made. Registration announcements contain personal/address information, which was not retained in the packet."
+}

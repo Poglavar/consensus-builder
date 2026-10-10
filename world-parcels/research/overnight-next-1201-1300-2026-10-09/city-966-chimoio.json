@@ -1,0 +1,95 @@
+{
+  "name": "Chimoio",
+  "cityCode": 966,
+  "wupCityCode": 966,
+  "queueRank": 1228,
+  "country": "Mozambique",
+  "countryCode": "MZ",
+  "iso3": "MOZ",
+  "point": [-19.1171927912217, 33.479275523939],
+  "centerLatLon": [-19.1171927912217, 33.479275523939],
+  "population2025": 453521,
+  "population2025k": 453.521,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Chimoio Mozambique official cadastral parcel map land registry GIS",
+        "result": "Official ADE/MOZGIS national geospatial portals and an ArcGIS REST catalog were found. The catalog exposed administrative and general layers, but no Chimoio-specific public cadastral parcel layer. A bounded anonymous administrative point query at the exact WUP point returned one feature; this is not parcel evidence.",
+        "actualResultUrls": [
+          "https://www.ade.gov.mz/",
+          "https://www.mozgis.gov.mz/",
+          "https://www.mozgis.gov.mz/server/rest/services?f=pjson",
+          "https://www.mozgis.gov.mz/server/rest/services/Data/UnidadesAdministrativasCenso2017/MapServer/0"
+        ]
+      },
+      {
+        "language": "Portuguese",
+        "query": "Chimoio Moçambique cadastro mapa parcelas registro predial oficial",
+        "result": "Official Portuguese-language sources confirmed MOZGIS/ADE, Chimoio municipal land documentation, and the national predial registry portal. No anonymous Chimoio parcel viewer or parcel geometry endpoint was verified. The discovered public parcel services are explicitly for Matola, not Chimoio.",
+        "actualResultUrls": [
+          "https://www.ade.gov.mz/",
+          "https://www.mozgis.gov.mz/",
+          "https://cmchimoio.ac.mz/upload/CODIGO-DE-POSTURA-FINAL-12.8.2020-3-REVISAO-em-03-de-12-de-2020-1.pdf",
+          "https://utente.srn.gov.mz/v71/Entrada",
+          "https://www.mozgis.gov.mz/server/rest/services/Data/CMCMPlanCadastroLayersVisualizacao/MapServer"
+        ]
+      }
+    ],
+    "checkedAt": "2026-10-09"
+  },
+  "registryFound": null,
+  "registryBasis": "No Chimoio-local public cadastral/parcel registry or map service was evidenced. National MOZGIS/ADE discovery and an administrative boundary layer do not establish parcel coverage; the only discovered parcel service is documented as Matola municipal cadastral data.",
+  "registryEvidenceUrls": [
+    "https://www.mozgis.gov.mz/server/rest/services?f=pjson",
+    "https://www.mozgis.gov.mz/server/rest/services/Data/UnidadesAdministrativasCenso2017/MapServer/0",
+    "https://www.mozgis.gov.mz/server/rest/services/Data/CMCMPlanCadastroLayersVisualizacao/MapServer"
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "url": "https://www.mozgis.gov.mz/server/rest/services?f=pjson",
+      "outcome": "Retrieved ArcGIS REST service catalog. Catalog folders/services were searched for Chimoio, Manica, cadastral, parcel, talhao, predial and DUAT names; no Chimoio parcel service was found.",
+      "safeFieldsOnly": true
+    },
+    {
+      "method": "GET",
+      "url": "https://www.mozgis.gov.mz/server/rest/services/Data/UnidadesAdministrativasCenso2017/MapServer/0?f=pjson",
+      "outcome": "Retrieved schema. Layer is administrative polygon data with OBJECTID and Id, not cadastral parcels.",
+      "safeFieldsOnly": true
+    },
+    {
+      "method": "GET",
+      "url": "https://www.mozgis.gov.mz/server/rest/services/Data/UnidadesAdministrativasCenso2017/MapServer/0/query?f=json&where=1%3D1&geometry=33.479275523939%2C-19.1171927912217&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CId&returnGeometry=false",
+      "outcome": "Returned one administrative feature at the exact WUP point using ArcGIS x=longitude,y=latitude request order; no geometry or parcel identity retained.",
+      "safeFieldsOnly": true
+    },
+    {
+      "method": "GET",
+      "url": "https://www.mozgis.gov.mz/server/rest/services/Data/CMCMPlanCadastroLayersVisualizacao/MapServer?f=pjson",
+      "outcome": "Retrieved parcel/talhao service metadata, but its description and subject identify Conselho Municipal da Cidade da Matola; not applicable as Chimoio coverage.",
+      "safeFieldsOnly": true
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "MOZGIS/ADE is a national geospatial portal and catalog; the reviewed administrative layer is national administrative data.",
+    "verifiedOpenScope": "Administrative layer metadata and exact-point response verified; no Chimoio cadastral parcel layer or geometry response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "publicParcelGeometryFound": false,
+    "maxFullPolygonsRetained": 0
+  },
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "resultCategory": "official_national_gis_no_chimoio_parcel_layer",
+  "technicalBlocker": "No public Chimoio parcel endpoint was identified in the first-party service catalog. National registry workflows may require an account; no login, credentials, private token, CAPTCHA bypass or TLS exception was used.",
+  "remainingUncertainty": "Whether Chimoio municipal cadastral data exists behind an unpublished or authenticated service, and whether another first-party endpoint exposes safe parcel IDs and geometry, remain unverified.",
+  "runtimeReadiness": "held_pending_independent_serial_review",
+  "adapterReady": false,
+  "pointBasis": "Exact WUP 2025 population-weighted settlement point; not shifted to force a parcel hit.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09"
+}

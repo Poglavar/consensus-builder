@@ -1,0 +1,75 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; local registry/city-map evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09T00:00:00Z",
+  "cityCode": 8133,
+  "queueRank": 1289,
+  "cityId": "wup:8133",
+  "name": "Daska",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "centerLatLon": [32.3328401257637, 74.3546794942495],
+  "point": [32.3328401257637, 74.3546794942495],
+  "population2025": 433772,
+  "population2025k": 433.772,
+  "populationUnit": "persons",
+  "year": 2025,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Daska Pakistan official cadastral map land records parcel GIS Punjab",
+        "result": "Found the official Municipal Committee Daska services-map page and its 2023-24 city basemap PDF; the PDF legend includes Parcel Boundary. Found the official Sialkot district Revenue Department Daska page and Punjab PLRA/PULSE cadastral-map services. The PULSE viewer's configured Punjab cadastral ArcGIS service was inspected anonymously and returned Token Required.",
+        "actualResultUrls": [
+          "https://mcdaska.lgpunjab.org.pk/map/",
+          "https://www.mcdaska.lgpunjab.org.pk/wp-content/uploads/2024/05/Base-Map_MC-Daska_2023-24.pdf",
+          "https://sialkot.punjab.gov.pk/Revenue_Department_Daska",
+          "https://lis.pulse.gop.pk/",
+          "https://www.punjab-zameen.gov.pk/"
+        ]
+      },
+      {
+        "language": "Urdu",
+        "query": "ڈسکہ پاکستان سرکاری کادستر نقشہ اراضی ریکارڈ GIS پارسل",
+        "result": "Search results identified official Punjab cadastral-map, PLRA land-record, and PULSE services, plus the official Daska municipal map page. No anonymous safe Daska parcel polygon response was exposed in the bounded review.",
+        "actualResultUrls": [
+          "https://jamabandi.punjab.gov.pk/CadastralMap.aspx/AccessibilityOptions.aspx",
+          "https://lis.pulse.gop.pk/",
+          "https://www.punjab-zameen.gov.pk/",
+          "https://mcdaska.lgpunjab.org.pk/map/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {"url": "https://mcdaska.lgpunjab.org.pk/map/", "observation": "Official Municipal Committee Daska services-map index publishes the city map set."},
+    {"url": "https://www.mcdaska.lgpunjab.org.pk/wp-content/uploads/2024/05/Base-Map_MC-Daska_2023-24.pdf", "observation": "Official 2023-24 Basemap-Daska City PDF; extracted legend includes Road Boundary, Parcel Boundary, and MC boundary layers. It is a rendered map document, not an exposed vector parcel API."},
+    {"url": "https://sialkot.punjab.gov.pk/Revenue_Department_Daska", "observation": "Official Sialkot district page identifies Revenue Department Daska and its land-record/revenue-administration context."},
+    {"url": "https://lis.pulse.gop.pk/", "observation": "Official/public Punjab PULSE viewer advertises cadastral maps and parcel visualization with an indicative-boundary disclaimer; the page configuration points to Punjab_Cdastral_Maps."},
+    {"url": "https://www.punjab-zameen.gov.pk/", "observation": "Official Punjab Land Records Authority portal describing GIS-linked land-record services."}
+  ],
+  "requests": [
+    {"url": "https://mcdaska.lgpunjab.org.pk/map/", "method": "GET", "httpStatus": 200, "outcome": "Official map page retrieved; page lists Daska municipal map materials."},
+    {"url": "https://www.mcdaska.lgpunjab.org.pk/wp-content/uploads/2024/05/Base-Map_MC-Daska_2023-24.pdf", "method": "GET", "httpStatus": 200, "outcome": "PDF retrieved successfully; text extraction confirmed the Parcel Boundary legend entry. No vector IDs or parcel geometry were requested or retained."},
+    {"url": "https://lis.pulse.gop.pk/", "method": "GET", "httpStatus": 200, "outcome": "Current JavaScript/configuration retrieved; it references the Punjab_Cdastral_Maps ArcGIS MapServer and states that complete parcel details require login."},
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer?f=pjson", "method": "GET", "httpStatus": 200, "outcome": "ArcGIS error body code 499 Token Required; no token requested or used, and no schema/geometry returned."},
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/0/query?where=1%3D1&outFields=*&returnGeometry=true&resultRecordCount=3&f=geojson", "method": "GET", "httpStatus": 200, "outcome": "ArcGIS error body code 499 Token Required; no feature response, IDs, attributes, or geometry returned."},
+    {"url": "https://sialkot.punjab.gov.pk/Revenue_Department_Daska", "method": "GET", "httpStatus": null, "outcome": "Anonymous request timed out during bounded review; official search result and URL were retained as discovery evidence, without inferring page contents beyond the identified title."},
+    {"url": "https://jamabandi.punjab.gov.pk/CadastralMap.aspx/AccessibilityOptions.aspx", "method": "GET", "httpStatus": null, "outcome": "Host resolution failed in the execution environment; no response or absence inference."}
+  ],
+  "registryFound": true,
+  "registryBasis": "Official Municipal Committee Daska map material explicitly contains a parcel-boundary layer in a city basemap, and the official district portal identifies the Daska revenue department. This establishes local registry/map context, not legal title coverage or complete citywide vector coverage.",
+  "registryEvidenceUrls": ["https://mcdaska.lgpunjab.org.pk/map/", "https://www.mcdaska.lgpunjab.org.pk/wp-content/uploads/2024/05/Base-Map_MC-Daska_2023-24.pdf", "https://sialkot.punjab.gov.pk/Revenue_Department_Daska"],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {"url": "https://lis.pulse.gop.pk/", "kind": "Public Punjab PULSE cadastral viewer with ArcGIS-backed Punjab cadastral layer", "publisher": "Punjab Urban Land Systems Enhancement / Punjab Land Records Authority", "scope": "Viewer advertises cadastral parcel visualization; anonymous REST metadata and bounded feature query were token-gated.", "safeSampleFile": null, "sampleAttributes": "none retained", "nativeFields": []},
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not executed against a returned feature layer because the anonymous service was token-gated; the exact WUP point was preserved and not shifted.", "requestEvidence": []},
+  "coverageAssessment": {"claimedScope": "Official Daska municipal city basemap and Punjab PULSE/PLRA cadastral viewer material.", "verifiedOpenScope": "Rendered city map with parcel-boundary legend; no anonymous safe vector feature response.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "safeFieldAllowlist": ["OBJECTID", "safe parcel/cadastral identifier only if exposed by a future anonymous safe endpoint", "geometry"],
+  "runtimeReadiness": "held_quality_review",
+  "resultCategory": "official_registry_context_no_verified_public_geometry",
+  "status": "complete",
+  "remainingUncertainty": "The municipal PDF is rendered and its parcel lines may be generalized; it does not prove current legal or complete citywide parcel coverage. PULSE advertises cadastral mapping but anonymous ArcGIS access was token-gated, so no parcel schema, CRS, native ID, or polygon was verified. No owner, address, contact, titleholder, tax, or account fields were requested or retained."
+}

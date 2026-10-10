@@ -1,0 +1,141 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "wupCityCode": 6053,
+  "queueRank": 1783,
+  "name": "Hull",
+  "country": "United Kingdom",
+  "countryCode": "GB",
+  "iso3": "GBR",
+  "centerLatLon": [53.7628896052307, -0.354103477578705],
+  "population2025": 322100,
+  "population2025k": 322.1,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted",
+  "nativeIdReadiness": "not_applicable_no_verified_parcel_response",
+  "registryFound": null,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hull official council GIS map parcels land registry INSPIRE Hull City Council",
+        "result": "Official Hull My Hull viewer, Hull land-charges page, HM Land Registry INSPIRE dataset and official Use land and property data download service found.",
+        "actualResultUrls": [
+          "https://maps.hull.gov.uk/",
+          "https://www.hull.gov.uk/building-standards-regulations/land-charges",
+          "https://www.data.gov.uk/dataset/811bcf4c-fbbf-4597-aa9c-3d5bd3bfd455/inspire-index-polygons-spatial-data",
+          "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+        ]
+      },
+      {
+        "language": "native/local (English)",
+        "query": "Hull cadastral map parcels official UK HM Land Registry Kingston upon Hull",
+        "result": "The local language is English. The same official Hull council and HM Land Registry sources were found, including a current Hull City Council INSPIRE download entry and My Hull public map.",
+        "actualResultUrls": [
+          "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+          "https://www.hull.gov.uk/open-data/local-authority-land-assets",
+          "https://maps.hull.gov.uk/"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+      "operator": "HM Land Registry",
+      "observation": "Current official download page lists Hull City Council under local-authority INSPIRE Index Polygon GML downloads. Dataset description says the polygons show indicative positions of registered freehold properties in England and Wales; this is a national custodian dataset, not a Hull-only registry custodian."
+    },
+    {
+      "url": "https://maps.hull.gov.uk/",
+      "operator": "Hull City Council (third-party hosted My Hull viewer)",
+      "observation": "Public council-linked viewer returned HTTP 200. HTML names the Astun/iShare map source mapsources/MyHouse and address endpoint getdata.aspx. The viewer advertises property and local-information themes, but no legal parcel layer or parcel schema was verified."
+    },
+    {
+      "url": "https://www.hull.gov.uk/open-data/local-authority-land-assets",
+      "operator": "Hull City Council",
+      "observation": "Council says My Hull exposes council-owned registered land, adopted highway and other themes; this is local asset/thematic mapping, not proof of a complete cadastral service."
+    },
+    {
+      "url": "https://www.hull.gov.uk/building-standards-regulations/land-charges",
+      "operator": "Hull City Council / HM Land Registry",
+      "observation": "Council page says HM Land Registry provides LLC1 and personal local-land-charge searches for the Kingston upon Hull area; the search requires a detailed plan and is not an anonymous parcel-geometry API."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://maps.hull.gov.uk/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Inspected current HTML and JavaScript bootstrap. Found txtMapSource=mapsources/MyHouse, Astun.JS.Map, and getdata.aspx address-finder wiring."
+    },
+    {
+      "url": "https://maps.hull.gov.uk/FileIncluderJS.aspx?language=",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Returned current Astun/iShare loader JavaScript; no parcel layer schema or public geometry endpoint was exposed in the bounded inspection."
+    },
+    {
+      "url": "https://maps.hull.gov.uk/getdata.aspx",
+      "method": "GET",
+      "status": "HTTP 200 application response",
+      "summary": "Returned ERROR 10000: No RequestType parameter passed."
+    },
+    {
+      "url": "https://maps.hull.gov.uk/getdata.aspx?RequestType=MapSource&MapSource=MyHouse",
+      "method": "GET",
+      "status": "application error",
+      "summary": "Returned ERROR 10000 (IntGetData.aspx): MapSource not found; no anonymous ID-plus-geometry response."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+      "method": "GET",
+      "status": "Cloudflare challenge response in direct curl; web-indexed official page confirmed",
+      "summary": "The official page is indexed and lists Hull City Council GML, but the direct request returned a challenge page, so no GML bytes were downloaded or parsed. No challenge bypass attempted."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/api/v1/",
+      "method": "GET (documentation review only)",
+      "status": "official documentation",
+      "summary": "Official API documentation says API access requires an account, licence agreement and API key; no credentials were used or requested."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "HM Land Registry INSPIRE local-authority files cover indicative registered freehold property extents in England and Wales; Hull City Council My Hull provides local thematic/property information.",
+    "verifiedOpenScope": "Official dataset publication and public Hull viewer existence only; no live anonymous parcel feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "sourceFields": null,
+  "nativeFieldMapping": "HMLR INSPIRE identity is documented by official guidance as the Land Registry-INSPIRE ID; the current Hull download was not retrieved, so the exact feature field/schema/CRS was not independently parsed. No Hull viewer fields were retained.",
+  "compositeKeyProvenance": null,
+  "crs": "Unverified for Hull feature response; no geometry downloaded. My Hull viewer CRS was not exposed in the bounded HTML/loader inspection.",
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not tested against parcel geometry; exact-point absence is not inferred.",
+    "requestEvidence": [
+      "Hull viewer bootstrap inspected; bounded endpoint probes returned no parcel geometry.",
+      "HMLR official Hull download listing evidenced, but current direct download was challenge-gated and no file was retained."
+    ]
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review required",
+  "uncertainty": "The official HMLR Hull GML publication is a strong source lead, but exact current download URL, GML schema/CRS and a bounded parcel ID-plus-geometry response remain unverified. Hull My Hull is thematic and does not establish legal cadastral completeness. This packet does not assert parcel absence, ownership, title status, completeness or adapter readiness.",
+  "resultCategory": "official_national_parcel_publication_and_local_viewer_lead_no_verified_geometry"
+}

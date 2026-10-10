@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4537-alicante.json",
+  "purpose": "Document first-party Spanish cadastral discovery and bounded anonymous service attempts for Alicante.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The Dirección General del Catastro is a verified first-party national cadastral custodian, and Alicante's municipality documents a local Catastro map layer. Current anonymous WFS/WMS calls did not return a usable parcel feature, so no geometry sample or adapter qualification is claimed.",
+  "registryAssessment": "Registry/source found: the national Spanish cadastre is evidenced by official Catastro pages and the public INSPIRE parcel-service catalogue; Alicante local map evidence is from the Ayuntamiento de Alicante. This is source discovery, not source integration/admission.",
+  "officialPrimarySources": [
+    {"url": "https://www.sedecatastro.gob.es/", "observation": "Official Sede Electrónica del Catastro; public cadastral map and diffusion entry points are advertised."},
+    {"url": "https://www.catastro.hacienda.gob.es/es-ES/sede.html", "observation": "Official portal states that free access includes cadastral cartography, cadastral data, cadastral reference and map web services."},
+    {"url": "https://datos.gob.es/es/catalogo/e0dat0002-spanish-general-directorate-for-cadastre-cadastral-parcel-inspire-download-service-wfs1", "observation": "Official public-data catalogue identifies the DG Catastro Cadastral Parcel INSPIRE WFS and its access URL."},
+    {"url": "https://www.alicante.es/es/noticias/mapa-interactivo-informacion-urbanistica", "observation": "Ayuntamiento de Alicante documents its urban map and explicitly lists a Catastro layer."},
+    {"url": "https://www.catastro.hacienda.gob.es/webinspire/documentos/inspire-cp-WFS_en.pdf", "observation": "DG Catastro WFS documentation describes WFS 2.0.0, CP:CadastralParcel, bounding-box limits and public parcel geometry service behavior."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Alicante Spain official cadastral parcel map API Catastro parcela", "result": "Official national Catastro, public INSPIRE WFS catalogue, and Alicante municipal Catastro map page found.", "actualResultUrls": ["https://www.sedecatastro.gob.es/", "https://datos.gob.es/en/catalogo/e0dat0002-cadastral-parcels-of-dg-cadastre-spain.xml", "https://www.alicante.es/es/noticias/mapa-interactivo-informacion-urbanistica"]},
+    {"language": "Spanish", "query": "Alicante España mapa parcelas catastrales oficial API Sede Catastro", "result": "Se confirmó la Sede del Catastro, el servicio INSPIRE WFS público y la capa Catastro del mapa municipal de Alicante.", "actualResultUrls": ["https://www.sedecatastro.gob.es/", "https://www.catastro.hacienda.gob.es/es-ES/sede.html", "https://datos.gob.es/es/catalogo/e0dat0002-spanish-general-directorate-for-cadastre-cadastral-parcel-inspire-download-service-wfs1", "https://www.alicante.es/es/noticias/mapa-interactivo-informacion-urbanistica"]}
+  ],
+  "attempts": [
+    {"url": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/03/ES.SDGC.CP.atom_03.xml", "method": "GET", "httpStatus": 200, "result": "Province 03 Atom feed returned successfully and listed 03900-ALICANTE/ALACANT in its municipality listing; no raw feed retained in the cohort directory."},
+    {"url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&Version=2.0.0&request=GetCapabilities", "method": "GET", "httpStatus": 400, "result": "Current HTTPS endpoint returned the Catastro HTML error page 'No se puede procesar su petición'; no capabilities document was obtained."},
+    {"url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&Version=2.0.0&request=GetFeature&typeName=CP:CadastralParcel&srsName=EPSG:4326&BBOX=-0.4769,38.3645,-0.4767,38.3647", "method": "GET", "httpStatus": null, "result": "Connection reset during the bounded exact-point-area request; no feature response."},
+    {"url": "https://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetFeatureInfo&LAYERS=parcela&QUERY_LAYERS=parcela&INFO_FORMAT=text/html&CRS=EPSG:4326&BBOX=38.3645,-0.4769,38.3647,-0.4767&WIDTH=1000&HEIGHT=1000&I=500&J=500", "method": "GET", "httpStatus": null, "result": "Connection reset; no feature-info response."}
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": {"sourceFieldsObserved": [], "retainedIdentity": null, "retainedIdentityProvenance": "No successful feature response; no native identity inferred or fabricated."},
+  "geometryDecision": {"verified": false, "sourceId": "DG-Catastro-INSPIRE-WFS", "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Attempted with exact WUP point [38.3645764288393, -0.476811353862035] and no coordinate shift; no usable response.", "requestEvidence": [{"httpStatus": 200, "contentType": "text/xml", "tlsVerification": "default", "request": "province Atom feed"}, {"httpStatus": 400, "contentType": "text/html", "tlsVerification": "default", "request": "WFS GetCapabilities"}, {"httpStatus": null, "contentType": null, "tlsVerification": "default", "request": "WFS bounded GetFeature"}, {"httpStatus": null, "contentType": null, "tlsVerification": "default", "request": "WMS GetFeatureInfo"}]},
+  "coverageAssessment": {"claimedScope": "Public DG Catastro INSPIRE cadastral parcel service and Alicante municipal Catastro map layer.", "verifiedOpenScope": "Official source existence, province feed reachability, and documented WFS schema/limits were verified; no Alicante parcel feature was returned.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "The failed exact-point requests may reflect current service request syntax, service-side filtering, or transient endpoint behavior. They do not evidence parcel absence or citywide lack of coverage. Native field names and CRS of an Alicante feature remain unverified.",
+  "runtimeAssessment": "held; no adapter admission or source integration implied"
+}

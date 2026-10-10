@@ -1,0 +1,23 @@
+{
+  "taskId": "city:8337",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-8337-sonipat.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/sonipat-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T16:53:55Z",
+  "reason": "Sonipat district and Haryana custody documented; the HARSAC candidate reportedly returned authentication responses, its administrative boundary is not a parcel layer, and no native parcel geometry or adapter qualification is evidenced. The packet also has an empty executedQueries array despite bilingual query/result entries.",
+  "bilingualSearchRecheck": [
+    {
+      "language": "English",
+      "query": "Sonipat Haryana official cadastral parcel map GIS land records portal plot map"
+    },
+    {
+      "language": "Hindi",
+      "query": "हरियाणा सोनीपत आधिकारिक भू नक्शा खसरा नक्शा कैडस्ट्रल मानचित्र"
+    }
+  ],
+  "retainedFullPolygons": 0
+}

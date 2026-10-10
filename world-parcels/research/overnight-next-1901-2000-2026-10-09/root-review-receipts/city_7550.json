@@ -1,0 +1,16 @@
+{
+  "taskId": "city:7550",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-7550-bojonegoro.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/bojonegoro-service-review.json",
+    "tmp/valhalla-parcel-research/bojonegoro-bhumi-layers.json",
+    "tmp/valhalla-parcel-research/bojonegoro-atlas-resources.json",
+    "tmp/valhalla-parcel-research/bojonegoro-wfs.headers",
+    "tmp/valhalla-parcel-research/bojonegoro-wms-capabilities.xml"
+  ],
+  "checkedAt": "2026-10-10T18:57:10.644794Z",
+  "reason": "Identity and persons match immutable roster/queue. English and Indonesian searches are recorded. First-party BHUMI metadata lists Bidang Tanah/umum:Persil and NIB; ATLAS cache lists seven resources, none city-specific. Saved WFS response is application 404 HTML, with no native-ID polygon response or retained polygons. Institutional custody is supported, but local coverage and all adapter, paging, 13-cell, metric geometry, source binding, and headed Details gates are unproved; held without an absence inference."
+}

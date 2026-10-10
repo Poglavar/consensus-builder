@@ -1,0 +1,14 @@
+{
+  "taskId": "city:5660",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-5660-dera-ismail-khan.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/dera-ismail-khan-service-review.json",
+    "tmp/valhalla-parcel-research/5660/kplr.html"
+  ],
+  "checkedAt": "2026-10-09T16:11:46+00:00",
+  "basis": "Official Khyber Pakhtunkhwa program and SDC evidence supports land-record custody for D.I. Khan; original portal cache lists the city. No native-ID parcel geometry or independent adapter qualification is evidenced. The program itself reports 62 mauzas pending operationalization; no citywide absence inference.",
+  "admissionGates": "No verified native parcel geometry; fresh exact-ID read, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are not evidenced."
+}

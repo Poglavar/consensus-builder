@@ -1,0 +1,107 @@
+{
+  "cityCode": 9656,
+  "queueRank": 1667,
+  "country": "China",
+  "countryCode": "CN",
+  "point": [26.5819375144437, 107.959995927961],
+  "population2025": 342989,
+  "population2025k": 342.989,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kaili Guizhou cadastral parcel map official land registration map",
+        "result": "Search identified the official Kaili municipal government site and an official Kaili Natural Resources Bureau page; no public Kaili parcel viewer or vector API was identified.",
+        "actualResultUrls": [
+          "https://www.kaili.gov.cn/",
+          "https://www.kaili.gov.cn/zwgk/bmxxgkml/zrzyj/dwzz/",
+          "https://www.kaili.gov.cn/xwzx/tzgg/202501/P020250125614707730580.pdf"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "凯里市 不动产登记 地图 官方",
+        "result": "Search identified the official Kaili government notice and official Natural Resources Bureau institutional page. The official page documents registration custody and information-platform responsibilities, but search results did not expose a public cadastral map/API endpoint.",
+        "actualResultUrls": [
+          "https://www.kaili.gov.cn/",
+          "https://www.kaili.gov.cn/zwgk/bmxxgkml/zrzyj/dwzz/",
+          "https://www.kaili.gov.cn/zwgk/bmxxgkml/zrzyj/zwfw/"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10"
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "凯里市自然资源局 / Kaili Natural Resources Bureau",
+    "officialUrl": "https://www.kaili.gov.cn/zwgk/bmxxgkml/zrzyj/dwzz/",
+    "evidence": "The official institutional page states that the bureau is responsible for unified natural-resource and real-estate registration, cadastral investigation and real-estate surveying, dispute handling, results application, and establishing and maintaining the city-wide natural-resource and real-estate registration information platform.",
+    "localScope": "Kaili municipal city-level natural-resources and real-estate registration custody; this is institutional evidence, not evidence of an open parcel geometry service."
+  },
+  "sourceDiscovery": {
+    "officialViewerOrConfig": "No public cadastral viewer, map script, service URL, or configuration was linked from the official Natural Resources Bureau page or its public-service page.",
+    "attemptedRoutes": [
+      {
+        "method": "GET",
+        "url": "https://www.kaili.gov.cn/zwgk/bmxxgkml/zrzyj/dwzz/",
+        "outcome": "HTTP 200; official bureau duties page inspected for cadastral/map links and registration scope. No public parcel endpoint exposed."
+      },
+      {
+        "method": "GET",
+        "url": "https://www.kaili.gov.cn/zwgk/bmxxgkml/zrzyj/zwfw/",
+        "outcome": "HTTP 200; public-service page inspected. It exposed a generic Guizhou unified-login link and no anonymous cadastral map/API route."
+      },
+      {
+        "method": "GET",
+        "url": "https://www.kaili.gov.cn/search?searchWord=%E4%B8%8D%E5%8A%A8%E4%BA%A7",
+        "outcome": "HTTP 404; guessed search route is not a usable public service and was not treated as evidence of absence."
+      },
+      {
+        "method": "GET",
+        "url": "https://www.kaili.gov.cn/",
+        "outcome": "HTTP 200; official site navigation inspected; it links the Natural Resources Bureau but no parcel viewer was found."
+      }
+    ],
+    "parcelResponse": "No bounded anonymous public ID-plus-geometry response was available to inspect.",
+    "schema": "unverified",
+    "crs": "unverified"
+  },
+  "scopeLimits": [
+    "Exact WUP point [26.5819375144437, 107.959995927961] was preserved in latitude/longitude order; no parcel hit or miss was inferred.",
+    "No public map extent, parcel layer, stable native parcel identifier, geometry, source schema, or CRS was verified.",
+    "A generic unified-login link and an unusable guessed search route are not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, personal, tax, account, or other unsafe fields were requested or retained.",
+    "Official local registration custody is not treated as proof of an open vector parcel API or complete city coverage.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains pending."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public parcel geometry service was reached; exact-point hit/miss was not tested.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Kaili municipal natural-resource and real-estate registration custody.",
+    "verifiedOpenScope": "Local institutional custody only; anonymous parcel geometry and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current public viewer/API route, access controls, layer schema, CRS, stable native parcel identity, and citywide coverage remain unresolved. No claim is made about parcel absence, legal title, ownership, tax records, or completeness of any Chinese cadastral dataset."
+}

@@ -1,0 +1,15 @@
+{
+  "taskId": "city:9903",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-9903-anantapur.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/anantapur-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T12:30:51Z",
+  "identityReview": "Rank 1261; WUP code 9903; India IN/IND; [14.6733011278587,77.5918898198689]; 442201 persons. Exact roster and pending queue match.",
+  "sourceReview": "English and Telugu searches with result URLs are recorded in the paired evidence. Official state cadastral service custody is supported, but the bounded Bhunaksha request timed out before parcel geometry, schema, CRS, or native IDs were obtained.",
+  "admissionReview": "Zero durable polygons and no verified safe feature identity. Fresh native-ID reads, forced paging, 13 bounded cells, independent metric GEOS checks, source binding, and headed Details verification are absent. Timeout is unresolved access, not citywide absence."
+}

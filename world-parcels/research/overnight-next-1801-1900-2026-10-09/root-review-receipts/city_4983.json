@@ -1,0 +1,15 @@
+{
+  "taskId": "city:4983",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-4983-yarim.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/yarim-service-review.json",
+    "tmp/valhalla-parcel-research/4983/services.html",
+    "tmp/valhalla-parcel-research/4983/cso.html"
+  ],
+  "checkedAt": "2026-10-10T17:43:15Z",
+  "reason": "WUP code 4983, rank 1886, Yemen point and 304301 persons match the original archive and queue. English and Arabic searches are recorded. Cached service and official statistical GIS pages contain procedural/statistical material, not a Yarim parcel response. Local registry custody remains unresolved; no full polygon with safe native ID or independent adapter and headed Details qualification is evidenced."
+}

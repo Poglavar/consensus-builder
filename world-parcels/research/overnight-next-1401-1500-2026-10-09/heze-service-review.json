@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9882-heze.json",
+  "purpose": "Document independent city-specific registry discovery and bounded anonymous geometry access investigation.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Fresh English and Chinese searches found first-party Heze local registry/procedure evidence. Inspection of the current official site and its public JavaScript found no anonymous cadastral feature endpoint, schema, CRS, native parcel ID, or geometry response. No personal-property lookup was attempted.",
+  "registryAssessment": "Local custody is evidenced by the Heze Municipal Natural Resources and Planning Bureau’s official site and its 不动产登记专栏. A city-specific report describes the Heze Real Estate Registration and Transaction Center’s cadastral-map-related registration service. This is local registry/procedure evidence, not open parcel geometry admission.",
+  "officialPrimarySources": [
+    {"title": "Heze Municipal Natural Resources and Planning Bureau", "url": "https://zygh.heze.gov.cn/", "observation": "Current first-party municipal bureau homepage; links the official real-estate-registration section and Shandong map portal."},
+    {"title": "Official Heze real-estate-registration section", "url": "http://zygh.heze.gov.cn/zglby/?catas=1585109696539398144", "observation": "Current public section. JavaScript calls article/category services only; no parcel layer or geometry endpoint was exposed."},
+    {"title": "Heze registration-center service report", "url": "https://heze.dzwww.com/yw/202211/t20221122_11090068.htm", "observation": "Describes the city registration center’s one-certificate-one-code service and cadastral-map viewing in a registration workflow; not an anonymous GIS endpoint."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Heze China official cadastral parcel map real estate registration GIS site:heze.gov.cn OR site:zygh.heze.gov.cn", "executionMethod": "Executed separate web search", "resultUrls": ["https://zygh.heze.gov.cn/", "http://zygh.heze.gov.cn/zglby/?catas=1585109696539398144"]},
+    {"language": "Chinese", "query": "菏泽市 不动产登记 地籍图 地块地图 官方 自然资源局", "executionMethod": "Executed separate local-language web search", "resultUrls": ["https://zygh.heze.gov.cn/", "http://zygh.heze.gov.cn/zglby/?catas=1585109696539398144", "https://www.heze.gov.cn/"]}
+  ],
+  "attempts": [
+    {"attempt": "official homepage over HTTPS", "url": "https://zygh.heze.gov.cn/", "result": "TLS certificate expired; normal verification failed. No verification bypass used.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "official homepage over HTTP", "url": "http://zygh.heze.gov.cn/", "result": "HTTP 200. Reviewed HTML and found official registration-section link and Shandong base-map link; no parcel API.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "official registration section", "url": "http://zygh.heze.gov.cn/zglby/?catas=1585109696539398144", "result": "HTTP 200. Current JavaScript exposed article/category endpoints only.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "current public configuration", "url": "http://zygh.heze.gov.cn/2c908088819842f701819a2a3401002b/js/url.js", "result": "HTTP 200. url_service is empty; no cadastral/GIS service URL present.", "credentialsUsed": false, "personalPropertyFieldsRequested": false}
+  ],
+  "geometryDecision": {"publicParcelGeometryFound": false, "sampleFile": null, "details": "No anonymous safe parcel geometry response was found; no GeoJSON retained."},
+  "coverageAssessment": {"claimedScope": "Heze local registration custody and cadastral-map use are evidenced by official/local materials.", "verifiedOpenScope": "No open parcel geometry or citywide query coverage verified.", "citywideVerified": false, "countrywideVerified": false},
+  "safeFieldAllowlist": ["id", "geometry"],
+  "remainingUncertainty": "A separate authenticated or non-indexed cadastral viewer may exist; exact-point and citywide parcel coverage were not tested because no public parcel endpoint was identified.",
+  "runtimeReadiness": "held_unqualified"
+}

@@ -1,0 +1,21 @@
+{
+  "taskId": "city:4530",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-4530-irapuato.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/irapuato-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T10:47:10Z",
+  "reason": "Municipal GeoPortal and Dirección de Catastro establish local custody; SIUS and cadastral certification require login, direct GeoPortal requests timed out, and no anonymous native ID or polygon is evidenced.",
+  "identityCheck": "City code, rank, country, immutable point and 2025 population persons match the SHA-256 verified WUP roster, pending queue and ledger. English plus native-language executed search queries and result URLs were checked in both paired files.",
+  "polygonCheck": "Zero full polygons retained for this city; no unsafe ID attributes were retained in a polygon sample.",
+  "qualificationGates": "No independently evidenced fresh native-ID full-polygon reads, forced paging, 13 bounded cells, metric GEOS validity/duplicates/overlap checks, source binding or headed pointer/Details-panel verification. City remains held, unintegrated and unenabled.",
+  "sourceUrlsRecorded": [
+    "https://geoportal.irapuato.gob.mx/",
+    "https://vccc.irapuato.gob.mx/"
+  ]
+}

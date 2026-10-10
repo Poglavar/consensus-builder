@@ -1,0 +1,70 @@
+{
+  "cityCode": 1590,
+  "queueRank": 1493,
+  "name": "Mahilioŭ",
+  "aliases": ["mahiliou"],
+  "country": "Belarus",
+  "countryCode": "BY",
+  "point": [53.8969538474431, 30.3423548100176],
+  "population2025": 380951,
+  "population2025k": 380.951,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Mahilioŭ Belarus official cadastral map parcel registry GIS",
+        "result": "Search identified the official Belarus National Cadastral Agency public cadastral map at map.nca.by and the National Cadastral Agency site. The official map HTML loaded anonymously and identified itself as the Public Cadastral Map of the Republic of Belarus; no parcel geometry was returned by bounded service requests.",
+        "actualResultUrls": ["https://map.nca.by/", "https://nca.by/"]
+      },
+      {
+        "language": "Belarusian/Russian local",
+        "query": "Магілёў кадастравая карта зямельныя ўчасткі афіцыйны сайт",
+        "result": "Search identified the official Belarus public cadastral map at map.nca.by and official National Cadastral Agency material describing public cadastral-map access. A secondary result also referenced the official map and Belarus land-information geoportal, but was not used as registry evidence.",
+        "actualResultUrls": ["https://map.nca.by/", "https://nca.by/", "https://gki.gov.by/"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidenceUrls": ["https://map.nca.by/", "https://nca.by/"],
+  "registryBasis": "The first-party National Cadastral Agency public map loaded anonymously and its HTML title/description identify a public cadastral GIS for Belarus. This evidences a relevant public cadastral service, not open parcel integration or citywide completeness.",
+  "source": {
+    "sourceId": "BY-1590-MAHILIOU-NCA-PUBLIC-CADASTRAL-MAP-REVIEW",
+    "name": "Belarus Public Cadastral Map",
+    "url": "https://map.nca.by/",
+    "operator": "National Cadastral Agency of Belarus",
+    "serviceType": "Official public cadastral web map; anonymous parcel response not verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "nativeFieldMapping": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official map describes itself as a GIS for viewing spatial and other data from state land-cadastre registers and registries.",
+    "verifiedOpenScope": "The map shell and current JavaScript loaded, but the exposed WFS route was denied by the service edge. No citywide or countrywide machine-readable parcel scope was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_registry_geometry_unverified",
+  "technicalBlocker": "Anonymous GET of the official map returned HTTP 200 and its bundled JavaScript exposed /geoserver/pcm/ows WFS and /api routes. Bounded anonymous GET requests to WFS GetCapabilities and a maxFeatures=3 DWITHIN query at the immutable WUP point returned HTTP 403; /api/layers/list returned HTTP 404. No login, credential, private token, CAPTCHA bypass, unsafe field request, or TLS exception was used. The 403/404 outcomes are not treated as evidence of citywide absence.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "registration-rights"],
+  "remainingUncertainty": "The current public service's usable endpoint authorization, exact parcel layer, schema, CRS, stable native identity, pagination, freshness, and citywide completeness remain unverified. The bundled JS references parcel-search layer IDs and WFS conventions, but no response schema was obtained.",
+  "nextStep": "Hold runtime integration. A later researcher may qualify the current anonymous first-party endpoint after independently verifying safe ID-plus-geometry output, schema, CRS, stable native identity, and coverage.",
+  "runtimeReadiness": "held_unqualified",
+  "adapterReady": false,
+  "centerLatLon": [53.8969538474431, 30.3423548100176],
+  "populationPlausibility2025": "High",
+  "pointBasis": "Exact immutable WUP 2025 population-weighted settlement point; not shifted to force a parcel hit.",
+  "sourceIds": [],
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "attempt": 1,
+  "priorCheck": {"attemptState": "pending", "attemptEvidence": [], "possiblePriorMatches": []},
+  "schemaVersion": "1.0"
+}

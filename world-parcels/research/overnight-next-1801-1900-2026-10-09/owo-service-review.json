@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-6204-owo.json",
+  "cityCode": 6204,
+  "queueRank": 1900,
+  "city": "Owo",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "iso3": "NGA",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Ondo State land/survey administration and an Owo area lands office were evidenced, but no anonymous public parcel geometry endpoint was verified. No sample GeoJSON was retained.",
+  "queryOutcomes": "Separate English and Yoruba discovery queries, outcomes, and actual URLs are recorded in city-6204-owo.json under freshResearch.queries.",
+  "requestOutcomes": "All executed GET/POST attempts, statuses, portal inspection results, ArcGIS search outcome, and the rejected bounded Overpass request are recorded in city-6204-owo.json under requests.",
+  "requestCoordinates": {
+    "wupPointLatLon": [7.20065846761155, 5.58657014209914],
+    "coordinateOrderNote": "Exact WUP latitude/longitude preserved; no coordinate shift applied."
+  },
+  "safeFieldAllowlist": ["stable native parcel id if exposed", "full native polygon or multipolygon geometry", "service/layer metadata", "CRS metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": null,
+  "geometryQuality": "No parcel geometry retrieved; no sample retained.",
+  "geometryDecision": {"verified": false, "sampleCount": 0, "sampleFile": null, "reason": "No public anonymous parcel vector endpoint was established."},
+  "coverageAssessment": {"claimedScope": "Ondo State land/survey administration, including the Owo area lands office and LandsApp service portal.", "verifiedOpenScope": null, "citywideVerified": false, "countrywideVerified": false},
+  "scopeLimits": [
+    "State ministry procedure and digital service evidence are not equivalent to an open cadastral API.",
+    "No unsafe fields were requested or retained.",
+    "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS-verification bypass was used.",
+    "A zero map/API discovery result and HTTP 406 transport response do not prove citywide parcel absence."
+  ],
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent adapter qualification remains required",
+  "uncertainty": "A first-party Ondo parcel service may exist behind an authenticated or unindexed workflow. A future attempt should inspect any newly exposed official viewer/configuration for geometry-only access, stable native IDs, CRS, and coverage without requesting owner or title data."
+}

@@ -1,0 +1,21 @@
+{
+  "taskId": "city:5163",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-5163-batna.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/batna-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T09:57:24Z",
+  "identity": "Packet city code, rank, country, exact point and population persons match both frozen roster and pending queue.",
+  "searchReview": "English and local-language executed query records are present in both packet and paired review; independent search recheck found corresponding leads, without a qualifying parcel response.",
+  "retainedFullPolygons": 0,
+  "reviewerCustodyDecision": null,
+  "admission": "held: fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding and headed Details verification are absent.",
+  "reason": "Batna custody remains unconfirmed by first-party evidence in this review: the packet's registryFound=true relies on a secondary local-office directory while the authority site failed DNS and the general map timed out. No anonymous native-ID polygon, source binding, or qualification evidence. Neither failure establishes absence.",
+  "firstPartyUrlsChecked": [
+    "https://www.an-cadastre.dz/",
+    "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx"
+  ]
+}

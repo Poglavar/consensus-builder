@@ -1,0 +1,106 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8039-sterling-heights.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Review official Sterling Heights and Macomb County parcel channels and qualify bounded anonymous parcel geometry evidence.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "wupPointPreserved": [42.4672562666258, -82.953282452946]
+  },
+  "assessment": "First-party Sterling Heights city GIS and Macomb County GIS parcel resources were identified. The city ArcGIS REST routes advertise parcel layers, but the bounded anonymous REST metadata request timed out from this environment; no parcel geometry or native ID was verified or retained.",
+  "registryAssessment": "A local public parcel-map custodian is evidenced by the City of Sterling Heights GIS map gallery and city-hosted ArcGIS services. Macomb County separately documents its GIS mapping workgroup and public GIS Parcel Explorer. These are local mapping/parcel resources, not evidence of titleholder or owner data access.",
+  "coverageAssessment": {
+    "claimedScope": "Official city map/service discovery and county GIS resource discovery, with one bounded anonymous REST retrieval attempt.",
+    "verifiedOpenScope": "First-party parcel service URLs were identified; no safe parcel identity plus polygon response was obtained.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "officialPrimarySources": [
+    {
+      "url": "https://www.sterlingheights.gov/171/Maps",
+      "operator": "City of Sterling Heights",
+      "scope": "Official map gallery describing the city GIS OneView and parcel layer availability."
+    },
+    {
+      "url": "https://maps.sterling-heights.net/arcgis/rest/services/GIS_Maps/City_Base_Map/MapServer",
+      "operator": "City of Sterling Heights GIS",
+      "scope": "Indexed first-party ArcGIS MapServer advertising Tax Parcels and Parcel Identification Number layers."
+    },
+    {
+      "url": "https://maps.sterling-heights.net/arcgis/rest/services/GIS_Maps/SterlingHeightsBasemap/MapServer",
+      "operator": "City of Sterling Heights GIS",
+      "scope": "Indexed first-party ArcGIS MapServer advertising a Parcel Dataset layer and State Plane Michigan South service spatial reference."
+    },
+    {
+      "url": "https://www.macombgov.org/departments/planning-and-economic-development/mapping-and-data-services",
+      "operator": "Macomb County Planning and Economic Development GIS",
+      "scope": "County description of GIS mapping/data services and public GIS Parcel Explorer resources."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Sterling Heights Michigan official GIS parcel map Macomb County parcel viewer",
+      "result": "Found the official city GIS map gallery, city ArcGIS parcel services, and Macomb County GIS mapping/data services.",
+      "actualResultUrls": [
+        "https://www.sterlingheights.gov/171/Maps",
+        "https://maps.sterling-heights.net/arcgis/rest/services/GIS_Maps/City_Base_Map/MapServer",
+        "https://maps.sterling-heights.net/arcgis/rest/services/GIS_Maps/SterlingHeightsBasemap/MapServer",
+        "https://www.macombgov.org/departments/planning-and-economic-development/mapping-and-data-services"
+      ]
+    },
+    {
+      "language": "English (local-language search; United States)",
+      "query": "Sterling Heights Michigan official GIS parcel map Macomb County parcel viewer cadastral",
+      "result": "Found the same first-party city and county parcel resources; no distinct non-English local-language source applies to this United States locality.",
+      "actualResultUrls": [
+        "https://www.sterlingheights.gov/171/Maps",
+        "https://maps.sterling-heights.net/arcgis/rest/services/GIS_Maps/City_Base_Map_CW/MapServer",
+        "https://www.macombgov.org/departments/planning-and-economic-development/mapping-and-data-services"
+      ]
+    }
+  ],
+  "attempts": [
+    "Reviewed the official Sterling Heights map gallery; it describes the city GIS OneView and parcel layer availability.",
+    "Reviewed the indexed official City_Base_Map ArcGIS REST service; it advertises Tax Parcels and Parcel Identification Number layers.",
+    "Reviewed the indexed official SterlingHeightsBasemap ArcGIS REST service; it advertises Parcel Dataset layer 172 and a State Plane Michigan South feet spatial reference.",
+    "Reviewed the official Macomb County mapping/data-services page; it identifies county GIS stewardship and public GIS Parcel Explorer access.",
+    "Attempted anonymous TLS-verified GET retrieval of the city ArcGIS REST service metadata and layer metadata from the research environment; the host connection timed out before a response. No point query was issued after metadata retrieval failed, and no timeout was treated as parcel absence.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, TLS-verification disablement, owner, address, contact, titleholder, tax/account, or personal field was used or retained."
+  ],
+  "safeFieldAllowlist": ["geometry", "native parcel identifier only after schema verification"],
+  "geometryEvidence": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeIdentity": null,
+    "nativeIdFields": [],
+    "exactWupPointTest": "No exact-point parcel test was completed because the official REST metadata request timed out. The unchanged WUP point is not evidence of absence.",
+    "requestEvidence": [
+      {
+        "url": "https://maps.sterling-heights.net/arcgis/rest/services/GIS_Maps/SterlingHeightsBasemap/MapServer?f=pjson",
+        "method": "GET; anonymous; TLS verification enabled; metadata only",
+        "httpStatus": null,
+        "assessment": "Connection timed out from the research environment before HTTP response."
+      },
+      {
+        "url": "https://maps.sterling-heights.net/arcgis/rest/services/GIS_Maps/SterlingHeightsBasemap/MapServer/172?f=pjson",
+        "method": "GET; anonymous; TLS verification enabled; layer metadata only",
+        "httpStatus": null,
+        "assessment": "Connection timed out from the research environment before HTTP response."
+      }
+    ]
+  },
+  "nextStep": "Root/serial review should independently retry the identified first-party route, verify layer schema and CRS/order, and qualify a bounded anonymous geometry response before any adapter admission. Keep runtime held.",
+  "remainingUncertainty": "The service may be publicly queryable from another network path; safe native identity, geometry response behavior, exact-point coverage, freshness, and citywide completeness remain unverified.",
+  "researchAttempt": 1,
+  "rootReview": null,
+  "rootReviewedAt": null
+}

@@ -1,0 +1,18 @@
+{
+  "taskId": "packet:11601",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-11601-raiganj.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/raiganj-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/root-review-receipts/city_11601.json",
+    "tmp/valhalla-parcel-research/11601/district.html",
+    "tmp/valhalla-parcel-research/11601/dllro.html"
+  ],
+  "checkedAt": "2026-10-09T12:05:31Z",
+  "reason": "Raiganj code 11601, rank 1221, India/IN, immutable point and 456239 persons match the WUP queue. English and Bengali searches are recorded; the Bengali result URL has a malformed variant, while correctly encoded official paths are also recorded. Cached first-party district and land-reforms-office HTML links Banglarbhumi and identifies the Raiganj service chain, supporting local custody. Banglarbhumi timed out with no parcel response. No native ID or full polygon is evidenced; zero polygons are retained.",
+  "qualificationCheck": "No independent evidence of fresh native-ID full-polygon reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, full-parcel source binding, or headed Details-panel verification. Keep held, unintegrated and unenabled. A timeout or login wall is not evidence of citywide absence."
+}

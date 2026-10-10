@@ -1,0 +1,26 @@
+{
+  "schemaVersion":"1.0",
+  "checkedAt":"2026-10-09",
+  "cityRecord":"city-7279-uvira.json",
+  "cityCode":7279,
+  "purpose":"Document first-party discovery, current public cadastral routes, bounded anonymous access review, and evidence limits.",
+  "scopeLimits":{"maxFullPolygonsRetainedInCityRecord":0,"maxFullPolygonsRetainedInReview":0,"maxFullPolygonsRetainedInRepository":0,"ownerOrAddressDataRetained":false,"credentialsOrTokenValuesRetained":false,"unsafeFieldsRequested":false,"citywideCompletenessAsserted":false},
+  "assessment":"Official national cadastral administration and digitization context was found, but no Uvira-specific anonymous parcel viewer/API or safe ID-plus-geometry response was exposed. No parcel sample is retained.",
+  "registryAssessment":"registryFound remains null: national agency evidence is not local Uvira registry evidence.",
+  "safeFieldAllowlist":["safe parcel identifier only if publicly exposed and non-personal","geometry","CRS","non-personal layer/schema metadata"],
+  "queries":[
+    {"language":"English","query":"Uvira Democratic Republic of the Congo official cadastral map land registry parcel API local government","outcome":"Found official national ministry, ImmoRDC and BIC context; no public Uvira parcel-vector endpoint.","actualResultUrls":["https://www.affairesfoncieres.gouv.cd/","https://immordc.cd/comptes/ministere-des-affaires-foncieres-rdc","https://bic.cd/"]},
+    {"language":"French","query":"Uvira cadastre parcellaire République démocratique du Congo carte foncière service officiel","outcome":"Found national cadastral digitization and administrative context; no anonymous Uvira parcel identity, schema, CRS, or geometry response.","actualResultUrls":["https://www.affairesfoncieres.gouv.cd/","https://www.affairesfoncieres.gouv.cd/ressources/lois-decrets-arretes","https://immordc.cd/comptes/ministere-des-affaires-foncieres-rdc","https://bic.cd/"]}
+  ],
+  "attempts":[
+    {"url":"https://www.affairesfoncieres.gouv.cd/","method":"GET; current HTML/JavaScript review","httpStatus":200,"result":"Official ministry page loaded. It identifies cadastral administration and a pilot digitization project. The project link in current HTML points to http://localhost:3000/ressources/documents/projet-pilote-de-numerisation-du-cadastre, which is not a usable public Uvira map/API route; no credentials or bypass attempted."},
+    {"url":"https://www.affairesfoncieres.gouv.cd/ressources/lois-decrets-arretes","method":"GET/search-index review","httpStatus":"indexed official page","result":"Official legal/document index reviewed for cadastral service context; no Uvira parcel layer or safe geometry response."},
+    {"url":"https://immordc.cd/comptes/ministere-des-affaires-foncieres-rdc","method":"GET","httpStatus":200,"result":"Public ministry-linked description loaded. It describes the national/provincial cadastre structure and 130 jurisdictions, but no public parcel viewer, schema, CRS, native parcel ID, or Uvira geometry."},
+    {"url":"https://bic.cd/","method":"GET; module JavaScript/configuration review","httpStatus":200,"result":"BIC portal loaded. Current module references Supabase project configuration and an anonymous home-bic-counts aggregate function; no parcel layer/query, safe parcel ID, schema, CRS, or Uvira geometry route was exposed. No authenticated or unsafe route was attempted."},
+    {"url":"https://backend-cadastre.193.203.191.123.sslip.io/","method":"GET","httpStatus":200,"result":"The ministry page's current backend host returned a WordPress landing response and REST discovery headers. No parcel endpoint was inferred or probed beyond the public root; no credentials or private fields requested."}
+  ],
+  "geometryEvidence":null,
+  "geometryDecision":{"verified":false,"sourceId":null,"nativeIdField":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"No exact-point parcel containment test was completed because no public Uvira parcel layer/API was available. Exact WUP point [-3.38572977318456, 29.1429622424188] was preserved and not shifted; this access gap is not evidence of citywide absence."},
+  "remainingUncertainty":"Any authenticated or non-indexed ministry/BIC service, current parcel schema, CRS, native identity, exact-point parcel, and citywide open coverage remain unverified. No login, CAPTCHA, credentials, private tokens, owner/address/contact/titleholder/tax fields, or TLS bypass was used.",
+  "runtimeAssessment":"held; serial reviewer must independently qualify any adapter"
+}

@@ -1,0 +1,67 @@
+{
+  "cityCode": 12070,
+  "queueRank": 1376,
+  "name": "Huangyan District",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [28.6509454083006, 121.254074108205],
+  "population2025": 410213,
+  "population2025k": 410.213,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": null,
+  "registryAssessment": "The official Taizhou Natural Resources and Planning Bureau Huangyan Sub-bureau is evidenced as the local custodian for unified natural-resource and real-estate registration, cadastral surveying, and geospatial information management. No public anonymous parcel-vector endpoint with a safe native identifier and geometry was verified.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Huangyan District China official cadastral parcel map land registry GIS natural resources bureau",
+        "result": "Search results did not identify a public Huangyan parcel viewer or anonymous parcel API. First-party Huangyan government material was found confirming the local natural-resources sub-bureau's registration, cadastral, surveying, and geospatial-data remit.",
+        "actualResultUrls": [
+          "https://www.zjhy.gov.cn/art/2024/8/26/art_1622221_59111271.html",
+          "https://www.zjhy.gov.cn/module/download/downfile.jsp?classid=0&filename=7eaa5d9c6fa1414fa66bb198a732890d.pdf"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "黄岩区 地籍图 不动产登记 自然资源和规划局 官方",
+        "result": "黄岩区政府公开页面确认黄岩分局负责农村宅基地及住房确权登记；其2025年部门预算确认负责全区自然资源和不动产统一确权登记、地籍/测绘地理信息管理和基础地理信息公共服务。未找到公开匿名宗地矢量接口、图层模式或安全ID+几何响应。",
+        "actualResultUrls": [
+          "https://www.zjhy.gov.cn/art/2024/8/26/art_1622221_59111271.html",
+          "https://www.zjhy.gov.cn/module/download/downfile.jsp?classid=0&filename=7eaa5d9c6fa1414fa66bb198a732890d.pdf"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.zjhy.gov.cn/art/2024/8/26/art_1622221_59111271.html",
+      "role": "Official Huangyan District government publication by the Taizhou Natural Resources and Planning Bureau Huangyan Sub-bureau",
+      "observation": "The notice concerns rural homestead and housing rights confirmation and registration, names the Huangyan sub-bureau as the responsible local department, and gives its Huangyan office address. It is registry-procedure evidence, not a parcel geometry service."
+    },
+    {
+      "url": "https://www.zjhy.gov.cn/module/download/downfile.jsp?classid=0&filename=7eaa5d9c6fa1414fa66bb198a732890d.pdf",
+      "role": "Official 2025 departmental budget of the Huangyan Sub-bureau",
+      "observation": "The document states duties covering unified natural-resource and real-estate registration, registration-data collection/sharing, cadastral surveying, basic geographic-information resources and public service, and surveying/geographic-information results management. It does not expose an anonymous parcel layer or API."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No safe native parcel identity plus full polygon was obtained from an anonymous public response. The exact WUP point was preserved and not shifted; lack of a public endpoint is not evidence of citywide parcel absence."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Local Huangyan natural-resources and real-estate registration, cadastral surveying, and geospatial-data administration.",
+    "verifiedOpenScope": "Official local custody and duties were verified, but public parcel geometry access, schema, CRS, exact-point containment, and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

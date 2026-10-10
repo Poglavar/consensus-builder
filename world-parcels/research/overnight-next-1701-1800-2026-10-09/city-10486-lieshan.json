@@ -1,0 +1,93 @@
+{
+  "cityCode": 10486,
+  "queueRank": 1773,
+  "city": "Lieshan",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [33.8978810941972, 116.791882556822],
+  "population2025": 323702,
+  "population2025k": 323.702,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Lieshan Huaibei China official cadastral parcel map land records",
+        "result": "First-party discovery identified the Huaibei Municipal Bureau of Natural Resources and Planning announcement for the Huaibei cadastral map query system and its public viewer URL. The announcement says the system displays administrative divisions, cadastral areas, parcel information, and building/unit layers.",
+        "actualResultUrls": [
+          "https://zrghj.huaibei.gov.cn/gzdt/jndt/57377631.html",
+          "http://60.172.200.224:9293/hbdj"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "烈山区 淮北市 官方 不动产登记 地籍图 宗地图",
+        "result": "First-party/local-language discovery confirmed the Huaibei cadastral map query announcement and the official Huaibei real-estate-registration section. The Lieshan district government site was also identified as the local administrative custodian, but no separate Lieshan parcel API was found.",
+        "actualResultUrls": [
+          "https://zrghj.huaibei.gov.cn/gzdt/jndt/57377631.html",
+          "https://zrghj.huaibei.gov.cn/bdcdj/index.html",
+          "https://www.lieshan.gov.cn/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": "Huaibei Municipal Bureau of Natural Resources and Planning; Huaibei cadastral map query system, with Lieshan District People's Government as the local administrative government site",
+  "registryEvidence": {
+    "announcementUrl": "https://zrghj.huaibei.gov.cn/gzdt/jndt/57377631.html",
+    "viewerUrl": "http://60.172.200.224:9293/hbdj",
+    "viewerText": "淮北市地籍图查询系统; the announcement describes display/query of administrative divisions, cadastral areas, parcels, and building/unit information.",
+    "localArea": "烈山区 (Lieshan District), 淮北市 (Huaibei), 安徽省 (Anhui)"
+  },
+  "sourceReview": {
+    "service": "Huaibei cadastral map query platform",
+    "baseUrl": "http://60.172.200.224:9293/hbdj/",
+    "officialAssetsInspected": ["/config.js", "/assets/js/app.2066caa2.js"],
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "crs": "Unverified; the current configuration exposes Tianditu basemap URLs but no successful parcel geometry response or parcel-layer CRS metadata was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate-reference metadata", "public service and layer metadata"]
+  },
+  "requestsAndEndpointChecks": [
+    {"method": "GET", "url": "https://zrghj.huaibei.gov.cn/gzdt/jndt/57377631.html", "outcome": "200; official announcement readable; no login used"},
+    {"method": "GET", "url": "http://60.172.200.224:9293/hbdj", "outcome": "301 to /hbdj/; public viewer HTML then returned 200; no login used"},
+    {"method": "GET", "url": "http://60.172.200.224:9293/hbdj/config.js", "outcome": "200; current configuration inspected; viewer title 淮北市, map center and endpoint paths identified"},
+    {"method": "GET", "url": "http://60.172.200.224:9293/hbdj/assets/js/app.2066caa2.js", "outcome": "200; current client code inspected; anonymous POST routes and token parameter shape identified"},
+    {"method": "POST", "url": "http://60.172.200.224:9293/getDJ/hbdj/tb-zoning-and-cadastre/list?token=wwg", "parameters": {"type": 0}, "outcome": "200 JSON; success=false, code=10002, message=权限不足，无权操作！ (insufficient permission); no IDs or geometry"},
+    {"method": "POST", "url": "http://60.172.200.224:9293/getDJ/hbdj/tb-zoning-and-cadastre/list?token=wwg", "parameters": {"type": 1}, "outcome": "200 JSON; explicit permission-denied response; no IDs or geometry"},
+    {"method": "POST", "url": "http://60.172.200.224:9293/getDJ/hbdj/tb-zoning-and-cadastre/list?token=wwg", "parameters": {"type": 2}, "outcome": "200 JSON; explicit permission-denied response; no IDs or geometry"},
+    {"method": "POST", "url": "http://60.172.200.224:9293/getDJ/hbdj/tb-parcel/list?token=wwg", "parameters": {"type": 0}, "outcome": "200 JSON; explicit permission-denied response; no IDs or geometry"},
+    {"method": "POST", "url": "http://60.172.200.224:9293/getDJ/hbdj/tb-parcel/list?token=wwg", "parameters": {"type": 1}, "outcome": "200 JSON; explicit permission-denied response; no IDs or geometry"}
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed against parcel geometry; no hit/miss inference",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Huaibei cadastral map query system; official announcement claims Huaibei cadastral and real-estate-registration visualization/query",
+    "verifiedOpenScope": "Official viewer and client routes verified, but anonymous parcel responses were permission denied",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": [
+    "The exact WUP point [33.8978810941972, 116.791882556822] was preserved and not shifted.",
+    "The viewer is evidence of a local cadastral service, not evidence that anonymous parcel geometry is openly downloadable.",
+    "Permission-denied responses, lack of exact-point testing, or unavailable geometry are not evidence of citywide parcel absence.",
+    "No owner, address, titleholder, contact, tax/account, personal, or other unsafe fields were requested or retained.",
+    "No raw source-specific attribute set and no GeoJSON sample were retained.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The public viewer's parcel schema, stable native parcel identity, CRS, geometry response, anonymous access conditions, and citywide completeness remain unresolved."
+}

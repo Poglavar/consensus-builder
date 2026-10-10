@@ -1,0 +1,130 @@
+{
+  "cityCode": 10449,
+  "queueRank": 1649,
+  "name": "Khammam",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "point": [17.2489124071603, 80.165271980989],
+  "population2025": 346533,
+  "population2025k": 346.533,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Khammam Telangana official Survey Land Records cadastral parcel map GIS Bhu Bharati",
+        "result": "First-party discovery found the official Khammam district Survey & Land Records page, Telangana Bhu Bharati GIS, and the official TGRAC Web GIS/ArcGIS cadastral route. A bounded exact-point query returned no features; no citywide absence inference was made.",
+        "actualResultUrls": [
+          "https://khammam.telangana.gov.in/survey-and-land-records/",
+          "https://bhubharati.telangana.gov.in/gis/",
+          "https://tgrac.telangana.gov.in/trac/webgis.php",
+          "https://tgrac.telangana.gov.in/arcgis/rest/services/Hydra_Folder/Fourth_Window/MapServer/0"
+        ]
+      },
+      {
+        "language": "Telugu",
+        "query": "ఖమ్మం తెలంగాణ అధికారిక భూ పటం కడాస్ట్రల్ పార్సెల్ భూ భారతి భూమి రికార్డులు",
+        "result": "Native-language discovery found the official Telangana Bhu Bharati GIS and Khammam Survey & Land Records routes. The public GIS advertises parcel information and village selection, but no safe Khammam feature response was obtained from the viewer route.",
+        "actualResultUrls": [
+          "https://bhubharati.telangana.gov.in/gis/",
+          "https://khammam.telangana.gov.in/survey-and-land-records/",
+          "https://tgrac.telangana.gov.in/trac/webgis.php"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://khammam.telangana.gov.in/survey-and-land-records/",
+      "observation": "Official Khammam district page states that the District Survey & Land Records office maintains government and patta land records, survey/subdivision work, and town-survey records are maintained in the municipal office."
+    },
+    {
+      "url": "https://bhubharati.telangana.gov.in/gis/",
+      "observation": "Official Telangana Bhu Bharati GIS page exposes district/division/mandal/village selectors and map parcel-information controls."
+    },
+    {
+      "url": "https://tgrac.telangana.gov.in/trac/webgis.php",
+      "observation": "Official Telangana Remote Sensing Applications Centre Web GIS catalogue links Bhu Bharathi and Bhunaksha services."
+    },
+    {
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Hydra_Folder/Fourth_Window/MapServer/0?f=pjson",
+      "observation": "Official ArcGIS REST metadata identifies a polygon Feature Layer named Cadastral Parcels, with projected WGS 1984 Lambert Conformal Conic metadata and fields including OBJECTID, OBJECTID_1, Feature_Co and Parcel_num."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://khammam.telangana.gov.in/survey-and-land-records/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official district Survey & Land Records page loaded; no parcel geometry endpoint was exposed."
+    },
+    {
+      "url": "https://bhubharati.telangana.gov.in/gis/",
+      "method": "GET",
+      "httpStatus": "timeout after 20 seconds",
+      "outcome": "The viewer route was attempted anonymously. No login, CAPTCHA/Cloudflare bypass, credentials, or private token was used; no feature response was obtained."
+    },
+    {
+      "url": "https://tgrac.telangana.gov.in/trac/webgis.php",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official TGRAC Web GIS catalogue loaded and exposed the Bhu Bharathi/Bhunaksha routes."
+    },
+    {
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Hydra_Folder/Fourth_Window/MapServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Layer metadata loaded. It is a polygon Cadastral Parcels layer; schema and projected CRS were recorded, but no Khammam applicability or feature identity was established from metadata alone."
+    },
+    {
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Hydra_Folder/Fourth_Window/MapServer/0/query?f=pjson&where=1%3D1&geometry=80.165271980989%2C17.2489124071603&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Response was valid ArcGIS JSON with polygon geometry type and an empty features array. This exact-point zero result is not treated as evidence of citywide absence, and no geometry was retained."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The official Khammam district Survey & Land Records office is a local cadastral/survey custodian, while Bhu Bharati and TGRAC provide state public land-map channels. This establishes registry custody but not an open city-bounded parcel API.",
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": {
+    "candidateNativeIdFields": ["OBJECTID", "OBJECTID_1", "Parcel_num"],
+    "geometryField": "Shape",
+    "status": "Metadata candidates only; no feature row was retrieved, so identity stability and Khammam applicability remain unconfirmed."
+  },
+  "compositeKeyProvenance": null,
+  "crs": "TGRAC layer metadata reports WGS 1984 Lambert Conformal Conic; the empty exact-point response reports output WKID 4326.",
+  "geometryQuality": "not evaluated; no parcel geometry retrieved",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": "tgrac-telangana-cadastral-parcels-layer",
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Khammam district Survey & Land Records and Telangana state Bhu Bharati/TGRAC land-survey channels.",
+    "verifiedOpenScope": "Local/state custodian and cadastral-layer metadata only; Khammam city coverage, safe feature identity, and usable geometry were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "Exact WUP point [17.2489124071603, 80.165271980989] was preserved in latitude/longitude order and was not shifted.",
+    "The exact-point query returned zero features, but no citywide absence conclusion was drawn.",
+    "TGRAC layer extent and metadata do not prove Khammam citywide cadastral coverage.",
+    "No owner, address, titleholder, contact, personal, tax/account or other unsafe fields were requested or retained.",
+    "No raw source-specific attribute set, synthetic identity, or sample GeoJSON was retained.",
+    "Packet completion is not source integration/admission; runtime remains held pending serial review."
+  ],
+  "uncertainty": "The live Bhu Bharati viewer's current configuration, Khammam village route, parcel response schema, stable native identity, CRS handling, and citywide coverage remain unresolved."
+}

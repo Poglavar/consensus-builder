@@ -1,0 +1,105 @@
+{
+  "cityCode": 10505,
+  "queueRank": 1795,
+  "city": "Ranipet",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [12.9276764450989, 79.3225583471629],
+  "population2025": 320233,
+  "population2025k": 320.233,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ranipet Tamil Nadu official cadastral parcel map land records GIS survey portal",
+        "result": "First-party discovery identified the Ranipet District Government of Tamil Nadu revenue service page, the Tamil Nadu official land-record e-services route, the Tamil Nadu Integrated Land Record announcement, and the official TNGIS web GIS portal. The sources describe land records/FMB/TSLR and GIS services, but did not expose a parcel vector endpoint in the accessible discovery content.",
+        "actualResultUrls": [
+          "https://ranipet.nic.in/service-category/revenue/",
+          "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu",
+          "https://tn.nic.in/news/additional-land-records-services-launch-by-honourable-minister-for-revenue-and-disaster-management-tamil-nadu/",
+          "https://www.tngis.tn.gov.in/apps.html",
+          "https://eservices.tn.gov.in/"
+        ]
+      },
+      {
+        "language": "Tamil",
+        "query": "ராணிப்பேட்டை தமிழ்நாடு அதிகாரப்பூர்வ நில வரைபடம் பட்டா நில அளவை",
+        "result": "Tamil-language discovery confirmed the same Tamil Nadu government land-record and GIS routes, including TamilNilam/Tamil Nadu land-record terminology. No separate Ranipet local parcel API or safe anonymous parcel geometry response was identified.",
+        "actualResultUrls": [
+          "https://ranipet.nic.in/",
+          "https://www.tngis.tn.gov.in/apps.html",
+          "https://eservices.tn.gov.in/",
+          "https://tamilnilam.tn.gov.in/citizen"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": "Ranipet District Administration, Government of Tamil Nadu; Department of Survey and Settlement / Revenue and Disaster Management, Government of Tamil Nadu",
+  "registryEvidence": {
+    "districtRevenuePage": "https://ranipet.nic.in/service-category/revenue/",
+    "districtPageOutcome": "Official Ranipet District page lists e-Services (Anytime / Anywhere) – Land under Revenue and identifies district administration/NIC ownership.",
+    "stateServiceEvidence": "Official Tamil Nadu/NIC material identifies eservices.tn.gov.in as the Integrated Land Record route combining textual records, FMB/maps, and Chitta; the national government service description says rural/urban lookup uses district, taluk/town, village/ward, survey and subdivision fields.",
+    "tngisEvidence": "Official TNGIS page identifies Tamil Nadu Geographical Information System and lists district.ranipet among district GIS entries; accessible content did not expose a public parcel layer URL."
+  },
+  "sourceReview": {
+    "service": "Tamil Nadu official land-record e-Services / TamilNilam and TNGIS public web GIS",
+    "baseUrls": [
+      "https://eservices.tn.gov.in/",
+      "https://tamilnilam.tn.gov.in/citizen",
+      "https://www.tngis.tn.gov.in/apps.html",
+      "https://ranipet.nic.in/service-category/revenue/"
+    ],
+    "officialAssetsInspected": ["official discovery pages and current rendered page content; direct service HTML/configuration fetch timed out"],
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": "The official service description indicates administrative and survey/subdivision selectors, but no selected Ranipet hierarchy values or parcel-level native key were returned.",
+    "crs": null,
+    "safeFieldAllowlist": [
+      "stable native parcel identifier only, if independently confirmed",
+      "full parcel polygon geometry",
+      "geometry CRS / coordinate reference metadata",
+      "public service and layer metadata"
+    ]
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://ranipet.nic.in/service-category/revenue/", "outcome": "200 via public web retrieval; official Revenue page listed e-Services (Anytime / Anywhere) – Land; no login used"},
+    {"method": "GET", "url": "https://tn.nic.in/news/additional-land-records-services-launch-by-honourable-minister-for-revenue-and-disaster-management-tamil-nadu/", "outcome": "200 via public web retrieval; official NIC Tamil Nadu page documented Integrated Land Record at https://eservices.tn.gov.in/ and TamilNilam citizen route; no login used"},
+    {"method": "GET", "url": "https://www.tngis.tn.gov.in/apps.html", "outcome": "200 via public web retrieval; official TNGIS page readable and showed district.ranipet, but no parcel API URL or safe layer schema was exposed in accessible content"},
+    {"method": "GET", "url": "https://eservices.tn.gov.in/", "outcome": "Timed out after 20 seconds from anonymous direct request; no login, CAPTCHA bypass, or retry with credentials"},
+    {"method": "GET", "url": "https://www.tngis.tn.gov.in/apps.html", "outcome": "Timed out after 25 seconds from a second anonymous direct curl request; public web retrieval had already confirmed page content; no API request attempted without current configuration"},
+    {"method": "GET", "url": "https://tamilnilam.tn.gov.in/citizen", "outcome": "Identified by official announcement as the public citizen route for Patta Transfer History; no parcel geometry request made and no unsafe fields requested"}
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed because the official service configuration/API and Ranipet parcel hierarchy were not accessible anonymously; no hit/miss inference is made.",
+    "requestEvidence": ["https://ranipet.nic.in/service-category/revenue/", "https://tn.nic.in/news/additional-land-records-services-launch-by-honourable-minister-for-revenue-and-disaster-management-tamil-nadu/", "https://www.tngis.tn.gov.in/apps.html"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Tamil Nadu official integrated land records, FMB/maps, TamilNilam, and TNGIS services, with Ranipet district listed in TNGIS.",
+    "verifiedOpenScope": "Official custodian and public service routes verified; no open Ranipet parcel ID+geometry response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": [
+    "Exact WUP point [12.9276764450989, 79.3225583471629] was preserved in latitude/longitude order and was not shifted.",
+    "A timeout, unusable UI, map extent miss, zero exact-point hit, or unavailable API is not evidence of citywide cadastral absence.",
+    "No stable native parcel identifier, native field schema, CRS response, or full parcel polygon was obtained.",
+    "No owner, address, titleholder, contact, personal, tax, account, or other unsafe fields were requested or retained.",
+    "No raw source-specific attribute set or GeoJSON sample was retained.",
+    "Packet completion is not source integration/admission; serial reviewer qualification remains required."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The official Tamil Nadu land-record and GIS services may contain Ranipet parcel coverage, but the current anonymous service contract, administrative selection values, stable parcel identity, CRS, geometry access, and citywide coverage remain unresolved.",
+  "retainedSample": null
+}

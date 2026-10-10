@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-12091-fuqing.json",
+  "purpose": "Document first-party local registry context and bounded anonymous parcel-geometry access review for Fuqing, China.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Fuqing's official Natural Resources and Planning Bureau is a local registry/cadastre custodian. Official material describes unified real-estate registration, cadastral investigation, real-estate surveying, and results application. Official Fuqing and Fujian sources describe municipal One Map/public geospatial platforms and a Tian地图·Fuqing service, but bounded anonymous routes did not return a current viewer configuration or safe parcel feature response.",
+  "registryAssessment": "Local registry/cadastre custodian verified: 福清市自然资源和规划局, including its 不动产登记和交易中心. The public geospatial platform is official bureau material, but it is not by itself evidence of an open parcel-feature API.",
+  "officialPrimarySources": [
+    {"url": "https://www.fuqing.gov.cn/xjwz/zwgk/jigzn/zfgzbm/fqszrzyhghj/202501/t20250114_4961650.htm", "observation": "Official Fuqing government organizational page for the Natural Resources and Planning Bureau. It describes the Real Estate Registration and Transaction Center's registration, cadastral investigation, surveying, and results application duties."},
+    {"url": "https://zrzyt.fujian.gov.cn/ztzl/sxzygwzxsqzx/zyzxzx/202408/t20240808_6499685.htm", "observation": "Official Fujian Natural Resources article describing Fuqing's One Map system, its public-facing planning platform, and internal/government platforms."},
+    {"url": "https://www.fqghj.net/show.aspx?nid=6528&tid=75", "observation": "Bureau-hosted official notice publishing the 2022 Fuqing public geospatial-platform version and public WMTS availability for vector/imagery map data; it does not expose a parcel schema or native parcel IDs in the notice."},
+    {"url": "http://www.fqghj.net:9002/Portal/index.html", "observation": "Officially published Fuqing public platform URL was attempted over HTTP at the exact URL given in the notice; the HTTP request timed out. HTTPS variant was not substituted as evidence for the published HTTP endpoint."},
+    {"url": "https://fujian.tianditu.gov.cn/map", "observation": "Official Fujian Natural Resources source links the current provincial Tian地图·福建 public map. Bounded GET did not complete during this run; no Fuqing parcel layer was inferred."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Fuqing China official cadastral parcel map land registry GIS Natural Resources Bureau", "result": "Search led to official Fuqing government, Fujian Natural Resources, and Fuqing Smart City Planning Network sources; no safe anonymous parcel response was found.", "actualResultUrls": ["https://www.fuqing.gov.cn/xjwz/zwgk/jigzn/zfgzbm/fqszrzyhghj/202501/t20250114_4961650.htm", "https://zrzyt.fujian.gov.cn/ztzl/sxzygwzxsqzx/zyzxzx/202408/t20240808_6499685.htm", "https://www.fqghj.net/show.aspx?nid=6528&tid=75"]},
+    {"language": "Chinese", "query": "福清市 地籍图 不动产登记 自然资源和规划局 官方 地图 服务", "result": "官方结果确认地方自然资源/不动产登记职责和福清一张图/天地图平台；未验证匿名宗地要素服务、模式、CRS或稳定原生宗地标识。", "actualResultUrls": ["https://www.fuqing.gov.cn/xjwz/zwgk/jigzn/zfgzbm/fqszrzyhghj/202501/t20250114_4961650.htm", "https://zrzyt.fujian.gov.cn/ztzl/sxzygwzxsqzx/zyzxzx/202408/t20240808_6499685.htm", "https://www.fqghj.net/show.aspx?nid=6528&tid=75"]}
+  ],
+  "attempts": [
+    {"url": "https://fqghj.net/index.aspx", "result": "Bounded anonymous TLS GET timed out after 12 seconds; no retry with weakened TLS or credentials."},
+    {"url": "http://www.fqghj.net:9002/Portal/index.html", "result": "Bounded anonymous HTTP GET timed out after 12 seconds; no map HTML, JavaScript, configuration, API route, schema, CRS, or parcel response obtained."},
+    {"url": "https://fujian.tianditu.gov.cn/map", "result": "Bounded anonymous GET did not complete within the run window; no parcel absence inference made."},
+    {"url": "https://www.fuqing.gov.cn/xjwz/zwgk/jigzn/zfgzbm/fqszrzyhghj/202501/t20250114_4961650.htm", "httpStatus": 200, "result": "Official local custodian page fetched through discovery/open tooling."},
+    {"url": "https://zrzyt.fujian.gov.cn/ztzl/sxzygwzxsqzx/zyzxzx/202408/t20240808_6499685.htm", "httpStatus": 200, "result": "Official Fujian article fetched; One Map public/internal platform roles documented."},
+    {"url": "https://www.fqghj.net/show.aspx?nid=6528&tid=75", "httpStatus": 200, "result": "Official local notice fetched; public WMTS vector/imagery coverage claims documented, but no parcel feature schema."}
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Not performed against a verified public parcel feature service. Timeouts and map-service scope statements are not evidence of citywide absence.", "requestEvidence": []},
+  "coverageAssessment": {"claimedScope": "Official sources describe Fuqing municipal One Map/public geospatial services and public vector/imagery map coverage, plus local cadastral and real-estate registration responsibilities.", "verifiedOpenScope": "Local custodian and platform existence verified; anonymous parcel geometry, schema/CRS, stable native ID, and citywide cadastral completeness not verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "The current public viewer/API may be temporarily unavailable or may require a browser-mediated route. Registration-related cadastral information may be authorization-gated. No login, owner/address/contact/titleholder/personal/tax/account fields, private token, CAPTCHA bypass, or TLS exception was used.",
+  "runtimeAssessment": "held; no adapter admission or source integration implied"
+}

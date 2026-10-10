@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-1023-boa-vista.json",
+  "purpose": "Document first-party registry/map discovery, viewer/service evidence, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Boa Vista's official municipal pages evidence a local Department of Real Estate Cadastre and cadastral administrative services. The current public cartographic page exposes two downloadable base-cartography PDFs, not a parcel feature service. No safe anonymous parcel ID-plus-complete-geometry response was obtained; no sample GeoJSON was retained.",
+  "registryAssessment": "The Departamento de Cadastro Imobiliário (DCI) is identified on the official municipal secretariat page and is the local cadastral custodian evidenced here. The citizen portal documents cadastro imobiliário, lot registration, and a certificate with limits and measurements. General federal or state material was not treated as local custody.",
+  "officialPrimarySources": [
+    {"url": "https://boavista.rr.gov.br/prefeitura/secretarias-e-orgaos-municipais/secretaria-municipal-de-planejamento-orcamento-financas-e-tecnologia-da-informacao", "observation": "Official municipal page identifies the Departamento de Cadastro Imobiliário (DCI), its secretariat, municipal address and contact details."},
+    {"url": "https://boavista.rr.gov.br/mapa-cartografico", "observation": "Official municipal Mapa Cartográfico page exposes Base Cartográfica Municipal 2016 and 2020 as PDF downloads."},
+    {"url": "https://cidadao.boavista.rr.gov.br/servicos/certidao-de-cadastro-com-limites-e-metragens/show", "observation": "Official citizen portal documents the certificate-with-limits-and-measurements workflow and requires applicant/property documentation; no public parcel geometry endpoint is exposed."},
+    {"url": "https://cidadao.boavista.rr.gov.br/servicos/cadastramento-de-lote/show", "observation": "Official citizen portal documents lot registration as an administrative service and lists required identity and property-chain documents; no public parcel geometry endpoint is exposed."},
+    {"url": "https://boavista.rr.gov.br/matriculaonline", "observation": "Official municipal page links to Matricula Online, but the linked public application identifies itself as an education-enrollment product and was excluded from cadastral qualification."}
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://boavista.rr.gov.br/mapa-cartografico",
+    "observedTechnology": "Municipal HTML page with direct PDF links; no JavaScript map viewer or GIS service configuration exposed.",
+    "observedControls": ["Base Cartográfica Municipal 2016 PDF", "Base Cartográfica Municipal 2020 PDF"],
+    "schemaAndCrs": "No parcel feature schema or service CRS was exposed. The PDFs were treated as cartographic documents, not parcel API responses.",
+    "nativeFieldNames": [],
+    "sourceFieldMapping": "None observed; no parcel feature response obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://boavista.rr.gov.br/mapa-cartografico", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200; page HTML inspected. Only two direct municipal base-cartography PDF links were present; no parcel API, WMS, WFS, GeoJSON, or map configuration was exposed."},
+    {"url": "https://boavista.rr.gov.br/storage/paginas/mapa-cartografico/BASE_GERAL_2016.pdf", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 application/pdf; downloaded as ignored scratch evidence. It is a cartographic document, not a safe structured parcel feature response; no geometry retained."},
+    {"url": "https://boavista.rr.gov.br/storage/paginas/mapa-cartografico/BASE_GERAL_2020.pdf", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 application/pdf; downloaded as ignored scratch evidence. It is a cartographic document, not a safe structured parcel feature response; no geometry retained."},
+    {"url": "https://matriculaonline.boavista.rr.gov.br/", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 public application shell; current Nuxt config identifies an education-enrollment product and an authentication API. No cadastral route was used and no credentials or token-bearing request was attempted."},
+    {"url": "https://prd-smec-giz-api.suportesolucao.cloud/api/", "method": "GET", "normalTlsVerification": true, "result": "HTTP 404 JSON route-not-found; this is the education application API and not a cadastral service."},
+    {"url": "https://prd-smec-giz-api.suportesolucao.cloud/api/v1", "method": "GET", "normalTlsVerification": true, "result": "HTTP 404 JSON route-not-found; no further probing performed."},
+    {"url": "https://prd-smec-giz-api.suportesolucao.cloud/api/v1/auth/login", "method": "GET", "normalTlsVerification": true, "result": "HTTP 405; endpoint allows POST. No login, credentials, CAPTCHA, or token request was attempted."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous parcel response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "query": "No parcel geometry query submitted because the official municipal map exposed only PDFs and the linked application was unrelated education software."},
+  "coverageAssessment": {"claimedScope": "Official Boa Vista DCI custody, citizen-service workflows, municipal map page and linked public application shell.", "verifiedOpenScope": "Municipal custody and base-cartography documents only; no anonymous complete-polygon feature response verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "Native parcel identity, schema, CRS, API access policy, and coverage remain unverified. Administrative certificate/registration workflows and PDF cartography do not establish an open parcel geometry service. Failed or unrelated routes are not evidence of citywide absence.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."}
+}

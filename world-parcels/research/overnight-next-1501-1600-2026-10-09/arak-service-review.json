@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-4664-arak.json",
+  "purpose": "Document first-party registry/map discovery, bounded anonymous request outcomes, scope limits, safe-field rules, and uncertainty.",
+  "assessment": "Arak's municipal property/planning map URL was identified, but the service could not be inspected: HTTPS failed normal certificate verification and HTTP timed out. The national registration portal also timed out. No safe anonymous native parcel ID plus complete polygon was verified.",
+  "registryAssessment": "No local registry/cadastre/map service was directly verified as usable; registryFound remains null. Search evidence distinguishes the Arak registration office and municipal map reference from general Iranian cadastral procedure material, but neither establishes an open parcel API.",
+  "officialPrimarySources": [
+    {"url": "https://ayan.arak.ir/", "observation": "Municipal Arak property/planning map URL discovered in search; direct HTTPS access failed certificate verification and HTTP timed out."},
+    {"url": "https://my.ssaa.ir/", "observation": "National registration service URL; web retrieval timed out before public map/API configuration could be inspected."}
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://ayan.arak.ir/",
+    "observedLayer": null,
+    "observedVendor": null,
+    "observedLayerDescription": null,
+    "schemaAndCrs": null,
+    "exactPointExtentCheck": "Not performed; no usable viewer response was obtained. Exact WUP point [34.0911822617141, 49.6946635336201] was preserved and not shifted.",
+    "nativeFieldNames": null,
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://ayan.arak.ir/", "method": "GET", "normalTlsVerification": true, "result": "TLS certificate verification failed; request was not retried with verification disabled."},
+    {"url": "http://ayan.arak.ir/", "method": "GET", "normalTlsVerification": true, "result": "Connection timed out after 20 seconds; no HTML, JavaScript, configuration, schema, CRS, or parcel response returned."},
+    {"url": "https://my.ssaa.ir/", "method": "GET", "normalTlsVerification": true, "result": "Web retrieval timed out; no public map/API configuration or parcel response returned."},
+    {"url": "https://mapcarta.com/N4582266652", "method": "GET", "normalTlsVerification": true, "result": "Secondary map page identifies the Arak registration office location; it is not a cadastral parcel service and no geometry was retained."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying cadastral parcel geometry response was obtained.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "query": "No parcel-point query submitted because no public cadastral endpoint and safe request shape were verified."},
+  "coverageAssessment": {"claimedScope": "Arak municipal map discovery plus national/local cadastral-service discovery.", "verifiedOpenScope": "No anonymous complete parcel polygon response verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "A map timeout, TLS failure, login wall, or exact-point miss would not establish citywide absence. Service ownership, current JavaScript/configuration, schema, CRS, native parcel identity, anonymous access, and completeness remain unverified.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous safe ID-plus-parcel-geometry response; this packet does not qualify an adapter or enable runtime."}
+}

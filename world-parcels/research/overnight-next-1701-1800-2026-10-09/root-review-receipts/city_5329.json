@@ -1,0 +1,14 @@
+{
+  "taskId": "city:5329",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-5329-yokkaichi.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/yokkaichi-service-review.json",
+    "tmp/valhalla-parcel-research/5329/portal.html",
+    "tmp/valhalla-parcel-research/5329/map.html"
+  ],
+  "checkedAt": "2026-10-10T13:52:58Z",
+  "reason": "Queue identity and English/Japanese searches checked. Official portal cache lists thematic maps; bounded map cache is an agreement shell. No full parcel polygon or native-ID geometry response was retained. Independent adapter and headed Details qualification are absent."
+}

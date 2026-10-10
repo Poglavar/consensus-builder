@@ -1,0 +1,17 @@
+{
+  "taskId": "city:11206",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-11206-sihui.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/sihui-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T13:01:34Z",
+  "reason": "WUP archive and queue agree on Sihui, China, rank 1694, point [23.3489476405903,112.70204051422], and 337299 persons. English and Simplified Chinese queries and first-party URLs are recorded. The Guangdong Sihui services portal and Sihui Natural Resources Bureau disclosure page support local record custody, but the latter requires identity and verification; the regional registration-unit map is not a parcel feature service. No native parcel ID plus full polygon response or safe sample was evidenced. Unavailable public routes are not absence.",
+  "firstPartyChecks": [
+    "https://www.gdzwfw.gov.cn/portal/index?region=441284",
+    "https://ysqgk.gd.gov.cn/758173/apply?type=3"
+  ],
+  "admissionGates": "No fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification; runtime remains held."
+}

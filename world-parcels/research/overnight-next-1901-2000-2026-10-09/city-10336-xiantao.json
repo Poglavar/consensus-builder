@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 10336,
+  "queueRank": 1938,
+  "name": "Xiantao",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [30.3722179748149, 113.449733072211],
+  "population2025": 297859,
+  "population2025k": 297.859,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Xiantao China official cadastral parcel map land registration geoportal API",
+        "result": "No Xiantao-specific public anonymous parcel map/API was found. Results identified official Chinese cadastral/real-estate registration policy material and an official Hubei Natural Resources report about Xiantao registration services, but not a downloadable parcel feature service.",
+        "actualResultUrls": [
+          "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202505/t20250515_5651271.shtml",
+          "https://zrzyt.hubei.gov.cn/bmdt/ztzl/fgfgg/szdt/202011/t20201118_3036398.shtml",
+          "https://app.www.gov.cn/govdata/gov/202310/12/508153/article.html"
+        ]
+      },
+      {
+        "language": "Chinese (local/official language)",
+        "query": "仙桃市 官方 不动产 登记 地籍图 宗地图 公开 地图 服务 API",
+        "result": "Official results confirmed the Xiantao real-estate registration center, online registration, the 2023 一码看图 function, and later visual map querying. The search did not expose an anonymous parcel feature endpoint, response schema, CRS, or safe parcel identifier.",
+        "actualResultUrls": [
+          "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202505/t20250515_5651271.shtml",
+          "https://credit.xiantao.gov.cn/wcm/content/detail/20230704155156_100562.html",
+          "https://credit.xiantao.gov.cn/wcm/content/detail/20240813162917_100312.html",
+          "https://credit.xiantao.gov.cn/wcm/content/detail/20240820144539_100352.html"
+        ]
+      },
+      {
+        "language": "Chinese (local/official language)",
+        "query": "仙桃 一码看图 不动产 入口; 仙桃 不动产登记 以图查房 网址; site:hbzwfw.gov.cn 仙桃 不动产登记",
+        "result": "Search results described the 湖北政务服务网/鄂汇办 online registration and query channels, but no directly callable Xiantao public map/API URL was returned. The descriptions indicate identity/official service workflows rather than anonymous parcel geometry access.",
+        "actualResultUrls": [
+          "https://zrzyt.hubei.gov.cn/bmdt/ztzl/fgfgg/szdt/202101/t20210106_3202494.shtml",
+          "https://zrzyt.hubei.gov.cn/bmdt/ztzl/fgfgg/szdt/202007/t20200731_2724105.shtml",
+          "https://zrzyhcxjs.wuhan.gov.cn/ztzl/yhyshj/yhyshj_bszn/202404/P020240409837386450835.pdf"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202505/t20250515_5651271.shtml",
+      "operator": "仙桃市不动产登记中心 / Xiantao Real Estate Registration Center, under Xiantao Natural Resources and Urban-Rural Construction authority",
+      "evidence": "First-party Hubei Natural Resources report identifies the local registration center and states that Xiantao implemented online registration, 2023 一码看图 (QR-based viewing of property floor plans), and a later visual registration-information query mechanism. This is direct local-custodian evidence, not merely national agency prose."
+    },
+    {
+      "url": "https://zrzyt.hubei.gov.cn/bmdt/ztzl/fgfgg/szdt/202011/t20201118_3036398.shtml",
+      "operator": "仙桃市自然资源和规划局 / Xiantao Natural Resources and Planning Bureau",
+      "evidence": "First-party Hubei Natural Resources report attributed to Xiantao's bureau describes the local real-estate registration online hall and information-sharing platform; it does not publish an anonymous parcel geometry service."
+    },
+    {
+      "url": "https://credit.xiantao.gov.cn/wcm/content/detail/20230704155156_100562.html",
+      "operator": "中国仙桃网 / Credit China Xiantao municipal publication",
+      "evidence": "Official Xiantao municipal publication says the city data middle platform aggregates natural-resource/registration-related data and APIs for internal/public-service workflows, but it does not expose parcel features or a public parcel endpoint."
+    },
+    {
+      "url": "https://app.www.gov.cn/govdata/gov/202310/12/508153/article.html",
+      "operator": "Ministry of Natural Resources / State Council government publication",
+      "evidence": "National policy says cadastral data may be visualized through public geographic platforms where lawful; it is general national guidance and not evidence of an open Xiantao parcel layer."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202505/t20250515_5651271.shtml",
+      "method": "GET via public web retrieval",
+      "status": "200/indexed",
+      "summary": "Official local-service article retrieved; it described 一码看图 and visual query capabilities but supplied no public map/API URL or parcel response."
+    },
+    {
+      "url": "https://zrzyt.hubei.gov.cn/bmdt/ztzl/fgfgg/szdt/202011/t20201118_3036398.shtml",
+      "method": "GET via public web retrieval",
+      "status": "200/indexed",
+      "summary": "Official Xiantao bureau report retrieved; it described an online registration hall and provincial service integration, with no anonymous parcel feature route."
+    },
+    {
+      "url": "https://credit.xiantao.gov.cn/wcm/content/detail/20230704155156_100562.html",
+      "method": "GET via curl with verified TLS",
+      "status": 200,
+      "summary": "Official Xiantao municipal publication downloaded and inspected. HTML exposed ordinary site scripts and article content; no parcel viewer configuration, feature-service URL, geometry endpoint, or safe native ID field was present."
+    },
+    {
+      "url": "https://credit.xiantao.gov.cn/wcm/content/detail/20240813162917_100312.html",
+      "method": "GET via public web retrieval",
+      "status": "200/indexed",
+      "summary": "Official Xiantao data-management notice retrieved; it identifies natural-resource/spatial data governance but not an anonymous parcel service."
+    },
+    {
+      "url": "https://credit.xiantao.gov.cn/wcm/content/detail/20240820144539_100352.html",
+      "method": "GET via public web retrieval",
+      "status": "200/indexed",
+      "summary": "Official Xiantao government-map article retrieved; it describes a service-center locations map, not cadastral parcels."
+    },
+    {
+      "url": "https://hbzwfw.gov.cn/ and related 湖北政务服务网/鄂汇办 references",
+      "method": "GET/search discovery only",
+      "status": "no direct public parcel endpoint exposed",
+      "summary": "The official references identify authenticated or identity-mediated registration/query workflows. No login, credentials, private token, CAPTCHA bypass, or unsafe owner/address/title data was attempted."
+    },
+    {
+      "url": "WUP exact point [30.3722179748149, 113.449733072211]",
+      "method": "parcel point query",
+      "status": "not run",
+      "summary": "No anonymous parcel endpoint was identified, so no point query was possible. This is not evidence of citywide absence."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": null,
+    "fallbackOidField": null,
+    "compositeKey": null,
+    "fieldMapping": {
+      "geometry": "Not available: no anonymous parcel feature response was returned.",
+      "native identity": "Not available: no parcel feature schema or safe native ID was exposed by the attempted public routes."
+    },
+    "crs": "Not confirmed.",
+    "geometryType": "Not confirmed."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The Xiantao registration center/local natural-resources authority administers city real-estate registration services; official sources describe citywide service operations and map-viewing/query functions.",
+    "verifiedOpenScope": "Local custodian and service-operation evidence only; open citywide parcel geometry coverage was not verified.",
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "No usable point or parcel response was obtained. This is an endpoint/access limitation, not evidence of citywide absence."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["geometry", "stable native parcel identifier if later exposed"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "tax", "account", "legal description", "rights/title details", "personal identifiers"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_local_registry_custodian_geometry_unverified",
+  "remainingUncertainty": "Xiantao clearly has a local real-estate registration center and online/map-viewing workflows, but the discovered routes are service descriptions or identity-mediated applications. The current public JavaScript/configuration did not expose an anonymous parcel feature API, schema, CRS, stable native parcel identity, or geometry response.",
+  "nextStep": "Serial reviewer should independently inspect the current official Hubei/Xiantao registration portal and qualify any anonymous parcel endpoint, native ID, CRS, geometry, and coverage before adapter admission."
+}

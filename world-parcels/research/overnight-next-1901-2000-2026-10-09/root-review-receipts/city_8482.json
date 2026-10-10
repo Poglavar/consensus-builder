@@ -1,0 +1,12 @@
+{
+  "taskId": "city:8482",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-8482-caruaru.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/caruaru-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T18:30:33.712471Z",
+  "reason": "WUP roster and queue match code 8482, rank 1916, Brazil, point, and 299805 persons; English and Portuguese searches were executed. The municipal Cadastro Imobiliário custodian is corroborated by a live first-party legislative page. No anonymous native-ID-plus-polygon response, bounded retrieval, paging, 13 cells, metric geometry checks, source binding, or headed Details proof exists. The login wall is not citywide absence; custody true and runtime admission held."
+}

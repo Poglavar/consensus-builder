@@ -1,0 +1,13 @@
+{
+  "taskId": "city:284",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-284-deir-el-balah.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/deir-el-balah-service-review.json",
+    "tmp/valhalla-parcel-research/284/webmap-data.json"
+  ],
+  "checkedAt": "2026-10-10T15:32:09Z",
+  "reason": "The immutable WUP identity and English/Arabic searches match the queue. Original public ArcGIS Web Map cache is a static 2022 snapshot with EPSG:3857 TYPE3GAZA8 polygons; local first-party payload inspection found 1427 features, unique OBJECTIDs and two source envelopes near the WUP point. This is public geometry discovery, not a fresh live adapter read. Forced paging, 13 cells, full metric GEOS checks, source binding and headed Details proof are absent; no citywide coverage is inferred."
+}

@@ -1,0 +1,13 @@
+{
+  "taskId": "city:5874",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-5874-pachuca.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pachuca-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T16:46:12Z",
+  "reason": "Held: state and municipal cadastral custody and English/Spanish searches are supported, but no anonymous safe native-ID polygon response or qualified adapter; inaccessible/login-gated portals do not prove parcel absence."
+}

@@ -1,0 +1,135 @@
+{
+  "cityCode": 7868,
+  "queueRank": 1614,
+  "name": "Burewala",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "point": [30.1593515650401, 72.6808197136685],
+  "population2025": 354057,
+  "population2025k": 354.057,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Burewala Pakistan official cadastral parcel map GIS land records Punjab",
+        "result": "Found the official Punjab municipal GIS program page listing Burewala and the official Municipal Committee Burewala basemap PDF. The basemap visibly documents parcel boundaries, but no public parcel-feature API or safe native parcel IDs/full polygons were exposed.",
+        "actualResultUrls": [
+          "https://pmdfc.punjab.gov.pk/gis-map-16_cities-pcp",
+          "https://mcburewala.lgpunjab.org.pk/wp-content/uploads/2024/05/Base-Map_MC-Burewala_2023-24.pdf",
+          "https://lis.pulse.gop.pk/",
+          "https://www.punjab-zameen.gov.pk/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "بورے والا پنجاب سرکاری کادستر زمین نقشہ اراضی ریکارڈ",
+        "result": "Official Urdu/Punjab land-record results identified PLRA/Punjab Land Records services and the Burewala municipal basemap. The public services describe land-record access and map infrastructure but did not provide an anonymous safe parcel-ID plus polygon response for Burewala.",
+        "actualResultUrls": [
+          "https://jamabandi.punjab.gov.in/DigitalFard.aspx",
+          "https://www.punjab.gov.pk/digital-platforms",
+          "https://mcburewala.lgpunjab.org.pk/portfolio_cat/updated-maps-2023/",
+          "https://mcburewala.lgpunjab.org.pk/wp-content/uploads/2024/05/Base-Map_MC-Burewala_2023-24.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "A local municipal map is actually evidenced: the official Municipal Committee Burewala 2023-24 basemap, published through Punjab Municipal Development Fund Company’s GIS municipal program, identifies parcel boundaries and is signed by municipal officials. This evidences a local municipal mapping custodian, not an open cadastral parcel API or legal title registry.",
+  "officialSources": [
+    {
+      "url": "https://pmdfc.punjab.gov.pk/gis-map-16_cities-pcp",
+      "observation": "Official Punjab municipal GIS program page listing Burewala among the 16 city GIS maps."
+    },
+    {
+      "url": "https://mcburewala.lgpunjab.org.pk/wp-content/uploads/2024/05/Base-Map_MC-Burewala_2023-24.pdf",
+      "observation": "Official Burewala municipal basemap, version 1.5, April 2024, scale 1:10,000; legend includes Parcel Boundary, and the signature panel names the municipal GIS officer, Municipal Officer (I&S), and Chief Officer."
+    },
+    {
+      "url": "https://lis.pulse.gop.pk/",
+      "observation": "Official Punjab Urban Land Systems Enhancement map portal. Public page exposes ArcGIS infrastructure and states that complete parcel details require login; no Burewala parcel response was retained."
+    },
+    {
+      "url": "https://www.punjab-zameen.gov.pk/",
+      "observation": "Official Punjab Land Records Authority site describing GIS-linked land-record services; no anonymous Burewala parcel geometry endpoint was identified."
+    }
+  ],
+  "source": {
+    "sourceId": "mcburewala-pmdfc-basemap-2023-24",
+    "name": "Burewala Municipal Committee basemap",
+    "operator": "Municipal Committee Burewala / Punjab Municipal Development Fund Company",
+    "endpoint": "https://mcburewala.lgpunjab.org.pk/wp-content/uploads/2024/05/Base-Map_MC-Burewala_2023-24.pdf",
+    "method": "Official web discovery and bounded anonymous GET inspection",
+    "responseFormat": "PDF map",
+    "nativeCrs": null,
+    "queryOutputCrs": null,
+    "nativeIdentity": null,
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "scope": "Municipal basemap showing parcel-boundary cartography; not a queryable parcel-feature dataset and not evidence of complete cadastral coverage."
+  },
+  "requests": [
+    {
+      "url": "https://pmdfc.punjab.gov.pk/gis-map-16_cities-pcp",
+      "method": "GET",
+      "httpStatus": "timeout",
+      "outcome": "Direct anonymous request timed out in the bounded attempt; official search discovery independently identified the page and its Burewala listing."
+    },
+    {
+      "url": "https://mcburewala.lgpunjab.org.pk/wp-content/uploads/2024/05/Base-Map_MC-Burewala_2023-24.pdf",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official PDF returned. It depicts parcel boundaries and municipal context, but provides no machine-readable parcel IDs or full parcel polygons suitable for safe GeoJSON retention."
+    },
+    {
+      "url": "https://mcburewala.lgpunjab.org.pk/portfolio_cat/updated-maps-2023/",
+      "method": "GET via discovery",
+      "httpStatus": 200,
+      "outcome": "Official municipal map index identified through first-party search results; no parcel API was exposed."
+    },
+    {
+      "url": "https://lis.pulse.gop.pk/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Public PULSE map page returned and its current JavaScript/configuration was inspected. It uses ArcGIS services under gismaps.punjab-zameen.gov.pk; the page explicitly says complete parcel details require login. No Burewala parcel layer was safely queried."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Public ArcGIS service inventory returned. No Burewala-specific open parcel service was identified; the visible GPC parcel service required a token."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/GPC/GPC_Parcels/MapServer?f=pjson",
+      "method": "GET",
+      "httpStatus": 499,
+      "outcome": "ArcGIS returned Token Required. No token was used, and no feature query or geometry was retained."
+    },
+    {
+      "url": "https://jamabandi.punjab.gov.pk/DigitalFard.aspx",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official Punjab Land Records search module returned, requiring interactive region/district/tehsil/village selection; no anonymous parcel geometry endpoint was exposed."
+    },
+    {
+      "url": "https://www.punjab-zameen.gov.pk/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official PLRA site returned and described GIS-linked land-record services; no public Burewala parcel geometry was found."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "legal_description", "value", "full parcel attributes"],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Official Burewala municipal basemap and Punjab land-record/GIS channels investigated.",
+    "verifiedOpenScope": "Municipal PDF cartography shows parcel boundaries; no safe machine-readable parcel identity plus full polygon response was verified.",
+    "countrywideVerified": false
+  },
+  "resultCategory": "local_map_evidenced_no_verified_public_parcel_geometry",
+  "runtimeReadiness": "held_serial_review",
+  "remainingUncertainty": "The municipal basemap does not establish parcel-level API coverage, native parcel identity, CRS, or citywide completeness. No claim is made about parcel absence, ownership, legal title, tax records, or completeness of PLRA/PULSE/internal datasets. Packet completion is not source integration or admission."
+}

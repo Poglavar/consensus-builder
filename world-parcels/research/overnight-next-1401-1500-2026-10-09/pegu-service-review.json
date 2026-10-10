@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5688-pegu.json",
+  "purpose": "Independent first-party registry/map discovery and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "exactPointMissNotInterpretedAsAbsence": true
+  },
+  "assessment": "Myanmar's official Settlement and Land Records Department (SLRD) is the evidenced national land-record custodian, with Bago Region Government providing local administrative context. The SLRD page returned an anonymous Cloudflare challenge, and a public ArcGIS directory exposed no parcel/cadastral service. No safe Pegu native parcel identity plus polygon was verified; no sample was retained and runtime remains held.",
+  "registryAssessment": "National SLRD custody is evidenced by its official site and land-record/map materials. The official Bago Region Government page provides Bago district/township context and a district map image. Neither source was verified as an open Pegu parcel-vector endpoint or local registry API.",
+  "officialPrimarySources": [
+    {"url": "https://slrd.gov.mm/en", "operator": "Settlement and Land Records Department, Myanmar", "observation": "Official national department site; references departmental records/maps and geodatabase analysis, but no public Pegu parcel endpoint was exposed in the bounded anonymous request."},
+    {"url": "https://bagoregion.gov.mm/bago-tsp-news/", "operator": "Bago Region Government, Myanmar", "observation": "Official local government page for Bago Township with a Bago district map image and township navigation; no cadastral parcel API or parcel attributes."},
+    {"url": "https://services5.arcgis.com/2ukn26wMEzoCxUbs/ArcGIS/rest/services", "operator": "Public ArcGIS services directory", "observation": "Directory lists general Myanmar boundaries, transport, census and other services; no parcel/cadastral layer was listed."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Pegu Bago Myanmar official cadastral parcel map land records GIS", "result": "SLRD national custodian, Bago Region Government context and general Myanmar ArcGIS services found; no verified public Pegu parcel vector endpoint.", "actualResultUrls": ["https://slrd.gov.mm/en", "https://bagoregion.gov.mm/bago-tsp-news/", "https://services5.arcgis.com/2ukn26wMEzoCxUbs/ArcGIS/rest/services"]},
+    {"language": "Burmese", "query": "ပဲခူး မြေစာရင်း မြေကွက် မြေပုံ GIS အစိုးရ", "result": "Burmese discovery confirmed SLRD and Bago Region Government first-party pages; no machine-readable Pegu parcel polygon and stable native identity were verified.", "actualResultUrls": ["https://slrd.gov.mm/my", "https://bagoregion.gov.mm/bago-tsp-news/", "https://maprint.dpsmap.com/"]}
+  ],
+  "attempts": [
+    {"attempt": "SLRD official site and public page inspection", "result": "The site is a first-party national land-record custodian, but the bounded anonymous GET returned a Cloudflare managed challenge. No bypass, login or credentials were attempted.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "Bago Region Government official page inspection", "result": "HTTP 200 page identified Bago Township and a Bago district map image, but no parcel service, schema or API configuration was exposed.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "Public ArcGIS REST directory inspection", "result": "HTTP 200 JSON service directory returned general Myanmar layers; no parcel/cadastral layer was listed, so no parcel metadata or geometry query was attempted.", "credentialsUsed": false, "personalPropertyFieldsRequested": false}
+  ],
+  "requests": [
+    {"url": "https://slrd.gov.mm/en", "method": "GET", "outcome": "HTTP 403 Cloudflare managed challenge", "safeRequest": true},
+    {"url": "https://bagoregion.gov.mm/bago-tsp-news/", "method": "GET", "outcome": "HTTP 200; official page and district-map context loaded", "safeRequest": true},
+    {"url": "https://services5.arcgis.com/2ukn26wMEzoCxUbs/ArcGIS/rest/services?f=pjson", "method": "GET", "outcome": "HTTP 200 JSON; no parcel/cadastral service listed", "safeRequest": true},
+    {"url": "https://maprint.dpsmap.com/", "method": "GET", "outcome": "No usable bounded parcel response verified", "safeRequest": true}
+  ],
+  "geometryDecision": {"publicParcelGeometryFound": false, "sampleFile": null, "details": "No full parcel polygon and no verified stable cadastral native identity were obtained. No exact-point hit or miss was used to infer coverage."},
+  "coverageAssessment": {"claimedScope": "Myanmar SLRD national custody plus Bago Region Government administrative context and general public ArcGIS services.", "verifiedOpenScope": "Custody/context only; Pegu parcel geometry, schema, CRS and citywide extent remain unverified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "safeFieldAllowlist": ["stable native parcel identifier if exposed", "geometry", "CRS", "source layer/service metadata"],
+  "remainingUncertainty": "Pegu cadastral records may exist in offline/local SLRD systems, an interactive route, or an unindexed service. The challenge response is an access limitation, not evidence of absence.",
+  "runtimeDecision": "held_not_enabled_no_verified_public_geometry"
+}

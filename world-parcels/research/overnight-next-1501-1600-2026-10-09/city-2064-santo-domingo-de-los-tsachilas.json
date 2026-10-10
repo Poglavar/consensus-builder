@@ -1,0 +1,61 @@
+{
+  "cityCode": 2064,
+  "queueRank": 1594,
+  "name": "Santo Domingo de los Tsachilas",
+  "country": "Ecuador",
+  "countryCode": "EC",
+  "iso3": "ECU",
+  "locId": 218,
+  "capital": false,
+  "point": [-0.256778935248753, -79.1817456340252],
+  "population2025": 356829,
+  "population2025k": 356.829,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Santo Domingo de los Tsachilas Ecuador official cadastral map GIS parcel municipality",
+        "result": "Found the official Municipality of Santo Domingo Dirección de Avalúos y Catastros page, the municipal online services route, and the municipal property registry site. No public parcel geometry endpoint was found in discovery.",
+        "actualResultUrls": [
+          "https://www.santodomingo.gob.ec/?p=3528",
+          "https://online.santodomingo.gob.ec/Account/Login?ReturnUrl=%2FLandUse%2FLandUseListView",
+          "https://registrodelapropiedadsd.gob.ec/"
+        ]
+      },
+      {
+        "language": "Spanish (local/native)",
+        "query": "Ecuador Santo Domingo de los Tsáchilas catastro mapa predios geoportal oficial",
+        "result": "Found the official municipal Dirección de Avalúos y Catastros page and municipal property registry. The official national IGM results were general cartographic/geoportal material, not a city parcel service. No public parcel geometry endpoint was verified.",
+        "actualResultUrls": [
+          "https://www.santodomingo.gob.ec/?p=3528",
+          "https://registrodelapropiedadsd.gob.ec/",
+          "https://www.geoportaligm.gob.ec/portal/index.php/descargas/geoinformacion/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official municipal site identifies a Dirección de Avalúos y Catastros responsible for the cadastral system of Cantón Santo Domingo, including urban and rural cadastre. This establishes a local cadastral custodian, not an open parcel API or citywide geometry result.",
+  "registryEvidenceUrls": [
+    "https://www.santodomingo.gob.ec/?p=3528",
+    "https://registrodelapropiedadsd.gob.ec/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "runtimeReadiness": "held; serial reviewer must independently qualify any adapter",
+  "resultCategory": "primary_local_registry_found_no_public_parcel_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "Municipal urban and rural cadastral system, as described by the official municipal department page",
+    "verifiedOpenScope": "None",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "uncertainty": "The exact WUP point was preserved and not shifted. A zero exact-point result was not obtained and no absence inference is made. The municipal online services route was not anonymously usable from this environment, and the property registry's public entry point requires credentials; neither provides evidence of parcel absence.",
+  "researchFile": "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-2064-santo-domingo-de-los-tsachilas.json"
+}

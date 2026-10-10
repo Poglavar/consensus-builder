@@ -1,0 +1,124 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:86",
+  "wupCityCode": 86,
+  "cityCode": 86,
+  "queueRank": 1278,
+  "rank": 1278,
+  "name": "Kaliningrad",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso2": "RU",
+  "iso3": "RUS",
+  "locId": 643,
+  "capital": false,
+  "aliases": ["kaliningrad"],
+  "point": [54.7148268101403, 20.5072107472647],
+  "centerLatLon": [54.7148268101403, 20.5072107472647],
+  "pointBasis": "Immutable WUP 2025 queue point copied unchanged in latitude/longitude order; no coordinate adjustment.",
+  "population2025": 436555,
+  "population2025k": 436.555,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "status": "complete",
+  "resultCategory": "official_local_geoportal_and_national_cadastral_references_no_verified_parcel_geometry",
+  "registryFound": true,
+  "registryBasis": "The official City of Kaliningrad geoportal is a local public map and its indexed layer list includes Земельные участки (land parcels). This evidences a local map channel, but not a verified downloadable cadastral feature response.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_quality_review",
+  "blocker": "No bounded anonymous response containing a safe native parcel ID and full geometry was obtained from the official local portal or national viewer routes.",
+  "source": {
+    "localCustodian": "Administration of the urban district City of Kaliningrad / geoportal.klgd.ru",
+    "localMap": "https://geoportal.klgd.ru/index.php/view/map/",
+    "nationalCustodian": "Federal Service for State Registration, Cadastre and Cartography (Rosreestr)",
+    "nationalViewer": "https://nspd.gov.ru/map?thematic=PKK",
+    "localAddressSpatialData": "https://www.klgd.ru/activity/construction/adresnyy-reestr/prostranstdannye_adresreestr.php?print=Y",
+    "crs": "EPSG:3857 (geoportal project extent); no parcel response CRS observed"
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "First-party English and Russian discovery plus bounded anonymous checks of the official Kaliningrad geoportal, municipal spatial-data page, and national cadastral-map references.",
+    "verifiedOpenScope": "Local map page, layer catalogue, project extent and CRS were observed; no parcel feature response or native parcel identity was observed.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kaliningrad official cadastral parcel map public viewer Rosreestr cadastral map",
+        "result": "Found the official City of Kaliningrad geoportal, official municipal spatial-data page, and national Rosreestr/NSPD cadastral references. The local portal exposes a land-parcels layer in its public map catalogue, but no feature response was retrieved.",
+        "actualResultUrls": [
+          "https://geoportal.klgd.ru/",
+          "https://www.klgd.ru/activity/construction/adresnyy-reestr/prostranstdannye_adresreestr.php?print=Y",
+          "https://nspd.gov.ru/map?thematic=PKK",
+          "https://rosreestr.gov.ru/"
+        ]
+      },
+      {
+        "language": "Russian",
+        "query": "Калининград публичная кадастровая карта официальный карта земельных участков Росреестр",
+        "result": "Found the official city geoportal and its Земельные участки layer, the municipal spatial-data publication, and national Rosreestr/NSPD references. No anonymous parcel ID plus geometry response was evidenced.",
+        "actualResultUrls": [
+          "https://geoportal.klgd.ru/",
+          "https://www.klgd.ru/press/news/detail.php?ID=103914&print=Y",
+          "https://www.klgd.ru/activity/construction/adresnyy-reestr/prostranstdannye_adresreestr.php?print=Y",
+          "https://nspd.gov.ru/map?thematic=PKK"
+        ]
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://geoportal.klgd.ru/",
+        "method": "GET; anonymous; TLS verification enabled; public viewer route",
+        "httpStatus": 200,
+        "assessment": "Redirected to /index.php/view/map/; public HTML exposed project CRS EPSG:3857, extent 2256650.0,7289307.0,2300894.0,7320018.0, and a layer catalogue including Земельные участки. No feature payload or native parcel ID was returned in the inspected response."
+      },
+      {
+        "url": "https://www.klgd.ru/activity/construction/adresnyy-reestr/prostranstdannye_adresreestr.php?print=Y",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "assessment": "Official municipal page publishes address-register spatial data for buildings, structures and land parcels and WGS-84/MSK-39 files; it is not a verified parcel-boundary API and unsafe address attributes were not retained."
+      },
+      {
+        "url": "https://nspd.gov.ru/map?thematic=PKK",
+        "method": "GET; anonymous; TLS verification enabled; bounded request",
+        "httpStatus": "not retrieved by local request; public reference found by discovery",
+        "assessment": "National public cadastral-map reference identified; no anonymous parcel response was retained and no bypass or login was attempted."
+      },
+      {
+        "url": "https://rosreestr.gov.ru/",
+        "method": "GET; anonymous; TLS verification enabled; bounded request",
+        "httpStatus": "not retrieved by local request; public reference found by discovery",
+        "assessment": "National cadastral custodian identified; no parcel response was retained."
+      }
+    ],
+    "inspectedConfiguration": {
+      "viewer": "https://geoportal.klgd.ru/index.php/view/map/",
+      "apiBase": null,
+      "coordinateRoute": null,
+      "responseSchemaObserved": null,
+      "parcelEndpointObserved": false,
+      "schemaObserved": false,
+      "explicitCrsObserved": "EPSG:3857 for the public geoportal project"
+    }
+  },
+  "registryEvidenceUrls": [
+    "https://geoportal.klgd.ru/index.php/view/map/",
+    "https://www.klgd.ru/activity/construction/adresnyy-reestr/prostranstdannye_adresreestr.php?print=Y",
+    "https://www.klgd.ru/press/news/detail.php?ID=103914&print=Y",
+    "https://nspd.gov.ru/map?thematic=PKK"
+  ],
+  "checkedAt": "2026-10-09",
+  "researchAttempt": 1,
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "adapterReady": false,
+  "runtimeAssessment": {
+    "status": "held_quality_review",
+    "reason": "A local official map channel is evidenced, but no verified anonymous parcel geometry and native safe identity were obtained; serial review must independently qualify any adapter behavior."
+  }
+}

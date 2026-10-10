@@ -1,0 +1,132 @@
+{
+  "cityCode": 10359,
+  "queueRank": 1758,
+  "name": "Bhadohi",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [25.3944587432006, 82.5720214043768],
+  "population2025": 326738,
+  "population2025k": 326.738,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bhadohi official cadastral parcel map GIS Uttar Pradesh Bhadohi district",
+        "result": "First-party discovery identified the Government of Uttar Pradesh BhuNaksha public cadastral map viewer, the UP Bhulekh cadastral digitization dashboard, the UP Board of Revenue portal, and the official Bhadohi district site. The viewer is a public map service, but no citywide anonymous parcel geometry response was verified.",
+        "actualResultUrls": [
+          "https://upbhunaksha.gov.in/",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=198",
+          "https://bor.up.nic.in/",
+          "https://bhadohi.nic.in/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "भदोही आधिकारिक भू नक्शा खसरा नक्शा उत्तर प्रदेश",
+        "result": "First-party discovery identified the Hindi UP Board of Revenue land-record portal, UP BhuNaksha, and the Bhadohi district government site. The official dashboard reports Bhadohi district cadastral maps linked and georeferenced at district/tehsil level, but does not itself provide a citywide vector parcel response.",
+        "actualResultUrls": [
+          "https://bor.up.nic.in/",
+          "https://upbhunaksha.gov.in/",
+          "https://bhadohi.nic.in/hi/",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=198"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official Uttar Pradesh BhuNaksha viewer resolves Bhadohi district and tehsil/village cadastral-map levels, and the UP Bhulekh dashboard reports Bhadohi tehsil villages/maps linked and georeferenced. This evidences a state/local revenue cadastral custodian, not a verified open citywide parcel API.",
+  "officialSources": [
+    {
+      "url": "https://upbhunaksha.gov.in/",
+      "observation": "Current public BhuNaksha viewer. The server-rendered configuration exposes the official base URL and public level labels District, Tehsil, Village. Current JavaScript bundle exposes public masterdata, map-extent, and plot routes."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=198",
+      "observation": "Government of Uttar Pradesh cadastral digitization dashboard reports Bhadohi, Bhadohi tehsil with 428 verified/linked/georeferenced villages and 431 verified/linked/georeferenced map sheets. Dashboard statistics are not parcel geometry."
+    },
+    {
+      "url": "https://bor.up.nic.in/",
+      "observation": "UP Board of Revenue first-party portal identifies Bhulekh/Bhu-Naksha (village map) services. It is the revenue-service custodian entry point, not a citywide vector response."
+    },
+    {
+      "url": "https://bhadohi.nic.in/",
+      "observation": "Official district administration site confirms Bhadohi district and local administrative context; no parcel vector endpoint was exposed in the discovery result."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://upbhunaksha.gov.in/",
+      "method": "GET",
+      "outcome": "TLS-verified HTTP 200; current HTML and Angular bundle reference were retrieved. Server state exposed https://upbhunaksha.gov.in/bhunakshaserver as the public API base."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/main-76RVRF3Z.js",
+      "method": "GET",
+      "outcome": "TLS-verified current JavaScript bundle retrieved. Inspected routes include POST /masterdata/levelvalue, POST /MapInfo/getVVVVExtentGeoref, GET /Levels/*, and GET /v1/khasramap/plot?bhucode=...&id=.... No credentials or private tokens used."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/stateCode",
+      "method": "GET",
+      "outcome": "HTTP 200 text response 09, identifying the Uttar Pradesh state code."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/levelLabels",
+      "method": "GET",
+      "outcome": "HTTP 200 JSON response [District, Tehsil, Village]."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+      "method": "POST",
+      "requestData": {"level": "1", "codes": ""},
+      "outcome": "HTTP 200 safe administrative list included Bhadohi district code 198 / भदोही."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+      "method": "POST",
+      "requestData": {"level": "2", "codes": "198"},
+      "outcome": "HTTP 200 safe administrative list returned Bhadohi tehsil code 00997 / भदोही."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+      "method": "POST",
+      "requestData": {"level": "3", "codes": "198,00997"},
+      "outcome": "HTTP 200 safe village list included कस्बा भदोही code 219537 with hasData true. No owner, address, titleholder, contact, tax/account or personal fields requested."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref",
+      "method": "POST",
+      "requestData": {"gisLevels": "198,00997,00001"},
+      "outcome": "HTTP 200 returned zero extent and gisCode 1980099700001. This is a map-extent miss for an arbitrary village code and is not evidence of citywide absence."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref",
+      "method": "POST",
+      "requestData": {"gisLevels": "198,00997,219537"},
+      "outcome": "Bounded request timed out with no response. No CRS, extent, parcel schema or geometry retained; timeout is not evidence of cadastral absence."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/v1/khasramap/plot?bhucode=19800997219537&id=1",
+      "method": "GET",
+      "outcome": "Bounded anonymous plot probe was attempted after the current bundle exposed this route, but the request did not complete within the bounded run. No geometry or parcel identity was obtained."
+    }
+  ],
+  "source": "Government of Uttar Pradesh BhuNaksha / Bhulekh cadastral map and revenue services",
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "UP BhuNaksha public cadastral-map workflow with Bhadohi district, Bhadohi tehsil and village selectors; UP Bhulekh digitization dashboard statistics.",
+    "verifiedOpenScope": "Official state/local cadastral custody and administrative level lookup; no citywide anonymous parcel ID-plus-geometry response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": "Exact WUP point preserved in latitude/longitude order. No coordinate shift or exact-point parcel inference was made. A zero map extent, timeout, or incomplete public UI is not evidence of citywide absence. Safe field allowlist is limited to stable native parcel ID, full parcel polygon geometry, CRS and public service metadata. Packet completion is not source integration or runtime admission; serial reviewer qualification remains required."
+}

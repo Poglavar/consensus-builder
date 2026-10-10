@@ -1,0 +1,15 @@
+{
+  "taskId": "city:1590",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-1590-mahilio.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/mahilio-service-review.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "tmp/valhalla-parcel-research/1590/map.html",
+    "tmp/valhalla-parcel-research/1590/app.js",
+    "tmp/valhalla-parcel-research/1590/resp"
+  ],
+  "checkedAt": "2026-10-09T18:06:05Z",
+  "reviewNotes": "First-party cadastral map HTML and JavaScript are present, but the saved WFS response is 403. No native ID plus geometry, pagination, 13-cell, metric GEOS, source-binding, or headed Details proof. Packet WFS coordinate claim is not an exact WUP-point result."
+}

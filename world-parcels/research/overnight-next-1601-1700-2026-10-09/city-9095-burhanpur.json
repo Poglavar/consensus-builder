@@ -1,0 +1,119 @@
+{
+  "cityCode": 9095,
+  "queueRank": 1650,
+  "name": "Burhanpur",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "point": [21.3153487824855, 76.2250488491978],
+  "population2025": 346277,
+  "population2025k": 346.277,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Burhanpur Madhya Pradesh official cadastral parcel map land records GIS Bhu Naksha",
+        "result": "First-party results identified the official Burhanpur district GIS page, the Madhya Pradesh WebGIS 2.0 land-record map portal, the National Government Services description of Madhya Pradesh parcel-map dissemination, and the Government of India DILRMP Burhanpur map-digitization page. The live parcel viewers did not provide a bounded anonymous feature response in this attempt.",
+        "actualResultUrls": [
+          "https://burhanpur.nic.in/en/burhanpur-gis/",
+          "https://webgis2.mpbhulekh.gov.in/",
+          "https://services.india.gov.in/service/detail/check-dissemination-of-naksha-parcel-map-of-madhya-pradesh-online-1",
+          "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/451"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "बुरहानपुर मध्य प्रदेश आधिकारिक भू नक्शा भू अभिलेख खसरा नक्शा",
+        "result": "First-party Hindi district content links to Madhya Pradesh land records and describes Burhanpur GIS; the official WebGIS 2.0 page exposed a JavaScript application and Hindi/English security notice, but no anonymous parcel ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://burhanpur.nic.in/बुरहानपुर-जीआईएस/",
+          "https://burhanpur.nic.in/",
+          "https://webgis2.mpbhulekh.gov.in/",
+          "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/451"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://burhanpur.nic.in/en/burhanpur-gis/",
+      "observation": "Official District Burhanpur page says Burhanpur GIS is a Government of India/Madhya Pradesh district spatial-information system and links the public GIS host https://burhanpurgis.mp.gov.in/. Its described layers include land use and infrastructure, not a confirmed cadastral parcel layer."
+    },
+    {
+      "url": "https://webgis2.mpbhulekh.gov.in/",
+      "observation": "Official Madhya Pradesh WebGIS 2.0 land-record map viewer. The current public HTML requires JavaScript and displays a Hindi/English security notice; no service configuration or feature schema was exposed by the bounded request."
+    },
+    {
+      "url": "https://services.india.gov.in/service/detail/check-dissemination-of-naksha-parcel-map-of-madhya-pradesh-online-1",
+      "observation": "Government service description says Madhya Pradesh parcel maps are accessed by selecting district, subdivision, tehsil and village, with maps and related forms available. It establishes the state service route, not a city-bounded API."
+    },
+    {
+      "url": "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/451",
+      "observation": "Government of India DILRMP page reports Burhanpur district statistics for digitized/georeferenced cadastral maps and parcels, including a BURHANPUR NAGAR tehsil row. These statistics are coverage evidence, not a parcel geometry endpoint or proof of exact WUP-point coverage."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://burhanpur.nic.in/en/burhanpur-gis/",
+      "method": "GET via first-party web access",
+      "httpStatus": 200,
+      "outcome": "Official district page loaded and linked the Burhanpur GIS host; page text described district GIS scope but exposed no parcel API."
+    },
+    {
+      "url": "https://webgis2.mpbhulekh.gov.in/",
+      "method": "GET via first-party web access",
+      "httpStatus": 200,
+      "outcome": "Viewer shell was observed as a JavaScript application with Hindi/English security notice. A direct bounded curl request timed out before HTML/configuration retrieval; no login, credentials, private token, CAPTCHA/Cloudflare bypass, or unsafe lookup was attempted."
+    },
+    {
+      "url": "https://burhanpurgis.mp.gov.in/",
+      "method": "GET",
+      "httpStatus": "timeout after 20 seconds from bounded request environment",
+      "outcome": "The official linked GIS host did not return a response. This is not evidence of citywide parcel absence."
+    },
+    {
+      "url": "https://mpbhulekh.gov.in/",
+      "method": "GET",
+      "httpStatus": "timeout after 20 seconds from bounded request environment",
+      "outcome": "The official state land-record host did not return a response. No retry with disabled TLS or authentication was made."
+    },
+    {
+      "url": "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/451",
+      "method": "GET via indexed first-party page",
+      "httpStatus": "indexed result available; live open returned cache miss",
+      "outcome": "Indexed first-party content exposed Burhanpur and BURHANPUR NAGAR cadastral-map digitization statistics. No parcel geometry or native parcel row was requested or retained."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Official Burhanpur district administration and Madhya Pradesh land-record/Bhu-Naksha service routes evidence a local/state cadastral custodian and public map procedure. They do not establish an open city-bounded parcel API in this attempt.",
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel feature response retrieved",
+  "geometryQuality": "not evaluated; no parcel geometry retrieved",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": "madhya-pradesh-webgis2-mpbhulekh-bhunaksha",
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Madhya Pradesh WebGIS/Bhu-Naksha land-record service and Burhanpur district GIS/DILRMP coverage.",
+    "cityCoverage": "Burhanpur district and BURHANPUR NAGAR tehsil are named in official coverage material, but city polygon boundaries and exact WUP-point parcel coverage were not verified.",
+    "exactPointChecked": false,
+    "note": "The exact WUP point [21.3153487824855, 76.2250488491978] was preserved in latitude/longitude order and was not shifted. No exact-point hit/miss inference was made."
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "retainedSample": null,
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current viewer JavaScript/configuration, parcel layer schema, CRS, stable native identity, anonymous geometry access, and citywide coverage remain unresolved. No raw source-specific attributes, owner/address/contact information, or synthetic identity was retained. This packet is not source integration/admission."
+}

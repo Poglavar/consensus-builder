@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11864-dongyang.json",
+  "purpose": "Document independent city-specific registry discovery and bounded anonymous geometry access investigation.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Fresh English and Chinese searches found first-party Dongyang Natural Resources and Planning Bureau and Real Estate Registration Center evidence, plus Zhejiang's official GIS platform. The current public application was inspected through its HTML and linked JavaScript/configuration routes, but no anonymous safe parcel ID-plus-geometry response, schema, CRS, or native ID field was found. No GeoJSON is retained.",
+  "registryAssessment": "Local registry custody is evidenced, so registryFound is true. Dongyang government pages publish real-estate registration notices under the municipal Natural Resources and Planning Bureau and identify the Real Estate Registration Center. This does not establish open parcel geometry or runtime adapter readiness.",
+  "officialPrimarySources": [
+    {"title": "Dongyang first-registration announcement", "url": "https://www.dongyang.gov.cn/art/2024/10/8/art_1229162472_59692027.html", "observation": "First-party page is categorized under Dongyang Natural Resources and Planning Bureau real-estate registration notices."},
+    {"title": "Dongyang lost real-estate certificate notice", "url": "https://www.dongyang.gov.cn/art/2025/8/18/art_1229162472_59824309.html", "observation": "First-party page identifies the Real Estate Registration Center as the source."},
+    {"title": "Dongyang 2025 land-assembly development plan notice", "url": "https://www.dongyang.gov.cn/art/2025/4/17/art_1229311451_19752.html", "observation": "First-party municipal notice identifies the Natural Resources and Planning Bureau as a participating land/natural-resources custodian."},
+    {"title": "Zhejiang geographic-information public-service platform", "url": "https://ditu.zjzwfw.gov.cn/platform-main/index.html", "observation": "Official provincial GIS platform landing page advertises online maps, resource center, geocoding, and public geographic-information services."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Dongyang Zhejiang China official cadastral parcel map GIS natural resources bureau public service", "executionMethod": "Executed separate web search", "resultUrls": ["https://www.dongyang.gov.cn/art/2024/10/8/art_1229162472_59692027.html", "https://www.dongyang.gov.cn/art/2025/8/18/art_1229162472_59824309.html", "https://ditu.zjzwfw.gov.cn/platform-main/index.html"]},
+    {"language": "Chinese", "query": "东阳市 不动产登记 地籍图 查询 自然资源和规划局 官方 地图 服务", "executionMethod": "Executed separate local-language web search", "resultUrls": ["https://www.dongyang.gov.cn/art/2024/10/8/art_1229162472_59692027.html", "https://www.dongyang.gov.cn/art/2025/8/18/art_1229162472_59824309.html", "https://www.dongyang.gov.cn/art/2025/4/17/art_1229311451_19752.html", "https://ditu.zjzwfw.gov.cn/platform-main/index.html"]}
+  ],
+  "attempts": [
+    {"attempt": "official Dongyang government homepage", "url": "https://www.dongyang.gov.cn/", "result": "TLS-verified GET returned HTTP 403. Search-indexed first-party pages were retained as evidence; no bypass, login, or alternate credentials used.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "official Zhejiang GIS landing page", "url": "https://ditu.zjzwfw.gov.cn/platform-main/index.html", "result": "HTTP 200. Current HTML and linked public JavaScript were inspected; no parcel layer or parcel endpoint was published in the landing application.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "Dongyang site configuration lookup", "url": "https://ditu.zjzwfw.gov.cn/platform-main/config/getSiteList.do?areaCode=330783", "result": "HTTP 200 JSON returned status OK with data null; no Dongyang-specific public service configuration was returned.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "Zhejiang administrative division lookup", "url": "https://ditu.zjzwfw.gov.cn/ime-server/rest/xzqh_zj/division/search?withgeometry=false&withparents=true&fullname=浙江省金华市东阳市", "result": "HTTP 200 JSON returned code 401 / 未授权. No authorization was attempted; this was not a parcel response.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "current JavaScript/configuration inspection", "url": "https://ditu.zjzwfw.gov.cn/platform-main/index.html", "result": "Inspected public scripts including areaSystem.js; they exposed platform/site lookup routes but not a safe anonymous cadastral feature service, schema, CRS, or native parcel ID field. No endpoint was guessed or probed beyond documented routes.", "credentialsUsed": false, "personalPropertyFieldsRequested": false}
+  ],
+  "geometryDecision": {"publicParcelGeometryFound": false, "sampleFile": null, "details": "No anonymous safe parcel geometry response with stable native identity, schema, and CRS was found; no GeoJSON retained."},
+  "coverageAssessment": {"claimedScope": "Dongyang municipal natural-resources and real-estate registration bodies administer local registration matters; Zhejiang's platform claims public geographic-information services.", "verifiedOpenScope": "Local registry custody and public GIS landing access were verified, but open parcel query coverage, schema, CRS, stable identity, and geometry access were not verified.", "citywideVerified": false, "countrywideVerified": false},
+  "safeFieldAllowlist": ["id", "geometry"],
+  "remainingUncertainty": "A separate local or authenticated cadastral viewer may exist; no exact-point query was attempted because no anonymous usable parcel endpoint was identified. A zero-hit inference is not made.",
+  "runtimeReadiness": "held_unqualified"
+}

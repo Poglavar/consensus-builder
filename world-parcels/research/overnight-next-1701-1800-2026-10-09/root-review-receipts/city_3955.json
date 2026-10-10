@@ -1,0 +1,22 @@
+{
+  "taskId": "city:3955",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-3955-famenin.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/famenin-service-review.json",
+    "tmp/valhalla-parcel-research/famenin/zamin.html",
+    "tmp/valhalla-parcel-research/famenin/zamin.js"
+  ],
+  "checkedAt": "2026-10-10T15:23:10Z",
+  "reason": "WUP 2025 rank 1793, Iran, exact point and 320591 persons match both rosters and the original source. English and Persian searches are recorded. Saved first-party land-portal HTML and script do not establish a Famenin parcel layer, native ID or full polygon; other registration hosts failed to respond. Fresh ID reads, paging, 13 cells, metric GEOS checks, source binding and headed Details proof are absent. Hold without inferring citywide absence.",
+  "checks": {
+    "immutableQueueIdentity": "matched WUP 2025 and both cohort rosters",
+    "bilingualExecutedSearches": true,
+    "retainedFullPolygons": 0,
+    "independentLiveAdapterQualified": false,
+    "runtimeAdmission": false
+  }
+}

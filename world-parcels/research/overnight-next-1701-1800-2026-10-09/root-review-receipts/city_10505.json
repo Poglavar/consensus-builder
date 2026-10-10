@@ -1,0 +1,29 @@
+{
+  "taskId": "city:10505",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-10505-ranipet.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranipet-service-review.json",
+    "tmp/valhalla-parcel-research/10505/eservices.headers",
+    "tmp/valhalla-parcel-research/10505/tngis.headers"
+  ],
+  "checkedAt": "2026-10-10T15:27:09Z",
+  "reason": "Official district/state land-record routes and English/Tamil searches are recorded, but anonymous service requests timed out and no native parcel ID, geometry or CRS response was obtained. Zero polygons are retained. Timeout does not establish citywide absence. No independent live adapter qualification or headed Details-panel verification; no admission.",
+  "identityVerified": {
+    "rank": 1795,
+    "cityCode": 10505,
+    "country": "India",
+    "point": [
+      12.9276764450989,
+      79.3225583471629
+    ],
+    "population2025Persons": 320233
+  },
+  "bilingualSearchesRecorded": true,
+  "retainedFullPolygonCount": 0,
+  "independentAdapterQualified": false,
+  "runtimeAdmission": false
+}

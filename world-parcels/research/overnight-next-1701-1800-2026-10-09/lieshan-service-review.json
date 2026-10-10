@@ -1,0 +1,30 @@
+{
+  "cityRecord": "city-10486-lieshan.json",
+  "cityCode": 10486,
+  "queueRank": 1773,
+  "city": "Lieshan",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "runtimeReadiness": "held",
+  "summary": "An official Huaibei cadastral map viewer was evidenced for Lieshan District, but its current anonymous parcel/cadastral endpoints returned explicit permission-denied JSON. No parcel identity or geometry was retained.",
+  "queryOutcomes": "English and Chinese discovery queries are recorded verbatim in city-10486-lieshan.json. First-party results identified the Huaibei cadastral map announcement, the current viewer, the Huaibei real-estate-registration section, and the Lieshan district government site.",
+  "requestOutcomes": "The official announcement, viewer HTML, current config, and current client JavaScript were fetched. Five bounded anonymous POST checks against cadastral hierarchy and parcel list routes returned HTTP 200 with code 10002 / 权限不足，无权操作！. No login, CAPTCHA bypass, credential, private token, unsafe field, or TLS-verification bypass was used.",
+  "scopeLimits": [
+    "The local custodian/service is evidenced, but open anonymous parcel geometry access is not.",
+    "The viewer configuration exposes basemap and endpoint paths, not verified parcel schema, CRS, or stable native IDs.",
+    "No exact-point hit/miss test was possible; permission denial and unavailable geometry are not treated as citywide absence.",
+    "No raw source-specific attributes or parcel polygons were retained."
+  ],
+  "safeFieldAllowlist": ["native parcel identifier", "geometry", "source layer name", "CRS", "public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryRetention": {"sampleGeoJSON": null, "featureCount": 0, "reason": "No safe, verified native parcel geometry response was available."},
+  "uncertainty": "Parcel-level stable identity, schema, CRS, geometry endpoint behavior, anonymous access, and citywide coverage remain unverified.",
+  "qualificationDecision": "hold",
+  "completionSummary": {"recordWritten": true, "serviceReviewWritten": true, "sampleGeoJSONWritten": false, "openParcelEndpointVerified": false, "adapterQualified": false}
+}

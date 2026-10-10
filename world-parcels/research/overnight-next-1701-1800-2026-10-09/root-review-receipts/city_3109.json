@@ -1,0 +1,19 @@
+{
+  "taskId": "city:3109",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-3109-valladolid.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/valladolid-service-review.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/valladolid-parcel-sample.geojson",
+    "tmp/valhalla-parcel-research/valladolid-province.atom.xml",
+    "tmp/valhalla-parcel-research/valladolid-cp.zip",
+    "tmp/valhalla-parcel-research/A.ES.SDGC.CP.47900.cadastralparcel.gml"
+  ],
+  "checkedAt": "2026-10-10T14:56:56.695674Z",
+  "reason": "Immutable WUP code 3109/rank 1778, Spain point and 323201 persons match the roster. English and Spanish searches are recorded. First-party ATOM index links the 47900-VALLADOLID ZIP; original GML independently contains native reference 6415809UM5161E and its one retained safe-ID full polygon matches source geometry in EPSG:25830 within CRS transform tolerance. The original GML has 22665 CadastralParcel elements, versus 22876 claimed in the worker review, so that count is unaccepted. No independently proven fresh adapter native-ID reads, forced paging, 13 bounded cells, full metric GEOS overlap/operation checks, source binding or headed Details check exists; discovery remains held.",
+  "firstPartyUrlsOpened": [
+    "https://www.catastro.hacienda.gob.es/webinspire/"
+  ]
+}

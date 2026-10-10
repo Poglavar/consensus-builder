@@ -1,0 +1,105 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1926-saki.json",
+  "purpose": "Document first-party local registry context and bounded anonymous parcel-geometry access review for Saki, Oyo State, Nigeria.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Oyo State's official OyoGISS/OSGSIS and Office of the Surveyor General services establish a local land and spatial-information custodian relevant to Saki. The public OYSG PGP route did not expose an anonymous feature response, and the Digital Land Survey Plan Registry is a lookup service requiring an exact survey-plan name or number. No parcel polygon or safe native parcel identity was retained.",
+  "registryAssessment": "Local registry/cadastre custodian verified: Oyo State Government land administration through the Ministry of Lands, Housing & Urban Development, OyoGISS, and the Office of the Surveyor General. Official Oyo material separately names Saki in state planning/land-management context.",
+  "officialPrimarySources": [
+    {
+      "url": "https://lands.oyostate.gov.ng/oyo-giss.html",
+      "observation": "Official OyoGISS page describes a state GIS platform for land administration, urban planning, and spatial data, and says its OYPRS property digitisation covers all 33 LGAs. This is service-scope evidence, not proof of open parcel geometry."
+    },
+    {
+      "url": "https://oyogsis.oysglands.com/",
+      "observation": "Official OSGSIS landing page links to OYSG PGP, Digital Survey Plan Registry, and Spatial Data Infrastructure products."
+    },
+    {
+      "url": "https://lands.oyostate.gov.ng/survey-search.html",
+      "observation": "Official Digital Land Survey Plan Registry page says the Office of the Surveyor General preserves and verifies survey plans by exact plan name or survey-plan number; it explains that approved basic survey information may be displayed while sensitive/internal records remain protected."
+    },
+    {
+      "url": "https://oyostate.gov.ng/bureau-of-physical-planning-dev-control-unit/",
+      "observation": "Official Oyo State planning page explicitly mentions redesigning residential plots on stateland along Koomi Road, Saki, Saki West Local Government."
+    },
+    {
+      "url": "https://old.oyostate.gov.ng/wp-content/uploads/2020/05/REV.%20CLEAN%20COPY.pdf",
+      "observation": "Official Oyo State revenue schedule names Saki-East and Saki-West land-use-charge areas, supporting local administrative scope but not parcel geometry."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Saki Nigeria official cadastral parcel map Oyo land registry GIS",
+      "result": "Found official OyoGISS, OSGSIS, and Digital Land Survey Plan Registry sources. No anonymous safe-ID parcel geometry response was verified.",
+      "actualResultUrls": [
+        "https://lands.oyostate.gov.ng/oyo-giss.html",
+        "https://oyogsis.oysglands.com/",
+        "https://lands.oyostate.gov.ng/survey-search.html",
+        "https://oyostate.gov.ng/bureau-of-physical-planning-dev-control-unit/"
+      ]
+    },
+    {
+      "language": "Yoruba",
+      "query": "Saki Nigeria maapu kadastre osise, iforukọsilẹ ilẹ ati GIS Oyo",
+      "result": "No separate Yoruba-first-party endpoint was found. The official Oyo State English-language land/spatial services were the relevant local results; no anonymous geometry response was verified.",
+      "actualResultUrls": [
+        "https://lands.oyostate.gov.ng/oyo-giss.html",
+        "https://oyogsis.oysglands.com/",
+        "https://lands.oyostate.gov.ng/survey-search.html"
+      ]
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://oyogsis.oysglands.com/",
+      "httpStatus": 200,
+      "result": "Official landing page reviewed. It exposed links to OYSG PGP at maps-server.oysglands.com, OYSG DSPR, and OYSG SDI; no parcel schema or feature endpoint was present in the page."
+    },
+    {
+      "url": "https://maps-server.oysglands.com/",
+      "httpStatus": 200,
+      "result": "Anonymous GET returned an empty HTTP 200 response with a Refresh header to https://oyogsis.oysglands.com. No JavaScript/configuration, schema, CRS, or feature response was obtained."
+    },
+    {
+      "url": "https://lands.oyostate.gov.ng/survey-search.html",
+      "httpStatus": 200,
+      "result": "Official registry page reviewed. The public search requires an exact survey-plan name or number; no citywide or coordinate-based parcel query was attempted, and no unsafe fields were requested."
+    },
+    {
+      "url": "https://las.oysglands.com/",
+      "httpStatus": 403,
+      "result": "The survey-registry link's anonymous GET returned HTTP 403. No retry with credentials, CAPTCHA bypass, private token, or TLS weakening was attempted."
+    }
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed against a public feature service; a zero hit, HTTP 403, redirect, or unusable public UI is not treated as citywide absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "OyoGISS describes state-wide land/spatial administration and says OYPRS property digitisation covers all 33 LGAs; the Digital Land Survey Plan Registry is an Oyo State survey-plan verification service.",
+    "verifiedOpenScope": "Local custodian and service existence verified, but anonymous parcel geometry, native ID schema, CRS, and citywide completeness were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "The public OYSG PGP endpoint structure, access controls, parcel schema/CRS, safe identity fields, and exact WUP-point coverage remain unknown without a separately published anonymous feature service or authorized access.",
+  "runtimeAssessment": "held; no adapter admission or source integration implied"
+}

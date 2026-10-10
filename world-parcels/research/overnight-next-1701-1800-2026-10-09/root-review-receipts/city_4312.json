@@ -1,0 +1,17 @@
+{
+  "taskId": "city:4312",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-4312-murcia.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/murcia-service-review.json",
+    "tmp/valhalla-parcel-research/murcia/layer.json",
+    "tmp/valhalla-parcel-research/murcia/point-query.geojson",
+    "tmp/valhalla-parcel-research/murcia/point-query-wgs84.geojson",
+    "tmp/valhalla-parcel-research/murcia/geovisor.html"
+  ],
+  "checkedAt": "2026-10-10T14:03:09Z",
+  "reason": "Immutable WUP identity and English/Spanish searches checked. Original SITAM layer metadata shows a public polygon layer, source EPSG:25830 and supportsPagination=false; original exact-point GeoJSON response has zero features. No native-ID polygon read, forced paging, 13-cell, metric GEOS, source binding or headed Details evidence exists. The point miss does not establish citywide absence, and the layer scope may be public property only."
+}

@@ -1,0 +1,16 @@
+{
+  "taskId": "city:7582",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-7582-ziyang.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ziyang-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-09T14:19:14.661456Z",
+  "reason": "Sichuan natural-resources article is sourced to Ziyang municipal bureau but describes Lezhi County registration, supporting limited custody only. Municipal host DNS failure leaves viewer and public geometry unresolved. No native-ID polygon response or adapter qualification.",
+  "firstPartyPagesChecked": [
+    "https://dnr.sc.gov.cn/scdnr/scszdt/2025/6/12/80374ae0d8c34fcd8235d646536949ac.shtml"
+  ],
+  "admissionGates": "No verified full parcel geometry or safe native ID; fresh ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are not evidenced."
+}

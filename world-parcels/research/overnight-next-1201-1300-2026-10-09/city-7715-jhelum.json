@@ -1,0 +1,138 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; local registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09T00:00:00Z",
+  "cityCode": 7715,
+  "queueRank": 1213,
+  "cityId": "wup:7715",
+  "name": "Jhelum",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "centerLatLon": [32.9467303931881, 73.7184666343392],
+  "point": [32.9467303931881, 73.7184666343392],
+  "population2025": 457793,
+  "population2025k": 457.793,
+  "populationUnit": "persons",
+  "year": 2025,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jhelum Pakistan official cadastral map land records parcel GIS Punjab",
+        "result": "Found official Punjab/PLRA land-record and PULSE sources, plus the Municipal Committee Jhelum services-map page. MC Jhelum links a 2023-24 base-map PDF whose legend includes parcel boundaries. PULSE also exposes a public viewer describing Jhelum cadastral maps, but its ArcGIS service is token-gated for REST access.",
+        "actualResultUrls": [
+          "https://mcjhelum.lgpunjab.org.pk/map/",
+          "https://mcjhelum.lgpunjab.org.pk/wp-content/uploads/Base-Map_2023-24_Jhelum-City.pdf",
+          "https://lis.pulse.gop.pk/",
+          "https://www.punjab-zameen.gov.pk/",
+          "https://jhelum.punjab.gov.pk/district_administration_jhelum"
+        ]
+      },
+      {
+        "language": "Urdu",
+        "query": "جہلم پاکستان سرکاری کادستر نقشہ اراضی ریکارڈ GIS پارسل",
+        "result": "Search results identified the official Punjab Land Records cadastral-map interface and Punjab PULSE/PLRA land-record services. The public interfaces require district/tehsil/village selection or viewer-side access; no anonymous safe Jhelum polygon response was exposed in the bounded review.",
+        "actualResultUrls": [
+          "https://jamabandi.punjab.gov.in/CadastralMap.aspx",
+          "https://lis.pulse.gop.pk/",
+          "https://onlinefard.punjab-zameen.gov.pk/",
+          "https://www.punjab-zameen.gov.pk/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://mcjhelum.lgpunjab.org.pk/map/",
+      "observation": "Official Municipal Committee Jhelum services-map page lists the Base Map Jhelum City under the 2023-24 map set."
+    },
+    {
+      "url": "https://mcjhelum.lgpunjab.org.pk/wp-content/uploads/Base-Map_2023-24_Jhelum-City.pdf",
+      "observation": "Official MC Jhelum PDF, prepared by the municipal GIS Officer, has a legend for Parcel Boundary and shows parcel boundaries in the city base map. It is a rendered map document, not an exposed vector parcel API."
+    },
+    {
+      "url": "https://lis.pulse.gop.pk/",
+      "observation": "Punjab Urban Land Systems Enhancement public viewer lists Cadastral Maps including Jhelum and a Parcels layer; the viewer states its lines are indicative and not legal boundaries."
+    },
+    {
+      "url": "https://jhelum.punjab.gov.pk/district_administration_jhelum",
+      "observation": "Official District Administration page assigns Revenue Administration maintenance of land records and supervision of LRMIS centers; this establishes district revenue custody context, not vector geometry."
+    },
+    {
+      "url": "https://jamabandi.punjab.gov.pk/CadastralMap.aspx",
+      "observation": "Official Punjab Land Records cadastral-map interface exposes village-wise district, tehsil, and village selection, but the bounded anonymous review did not retrieve a Jhelum geometry response."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "ArcGIS REST service responded with HTTP 200 but an error body: code 499 Token Required. No token was requested or used."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Layer metadata route responded with HTTP 200 but an error body: code 499 Token Required. No schema or geometry was returned."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/Punjab/Pulse_Map/MapServer?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Returned ArcGIS error code 404 Service not found; this route was identified in the viewer configuration but did not resolve as a service."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/Jehlum/Pind_Dadan_Khan/MapServer?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Returned ArcGIS error code 404 Service not found; no geometry response."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/GPC/GPC_Parcels/MapServer?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Returned ArcGIS error code 499 Token Required; no geometry or attributes requested beyond service metadata."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Official Municipal Committee Jhelum material provides a city base map with an explicit parcel-boundary layer/legend, while the official Punjab district administration identifies revenue/LRMIS custody. The evidence establishes local/public cadastral-map context but not legal title coverage or a public vector endpoint.",
+  "registryEvidenceUrls": [
+    "https://mcjhelum.lgpunjab.org.pk/map/",
+    "https://mcjhelum.lgpunjab.org.pk/wp-content/uploads/Base-Map_2023-24_Jhelum-City.pdf",
+    "https://jhelum.punjab.gov.pk/district_administration_jhelum"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "url": "https://lis.pulse.gop.pk/",
+    "kind": "Public Punjab PULSE cadastral viewer with ArcGIS-backed layers",
+    "publisher": "Punjab Urban Land Systems Enhancement / Punjab Land Records Authority",
+    "scope": "Viewer advertises Jhelum cadastral maps and parcels; anonymous REST geometry access was not verified because the referenced service returned Token Required.",
+    "safeSampleFile": null,
+    "sampleAttributes": "none retained",
+    "nativeFields": []
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not executed against a returned feature layer: the anonymous ArcGIS metadata routes were token-gated. The exact WUP point was preserved and not shifted.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official municipal city map and Punjab cadastral viewer material cover Jhelum or Punjab cadastral mapping.",
+    "verifiedOpenScope": "Rendered municipal base map with parcel-boundary legend; no anonymous safe full-polygon response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["OBJECTID", "parcel/cadastral identifier only if exposed by a future anonymous safe endpoint", "geometry"],
+  "runtimeReadiness": "held_quality_review",
+  "resultCategory": "official_registry_context_no_verified_public_geometry",
+  "status": "complete",
+  "remainingUncertainty": "The MC Jhelum PDF is a rendered map and does not prove complete or current parcel coverage. PULSE advertises Jhelum cadastral layers, but anonymous ArcGIS REST inspection was token-gated; no polygon IDs, schema, CRS, or citywide completeness were verified. No owner, address, contact, titleholder, tax, or account fields were requested or retained."
+}

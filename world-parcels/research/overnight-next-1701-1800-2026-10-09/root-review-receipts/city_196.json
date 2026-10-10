@@ -1,0 +1,26 @@
+{
+  "taskId": "city:196",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-196-rio-branco.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/rio-branco-service-review.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T13:47:45Z",
+  "reviewReason": "Municipal cadastral custody and the official polygon-layer schema are supported. The anonymous point feature request did not return a verified ID and full polygon. No stable native identity or adapter qualification is evidenced.",
+  "firstPartyUrlsOpened": [
+    "https://rbgeo.riobranco.ac.gov.br/server/rest/services/Hosted/Lotes_Cadastro_Imobili%C3%A1rio/FeatureServer/0",
+    "https://www.ac.gov.br/servico/cadastramento-de-imovel"
+  ],
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "samplePolygonCount": 0
+}

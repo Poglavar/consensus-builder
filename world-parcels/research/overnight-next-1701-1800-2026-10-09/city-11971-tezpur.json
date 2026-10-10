@@ -1,0 +1,80 @@
+{
+  "cityCode": 11971,
+  "queueRank": 1751,
+  "city": "Tezpur",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [26.6407483533847, 92.7897617612963],
+  "population2025": 328217,
+  "population2025k": 328.217,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tezpur Assam official cadastral map parcel land records GIS BhuNaksha Dharitree",
+        "result": "First-party discovery identified Assam Government Directorate of Land Records material and the official NIC Assam BhuNaksha public cadastral viewer. The viewer exposes Assam parcel-map and Dharitree lookup routes.",
+        "actualResultUrls": ["https://bhunaksha.assam.gov.in/", "https://dlrs.assam.gov.in/", "https://basundhara.assam.gov.in/ilrms/"]
+      },
+      {
+        "language": "Assamese",
+        "query": "তেজপুৰ অসম মাটি মানচিত্ৰ ভূমি ৰেকৰ্ড চৰকাৰী",
+        "result": "Assamese-language discovery confirmed the same first-party Assam land-record ecosystem; the official viewer itself labels district, circle, village and parcel fields in Assamese and English. No separate local city parcel service was identified.",
+        "actualResultUrls": ["https://bhunaksha.assam.gov.in/", "https://dlrs.assam.gov.in/"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": "Directorate of Land Records, Government of Assam; NIC Assam BhuNaksha public viewer",
+  "registryEvidence": {
+    "viewerUrl": "https://bhunaksha.assam.gov.in/",
+    "officialAgencyUrl": "https://dlrs.assam.gov.in/",
+    "viewerEvidence": "The official viewer identifies itself as BhuNaksha, developed by NIC Assam, and displays parcel-map controls and Dag Details.",
+    "hierarchy": {
+      "district": {"code": "11", "label": "শোণিতপুৰ ( SONITPUR )"},
+      "circle": {"code": "110101", "label": "তেজপুৰ ( TEZPUR )"},
+      "urbanVillageCandidates": [
+        {"code": "110101030410006", "label": "তেজপুৰ চহৰ ১ম অংশ ( TEZPUR SAHAR 1M ANGKHA )"},
+        {"code": "110101040120003", "label": "তেজপুৰ চহৰ ৩য় অংশ ( TEZPUR SAHAR 3 ANGKHA )"},
+        {"code": "110101040120004", "label": "তেজপুৰ চহৰ ৪ৰ্থ অংশ ( TEZPUR SAHAR 4RTH ANGKHA )"},
+        {"code": "110101040120006", "label": "তেজপুৰ চহৰ ২য় অংশ ( TEZPUR SAHAR 2 ANGKHA )"}
+      ]
+    }
+  },
+  "sourceReview": {
+    "service": "BhuNaksha Assam public web viewer",
+    "baseUrl": "https://bhunaksha.assam.gov.in/",
+    "officialAssetsInspected": ["/assets/index-qVUqnX9k.js"],
+    "nativeFieldMapping": {
+      "districtCode": "proxy/districts response code",
+      "circleCode": "proxy/circles response code",
+      "villageCode": "proxy/villages response code",
+      "parcelDag": "viewer JS references click_info data.attributes.TEXTPARCEL and parcel_info dag_no",
+      "parcelStableIdentity": "not returned in this attempt"
+    },
+    "compositeKeyProvenance": "The public hierarchy supplied district code 11, circle code 110101, and village codes above. These are administrative selection keys, not parcel identities.",
+    "crs": "EPSG:32646 was specified by the official viewer JS for click_info and parcel_info and in the WMS capabilities response; no parcel geometry response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "public service and layer metadata"]
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://bhunaksha.assam.gov.in/", "outcome": "200; public landing page readable; no login used"},
+    {"method": "GET", "url": "https://bhunaksha.assam.gov.in/assets/index-qVUqnX9k.js", "outcome": "200; current JavaScript inspected; public hierarchy, WMS, click_info and parcel_info routes identified"},
+    {"method": "POST", "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/authKey", "outcome": "200; public session token endpoint responded; token not retained"},
+    {"method": "GET", "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/districts", "outcome": "200; returned Assam district hierarchy including Sonitpur code 11"},
+    {"method": "POST", "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/circles", "parameters": {"dist_code": "11"}, "outcome": "200; returned Tezpur circle code 110101"},
+    {"method": "POST", "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/villages", "parameters": {"circle_code": "110101"}, "outcome": "200; returned village list including four Tezpur urban village candidates"},
+    {"method": "GET", "url": "https://bhunaksha.assam.gov.in/api/v1/map/bhunakshaWMS/110101030410006", "parameters": {"SERVICE": "WMS", "REQUEST": "GetCapabilities", "layer_code": "ASSAM_PARCEL", "map_type": "GENERIC_MAP"}, "outcome": "200; capabilities returned EPSG:32646 and a bounding box for Tezpur urban village candidate 110101030410006. The WUP point converted to EPSG:32646 is within that advertised extent; this is not a parcel hit."},
+    {"method": "POST", "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/click_info", "parameters": {"village_code": "110101030410006", "layer_code": "ASSAM_PARCEL", "crs": 32646, "x": 479075.27, "y": 2946663.044}, "outcome": "200 transport with JSON error 'Failed to fetch districts'; repeated for the other three Tezpur urban candidates; no parcel identity or geometry"},
+    {"method": "GET", "url": "https://bhunaksha.assam.gov.in/api/v1/map/bhunakshaWMS/110101030410006", "parameters": {"REQUEST": "GetFeatureInfo", "layer_code": "ASSAM_PARCEL", "crs": "EPSG:32646"}, "outcome": "400 Bad Request; no feature response"}
+  ],
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "WMS extent overlap was observed for one Tezpur urban village candidate, but no parcel feature response was obtained; no hit/miss inference", "requestEvidence": []},
+  "coverageAssessment": {"claimedScope": "Assam parcel-map viewer with district/circle/village selection", "verifiedOpenScope": "Official hierarchy and one village WMS capabilities response only", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": ["The exact WUP point [26.6407483533847, 92.7897617612963] was preserved and not shifted.", "An extent overlap, click-info backend error, WMS GetFeatureInfo error, or missing geometry is not evidence of citywide cadastral absence.", "No owner, address, titleholder, contact, deed, tax/account, personal or other unsafe fields were requested or retained.", "No raw source-specific attribute set or GeoJSON sample was retained.", "Packet completion records executed attempts only; runtime adapter qualification and admission remain a separate serial-review decision."],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Parcel-level stable native identity, schema fields, successful geometry endpoint behavior, and citywide completeness remain unresolved.",
+  "retainedSample": null
+}

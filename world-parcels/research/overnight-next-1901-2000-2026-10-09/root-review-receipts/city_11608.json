@@ -1,0 +1,12 @@
+{
+  "taskId": "city:11608",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-11608-changxing.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/changxing-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T18:13:59.282869Z",
+  "reason": "The immutable queue identity and English/Chinese executed searches agree. The first-party Huzhou notice corroborates local registration custody. The county host returned HTTP 200 on this review, unlike the worker 403, but no cadastral polygon response or admission checks exist."
+}

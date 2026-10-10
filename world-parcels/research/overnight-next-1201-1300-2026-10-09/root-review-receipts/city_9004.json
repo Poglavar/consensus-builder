@@ -1,0 +1,19 @@
+{
+  "taskId": "city:9004",
+  "decision": "held",
+  "reason": "Huiminxiang rank 1293, CN, immutable WUP point and 432064 persons match the hashed UN roster and pending queue. English and Simplified Chinese executed searches are recorded. The original Fuling bureau page identifies its real-estate registration center and land registration duties, supporting registryFound=true; the original Chongqing guidance provides a query procedure. No anonymous safe native-ID polygon response is evidenced; the government-service timeout is not absence. Fresh exact-ID reads, forced paging, 13 bounded cells, metric full-polygon checks, source binding and headed Details verification are absent; hold without a citywide absence claim.",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-9004-huiminxiang.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/huiminxiang-service-review.json",
+    "tmp/valhalla-parcel-research/9004/fl-registry.html",
+    "tmp/valhalla-parcel-research/9004/cq-query.html",
+    "tmp/valhalla-parcel-research/9004/cq-home.html",
+    "tmp/valhalla-parcel-research/9004/fl-registry.headers",
+    "tmp/valhalla-parcel-research/9004/cq-query.headers",
+    "tmp/valhalla-parcel-research/9004/zwfw.headers"
+  ],
+  "checkedAt": "2026-10-09T13:15:16.036542Z"
+}

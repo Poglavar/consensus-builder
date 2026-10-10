@@ -1,0 +1,20 @@
+{
+  "cityRecord": "city-7979-wazirabad.json",
+  "cityCode": 7979,
+  "queueRank": 1681,
+  "attempt": 2,
+  "reviewStatus": "complete_packet_held_for_serial_review",
+  "service": "Punjab PULSE / PLRA ArcGIS public cadastral viewer",
+  "serviceUrl": "https://lis.pulse.gop.pk/",
+  "layerUrl": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/35",
+  "layer": {"id": 35, "name": "Wazirabad", "geometryType": "esriGeometryPolygon", "sourceCrs": "WKID 102100/3857", "nativeIdField": "OBJECTID", "geometryField": "Shape", "capabilities": "Map,Query,Data"},
+  "query": {"pointLatLon": [32.4355546089934, 74.1248485345839], "arcgisPointOrder": [74.1248485345839, 32.4355546089934], "where": "1=1", "outFields": ["OBJECTID"], "returnGeometry": true, "outSR": 4326, "result": {"featureCount": 1, "nativeIds": ["6911537"]}},
+  "safeFieldAllowlist": ["OBJECTID", "polygon geometry", "CRS/service metadata"],
+  "sourceFieldMapping": {"OBJECTID": "stable native ArcGIS OID", "Shape": "native polygon geometry"},
+  "compositeKeyProvenance": null,
+  "requestOutcomes": [{"route": "/api/gis/token", "status": 200, "outcome": "Public viewer session token issued; value omitted."}, {"route": "MapServer/35?f=pjson", "status": 200, "outcome": "Metadata retrieved with public viewer session token; no feature attributes requested."}, {"route": "MapServer/35/query", "status": 200, "outcome": "One exact-point polygon returned; geometry transformed by service to EPSG:4326 for retained sample."}],
+  "scopeLimits": ["Exact-point result is not a citywide inventory.", "Map disclaimer says indicative property lines only and not legal boundaries.", "Login-only complete parcel details were not accessed.", "No unsafe fields were requested, logged, or retained.", "Timeout/login wall/map extent miss would not be treated as absence; none was used as absence evidence here."],
+  "geometrySample": {"file": "wazirabad-parcel-sample.geojson", "featureCount": 1, "identity": "OBJECTID=6911537"},
+  "runtimeReadiness": "held_pending_serial_review",
+  "uncertainty": "Citywide coverage, update currency, legal status, and registry-record linkage were not independently established. Serial reviewer must qualify any adapter; packet completion does not admit the source into runtime."
+}

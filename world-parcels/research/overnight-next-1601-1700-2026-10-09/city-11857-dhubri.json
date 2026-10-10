@@ -1,0 +1,122 @@
+{
+  "schemaVersion": "1.0",
+  "cityCode": 11857,
+  "queueRank": 1604,
+  "name": "Dhubri",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "point": [26.0444154617722, 89.9643320981953],
+  "population2025": 355592,
+  "population2025k": 355.592,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dhubri Assam official cadastral parcel map land records GIS city survey Bhulekh",
+        "result": "First-party discovery found the Government of Assam Dhubri district portal, Assam Directorate of Land Records, the Assam ILRMS/Dharitree citizen viewer, a Government of India DILRMP Dhubri map-digitization status page, and an Assam government cadastral-mapping information page. No public anonymous Dhubri parcel feature endpoint or bounded geometry response was established.",
+        "actualResultUrls": [
+          "https://dhubri.assam.gov.in/",
+          "https://dlrs.assam.gov.in/",
+          "https://ilrms.assam.gov.in/dhar/index.php/Welcome/SelectLOC",
+          "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/301",
+          "https://astec.assam.gov.in/portlet-sub-innerpage/cadastral-mapping"
+        ]
+      },
+      {
+        "language": "Assamese",
+        "query": "ধুবুৰী অসম ভূমি নক্সা জমি অভিলেখ চৰকাৰী",
+        "result": "Assamese-language first-party discovery found the Assamese Dharitree/ILRMS interface, which lists ধুবুৰী (Dhubri) and describes citizen Jamabandi/record-of-rights access, plus the Assam Directorate of Land Records. It did not expose a public parcel polygon, native parcel-ID-plus-geometry API, or city-bounded geometry service.",
+        "actualResultUrls": [
+          "https://ilrms.assam.gov.in/dhar/index.php/Welcome/SelectLOC",
+          "https://landhub.assam.gov.in/jamabandiLanguage/index.php/Welcome/SelectLOC",
+          "https://dlrs.assam.gov.in/as/taxonomy/term/4827"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://dhubri.assam.gov.in/about-us/district-profile",
+      "observation": "Official Dhubri district profile identifies Dhubri as a district revenue area with eight revenue circles, including Dhubri, and six municipal boards including Dhubri Municipal Board. This is local administrative context, not an open parcel geometry service."
+    },
+    {
+      "url": "https://dlrs.assam.gov.in/",
+      "observation": "Official Assam Directorate of Land Records page identifies the state land-records/survey authority and provides land-record information and service navigation. It does not provide a verified anonymous parcel geometry endpoint."
+    },
+    {
+      "url": "https://ilrms.assam.gov.in/dhar/index.php/Welcome/SelectLOC",
+      "observation": "Official Assam ILRMS/Dharitree citizen viewer lists ধুবুৰী (Dhubri), provides district/circle/village selection, and states that Jamabandi/record-of-rights information is available through the citizen service. The rendered form is record-oriented and includes a CAPTCHA-based lookup flow; no parcel polygon response was observed."
+    },
+    {
+      "url": "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/301",
+      "observation": "Government of India DILRMP status page is for Assam/Dhubri cadastral-map digitization and ULPIN status. It is programme status, not proof of an anonymous city parcel API."
+    },
+    {
+      "url": "https://astec.assam.gov.in/portlet-sub-innerpage/cadastral-mapping",
+      "observation": "Official Assam Science Technology and Environment Council page describes cadastral maps of Assam under the SIS-DP project. It provides general project information, not a verified Dhubri parcel feature service."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://ilrms.assam.gov.in/dhar/index.php/Welcome/SelectLOC",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Current HTML loaded. Dhubri was listed as district code 02. The page exposed the current JavaScript workflow and a POST form to Welcome/ROR; no geometry-bearing response was returned."
+    },
+    {
+      "url": "https://ilrms.assam.gov.in/dhar/application/views/js/dharitreecore.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Current viewer JavaScript exposed POST lookup routes Welcome/getCirdivJson, Welcome/getVillCodeJson and the record workflow. No map/feature-service route or geometry schema was found in the inspected script."
+    },
+    {
+      "url": "https://ilrms.assam.gov.in/dhar/index.php/Welcome/getCirdivJson",
+      "method": "POST",
+      "requestBody": "district_code=02",
+      "httpStatus": 200,
+      "outcome": "Returned eight Dhubri district circle records, including ধুবুৰী with cir_code 01 01. This is location-selection metadata only; no parcel geometry or native parcel identity was returned."
+    },
+    {
+      "url": "https://ilrms.assam.gov.in/dhar/index.php/Welcome/getVillCodeJson",
+      "method": "POST",
+      "requestBody": "district_code=02&subdiv_code=01&circle_code=01",
+      "httpStatus": 500,
+      "outcome": "Village lookup returned an empty HTTP 500 response in the anonymous direct request. No retry with credentials, CAPTCHA bypass, or altered TLS settings was attempted; this is not evidence of citywide absence."
+    },
+    {
+      "url": "https://landhub.assam.gov.in/jamabandiLanguage/index.php/Welcome/SelectLOC",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Current alternate language viewer loaded and exposed a record lookup form, CAPTCHA asset and JamabandiController/getJamabandiDetailsReport route. No geometry response was obtained or requested."
+    },
+    {
+      "url": "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/301",
+      "method": "GET",
+      "httpStatus": 0,
+      "outcome": "Direct curl failed local TLS certificate-chain verification. No certificate exception was used. Search inspection recorded the official page as discovery evidence only."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "A local/state registry custodian is evidenced by the official Dhubri district administration portal and Assam Directorate of Land Records/ILRMS Dharitree service, including a Dhubri district circle selection. This establishes land-record custody, not public anonymous parcel geometry access.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Assam state ILRMS/Dharitree land-record services and Dhubri district revenue-circle administration.",
+    "verifiedOpenScope": "Only district/circle selection metadata was retrieved. No city-bounded parcel record, native parcel ID, geometry, schema or CRS response was retrieved.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "Dharitree may support additional record and map functions through an interactive workflow requiring location selections and CAPTCHA, but no anonymous public parcel geometry service was verified. The exact WUP point was not used to infer presence or absence, and no citywide absence is inferred from the 500 response, CAPTCHA workflow, or TLS failure.",
+  "nextStep": "Serial reviewer should independently inspect the current Assam ILRMS/Dharitree viewer and any officially linked cadastral map service. If anonymous access is available, validate a bounded geometry-only Dhubri query with one stable native parcel identity and record CRS before considering adapter qualification."
+}

@@ -1,0 +1,13 @@
+{
+  "taskId": "city:11486",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-11486-liyang.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/liyang-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T10:12:41.239960Z",
+  "reviewNote": "Official Liyang 2015 and 2023 government pages independently confirmed registration, measurement, platform and public-query duties. The paired evidence documents separate English and Chinese searches and an accessible official map viewer, but no safe native parcel ID plus complete polygon response. No fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding or headed Details verification; no admission."
+}

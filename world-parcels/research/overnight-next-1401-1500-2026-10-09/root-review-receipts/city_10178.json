@@ -1,0 +1,12 @@
+{
+  "taskId": "city:10178",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-10178-laiwu.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/laiwu-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T18:10:31Z",
+  "reason": "First-party Shandong map API documentation and Jinan/Laiwu planning leads do not establish an anonymous cadastral parcel response. The planning route returned 403 and another publication timed out. No native ID/full polygon read, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, or headed Details verification exists; no parcel-absence inference is made."
+}

@@ -1,0 +1,14 @@
+{
+  "taskId": "city:9383",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-9383-parbhani.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/parbhani-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T12:12:21Z",
+  "identity": "Rank 1246, code 9383, India/IN/IND, point [19.2662427703109,76.7764897917506], 446508 persons match immutable roster and queue.",
+  "searchAndSourceReview": "English and Marathi queries with result URLs are recorded. The first-party Parbhani district page independently confirms the District Superintendent of Land Records and survey duties. Maharashtra service timeout leaves the public parcel route unresolved, not absent.",
+  "admissionReview": "Zero full polygons retained, so safe ID attributes cannot be demonstrated. No fresh native-ID feature read, forced pagination, 13 bounded cells, independent metric GEOS validity/duplicate/overlap/operation checks, source binding, or headed Details-panel verification is evidenced. No integration or runtime admission. Unresolved geometry access is not a finding of citywide absence."
+}

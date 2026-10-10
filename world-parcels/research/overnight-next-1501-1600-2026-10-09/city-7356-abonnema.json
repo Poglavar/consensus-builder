@@ -1,0 +1,101 @@
+{
+  "cityCode": 7356,
+  "queueRank": 1531,
+  "name": "Abonnema",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "iso3": "NGA",
+  "point": [4.75278647885249, 6.77389678023712],
+  "population2025": 372654,
+  "population2025k": 372.654,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Abonnema Nigeria official cadastral map parcel Rivers State land registry GIS",
+        "result": "Search identified Rivers State Government, the Office of the Surveyor General Rivers State (SGRIV) land-management portal, and Rivers State land-administration references. No official Abonnema parcel viewer or anonymous parcel geometry endpoint was found.",
+        "actualResultUrls": [
+          "https://riversstate.gov.ng/",
+          "https://www.sgriv.com/",
+          "https://er.researchfloor.org/wp-content/uploads/2025/01/Modellingof-the-Procedures-of-Land-Titling-in-Port-Harcourt-Urban-Area-of-Rivers-State-Nigeria.pdf"
+        ]
+      },
+      {
+        "language": "Kalabari/Ijaw local-language lead",
+        "query": "Abonnema Kalabari ilẹ̀ cadastral map land registry",
+        "result": "No useful first-party local-language cadastral result was returned. The search lead confirms Abonnema's Kalabari/Ijaw context but does not establish parcel coverage or geometry.",
+        "actualResultUrls": [
+          "https://fr.wikipedia.org/wiki/Abonnema"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.sgriv.com/",
+      "operator": "Office of the Surveyor General, Rivers State",
+      "observation": "Public portal identifies itself as Rivers State land management and offers C of O request access, but public landing page exposes no map, parcel layer, geometry API, schema, or anonymous parcel query. Register and login pages were reachable; no credentials were used."
+    },
+    {
+      "url": "https://riversstate.gov.ng/",
+      "operator": "Rivers State Government",
+      "observation": "Official state portal was attempted but returned HTTP 403 from this network; no parcel service could be inspected there."
+    },
+    {
+      "url": "https://er.researchfloor.org/wp-content/uploads/2025/01/Modellingof-the-Procedures-of-Land-Titling-in-Port-Harcourt-Urban-Area-of-Rivers-State-Nigeria.pdf",
+      "operator": "Secondary procedural reference about Rivers State Ministry of Lands and Surveys",
+      "observation": "Describes Rivers State land-titling offices including Lands, Deeds Registry, GIS laboratory, and Office of the Surveyor General. It is not evidence of an Abonnema public parcel endpoint."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.sgriv.com/",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Public landing page loaded over TLS. Current JavaScript/configuration inspected; it contains request/login flows but no public map or parcel API."
+    },
+    {
+      "url": "https://www.sgriv.com/register",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Registration page loaded. No registration was submitted."
+    },
+    {
+      "url": "https://www.sgriv.com/login",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Login page loaded. No login or credentialed request was attempted."
+    },
+    {
+      "url": "https://riversstate.gov.ng/",
+      "method": "GET",
+      "httpStatus": 403,
+      "result": "Official state portal denied the anonymous request from this network; this is not evidence of absent records."
+    },
+    {
+      "url": "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=4.75278647885249&lon=6.77389678023712&zoom=18&addressdetails=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Returned an OSM road feature near Degema, Rivers. Not a cadastral source and no geometry retained."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Rivers State land administration and survey services; the public SGRIV portal is a request/intake service, not a verified open parcel layer.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "geometrySamples": [],
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "No independently verified anonymous parcel adapter, schema/CRS, native parcel identifier, or polygon response was found.",
+  "safeFieldAllowlist": ["native parcel identifier if publicly exposed", "geometry", "source layer/service identifier", "CRS", "retrieval timestamp"],
+  "uncertainty": "A public state land-administration custodian is evidenced, but anonymous parcel-map access for Abonnema was not found. The 403 response and lack of a point hit do not support a citywide absence conclusion. No sample GeoJSON retained.",
+  "attempt": 1
+}

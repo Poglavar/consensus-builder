@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-10",
+  "wupCityCode": 11810,
+  "cityCode": 11810,
+  "cityId": "wup2025:11810",
+  "name": "Pinghu",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "centerLatLon": [30.7247750528208, 121.005126953426],
+  "point": [30.7247750528208, 121.005126953426],
+  "queueRank": 1963,
+  "population2025": 295531,
+  "population2025k": 295.531,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pinghu China official cadastral parcel map land registration natural resources bureau",
+        "result": "First-party Pinghu government material identifies the Pinghu Natural Resources and Planning Bureau in land and registration administration, and a public procurement notice describes city cadastral-database and cadastral-map compilation. No anonymous public parcel-vector service was verified.",
+        "actualResultUrls": [
+          "https://www.pinghu.gov.cn/art/2021/8/26/art_1229456584_2330610.html",
+          "https://www.pinghu.gov.cn/module/download/downfile.jsp?classid=0&filename=c0ee4d38b3904a029b6a2d6810eb631b.pdf"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "平湖市 官方 不动产登记 地籍图 宗地图 自然资源和规划局",
+        "result": "First-party Chinese results identify Pinghu Natural Resources and Planning Bureau as the local land/registration custodian and record a 2025 Pinghu cadastral-database and cadastral-map project. No public safe parcel geometry response was established.",
+        "actualResultUrls": [
+          "https://www.pinghu.gov.cn/art/2021/8/26/art_1229456584_2330610.html",
+          "https://m.sizebid.com/001/zhejiang/caigou/2025/21a0aae0509e0f2cf34064319451c42e.html",
+          "https://www.pinghu.gov.cn/art/2025/7/18/art_1229406239_5547958.html"
+        ]
+      }
+    ],
+    "officialViewerInspection": "The official Pinghu government information host was requested anonymously over HTTPS and returned HTML for the public information page, but no current cadastral viewer JavaScript/configuration or parcel-vector API route was exposed in the inspected page. No login, CAPTCHA bypass, credential, private token, or unsafe owner/address/titleholder field was used."
+  },
+  "registryFound": true,
+  "registryBasis": "First-party Pinghu government material names the Pinghu Natural Resources and Planning Bureau in land and immovable-property registration administration. A 2025 procurement notice specifically records a Pinghu cadastral database and cadastral-map compilation project. This establishes a local registry/cadastre custodian, not open parcel-vector access.",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Local Pinghu registry/cadastre administration and attempted official public-information access.",
+    "verifiedOpenScope": "Local registry/cadastre custodian evidenced; no anonymous safe parcel polygon response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "resultCategory": "local_registry_cadastre_no_verified_open_parcel_geometry",
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No bounded anonymous request returned a safe native parcel identity and full polygon geometry. The exact WUP point was not shifted, and the absence of a verified public endpoint is not treated as citywide absence."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "technicalBlocker": "The inspected first-party Pinghu pages provide local registry/cadastre context and procurement/procedure material but no public parcel-vector route. Current viewer/API URL, CRS, schema, safe native ID, bounded geometry response, and exact-point hit status therefore remain unverified.",
+  "remainingUncertainty": "A separately published, authenticated, or locally networked cadastral service may exist but was not accessed. Exact-point parcel coverage, CRS/schema, and citywide completeness remain unknown.",
+  "nextStep": "A serial reviewer may independently qualify a first-party Pinghu parcel adapter only after confirming a current public route, CRS/schema, safe ID fields, and bounded geometry response."
+}

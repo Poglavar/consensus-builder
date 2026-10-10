@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:4664",
+  "cityCode": 4664,
+  "wupCityCode": 4664,
+  "name": "Arak",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "iso2": "IR",
+  "iso3": "IRN",
+  "rank": 1565,
+  "queueRank": 1565,
+  "point": [34.0911822617141, 49.6946635336201],
+  "centerLatLon": [34.0911822617141, 49.6946635336201],
+  "pointBasis": "Exact WUP2025 settlement point; not shifted and not a municipal boundary or parcel-coverage claim.",
+  "population2025": 366442,
+  "population2025k": 366.442,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "Iranian cadastral custody is associated with the national Organization for Registration of Deeds and Properties and local registration offices; an Arak municipal property/planning map URL was discovered, but its public service could not be verified over the available connection. No local first-party cadastral endpoint or anonymous parcel response was confirmed.",
+  "registryEvidenceUrls": [
+    "https://ayan.arak.ir/",
+    "https://my.ssaa.ir/",
+    "https://mapcarta.com/N4582266652"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The municipal map host failed normal TLS verification and the HTTP fallback timed out. The national registration portal also timed out in web retrieval. No login, credentials, private tokens, CAPTCHA bypass, unsafe field request, or TLS-verification exception was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_unverified_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Arak municipal property/planning map discovery and Iranian national/local cadastral-service discovery.",
+    "verifiedOpenScope": "No public anonymous cadastral parcel response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Arak Iran official cadastral parcel map GIS land registry municipality",
+        "scope": "Identify local registry custody and a safe public parcel geometry route.",
+        "result": "Search located references to the Arak registration office, Iranian cadastral/land-registration services, and the Arak municipal map URL ayan.arak.ir. The direct municipal and national service routes were not usable for schema or parcel verification.",
+        "actualResultUrls": [
+          "https://ayan.arak.ir/",
+          "https://my.ssaa.ir/",
+          "https://mapcarta.com/N4582266652",
+          "https://www.tasnimnews.ir/fa/news/1398/06/12/2089748/%D9%88%D8%A7%D8%AD%D8%AF%D9%87%D8%A7%DB%8C-%D9%85%D8%B3%DA%A9%D9%88%D9%86%DB%8C-%D8%AD%D8%A7%D8%B4%DB%8C%D9%87-%D8%B4%D9%87%D8%B1-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%85%D8%B1%DA%A9%D8%B2%DB%8C-%D8%B3%D9%86%D8%AF%D8%AF%D8%A7%D8%B1-%D9%85%DB%8C-%D8%B4%D9%88%D8%AF"
+        ],
+        "executionMethod": "Separate English web search and direct first-party URL attempts."
+      },
+      {
+        "language": "Persian",
+        "query": "اراک نقشه کاداستر سامانه املاک و اسناد ثبت اسناد نقشه پارسل",
+        "scope": "Independent local-language search for Arak cadastral custody and public parcel geometry.",
+        "result": "Search found Persian references to Arak cadastral coverage, the municipal Ayan property/planning map, and national registration/cadastral procedures. Results did not expose a verified anonymous parcel ID-plus-complete-polygon endpoint.",
+        "actualResultUrls": [
+          "https://ayan.arak.ir/",
+          "https://my.ssaa.ir/",
+          "https://www.tasnimnews.ir/fa/news/1398/06/12/2089748/%D9%88%D8%A7%D8%AD%D8%AF%D9%87%D8%A7%DB%8C-%D9%85%D8%B3%DA%A9%D9%88%D9%86%DB%8C-%D8%AD%D8%A7%D8%B4%DB%8C%D9%87-%D8%B4%D9%87%D8%B1-%D8%A7%D8%B3%D8%AA%D8%A7%D9%86-%D9%85%D8%B1%DA%A9%D8%B2%DB%8C-%D8%B3%D9%86%D8%AF%D8%AF%D8%A7%D8%B1-%D9%85%DB%8C-%D8%B4%D9%88%D8%AF",
+          "https://amagestate.com/legal/cadastral-mapping-executive-regulation/"
+        ],
+        "executionMethod": "Separate Persian-language web search and direct first-party URL attempts."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "The exact WUP point was not shifted. Public parcel-layer coverage, viewer configuration, request shape, schema, CRS, native identity, and citywide completeness remain unverified. A timeout, certificate problem, inaccessible viewer, or lack of exact-point response is not treated as evidence of citywide parcel absence.",
+  "nextStep": "Serial reviewer should independently validate a first-party anonymous native parcel endpoint before any adapter qualification; keep runtime held."
+}

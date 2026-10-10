@@ -1,0 +1,16 @@
+{
+  "taskId": "city:3523",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-3523-jacobabad.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/jacobabad-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T17:14:07Z",
+  "reviewNotes": "Sindh Board of Revenue portal and FAQ support provincial land-record custody and a Deh Maps route, including district/deh records. The portal timed out and map route returned 502; no Jacobabad parcel feature, native ID, CRS, or polygon exists. English and Urdu/Sindhi searches are recorded. Service failure is not absence.",
+  "identityCheck": "2025 WUP archive SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114, ranked roster, and pending queue agree on code, rank, country, point and population persons.",
+  "admissionGate": "Held: no independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. Zero retained full polygons; no runtime/catalog/report admission."
+}

@@ -1,0 +1,58 @@
+{
+  "cityCode": 1630,
+  "queueRank": 1854,
+  "name": "Kanggye",
+  "country": "Dem. People's Republic of Korea",
+  "countryCode": "KP",
+  "iso3": "PRK",
+  "point": [40.9699241568181, 126.595496917771],
+  "population2025": 310432,
+  "population2025k": 310.432,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kanggye DPR Korea cadastral map parcel land registry official",
+        "result": "No first-party DPRK/Kanggye cadastral viewer, parcel API, or local registry service was found. Results were general or secondary material, including a Kanggye reference and Republic of Korea cadastral services; none provided Kanggye parcel geometry.",
+        "actualResultUrls": ["https://en.wikipedia.org/wiki/Kanggye", "https://kgeop.go.kr/", "https://nkinfo.unikorea.go.kr/nkp/main/portalMain.do"]
+      },
+      {
+        "language": "Korean (local/native search)",
+        "query": "강계시 지적도 토지정보 열람 공식 / 북한 토지등록 지적도 지도 강계 공식",
+        "result": "No DPRK first-party Kanggye parcel source was found. Search results primarily returned Republic of Korea cadastral portals and South Korean government/academic DPRK-information pages; these are not Kanggye registry custodians and were not treated as registry evidence.",
+        "actualResultUrls": ["https://kras.gg.go.kr/land_info/info/landmap/landmap.do", "https://nkinfo.unikorea.go.kr/nkp/main/portalMain.do", "https://nationalatlas.ngii.go.kr/pages/page_3900.php"]
+      }
+    ]
+  },
+  "registryFound": null,
+  "source": {
+    "provider": null,
+    "viewerUrl": null,
+    "serviceType": "No first-party public Kanggye/DPRK parcel service identified",
+    "parcelLayerConfirmed": false,
+    "nativeIdField": null,
+    "geometryField": null,
+    "safeFieldsRequested": ["stable native parcel ID if publicly exposed", "polygon geometry", "service/layer metadata", "CRS metadata"],
+    "crs": null
+  },
+  "verifiedSample": {
+    "count": 0,
+    "exactWupPointQuery": false,
+    "result": "No safe parcel ID-plus-geometry response was available. This is not evidence of citywide parcel absence.",
+    "requestEvidence": "tmp/valhalla-parcel-research/1630/"
+  },
+  "coverageAssessment": {
+    "claimedScope": "None; no first-party open parcel source identified.",
+    "verifiedOpenScope": "None. Search and direct-access attempts did not establish a local or national DPRK parcel service.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; no independently verified parcel adapter candidate",
+  "notes": "Attempt 1 of 3. Exact WUP point is preserved in latitude/longitude order; no coordinate shift was applied. No login, credentials, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS verification bypass was used. This packet is research evidence only and is not source integration or runtime admission."
+}

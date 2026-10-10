@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2836-sareyn.json",
+  "cityCode": 2836,
+  "purpose": "Document first-party English/Persian discovery, current public national service routes, bounded anonymous access review, scope limits, and uncertainty for Sareyn.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Iran's SSAA is the relevant national cadastral/land-registration custodian, and a local Sareyn registration office is publicly referenced. No anonymous official parcel-vector endpoint with a safe native ID, schema and geometry was verified. The packet is complete as research, not source integration; runtime remains held.",
+  "registryAssessment": "National custodian evidence and a local registration-office reference exist, but no city-bounded open cadastral response was obtained from executed anonymous routes; registryFound remains null.",
+  "safeFieldAllowlist": ["safe parcel or feature identifier only if publicly exposed and non-personal", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "queries": [
+    {
+      "language": "English",
+      "query": "Sareyn Iran official cadastral parcel map GIS land registry",
+      "outcome": "National SSAA/Shamim routes and a Sareyn registration-office reference found; no anonymous parcel feature response verified.",
+      "actualResultUrls": ["https://ssaa.ir", "https://my.ssaa.ir", "https://shamim.ssaa.ir", "https://mapcarta.com/W1287516596", "https://www.samanehha.com/web/327/%D8%B3%D8%A7%D9%85%D8%A7%D9%86%D9%87-%D8%B4%D9%85%DB%8C%D9%85.html"]
+    },
+    {
+      "language": "Persian/local",
+      "query": "سرعین اردبیل نقشه کاداستر قطعه زمین سامانه GIS ثبت اسناد",
+      "outcome": "اداره ثبت اسناد و املاک سرعین and national registration/cadastre material found; no public parcel endpoint or geometry was found, and Shamim access is described as authorized/account-based.",
+      "actualResultUrls": ["https://ssaa.ir", "https://my.ssaa.ir", "https://shamim.ssaa.ir", "https://mapcarta.com/W1287516596", "https://www.tasnimnews.ir/fa/news/1405/04/15/3640594/%D8%B1%D8%A7%D9%87-%D8%A7%D9%86%D8%AF%D8%A7%D8%B2%DB%8C-%D8%B2%DB%8C%D8%B1%D8%B3%D8%A7%D9%85%D8%A7%D9%86%D9%87-%D8%B3%DB%8C%D9%86%D8%A7%D9%85-%D8%A8%D8%B1%D8%A7%DB%8C-%DB%8C%DA%A9%D9%BE%D8%A7%D8%B1%DA%86%D9%87-%D8%B3%D8%A7%D8%B2%DB%8C-%D8%A7%D8%B7%D9%84%D8%A7%D8%B9%D8%A7%D8%AA-%D8%B2%D9%85%DB%8C%D9%86-%D9%88-%D8%A7%D9%85%D9%84%D8%A7%DA%A9"]
+    }
+  ],
+  "attempts": [
+    {"url":"https://ssaa.ir","method":"GET via curl -L --max-time 15","httpStatus":0,"result":"Connection timed out. No TLS exception or retry bypass used; no response schema or geometry obtained."},
+    {"url":"https://my.ssaa.ir","method":"GET via curl -L --max-time 15","httpStatus":0,"result":"Connection timed out. No login or credential flow attempted."},
+    {"url":"https://shamim.ssaa.ir","method":"GET via curl -L --max-time 15","httpStatus":0,"result":"Connection timed out. Public descriptions indicate authorized/account-based access; no credentials or private tokens used."},
+    {"url":"https://mapcarta.com/W1287516596","method":"public web search/open","httpStatus":200,"result":"Non-official map reference identifies an اداره ثبت اسناد و املاک سرعین government office near the WUP point; it provides place evidence only, not cadastral parcels or parcel geometry."},
+    {"url":"https://www.samanehha.com/web/327/%D8%B3%D8%A7%D9%85%D8%A7%D9%86%D9%87-%D8%B4%D9%85%DB%8C%D9%85.html","method":"public web search/open","httpStatus":200,"result":"Persian service description says Shamim supports cadastral surveying and access is defined for authorized users; it is not a parcel feature response."}
+  ],
+  "geometryEvidence": null,
+  "geometryDecision": {"verified":false,"sourceId":null,"nativeIdField":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"No exact-point parcel containment test was completed. The exact WUP point [38.1505150822643, 48.0736615214238] was preserved and not shifted; timeout/restricted access is not evidence of citywide absence."},
+  "remainingUncertainty": "The current SSAA/Shamim JavaScript/configuration, any public service URL, local municipal GIS, native parcel identity, parcel CRS, exact-point parcel, and citywide open coverage remain unverified. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS exception was used.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter"
+}

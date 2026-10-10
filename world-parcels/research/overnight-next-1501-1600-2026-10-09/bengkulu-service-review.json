@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-4136-bengkulu.json",
+  "purpose": "Document first-party registry/map discovery, current viewer configuration, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Official ATR/BPN evidence establishes Kantor Pertanahan Kota Bengkulu as the city custodian. BHUMI is the national public map viewer and its current JavaScript names a Geoserver parcel layer (`umum:Persil`) and an internal `/expapi/getPersil` path. No anonymous safe ID-plus-complete-polygon response was obtained.",
+  "registryAssessment": "Local city registry custody found through the official ATR/BPN Kota Bengkulu site. National agency documentation separately confirms BHUMI as the public land-map channel; this is not treated as proof of citywide geometry availability.",
+  "officialPrimarySources": [
+    {
+      "url": "https://kot-bengkulu.atrbpn.go.id/berita/kantah-kota-bengkulu-ikuti-pembahasan-verifikasi-usulan-lp2b-pada-lahan-baku-sawah",
+      "observation": "Official city office page names Kantor Pertanahan Kota Bengkulu and discusses its land-use/land administration role."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+      "observation": "Official BHUMI documentation describes the interactive ATR/BPN spatial map and its integration with the ATLAS geospatial platform."
+    },
+    {
+      "url": "https://jdih.atrbpn.go.id/uploads/1021/Petunjuk%20Teknis%20Nomor%205%20Tahun%202021%20tentang%20Juknis%20Layanan%20Informasi%20Pertanahan%20dan%20Ruang%20Secara%20Elektronik.pdf",
+      "observation": "Official guidance states that publicly accessible land-map information is served through BHUMI."
+    }
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://bhumi.atrbpn.go.id/peta",
+    "iframeRoute": "https://bhumi.atrbpn.go.id/konsolbhumi.html",
+    "observedLayer": "umum:Persil",
+    "observedRelativeServiceUrl": "/bhumigs/umum",
+    "observedVendor": "Geoserver",
+    "observedLayerDescription": "Registered land parcels, with thematic display and map-click information described by BHUMI.",
+    "schemaAndCrs": "Not verified from a successful service response.",
+    "nativeFieldNames": "Not retained; no successful feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {
+      "url": "https://bhumi.atrbpn.go.id/",
+      "method": "GET",
+      "result": "HTTP 200; page embeds the official BHUMI console."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/peta",
+      "method": "GET",
+      "result": "HTTP 200; current JavaScript/configuration inspected and `umum:Persil` / `/bhumigs/umum` identified."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bhumigs/umum?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 404 HTML response; no capabilities or parcel schema returned."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bhumigs/umum?service=WMS&request=GetCapabilities",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 404 HTML response; no capabilities or parcel schema returned."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/api/proksi",
+      "method": "POST",
+      "bodyClass": "Anonymous proxy request for the observed service URL only; no credentials or unsafe fields.",
+      "normalTlsVerification": true,
+      "result": "HTTP 400 JSON error (`Unexpected token < in JSON at position 0`); no parcel feature response."
+    }
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {
+    "sampleFile": null,
+    "featureCount": 0,
+    "query": "No WUP-point parcel query submitted because the public service route and safe request shape were not verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Kantor Pertanahan Kota Bengkulu is city-specific registry custody; BHUMI is a national public land-map viewer.",
+    "verifiedOpenScope": "No anonymous complete-polygon feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "remainingUncertainty": "A 404 on a guessed direct route and a 400 proxy response are access/route findings only, not evidence of cadastral absence. CRS, schema, native identity, parcel coverage and citywide completeness remain unverified.",
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."
+  }
+}

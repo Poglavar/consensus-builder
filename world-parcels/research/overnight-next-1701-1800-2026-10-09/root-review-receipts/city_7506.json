@@ -1,0 +1,16 @@
+{
+  "taskId": "city:7506",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-7506-gwagwalada.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/gwagwalada-service-review.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "tmp/valhalla-parcel-research/7506/management.html",
+    "tmp/valhalla-parcel-research/7506/portal.js"
+  ],
+  "checkedAt": "2026-10-10T13:44:21Z",
+  "registryFound": true,
+  "reason": "First-party FCT land-administration evidence lists a Gwagwalada Unit. The cached portal JavaScript identifies map download as a client-side demonstration; no anonymous native parcel ID or full polygon response is present. Public geometry availability remains unresolved.",
+  "admission": "Held: no independently verified full native parcel polygon and ID; fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, and headed Details-panel verification are missing. No runtime, catalog, city configuration, or generated coverage admission."
+}

@@ -1,0 +1,33 @@
+{
+  "cityRecord": "city-756-siem-reap.json",
+  "cityCode": 756,
+  "queueRank": 1621,
+  "city": "Siem Reap",
+  "country": "Cambodia",
+  "countryCode": "KH",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": null,
+  "summary": "English and Khmer first-party discovery identified MLMUPC cadastral-service routes and the official Siem Reap Municipality gazetteer entry. Linked cadastral/registration hosts returned anonymous HTTP 403 responses, so no safe parcel ID plus geometry response was verified. This is not evidence of citywide cadastral absence.",
+  "queryOutcomes": "Both discovery queries and their actual URLs are recorded in city-756-siem-reap.json. The English query found MLMUPC service pages and the NCDD gazetteer; the Khmer query found the same official service/city evidence and Khmer cadastral-publication context.",
+  "requestOutcomes": "MLMUPC services and electronic-cadastral pages returned 200; gdcg.mlmupc.gov.kh, cadastral.mlmupc.gov.kh, and report-cis.mlmupc.gov.kh returned 403; the NCDD Siem Reap gazetteer returned 200. No login, private token, unsafe field request, CAPTCHA/Cloudflare bypass, or TLS exception was used.",
+  "scopeLimits": [
+    "No city boundary-to-parcel coverage or complete Siem Reap cadastral coverage was established.",
+    "No exact-point hit/miss, extent miss, timeout, or 403 access denial was used as an absence claim.",
+    "No parcel geometry, native parcel identity, source attributes, CRS, or sample GeoJSON was retained.",
+    "The NCDD gazetteer is administrative reference data, not parcel geometry.",
+    "National/general agency service pages are not treated as proof of an open local runtime adapter."
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeIdentityPolicy": "No native parcel identity was observed; no synthetic identity was created. If a future public response is found, retain only one stable native identity in GeoJSON properties and document native field mapping here.",
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The official national custodian and Siem Reap administrative scope are evidenced, but anonymous map/API access, service configuration, city coverage, schema, CRS, parcel identity, and geometry remain unknown. Do not infer absence from 403 responses or search results.",
+  "retainedSample": null
+}

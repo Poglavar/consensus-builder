@@ -1,0 +1,39 @@
+{
+  "cityRecord": "city-7283-narmashir.json",
+  "cityCode": 7283,
+  "queueRank": 1742,
+  "city": "Narmashir",
+  "country": "Iran (Islamic Republic of)",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": null,
+  "verifiedSample": false,
+  "runtimeReadiness": "held",
+  "summary": "National Iranian cadastral and registration leads were documented, but no Narmashir-specific public parcel geometry service or safe native parcel identity was verified.",
+  "queryOutcomes": "English and Persian discovery queries are recorded verbatim in city-7283-narmashir.json. Results were limited to national cadastral context, legacy map references, and general procedures; no city-specific first-party parcel endpoint was found.",
+  "requestOutcomes": "Bounded GET checks to ssaa.ir, cadastre.mimt.gov.ir, and the indexed map.mimt.gov.ir tile route timed out. An official National Cartographic Center publication was identified as context only. No login, CAPTCHA bypass, credential, private token, unsafe field, or TLS exception was used.",
+  "scopeLimits": [
+    "National registration and cadastral custodians do not by themselves evidence a local Narmashir registry or public parcel service.",
+    "The legacy cadastre.mimt.gov.ir and map.mimt.gov.ir references were unreachable and yielded no schema, CRS, identity, or geometry response.",
+    "No exact-point hit, extent miss, timeout, or unavailable UI was treated as evidence of citywide parcel absence.",
+    "No parcel polygon was retained because no verified native identity and geometry were available."
+  ],
+  "safeFieldAllowlist": ["native parcel identifier", "geometry", "source layer name", "CRS", "service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryRetention": {
+    "sampleGeoJSON": null,
+    "featureCount": 0,
+    "reason": "No safe, verified native parcel geometry response was available."
+  },
+  "uncertainty": "Open parcel coverage, schema, CRS, native identity semantics, and citywide completeness remain unverified. National institutional leads are not an admission of source integration.",
+  "qualificationDecision": "hold",
+  "completionSummary": {
+    "recordWritten": true,
+    "serviceReviewWritten": true,
+    "sampleGeoJSONWritten": false,
+    "openParcelEndpointVerified": false,
+    "adapterQualified": false
+  }
+}

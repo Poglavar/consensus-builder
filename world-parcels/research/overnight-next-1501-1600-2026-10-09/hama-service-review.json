@@ -1,0 +1,27 @@
+{
+  "cityRecord": "city-1690-hama.json",
+  "schemaVersion": 1,
+  "cityCode": 1690,
+  "queueRank": 1520,
+  "city": "Hama",
+  "country": "Syrian Arab Republic",
+  "countryCode": "SY",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "outcome": "complete_no_verified_open_geometry",
+  "registryFound": true,
+  "registryScope": "Hama Directorate of Real Estate Affairs and its cadastral-plan/land-registry services, with official SANA evidence of ongoing digitization; no open parcel geometry service was verified.",
+  "exactPointLatLon": [35.1345747864745, 36.7586604856154],
+  "queries": [
+    {"language": "English", "query": "Hama Syria official cadastral parcel map land registry Directorate of Real Estate Affairs GIS", "outcome": "Official local registry evidence found; official governorate site had no exposed parcel viewer/API.", "urls": ["https://sana.sy/governorates/hama/2183446/", "https://hama.gov.sy/"]},
+    {"language": "Arabic", "query": "حماة سوريا مديرية المصالح العقارية خريطة عقارية سجل عقاري مخطط مساحي", "outcome": "Official Arabic reports found for Hama registry services and digitization; no anonymous geometry/CRS response.", "urls": ["https://sana.sy/governorates/hama/2206045/", "https://sana.sy/governorates/hama/2218458/", "https://hama.gov.sy/about"]}
+  ],
+  "requestOutcomes": "GET https://hama.gov.sy/ and /about returned HTTP 200. GETs of the three official SANA Hama registry reports returned HTTP 200 during source inspection. The Hama site HTML and referenced JavaScript were checked for map/GIS/cadastral routes; none was exposed. No login, credentials, CAPTCHA bypass, private token, or unsafe property fields were used.",
+  "schemaCrs": "Not available; no parcel feature response was received.",
+  "safeFieldAllowlist": ["stable native parcel identifier", "geometry", "source CRS", "non-sensitive administrative scope"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "mortgage/lien details"],
+  "sampleGeojson": null,
+  "runtimeReadiness": "held",
+  "uncertainty": "The official reports evidence a local registry and digitization, but not citywide coverage, exact-point coverage, public geometry, CRS, or native parcel IDs. A point miss or absent endpoint is not evidence of citywide absence.",
+  "completion": "All executed discovery and request attempts are recorded; packet is complete for attempt 1, with no retained GeoJSON sample."
+}

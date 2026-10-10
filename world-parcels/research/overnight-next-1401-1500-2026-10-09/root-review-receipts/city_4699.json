@@ -1,0 +1,12 @@
+{
+  "taskId": "city:4699",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-4699-as-samawah.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/as-samawah-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T16:59:28Z",
+  "reason": "Official Iraqi registration and geographic-portal pages were inspected, but they do not evidence an anonymous As Samawah parcel polygon service or native ID. Registry custody for this specific city remains unresolved (null). No fresh exact-ID read, paging, 13-cell coverage, metric GEOS, binding, or headed Details proof exists."
+}

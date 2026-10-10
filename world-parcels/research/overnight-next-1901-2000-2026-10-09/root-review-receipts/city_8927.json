@@ -1,0 +1,14 @@
+{
+  "taskId": "city:8927",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-8927-amroha.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/amroha-service-review.json",
+    "tmp/valhalla-parcel-research/amroha/bhunaksha.html",
+    "tmp/valhalla-parcel-research/amroha/upbhulekh.html"
+  ],
+  "checkedAt": "2026-10-10T18:19:12.975260Z",
+  "reviewFinding": "Queue identity and bilingual search records agree. Official district referral and public viewer are documented, but no safe native ID plus full parcel polygon response is retained. Viewer timeouts and no exact-point read do not establish absence. No live adapter qualification or headed Details verification."
+}

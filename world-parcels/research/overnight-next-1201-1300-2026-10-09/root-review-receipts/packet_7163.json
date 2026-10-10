@@ -1,0 +1,18 @@
+{
+  "taskId": "packet:7163",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-7163-maragha.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/maragha-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/root-review-receipts/city_7163.json"
+  ],
+  "checkedAt": "2026-10-09T13:43:54Z",
+  "identityReview": "Immutable WUP code, rank, country, point, and population in persons match the ranked roster and pending queue.",
+  "searchReview": "Paired packet documents executed English and Arabic searches with actual result URLs.",
+  "sourceReview": "The cited ITDA office is a commercial registry, not proof of local land-record custody. The Survey Authority describes map procurement, and the Ministry of Justice cadastral notice was only available as indexed text after direct TLS failure. The packet’s local registryFound=true claim is not independently accepted; custody remains qualified/unresolved. IDSC metadata identifies building/administrative layers, not parcels.",
+  "geometryReview": "No full source parcel polygon was retained; sample count is zero and no safe native parcel ID response is evidenced. Point/timeout/viewer limitations are not citywide absence.",
+  "admissionReview": "Held: no independently evidenced fresh exact native-ID reads, forced paging and complete manifest, 13 bounded cells, metric GEOS validity/duplicate/overlap/operation checks, full-parcel source binding, or headed Details-panel verification. No runtime, catalog, registry, or generated report admission."
+}

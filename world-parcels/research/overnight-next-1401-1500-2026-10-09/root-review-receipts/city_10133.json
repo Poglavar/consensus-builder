@@ -1,0 +1,17 @@
+{
+  "taskId": "city:10133",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-10133-pratapgarh.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pratapgarh-service-review.json",
+    "tmp/valhalla-parcel-research/pratapgarh/villages.json"
+  ],
+  "checkedAt": "2026-10-09T16:27:22.006099+00:00",
+  "reviewFindings": {
+    "identity": "WUP 2025 source and immutable queue agree: Pratapgarh, India, rank 1421, point [25.9152575987023,81.98769878421], 398315 persons.",
+    "searches": "Packet and paired review record executed English and Hindi queries with first-party result URLs.",
+    "sourceEvidence": "Original cached first-party village response contains city-named codes 158800 and 216228, both hasData=false. Worker-recorded zero extent and empty plot responses are unresolved for citywide coverage; no full polygons or stable native parcel ID were retained.",
+    "holdReason": "No native-ID parcel polygon, live adapter/source binding, forced paging, 13 bounded cells, metric GEOS overlap checks, or headed details-panel verification. Empty/zero responses are not citywide absence."
+  }
+}

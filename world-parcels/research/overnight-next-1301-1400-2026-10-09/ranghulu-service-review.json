@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9116-ranghulu.json",
+  "cohort": "overnight-next-1301-1400-2026-10-09",
+  "purpose": "Independent service review for Ranghulu's official cadastral and real-estate-registration custody and bounded anonymous public geometry availability.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Ranghulu and Heilongjiang government sources evidence a local/municipal real-estate-registration custodian and service guidance. Anonymous HTTPS GETs returned service portals, but the reviewed responses exposed no public parcel map/API, layer schema, native safe parcel ID, CRS, or full polygon. No sample GeoJSON was created; runtime readiness remains held.",
+  "registryAssessment": "registryFound=true is supported by the official Ranghulu district government service portal's real-estate-registration guide and official provincial reports naming Daqing Natural Resources and Ranghulu district registration departments. This establishes custody/service evidence, not open vector access, title, ownership, or citywide completeness.",
+  "coverageAssessment": {
+    "claimedScope": "Ranghulu district government service portal plus Daqing municipal and Ranghulu district real-estate-registration reporting.",
+    "verifiedOpenScope": "Official descriptive service pages only; no anonymous parcel geometry or stable safe ID.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["cityCode", "queueRank", "WUP point", "official service URLs", "HTTP status/content type", "public service metadata", "native CRS/ID only if returned safely", "geometry only if independently verified"],
+  "searchQueries": [
+    {"language": "English", "query": "Ranghulu Daqing China official cadastral parcel map GIS land registry", "actualResultUrls": ["https://dqrhlq.zwfw.hlj.gov.cn/", "https://dq.zwfw.hlj.gov.cn/", "https://www.hlj.gov.cn/hlj/c107856/202310/c00_31678223.shtml"]},
+    {"language": "Chinese (local/native-language query)", "query": "让胡路区 大庆 官方 地籍 地图 GIS 不动产 登记", "actualResultUrls": ["https://dqrhlq.zwfw.hlj.gov.cn/", "https://dq.zwfw.hlj.gov.cn/", "https://www.hlj.gov.cn/hlj/c107856/202310/c00_31678223.shtml", "https://zrzyt.hlj.gov.cn/zrzyt/c112207/202603/c00_31921585.shtml"]}
+  ],
+  "attempts": [
+    "Ran separate English and Chinese first-party discovery queries and recorded official result URLs.",
+    "Reviewed the official Ranghulu district service portal and Daqing service portal for current public registration/map links.",
+    "Anonymous TLS-verified GET of the Ranghulu district portal returned HTTP 200; page advertised real-estate-registration guidance but exposed no parcel service configuration or geometry.",
+    "Anonymous TLS-verified GET of the Daqing service portal returned HTTP 200; page exposed an Internet-plus real-estate-registration label but no parcel geometry/API.",
+    "Reviewed official Heilongjiang government and provincial natural-resources reports for local custodian evidence; prose identified Daqing/Ranghulu registration departments but provided no public vector payload.",
+    "Did not submit the exact WUP point [46.6119097522878, 124.856110545558] to a parcel endpoint because no anonymous parcel endpoint was verified; did not shift coordinates.",
+    "Did not request or retain owner, address, contact, titleholder, tax, account, personal, credential, or token fields; did not log in, bypass CAPTCHA/Cloudflare, or disable TLS verification.",
+    "No sample GeoJSON was created because no full parcel polygon and safe native identity were independently verified."
+  ],
+  "geometryEvidence": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "nativeCrs": null,
+    "exactWupPointTest": "Not run; no anonymous full parcel-geometry endpoint was verified. Exact WUP point preserved unchanged.",
+    "polygonResponse": "None; official portal responses exposed registration guidance but no public parcel vector service."
+  },
+  "nextStep": "Independent serial review of any current Daqing/Ranghulu natural-resources map viewer or service configuration, if exposed publicly; keep adapter/runtime held until safe native IDs and full parcel polygons are independently qualified.",
+  "remainingUncertainty": "The current cadastral backend, native schema/CRS, parcel identity field, anonymous geometry capability, and citywide coverage remain unknown. Portal/API absence in this bounded attempt is not evidence that Ranghulu lacks cadastral data.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

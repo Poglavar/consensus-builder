@@ -1,0 +1,15 @@
+{
+  "taskId": "root:finland-followthrough",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/country-integration-audit-2026-10-09/Finland-runtime-qualification.json",
+    "world-parcels/research/country-integration-audit-2026-10-09/finland-root-independent-probe.json",
+    "world-parcels/research/country-integration-audit-2026-10-09/finland-root-quality.json",
+    "world-parcels/research/country-integration-audit-2026-10-09/FI-identity-followthrough.json",
+    "world-parcels/research/country-integration-audit-2026-10-09/FI-samples.json",
+    "backend/test/finland-cp-gml-wfs.test.js"
+  ],
+  "checkedAt": "2026-10-09T10:57:43.476001Z",
+  "reviewBasis": "Helsinki WUP 555/FI/1014317 persons and unchanged point match the bulk source. Three native-ID polygons are durably sampled; bounded readbacks, paging, and a 38-feature metric GEOS audit are reported, and the targeted adapter tests pass. Original response caches are absent here. A verified contained 1 m and 8 m site returned zero through generic KVP BBOX; the explicit geometry FES data/post-hit triad was gateway rejected. Live geometry-bound query semantics and headed Details verification remain unproven."
+}

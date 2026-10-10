@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10722,
+  "cityCode": 10722,
+  "cityId": "wup2025:10722",
+  "name": "Jiaozhou",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [36.2925260574482, 120.028600652066],
+  "point": [36.2925260574482, 120.028600652066],
+  "queueRank": 1216,
+  "population2025": 457288,
+  "population2025k": 457.288,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jiaozhou China official cadastral map land parcels natural resources bureau",
+        "result": "The first-party search result identified the Qingdao/Shandong government service entry for Jiaozhou real-estate registration. The official Shandong Tian地图 platform and API documentation were also identified; the public viewer is a general geographic-information platform, and no anonymous cadastral parcel-vector endpoint was established.",
+        "actualResultUrls": [
+          "https://qdzwfw.sd.gov.cn/jz/icity/proinfo/index3?code=181463c6-1c02-4799-9e1b-c9f0dbdab8bc",
+          "https://www.sdmap.gov.cn/",
+          "https://www.sdmap.gov.cn/map.html",
+          "https://sdmap.gov.cn/mapAPI.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "胶州 官方 不动产登记 地籍图 宗地图 自然资源和规划局",
+        "result": "The first-party Qingdao/Shandong government service entry identifies 胶州市自然资源和规划局 as implementing body and 胶州市不动产登记中心 as handling agency for real-estate registration. Search results did not establish an anonymous Jiaozhou parcel-geometry API.",
+        "actualResultUrls": [
+          "https://qdzwfw.sd.gov.cn/jz/icity/proinfo/index3?code=181463c6-1c02-4799-9e1b-c9f0dbdab8bc",
+          "https://www.sdmap.gov.cn/map.html"
+        ]
+      }
+    ],
+    "officialViewerInspection": "The current public Shandong Tian地图 viewer HTML references Config_url.v002.js and a bundled map.3fc18556.js. The inspected bundle contains public basemap, region, POI and user-plot routes; no public anonymous cadastral parcel layer or safe geometry-only parcel GetFeature route was identified. No login or private token was used."
+  },
+  "registryFound": true,
+  "registryBasis": "A first-party Qingdao/Shandong government service record explicitly names Jiaozhou Natural Resources and Planning Bureau (胶州市自然资源和规划局) as implementing body and Jiaozhou Real Estate Registration Center (胶州市不动产登记中心) as handling agency for real-estate registration. This establishes a local registry/procedure custodian, not public parcel-vector access.",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "The official Shandong geographic-information platform provides province-wide public basemap and geographic-information services; the government service portal provides Jiaozhou real-estate registration procedures.",
+    "verifiedOpenScope": "Jiaozhou local registration custodian and procedure are evidenced. No anonymous, safe, full parcel polygon response was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "resultCategory": "local_registry_procedure_no_verified_open_parcel_geometry",
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No bounded anonymous request returned safe parcel ID plus full polygon geometry. A zero exact-point result or absence of a public endpoint is not treated as citywide absence."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "technicalBlocker": "The official local procedure page is not a parcel geometry API. The official Shandong map viewer is a JavaScript application with general public map services; no safe anonymous cadastral parcel-vector route was established in the bounded inspection.",
+  "remainingUncertainty": "The local registry may have cadastral map data or authenticated/public-service query capabilities not exposed through the reviewed anonymous web routes. Parcel coverage at the exact WUP point and citywide completeness remain unverified.",
+  "nextStep": "A serial reviewer may independently qualify a first-party Jiaozhou parcel adapter only after confirming a current public route, CRS/schema, safe ID fields, and bounded geometry response."
+}

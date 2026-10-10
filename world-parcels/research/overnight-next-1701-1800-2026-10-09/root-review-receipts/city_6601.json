@@ -1,0 +1,28 @@
+{
+  "taskId": "city:6601",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-6601-shariatpur.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/shariatpur-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T15:11:50Z",
+  "reason": "The queue identity and English/Bengali searches match. The saved first-party Land Zoning response contains 1,177 nonempty MULTIPOLYGON WKT plots for one Shariatpur Sadar mouza, with gid and plot_no_en fields; it establishes bounded geometry discovery only. Stable native parcel identity, citywide scope, fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification remain unproven.",
+  "firstPartyCacheCheck": {
+    "path": "tmp/valhalla-parcel-research/shariatpur-mauza-001.json",
+    "sha256": "0180108e427a5b325076be769fcfbf7de39a7ed8ef737fc68844e48cc24a062e",
+    "sheets": 1,
+    "plots": 1177,
+    "nonemptyMultipolygonWkt": 1177,
+    "observedFields": [
+      "geom",
+      "gid",
+      "jl_no_en",
+      "label",
+      "m_code",
+      "plot_no_en",
+      "sht_no_en"
+    ]
+  }
+}

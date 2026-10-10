@@ -1,0 +1,13 @@
+{
+  "taskId": "city:9753",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-9753-raichur.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/raichur-service-review.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz"
+  ],
+  "checkedAt": "2026-10-10T15:35:39Z",
+  "reason": "The immutable WUP 2025 city identity, rank, country, point and 319647-person population match the source row and queue. English and Kannada searches are recorded in the city packet. First-party district and Karnataka portal pages establish a land-record service, but the paired evidence has no retained native parcel ID, full polygon, CRS or first-party geometry response. The portal timeouts and DILRMP certificate failure do not show citywide absence. Fresh adapter ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed Details verification are unproven; runtime admission remains held."
+}

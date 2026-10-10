@@ -1,0 +1,17 @@
+{
+  "taskId": "city:4929",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-4929-celaya.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/celaya-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/valhalla-parcel-research/4929/imipecelaya.headers",
+    "tmp/valhalla-parcel-research/4929/manzanas.headers",
+    "tmp/valhalla-parcel-research/4929/manzanas.json",
+    "tmp/valhalla-parcel-research/4929/construccion_capas.js"
+  ],
+  "checkedAt": "2026-10-10T09:08:31.083062Z",
+  "reviewFindings": "City catastro custody exists; original GIS response is urban blocks, not parcels, and no native-ID parcel adapter qualified.",
+  "admissionGates": "Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, and headed Details verification are not independently evidenced; no runtime admission."
+}

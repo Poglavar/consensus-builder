@@ -1,0 +1,44 @@
+{
+  "cityRecord": "city-6233-quy-nh-n.json",
+  "cityCode": 6233,
+  "queueRank": 1944,
+  "city": "Quy Nhơn",
+  "country": "Viet Nam",
+  "countryCode": "VN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "outcome": "complete_no_verified_parcel_source",
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "point": [13.7788040869455, 109.187901258743],
+  "population2025": 297184,
+  "population2025k": 297.184,
+  "populationUnit": "persons",
+  "queryOutcomes": [
+    {"language": "English", "query": "Quy Nhon Vietnam official cadastral parcel map GIS land registry", "outcome": "Official local/provincial registry and VBDLIS leads found; no anonymous parcel geometry response verified."},
+    {"language": "Vietnamese (local/official)", "query": "Quy Nhơn bản đồ địa chính thửa đất cổng thông tin chính thức", "outcome": "Official local procedures identify the Quy Nhơn land-registration branch; no public parcel geometry service or schema verified."}
+  ],
+  "requestOutcomes": [
+    {"url": "https://quynhon.binhdinh.gov.vn/", "method": "GET", "outcome": "Direct curl connection reset; no TLS bypass."},
+    {"url": "https://binhdinh.gov.vn/chinh-quyen/co-quan-chuyen-mon/so-tai-nguyen-va-moi-truong.html", "method": "GET", "outcome": "Verified-TLS curl rejected expired certificate; no exception used."},
+    {"url": "https://dichvucong.binhdinh.gov.vn/dichvucong/bothutuc/chiTietThuTuc?maThuTuc=43442", "method": "GET", "outcome": "Verified-TLS curl rejected expired certificate; no exception used."},
+    {"url": "https://dt-authen.mplis.gov.vn/", "method": "GET", "outcome": "HTTP 200 official restricted-system landing page; no login or anonymous parcel response."}
+  ],
+  "scopeLimits": [
+    "No exact-point hit or miss was used as a citywide conclusion.",
+    "No parcel geometry, native parcel identifier, source schema, CRS, or bounded feature response was verified.",
+    "No owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested or retained.",
+    "Local registryFound is true because official Quy Nhơn procedure material identifies the local land-registration branch; this does not establish an open parcel API.",
+    "No sample GeoJSON was written because no safe, unchanged full parcel polygon with a verified native identity was available.",
+    "Packet completion records research only and is not source integration or adapter admission."
+  ],
+  "safeFieldAllowlist": ["native parcel identifier", "geometry", "source CRS", "service URL", "retrieval timestamp"],
+  "uncertainty": "The official local custodian is evidenced, but current anonymous map/API availability, schema, CRS, native identity, and citywide coverage remain uncertain. TLS and connection failures limited direct retrieval; no certificate exception was authorized.",
+  "evidenceUrls": [
+    "https://quynhon.binhdinh.gov.vn/upload/105285/20230808/746fdb05186b2bdb2261b5d4f481d393102f01abd6.pdf",
+    "https://binhdinh.gov.vn/chinh-quyen/co-quan-chuyen-mon/so-tai-nguyen-va-moi-truong.html",
+    "https://dichvucong.binhdinh.gov.vn/dichvucong/bothutuc/chiTietThuTuc?maThuTuc=43442",
+    "https://dt-authen.mplis.gov.vn/"
+  ],
+  "qualification": {"verifiedSample": false, "nativeIdReadiness": "not_applicable_no_verified_parcel_response", "runtimeEligible": false}
+}

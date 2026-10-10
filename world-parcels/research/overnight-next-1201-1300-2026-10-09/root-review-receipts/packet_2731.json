@@ -1,0 +1,14 @@
+{
+  "taskId": "packet:2731",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-2731-manizales.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/manizales-service-review.json",
+    "tmp/valhalla-parcel-research/2731/gestor-17001.json",
+    "tmp/valhalla-parcel-research/2731/gestor-layer.json"
+  ],
+  "checkedAt": "2026-10-09T13:41:53Z",
+  "reason": "Queue code 2731, rank 1266, Colombia, point and 440407 persons match. English and Spanish searches are documented. Original IGAC response identifies Manizales and operating MASORA cadastral gestor, supporting local custody. Municipal parcel service requests timed out, yielding zero accepted polygons; this is unresolved access, not citywide absence. No independent runtime qualification; held."
+}

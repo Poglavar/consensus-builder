@@ -1,0 +1,16 @@
+{
+  "taskId": "city:6392",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-6392-sirsa.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/sirsa-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T18:28:12.800798Z",
+  "reason": "Official Haryana Revenue material identifies Sirsa village-map digitization and HARSAC custody. The packet reports an OTP/authentication wall; no independently evidenced parcel feature, native ID, polygon, or adapter qualification. Authentication and timeout do not establish parcel absence.",
+  "firstPartySourceUrls": [
+    "https://revenueharyana.gov.in/computerisation-of-land-records/",
+    "https://hsac.in/eodb/"
+  ]
+}

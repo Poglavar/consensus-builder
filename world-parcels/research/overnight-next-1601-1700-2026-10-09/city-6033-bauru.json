@@ -1,0 +1,120 @@
+{
+  "cityCode": 6033,
+  "queueRank": 1630,
+  "name": "Bauru",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "point": [-22.3181273663533, -49.074484645653],
+  "population2025": 351405,
+  "population2025k": 351.405,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bauru Brazil official cadastral parcel map geospatial GIS municipal parcel service",
+        "result": "Found the official Prefeitura Municipal de Bauru geoprocessing page. It links to the municipal Geopixel Cidades viewer and states that the geoprocessing/georeferencing system is a municipal system under Contrato 10.935/22. The separate official digital-maps page also publishes a 2024 cadastral map PDF and directs users to the current geoprocessing platform.",
+        "actualResultUrls": [
+          "https://www2.bauru.sp.gov.br/geoprocessamento/",
+          "https://www2.bauru.sp.gov.br/seplan/mapas_digitais.aspx",
+          "https://bauru.geopixel.com.br/geopixelcidades3/"
+        ]
+      },
+      {
+        "language": "Portuguese (Brazilian local language)",
+        "query": "Bauru cadastro imobiliário mapa cadastral geoprocessamento prefeitura parcelas lotes",
+        "result": "Found the official municipal geoprocessing page, the official digital cadastral-map page, and municipal land-subdivision/project procedures. The public pages evidence municipal cadastral/geoprocessing custody, but no openly documented parcel REST endpoint or anonymous parcel geometry response was exposed by the viewer checks.",
+        "actualResultUrls": [
+          "https://www2.bauru.sp.gov.br/geoprocessamento/",
+          "https://www2.bauru.sp.gov.br/seplan/mapas_digitais.aspx",
+          "https://www2.bauru.sp.gov.br/seplan/projetos_parcelamento_solo.aspx"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "A first-party Prefeitura Municipal de Bauru page identifies and links the municipal geoprocessing/georeferencing system, and the official SEPLAN page publishes a cadastral digital map and points to the current platform. This establishes a local municipal GIS/cadastral custodian, not an accessible parcel API or proof of citywide parcel completeness.",
+  "officialSources": [
+    {
+      "url": "https://www2.bauru.sp.gov.br/geoprocessamento/",
+      "observation": "Official Prefeitura Municipal de Bauru page; identifies the municipal geoprocessing/georeferencing system and links to the live Geopixel Cidades viewer."
+    },
+    {
+      "url": "https://bauru.geopixel.com.br/geopixelcidades3/",
+      "observation": "Linked public viewer. Its current configuration file points to the Bauru-specific server at https://bauru.geopixel.com.br/geopixelcidades3_server."
+    },
+    {
+      "url": "https://www2.bauru.sp.gov.br/seplan/mapas_digitais.aspx",
+      "observation": "Official SEPLAN digital-maps page; lists a cadastral/zoneing/commercial-corridor map PDF and directs users to the geoprocessing platform for current data."
+    },
+    {
+      "url": "https://www2.bauru.sp.gov.br/seplan/projetos_parcelamento_solo.aspx",
+      "observation": "Official municipal page for land-subdivision projects/maps; access is procedural and the page does not provide an anonymous parcel feature service."
+    }
+  ],
+  "source": {
+    "sourceId": "bauru-prefeitura-geopixel-cidades",
+    "name": "Bauru municipal Geopixel Cidades geoprocessing viewer",
+    "operator": "Prefeitura Municipal de Bauru",
+    "endpoint": "https://bauru.geopixel.com.br/geopixelcidades3/",
+    "method": "Viewer/configuration inspection and anonymous HTTP checks",
+    "responseFormat": "HTML/JavaScript configuration and JSON status responses; no parcel feature response obtained",
+    "nativeCrs": null,
+    "nativeIdentity": null,
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "scope": "Municipal geoprocessing viewer and official cadastral-map publication are evidenced; parcel-layer coverage, schema, CRS, identity, update cadence, and legal/tax-record equivalence remain unverified."
+  },
+  "requests": [
+    {
+      "url": "https://www2.bauru.sp.gov.br/geoprocessamento/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official municipal page returned and linked the Geopixel Cidades viewer."
+    },
+    {
+      "url": "https://bauru.geopixel.com.br/geopixelcidades3/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Viewer shell returned. Current JavaScript bundle was inspected for its configuration and service route behavior; no credentials, login, CAPTCHA, or private token was used."
+    },
+    {
+      "url": "https://bauru.geopixel.com.br/geopixelcidades3/configurations.json",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Public configuration returned serverPath=https://bauru.geopixel.com.br/geopixelcidades3_server."
+    },
+    {
+      "url": "https://bauru.geopixel.com.br/geopixelcidades3_server/v2/profiles",
+      "method": "GET",
+      "httpStatus": 401,
+      "outcome": "Unauthorized. No profile/layer metadata was obtained anonymously; no authentication attempt was made."
+    },
+    {
+      "url": "https://bauru.geopixel.com.br/geopixelcidades3_server/public/geoportalLogin",
+      "method": "POST",
+      "httpStatus": 500,
+      "outcome": "Server returned IllegalServiceAccessException/internal error for an empty anonymous request. No retry with credentials or bypass was attempted."
+    },
+    {
+      "url": "https://bauru.geopixel.com.br/geopixelcidades3_server/public/geoportalLogin",
+      "method": "GET",
+      "httpStatus": 500,
+      "outcome": "Server returned HttpRequestMethodNotSupportedException/internal error. This route did not yield public layer metadata or parcel geometry."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "safeFieldAllowlist": ["native parcel identity if later documented", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "titleholder", "address", "contact", "tax/account", "legal/title", "personal data"],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Municipal Bauru geoprocessing/cadastral publication and linked viewer.",
+    "verifiedOpenScope": "Only official page, viewer shell, public configuration, and anonymous authorization/error responses were verified; no parcel extent or parcel feature query was verified.",
+    "countrywideVerified": false
+  },
+  "resultCategory": "local_registry_evidenced_no_anonymous_parcel_api",
+  "runtimeReadiness": "held_serial_review",
+  "remainingUncertainty": "The exact-point hit status, map extent, parcel layer names, schema, native identity, CRS, and citywide completeness are unknown. A zero geometry result must not be inferred from the authorization/error responses. The official PDF cadastral map is cartographic evidence only and was not converted into parcel features. Packet completion is not source integration or admission."
+}

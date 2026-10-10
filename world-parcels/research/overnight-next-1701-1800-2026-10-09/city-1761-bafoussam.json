@@ -1,0 +1,82 @@
+{
+  "cityCode": 1761,
+  "queueRank": 1789,
+  "city": "Bafoussam",
+  "country": "Cameroon",
+  "countryCode": "CM",
+  "point": [5.48768368740835, 10.4144775100828],
+  "population2025": 321489,
+  "population2025k": 321.489,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bafoussam Cameroon official cadastral parcel map land registry viewer API",
+        "result": "First-party discovery found the official MINDCAF mandate for cadastral plans, the official City of Bafoussam portal, and an official MINHDU Bafoussam urban-planning study. No open Bafoussam land-parcel viewer or parcel API was identified. The MINMIDT result is explicitly a national mining cadastre, not a general land cadastre.",
+        "actualResultUrls": [
+          "https://www.mindcaf.gov.cm/fr/mission/",
+          "https://cubafoussam.cm/",
+          "https://minhdu.gov.cm/planification/study/43",
+          "https://www.minmidt.cm/carte-cadastrale-du-cameroun/"
+        ]
+      },
+      {
+        "language": "French",
+        "query": "Bafoussam Cameroun carte cadastrale parcelles registre foncier officiel service en ligne",
+        "result": "La recherche officielle a confirmé le mandat cadastral du MINDCAF, le portail de la Communauté Urbaine de Bafoussam et l'étude officielle du MINHDU. Elle a aussi trouvé une référence officielle au Service Régional du Cadastre de Bafoussam et à la Conservation Foncière de la Mifi, mais pas de couche publique de parcelles ni d'API anonyme vérifiable. La carte MINMIDT est une carte du cadastre minier national.",
+        "actualResultUrls": [
+          "https://www.mindcaf.gov.cm/fr/mission/",
+          "https://cubafoussam.cm/",
+          "https://minhdu.gov.cm/planification/study/43",
+          "https://minepat.gov.cm/wp-content/uploads/2022/07/cdmt-synthese-2025-2027-37-MINDCAF-ajs-fr-pdf.pdf",
+          "https://armp.cm/details?id_publication=55205&type_publication=AO",
+          "https://www.minmidt.cm/carte-cadastrale-du-cameroun/"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryCustodian": "MINDCAF is the national cadastral custodian; official references identify the Service Régional du Cadastre de Bafoussam and the Conservation Foncière de la Mifi, but no public parcel registry/map endpoint was verified.",
+  "registryEvidence": {
+    "officialMandateUrl": "https://www.mindcaf.gov.cm/fr/mission/",
+    "localEvidenceUrls": [
+      "https://minepat.gov.cm/wp-content/uploads/2022/07/cdmt-synthese-2025-2027-37-MINDCAF-ajs-fr-pdf.pdf",
+      "https://armp.cm/details?id_publication=55205&type_publication=AO"
+    ],
+    "interpretation": "Custodian and local office references are evidenced, but registryFound remains null because an actual public local registry, map, procedure-backed parcel lookup, or geometry service was not verified."
+  },
+  "sourceReview": {
+    "service": "No verified public land-parcel service; MINMIDT mining-cadastre page inspected as a distinct, out-of-scope lead",
+    "baseUrl": "https://www.minmidt.cm/carte-cadastrale-du-cameroun/",
+    "officialAssetsInspected": ["https://www.mindcaf.gov.cm/fr/mission/", "https://cubafoussam.cm/", "https://minhdu.gov.cm/planification/study/43"],
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "crs": "unverified; no parcel geometry response obtained",
+    "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "public service and layer metadata"]
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://www.mindcaf.gov.cm/fr/mission/", "outcome": "200; official MINDCAF mandate states that the ministry prepares and maintains cadastral plans; no parcel viewer or geometry endpoint exposed."},
+    {"method": "GET", "url": "https://cubafoussam.cm/", "outcome": "200; official municipal portal identifies Bafoussam and municipal services; no cadastral parcel map/API exposed."},
+    {"method": "GET", "url": "https://minhdu.gov.cm/planification/study/43", "outcome": "200; official Bafoussam urban-planning study page exposed planning documents/maps, not an anonymous parcel service."},
+    {"method": "GET", "url": "https://www.minmidt.cm/carte-cadastrale-du-cameroun/", "outcome": "Search result describes an official national mining-cadastre consultation platform; direct HTTPS fetch failed TLS certificate validation, and verification was not bypassed. Scope is mining cadastre, not general land parcels."},
+    {"method": "GET", "url": "https://armp.cm/details?id_publication=55205&type_publication=AO", "outcome": "Official procurement notice references a planned single-window facility for land registration/publicity in the Mifi (Bafoussam) Conservation Foncière; no parcel geometry or public API."},
+    {"method": "GET", "url": "https://minepat.gov.cm/wp-content/uploads/2022/07/cdmt-synthese-2025-2027-37-MINDCAF-ajs-fr-pdf.pdf", "outcome": "Official budget document search result references Service Régional du Cadastre Bafoussam; no parcel geometry or public API."}
+  ],
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Not performed against parcel geometry; no geometry endpoint was verified."},
+  "coverageAssessment": {"claimedScope": "MINDCAF cadastral mandate and local Bafoussam/Mifi offices", "verifiedOpenScope": "Official custodian and local-office references only; no anonymous parcel vector response", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": [
+    "The exact WUP point was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point hit, extent miss, timeout, TLS failure, or unavailable UI was treated as evidence of citywide parcel absence.",
+    "The MINMIDT online map lead concerns the mining cadastre and was not treated as a land-parcel source.",
+    "No owner, address, titleholder, contact, tax/account, personal, or other unsafe fields were requested or retained.",
+    "No raw source-specific attribute set or GeoJSON sample was retained.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Open parcel coverage, native parcel identity, schema, CRS, geometry endpoint behavior, and citywide completeness remain unresolved. Local cadastral custodians are evidenced, but no public parcel geometry service was verified."
+}

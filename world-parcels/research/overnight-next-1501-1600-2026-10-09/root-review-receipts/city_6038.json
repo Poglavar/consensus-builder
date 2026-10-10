@@ -1,0 +1,16 @@
+{
+  "taskId": "city:6038",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-6038-i-skenderun.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/i-skenderun-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T08:44:33.768216Z",
+  "reason": "Immutable WUP code 6038, rank 1518, Türkiye, point [36.5792338938787,36.1711530066539], 375056 persons match queue and ranked roster. Packet records separate English and Turkish searches with source URLs. Official TKGM listing supports local registry custody. Viewer DNS/502 failure and municipal JavaScript shell leave anonymous native-ID plus complete polygon unverified; they do not establish parcel absence. No fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel check.",
+  "independentlyCheckedFirstPartyUrls": [
+    "https://www.tkgm.gov.tr/hatay-bm/bagli-mudurlukler/iskenderun-tapu-mudurlugu"
+  ],
+  "sourceAdmission": "not_admitted"
+}

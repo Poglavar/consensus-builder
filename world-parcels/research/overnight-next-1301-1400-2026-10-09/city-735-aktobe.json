@@ -1,0 +1,151 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:735",
+  "cityCode": 735,
+  "wupCityCode": 735,
+  "name": "Aktobe",
+  "country": "Kazakhstan",
+  "countryCode": "KZ",
+  "rank": 1351,
+  "queueRank": 1351,
+  "point": [50.2941407239697, 57.1878832784277],
+  "centerLatLon": [50.2941407239697, 57.1878832784277],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 416455,
+  "population2025k": 416.455,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1301-1400-2026-10-09",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Kazakhstan sources identify the Aktobe geoportal as a functioning public system owned by the Aktobe regional digital technologies authority, with the city land-relations department's duty map and integration with the state land cadastre. The regional land-relations department is the identified local administrative custodian for land relations. This establishes local registry/map custody, not anonymous parcel geometry availability.",
+  "registryEvidenceUrls": [
+    "https://www.govarch.kz/ru/infosys/info/2249",
+    "https://www.gov.kz/memleket/entities/aktobe-zher",
+    "https://kazgisa.kz/asl-tabs/%D0%93%D0%98%D0%A1/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "The official Aktobe geoportal URL was identified but was not fetchable from the research environment (DNS/access failure). Kazakhstan's official service documentation routes parcel/cadastral-file requests through the Public Cadastral Map and authenticated eGov workflow; the open-data dataset identified for Aktobe is tabular and no safe anonymous geometry response was verified. No credentials, private tokens, owner/address data, or property-specific lookup were used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "official_local_custody_no_verified_public_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Official system descriptions cover the Aktobe geoportal, the city land-relations duty map, and integration with the state land cadastre.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response was verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "held_not_enabled_no_verified_public_geometry",
+    "reason": "A real public parcel adapter requires independently verified anonymous geometry, schema, CRS, and stable native IDs; those were not obtained here."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Aktobe Kazakhstan official cadastral parcel map land registry natural resources bureau GIS",
+        "result": "Found first-party/official references to the Aktobe geoportal, its local land-relations duty map and state cadastral integration, the Aktobe regional land-relations department, Kazakhstan's NSDI geoportal, and an official open-data listing for registered land plots in Aktobe Region. No anonymous geometry endpoint was verified.",
+        "actualResultUrls": [
+          "https://www.govarch.kz/ru/infosys/info/2249",
+          "https://www.gov.kz/memleket/entities/aktobe-zher",
+          "https://map.gov.kz/",
+          "https://ashyq.data.gov.kz/dataset/magda-ds-64c53a13-a1a4-4967-bfa7-b9c9a8d8eb55?lang=en"
+        ],
+        "executionMethod": "Separate English-language web search and first-party source review."
+      },
+      {
+        "language": "Russian/Kazakh",
+        "query": "Актобе официальный кадастр земельный участок публичная карта реестр недвижимости геопортал",
+        "result": "Found official Russian/Kazakh-language material describing the Aktobe geoportal and local land-relations administration, plus official guidance that public cadastral-map and land-cadastral-file workflows use eGov authentication/identity or a land-document identifier. No anonymous geometry-only response was verified.",
+        "actualResultUrls": [
+          "https://www.govarch.kz/ru/infosys/info/2249",
+          "https://www.gov.kz/memleket/entities/aktobe-zher",
+          "https://www.gov.kz/services/5300",
+          "https://www.gov.kz/memleket/entities/kostanai-denisov-audany-akimat/press/news/details/1275229?lang=ru",
+          "https://www.gov.kz/memleket/entities/aktobe-martuk/press/news/details/709569"
+        ],
+        "executionMethod": "Separate local-language web search and first-party source review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Aktobe Geoportal",
+        "operator": "Aktobe regional digital technologies authority / local Akimat system",
+        "homeUrl": "https://geoportal.akt.kz/",
+        "observation": "Official registry lists describe a functioning public geoportal with spatial and attribute information, the city land-relations duty map, the property-object duty map, and state land-cadastre integration. Direct anonymous fetch from this environment failed at DNS/access; no JavaScript/configuration or service schema could be inspected.",
+        "requestOutcome": "Not reached; DNS resolution failed in the execution environment."
+      },
+      {
+        "name": "Kazakhstan NSDI Geoportal",
+        "operator": "Republic of Kazakhstan NSDI portal",
+        "homeUrl": "https://map.gov.kz/",
+        "observation": "Public landing page exposes open geospatial-data catalogue and non-cadastral example layers. No Aktobe parcel layer or geometry response was verified.",
+        "requestOutcome": "Landing page readable; no parcel request made."
+      },
+      {
+        "name": "Aktobe Region registered-land open-data listing",
+        "operator": "Kazakhstan open-data portal / Smart Data Ukimet, source stated as EKGN",
+        "homeUrl": "https://ashyq.data.gov.kz/dataset/magda-ds-64c53a13-a1a4-4967-bfa7-b9c9a8d8eb55?lang=en",
+        "observation": "Listing describes quarterly registered land plots for Aktobe Region and exposes a CSV download link. The listing is tabular; no geometry was retained or requested.",
+        "requestOutcome": "Listing discovered; direct CSV retrieval was not completed from this environment."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://geoportal.akt.kz/",
+        "method": "GET",
+        "outcome": "DNS resolution failure from the research environment; no response body, schema, CRS, or ID field observed."
+      },
+      {
+        "url": "https://map.gov.kz/",
+        "method": "GET",
+        "outcome": "Public landing page observed; only catalogue/example layers visible, no parcel geometry request executed."
+      },
+      {
+        "url": "https://magda-minio-web.data.gov.kz/magda-datasets/EKGN_LANDPLOTS/egkn_land_plots/2026Q3_Aktobe_EKGN_LANDPLOTS.csv",
+        "method": "GET",
+        "outcome": "Download URL discovered from official open-data listing; not retrieved in this environment. No raw source attributes retained."
+      },
+      {
+        "url": "https://www.gov.kz/services/5300",
+        "method": "GET",
+        "outcome": "Official service page states that land-cadastral-file copies require authenticated eGov workflow, a selected parcel, identity/document data, and submission; no request was submitted."
+      }
+    ],
+    "historicalContext": [
+      "https://www.gov.kz/memleket/entities/kostanai-karasy-audany-akimat/press/article/details/32855"
+    ]
+  },
+  "source": {
+    "sourceId": "KZ-AKTOBE-LOCAL-GEOPORTAL",
+    "name": "Aktobe official geoportal and land-relations/cadastre custody evidence",
+    "url": "https://www.govarch.kz/ru/infosys/info/2249",
+    "operator": "Aktobe regional digital technologies authority / local Akimat system",
+    "serviceType": "Official local geoportal and land-relations custody evidence reviewed; public parcel geometry remains unverified",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No parcel response was obtained, so no native field or composite-key rule can be asserted.",
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "operatorNote": "The local custodian evidence is distinct from general national cadastral-service guidance; neither establishes anonymous geometry availability."
+  },
+  "rootReviewedAt": "2026-10-09T00:00:00Z",
+  "rootReview": {
+    "checkedAt": "2026-10-09T00:00:00Z",
+    "basis": "Reviewed separate English and Russian/Kazakh searches, first-party local-custody evidence, official service constraints, portal reachability, and the open-data listing. No geometry was obtained; citywide absence is not inferred.",
+    "primarySourceAuditFile": null
+  }
+}

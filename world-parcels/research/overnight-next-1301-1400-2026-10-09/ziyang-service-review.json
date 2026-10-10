@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "parcel_service_review",
+  "cityCode": 7582,
+  "cityRecord": "city-7582-ziyang.json",
+  "queueRank": 1318,
+  "city": "Ziyang",
+  "country": "China",
+  "countryCode": "CN",
+  "wupPoint": [30.1238674926562, 104.643237753168],
+  "reviewedAt": "2026-10-09",
+  "status": "held",
+  "registryFound": true,
+  "registryBasis": "The Ziyang Municipal Natural Resources and Planning Bureau is identified by first-party Sichuan government material as the relevant municipal authority; this establishes a custodian, not an open parcel service.",
+  "queryOutcomes": [
+    {"language": "English", "query": "Ziyang China official cadastral parcel map API natural resources land registry", "outcome": "Official authority and provincial guidance found; no anonymous geometry endpoint."},
+    {"language": "Chinese (Simplified)", "query": "资阳 地籍图 不动产登记 地图 服务 自然资源局 官方", "outcome": "Official authority and registration-service references found; no anonymous geometry endpoint."}
+  ],
+  "requestOutcomes": [
+    {"url": "https://szrzyj.ziyang.gov.cn/", "method": "GET", "outcome": "DNS resolution failure; viewer/configuration could not be inspected."},
+    {"url": "https://dnr.sc.gov.cn/scdnr/scszdt/2025/6/12/80374ae0d8c34fcd8235d646536949ac.shtml", "method": "GET/search open", "outcome": "Official report opened; describes a registration information platform but exposes no safe public parcel response."},
+    {"url": "https://ggzyjy.sc.gov.cn/jyxx/002004/002004001/20240725/7a0b5580-b453-4be6-a935-e7d278e11a1e.html", "method": "GET/search open", "outcome": "Official land-transaction notice opened; its single parcel code is not citywide cadastral coverage and no geometry was retained."}
+  ],
+  "scopeLimits": [
+    "No exact-point hit or map extent test was possible.",
+    "No citywide coverage claim is made.",
+    "No login, CAPTCHA bypass, credentials, private token, owner/address/titleholder/tax fields were requested.",
+    "No raw source attribute set or parcel polygon was retained."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier", "geometry", "source CRS", "service metadata"],
+  "schemaAndCrs": {"status": "unverified", "nativeFields": null, "crs": null},
+  "qualification": {"verifiedParcelGeometry": false, "verifiedNativeIdentity": false, "runtimeReadiness": "held"},
+  "uncertainty": "The municipal host's DNS failure prevented current viewer/API inspection. Official documentation supports registry custodianship and cadastral workflows only; it does not prove public machine-readable parcel access.",
+  "conclusion": "No adapter qualification or GeoJSON sample is justified on this attempt."
+}

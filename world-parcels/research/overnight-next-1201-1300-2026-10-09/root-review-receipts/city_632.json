@@ -1,0 +1,14 @@
+{
+  "taskId": "city:632",
+  "decision": "held",
+  "reason": "Surrey identity and English/French searches match the queue. Original City of Surrey ArcGIS responses show one point parcel as duplicate rows and three full safe-ID polygon samples in a transfer-limited envelope; sample geometry matches the saved envelope response. Stable de-duplication, complete paging and the remaining live adapter, 13-cell, metric topology, binding and headed Details checks are unqualified.",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-632-surrey.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/surrey-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/surrey-parcel-samples.geojson",
+    "tmp/valhalla-parcel-research/surrey-632/exact-point-query.geojson",
+    "tmp/valhalla-parcel-research/surrey-632/bounded-envelope-query.geojson"
+  ],
+  "checkedAt": "2026-10-09T11:44:40.361813Z"
+}

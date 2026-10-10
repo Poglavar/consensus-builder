@@ -1,0 +1,16 @@
+{
+  "taskId": "city:10646",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-10646-xiangtan.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/xiangtan-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T14:30:38Z",
+  "independentlyOpenedFirstPartyUrls": [
+    "https://zrzyt.hunan.gov.cn/xxgk/gzdt/sxxx/202310/t20231008_31619536.html",
+    "https://zrzyt.hunan.gov.cn/xxgk/gzdt/sxxx/202402/t20240208_32848464.html"
+  ],
+  "reason": "Official Hunan notice confirms Xiangtan registration custody and parcel-map attachments. Public land-platform timeout and service descriptions yielded no anonymous native parcel ID or full polygon; no adapter or headed Details qualification."
+}

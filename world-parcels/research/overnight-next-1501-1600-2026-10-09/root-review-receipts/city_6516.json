@@ -1,0 +1,13 @@
+{
+  "taskId": "city:6516",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-6516-vladikavkaz.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/vladikavkaz-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T10:41:00.903223Z",
+  "reason": "Immutable rank 1596, Russian Federation, point and 356422 persons match both queue sources. English and Russian searches are recorded. National cadastral routes timed out and no original parcel response, native ID, or geometry was obtained. Custody remains unresolved; transport failure is not citywide absence. No adapter admission gates are evidenced.",
+  "sourceAdmission": "not_admitted"
+}

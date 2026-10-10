@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7782-gresik.json",
+  "cityCode": 7782,
+  "purpose": "Document first-party discovery, current viewer configuration, and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "ATR/BPN BHUMI is an official public national land-map service relevant to Gresik. Its current JavaScript/configuration was inspected: the map route uses a same-origin /api/proksi relay and has a Geoserver parcel path (/expapi/getPersil) that is session/token-backed. No login, credentials, private token, CAPTCHA/Cloudflare bypass, or unsafe field request was used. The official Gresik Regency GIS portal returned an authentication page. No parcel geometry or native parcel identity was retained.",
+  "registryAssessment": "registryFound remains null: the national public viewer establishes a relevant official service, while the Gresik-specific portal is login-gated and no Gresik parcel response was verified. The 2016 Gresik one-map legal abstract is administrative context only.",
+  "safeFieldAllowlist": ["safe parcel/native plot identifier if exposed", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "queries": [
+    {"language":"English","query":"Gresik Indonesia official cadastral parcel map land registry GIS","outcome":"Official ATR/BPN BHUMI viewer/help pages and Gresik Regency GIS portal found; no public Gresik parcel feature response found.","actualResultUrls":["https://bhumi.atrbpn.go.id/","https://bhumi.atrbpn.go.id/bantuan/peta","https://bhumi.atrbpn.go.id/bantuan/katalog_data","https://e-bk.gresikkab.go.id/authpeta"]},
+    {"language":"Indonesian","query":"peta bidang tanah Gresik resmi ATR BPN layanan peta","outcome":"Official BHUMI parcel-map documentation, Gresik Regency legal abstract, and official GIS portal found; no safe anonymous Gresik parcel geometry obtained.","actualResultUrls":["https://bhumi.atrbpn.go.id/bantuan/peta","https://bhumi.atrbpn.go.id/bantuan/unsur_peta","https://jdih.gresikkab.go.id/produk-hukum/download-abstrak/peraturan-bupati-kabupaten-gresik/peraturan-bupati-gresik-nomor-34-tahun-2016-tentang-pembuatan-satu-peta-bidang-tanah-multi-fungsi-di-kabupaten-gresik-1585102622","https://e-bk.gresikkab.go.id/authpeta"]}
+  ],
+  "attempts": [
+    {"url":"https://bhumi.atrbpn.go.id/","method":"GET","httpStatus":200,"result":"Official BHUMI landing page loaded; documentation identifies a public interactive land-map service."},
+    {"url":"https://bhumi.atrbpn.go.id/peta","method":"GET","httpStatus":200,"result":"Current map HTML and JavaScript loaded. The JS was inspected for endpoint/configuration strings; it exposed same-origin /api/proksi and a Geoserver /expapi/getPersil path."},
+    {"url":"https://bhumi.atrbpn.go.id/api/proksi","method":"GET","httpStatus":405,"result":"Proxy route exists but rejects GET; no proxy request was made to an unverified parcel URL and no credentials or token were supplied."},
+    {"url":"https://e-bk.gresikkab.go.id/authpeta","method":"GET","httpStatus":200,"result":"Official Gresik Regency Portal Peta page loaded with an authentication prompt; no anonymous parcel schema or geometry exposed."},
+    {"url":"https://bhumi.atrbpn.go.id/bantuan/peta","method":"GET","httpStatus":200,"result":"Official documentation reviewed; it describes parcel search identifiers NIB/HAK/NIBEL and open spatial map functionality, with accuracy/completeness disclaimer."},
+    {"url":"https://bhumi.atrbpn.go.id/bantuan/katalog_data","method":"GET","httpStatus":200,"result":"Official catalog documentation reviewed; parcel, administrative-boundary and ZNT datasets are described, but no raw feature response was obtained."},
+    {"url":"https://jdih.gresikkab.go.id/produk-hukum/download-abstrak/peraturan-bupati-kabupaten-gresik/peraturan-bupati-gresik-nomor-34-tahun-2016-tentang-pembuatan-satu-peta-bidang-tanah-multi-fungsi-di-kabupaten-gresik-1585102622","method":"GET","httpStatus":200,"result":"Official Gresik legal abstract reviewed for local land-parcel mapping context; it is not a live parcel API."}
+  ],
+  "geometryEvidence": null,
+  "geometryDecision": {"verified":false,"sourceId":null,"nativeIdField":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"No parcel containment test completed. The exact WUP point [-7.16160214503704, 112.632593965037] was preserved and not shifted; absence of a hit is not inferred as citywide absence."},
+  "remainingUncertainty": "Gresik's exact parcel, stable native parcel identifier, parcel CRS, anonymous API request shape, and citywide coverage remain unverified. The national viewer may require UI-derived selection/session context, while the local portal requires authentication.",
+  "runtimeAssessment": "not enabled; serial reviewer must independently qualify any adapter"
+}

@@ -1,0 +1,34 @@
+{
+  "taskId": "city:9677",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-9677-bidar.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/bidar-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T16:33:33.363148Z",
+  "reason": "First-party Bidar land-record page confirms survey-number record custody. NAKSHA viewer configuration names a Karnataka FeatureServer, but both saved metadata and bounded query responses contain ArcGIS code 499 Token Required; no parcel features were returned.",
+  "sourceUrlsReviewed": [
+    "https://bidar.nic.in/en/service/land-records/",
+    "https://nakshagis.dolr.gov.in/utm4243/rest/services/Naksha_43/Naksha_ka_29_43/FeatureServer/0"
+  ],
+  "identity": {
+    "cityCode": 9677,
+    "queueRank": 1837,
+    "country": "India",
+    "countryCode": "IN",
+    "point": [
+      17.9093292688742,
+      77.5145528508122
+    ],
+    "populationPersons": 312534,
+    "verifiedAgainst": "2025 WUP archive SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114 and cohort pending queue"
+  },
+  "searchLanguagesVerified": [
+    "English",
+    "Kannada"
+  ],
+  "retainedFullPolygons": 0,
+  "admissionGates": "No safe native-ID parcel polygon response or independent live adapter qualification. Fresh exact ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, and headed Details-panel verification remain unevidenced."
+}

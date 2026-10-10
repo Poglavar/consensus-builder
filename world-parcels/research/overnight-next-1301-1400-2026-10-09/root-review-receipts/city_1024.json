@@ -1,0 +1,13 @@
+{
+  "taskId": "city:1024",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-1024-ciudad-del-este.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ciudad-del-este-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ciudad-del-este-parcel-samples.geojson",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-09T15:13:18.534016Z",
+  "reason": "Official SNC municipality directory names Ciudad del Este and a fresh bounded first-party WFS response returned three ID-only MultiPolygons (numberMatched 247 is bounded service metadata, not city coverage). The retained sample has three full polygons with safe id attributes. Fresh exact-ID reads, forced paging and stable complete manifests, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed Details verification are not evidenced; public geometry discovery remains held."
+}

@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "cityCode": 4108,
+  "wupCityCode": 4108,
+  "queueRank": 1473,
+  "name": "Bournemouth",
+  "country": "United Kingdom",
+  "countryCode": "GB",
+  "iso2": "GB",
+  "iso3": "GBR",
+  "point": [50.7377349576354, -1.90482883545276],
+  "centerLatLon": [50.7377349576354, -1.90482883545276],
+  "population2025": 386557,
+  "population2025k": 386.557,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "serviceReview": "bournemouth-service-review.json",
+  "sourceIds": ["hmlr-inspire-index-polygons-bournemouth-christchurch-and-poole"],
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "site:gov.uk Bournemouth land registry cadastral parcel map INSPIRE",
+        "result": "Found HM Land Registry's official INSPIRE Index Polygons dataset and the GOV.UK index-map procedure. The dataset is divided by local authority and the current download page lists Bournemouth Christchurch and Poole Council.",
+        "actualResultUrls": [
+          "https://www.gov.uk/get-information-about-property-and-land/search-the-index-map",
+          "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+          "https://www.data.gov.uk/dataset/811bcf4c-fbbf-4597-aa9c-3d5bd3bfd455/inspire-index-polygons-spatial-data"
+        ]
+      },
+      {
+        "language": "English (UK local/native language)",
+        "query": "Bournemouth official parcel map cadastral land registry local land charges BCP Council",
+        "result": "BCP Council official pages document local land charges for most BCP properties, council land boundary records, and an interactive mapping service; the parcel geometry source itself is HM Land Registry's national INSPIRE service.",
+        "actualResultUrls": [
+          "https://www.bcpcouncil.gov.uk/planning-and-building-control/local-land-charges",
+          "https://www.bcpcouncil.gov.uk/planning-and-building-control/land-and-premises/council-owned-land",
+          "https://maps.bcpcouncil.gov.uk/"
+        ]
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "HM Land Registry INSPIRE Index Polygons: indicative extent and position of registered freehold properties in England and Wales, published as local-authority files; the current download listing includes Bournemouth Christchurch and Poole Council.",
+    "verifiedOpenScope": "The official metadata and download page establish the BCP local-authority package and national service scope, but the archive could not be fetched anonymously during this attempt.",
+    "countrywideVerified": false
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.data.gov.uk/dataset/811bcf4c-fbbf-4597-aa9c-3d5bd3bfd455/inspire-index-polygons-spatial-data",
+      "operator": "HM Land Registry",
+      "observation": "Official catalogue describes INSPIRE Index Polygons as freehold registered-property locations, divided by local authority, under the UK Open Government Licence."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+      "operator": "HM Land Registry / Use land and property data service",
+      "observation": "Current first-party download page listed 'Bournemouth Christchurch and Poole Council' and a GML archive link."
+    },
+    {
+      "url": "https://www.bcpcouncil.gov.uk/planning-and-building-control/local-land-charges",
+      "operator": "Bournemouth, Christchurch and Poole Council",
+      "observation": "Local authority procedure page states that BCP keeps a register for the majority of properties and accepts parcel-supported searches; this is a local registry/procedure lead, not the cadastral geometry endpoint."
+    },
+    {
+      "url": "https://inspire.landregistry.gov.uk/inspire/ows?Service=WMS&Request=Getcapabilities",
+      "operator": "HM Land Registry INSPIRE service",
+      "observation": "Public WMS capabilities returned the CP.CadastralParcel layer, EPSG:27700/CRS:84 support, and England/Wales extent."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download?format=html",
+      "method": "GET",
+      "status": "HTTP 200 HTML",
+      "summary": "Official download page returned and exposed the BCP archive link."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Bournemouth_Christchurch_and_Poole_Council.zip",
+      "method": "GET",
+      "status": "HTTP 302/self-redirect then Cloudflare challenge",
+      "summary": "Anonymous archive request did not yield the GML; no CAPTCHA or challenge bypass was attempted and no geometry was retained."
+    },
+    {
+      "url": "https://inspire.landregistry.gov.uk/inspire/ows?Service=WMS&Request=Getcapabilities",
+      "method": "GET",
+      "status": "HTTP 200 XML",
+      "summary": "WMS capabilities returned CP.CadastralParcel, EPSG:27700 and CRS:84."
+    },
+    {
+      "url": "https://inspire.landregistry.gov.uk/inspire/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=inspire:CP.CadastralParcel",
+      "method": "GET",
+      "status": "ServiceUnavailable",
+      "summary": "Public endpoint explicitly returned 'Service WFS is disabled'; no feature response was obtained."
+    },
+    {
+      "url": "https://inspire.landregistry.gov.uk/inspire/ows?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetFeatureInfo&LAYERS=inspire:CP.CadastralParcel&QUERY_LAYERS=inspire:CP.CadastralParcel",
+      "method": "GET",
+      "status": "LayerNotQueryable",
+      "summary": "Bounded exact-point GetFeatureInfo attempt was rejected because the cadastral layer is not queryable; this is not evidence of absence."
+    },
+    {
+      "url": "https://maps.bcpcouncil.gov.uk/",
+      "method": "GET",
+      "status": "HTTP 200 IIS default page",
+      "summary": "The linked map host served an IIS default page during this attempt; no usable viewer configuration or API was exposed."
+    }
+  ],
+  "sourceSchema": {
+    "nativeIdentityField": "INSPIREID",
+    "nativeFieldsExpected": ["gml_id", "INSPIREID", "LABEL", "NATIONALCADASTRALREFERENCE", "VALIDFROM", "BEGINLIFESPANVERSION"],
+    "geometryType": "Polygon",
+    "sourceCrs": "EPSG:27700",
+    "safeFieldAllowlist": ["INSPIREID", "geometry"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax", "account"]
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "The source is relevant and authoritative, but no anonymous parcel geometry response was obtained in this attempt; serial review must independently qualify any adapter.",
+  "remainingUncertainty": "The official source establishes local-authority package scope, not complete citywide availability at the WUP point. The archive challenge, disabled WFS and non-queryable WMS prevent a bounded polygon sample. Exact-point non-response is not treated as citywide absence.",
+  "nextStep": "Serial reviewer should independently retry the official BCP GML download or another first-party endpoint, verify INSPIREID semantics and CRS conversion, and retain no more than three polygons if safely obtained.",
+  "identityPolicy": "No GeoJSON sample was retained. If later retained, properties must contain exactly one canonical native identity, preferably INSPIREID; native field mapping remains metadata-only."
+}

@@ -1,0 +1,21 @@
+{
+  "taskId": "city:1499",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-1499-dusuq.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/dusuq-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T09:57:24Z",
+  "identity": "Packet city code, rank, country, exact point and population persons match both frozen roster and pending queue.",
+  "searchReview": "English and local-language executed query records are present in both packet and paired review; independent search recheck found corresponding leads, without a qualifying parcel response.",
+  "retainedFullPolygons": 0,
+  "reviewerCustodyDecision": true,
+  "admission": "held: fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding and headed Details verification are absent.",
+  "reason": "First-party governorate spatial-property service and national surveying service substantiate institutional service custody only; the governorate submission requires login and no anonymous native-ID polygon was obtained. No source binding or qualification evidence. Timeouts do not establish absence.",
+  "firstPartyUrlsChecked": [
+    "https://kfs.gov.eg/services/019bbb46-a0c4-7373-a25b-d7853ad3b16c",
+    "https://www.esa.gov.eg/services.aspx"
+  ]
+}

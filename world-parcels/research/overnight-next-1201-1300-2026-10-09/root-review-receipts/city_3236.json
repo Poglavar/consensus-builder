@@ -1,0 +1,15 @@
+{
+  "taskId": "city:3236",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-3236-gemena.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/gemena-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T12:39:21Z",
+  "identityReview": "Immutable roster and pending queue match WUP code 3236, rank 1267, Democratic Republic of the Congo, exact point, and population in persons.",
+  "searchReview": "Paired city packet and service review record executed English and French searches and first-party result URLs.",
+  "sourceReview": "The live first-party Ministry directory lists Gemena under Sud-Ubangi, and the public-service page documents formal cadastral-register consultation. This supports institutional custody, not anonymous geometry access.",
+  "admissionReview": "No full source parcel polygon or safe native ID was retained. Fresh exact native-ID reads, forced paging, 13 bounded cells, independent metric GEOS validity/duplicates/overlap checks, full-parcel source binding, and headed Details-panel verification are absent. No runtime or catalog admission; unverified geometry access is not citywide absence."
+}

@@ -1,0 +1,17 @@
+{
+  "taskId": "city:7370",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-7370-butembo.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/butembo-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T11:01:23.763335Z",
+  "reason": "Held: exact WUP identity and English/French searches checked. Official ministry jurisdiction list and government consultation procedure ground local cadastral custody; no safe native-ID polygon response or independently qualified adapter is evidenced. Fresh ID reads, paging, 13 cells, metric GEOS checks, source binding and headed Details verification are missing. No citywide absence is inferred.",
+  "firstPartyUrlsChecked": [
+    "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+    "https://servicepublic.gouv.cd/service/4671"
+  ]
+}

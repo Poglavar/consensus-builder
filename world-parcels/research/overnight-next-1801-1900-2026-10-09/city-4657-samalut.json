@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 4657,
+  "queueRank": 1832,
+  "cityId": "queue:1832",
+  "name": "Samalut",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "iso3": "EGY",
+  "point": [28.3124570979132, 30.7227808637348],
+  "centerLatLon": [28.3124570979132, 30.7227808637348],
+  "population2025": 313324,
+  "population2025k": 313.324,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Samalut Egypt official cadastral map parcels GIS land registry Egyptian Survey Authority",
+        "result": "Official discovery identified the Egyptian Survey Authority (ESA) as the national surveying and cadastral-mapping authority. Its public services describe digital maps and property/land mapping, but no Samalut-specific public parcel viewer or parcel API was exposed. An official national ArcGIS service was inspected; its layers are Building, CITY, CENTER, STATE and Equipments, with no parcel layer.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://www.egis.idsc.gov.eg/server/rest/services/Map/FeatureServer"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "سمالوط مصر خريطة كادسترية أراضي جهاز المساحة والسجل العيني بوابة جغرافية رسمية",
+        "result": "Arabic discovery found the official Egyptian Survey Authority pages describing digital maps, property/land mapping and the national cadastral-record project, plus official Samalut references in government publications. These establish national agency context but did not expose a public Samalut parcel layer, stable parcel identity, or parcel geometry endpoint.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main2.aspx",
+          "https://www.esa.gov.eg/benya.aspx",
+          "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+          "https://www.alamiria.com/Sec/TashTxt?id=qq4AnZSMTIE%3D"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Separate English and Arabic web discovery followed by TLS-verified bounded anonymous GET requests to official ESA and Egyptian national GIS/ArcGIS routes. No credentials, login, private token, CAPTCHA/Cloudflare bypass, unsafe-field request, coordinate shift, or TLS disablement was used."
+  },
+  "registryFound": null,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.esa.gov.eg/",
+      "observation": "Official Egyptian Survey Authority. Its pages describe digital maps, cadastral-record/property mapping work and map products, but the inspected public pages provide service/procedure information rather than an anonymous parcel feature service for Samalut."
+    },
+    {
+      "url": "https://www.egis.idsc.gov.eg/server/rest/services/Map/FeatureServer",
+      "observation": "Official Egyptian national GIS ArcGIS FeatureServer. Exposed layers are Building, CITY, CENTER, STATE and Equipments; no parcel/cadastre layer was present in the service metadata."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "Official Survey Authority landing page retrieved. It describes mapping and cadastral-record activities but did not reveal a public parcel API route in the inspected HTML."
+    },
+    {
+      "url": "https://www.egis.idsc.gov.eg/server/rest/services/Map/FeatureServer?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain;charset=UTF-8",
+      "assessment": "Service metadata retrieved. Layers were Building, CITY, CENTER, STATE and Equipments; no parcel layer or parcel schema was present."
+    },
+    {
+      "url": "https://www.egis.idsc.gov.eg/server/rest/services/Map/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain;charset=UTF-8",
+      "assessment": "Layer 0 metadata retrieved as a polygon Building layer. Fields include ID and building/property-related fields; this is not a cadastral parcel layer and no fields were retained in the packet."
+    },
+    {
+      "url": "https://www.egis.idsc.gov.eg/server/rest/services/Map/FeatureServer/0/query?where=1%3D1&geometry=30.7227808637348%2C28.3124570979132%2C30.7247808637348%2C28.3144570979132&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&resultRecordCount=3&f=geojson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "assessment": "Bounded anonymous query against the official Building layer returned an ArcGIS JSON error 400 (Unable to complete operation), not a parcel response. This is an access/service/query limitation and not evidence of citywide absence. The exact WUP point was not shifted."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "method": "GET via official discovery result",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official digital-map service page describes requesting maps by location, scale, layers and projection, with delivery/pricing procedure; it does not expose an anonymous parcel feature endpoint."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Samalut, Minya Governorate, Egypt, with national ESA and Egyptian GIS routes.",
+    "verifiedOpenScope": "National cadastral/mapping agency and national GIS service context only; no Samalut parcel geometry, stable native parcel identity, parcel schema, or citywide open coverage verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The public ESA workflow may require a service request or non-public data product. A current Samalut-specific cadastral viewer/API, parcel layer schema, CRS, stable native identity and coverage remain unresolved. The national GIS service inspected was not a parcel service. No exact-point hit or miss, map-extent miss, or citywide absence is inferred.",
+  "nextStep": "Hold for serial review. A later attempt may inspect any newly identified official Samalut/Minya cadastral viewer or public API and retain at most three unchanged polygons only after safe native parcel identities and CRS are verified. Runtime readiness remains held pending independent adapter qualification."
+}

@@ -1,0 +1,35 @@
+{
+  "cityRecord": "city-9340-baochi.json",
+  "cityCode": 9340,
+  "queueRank": 1931,
+  "city": "Baochi",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "outcome": "complete_no_verified_parcel_source",
+  "registryFound": null,
+  "runtimeReadiness": "held",
+  "point": [39.7184651310975, 117.295266642559],
+  "queryOutcomes": [
+    {"language": "English", "query": "Baochi China cadastral parcel map official GIS Tianjin Baodi", "outcome": "Official Tianjin Tianditu lead found; no Baochi-specific parcel result."},
+    {"language": "Chinese (Simplified)", "query": "宝坻区 自然资源和规划局 地籍图 不动产登记 地图", "outcome": "Official Tianjin Tianditu and Baodi government material found; no public parcel geometry service verified."}
+  ],
+  "requestOutcomes": [
+    {"url": "https://tianjin.tianditu.gov.cn/", "method": "GET", "outcome": "First-party page accessible through web inspection; identifies municipal operator and advertises map/API resources; no parcel response."},
+    {"url": "https://tianjin.tianditu.gov.cn/static/help/note.html", "method": "GET", "outcome": "Web inspection timed out."},
+    {"url": "https://tianjin.tianditu.gov.cn/", "method": "GET", "outcome": "Local curl default TLS verification failed on expired certificate; no bypass attempted."},
+    {"url": "https://tianjin.tianditu.gov.cn/static/html/bzmap.html", "method": "GET", "outcome": "Official standard-map catalog lists Baodi; no cadastral polygon/ID data."}
+  ],
+  "scopeLimits": [
+    "No exact-point hit or miss was used as a citywide conclusion.",
+    "No parcel geometry, native parcel identifier, source schema, CRS, or bounded feature response was verified.",
+    "No owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested or retained.",
+    "The Tianjin portal is a general municipal geospatial custodian lead; a local Baochi/Baodi cadastral registry endpoint was not evidenced, so registryFound remains null.",
+    "No sample GeoJSON was written because no safe, unchanged full parcel polygon with a verified native identity was available."
+  ],
+  "safeFieldAllowlist": ["native parcel identifier", "geometry", "source CRS", "service URL", "retrieval timestamp"],
+  "uncertainty": "The portal may have additional current JS/configuration-backed services or access-controlled cadastral functions. The bounded attempt cannot establish absence or coverage. The packet is complete as a research record, but source integration/admission is not established.",
+  "evidenceUrls": ["https://tianjin.tianditu.gov.cn/", "https://tianjin.tianditu.gov.cn/static/html/bzmap.html", "https://www.tjbd.gov.cn/zwgk/zcwj/qjwj/QZFBGS/202312/W020231227732100822863.pdf"],
+  "qualification": {"verifiedSample": false, "nativeIdReadiness": "not_applicable_no_verified_parcel_response", "runtimeEligible": false}
+}

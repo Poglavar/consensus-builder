@@ -1,0 +1,149 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:7613",
+  "wupCityCode": 7613,
+  "queueRank": 1260,
+  "rank": 1260,
+  "name": "Blitar",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso2": "ID",
+  "iso3": "IDN",
+  "point": [-8.10100602100698, 112.181443093969],
+  "centerLatLon": [-8.10100602100698, 112.181443093969],
+  "pointBasis": "Immutable WUP 2025 city coordinate, copied without adjustment; latitude/longitude order preserved.",
+  "population2025": 442219,
+  "population2025k": 442.219,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "status": "complete",
+  "resultCategory": "official_local_registry_and_national_public_viewer_geometry_unverified",
+  "registryFound": true,
+  "registryBasis": "Official Kota Blitar government material identifies and documents the BPN Kota Blitar land office and electronic land-certificate service. This evidences local registry custody, not an open parcel download or title result.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_not_enabled_no_verified_public_geometry",
+  "blocker": "The official BHUMI/ATLAS viewer is reachable and documents parcel layers, but the current anonymous public shell/console did not expose a usable parcel schema. A bounded anonymous BHUMI proxy GetCapabilities request returned 404. This is not evidence of citywide parcel absence.",
+  "source": {
+    "sourceId": null,
+    "name": "Kantor Pertanahan Kota Blitar / Kementerian ATR/BPN; BHUMI ATR/BPN and ATLAS",
+    "url": "https://bhumi.atrbpn.go.id/",
+    "operator": "Kementerian Agraria dan Tata Ruang/Badan Pertanahan Nasional (ATR/BPN); local custodian Kantor Pertanahan Kota Blitar",
+    "serviceType": "Official local registry custodian and national public map viewer; no verified anonymous parcel feature response",
+    "layer": "Parcel/land-field layers documented by BHUMI; concrete layer response not verified",
+    "geometryType": "Polygon layer documented/configured, response not verified",
+    "nativeIdField": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "Only safe source metadata and administrative context retained. No owner, address, contact, titleholder, tax/account, or personal fields requested or retained.",
+    "outputCrs": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Official Kota Blitar government material, official BHUMI help pages/current shell and console, and bounded anonymous public proxy request were reviewed.",
+    "verifiedOpenScope": "Local registry custody and national public viewer existence/documentation are evidenced; anonymous parcel schema and geometry response remain unverified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "technicalBlocker": "BHUMI's current public page delegates the map to a separate console. The console HTML and JavaScript were reachable, but no public WMS/WFS parcel endpoint was exposed in the inspected assets. A known BHUMI proxy capability route redirected then returned 404. The city SIHANDAL site is described publicly as a government asset WebGIS, not a cadastral parcel source; its TLS certificate was expired during the direct GET, so no exception was used.",
+  "remainingUncertainty": "A parcel layer may be available interactively inside the current BHUMI console or through an authenticated/separately published ATR/BPN service. SIHANDAL may expose government asset polygons, but that would not establish citywide cadastral coverage or a cadastral native identity.",
+  "registryEvidenceUrls": [
+    "https://blitarkota.go.id/berita/resmi-implementasikan-layanan-sertifikat-tanah-elektronik-pemkot-blitar-gelar-sosialisasi-eksternal",
+    "https://bhumi.atrbpn.go.id/bantuan/peta",
+    "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+    "https://sihandal.blitarkota.go.id/"
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Blitar Indonesia official cadastral parcel map GIS land registry ATR BPN",
+        "result": "First-party discovery located the official BHUMI/ATLAS viewer and official Kota Blitar material naming the BPN Kota Blitar land office. No directly usable anonymous parcel geometry response was verified.",
+        "actualResultUrls": [
+          "https://bhumi.atrbpn.go.id/",
+          "https://bhumi.atrbpn.go.id/bantuan/peta",
+          "https://blitarkota.go.id/berita/resmi-implementasikan-layanan-sertifikat-tanah-elektronik-pemkot-blitar-gelar-sosialisasi-eksternal"
+        ]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Blitar peta bidang tanah ATR BPN resmi Kantor Pertanahan Kota Blitar",
+        "result": "Indonesian-language discovery found official BHUMI help documentation for map/parcel-related elements and official Kota Blitar evidence of BPN Kota Blitar land-registration custody. No safe anonymous parcel feature response was obtained.",
+        "actualResultUrls": [
+          "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+          "https://blitarkota.go.id/berita/resmi-implementasikan-layanan-sertifikat-tanah-elektronik-pemkot-blitar-gelar-sosialisasi-eksternal",
+          "https://sihandal.blitarkota.go.id/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://bhumi.atrbpn.go.id/",
+        "operator": "Kementerian ATR/BPN",
+        "scope": "Official public map shell; current HTML delegates the map to a separate BHUMI console.",
+        "configurationObservation": "Current shell exposed /konsolbhumi.html and the separate konsolbhumi.atrbpn.go.id console; inspected assets did not expose a public parcel service URL."
+      },
+      {
+        "url": "https://sihandal.blitarkota.go.id/",
+        "operator": "Dinas Pekerjaan Umum dan Penataan Ruang Kota Blitar",
+        "scope": "Official city asset WebGIS describing public asset land/building mapping; not established as a cadastral parcel source.",
+        "configurationObservation": "Direct TLS request failed certificate verification because the certificate was expired; no TLS exception was used."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://bhumi.atrbpn.go.id/",
+        "method": "GET; anonymous public read; TLS verification enabled",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=utf-8",
+        "assessment": "Official shell reachable; it delegates the map to /konsolbhumi.html."
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/konsolbhumi.html",
+        "method": "GET; anonymous public read; TLS verification enabled",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "assessment": "Console iframe wrapper reachable; it points to konsolbhumi.atrbpn.go.id."
+      },
+      {
+        "url": "https://konsolbhumi.atrbpn.go.id/",
+        "method": "GET; anonymous public read; TLS verification enabled",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Current console shell reachable; inspected JavaScript assets did not reveal a usable public parcel schema endpoint."
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/proxy/http://10.20.20.142:80/geoserver/umum/wms?service=WMS&request=GetCapabilities&version=1.1.1",
+        "method": "GET; anonymous public proxy attempt; TLS verification enabled",
+        "httpStatus": "308 then 404",
+        "contentType": "text/html; charset=utf-8",
+        "assessment": "Redirected proxy path returned the BHUMI HTML 404 page, not WMS capabilities; no schema or geometry retained."
+      },
+      {
+        "url": "https://sihandal.blitarkota.go.id/",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": "TLS certificate verification failure",
+        "contentType": null,
+        "assessment": "Certificate was expired; request was not retried with verification disabled and no data was retained."
+      }
+    ],
+    "historicalContext": ["No prior Blitar artifact was present in the inspected cohort directory before this attempt."]
+  },
+  "checkedAt": "2026-10-09",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "sourceIds": [],
+  "nextStep": "A serial reviewer may independently qualify an adapter only after verifying a safe anonymous parcel geometry service and stable native identifier; do not infer absence from the held result.",
+  "adapterReady": false,
+  "runtimeAssessment": {
+    "status": "held_local_registry_and_viewer_only",
+    "reason": "Official local land-office custody and national public viewer documentation are evidenced, but no bounded anonymous parcel geometry response was verified."
+  }
+}

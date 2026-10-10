@@ -1,0 +1,145 @@
+{
+ "currentVersion": 10.81,
+ "id": 25,
+ "name": "Jawa Tengah",
+ "type": "Feature Layer",
+ "description": "",
+ "geometryType": "esriGeometryPolygon",
+ "sourceSpatialReference": {
+  "wkid": 4326,
+  "latestWkid": 4326
+ },
+ "copyrightText": "",
+ "parentLayer": {
+  "id": 10,
+  "name": "Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) Skala 1: 5000"
+ },
+ "subLayers": [],
+ "minScale": 0,
+ "maxScale": 0,
+ "drawingInfo": {
+  "renderer": {
+   "type": "simple",
+   "symbol": {
+    "type": "esriSFS",
+    "style": "esriSFSSolid",
+    "color": [
+     233,
+     208,
+     247,
+     255
+    ],
+    "outline": {
+     "type": "esriSLS",
+     "style": "esriSLSSolid",
+     "color": [
+      110,
+      110,
+      110,
+      255
+     ],
+     "width": 0.4
+    }
+   },
+   "label": "",
+   "description": ""
+  },
+  "transparency": 0,
+  "labelingInfo": null
+ },
+ "defaultVisibility": true,
+ "extent": {
+  "xmin": 108.56854175600006,
+  "ymin": -7.908384291999937,
+  "xmax": 111.62138718000006,
+  "ymax": -6.674771817999954,
+  "spatialReference": {
+   "wkid": 4326,
+   "latestWkid": 4326
+  }
+ },
+ "hasAttachments": false,
+ "htmlPopupType": "esriServerHTMLPopupTypeAsHTMLText",
+ "displayField": "kecamatan",
+ "typeIdField": null,
+ "subtypeFieldName": null,
+ "subtypeField": null,
+ "defaultSubtypeCode": null,
+ "fields": [
+  {
+   "name": "objectid",
+   "type": "esriFieldTypeOID",
+   "alias": "objectid",
+   "domain": null
+  },
+  {
+   "name": "kecamatan",
+   "type": "esriFieldTypeString",
+   "alias": "kecamatan",
+   "length": 254,
+   "domain": null
+  },
+  {
+   "name": "kelurahan",
+   "type": "esriFieldTypeString",
+   "alias": "kelurahan",
+   "length": 254,
+   "domain": null
+  },
+  {
+   "name": "tipehak",
+   "type": "esriFieldTypeString",
+   "alias": "tipehak",
+   "length": 254,
+   "domain": null
+  },
+  {
+   "name": "nib",
+   "type": "esriFieldTypeString",
+   "alias": "nib",
+   "length": 254,
+   "domain": null
+  },
+  {
+   "name": "shape",
+   "type": "esriFieldTypeGeometry",
+   "alias": "shape",
+   "domain": null
+  }
+ ],
+ "geometryField": {
+  "name": "shape",
+  "type": "esriFieldTypeGeometry",
+  "alias": "shape"
+ },
+ "indexes": null,
+ "subtypes": [],
+ "relationships": [],
+ "canModifyLayer": true,
+ "canScaleSymbols": false,
+ "hasLabels": false,
+ "capabilities": "Map,Query,Data",
+ "maxRecordCount": 1000,
+ "supportsStatistics": true,
+ "supportsAdvancedQueries": true,
+ "supportedQueryFormats": "JSON, geoJSON",
+ "isDataVersioned": false,
+ "ownershipBasedAccessControlForFeatures": {"allowOthersToQuery": true},
+ "useStandardizedQueries": true,
+ "advancedQueryCapabilities": {
+  "useStandardizedQueries": true,
+  "supportsStatistics": true,
+  "supportsHavingClause": true,
+  "supportsCountDistinct": true,
+  "supportsOrderBy": true,
+  "supportsDistinct": true,
+  "supportsPagination": true,
+  "supportsTrueCurve": true,
+  "supportsReturningQueryExtent": true,
+  "supportsQueryWithDistance": true,
+  "supportsSqlExpression": true
+ },
+ "supportsDatumTransformation": true,
+ "supportsCoordinatesQuantization": true,
+ "serviceItemId": "f93ce45582be4e058f4437b0c96580ec"
+}

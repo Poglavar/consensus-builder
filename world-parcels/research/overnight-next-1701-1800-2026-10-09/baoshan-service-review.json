@@ -1,0 +1,61 @@
+{
+  "cityRecord": "city-5847-baoshan.json",
+  "schemaVersion": "1.0",
+  "cityCode": 5847,
+  "queueRank": 1755,
+  "city": "Baoshan",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Baoshan's official municipal Natural Resources and Planning Bureau and Real Estate Registration Center are evidenced as local custodians. Official registration pages and Yunnan public geospatial references were inspected, but no anonymous safe parcel ID plus full polygon response was verified. No GeoJSON sample is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Chinese discovery queries, exact text, outcomes, and actual URLs are recorded in city-5847-baoshan.json.",
+  "requestOutcomes": "Five bounded first-party routes were attempted: Baoshan bureau disclosure portal, Baoshan registration-information index, Baoshan Registration Center annual report, Yunnan Natural Resources portal, and an official Yunnan Tianditu/public-map notice. The direct HTML pages returned HTTP 200, but only institutional/public-notice content was available; no parcel layer, safe native ID, parcel schema, CRS, or full geometry response was found.",
+  "attemptedRoutes": [
+    {"route": "Baoshan Natural Resources and Planning Bureau disclosure portal", "url": "https://www.baoshan.gov.cn/bmym/bsszrzyhghj/zfxxgkpt.htm", "outcome": "HTTP 200; local bureau responsibilities, registration-information category, and service channels inspected; no parcel API/viewer exposed."},
+    {"route": "Baoshan registration-information index", "url": "https://www.baoshan.gov.cn/bmym/bsszrzyhghj/zfxxgkpt/fdzdgknr/zrzygz/bdcdjxx/1.htm", "outcome": "HTTP 200; public registration notices/results listed; no anonymous parcel feature response or schema."},
+    {"route": "Baoshan Real Estate Registration Center annual report", "url": "https://www.baoshan.gov.cn/info/3535/10282844.htm", "outcome": "HTTP 200; local Registration Center and cadastral-information/query duties described; no open vector parcel response."},
+    {"route": "Yunnan Natural Resources portal", "url": "https://dnr.yn.gov.cn/", "outcome": "HTTP 200; official provincial portal fetched; no Baoshan parcel endpoint identified in inspected page."},
+    {"route": "Official Yunnan Tianditu/public-map notice", "url": "https://dnr.yn.gov.cn/html/2024/tongzhigonggao_0905/4047492.html", "outcome": "Official notice readable; points to public standard maps/Tianditu Yunnan, but no parcel feature schema or geometry endpoint."}
+  ],
+  "scopeLimits": [
+    "Exact WUP point [25.1261289113243, 99.182253649597] was preserved; no exact-point hit/miss inference was made.",
+    "No city boundary or complete Baoshan parcel coverage was established for an open geometry service.",
+    "No parcel geometry, stable native parcel identity, source field schema, or parcel CRS was retrieved or retained.",
+    "The municipal bureau and Registration Center are local custody evidence, but custody evidence is not proof of an open vector parcel API.",
+    "The Yunnan public geospatial references describe general map services/standard maps, not a verified citywide cadastral feature layer.",
+    "A zero exact-point hit, map extent miss, inaccessible viewer, timeout, route miss, or absent public endpoint is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, registration-detail, or personal fields were requested or retained.",
+    "Packet completion does not qualify or admit a runtime adapter; independent serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "excludedFields": ["owner/titleholder names", "addresses/contact data", "tax/account/registration details", "credentials/private tokens/personal data"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public parcel geometry query reached; no hit/miss inference.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Baoshan municipal registration custody and Yunnan public geospatial map references.",
+    "verifiedOpenScope": "Official institutional pages and general public-map references only.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current anonymous cadastral viewer/API route, access controls, parcel layer availability, native identity, schema, CRS, and citywide coverage remain unresolved. No claim is made about parcel absence, legal title, ownership, or completeness.",
+  "retainedSample": null
+}

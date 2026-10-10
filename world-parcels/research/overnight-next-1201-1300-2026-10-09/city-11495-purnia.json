@@ -1,0 +1,113 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel-map services for Purnia; failed point/extent access is not evidence of citywide absence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "cityCode": 11495,
+  "queueRank": 1208,
+  "name": "Purnia",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [25.7783442725468, 87.4877907323288],
+  "pointBasis": "Exact WUP queue point in latitude/longitude order; not shifted to force a parcel hit.",
+  "population2025": 461043,
+  "population2025k": 461.043,
+  "populationUnit": "persons",
+  "aliases": ["purnia", "Purnea"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Purnia Bihar official cadastral map land parcels Bhu Naksha Bihar official",
+        "result": "Search located the official Government of Bihar/NIC BhuNaksha viewer, the Bihar Revenue and Land Reforms department portal, and the official Purnea district Revenue Department page. The BhuNaksha viewer is a cadastral mapping service with district/subdivision/circle/mauza/map selectors; no city-bounded geometry was established by search alone.",
+        "actualResultUrls": [
+          "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "https://land.bihar.gov.in/landbihar/Default.aspx",
+          "https://purnea.nic.in/departments/revenue-department/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "Purnia Bihar official भू नक्शा khasra plot map revenue",
+        "result": "The local-language search also located Bihar Government Revenue and Land Reforms portals describing भू-नक्शा as the revenue-map service and the official BhuNaksha viewer. No authenticated service was used and no owner, address, or titleholder fields were requested.",
+        "actualResultUrls": [
+          "https://biharbhumi.bihar.gov.in/",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Official Government of Bihar Directorate of Land Records & Survey/NIC BhuNaksha provides a public cadastral map viewer and exposes Purnia district and local administrative selectors. This establishes a first-party cadastral-map source, but not citywide geometry completeness.",
+  "officialSources": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+      "observation": "Official Bihar BhuNaksha landing page identifies the service as cadastral mapping software for digitized cadastral maps and names the Directorate of Land Records & Survey, Government of Bihar; it links to the public map viewer."
+    },
+    {
+      "url": "https://land.bihar.gov.in/landbihar/Default.aspx",
+      "observation": "Official Bihar Department of Revenue and Land Reforms portal lists Bhu-Naksha/भू-मानचित्र among its revenue-map services."
+    },
+    {
+      "url": "https://purnea.nic.in/departments/revenue-department/",
+      "observation": "Official Purnea district site provides a local Revenue Department page and links to land-record services; it does not itself expose parcel geometry in the reviewed page."
+    }
+  ],
+  "source": {
+    "name": "BhuNaksha Bihar",
+    "url": "https://bhunaksha.bihar.gov.in/10/indexmain.jsp",
+    "custodian": "Directorate of Land Records & Survey, Government of Bihar; NIC implementation",
+    "serviceType": "Public cadastral map viewer with anonymous map/lookup endpoints",
+    "schemaCrs": "Viewer JavaScript uses internal map coordinates and passes srs=0 to its extent endpoint; no authoritative EPSG/CRS definition was returned in the bounded responses."
+  },
+  "executedAttempts": [
+    {
+      "request": "GET https://bhunaksha.bihar.gov.in/10/index.jsp",
+      "outcome": "HTTP 200; official landing HTML reviewed."
+    },
+    {
+      "request": "GET https://bhunaksha.bihar.gov.in/10/indexmain.jsp",
+      "outcome": "HTTP 200; current JavaScript/configuration reviewed. Viewer loads https://bhunaksha.bihar.gov.in/rest endpoints, WMS, and OpenLayers map code."
+    },
+    {
+      "request": "POST https://bhunaksha.bihar.gov.in/rest/Levels/count with state=10",
+      "outcome": "HTTP 200; response 7, indicating seven location levels in the Bihar viewer."
+    },
+    {
+      "request": "POST https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel with state=10, level=0, codes=, hasmap=true",
+      "outcome": "HTTP 200; response included district Purnia with code 09."
+    },
+    {
+      "request": "POST https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel with state=10, level=1, codes=09,02,, hasmap=true",
+      "outcome": "HTTP 200; response included Sadar Purnia subdivision code 02 and Purnia East circle code 06 among the returned administrative lists."
+    },
+    {
+      "request": "POST https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel with state=10, level=1, codes=09,02,06,, hasmap=true",
+      "outcome": "HTTP 200; response returned a Purnia East village/map list with safe map identifiers and names; no owner/address fields were retained."
+    },
+    {
+      "request": "POST https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref with state=10, gisLevels=09_02_06_0609, srs=0",
+      "outcome": "HTTP 204 No Content. This bounded extent miss is not treated as evidence of cadastral absence or citywide lack of coverage."
+    },
+    {
+      "request": "GET https://bhunaksha.bihar.gov.in/10/WMS?service=WMS&request=GetCapabilities",
+      "outcome": "Returned the viewer error page rather than WMS capabilities; no schema/geometry response retained."
+    }
+  ],
+  "safeFieldAllowlist": ["district/subdivision/circle/mauza/map codes", "map names", "geometry only if independently verified", "service metadata"],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "resultCategory": "primary_source_verified_public_viewer_no_safe_city_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "Bihar digitized cadastral-map service with administrative and map selectors.",
+    "verifiedOpenScope": "Purnia district and Purnia local selector branches were returned by anonymous endpoint calls; exact WUP-point inclusion and citywide completeness were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_pending_independent_adapter_qualification",
+  "status": "complete"
+}

@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "1.0",
+  "cityCode": 8784,
+  "queueRank": 1603,
+  "name": "Satara",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "point": [17.6853192092287, 74.0088699646679],
+  "population2025": 355609,
+  "population2025k": 355.609,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Satara Maharashtra official GIS cadastral parcel map land records city survey",
+        "result": "First-party search found Maharashtra Bhumi Abhilekh/Mahabhumi land-record services, the official Satara district land-records page, the Government of India DILRMP Satara map-digitization page, and the Maharashtra Gazetteer description of Satara city survey. No public Satara parcel feature endpoint or bounded geometry response was established.",
+        "actualResultUrls": [
+          "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=35",
+          "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/527",
+          "https://gazetteers.maharashtra.gov.in/cultural.maharashtra.gov.in/english/gazetteer/SATARA/rev_admin_land_record.html"
+        ]
+      },
+      {
+        "language": "Marathi",
+        "query": "सातारा महाराष्ट्र भू नकाशा जमीन नोंदणी GIS मालमत्ता नकाशा अधिकृत",
+        "result": "मराठी प्रथम-पक्ष शोधात महाराष्ट्र भूमी अभिलेख, महाभू-नकाशा, नगर भूमापन आणि सातारा जिल्हा भूमी अभिलेख कार्यालयाची माहिती मिळाली. अधिकृत सार्वजनिक, अनामिक पार्सल आयडी-अधिक-भूमिती सेवा किंवा सीमित GeoJSON प्रतिसाद पडताळला गेला नाही.",
+        "actualResultUrls": [
+          "https://bhumiabhilekh.maharashtra.gov.in/?q=2026",
+          "https://www.satara.gov.in/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A5%80-%E0%A4%85%E0%A4%AD%E0%A4%BF%E0%A4%B2%E0%A5%87%E0%A4%96-%E0%A4%86%E0%A4%AA%E0%A4%B2%E0%A4%BE-%E0%A5%AD-%E0%A5%A8%E0%A5%A8-%E0%A4%AA%E0%A4%BE%E0%A4%B9%E0%A4%BE/",
+          "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=35"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=35",
+      "observation": "Official Maharashtra Land Records district page identifies the Satara District Superintendent of Land Records, jurisdiction over Satara district, 11 taluka offices and one city survey office. This establishes a local land-records/city-survey custodian, not open vector access."
+    },
+    {
+      "url": "https://gazetteers.maharashtra.gov.in/cultural.maharashtra.gov.in/english/gazetteer/SATARA/rev_admin_land_record.html",
+      "observation": "Maharashtra Gazetteer states that city survey was introduced in Satara in 1919 and that the Land Records Department maintains survey records and maps. Historical institutional evidence only."
+    },
+    {
+      "url": "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+      "observation": "Maharashtra’s official Mahabhumi portal advertises digitally signed land records, property cards and Mahabhu-Nakasha maps with land records. The requested dashboard path returned HTTP 404 in the direct request, so no service configuration or parcel response was obtained."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/527",
+      "observation": "Government of India DILRMP page is a Satara district map-digitization/geo-referencing status page. It is national programme status, not proof of an anonymous Satara city parcel API."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.satara.gov.in/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A5%80-%E0%A4%85%E0%A4%AD%E0%A4%BF%E0%A4%B2%E0%A5%87%E0%A4%96-%E0%A4%86%E0%A4%AA%E0%A4%B2%E0%A4%BE-%E0%A5%AD-%E0%A5%A8%E0%A5%A8-%E0%A4%AA%E0%A4%BE%E0%A4%B9%E0%A4%BE/",
+      "method": "GET",
+      "httpStatus": 404,
+      "outcome": "Official Satara district service URL returned an HTML 404 page; no parcel endpoint was exposed. Not evidence of absence."
+    },
+    {
+      "url": "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+      "method": "GET",
+      "httpStatus": 404,
+      "outcome": "Dashboard path returned an HTML 404 page; no JavaScript/configuration or anonymous parcel response was available."
+    },
+    {
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=35",
+      "method": "GET",
+      "httpStatus": 0,
+      "outcome": "Direct curl request timed out after 20 seconds. Search inspection independently exposed official Satara district land-record content; timeout is not evidence of absence."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/527",
+      "method": "GET",
+      "httpStatus": 0,
+      "outcome": "Direct curl request failed TLS verification because the host certificate chain was not trusted in this environment. No certificate exception was used. Search result content was recorded as discovery evidence only."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Local Satara land-records/city-survey custody is evidenced by the official Maharashtra Land Records district page and the Maharashtra Gazetteer’s Satara city-survey description. This does not establish public anonymous parcel geometry access.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Satara district land-records/city-survey administration and Maharashtra state Mahabhumi/Mahabhu-Nakasha services.",
+    "verifiedOpenScope": "No city-bounded parcel record, native parcel ID, schema, CRS or geometry response was retrieved.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "The Mahabhumi/Mahabhu-Nakasha viewer may expose parcel maps through a current route or interactive flow not discoverable from the tested URLs. Its anonymous access policy, endpoint, schema, CRS, native ID and exact-point coverage remain unknown. No exact-point hit or miss was requested, and no citywide absence is inferred.",
+  "nextStep": "Serial reviewer should independently inspect the current Mahabhumi/Mahabhu-Nakasha viewer and, if anonymous access is available, validate a bounded geometry-only Satara query with a stable native parcel identity."
+}

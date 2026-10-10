@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "status": "complete",
+  "wupCityCode": 10878,
+  "cityId": "wup2025:10878",
+  "name": "Cenxi",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "centerLatLon": [22.9179831122898, 110.982805978858],
+  "queueRank": 1879,
+  "population2025": 306146,
+  "population2025k": 306.146,
+  "populationUnit": "persons",
+  "plausibility": "Moderate",
+  "registryFound": true,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted",
+  "nativeIdReadiness": "not_applicable_no_verified_parcel_source",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Cenxi cadastral parcel map official GIS; Cenxi land registration map API",
+        "result": "No Cenxi-specific public parcel viewer/API or downloadable geometry with safe native parcel IDs was found. Results led to national Tianditu API documentation and general mapping material.",
+        "actualResultUrls": ["https://lbs.tianditu.gov.cn/server/search2.html", "https://www.webmap.cn/commres.do?method=tianMap"]
+      },
+      {
+        "language": "Chinese",
+        "query": "岑溪市 自然资源局 不动产登记 地籍图 电子地图",
+        "result": "Official Guangxi Natural Resources results confirmed Cenxi land-use approvals and the Guangxi real-estate-registration administration/procedure framework; no anonymous Cenxi parcel geometry service was exposed.",
+        "actualResultUrls": ["https://dnr.gxzf.gov.cn/zfxxgk/fdzdgknr/ygzd/jsydpfwj/t27280542.shtml", "https://dnr.gxzf.gov.cn/zxgz/yhyshj/bsrk/", "https://dnr.gxzf.gov.cn/zfxxgk/fdzdgknr/dzgl/bdcdjgl/index.shtml"]
+      }
+    ],
+    "searchLimits": "Search-engine discovery only; no login, CAPTCHA/Cloudflare bypass, credentials, private tokens, or unsafe owner/address/title fields used."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Cenxi local real-estate registration and cadastral records are administered through the county-level registration authority under Guangxi/China rules; this is administrative evidence, not proof of an open geospatial endpoint.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_local_registry_evidenced_no_verified_open_parcel_endpoint",
+  "registryBasis": "An official Guangxi Natural Resources land-use approval names Cenxi and states that, after lawful land acquisition, the real-estate registration institution handles collective-land ownership cancellation or change. Guangxi's official registration entry point and policy pages document local/county registration procedures and cadastral-information governance. No public Cenxi map/API was established.",
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://dnr.gxzf.gov.cn/zfxxgk/fdzdgknr/ygzd/jsydpfwj/t27280542.shtml",
+      "operator": "Guangxi Zhuang Autonomous Region Department of Natural Resources",
+      "observation": "Official 2025 Cenxi urban-construction land approval; references the Cenxi People's Government and the registration institution's role after land acquisition. It contains no parcel feature service or downloadable parcel geometry."
+    },
+    {
+      "url": "https://dnr.gxzf.gov.cn/zxgz/yhyshj/bsrk/",
+      "operator": "Guangxi Zhuang Autonomous Region Department of Natural Resources",
+      "observation": "Official registration-services entry point; public procedure links, not a Cenxi parcel map endpoint."
+    },
+    {
+      "url": "https://dnr.gxzf.gov.cn/zfxxgk/fdzdgknr/dzgl/bdcdjgl/index.shtml",
+      "operator": "Guangxi Zhuang Autonomous Region Department of Natural Resources",
+      "observation": "Official real-estate-registration management catalogue; general policy/procedure scope, no anonymous Cenxi geometry response."
+    },
+    {
+      "url": "https://www.cenxi.gov.cn/",
+      "operator": "Cenxi Municipal People's Government",
+      "observation": "Official local-government domain identified during discovery, but direct TLS validation failed because the certificate was expired; no content or service configuration was accepted from the failed request."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.cenxi.gov.cn/",
+      "method": "GET",
+      "status": "TLS certificate validation failed",
+      "summary": "curl rejected an expired certificate; no certificate exception was used and no response body was treated as evidence."
+    },
+    {
+      "url": "https://www.wuzhou.gov.cn/",
+      "method": "GET",
+      "status": "TLS certificate validation failed",
+      "summary": "curl rejected an expired certificate; no certificate exception was used."
+    },
+    {
+      "url": "https://dnr.gxzf.gov.cn/",
+      "method": "GET",
+      "status": "timeout after 15 seconds",
+      "summary": "Root host did not return in the bounded direct request; indexed official pages were inspected through public search results."
+    },
+    {
+      "url": "https://map.tianditu.gov.cn/",
+      "method": "GET",
+      "status": "HTTP 418",
+      "summary": "National map host returned an anti-automation response; no parcel request was attempted and no absence inference was made."
+    },
+    {
+      "url": "https://lbs.tianditu.gov.cn/server/search2.html",
+      "method": "GET (public documentation)",
+      "status": "official documentation found",
+      "summary": "Documents Tianditu place-search API requiring an application key; it is not a cadastral parcel geometry service. No key was requested or used."
+    }
+  ],
+  "safeFieldAllowlist": ["stable native parcel ID if publicly returned", "geometry", "source URL", "CRS", "bounded retrieval metadata"],
+  "sourceFields": null,
+  "crs": null,
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "No anonymous, city-scoped parcel geometry plus stable native parcel identity was verified. Administrative registry evidence does not establish an open integration endpoint.",
+  "remainingUncertainty": "The exact WUP point is retained unchanged as a research locator. A zero exact-point hit was not used as evidence of absence; no bounded parcel query could be executed.",
+  "nextStep": "On a later attempt, inspect any currently published Cenxi/Wuzhou/Guangxi public cadastral viewer configuration without bypassing access controls, then request only a small geometry-plus-native-ID response and validate CRS and geographic scope before considering admission."
+}

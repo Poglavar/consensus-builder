@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-2064-santo-domingo-de-los-tsachilas.json",
+  "cityCode": 2064,
+  "queueRank": 1594,
+  "purpose": "Document first-party discovery, current local cadastral/registry service review, bounded anonymous access, safe-field handling, and uncertainty.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "A local official cadastral custodian was evidenced, but no anonymous parcel map/API response, schema, stable native parcel identity, or geometry was verified. The packet is complete as a documented research attempt; runtime readiness is held.",
+  "registryAssessment": "registryFound=true is supported by the official municipal Dirección de Avalúos y Catastros page and the official Empresa Pública Municipal Registro de la Propiedad del Cantón Santo Domingo. This does not establish open geometry access or citywide parcel coverage.",
+  "safeFieldAllowlist": ["id", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "queries": [
+    {"language":"English","query":"Santo Domingo de los Tsachilas Ecuador official cadastral map GIS parcel municipality","outcome":"Official municipal cadastral department, municipal online services, and municipal property registry were found; no public parcel geometry service was verified.","actualResultUrls":["https://www.santodomingo.gob.ec/?p=3528","https://online.santodomingo.gob.ec/Account/Login?ReturnUrl=%2FLandUse%2FLandUseListView","https://registrodelapropiedadsd.gob.ec/"]},
+    {"language":"Spanish (local/native)","query":"Ecuador Santo Domingo de los Tsáchilas catastro mapa predios geoportal oficial","outcome":"Official municipal cadastral and registry sources were found; national IGM material was general cartography rather than a city parcel endpoint.","actualResultUrls":["https://www.santodomingo.gob.ec/?p=3528","https://registrodelapropiedadsd.gob.ec/","https://www.geoportaligm.gob.ec/portal/index.php/descargas/geoinformacion/"]}
+  ],
+  "attempts": [
+    {"url":"https://www.santodomingo.gob.ec/?p=3528","method":"GET/search open","httpStatus":null,"result":"Search discovery identified the official Dirección de Avalúos y Catastros page and its stated urban/rural cadastral remit; direct fetch timed out from this environment."},
+    {"url":"https://online.santodomingo.gob.ec/Account/Login?ReturnUrl=%2FLandUse%2FLandUseListView","method":"GET","httpStatus":null,"result":"Official municipal online-services land-use/avalúo route attempted anonymously; request timed out. No login attempt or bypass was made."},
+    {"url":"https://registrodelapropiedadsd.gob.ec/","method":"GET/search open","httpStatus":200,"result":"Official municipal property registry homepage loaded and identifies the Empresa Pública Municipal Registro de la Propiedad del Cantón Santo Domingo and online registral services."},
+    {"url":"https://servicios.registrodelapropiedadsd.gob.ec/ventanilla/login.xhtml","method":"GET","httpStatus":200,"result":"Registry ventanilla loaded a credential form requiring cédula and contraseña; no credentials were used and no private/unsafe fields were requested."},
+    {"url":"https://www.geoportaligm.gob.ec/portal/index.php/descargas/geoinformacion/","method":"GET/search open","httpStatus":200,"result":"Official national IGM download catalog loaded; only general maps/cartographic products were observed, not a city parcel query service."}
+  ],
+  "geometryEvidence": {"verified":false,"sampleFile":null,"sampleCount":0,"nativeIdentityField":null,"requestedFields":[],"retainedProperties":[]},
+  "geometryDecision": {"verified":false,"sourceId":null,"nativeIdField":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"No exact-point parcel test was completed; the supplied coordinate was preserved and not shifted."},
+  "remainingUncertainty": "No public map/API configuration, CRS, schema, bounded ID+geometry response, or citywide coverage evidence was obtained. Timeout, login wall, and unavailable UI are not evidence of citywide absence.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter"
+}

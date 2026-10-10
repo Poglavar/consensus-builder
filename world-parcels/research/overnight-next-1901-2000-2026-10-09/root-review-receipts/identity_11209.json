@@ -1,0 +1,14 @@
+{
+  "taskId": "identity:11209",
+  "decision": "resolved",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/identity-11209-official-geography-response.json",
+    "world-parcels/research/india-africa-2026-10-08/india-city-11285.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/root-identity-decision-overlay.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/identity-review.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/skip-ledger.json"
+  ],
+  "checkedAt": "2026-10-10T18:08:43.559411Z"
+}

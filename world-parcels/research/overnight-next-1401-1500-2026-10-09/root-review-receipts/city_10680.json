@@ -1,0 +1,12 @@
+{
+  "taskId": "city:10680",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-10680-ezhou.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ezhou-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T16:59:28Z",
+  "reason": "The first-party Ezhou registration-center notice and work plan support local cadastral custody and a login-based map procedure. The reported online hall default page and Hubei timeout provide no anonymous parcel polygon or safe native ID. Fresh adapter, paging, 13-cell, metric GEOS, binding, and headed Details proof are absent."
+}

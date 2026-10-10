@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 1907,
+  "queueRank": 1965,
+  "name": "Barinas",
+  "country": "Venezuela (Bolivarian Republic of)",
+  "countryCode": "VE",
+  "iso3": "VEN",
+  "point": [8.61788659564614, -70.2225811075378],
+  "population2025": 295298,
+  "population2025k": 295.298,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Barinas Venezuela official cadastral parcel map catastro geoportal site:gov.ve OR site:igv.gob.ve",
+        "result": "Search found the official Instituto Geográfico de Venezuela Simón Bolívar (IGVSB) site and general legal/cartographic references, but no verified Barinas parcel viewer or anonymous parcel API.",
+        "actualResultUrls": ["https://igvsb.gob.ve/", "https://directory.spatineo.com/service/1536/", "https://alcaldiabarinas.gob.ve/"]
+      },
+      {
+        "language": "Spanish (local/official language)",
+        "query": "Barinas Venezuela catastro mapa parcelas registro inmobiliario oficial",
+        "result": "Search found the official IGVSB national cadastral mandate and a directory reference to an IGVSB WMS, plus a reported municipal catastro office; no first-party Barinas parcel feature service or safe native parcel response was exposed.",
+        "actualResultUrls": ["https://igvsb.gob.ve/servicios_cartograficos", "https://igvsb.gob.ve/servicio_api_mapoteca", "https://venezuela.justia.com/federales/leyes/ley-de-geografia-cartografia-y-catastro-nacional/gdoc/", "https://alcaldiabarinas.gob.ve/"]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://igvsb.gob.ve/",
+      "operator": "Instituto Geográfico de Venezuela Simón Bolívar (IGVSB)",
+      "evidence": "First-party national geospatial agency site was reachable over verified TLS. Its current services navigation exposes cartographic services, geodesic services, and mapoteca; it does not identify an open Barinas parcel layer. This is national-agency evidence, not local registry evidence."
+    },
+    {
+      "url": "https://igvsb.gob.ve/servicios_cartograficos",
+      "operator": "Instituto Geográfico de Venezuela Simón Bolívar (IGVSB)",
+      "evidence": "Current first-party JavaScript/configuration was inspected. Exposed layers are general cartography such as state boundaries, state capitals, water bodies, place names, and map-index sheets; no parcel layer or feature-service endpoint was exposed."
+    },
+    {
+      "url": "https://igvsb.gob.ve/servicio_api_mapoteca",
+      "operator": "Instituto Geográfico de Venezuela Simón Bolívar (IGVSB)",
+      "evidence": "Current first-party page exposes a mapoteca API route for map products, not a cadastral parcel feature service."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://igvsb.gob.ve/",
+      "method": "GET via curl with verified TLS",
+      "status": 200,
+      "summary": "Official national agency homepage retrieved."
+    },
+    {
+      "url": "https://igvsb.gob.ve/servicios_cartograficos",
+      "method": "GET via curl with verified TLS",
+      "status": 200,
+      "summary": "Official cartographic page and current JavaScript inspected; only general cartographic layers were exposed."
+    },
+    {
+      "url": "https://igvsb.gob.ve/servicio_api_mapoteca",
+      "method": "GET via curl with verified TLS",
+      "status": 200,
+      "summary": "Official mapoteca page retrieved; API route concerns map products and did not return parcel schema or geometry."
+    },
+    {
+      "url": "http://igvsb.geoportalsb.gob.ve/cgi-bin/mapserv?SERVICE=WMS&REQUEST=GetCapabilities",
+      "method": "GET via curl, 20-second bound",
+      "status": "DNS failure",
+      "summary": "The historical/directory-listed IGVSB WMS hostname could not be resolved. No TLS bypass, credentials, or private token was used; this is an endpoint availability limitation, not evidence of absence."
+    },
+    {
+      "url": "https://alcaldiabarinas.gob.ve/",
+      "method": "HEAD via curl, 12-second bound",
+      "status": "DNS/transport timeout",
+      "summary": "The municipal official-domain lead did not respond in the bounded request. No municipal parcel viewer or API could be inspected."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": null,
+    "fallbackOidField": null,
+    "compositeKey": null,
+    "fieldMapping": {
+      "geometry": "Not available: no anonymous parcel feature response was returned.",
+      "native identity": "Not available: no parcel feature schema or native ID was exposed by the attempted public routes."
+    },
+    "crs": "Not confirmed for parcels.",
+    "geometryType": "Not confirmed for parcels."
+  },
+  "coverageAssessment": {
+    "claimedScope": "IGVSB is the national geographic/cartographic/cadastral authority; municipal offices are the expected local custodians under the national cadastral framework.",
+    "verifiedOpenScope": "National general cartography only. Barinas municipal cadastral custody was not independently evidenced through a reachable first-party page, and city parcel geometry was not verified.",
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "No parcel endpoint was available for an exact-point query. This is not evidence of citywide absence."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["native parcel identifier if later exposed", "geometry"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "tax", "account", "legal description", "rights/title details"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "national_cadastral_authority_local_parcel_geometry_unverified",
+  "remainingUncertainty": "A municipal Barinas cadastral database, map, or service may exist behind an unavailable official route. No public anonymous parcel schema, CRS, stable native identifier, or geometry response was obtained.",
+  "nextStep": "Serial reviewer should independently inspect the current official IGVSB and Alcaldía Barinas services, retry the WMS/API routes if they become reachable, and verify a safe native parcel identity, CRS, geometry, and Barinas coverage before adapter qualification."
+}

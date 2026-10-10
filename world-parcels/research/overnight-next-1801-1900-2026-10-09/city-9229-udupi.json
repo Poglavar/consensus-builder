@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 9229,
+  "queueRank": 1817,
+  "cityId": "queue:1817",
+  "name": "Udupi",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [13.3450929336684, 74.7520974495958],
+  "centerLatLon": [13.3450929336684, 74.7520974495958],
+  "population2025": 315743,
+  "population2025k": 315.743,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Udupi Karnataka official GIS cadastral parcel map API land records Bhoomi site:gov.in",
+        "result": "First-party results identified the Government of India DILRMP Udupi map-digitization/ULPIN status page, the Karnataka land-record survey-number API documentation, the official Udupi District administrative page listing the Deputy Director of Land Records and Udupi Taluk Tahsildar, and the national NAKSHA urban parcel-mapping programme. No Udupi parcel feature response was returned by discovery.",
+        "actualResultUrls": [
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/571",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/MapDiditizaionDistrictList/29",
+          "https://mobservice.sujala3lri.karnataka.gov.in/Help/Api/GET-api-GetDSSSurveyNumber_village_wscode_district_taluk_hobli",
+          "https://rcmysore.gov.in/udupi-district/",
+          "https://www.nakshauat.dolr.gov.in/NakshaUat/index.html"
+        ]
+      },
+      {
+        "language": "native/local (Kannada)",
+        "query": "ಉಡುಪಿ ಕರ್ನಾಟಕ ಅಧಿಕೃತ GIS ಕಂದಾಯ ಭೂ ದಾಖಲೆ ಪಾರ್ಸೆಲ್ ನಕ್ಷೆ API",
+        "result": "Kannada-language discovery was run against official Karnataka government domains. It returned official Karnataka RDPR material containing Udupi district/taluk/village records and the official Udupi District page with Kannada toggle, but no public Udupi parcel geometry endpoint or safe parcel feature response.",
+        "actualResultUrls": [
+          "https://rcmysore.gov.in/udupi-district/",
+          "https://rdpr.karnataka.gov.in/storage/pdf-files/Panchayatraj/anx_112_21_28_12_21.pdf",
+          "https://mobservice.sujala3lri.karnataka.gov.in/Help/Api/GET-api-GetDSSSurveyNumber_village_wscode_district_taluk_hobli"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Separate English and Kannada first-party discovery, followed by bounded anonymous TLS-verified GET attempts. No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS disablement were used."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://rcmysore.gov.in/udupi-district/",
+      "observation": "Official Government of Karnataka regional commissioner page for Udupi District. It identifies the Deputy Director, Land Records and the Udupi Taluk Tahsildar, evidencing a local/district registry custodian; it does not expose parcel geometry in the page response."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/571",
+      "observation": "Official DILRMP Udupi status page found through discovery. It reports cadastral-map digitization/geo-referencing and ULPIN-related progress for Udupi district, but is status evidence rather than an open parcel feature service."
+    },
+    {
+      "url": "https://mobservice.sujala3lri.karnataka.gov.in/Help/Api/GET-api-GetDSSSurveyNumber_village_wscode_district_taluk_hobli",
+      "observation": "Official Karnataka public API help page documents a GET survey-number route requiring village, wscode, district, taluk and hobli. It documents request parameters and JSON format, but not parcel polygon geometry or an Udupi-specific unit selection."
+    },
+    {
+      "url": "https://www.nakshauat.dolr.gov.in/NakshaUat/index.html",
+      "observation": "Official national NAKSHA urban land-record mapping programme page. It is general programme context and does not establish Udupi coverage or an accessible Udupi parcel layer."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://mobservice.sujala3lri.karnataka.gov.in/Help/Api/GET-api-GetDSSSurveyNumber_village_wscode_district_taluk_hobli?village=Udupi&wscode=UNRESOLVED&district=Udupi&taluk=Udupi&hobli=UNRESOLVED",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Anonymous TLS-verified request timed out after 20 seconds before a response. Required village/wscode/hobli identifiers were not safely guessable, so no follow-up query was made. This is a route/identifier failure, not evidence of parcel absence."
+    },
+    {
+      "url": "https://landrecords.karnataka.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Anonymous TLS-verified request timed out after 20 seconds. No viewer JavaScript/configuration, service URL, schema, CRS, native ID or geometry was obtained."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/571",
+      "method": "GET via first-party discovery/open",
+      "httpStatus": 502,
+      "contentType": null,
+      "assessment": "Official status route returned a gateway failure in the web fetch. Search-result content still evidenced Udupi DILRMP status, but no live parcel response was obtained."
+    },
+    {
+      "url": "https://www.nakshauat.dolr.gov.in/NakshaUat/index.html",
+      "method": "GET via first-party discovery/open",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Official programme page timed out; no Udupi-specific map configuration or parcel schema was obtained."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Karnataka/Udupi district land-record custody, DILRMP cadastral-map status, and the documented Karnataka survey-number API.",
+    "verifiedOpenScope": "Local/district custodian and national/state land-record programme evidence only; no open Udupi parcel geometry coverage verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The current Karnataka viewer/API configuration, Udupi urban/taluk/village identifiers, parcel schema, CRS, stable native identity, update currency and citywide completeness remain unresolved. The exact WUP point was preserved and never shifted; no exact-point hit/miss inference was made. A timeout, gateway failure or unusable route is not evidence of citywide cadastral absence. Runtime readiness remains held pending independent serial qualification."
+}

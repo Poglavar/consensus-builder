@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 7548,
+  "queueRank": 1809,
+  "cityId": "queue:1809",
+  "name": "Nazirhat",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "point": [22.6487438204526, 91.8096353514098],
+  "centerLatLon": [22.6487438204526, 91.8096353514098],
+  "population2025": 317240,
+  "population2025k": 317.24,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bangladesh Nazirhat cadastral parcel map official land record Chattogram",
+        "result": "First-party results identified the Department of Land Records and Surveys (DLRS) settlement viewer and official Integrated Online Map Purchase System. The viewer's current Chattogram BDS survey endpoint was inspected; it returned only Anwara and Banshkhali upazila records, not Fatikchhari/Nazirhat.",
+        "actualResultUrls": [
+          "https://settlement.gov.bd/",
+          "https://map.settlement.gov.bd/",
+          "https://dlrs.gov.bd/"
+        ]
+      },
+      {
+        "language": "native/local (Bangla)",
+        "query": "বাংলাদেশ নাজিরহাট ভূমি নকশা দাগ খতিয়ান সরকারি",
+        "result": "First-party Bangla results identified the DLRS settlement portal, Chattogram zonal settlement office, and Nazirhat Pourashava land-plot application form. The official viewer route was then inspected anonymously; no Nazirhat parcel geometry response was obtained.",
+        "actualResultUrls": [
+          "https://settlement.gov.bd/",
+          "https://dlrs.gov.bd/site/page/01ecf1f9-b669-4059-8782-a033077b5458/%E0%A6%9A%E0%A6%9F%E0%A7%8D%E0%A6%9F%E0%A6%97%E0%A7%8D%E0%A6%B0%E0%A6%BE%E0%A6%AE-%E0%A6%9C%E0%A7%8B%E0%A6%A8%E0%A6%BE%E0%A6%B2-%E0%A6%B8%E0%A7%87%E0%A6%9F%E0%A7%87%E0%A6%B2%E0%A6%AE%E0%A7%87%E0%A6ন্ট-%E0%A6%85%E0%A6%AB%E0%A6%BF%E0%A6%B8",
+          "https://nazirhatpourashava.gov.bd/"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "First-party web discovery followed by TLS-verified bounded GET/POST requests with a browser User-Agent, X-Requested-With header for JSON POSTs, and a cookie jar; no credentials or private tokens."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://settlement.gov.bd/Map/MapSearch",
+      "observation": "Official DLRS public map viewer. Current JavaScript configuration exposes /Map/GetDivisionList, /Khatian/getdistrictlistdivisionwise, /Khatian/GetSurveyListDistrictWise, /Khatian/GetThanaListBySurveyMap, /Khatian/GetMouzaListBySurveyMap, /Khatian/GetMouzaListBySurveyMapForshet, /Khatian/GetSheetJsonBySurvey, and /tiles/parcels/{rsnum}/{comcod}/{unitcod}/meta. These are survey/mouza map services, not a citywide point-query API."
+    },
+    {
+      "url": "https://map.settlement.gov.bd/",
+      "observation": "Official DLRS map-purchase portal describing CS, SA, RS, BRS and BDS mouza-map records. It is a document/map ordering portal, not an exposed parcel feature service."
+    },
+    {
+      "url": "https://dlrs.gov.bd/",
+      "observation": "Official Department of Land Records and Surveys site identifying survey maps, khatians and online mouza-map services."
+    },
+    {
+      "url": "https://nazirhatpourashava.gov.bd/",
+      "observation": "Nazirhat Pourashava official application material references plot, CS/SA dag and khatian fields; it does not expose anonymous parcel geometry or a cadastral API."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://settlement.gov.bd/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Loaded official settlement viewer shell; page links to public map search and Leaflet/vector-grid implementation."
+    },
+    {
+      "url": "https://settlement.gov.bd/Map/MapSearch",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Loaded current viewer configuration and JavaScript. The viewer uses survey/mouza selection and vector tiles/GeoJSON by selected mouza, with no point-based citywide parcel query."
+    },
+    {
+      "url": "https://settlement.gov.bd/Map/GetDivisionList",
+      "method": "POST",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "requestBody": "empty POST",
+      "assessment": "Returned official division list including Chattogram unit code 040000000."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise",
+      "method": "POST",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "requestBody": "divid=040000000",
+      "assessment": "Returned Chattogram district unit code 040100000 and comcod 4111."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise",
+      "method": "POST",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "requestBody": "districtid=040100000&comcod=4111",
+      "assessment": "Returned only BDS survey rsnum 201901, marked ongoing."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap",
+      "method": "POST",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "requestBody": "comcod=4111&rsno1=201901&districtid=040100000",
+      "assessment": "Returned only Anwara and Banshkhali upazila records. Fatikchhari, the relevant Nazirhat locality context, was not returned by this current survey route. This is a route/coverage limitation, not evidence of cadastral absence."
+    },
+    {
+      "url": "https://tiles.settlement.gov.bd/catalog",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Returned Martin tile catalog with raster overlays; no public parcel-layer catalog entry."
+    },
+    {
+      "url": "https://settlement.gov.bd/tiles/parcels/201901/4111/040107008/meta",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Returned metadata for an Anwara mouza outside Nazirhat, including bbox and dag centroids. Not retained or used as Nazirhat evidence; no geometry sample was taken."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Bangladesh DLRS survey and mouza-map services, with Chattogram district BDS route inspected.",
+    "verifiedOpenScope": "Official national survey/map portal and current Chattogram BDS endpoint only; no Fatikchhari/Nazirhat parcel geometry scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The relevant historic/current survey (CS, SA, RS, BRS or another BDS coverage route), Fatikchhari mouza identifiers, parcel schema, native stable parcel identity, CRS for any Nazirhat sheet, and citywide completeness remain unresolved. The route's omission of Fatikchhari, a map extent miss, timeout, login wall or unusable UI must not be treated as citywide absence.",
+  "nextStep": "A later attempt may identify Fatikchhari mouza/sheet identifiers through an officially exposed DLRS route and request only bounded anonymous ID-plus-geometry map data. Serial reviewer qualification remains required; runtime readiness stays held."
+}

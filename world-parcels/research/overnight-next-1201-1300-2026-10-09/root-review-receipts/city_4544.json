@@ -1,0 +1,17 @@
+{
+  "taskId": "city:4544",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-4544-chief-albert-luthuli-park.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/chief-albert-luthuli-park-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/chief-albert-luthuli-park-parcel-samples.geojson",
+    "tmp/valhalla-parcel-research/4544/service.json",
+    "tmp/valhalla-parcel-research/4544/stands.json",
+    "tmp/valhalla-parcel-research/4544/point.geojson",
+    "tmp/valhalla-parcel-research/4544/bounded-source.geojson",
+    "tmp/valhalla-parcel-research/4544/sample-source.geojson"
+  ],
+  "checkedAt": "2026-10-09T12:35:25Z",
+  "reason": "Immutable queue identity and bilingual packet/review searches match. Original municipal Stands response has three full source polygons with safe GIS_KEY sample IDs and exceededTransferLimit=true. No independent live adapter qualification for fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding or headed Details panel."
+}

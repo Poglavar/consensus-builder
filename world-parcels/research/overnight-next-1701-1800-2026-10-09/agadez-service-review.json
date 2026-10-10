@@ -1,0 +1,40 @@
+{
+  "cityRecord": "city-2546-agadez.json",
+  "cityCode": 2546,
+  "queueRank": 1712,
+  "city": "Agadez",
+  "country": "Niger",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "runtimeReadiness": "held",
+  "summary": "Official regional registry jurisdiction and land procedures were evidenced, but no anonymous public parcel geometry service was found. No sample GeoJSON was retained.",
+  "queryOutcomes": "English and French discovery queries are recorded verbatim in city-2546-agadez.json. Results were limited to official registry-procedure, cartography-infrastructure, and project-document evidence.",
+  "requestOutcomes": "The executed first-party GET checks and outcomes are recorded in city-2546-agadez.json under requestsAndEndpointChecks. No login, CAPTCHA bypass, credentials, private token, unsafe field, or TLS exception was used.",
+  "scopeLimits": [
+    "The Finance/Tax notice establishes the Tahoua regional conservation office's jurisdiction over Agadez, not a public GIS layer.",
+    "IGNN's cartography page describes geographic databases and a geoportal concept, but no current parcel endpoint was exposed.",
+    "The 2025 Agadez report references a municipal cadastral plan for a specific subdivision, without machine-readable geometry or native IDs.",
+    "Historical UNESCO evidence is contextual and cannot support a citywide absence conclusion.",
+    "No exact-point hit, extent test, timeout, or unavailable UI was treated as evidence of citywide absence."
+  ],
+  "safeFieldAllowlist": ["native parcel identifier", "geometry", "source layer name", "CRS", "service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryRetention": {
+    "sampleGeoJSON": null,
+    "featureCount": 0,
+    "reason": "No safe, verified native parcel geometry response was available."
+  },
+  "uncertainty": "Open parcel coverage, schema, CRS, native identity semantics, and citywide completeness remain unverified. Registry existence is documented, but runtime integration is not admitted.",
+  "qualificationDecision": "hold",
+  "completionSummary": {
+    "recordWritten": true,
+    "serviceReviewWritten": true,
+    "sampleGeoJSONWritten": false,
+    "openParcelEndpointVerified": false,
+    "adapterQualified": false
+  }
+}

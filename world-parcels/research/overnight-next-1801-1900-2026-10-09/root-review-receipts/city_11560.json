@@ -1,0 +1,19 @@
+{
+  "taskId": "city:11560",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-11560-fanling.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/fanling-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/fanling-parcel-sample.geojson",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "tmp/valhalla-parcel-research/11560/layers.json",
+    "tmp/valhalla-parcel-research/11560/identify.json",
+    "tmp/valhalla-parcel-research/11560/lot.geojson"
+  ],
+  "checkedAt": "2026-10-10T17:50:47Z",
+  "reviewNotes": "WUP source archive, queue and packet agree on code 11560, rank 1888, Hong Kong SAR, exact point and 304190 persons. English and Traditional Chinese executed searches are recorded. Original Lands Department cache identifies ArcGIS polygon layer 107 and native LOTID 1800068273. The raw response matches the one retained polygon with only a safe ID; metric EPSG:2326 GEOS geometry is valid and contains the WUP point. This one hit does not establish Fanling-wide coverage or adapter readiness.",
+  "admissionGate": "No independent live adapter qualification for fresh exact-ID reads and forced paging, no 13 aligned bounded cells or overlap/operation checks, and no source binding or headed Details-panel verification. No runtime or catalog admission."
+}

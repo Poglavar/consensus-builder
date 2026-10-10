@@ -1,0 +1,16 @@
+{
+  "taskId": "packet:7835",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-7835-vladivostok.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/vladivostok-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/vladivostok-parcel-samples.geojson",
+    "tmp/valhalla-parcel-research/vladivostok-attempt-3/project.json",
+    "tmp/valhalla-parcel-research/vladivostok-attempt-3/wfs.json"
+  ],
+  "checkedAt": "2026-10-09T12:10:12.703874Z",
+  "reason": "Queue identity matches code 7835/rank 1222/Russian Federation/RU/point [43.1274390055063,131.920391588581]/455141 persons. English and Russian searches are recorded. Viewer configuration names the EGRN WFS layer; original bounded WFS cache has 182 returned/matched features with unique feature IDs and EPSG:3857 polygon geometry. Three durable safe-ID polygons only. Fresh reprojection differs from samples by about 2.1–2.2e-8 degrees, so unchanged geometry equivalence is unresolved. No independently evidenced fresh exact-ID reads, forced paging, 13 cells, metric GEOS overlap/validity, source binding, or headed Details check. Bounded positive discovery remains held; no citywide coverage or admission claimed."
+}

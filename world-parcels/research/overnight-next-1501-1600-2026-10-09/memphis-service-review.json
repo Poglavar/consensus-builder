@@ -1,0 +1,27 @@
+{
+  "cityRecord": "city-6980-memphis.json",
+  "cityCode": 6980,
+  "queueRank": 1597,
+  "serviceReviewStatus": "complete",
+  "attempt": 1,
+  "routes": [
+    {"route": "Shelby County Assessor GIS page", "url": "https://www.assessor.shelbycountytn.gov/gis", "outcome": "First-party viewer discovered; page text advertised parcel-number search and parcel layer, but multiple viewer layers displayed loading errors in the fetched page."},
+    {"route": "Shelby County public ArcGIS parcel layer", "url": "https://gis.shelbycountytn.gov/public/rest/services/BaseMap/Assessor/MapServer/0", "outcome": "HTTP 403 for anonymous direct GET; no geometry inferred from failure."},
+    {"route": "Tennessee GeoViewer Shelby parcel layer metadata", "url": "https://geoviewer.cot.tn.gov/arcgis/rest/services/GeoViewer/NonImpact_Parcels/MapServer/6?f=pjson", "outcome": "Anonymous GET succeeded; polygon schema, CRS, extent, max record count, supported formats, and field names inspected."},
+    {"route": "Tennessee GeoViewer exact WUP point query", "url": "https://geoviewer.cot.tn.gov/arcgis/rest/services/GeoViewer/NonImpact_Parcels/MapServer/6/query", "outcome": "Anonymous GET succeeded; one polygon intersected the unchanged point, with safe fields OBJECTID=220600 and PARCELID=058068  00001; geometry returned as GeoJSON WGS84."},
+    {"route": "Tennessee GeoViewer bounded envelope query", "url": "https://geoviewer.cot.tn.gov/arcgis/rest/services/GeoViewer/NonImpact_Parcels/MapServer/6/query", "outcome": "Anonymous GET succeeded with three polygons and exceededTransferLimit=true; bounded response retained only in ignored scratch evidence."}
+  ],
+  "scopeLimits": [
+    "A point hit proves only that the service contains a parcel intersecting that point, not citywide completeness.",
+    "The bounded request was record-limited and is not evidence that the envelope contains only three parcels.",
+    "County-service coverage and municipal Memphis coverage were not independently boundary-validated in this attempt.",
+    "The Shelby County public endpoint's 403 and assessor viewer layer errors are route-specific failures, not absence evidence."
+  ],
+  "safeFieldAllowlist": ["PARCELID", "OBJECTID", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "deed", "tax", "account", "assessment details"],
+  "retainedGeoJSON": {"file": "city-6980-memphis-sample.geojson", "featureCount": 1, "propertiesPolicy": "exactly one canonical native identity only: id=PARCELID"},
+  "uncertainty": [
+    "The public map viewer itself was not used interactively and no login, credential, private token, CAPTCHA, or Cloudflare bypass was attempted.",
+    "No adapter was implemented or independently serially reviewed; runtimeReadiness remains held."
+  ]
+}

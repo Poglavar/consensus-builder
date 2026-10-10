@@ -1,0 +1,15 @@
+{
+  "taskId": "city:11868",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-11868-jinshan.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/jinshan-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T17:23:50.853835Z",
+  "reason": "Official Jinshan district map-query service and custodian independently corroborated; no anonymous native parcel ID or full polygon response, adapter paging/cells/GEOS/binding, or headed Details proof.",
+  "registryCustody": true,
+  "publicGeometryVerified": false,
+  "runtimeQualified": false
+}

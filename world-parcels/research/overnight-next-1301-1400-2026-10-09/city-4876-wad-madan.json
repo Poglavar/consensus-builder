@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:4876",
+  "cityCode": 4876,
+  "queueRank": 1400,
+  "wupCityCode": 4876,
+  "name": "Wad Madanī",
+  "country": "Sudan",
+  "countryCode": "SD",
+  "centerLatLon": [14.3818920091121, 33.5314635606539],
+  "point": [14.3818920091121, 33.5314635606539],
+  "population2025": 403988,
+  "population2025k": 403.988,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Wad Madani Sudan official cadastral map land registry parcel GIS",
+        "result": "First-party Al Jazirah state ministry land-authority and planning evidence found. The national Sudan Spatial Portal is documented as a WMS/WFS map portal, but its public root timed out during direct inspection; no parcel layer, public parcel API, schema, CRS response, or safe parcel identity was verified.",
+        "actualResultUrls": [
+          "https://www.ogs.gov.sd/",
+          "https://www.ogs.gov.sd/%D9%85%D8%B5%D9%84%D8%AD%D8%A9-%D8%A7%D9%84%D8%A3%D8%B1%D8%A7%D8%B6%D9%8A/",
+          "https://www.ogs.gov.sd/%D8%B9%D9%86-%D8%A7%D9%84%D9%88%D8%B2%D8%A7%D8%B1%D8%A9-2/",
+          "https://www.nic.gov.sd/public/projectDetails/3",
+          "https://www.geoportal.gov.sd/"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "السودان ود مدني خريطة كادسترية سجل الأراضي GIS",
+        "result": "وزارة التخطيط العمراني والإسكان والمرافق العامة بولاية الجزيرة confirms a Land Authority, Planning Directorate, and Survey Directorate responsible for land allocation, land contracts, detailed plans, and survey-approved sketches. Wad Madani-specific official reporting was found, but no public cadastral viewer or parcel geometry endpoint was exposed.",
+        "actualResultUrls": [
+          "https://www.ogs.gov.sd/%D9%85%D8%B5%D9%84%D8%AD%D8%A9-%D8%A7%D9%84%D8%A3%D8%B1%D8%A7%D8%B6%D9%8A/",
+          "https://www.ogs.gov.sd/%D8%B9%D9%86-%D8%A7%D9%84%D9%88%D8%B2%D8%A7%D8%B1%D8%A9-2/",
+          "https://www.ogs.gov.sd/%D8%A7%D9%84%D8%AA%D8%AE%D8%B7%D9%8A%D8%B7/",
+          "https://www.ogs.gov.sd/2026/08/17/%D9%88%D8%AF%D9%85%D8%AF%D9%86%D9%8A%E2%80%A6%D8%A7%D9%84%D8%AA%D8%AE%D8%B7%D9%8A%D8%B7-%D8%A7%D9%84%D8%B3%D9%84%D9%8A%D9%85-%D8%A7%D8%B3%D8%A7%D8%B3-%D8%A7%D9%84%D8%AA%D9%86%D9%85%D9%8A%D8%A9-%D8%A7/"
+        ]
+      }
+    ]
+  },
+  "verifiedSample": false,
+  "sourceIds": [],
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Wad Madani Sudan official cadastral map land registry parcel GIS",
+        "result": "Official state land-authority custody found; no public parcel geometry service verified.",
+        "actualResultUrls": ["https://www.ogs.gov.sd/", "https://www.nic.gov.sd/public/projectDetails/3", "https://www.geoportal.gov.sd/"]
+      },
+      {
+        "language": "Arabic",
+        "query": "السودان ود مدني خريطة كادسترية سجل الأراضي GIS",
+        "result": "Official Al Jazirah ministry land and planning functions found; no public cadastral viewer/API or parcel geometry verified.",
+        "actualResultUrls": ["https://www.ogs.gov.sd/%D9%85%D8%B5%D9%84%D8%AD%D8%A9-%D8%A7%D9%84%D8%A3%D8%B1%D8%A7%D8%B6%D9%8A/", "https://www.ogs.gov.sd/%D8%A7%D9%84%D8%AA%D8%AE%D8%B7%D9%8A%D8%B7/"]
+      }
+    ],
+    "officialEvidence": [
+      {
+        "url": "https://www.ogs.gov.sd/%D9%85%D8%B5%D9%84%D8%AD%D8%A9-%D8%A7%D9%84%D8%A3%D8%B1%D8%A7%D8%B6%D9%8A/",
+        "observation": "Official Al Jazirah state ministry Land Authority page says it implements housing plans and distributes residential plots across localities. It establishes local/state land-administration custody, not open parcel geometry access.",
+        "coverage": "Al Jazirah State; land-authority functions"
+      },
+      {
+        "url": "https://www.ogs.gov.sd/%D8%B9%D9%86-%D8%A7%D9%84%D9%88%D8%B2%D8%A7%D8%B1%D8%A9-2/",
+        "observation": "Official ministry page identifies land, planning, and survey directorates. Land handles housing allocation and lease contracts; survey implements urban plans on the ground.",
+        "coverage": "Al Jazirah State"
+      },
+      {
+        "url": "https://www.ogs.gov.sd/%D8%A7%D9%84%D8%AA%D8%AE%D8%B7%D9%8A%D8%B7/",
+        "observation": "Official planning page describes detailed land-use plans, housing schemes, and survey-approved sketches submitted with planning applications. This is administrative/planning evidence, not a public parcel dataset.",
+        "coverage": "Al Jazirah State and its localities"
+      },
+      {
+        "url": "https://www.nic.gov.sd/public/projectDetails/3",
+        "observation": "Sudan National Information Centre describes the Sudan Spatial Portal as a national map browser offering OGC WMS and WFS services. The linked portal root was separately attempted but timed out; no layer list or parcel schema was obtained.",
+        "coverage": "Sudan national spatial portal"
+      }
+    ],
+    "observedServices": [
+      {
+        "url": "https://www.geoportal.gov.sd/",
+        "method": "GET",
+        "httpStatus": 0,
+        "contentType": null,
+        "observation": "Direct anonymous request timed out after 30 seconds from the research environment. Because the root did not load, current JavaScript/configuration, advertised service URLs, schema, CRS, and bounded parcel response could not be inspected. No TLS exception, credentials, or bypass was used."
+      },
+      {
+        "url": "https://www.ogs.gov.sd/%D9%85%D8%B5%D9%84%D8%AD%D8%A9-%D8%A7%D9%84%D8%A3%D8%B1%D8%A7%D8%B6%D9%8A/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Anonymous official ministry page loaded. It exposed prose and images only; no public map, parcel download, WMS/WFS URL, parcel schema, or safe parcel identity was present. The page includes a login form; no login was attempted."
+      },
+      {
+        "url": "https://www.ogs.gov.sd/%D8%A7%D9%84%D8%AA%D8%AE%D8%B7%D9%8A%D8%B7/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Anonymous official planning page loaded. It describes detailed plans and survey-approved sketches but exposes no parcel geometry or public data endpoint."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Al Jazirah State Ministry of Urban Planning, Housing and Public Utilities has land, planning, and survey functions covering Wad Madani and other state localities; the national spatial portal is intended as Sudan-wide infrastructure.",
+    "verifiedOpenScope": "Official state land-administration custody and national portal documentation were verified. No open parcel geometry/identity response was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "registryExistenceScope": "State/local land-administration custody is evidenced; a citywide digital parcel registry and public accessibility are not established."
+  },
+  "qualityAssessment": {
+    "geometryQuality": "no parcel geometry sampled",
+    "identityReadiness": "not ready; no safe native parcel identity response identified",
+    "attributesRequested": ["none beyond public service-page prose and portal availability"],
+    "unsafeFieldsRequested": false
+  },
+  "blocker": "The official Al Jazirah ministry confirms land authority, planning, and survey responsibilities, but the national portal timed out and no public parcel endpoint was exposed by the accessible official pages. No parcel polygon or native parcel identity was obtained.",
+  "remainingUncertainty": "The state or local land authority may maintain offline, authenticated, request-only, or currently unavailable cadastral records. Portal timeout and absence of a public endpoint do not establish citywide absence.",
+  "nextStep": "If a later attempt is authorized, revisit only the official Sudan Spatial Portal or official Al Jazirah land-authority viewer/API when reachable, inspect its current configuration, and request geometry plus a stable parcel identity without owner/address fields.",
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "registry_custody_found_no_verified_open_parcel_endpoint"
+}

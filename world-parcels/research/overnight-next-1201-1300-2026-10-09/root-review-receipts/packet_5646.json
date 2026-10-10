@@ -1,0 +1,15 @@
+{
+  "taskId": "packet:5646",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-5646-west-valley-city.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/west-valley-city-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/west-valley-city-parcel-samples.geojson",
+    "backend/parcels/source-catalog.json"
+  ],
+  "checkedAt": "2026-10-09T10:49:07.387457Z",
+  "reason": "Original first-party ArcGIS GeoJSON response independently returned HTTP 200, 423 bytes and the packet SHA-256 with one safe PARCEL_ID polygon. Existing Utah adapter is bound to Salt Lake City, not West Valley City. Fresh adapter ID reads, forced paging, 13 cells, metric GEOS checks, proposal binding and headed Details verification remain unproven."
+}

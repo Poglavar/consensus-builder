@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:1204",
+  "cityCode": 1204,
+  "wupCityCode": 1204,
+  "name": "Borama",
+  "country": "Somalia",
+  "countryCode": "SO",
+  "iso2": "SO",
+  "iso3": "SOM",
+  "rank": 1571,
+  "queueRank": 1571,
+  "point": [9.93749024650022, 43.1846231646884],
+  "centerLatLon": [9.93749024650022, 43.1846231646884],
+  "pointBasis": "Exact WUP2025 settlement point; not shifted and not a municipal boundary or parcel-coverage claim.",
+  "population2025": 363753,
+  "population2025k": 363.753,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Low",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Borama Local Government is evidenced as the local land-registration custodian by its public service page and indexed online land-registration procedure. This establishes local registration/procedure custody, not anonymous parcel geometry or citywide digital coverage.",
+  "registryEvidenceUrls": [
+    "https://boramalocalgov.com/",
+    "https://www.borama.govsomaliland.online/article/online-land-registration"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "No safe anonymous first-party response containing a stable native parcel identifier and complete polygon was verified. The local-government homepage returned a Cloudflare challenge, and the indexed online land-registration procedure requires applicant login/account workflow. No login, credential, token, CAPTCHA bypass, or unsafe ownership/address/tax field request was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Borama Local Government land-registration and property/land service custody.",
+    "verifiedOpenScope": "No anonymous complete parcel polygon response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Borama Somalia cadastral map parcel official land registry",
+        "result": "Search found the Borama Local Government homepage, its land-registration/property-service references, and an indexed Borama local-government online land-registration procedure. No anonymous parcel feature response or public geometry API was verified.",
+        "actualResultUrls": [
+          "https://boramalocalgov.com/",
+          "https://www.borama.govsomaliland.online/article/online-land-registration"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "Somali",
+        "query": "Borama Somaliland khariidadda dhulka diiwaangelinta dhulka kaadastralka rasmiga ah",
+        "result": "Local-language discovery found Somali-language land-registration terminology and the Borama local-government service context, but no anonymous public parcel ID-plus-geometry endpoint. A Somaliland government map/document result was general administrative/topographic material, not a parcel service.",
+        "actualResultUrls": [
+          "https://www.borama.govsomaliland.online/article/online-land-registration",
+          "https://www.govsomaliland.org/uploads/files/2023/09/2023-09-06-11-22-45-9256-1693999365.pdf"
+        ],
+        "executionMethod": "Separate Somali-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "first_attempt",
+    "attemptEvidence": []
+  },
+  "remainingUncertainty": "The exact WUP point was not shifted. The indexed procedure may be backed by a private or authenticated land database, and the homepage may expose additional map functionality after its challenge; neither was accessed. A Cloudflare challenge, login wall, DNS failure on the indexed hostname during direct curl, or absence of an exact-point response is not evidence of citywide parcel absence.",
+  "nextStep": "Serial reviewer should independently validate whether a first-party anonymous native parcel endpoint exists before any adapter qualification; keep runtime held."
+}

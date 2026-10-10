@@ -1,0 +1,11 @@
+{
+  "taskId": "city:4537",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-4537-alicante.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/alicante-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T16:38:29Z",
+  "reason": "WUP archive and queue identity match; English and Spanish searches are recorded. First-party cached Atom feed lists Alicante, but the bounded WFS returned an HTML error and the purported parcel ZIP is an HTML 404 page. No native-ID polygon read or independent adapter qualification exists; custody is evidenced, parcel coverage and admission remain unresolved."
+}

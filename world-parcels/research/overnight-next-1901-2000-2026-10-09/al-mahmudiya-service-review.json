@@ -1,0 +1,41 @@
+{
+  "cityRecord": "city-1291-al-mahmudiya.json",
+  "cityCode": 1291,
+  "queueRank": 1946,
+  "city": "Al-Mahmudiya",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "Egyptian General Survey Authority (ESA), with Beheira survey-directorate/local-unit procedure context",
+  "serviceUrl": "https://www.esa.gov.eg/",
+  "scope": "Official Egyptian cadastral/property-map custody and digital-map production; Beheira is named in ESA state-property inventory coverage. No open Al-Mahmudiya parcel geometry endpoint was verified.",
+  "schemaAndCrs": "Unavailable: no anonymous parcel service, layer schema, geometry response, or CRS metadata was exposed by inspected public routes.",
+  "nativeIdentity": "Unavailable; no parcel feature response was obtained. No synthetic identity was created.",
+  "fieldMapping": {},
+  "attemptedRoutes": [
+    {"method": "GET", "url": "https://www.esa.gov.eg/main.aspx", "outcome": "official homepage reachable; cadastral/property-map role and services documented"},
+    {"method": "GET", "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx", "outcome": "official digital-map procedure reachable; GIS/CAD/PDF/JPG products described; no open parcel API"},
+    {"method": "GET", "url": "https://www.esa.gov.eg/amlak.aspx", "outcome": "official state-property inventory page reachable; Beheira included in project coverage; no parcel API"},
+    {"method": "GET", "url": "https://www.esa.gov.eg/testmap.aspx", "outcome": "official directorate page reachable; static image map only; no vector parcel service"},
+    {"method": "GET", "url": "https://www.esa.gov.eg/egypt_maps.aspx", "outcome": "official static map index reachable; no cadastral feature service"},
+    {"method": "GET", "url": "https://www.esa.gov.eg/alexDigitalMaps.aspx", "outcome": "official project page reachable; unrelated Alexandria project and no Al-Mahmudiya parcel service"},
+    {"method": "GET", "url": "https://www.esa.gov.eg/robots.txt", "outcome": "bounded public route check; no usable parcel service discovered"}
+  ],
+  "requestOutcome": "All recorded requests used ordinary anonymous HTTPS GET with certificate verification. Public pages succeeded where noted, but no bounded anonymous ID+geometry response was available. No login, CAPTCHA/Cloudflare bypass, credentials, private tokens, unsafe owner/address/contact/titleholder/tax/account fields, or global TLS exception was used.",
+  "retainedSample": null,
+  "retainedProperties": null,
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeDataPolicy": "No owner, address, contact, titleholder, tax/account, legal-description, application, or other personal/property-record fields were requested or retained.",
+  "officialCustodyEvidence": "ESA official pages describe cadastral/property maps and land records, digital GIS map products, and a state-property inventory program covering Beheira. An official 2026 notice also places survey records/maps for a Mahmudiya-area project at the Mahmudiya local unit and Beheira Survey Directorate; this is procedure/custody evidence, not open parcel-vector access.",
+  "limits": [
+    "National ESA custody and Beheira coverage do not equal open parcel-service integration.",
+    "No parcel geometry, native ID, schema, CRS, or bounded anonymous feature response was obtained.",
+    "No exact-point query or map-extent test was used to infer citywide absence.",
+    "No GeoJSON sample is retained because no safe native identity and full parcel polygon were verified.",
+    "RuntimeReadiness remains held pending independent serial qualification."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "A public, authenticated, staff-mediated, or otherwise unlinked ESA/Beheira cadastral service may exist, but it was not safely discoverable as an anonymous public endpoint during this attempt."
+}

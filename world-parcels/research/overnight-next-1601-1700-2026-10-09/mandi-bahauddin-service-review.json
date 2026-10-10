@@ -1,0 +1,33 @@
+{
+  "cityRecord": "city-7697-mandi-bahauddin.json",
+  "cityCode": 7697,
+  "queueRank": 1695,
+  "city": "Mandi Bahauddin",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Mandi Bahauddin district revenue administration, Punjab Land Records Authority, and PULSE cadastral-map routes establish a real local/provincial cadastral custodian and public map procedure. The current ArcGIS parcel service returned HTTP 499 Token Required and the PULSE parcel hierarchy route returned HTTP 401 Bearer authentication, so no parcel schema, CRS, safe native identity, or polygon was verified. No GeoJSON sample is retained and runtime remains held.",
+  "queryOutcomes": "Separate English and Urdu discovery queries and actual first-party URLs are recorded in city-7697-mandi-bahauddin.json.",
+  "requestOutcomes": "TLS verification remained enabled. PULSE viewer and municipal/district pages loaded; current ArcGIS service metadata and bounded parcel query were token-gated, while the D2D hierarchy endpoint required Bearer authentication. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe lookup, or TLS exception was used.",
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no usable parcel geometry response",
+  "geometryQuality": "not evaluated; no parcel geometry retained",
+  "retainedSample": null,
+  "scopeLimits": [
+    "Exact WUP point [32.5807897110688, 73.4859193391159] was preserved in latitude/longitude order; it was not shifted and no exact-point presence/absence conclusion was drawn.",
+    "PULSE listing Mandi Bahauddin establishes service scope, not complete city polygon coverage or exact-point parcel coverage.",
+    "Token-required, authentication-required, or unusable responses are not evidence of citywide parcel absence.",
+    "No source-specific raw attribute set, owner/address/contact information, or synthetic parcel identity was retained.",
+    "No GeoJSON was retained because no safe native ID plus full polygon response was verified.",
+    "This packet is not source integration/admission; serial reviewer qualification remains pending."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current parcel layer schema, CRS, stable native identity, anonymous geometry access, and citywide coverage remain unresolved. Future work should continue through public first-party routes only and retain at most three full polygons with exactly one canonical native identity per feature if a safe geometry response is independently verified."
+}

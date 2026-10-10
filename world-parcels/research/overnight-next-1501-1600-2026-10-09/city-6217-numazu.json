@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "wupCityCode": 6217,
+  "cityId": "wup2025:6217",
+  "name": "Numazu",
+  "country": "Japan",
+  "countryCode": "JP",
+  "iso3": "JPN",
+  "centerLatLon": [35.1153877559585, 138.891184277782],
+  "point": [35.1153877559585, 138.891184277782],
+  "queueRank": 1521,
+  "population2025": 374507,
+  "population2025k": 374.507,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Numazu City official cadastral parcel map GIS land parcel map Japan",
+        "result": "First-party discovery found Numazu City's official development-guidance page identifying a municipal cadastral-survey section, and the city's official cadastral-map-copy request/FAQ pages. The city also publishes urban-planning maps, but no anonymous municipal cadastral parcel API was exposed. The G-Space CKAN catalog provides an anonymous municipality extract for Numazu (code 22203).",
+        "actualResultUrls": [
+          "https://city.numazu.shizuoka.jp/shisei/office/ichiran/toshikei/machisidou.htm",
+          "https://city.numazu.shizuoka.jp/faq/answer/syoumei/fukushi_01_18.htm",
+          "https://city.numazu.shizuoka.jp/shisei/keikaku/various/toshikei/naiyou/soukatsu.htm",
+          "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-22203"
+        ]
+      },
+      {
+        "language": "Japanese",
+        "query": "沼津市 地籍図 公図 地番図 GIS 公式",
+        "result": "沼津市公式ページで、地籍調査係が国土調査法に基づき一筆ごとの所有者・地番・地目、境界位置・面積を調査すること、また地籍図写しを窓口申請できることを確認した。公開型都市計画図は確認したが、匿名の地籍図ポリゴンAPIは確認できなかった。G空間情報センターには沼津市コード22203の登記所備付地図GeoJSONが掲載されている。",
+        "actualResultUrls": [
+          "https://city.numazu.shizuoka.jp/shisei/office/ichiran/toshikei/machisidou.htm",
+          "https://city.numazu.shizuoka.jp/faq/answer/syoumei/fukushi_01_18.htm",
+          "https://city.numazu.shizuoka.jp/kurashi/todokede/shinsei/item/286.pdf",
+          "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-22203"
+        ]
+      }
+    ]
+  },
+  "sourceAssessment": {
+    "officialCityService": "Numazu City official cadastral-survey section and cadastral-map-copy application/FAQ; the city's public online urban-planning map is not a verified cadastral parcel API.",
+    "localRegistryProcedure": "Numazu City states that its cadastral-survey section performs parcel-level cadastral work and that anyone may request a copy of a cadastral map by place/lot at the city counter for a fee. This evidences local custody/procedure, not an anonymous citywide runtime service.",
+    "openGeometrySource": "G-Space CKAN package aigid-moj-22203, an anonymous Ministry of Justice registry-office map extract for Numazu municipality code 22203. The 2026 resource URL returned a GeoJSON FeatureCollection with 31,430 Polygon features and native ID field ID; its FeatureCollection name says 2025.",
+    "nativeIdentity": "ID",
+    "sourceFields": ["ID", "市区町村C", "大字コード", "丁目コード", "小字コード", "予備コード", "市区町村名", "大字名", "丁目名", "地番", "精度区分", "座標値種別", "地図名", "座標系", "測地系判別"],
+    "fieldMapping": {"ID": "stable source feature identity; safe identity candidate"},
+    "compositeKeyProvenance": "The source exposes municipality/area/lot fields, but no composite key was used because stable source ID field ID is present. No source attributes are retained in the packet.",
+    "crs": "CRS84 / GeoJSON coordinates in longitude, latitude; no retained geometry sample.",
+    "sampleFile": null,
+    "sampleScope": "No polygon retained: a bounded exact-point intersection check against the downloaded municipality extract returned zero features. This is not evidence of citywide absence or coverage failure."
+  },
+  "verifiedSample": false,
+  "targetGeometryEvidence": "bounded_exact_wup_point_query_returned_zero_features; no retained sample",
+  "coverageAssessment": {
+    "claimedScope": "Published Numazu municipality registry-map extract plus official city cadastral procedure and public map pages.",
+    "verifiedOpenScope": "The catalog metadata and anonymous GeoJSON download were verified; schema, CRS, feature count and safe ID field were inspected. A bounded exact-point test at the unchanged WUP point returned zero features. Citywide completeness and public-coordinate coverage remain unvalidated.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "requestsAndEndpointChecks": [
+    {"url": "https://city.numazu.shizuoka.jp/shisei/office/ichiran/toshikei/machisidou.htm", "method": "GET; first-party; TLS verification enabled", "status": "HTTP page found", "summary": "Official page identifies the Numazu City cadastral-survey section and describes its parcel-level survey remit; no parcel API exposed."},
+    {"url": "https://city.numazu.shizuoka.jp/faq/answer/syoumei/fukushi_01_18.htm", "method": "GET; first-party; TLS verification enabled", "status": "HTTP page found", "summary": "Official FAQ says anyone may request a cadastral-map copy by place/lot at the city counter and gives the fee; no public geometry endpoint."},
+    {"url": "https://city.numazu.shizuoka.jp/shisei/keikaku/various/toshikei/naiyou/soukatsu.htm", "method": "GET; first-party; TLS verification enabled", "status": "HTTP page found", "summary": "Official online urban-planning summary map; explicitly not a legally certifying document and not verified as cadastral geometry."},
+    {"url": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-22203", "method": "GET; anonymous; TLS verification enabled", "status": "HTTP 200 JSON", "summary": "Catalog metadata returned Numazu code 22203 GeoJSON/SHP resources for 2022-2026 and source field metadata."},
+    {"url": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/22/aigid-moj-22203/22203_%E6%B2%BC%E6%B4%A5%E5%B8%82_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%998%E7%B3%BB_%E7%AD%86R_2026.geojson", "method": "GET; anonymous; TLS verification enabled", "status": "HTTP 200 GeoJSON", "summary": "Fetched to ignored scratch; FeatureCollection name says 2025, contains 31,430 Polygon features, uses CRS84 and native ID field ID. A bounded exact-point intersection check at [35.1153877559585, 138.891184277782] returned zero features; no geometry retained."}
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "Official local custody/procedure and a public source extract were evidenced, but no public city viewer parcel API was qualified, citywide completeness was not verified, and the exact-point bounded test returned zero features. Runtime integration remains held.",
+  "remainingUncertainty": "The city public map's current JavaScript/configuration was not found to expose cadastral geometry; the source resource label 2026 conflicts with its FeatureCollection name 2025; and zero exact-point intersection cannot establish absence or completeness. No owner, address, lot, title, tax, or personal fields were requested or retained.",
+  "nextStep": "If runtime qualification is required, inspect any current official Numazu map viewer configuration and independently validate adapter behavior and coverage; retain only stable public IDs and geometry.",
+  "identityPolicy": "No GeoJSON sample retained. If later sampled, retain only the stable native ID field ID as properties.id with geometry.",
+  "cohort": "overnight-next-1501-1600",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

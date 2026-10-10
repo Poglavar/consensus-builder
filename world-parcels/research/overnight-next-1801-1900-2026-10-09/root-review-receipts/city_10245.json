@@ -1,0 +1,21 @@
+{
+  "taskId": "city:10245",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-10245-sivakasi.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/sivakasi-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T18:02:36Z",
+  "registryFound": true,
+  "reason": "Official Sivakasi-tehsil DILRMP digitization and Tamil Nadu land-record service support local record custody. Official requests timed out or failed TLS verification; no native parcel ID, full polygon, or public feature response was obtained. Search claims include English and Tamil queries with result URLs; no live adapter qualification.",
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

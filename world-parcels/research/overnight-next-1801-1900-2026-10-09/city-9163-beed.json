@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 9163,
+  "queueRank": 1856,
+  "cityId": "queue:1856",
+  "name": "Beed",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [18.9912362531228, 75.7545808482271],
+  "centerLatLon": [18.9912362531228, 75.7545808482271],
+  "population2025": 310278,
+  "population2025k": 310.278,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Beed Maharashtra official GIS map cadastral parcel property map",
+        "result": "Official results identified the District Beed land-records page, Maharashtra MahaBhumi/BhuNaksha services, the Beed district land-records custodian page, and national DILRMP map-digitization status for Beed. No indexed public parcel ID-plus-geometry response was exposed.",
+        "actualResultUrls": [
+          "https://beed.gov.in/en/service/land-records/",
+          "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/523"
+        ]
+      },
+      {
+        "language": "native/local (Marathi)",
+        "query": "बीड महाराष्ट्र अधिकृत GIS नकाशा मालमत्ता भूखंड कॅडस्ट्रल",
+        "result": "Official Marathi results identified the Beed District Superintendent of Land Records page, its subordinate Beed land-records office, duties to preserve cadastral/village/city-survey maps and provide copies, and Maharashtra e-map/BhuNaksha services. No anonymous parcel ID-plus-geometry response was exposed.",
+        "actualResultUrls": [
+          "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=25",
+          "https://bhumiabhilekh.maharashtra.gov.in/Services",
+          "https://beed.gov.in/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A5%80-%E0%A4%85%E0%A4%AD%E0%A4%BF%E0%A4%B2%E0%A5%87%E0%A4%96/",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Separate English and Marathi first-party discovery, followed by TLS-verified bounded access to the official BhuNaksha viewer. No credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe-field request, or TLS disablement."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=25",
+      "observation": "Official Beed District Superintendent of Land Records page names the district custodian and subordinate Beed office, and describes preservation/provision of village and city-survey maps, property cards and land-record copies. This establishes local registry/cadastral custody, not an open parcel API."
+    },
+    {
+      "url": "https://beed.gov.in/en/service/land-records/",
+      "observation": "Official District Beed land-records page links eFerfar and digitally signed 7/12 services and identifies the district administration as content owner. It does not expose parcel geometry."
+    },
+    {
+      "url": "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+      "observation": "Official Maharashtra land-records portal lists MahaBhumi services including Mahabhunakasha (maps with land records) and MH DIGI Maps."
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp",
+      "observation": "Official Maharashtra BhuNaksha viewer route was identified as the parcel-map candidate; direct anonymous retrieval timed out before HTML/JavaScript/configuration or a public feature request could be inspected."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/523",
+      "observation": "Official Government of India DILRMP page reports map-digitization/georeferencing status headings for Beed district. It is status metadata, not a parcel feature service."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "TLS-verified bounded request timed out after 25 seconds. No inference about citywide cadastral absence was made; no response body, schema, CRS, native ID or geometry was retained."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Beed city/local land-records custody under the District Superintendent of Land Records, Maharashtra state MahaBhumi/BhuNaksha services, and national DILRMP status metadata.",
+    "verifiedOpenScope": "Local custodial and procedure evidence plus identification of the official parcel-map viewer; no open parcel geometry response was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "The current BhuNaksha viewer/API route, access controls, layer schema, CRS, stable native parcel identity, update currency, legal access conditions and citywide coverage remain unresolved. The exact WUP point was preserved in latitude/longitude order and never shifted; no exact-point hit or miss was inferred. No owner, address, titleholder, contact, tax/account, personal or other unsafe fields were requested or retained.",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "nextStep": "A later attempt may inspect the official BhuNaksha viewer through an available public route and issue only a bounded anonymous safe-ID-plus-geometry request if the service reveals one."
+}

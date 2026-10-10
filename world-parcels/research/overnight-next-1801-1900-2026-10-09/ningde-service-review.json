@@ -1,0 +1,51 @@
+{
+  "cityRecord": "city-12018-ningde.json",
+  "cityCode": 12018,
+  "queueRank": 1825,
+  "city": "Ningde",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Fujian sources evidence Ningde natural-resources and real-estate registration data custody and a provincial public geospatial portal, but bounded anonymous requests produced no safe parcel ID plus geometry response. No sample GeoJSON is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Simplified Chinese discovery queries, actual outcomes, and first-party URLs are recorded in city-12018-ningde.json.",
+  "requestOutcomes": "The Fujian Natural Resources homepage returned 200. The Ningde report, Fujian Tianditu portal, and Ningde government homepage failed or timed out under bounded TLS-verified requests. No viewer JavaScript/configuration, public parcel service URL, schema, CRS, safe native identity, or geometry response was obtained.",
+  "scopeLimits": [
+    "Official local custody evidence is not proof of public vector parcel access.",
+    "The exact WUP point [26.660006736577, 119.530515230441] was preserved; no exact-point hit/miss inference was made.",
+    "No Ningde city boundary or complete city coverage was established for an open geometry service.",
+    "Timeouts, DNS failure, map extent miss, login wall, or unusable UI are not evidence of citywide cadastral absence.",
+    "No parcel polygon, stable native parcel identity, source schema, or CRS was retrieved or retained.",
+    "No owner, address, contact, titleholder, tax/account, personal, or other unsafe fields were requested.",
+    "Packet completion is research evidence only; it is not source integration or adapter admission."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only", "full parcel polygon geometry", "geometry CRS", "public source-layer metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public parcel geometry service was reached; the exact WUP point was preserved and no hit/miss inference was made.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Ningde municipal natural-resources and real-estate registration administration under Fujian, China.",
+    "verifiedOpenScope": "Institutional custody and provincial geospatial portal only; anonymous parcel geometry and citywide open coverage not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "A restricted, account-gated, formal-request, or not-yet-published cadastral service may exist. Public availability, current viewer/API route, parcel schema, CRS, native identity, coverage, and safe anonymous runtime access remain unresolved.",
+  "retainedSample": null
+}

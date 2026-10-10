@@ -1,0 +1,15 @@
+{
+  "taskId": "packet:1152",
+  "decision": "held",
+  "reason": "Nantes rank 1227, France, unchanged point and 453523 persons match the immutable roster. English and French executed-search records are present. Cached first-party DGFiP commune 44109 WMS capabilities advertise CP.CadastralParcel; public cadastral-map custody supports registryFound=true. No full vector parcel polygon/native ID was returned. IGN API Carto timeout remains unresolved, not parcel absence. No fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding or headed Details verification.",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-1152-nantes.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/nantes-service-review.json",
+    "tmp/valhalla-parcel-research/nantes/inspire-44109-capabilities.xml",
+    "tmp/valhalla-parcel-research/nantes/arcgis-service.json"
+  ],
+  "checkedAt": "2026-10-09T13:03:22.983203Z"
+}

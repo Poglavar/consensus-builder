@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7405-madiun.json",
+  "purpose": "Independent first-party registry/map discovery and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "exactPointMissNotInterpretedAsAbsence": true
+  },
+  "assessment": "Kota Madiun's official ATR/BPN land-office site evidences local cadastral measurement and mapping custody. ATR/BPN BHUMI publicly documents bidang tanah layers and parcel lookup concepts, but the reviewed public landing/documentation route and bounded anonymous requests did not produce a safe native parcel identifier plus polygon. No sample GeoJSON was retained; runtime remains held.",
+  "registryAssessment": "The local registry/cadastre custodian is Kantor Pertanahan Kota Madiun under ATR/BPN, evidenced by its official subdomain and a 2025 report naming its cadastral measurement and mapping section. The Madiun city SmartMap material is municipal PBB/P2 tax-map context, not evidence of an open cadastral vector service.",
+  "officialPrimarySources": [
+    {
+      "url": "https://kot-madiun.atrbpn.go.id/berita/rapat-fasilitasi-penyelesaian-perbedaan-luas-tanah-di-sppt-pbb-letter-c",
+      "operator": "Kantor Pertanahan Kota Madiun / ATR-BPN",
+      "observation": "Official 2025 report identifies the Kantor Pertanahan Kota Madiun and its measurement and cadastral-mapping section in a land-area discrepancy facilitation meeting. It exposes no safe parcel geometry endpoint."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+      "operator": "Kementerian ATR/BPN",
+      "observation": "Official BHUMI help page states that the interactive map is integrated with ATR/BPN's ATLAS geospatial platform."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+      "operator": "Kementerian ATR/BPN",
+      "observation": "Official help material documents bidang tanah map layers and searches by NIB, HAK or NIBEL; it does not publish a stable anonymous feature endpoint or promise unrestricted parcel downloads."
+    },
+    {
+      "url": "https://www.madiunkota.go.id/berita/2026/06/03/pimpin-audiensi-dengan-bpn-plt-wali-kota-perkuat-sinergi-untuk-penataan-aset-daerah",
+      "operator": "Pemerintah Kota Madiun",
+      "observation": "City government report describes coordination with BPN on land-data synchronization and digital certificates; it is supporting custody context, not parcel geometry evidence."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Madiun Indonesia official cadastral parcel map GIS land registry BPN ATR",
+      "result": "Found official BHUMI documentation and the official local land-office site; no verified open Madiun parcel-vector endpoint.",
+      "actualResultUrls": ["https://bhumi.atrbpn.go.id/bantuan/peta", "https://bhumi.atrbpn.go.id/bantuan/unsur_peta", "https://kot-madiun.atrbpn.go.id/berita/rapat-fasilitasi-penyelesaian-perbedaan-luas-tanah-di-sppt-pbb-letter-c"]
+    },
+    {
+      "language": "Indonesian",
+      "query": "Madiun peta bidang tanah kadaster resmi ATR BPN Kantor Pertanahan Kota Madiun",
+      "result": "Confirmed local cadastral custody and BHUMI's public parcel-map documentation; the municipal SmartMap material concerns PBB/P2 and did not yield an open cadastral geometry service.",
+      "actualResultUrls": ["https://bhumi.atrbpn.go.id/bantuan/unsur_peta", "https://kot-madiun.atrbpn.go.id/berita/rapat-fasilitasi-penyelesaian-perbedaan-luas-tanah-di-sppt-pbb-letter-c", "https://smartmap.madiunkota.go.id/"]
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": "Official BHUMI landing page and help documentation",
+      "result": "BHUMI landing page returned HTTP 200. Official help pages documented public map, parcel-layer and safe conceptual search functions. No anonymous feature URL, schema or CRS was exposed in the reviewed documentation.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    },
+    {
+      "attempt": "Current BHUMI JavaScript/configuration inspection",
+      "result": "Landing HTML and public script references were retrieved. Bounded retrieval of the referenced application bundles did not complete before timeout; no endpoint was inferred or fabricated from this incomplete route.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    },
+    {
+      "attempt": "Official local registry and municipal source inspection",
+      "result": "Kantor Pertanahan Kota Madiun official report confirmed cadastral measurement/mapping custody. Municipal SmartMap documentation was reviewed as tax-map context only; no safe cadastral geometry response was obtained.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://bhumi.atrbpn.go.id/",
+      "method": "GET",
+      "outcome": "HTTP 200; landing HTML retained in ignored scratch cache only; no parcel feature response.",
+      "safeRequest": true
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+      "method": "GET",
+      "outcome": "Official help page retrieved; documents ATLAS integration but not an anonymous parcel API.",
+      "safeRequest": true
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+      "method": "GET",
+      "outcome": "Official help page retrieved; documents bidang tanah layers and NIB/HAK/NIBEL search concepts, with no retained property data.",
+      "safeRequest": true
+    },
+    {
+      "url": "https://kot-madiun.atrbpn.go.id/berita/rapat-fasilitasi-penyelesaian-perbedaan-luas-tanah-di-sppt-pbb-letter-c",
+      "method": "GET",
+      "outcome": "Official local-office report retrieved; custody evidence only, no geometry endpoint.",
+      "safeRequest": true
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": false,
+    "sampleFile": null,
+    "details": "No full parcel polygon and no verified stable native parcel identity were obtained. No exact-point hit or miss was used to infer coverage."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Kota Madiun local ATR/BPN custody plus national BHUMI public map documentation.",
+    "verifiedOpenScope": "Custody and viewer documentation only; parcel schema, CRS, city extent and anonymous geometry access remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier if exposed", "geometry", "CRS", "source layer/service metadata"],
+  "remainingUncertainty": "BHUMI may expose Madiun parcel geometry through an interactive or application API route not discoverable from the bounded anonymous requests made here; authentication or unsafe fields were not pursued.",
+  "runtimeDecision": "held_not_enabled_no_verified_public_geometry"
+}

@@ -1,0 +1,119 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4669-pabna.json",
+  "purpose": "Document first-party Bangladesh cadastral/map discovery and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "exactPointShifted": false
+  },
+  "assessment": "The official DLRS settlement viewer and current MapSearch.js were reviewed. Anonymous endpoint discovery and bounded requests succeeded for division metadata, Pabna district metadata, BDS survey metadata, Pabna Sadar administrative/mouza metadata, and one sheet GeoJSON response. The tested sheet response was not shown to contain the exact WUP point, so no parcel polygon was retained.",
+  "registryAssessment": "DLRS is the national Department of Land Records and Surveys; the Pabna Zonal Settlement Office is the evidenced local settlement/cadastral custodian for Pabna. This establishes local registry custody and a public map procedure, not citywide parcel-vector coverage.",
+  "safeFieldAllowlist": ["native Dag_No identity only if a sample is later retained", "geometry", "CRS", "survey/mouza/sheet route identifiers", "HTTP status", "content type"],
+  "nativeFieldMapping": {
+    "sourceParcelIdentity": "Dag_No",
+    "sourceFeatureFieldsObserved": ["FID", "Id", "Dag_No"],
+    "mappingDecision": "No retained feature. FID/Id were not promoted because the tested sheet was not tied to the WUP point; Dag_No is the source-visible parcel/dag identity for any future qualified sample.",
+    "unsafeFieldsRequested": false
+  },
+  "officialPrimarySources": [
+    {
+      "url": "https://settlement.gov.bd/Map/MapSearch",
+      "observation": "Official DLRS map viewer. Page references /js/MapSearch.js and exposes survey/mouza/sheet/dag controls."
+    },
+    {
+      "url": "https://zso.pabna.gov.bd/",
+      "observation": "Official Pabna Zonal Settlement Office portal with Pabna/Sirajganj mouza-list and survey context."
+    },
+    {
+      "url": "https://map.land.gov.bd/",
+      "observation": "Official Ministry of Land mouza-and-plot digital land-zoning project; describes digitized/georeferenced mouza map sheets."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Pabna Bangladesh official cadastral map land records parcel GIS",
+      "result": "Official DLRS viewer, Smart Bhumi Naksha project, Pabna Zonal Settlement Office, and DLRS digital survey material found; no safe exact-point parcel match established.",
+      "actualResultUrls": ["https://settlement.gov.bd/Map/MapSearch", "https://map.land.gov.bd/", "https://zso.pabna.gov.bd/"]
+    },
+    {
+      "language": "Bengali",
+      "query": "পাবনা বাংলাদেশ সরকারি ক্যাডাস্ট্রাল মানচিত্র জমির রেকর্ড জিআইএস",
+      "result": "Official Bengali DLRS/Ministry of Land sources found; Pabna district and Pabna Sadar BDS metadata returned from the public viewer, but no exact-point parcel match established.",
+      "actualResultUrls": ["https://settlement.gov.bd/Map/MapSearch", "https://map.land.gov.bd/", "https://zso.pabna.gov.bd/"]
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "The exact WUP point was preserved as 24.0069361559384 latitude, 89.2376788585173 longitude. No point-shifted query was used. The tested sheet response was not demonstrated to cover that point.",
+    "requestEvidence": [
+      {
+        "url": "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey",
+        "method": "POST",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "request": "rsnum=201901, comcod=4156, unitcod=031101021, sheetno=001",
+        "responseAssessment": "2.2 MB GeoJSON FeatureCollection; declared CRS EPSG:4326; parcel-like polygons and Dag_No fields observed. Full raw response remains only in ignored tmp/ scratch and was not retained as an artifact.",
+        "retained": false
+      }
+    ]
+  },
+  "attempts": [
+    {
+      "url": "https://settlement.gov.bd/Map/GetDivisionList",
+      "method": "POST",
+      "httpStatus": 200,
+      "result": "Anonymous division metadata returned; Rajshahi division code 030000000 identified."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise",
+      "method": "POST",
+      "httpStatus": 200,
+      "result": "Anonymous district metadata returned; Pabna district identified as unit 031100000 with comcod 4156."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise",
+      "method": "POST",
+      "httpStatus": 200,
+      "result": "Pabna returned BDS survey rsnum 201901, status চলমান (ongoing)."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap",
+      "method": "POST",
+      "httpStatus": 200,
+      "result": "Pabna Sadar upazila returned with route unit 031101021 (Gafriabad mouza entry)."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetMouzaListBySurveyMap",
+      "method": "POST",
+      "httpStatus": 200,
+      "result": "Anonymous mouza/sheet metadata returned for the Pabna Sadar route."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey",
+      "method": "POST",
+      "httpStatus": 200,
+      "result": "Bounded single-sheet GeoJSON response obtained and schema/CRS inspected; no safe city-qualified sample retained."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official DLRS survey map service with Pabna district and Pabna Sadar BDS routes.",
+    "verifiedOpenScope": "Anonymous metadata and one public GeoJSON sheet were verified; exact WUP-point inclusion and citywide completeness remain unknown.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "The public viewer requires selecting the correct mouza and sheet for the city point; the bounded route tested here returned a sheet whose extent was not established as Pabna city. BDS is marked ongoing, and no citywide parcel API or completeness statement was verified.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter"
+}

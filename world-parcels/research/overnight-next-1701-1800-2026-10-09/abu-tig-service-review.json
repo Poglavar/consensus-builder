@@ -1,0 +1,57 @@
+{
+  "cityRecord": "city-7041-abu-tig.json",
+  "cityCode": 7041,
+  "queueRank": 1747,
+  "city": "Abu Tig",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "reviewStatus": "complete_packet_held_for_serial_review",
+  "disposition": "held",
+  "registryFound": true,
+  "verifiedSample": false,
+  "runtimeReadiness": "held",
+  "summary": "Official Egyptian survey/cadastral institutional services and an official administrative GIS service were verified, but no anonymous Abu Tig parcel ID plus full polygon geometry was found. No sample GeoJSON is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Arabic discovery queries, exact text, outcomes and actual first-party URLs are recorded in city-7041-abu-tig.json.",
+  "requestOutcomes": "ESA services and digital-map pages returned HTTP 200; the IDSC FeatureServer exposed only Building/CITY/CENTER/STATE and a bounded CITY point query returned administrative OBJECTIDs only; CAPMAS geoportal timed out. No credentials, unsafe fields or TLS exception were used.",
+  "scopeLimits": [
+    "Exact WUP point and population fields were preserved; no coordinate was shifted.",
+    "Administrative polygons are not cadastral parcels and were not retained as parcel samples.",
+    "A timeout, unavailable viewer, missing anonymous endpoint or administrative-layer result is not evidence of citywide cadastral absence.",
+    "Institutional registry evidence is not equivalent to open parcel geometry evidence or runtime integration/admission.",
+    "No unsafe owner, address, titleholder, contact, tax/account or personal fields were requested."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier", "full parcel polygon geometry", "geometry CRS", "source layer/service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "EPSG:4326 for inspected administrative service; parcel CRS unverified",
+  "geometryQuality": "not applicable; no parcel geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed against parcels; no hit/miss inference.",
+    "requestEvidence": ["ESA service pages HTTP 200", "IDSC Map FeatureServer metadata HTTP 200", "IDSC CITY bounded point query HTTP 200 with administrative OBJECTIDs only", "CAPMAS geoportal request timed out"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Egyptian survey/cadastral institutional sources and IDSC administrative GIS relevant to Abu Tig.",
+    "verifiedOpenScope": "Institutional/procedural evidence and administrative GIS only.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Local Abu Tig parcel endpoint, stable native identity, schema, CRS, geometry, update currency and completeness remain unresolved.",
+  "retainedSample": null,
+  "completionSummary": {
+    "recordWritten": true,
+    "serviceReviewWritten": true,
+    "sampleGeoJSONWritten": false,
+    "openParcelEndpointVerified": false,
+    "adapterQualified": false
+  }
+}

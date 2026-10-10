@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5239-sirajganj.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Document Sirajganj's first-party Bangladesh cadastral entry points, live anonymous request outcomes, scope limits, and runtime qualification boundary.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "assessment": "Official DLRS public map hierarchy establishes Sirajganj district and an active BDS survey. The current anonymous hierarchy returned no upazila entries, so no safe parcel ID, geometry schema, CRS, or polygon was verified. The packet is complete as a research attempt; runtime readiness remains held.",
+  "registryAssessment": "registryFound=true is supported by the official DLRS settlement map's Sirajganj district/BDS hierarchy and the official department portal's Rajshahi zonal custody listing. This does not establish citywide coverage or an accessible vector download.",
+  "coverageAssessment": {"claimedScope": "Official DLRS settlement map hierarchy for Sirajganj district and BDS survey.", "verifiedOpenScope": "District and survey selection only; no upazila/mouza/sheet or parcel response.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "safeFieldAllowlist": ["cityCode", "queueRank", "WUP point", "public service URLs", "HTTP status/content type", "survey and administrative codes", "service/operator descriptions"],
+  "searchQueries": [
+    {"language": "English", "query": "Sirajganj Bangladesh cadastral parcel map official DLRS settlement.gov.bd", "actualResultUrls": ["https://settlement.gov.bd/map/mapsearch", "https://settlement.gov.bd/", "https://dlrs.gov.bd/"]},
+    {"language": "Bengali", "query": "সিরাজগঞ্জ মৌজা নকশা ভূমি রেকর্ড জরিপ সরকারি", "actualResultUrls": ["https://settlement.gov.bd/map/mapsearch", "https://dlrs.portal.gov.bd/"]}
+  ],
+  "attempts": [
+    "Loaded the official DLRS map-search HTML and current MapSearch.js configuration anonymously with TLS verification.",
+    "POST /Map/GetDivisionList returned the official division list; Rajshahi division code 030000000 was selected.",
+    "POST /Khatian/getdistrictlistdivisionwise with Rajshahi division returned Sirajganj district code 031000000 and component code 4156.",
+    "POST /Khatian/GetSurveyListDistrictWise for Sirajganj returned BDS survey rsnum=201901, marked ongoing.",
+    "POST /Khatian/GetThanaListBySurveyMap with comcod=4156, rsno1=201901, districtid=031000000 returned HTTP 200 JSON [] and no subordinate map units.",
+    "Did not log in, submit credentials, defeat CAPTCHA/Cloudflare, disable TLS verification, request owner/address/title/account/tax/contact fields, or shift/test the exact WUP point against a local map.",
+    "No sample GeoJSON was created because no full parcel polygon response was verified."
+  ],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "nativeCrs": null, "exactWupPointTest": "Not run; exact WUP point [24.4428147841435, 89.6972650570864] preserved unchanged.", "polygonResponse": "None; hierarchy stopped at an empty upazila list."},
+  "nextStep": "Independent serial review should retry the official DLRS hierarchy and investigate any current Sirajganj BDS map-sheet route before adapter/runtime consideration.",
+  "remainingUncertainty": "Portal route availability, subordinate Sirajganj map units, native CRS, parcel identifiers, vector export capability, and citywide coverage remain unverified. Empty hierarchy output is an access/coverage limitation, not evidence of absence.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

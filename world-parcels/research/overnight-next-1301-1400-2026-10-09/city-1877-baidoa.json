@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:1877",
+  "cityCode": 1877,
+  "queueRank": 1339,
+  "wupCityCode": 1877,
+  "name": "Baidoa",
+  "country": "Somalia",
+  "countryCode": "SO",
+  "centerLatLon": [3.11860589568362, 43.6544179372767],
+  "point": [3.11860589568362, 43.6544179372767],
+  "population2025": 420281,
+  "population2025k": 420.281,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Baidoa Somalia official cadastral map land registry parcel GIS",
+        "result": "Municipal land-registration custody found; no public parcel map/API found. SWALIM WFS/catalogue available but no parcel layer identified.",
+        "actualResultUrls": ["https://baidoadistrict.sw.so/", "https://spatial.faoswalim.org/", "https://spatial.faoswalim.org/geoserver/ows?service=WFS&request=GetCapabilities"]
+      },
+      {
+        "language": "Somali",
+        "query": "Baydhabo Soomaaliya khariidad cadastral diiwaanka dhulka GIS",
+        "result": "No separate Somali-language official parcel viewer found; municipal land-administration evidence was confirmed through the official Baidoa site.",
+        "actualResultUrls": ["https://baidoadistrict.sw.so/", "https://baidoadistrict.sw.so/public-works-housing-and-land-administration-department/", "https://spatial.faoswalim.org/"]
+      }
+    ]
+  },
+  "verifiedSample": false,
+  "sourceIds": [],
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Baidoa Somalia official cadastral map land registry parcel GIS",
+        "result": "The official Baidoa Municipality site confirms a Public Works, Housing, and Land Administration Department and lists Land Registration as a municipal service. No public parcel viewer or parcel API was found. The official FAO SWALIM Geoportal provides open Somalia spatial datasets and an anonymous GeoServer WFS, but its catalogue exposes no parcel or cadastral layer.",
+        "actualResultUrls": ["https://baidoadistrict.sw.so/", "https://spatial.faoswalim.org/", "https://spatial.faoswalim.org/geoserver/ows?service=WFS&request=GetCapabilities"]
+      },
+      {
+        "language": "Somali",
+        "query": "Baydhabo Soomaaliya khariidad cadastral diiwaanka dhulka GIS",
+        "result": "No separate Somali-language official parcel map or public cadastral geometry endpoint was located. The official municipal site uses English service labels but identifies Baidoa/Baydhabo municipal land administration and land registration functions.",
+        "actualResultUrls": ["https://baidoadistrict.sw.so/", "https://baidoadistrict.sw.so/public-works-housing-and-land-administration-department/", "https://spatial.faoswalim.org/"]
+      }
+    ],
+    "officialEvidence": [
+      {
+        "url": "https://baidoadistrict.sw.so/",
+        "observation": "Baidoa Municipality identifies a Public Works, Housing, and Land Administration Department and lists Land Registration among municipal services. This is local registry/land-administration custody evidence, not evidence of an open parcel geometry service.",
+        "coverage": "Baidoa Municipality"
+      },
+      {
+        "url": "https://baidoadistrict.sw.so/public-works-housing-and-land-administration-department/",
+        "observation": "Official municipal department page was reachable anonymously. It establishes the local land-administration department; no downloadable parcel layer or map API was exposed in the page response.",
+        "coverage": "Baidoa Municipality"
+      },
+      {
+        "url": "https://spatial.faoswalim.org/",
+        "observation": "Official FAO SWALIM Geoportal describes an open Somalia geospatial database with land, boundaries, settlements and related themes. It is a national/environmental and planning data custodian, not a Baidoa cadastral registry.",
+        "coverage": "Somalia national geospatial portal"
+      }
+    ],
+    "observedServices": [
+      {
+        "url": "https://spatial.faoswalim.org/api/base/?page=1&page_size=1000",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Anonymous GeoNode catalogue returned 498 resources. Relevant catalogue titles included Buildings Footprints, settlement layers, and land/landform layers; no resource title or metadata identified a parcel or cadastral layer. Catalogue metadata was inspected without requesting unsafe attributes."
+      },
+      {
+        "url": "https://spatial.faoswalim.org/geoserver/ows?service=WFS&request=GetCapabilities",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/xml",
+        "observation": "Anonymous WFS 2.0 capabilities returned. The service advertises geonode layers including som_buildings and settlement/environmental datasets; no named land-parcel, cadastral, plot, or parcel-boundary feature type was identified."
+      },
+      {
+        "url": "https://spatial.faoswalim.org/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=geonode%3Asom_buildings&outputFormat=application%2Fjson&maxFeatures=3&propertyName=geom&bbox=43.6543179%2C3.1185059%2C43.6545179%2C3.1187059%2CEPSG%3A4326",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8",
+        "bbox": [43.6543179, 3.1185059, 43.6545179, 3.1187059],
+        "bboxCrs": "EPSG:4326; WFS 1.0.0 lon,lat order",
+        "maxFeatures": 3,
+        "featureCount": 5,
+        "returnedFeatures": 3,
+        "observation": "Bounded geometry-only query around the exact WUP point returned three nearby building MultiPolygons with native feature ids som_buildings.1197139, som_buildings.1197138, and som_buildings.1197159. These are buildings, not cadastral parcels, and no geometry was retained. The response contained only geometry plus the safe gid field in the inspected result; no owner/address fields were requested."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Baidoa Municipality has local land-registration and land-administration functions; SWALIM has a national open geospatial catalogue.",
+    "verifiedOpenScope": "Open SWALIM WFS/catalogue access was verified for non-cadastral layers only; no open Baidoa parcel geometry endpoint was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "registryExistenceScope": "Baidoa municipal land-registration custody is evidenced; the existence or accessibility of a citywide digital parcel registry is not established."
+  },
+  "qualityAssessment": {
+    "geometryQuality": "no parcel geometry sampled",
+    "identityReadiness": "not ready; no safe native parcel identity and parcel geometry response was identified",
+    "attributesRequested": ["geometry", "safe native feature id/gid only"],
+    "unsafeFieldsRequested": false
+  },
+  "blocker": "The official local municipality confirms land registration, but the bounded first-party SWALIM catalogue/WFS review exposed no parcel/cadastral layer. The only exact-area geometry response was a building layer and was not treated as parcel evidence.",
+  "remainingUncertainty": "A municipal or South West State land registry may have non-public records, a separate viewer, or request-only extracts. Zero parcel-layer discovery and the building response do not establish citywide absence.",
+  "nextStep": "If a later attempt is authorized, inspect only an official municipal or state cadastral viewer/API if publicly available and request geometry plus a stable parcel identity without owner/address fields.",
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "registry_custody_found_no_verified_open_parcel_endpoint"
+}

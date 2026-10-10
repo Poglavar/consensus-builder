@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10466,
+  "cityCode": 10466,
+  "cityId": "wup2025:10466",
+  "name": "市中区",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [34.862914136582, 117.543919330528],
+  "point": [34.862914136582, 117.543919330528],
+  "queueRank": 1290,
+  "population2025": 433213,
+  "population2025k": 433.213,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Shizhong District Zaozhuang cadastral parcel map official GIS",
+        "result": "Search results did not establish a first-party public cadastral parcel viewer or anonymous parcel-vector endpoint for Shizhong District. An official district-government bulletin was found that documents district natural-resources/real-estate-registration responsibilities.",
+        "actualResultUrls": [
+          "https://www.zzszq.gov.cn/zw/zwgkzt/zfgb/202012/P020201218339127617794.pdf"
+        ]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "市中区 枣庄 不动产登记 地图 官方",
+        "result": "Official district-government material identifies 区自然资源局 as the district-level custodian for real-estate-registration services including lawful inquiry/copying of registration materials. No public anonymous cadastral geometry service was verified.",
+        "actualResultUrls": [
+          "https://www.zzszq.gov.cn/zw/zwgkzt/zfgb/202012/P020201218339127617794.pdf",
+          "https://www.zzszq.gov.cn/"
+        ]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "枣庄市自然资源和规划局 市中区 地籍图 宗地图 GIS 地图服务",
+        "result": "Search results found general official/officially reported natural-resources work, but no verified current first-party parcel map/API URL with safe ID and geometry response.",
+        "actualResultUrls": [
+          "https://zaozhuang.sdnews.com.cn/zzxw/202503/t20250319_4504592.htm"
+        ]
+      }
+    ],
+    "officialViewerInspection": "No current official local cadastral viewer or public map/API configuration was established. Anonymous direct GET to the district government homepage over TLS was attempted from the research environment but failed to connect; this is an access failure, not evidence of source absence. No login, CAPTCHA bypass, credential, private token, unsafe property field, or owner/address data was used."
+  },
+  "registryFound": true,
+  "registryBasis": "The official 市中区人民政府公报 identifies the district natural-resources bureau (区自然资源局) as responsible for real-estate-registration public service, including lawful inquiry and copying of registration materials. This is local registry/procedure custody evidence, not public parcel-vector access or runtime admission.",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Official Shizhong District government material and first-party/officially reported Zaozhuang natural-resources references, with one bounded anonymous homepage connection attempt.",
+    "verifiedOpenScope": "Local registry/procedure custodian evidenced; no anonymous safe parcel polygon response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "resultCategory": "local_registry_procedure_no_verified_open_parcel_geometry",
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No bounded anonymous request returned a safe native parcel identity and full polygon geometry. The exact WUP point [34.862914136582, 117.543919330528] was not shifted, and no exact-point hit/miss or unavailable endpoint is treated as citywide absence."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "technicalBlocker": "The official local material establishes registry procedure custody but does not expose a public parcel geometry API. The district homepage could not be retrieved by direct anonymous HTTPS from this environment, so current viewer/configuration and CRS/schema remain unverified.",
+  "remainingUncertainty": "A separately published municipal, provincial, or authenticated cadastral service may exist. Its current public URL, access model, CRS/schema, safe native parcel ID, exact-point coverage, and citywide completeness remain unknown.",
+  "nextStep": "A serial reviewer may independently qualify a first-party Shizhong District parcel adapter only after confirming a current public route, CRS/schema, safe ID fields, and bounded geometry response."
+}

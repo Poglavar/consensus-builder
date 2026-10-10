@@ -1,0 +1,17 @@
+{
+  "taskId": "city:4660",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-4660-kosti.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/kosti-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T13:23:24.218209Z",
+  "identityReview": "Immutable roster, pending queue, and paired packet agree on code 4660, rank 1297, Kosti, Sudan, exact latitude/longitude point, and population 431504 persons.",
+  "searchReview": "Paired packet and review record executed and documented English and Arabic searches with result URLs.",
+  "sourceReview": "National Aqari first-party homepage confirms Sudanese judiciary-affiliated land registration services. The NIC first-party indexed page describes a national WMS/WFS portal, but no Kosti-local custody or parcel response was evidenced; registryFound remains null.",
+  "sampleReview": "Zero full source polygons retained in the paired files; no unsafe parcel attributes observed.",
+  "admissionReview": "No native polygon or ID. All adapter qualification gates remain unverified. Fresh native-ID reads, forced paging, thirteen bounded cells, independent metric GEOS validity/duplicate/overlap/operation checks, full-parcel source binding, and headed Details-panel verification are absent. Leave runtime/catalog/report state unchanged; no citywide absence is inferred."
+}

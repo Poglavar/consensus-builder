@@ -1,0 +1,79 @@
+{
+  "cityCode": 1024,
+  "queueRank": 1363,
+  "name": "Ciudad del Este",
+  "country": "Paraguay",
+  "countryCode": "PY",
+  "iso3": "PRY",
+  "point": [-25.5167593870259, -54.6481030416405],
+  "population2025": 412725,
+  "population2025k": 412.725,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": true,
+  "registryAssessment": "Paraguay's official Dirección General del Servicio Nacional de Catastro exposes a public cadastral viewer and a public GeoServer WFS parcel layer; the official municipality directory also records a cooperation agreement with the Municipalidad de Ciudad del Este. This is evidence of a local/national cadastral source, not a claim of complete current citywide coverage.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ciudad del Este Paraguay official cadastral map parcel GIS cadastre municipal",
+        "result": "Found the official Servicio Nacional de Catastro municipality page, public viewer, and Ciudad del Este municipal cooperation record; the official public viewer's JavaScript identifies the parcel WFS service.",
+        "actualResultUrls": ["https://www.catastro.gov.py/municipios", "https://www.catastro.gov.py/visor/", "https://www.catastro.gov.py/geoserver/ows?service=WFS&version=1.1.0&request=GetCapabilities"]
+      },
+      {
+        "language": "Spanish (local/native)",
+        "query": "Paraguay catastro mapa parcelario Ciudad del Este sitio oficial",
+        "result": "Found the official Servicio Nacional de Catastro municipality directory and its Ciudad del Este cooperation document, plus the official public cadastral viewer and WFS capabilities.",
+        "actualResultUrls": ["https://www.catastro.gov.py/municipios", "https://www.catastro.gov.py/public/b22ef1_Ciudad%20del%20Este.pdf", "https://www.catastro.gov.py/visor/", "https://www.catastro.gov.py/geoserver/ows?service=WFS&version=1.1.0&request=GetCapabilities"]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.catastro.gov.py/visor/",
+      "role": "Official public cadastral viewer",
+      "observation": "HTTP 200; current JavaScript/configuration names the public GeoServer WFS endpoint /geoserver/ows, parcel layer snc:parcelas_activas, and viewer CRS EPSG:32721."
+    },
+    {
+      "url": "https://www.catastro.gov.py/geoserver/ows?service=WFS&version=1.1.0&request=GetCapabilities",
+      "role": "Official public cadastral WFS capabilities",
+      "observation": "HTTP 200; advertises snc:parcelas_activas and other official layers."
+    },
+    {
+      "url": "https://www.catastro.gov.py/municipios",
+      "role": "Official SNC municipality directory",
+      "observation": "HTTP 200; lists a Convenio Marco de Cooperación entre el Servicio Nacional de Catastro y la Municipalidad de Ciudad del Este."
+    },
+    {
+      "url": "https://informacionpublica.paraguay.gov.py/public/870528-ID66946MAPACIUDADDELESTEpdf-ID66946MAPACIUDADDELESTE.pdf",
+      "role": "Officially hosted Ciudad del Este municipal cadastral map PDF",
+      "observation": "Public map credits Municipalidad de Ciudad del Este, Dirección de Catastro; states UTM, WGS 84, zone 21S, source MapInfo 2020."
+    }
+  ],
+  "geometryDecision": {
+    "verified": true,
+    "sampleCount": 3,
+    "sampleFile": "ciudad-del-este-parcel-samples.geojson",
+    "reason": "A bounded anonymous WFS request for safe id plus geometry returned three full MultiPolygon features in EPSG:4326 GeoJSON. The exact WUP point request was not used as evidence of absence; the point was preserved without shifting."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official SNC public parcel layer snc:parcelas_activas.",
+    "verifiedOpenScope": "Capabilities, schema, bounded anonymous ID+geometry responses, and the viewer's current configuration were verified. Complete current citywide coverage and exact-point containment were not independently established.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "sourceSchema": {
+    "nativeIdentity": "The native parcel layer's id field; WFS feature ids are emitted as parcelas_activas.<id>.",
+    "nativeFieldsObserved": ["id", "objectid", "id_parcela", "dpto", "dist", "padron", "zona", "mz", "lote", "finca", "nro_matricula", "ccatastral", "shape"],
+    "safeFieldsRequested": ["id", "geometry"],
+    "unsafeFieldsNotRequested": ["padron", "finca", "nro_matricula", "ccatastral", "obs", "financial/value fields", "owner, address, titleholder, contact or personal fields"],
+    "crs": "Viewer configuration uses EPSG:32721 (WGS 84 / UTM zone 21S); retained sample coordinates were requested as EPSG:4326 GeoJSON.",
+    "compositeKeyProvenance": null
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

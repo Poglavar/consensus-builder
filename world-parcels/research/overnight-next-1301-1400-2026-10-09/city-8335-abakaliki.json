@@ -1,0 +1,87 @@
+{
+  "cityCode": 8335,
+  "queueRank": 1392,
+  "name": "Abakaliki",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "iso3": "NGA",
+  "point": [6.31906373315647, 8.10148669470949],
+  "population2025": 406105,
+  "population2025k": 406.105,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-09",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Abakaliki official cadastral parcel map land registry GIS Ebonyi Nigeria",
+        "result": "First-party results identify the Ebonyi State Ministry of Lands and Survey, official property-registration procedures, and state budget references to digitization/GIS and analogue-map upgrading in Abakaliki. No public parcel viewer, service URL, layer schema, or safe anonymous parcel geometry endpoint was found.",
+        "actualResultUrls": [
+          "https://www.ebonyistate.gov.ng/ministries/lands-and-survey/MIN-88RUZ7R6",
+          "https://ebsmeda.eb.gov.ng/cat_doc/lands/",
+          "https://ebonyistate.gov.ng/storage/documents/min-1-proposed-2026-pdf-1769901855.pdf",
+          "https://ebsmeda.eb.gov.ng/wp-content/uploads/2026/01/Ebonyi-State-Government-2025-approved-budget.pdf"
+        ]
+      },
+      {
+        "language": "Igbo/local",
+        "query": "Abakaliki Igbo ala ndebanye aha map cadastral Ebonyi Ministry of Lands and Survey",
+        "result": "No first-party Igbo-language cadastral viewer or public parcel-geometry service was located. English official sources were retained because Nigeria's official land-service material and the state ministry pages reviewed publish the relevant procedures in English; this is a discovery limitation, not evidence of absence.",
+        "actualResultUrls": [
+          "https://www.ebonyistate.gov.ng/ministries/lands-and-survey/MIN-88RUZ7R6",
+          "https://ebsmeda.eb.gov.ng/cat_doc/lands/",
+          "https://www.eblands.online/reg_infor.php"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Ebonyi State Ministry of Lands and Survey / Office of the Surveyor-General, with procedures located at Block II Centenary City Secretariat, Ochudo City, Abakaliki.",
+    "scope": "State/local land-registration and survey custody is evidenced by official ministry pages and certificate-of-occupancy procedures naming the Abakaliki office; this does not establish a public parcel-map API or citywide geometry coverage.",
+    "urls": [
+      "https://www.ebonyistate.gov.ng/ministries/lands-and-survey/MIN-88RUZ7R6",
+      "https://ebsmeda.eb.gov.ng/wp-content/uploads/2025/10/EBONYI-STATE-PROPERTY-REGISTRATION-PROCEDURES-FOR-OBTAININ-GCERTIFICATE-OF-OCCUPANCY.pdf",
+      "https://www.eblands.online/reg_infor.php"
+    ]
+  },
+  "source": {
+    "sourceId": null,
+    "name": "Ebonyi State Ministry of Lands and Survey",
+    "url": "https://www.ebonyistate.gov.ng/ministries/lands-and-survey/MIN-88RUZ7R6",
+    "operator": "Ebonyi State Government",
+    "serviceType": "First-party land-registration and survey custodian evidenced; public parcel geometry service not verified",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "Official pages document land registration, survey, C-of-O procedures and planned/digitization work, but no public parcel feature service was exposed in the reviewed material."
+  },
+  "coverageAssessment": {
+    "claimedScope": "State Ministry of Lands and Survey and the Office of the Surveyor-General are evidenced as the relevant land-registration/survey custodians for Abakaliki; official budget/procedure documents mention digitization/GIS and analogue-map upgrading.",
+    "verifiedOpenScope": "No safe anonymous parcel ID+geometry response or public vector layer was verified. The exact WUP point was not shifted and no point hit/miss was treated as an absence result.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "local_registry_custody_evidenced_geometry_unverified",
+  "technicalBlocker": "No first-party public viewer configuration or parcel feature endpoint with safe minimal fields was found. The eblands.online registration/data pages were not usable for anonymous schema inspection (HTTP 406), and no geometry request was made to avoid unsafe registration/property fields.",
+  "remainingUncertainty": "Whether the state land-information/GIS work has a current public vector service, what its native parcel identity and CRS are, and whether it covers the unchanged WUP settlement point.",
+  "nextStep": "Revisit only if an official public vector endpoint or viewer configuration is documented; qualify metadata and a bounded safe ID+geometry response before runtime admission.",
+  "runtimeReadiness": "held_not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "pointBasis": "WUP 2025 settlement point in latitude/longitude order; not a municipal boundary or parcel-coverage claim.",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1301-1400-2026-10-09",
+  "attempt": 1
+}

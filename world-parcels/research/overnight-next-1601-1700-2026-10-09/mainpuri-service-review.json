@@ -1,0 +1,33 @@
+{
+  "cityRecord": "city-9231-mainpuri.json",
+  "cityCode": 9231,
+  "queueRank": 1648,
+  "city": "Mainpuri",
+  "country": "India",
+  "countryCode": "IN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Mainpuri district and Uttar Pradesh Revenue/Bhulekh sources establish a local/state cadastral land-record custodian and public BhuNaksha route. The current public viewer JavaScript and anonymous map endpoints were inspected, but no usable city-bounded parcel ID plus full geometry response was obtained. No sample GeoJSON is retained and runtime remains held.",
+  "queryOutcomes": "Separate English and Hindi discovery queries, actual query text, outcomes, and first-party URLs are recorded in city-9231-mainpuri.json.",
+  "requestOutcomes": "Mainpuri district land-record page and current BhuNaksha HTML/JavaScript loaded. State code/name and level labels were obtained; Mainpuri district code 148 was confirmed. Bounded Mainpuri hierarchy attempts returned no usable next-level list, extent returned zero coordinates, and WMS GetCapabilities returned PNG rather than capabilities XML. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe lookup, or TLS exception was used.",
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no usable parcel geometry response",
+  "geometryQuality": "not evaluated; no parcel geometry retained",
+  "retainedSample": null,
+  "scopeLimits": [
+    "Exact WUP point [27.2274083734834, 79.0312806442284] was preserved in latitude/longitude order; it was not shifted and no exact-point presence/absence conclusion was drawn.",
+    "Official dashboard counts describe digitization/linkage progress, not complete Mainpuri city parcel coverage.",
+    "Zero extent, empty hierarchy, and unusable WMS capabilities responses are not evidence of citywide absence.",
+    "No source-specific raw attribute set was retained and no synthetic parcel identity was created.",
+    "No owner, address, titleholder, contact, personal, tax/account or other unsafe fields were requested or retained.",
+    "This packet is not source integration/admission; serial reviewer qualification remains pending."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current selected tehsil/village route, stable native parcel identity, parcel schema, CRS, geometry retrieval, and citywide coverage remain unresolved."
+}

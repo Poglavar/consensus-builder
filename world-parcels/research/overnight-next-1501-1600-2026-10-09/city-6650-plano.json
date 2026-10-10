@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 6650,
+  "queueRank": 1553,
+  "name": "Plano",
+  "country": "United States of America",
+  "countryCode": "US",
+  "cityId": "wup2025:6650",
+  "point": [33.0655348058545, -96.746764017442],
+  "centerLatLon": [33.0655348058545, -96.746764017442],
+  "population2025": 367716,
+  "population2025k": 367.716,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted; bounded anonymous query attempts timed out",
+  "nativeIdReadiness": "PARCEL_ID documented on official Owner Parcels layer; no feature response retrieved in this attempt",
+  "sourceIds": [],
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Plano Texas official GIS parcel map ArcGIS parcel boundaries",
+        "result": "Found official City of Plano GIS ArcGIS REST services, including Owner Parcels and municipal boundary metadata.",
+        "actualResultUrls": [
+          "https://maps.planogis.org/arcgiswad/rest/services/PlanoGISintegrations/ESRICommunityBasemap/MapServer/11",
+          "https://maps.planogis.org/arcgiswad/rest/services/OpenData/MunicipalBoundary/FeatureServer/0",
+          "https://maps.planogis.org/arcgiswad/rest/services/PlanoGISintegrations/Clariti_PublicPortal/MapServer/1"
+        ]
+      },
+      {
+        "language": "native/local (English, United States)",
+        "query": "City of Plano Texas GIS land records parcel data official",
+        "result": "Found the same official Plano GIS/land-records services; the United States local language is English.",
+        "actualResultUrls": [
+          "https://maps.planogis.org/arcgiswad/rest/services/PlanoGISintegrations/ESRICommunityBasemap/MapServer/11",
+          "https://maps.planogis.org/arcgiswad/rest/services/Planning/LandUseAndHousingInventoryWebViewer/MapServer/layers",
+          "https://dashboard.plano.gov/"
+        ]
+      }
+    ]
+  },
+  "officialLeads": [
+    {
+      "url": "https://maps.planogis.org/arcgiswad/rest/services/PlanoGISintegrations/ESRICommunityBasemap/MapServer/11",
+      "operator": "City of Plano Planning Department / Land Records",
+      "observation": "Official ArcGIS layer named Owner Parcels; description says parcels in Collin and Denton counties within the City of Plano boundary. Geometry is polygon. Native source field PARCEL_ID is documented; OBJECTID is also an Esri object identifier. Layer extent covers Plano and native spatial reference is WKID 102738 / EPSG:2276, US survey feet."
+    },
+    {
+      "url": "https://maps.planogis.org/arcgiswad/rest/services/PlanoGISintegrations/Clariti_PublicPortal/MapServer/1",
+      "operator": "Plano GIS public portal",
+      "observation": "Search-indexed official ArcGIS layer named Active Parcels with Appraisal Information. It is a relevant secondary lead, but no feature data or field list was used because the endpoint did not respond to bounded requests in this attempt."
+    },
+    {
+      "url": "https://geographic.texas.gov/stratmap/land-parcels.html",
+      "operator": "Texas Geographic Information Office",
+      "observation": "State agency explains that Texas parcel information is maintained at county appraisal districts and documents a statewide standardized GIS land-parcel schema. This is general state context, not evidence of a Plano geometry response."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://maps.planogis.org/arcgiswad/rest/services/PlanoGISintegrations/ESRICommunityBasemap/MapServer/11",
+      "method": "GET via official REST metadata/search result",
+      "status": "official layer metadata observed",
+      "summary": "Owner Parcels metadata exposed polygon geometry, native PARCEL_ID, extent, and WKID 102738. No unsafe owner/address fields were requested or retained."
+    },
+    {
+      "url": "https://maps.planogis.org/arcgiswad/rest/services/PlanoGISintegrations/ESRICommunityBasemap/MapServer/11/query",
+      "method": "GET with point count query at exact WUP point; where=1=1, geometry point, inSR=4326, returnCountOnly=true",
+      "status": "timeout after 30 seconds",
+      "summary": "No result; not treated as evidence of absence."
+    },
+    {
+      "url": "https://maps.planogis.org/arcgiswad/rest/services/PlanoGISintegrations/ESRICommunityBasemap/MapServer/11/query",
+      "method": "GET with bounded approximately 400 m WGS84 envelope around exact WUP point; outFields=PARCEL_ID, returnGeometry=true, outSR=4326, resultRecordCount=3, f=geojson",
+      "status": "timeout after 30 seconds",
+      "summary": "No geometry response; no sample retained."
+    },
+    {
+      "url": "https://maps.planogis.org/arcgiswad/rest/services?f=pjson",
+      "method": "GET",
+      "status": "timeout after 20 seconds",
+      "summary": "Service-directory enumeration was unavailable; this did not invalidate the specific official layer metadata found by discovery."
+    },
+    {
+      "url": "https://maps.planogis.org/arcgiswad/rest/services/Planning/LandUseAndHousingInventoryWebViewer/MapServer/layers",
+      "method": "GET via official REST metadata/search result",
+      "status": "official metadata observed",
+      "summary": "Related city planning service was inspected for provenance; its documented land-use layer references GISDATA.PLANO.Land, but it is not accepted as a cadastral parcel sample."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Plano city parcels in Collin and Denton counties, according to the official Owner Parcels layer description.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "citywideGeometryVerified": false
+  },
+  "safeFieldAllowlist": ["PARCEL_ID", "OBJECTID", "geometry"],
+  "sourceFieldMapping": {
+    "nativeIdentity": "PARCEL_ID",
+    "fallbackEsriIdentity": "OBJECTID",
+    "geometryField": "Shape",
+    "nativeCrs": "WKID 102738 / EPSG:2276; US survey feet",
+    "compositeKey": null
+  },
+  "resultCategory": "official_city_parcel_layer_metadata_no_geometry_after_timeout",
+  "blocker": "Anonymous feature queries to the official Plano GIS Owner Parcels service timed out from this environment. A timeout is not evidence of citywide absence.",
+  "remainingUncertainty": "No bounded ID-plus-geometry response was obtained, so parcel location, polygon quality, and current native identity values remain unverified.",
+  "runtimeReadiness": "held",
+  "nextStep": "Retry the official Owner Parcels query when reachable, requesting only PARCEL_ID and geometry for a small Plano bbox, then validate CRS conversion, polygon quality, and citywide coverage before any adapter qualification."
+}

@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-10",
+  "wupCityCode": 7394,
+  "cityId": "wup2025:7394",
+  "name": "Francisco Morato",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "iso3": "BRA",
+  "centerLatLon": [-23.3044557273644, -46.7343685031083],
+  "point": [-23.3044557273644, -46.7343685031083],
+  "population2025": 346105,
+  "population2025k": 346.105,
+  "populationUnit": "persons",
+  "rank": 1652,
+  "queuePriority": 1652,
+  "attempt": 1,
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Francisco Morato Brazil cadastral map parcel GIS official prefeitura",
+        "result": "Search found the official municipal domain, IBGE municipal mapping, the federal Sinter public-property lookup service, and a municipal fiscal-cadastre custodian reference; no open municipal parcel feature service was identified.",
+        "actualResultUrls": [
+          "https://www.franciscomorato.sp.gov.br/",
+          "https://www.gov.br/pt-br/servicos/consultar-imoveis-no-sinter?id=12870&origem=servico",
+          "https://www.legislacaodigital.com.br/FranciscoMorato-SP/LeisComplementares/390/Arquivos/2"
+        ]
+      },
+      {
+        "language": "Portuguese (Brazil)",
+        "query": "Francisco Morato cadastro imobiliário mapa parcelário GIS prefeitura oficial",
+        "result": "Search found the municipal Cadastro Fiscal Imobiliário division and official municipal/IBGE material, but no anonymous public parcel geometry-plus-native-ID endpoint.",
+        "actualResultUrls": [
+          "https://www.legislacaodigital.com.br/FranciscoMorato-SP/LeisComplementares/390/Arquivos/2",
+          "https://geoftp.ibge.gov.br/cartas_e_mapas/colecao_de_mapas_municipais/2022/SP/francisco_morato/",
+          "https://www.gov.br/pt-br/servicos/consultar-imoveis-no-sinter?id=12870&origem=servico"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Municipal organizational act identifies the Divisão de Cadastro Fiscal Imobiliário, responsible for controlling the municipal fiscal property cadastre, structuring property registrations, identifying property registrations, and issuing property-cadastre certificates. This establishes local custody/procedure, not open geometry access.",
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.legislacaodigital.com.br/FranciscoMorato-SP/LeisComplementares/390/Arquivos/2",
+      "operator": "Municipality of Francisco Morato",
+      "observation": "Official municipal organizational act text names the Divisão de Cadastro Fiscal Imobiliário and its cadastral duties."
+    },
+    {
+      "url": "https://www.gov.br/pt-br/servicos/consultar-imoveis-no-sinter?id=12870&origem=servico",
+      "operator": "Brazil federal Sinter / Receita Federal service",
+      "observation": "First-party service page says anyone may consult properties by map or filters, including CIB/address/INCRA code; no Francisco Morato parcel response was verified."
+    },
+    {
+      "url": "https://geoftp.ibge.gov.br/cartas_e_mapas/colecao_de_mapas_municipais/2022/SP/francisco_morato/",
+      "operator": "IBGE",
+      "observation": "Official municipal map download directory; cartographic/administrative map, not a cadastral parcel service."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.franciscomorato.sp.gov.br/",
+      "method": "GET",
+      "status": "TLS verification failure",
+      "summary": "curl could not verify the server certificate; no certificate exception was used and no content was treated as retrieved."
+    },
+    {
+      "url": "https://servicos.receitafederal.gov.br/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Public Sinter service shell loaded. Referenced JavaScript was inspected for obvious public GIS endpoint strings; no usable city-scoped parcel feature response was obtained. No login or private token used."
+    },
+    {
+      "url": "https://www.gov.br/pt-br/servicos/consultar-imoveis-no-sinter?id=12870&origem=servico",
+      "method": "GET",
+      "status": "HTTP 200 / documentation",
+      "summary": "Official documentation confirms a public map-based property consultation entrypoint, but does not itself provide a bounded anonymous parcel ID plus geometry response for Francisco Morato."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Municipal fiscal-property cadastre custody and federal Sinter public consultation service.",
+    "verifiedOpenScope": "Institutional custody and generic service documentation only; no open Francisco Morato parcel geometry scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "resultCategory": "local_custodian_found_no_verified_open_parcel_geometry",
+  "sourceIds": [],
+  "verifiedSample": false,
+  "geometryQuality": "not applicable; no safe parcel geometry retrieved",
+  "runtimeEligible": false,
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "Current municipal viewer/API route, access controls, layer schema, CRS, stable native parcel identity, exact-point parcel membership, and citywide coverage remain unresolved. No absence claim is made.",
+  "identityPolicy": "Retain only a stable native parcel identifier with full polygon geometry if independently verified; do not request or retain owner, address, titleholder, contact, tax/account or personal fields."
+}

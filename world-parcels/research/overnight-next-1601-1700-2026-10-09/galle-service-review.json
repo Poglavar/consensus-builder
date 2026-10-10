@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-874-galle.json",
+  "cityCode": 874,
+  "queueRank": 1651,
+  "city": "Galle",
+  "country": "Sri Lanka",
+  "countryCode": "LK",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "The Sri Lanka Survey Department provides first-party LIS documentation and public Galle cadastral/fabric KML downloads. The public NSDI ArcGIS Parcel Fabrics layer is WGS84 but its published extent excludes Galle. Downloaded Galle KML records were not retained as samples because parcel-level stable native identity at the WUP point was not independently established; runtime remains held.",
+  "queryOutcomes": "Separate English and Sinhala discovery queries are recorded in city-874-galle.json. Both led to first-party Survey Department/LIS and NSDI sources; no separate Galle-local municipal parcel API was found.",
+  "requestOutcomes": "Official LIS HTML, KML index, Galle_Cad.kmz, Galle_Fabric.kmz, ArcGIS service metadata, layer schema and bounded GeoJSON query were attempted. The KML downloads succeeded anonymously. The bounded REST query returned an empty FeatureCollection because the layer extent begins north of Galle. No login, CAPTCHA bypass, credential, private token, unsafe field or TLS exception was used.",
+  "scopeLimits": [
+    "Exact WUP point [6.06146732901066,80.2126280668052] was preserved in latitude/longitude order; no coordinate was shifted.",
+    "A zero REST hit caused by the published map extent was not treated as citywide absence.",
+    "The Survey Department page describes national LIS custody; no local Galle registry custodian was independently evidenced.",
+    "Galle_Cad.kmz contains cadastral-sheet-like records; Galle_Fabric.kmz contains fabric/plan coverage records. Neither was proven to be a parcel-level stable-identity response at the WUP point.",
+    "No parcel polygon is retained in this packet; scratch KMZ and endpoint evidence remain under ignored tmp/valhalla-parcel-research/galle/.",
+    "No owner, address, contact, titleholder, personal, tax, account or other unsafe fields were requested or retained.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification is pending."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": {
+    "arcgisParcelFabric": {"nativeIdentityCandidate": "parcel_id", "objectIdField": "objectid", "geometryField": "shape"},
+    "galleKml": {"observedFields": ["OBJECTID_1", "objectid", "CM No", "Block_No", "Sheet No", "plan_no"], "identityDecision": "not retained; sheet/fabric semantics and parcel stability not independently confirmed"}
+  },
+  "compositeKeyProvenance": null,
+  "crs": "EPSG:4326 verified for ArcGIS layer; KML coordinates are longitude,latitude and were not converted into a retained sample",
+  "geometryQuality": "not applicable; no verified parcel polygon retained",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No verified parcel-level feature response at the exact WUP point. ArcGIS parcel-fabric extent excludes the point; KML downloads were not treated as an exact point parcel hit.",
+    "requestEvidence": ["Galle_Cad.kmz", "Galle_Fabric.kmz", "ArcGIS MapServer/2/query bounded WGS84 envelope"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Survey Department LIS and public Galle KML exports; NSDI Planning Cadastre national map service.",
+    "verifiedOpenScope": "Official Galle downloads are available, but parcel identity semantics and citywide parcel coverage remain unresolved.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The public source is authoritative and Galle-scoped downloads exist, but the available KML layers may represent cadastral sheets or fabric coverage rather than individual parcels. The REST parcel-fabric service has no Galle extent. No assertion is made about parcel absence, title, ownership, access restrictions or completeness.",
+  "retainedSample": null
+}

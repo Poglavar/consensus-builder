@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-11982-tong-an.json",
+  "purpose": "Document first-party registry/map discovery, current viewer-route outcomes, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Official Xiamen sources establish Tong'an local natural-resources custody and an official cadastral/geospatial service listing. The current service host timed out during bounded normal-TLS requests; no anonymous safe ID-plus-complete-polygon response was obtained.",
+  "registryAssessment": "Local registry/map custody found through official Xiamen Natural Resources and Planning Bureau and iXiamen service materials. This is institutional custody evidence, not proof of open parcel geometry.",
+  "officialPrimarySources": [
+    {"url": "https://zygh.xm.gov.cn/zfxxgk/gfjzfxxgk/", "observation": "Official Xiamen bureau page lists 同安分局 and 不动产登记中心 government-information sections."},
+    {"url": "https://ixm.xm.gov.cn/yyzx/202209/t20220909_94940.htm", "observation": "Official iXiamen listing identifies the Xiamen Surveying and Basic Geographic Information Center service as providing cadastral maps, parcel maps and basic surveying-result queries."},
+    {"url": "https://www.saac.gov.cn/daj/c100298/202403/5189e53e6fbf412d8172c547e6eef295.shtml", "observation": "National Archives report describes Xiamen's official map-based property/archive service and its integration of parcel/building information; it does not expose a safe anonymous parcel API."}
+  ],
+  "viewerConfiguration": {
+    "documentedHomeUrl": "https://chzx.zygh.xm.gov.cn/",
+    "observedServiceTypes": ["official cadastral-map query service", "official municipal surveying/geospatial information service"],
+    "schemaAndCrs": "Not verified from a successful parcel feature response.",
+    "nativeFieldNames": "Not retained; no successful feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://zygh.xm.gov.cn/zfxxgk/gfjzfxxgk/", "method": "GET/web search result inspection", "normalTlsVerification": true, "result": "Official page opened; Tong'an branch and Real Estate Registration Center sections observed. No parcel geometry."},
+    {"url": "https://ixm.xm.gov.cn/yyzx/202209/t20220909_94940.htm", "method": "GET/web page inspection", "normalTlsVerification": true, "result": "Official service listing opened; cadastral-map and parcel-map service description observed, with link to chzx.zygh.xm.gov.cn."},
+    {"url": "https://chzx.zygh.xm.gov.cn/", "method": "GET via curl, bounded 15-second timeout", "normalTlsVerification": true, "result": "Connection timed out; no HTML, JavaScript/configuration, schema, CRS or feature response obtained. No TLS exception used."},
+    {"url": "https://bdc.zygh.xm.gov.cn/yhrzpt/", "method": "GET/web search result inspection", "normalTlsVerification": true, "result": "Official Xiamen Real Estate Registration Center authentication page observed; login wall present. No login attempted and no protected data requested."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "query": "No WUP-point parcel query submitted because the current official map endpoint timed out and no parcel service endpoint was identified."},
+  "coverageAssessment": {"claimedScope": "Official local Tong'an/Xiamen custody and cadastral service availability.", "verifiedOpenScope": "Institutional custody and service listing verified; no current anonymous complete-polygon feature response verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "The timeout and login wall are access limitations only, not evidence of cadastral absence. Current service URL, parcel schema, CRS, native identity, geometry availability and citywide completeness remain unverified.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."}
+}

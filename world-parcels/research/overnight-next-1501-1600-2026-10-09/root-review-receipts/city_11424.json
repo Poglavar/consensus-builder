@@ -1,0 +1,13 @@
+{
+  "taskId": "city:11424",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-11424-taizhou.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/taizhou-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/root-identity-decision-overlay.json"
+  ],
+  "checkedAt": "2026-10-10T09:18:08.171893Z",
+  "reason": "Official Jiangsu Taizhou registry custody is supported; separate WUP 12098 Zhejiang Taizhou identity was previously resolved. No safe first-party ID plus complete polygon response or adapter qualification is evidenced."
+}

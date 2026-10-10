@@ -1,0 +1,111 @@
+{
+  "cityCode": 6786,
+  "queueRank": 1692,
+  "name": "Franca",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "iso3": "BRA",
+  "locId": 76,
+  "point": [-20.5278309058245, -47.396802438379],
+  "population2025": 337878,
+  "population2025k": 337.878,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Franca Brazil official cadastral parcel map GIS land registry",
+        "result": "First-party discovery identified the official Prefeitura de Franca cadastral-map page, the municipal Cadastro Fiscal Imobiliário notice, and the public Cadastro Imobiliário service. No anonymous first-party parcel feature API or downloadable native parcel polygon layer was verified.",
+        "actualResultUrls": [
+          "https://www.franca.sp.gov.br/prefeitura/mapas-cidade",
+          "https://www3.franca.sp.gov.br/noticia/26066/cfi-cadastro-fiscal-imobilirio.html",
+          "https://www3.franca.sp.gov.br/cartadeservicos/servicos/consulta-pblica-do-cadastro-imobilirio-municipal"
+        ]
+      },
+      {
+        "language": "Portuguese (Brazil)",
+        "query": "Franca SP cadastro imobiliário mapa cadastral lotes prefeitura oficial",
+        "result": "A busca em português confirmou a Prefeitura de Franca as municipal custodian: its Cadastro Fiscal Imobiliário covers municipal urban and rural properties, its public consultation accepts street and number and displays cadastral facts, and the official map page publishes a 2023 cadastral map. No safe anonymous parcel ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://www.franca.sp.gov.br/prefeitura/mapas-cidade",
+          "https://www3.franca.sp.gov.br/noticia/26066/cfi-cadastro-fiscal-imobilirio.html",
+          "https://www3.franca.sp.gov.br/cartadeservicos/servicos/consulta-pblica-do-cadastro-imobilirio-municipal",
+          "https://www3.franca.sp.gov.br/maisservico/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.franca.sp.gov.br/prefeitura/mapas-cidade",
+      "observation": "Official municipal page lists MAPA CADASTRAL DE FRANCA - 2023 in PDF and DWG among city maps. This establishes an official cadastral cartographic publication, not a parcel feature API."
+    },
+    {
+      "url": "https://www3.franca.sp.gov.br/noticia/26066/cfi-cadastro-fiscal-imobilirio.html",
+      "observation": "Official municipal notice states that the Cadastro Fiscal Imobiliário is maintained by the Prefeitura de Franca and records cadastral data for urban and rural properties."
+    },
+    {
+      "url": "https://www3.franca.sp.gov.br/cartadeservicos/servicos/consulta-pblica-do-cadastro-imobilirio-municipal",
+      "observation": "Official service page describes public cadastral consultation by street and property number, with cadastral number, property type and area fields; it requires image text/CAPTCHA in the documented workflow and does not expose geometry."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.franca.sp.gov.br/prefeitura/mapas-cidade",
+      "method": "GET via first-party web access",
+      "httpStatus": 200,
+      "outcome": "Official page loaded in bounded web access and exposed the 2023 cadastral map PDF/DWG links. No machine-readable parcel schema, CRS, native parcel identity, or feature endpoint was exposed. A separate local curl attempt timed out after 20 seconds; no retry escalation was used."
+    },
+    {
+      "url": "https://www3.franca.sp.gov.br/noticia/26066/cfi-cadastro-fiscal-imobilirio.html",
+      "method": "GET via first-party web access",
+      "httpStatus": 200,
+      "outcome": "Official notice loaded and identified the municipal Cadastro Fiscal Imobiliário and linked consultation service. No parcel geometry was returned."
+    },
+    {
+      "url": "https://www3.franca.sp.gov.br/cartadeservicos/servicos/consulta-pblica-do-cadastro-imobilirio-municipal",
+      "method": "GET via first-party web access",
+      "httpStatus": 200,
+      "outcome": "Official service instructions loaded. The documented public route requires street, five-digit property number, and image text; no anonymous geometry query or safe bounded feature response was attempted."
+    },
+    {
+      "url": "https://franca.siltecnologia.com.br/loginWeb.jsp?execobj=ServicosWebSite",
+      "method": "GET anonymous",
+      "httpStatus": "timeout after 20 seconds from local curl",
+      "outcome": "The linked municipal service endpoint did not return within the bounded request. No login, CAPTCHA bypass, credentials, private token, or TLS exception was attempted. Timeout is not evidence of parcel absence."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The Prefeitura de Franca is evidenced as the local cadastral custodian through its official Cadastro Fiscal Imobiliário notice and public Cadastro Imobiliário service. This establishes municipal custody, not an open parcel adapter or citywide geometry endpoint.",
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": null,
+  "geometryQuality": "not evaluated; no parcel geometry retrieved",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": "prefeitura-de-franca-cadastro-fiscal-imobiliario-and-official-cadastral-map-publication",
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Municipal Cadastro Fiscal Imobiliário for urban and rural properties, plus official cadastral cartography.",
+    "verifiedOpenScope": "Municipal custodianship and official cadastral map publication only; no anonymous feature schema, stable native parcel identity, CRS, or citywide parcel geometry was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "Exact WUP point [-20.5278309058245, -47.396802438379] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point hit or miss conclusion was drawn because no bounded parcel feature query returned.",
+    "The official cadastral map publication is not a substitute for a safe native parcel feature response; no polygon was retained.",
+    "No owner, address, titleholder, contact, personal, tax/account, legal/title, or unsafe source fields were requested or retained.",
+    "Packet completion is not source integration/admission; runtime remains held pending independent serial review."
+  ],
+  "uncertainty": "The public service's backend, current access policy, parcel schema, CRS, stable native identity, and citywide geometry coverage remain unresolved. A timeout, CAPTCHA requirement, or absence of a feature response is not evidence of citywide parcel absence.",
+  "retainedSample": null
+}

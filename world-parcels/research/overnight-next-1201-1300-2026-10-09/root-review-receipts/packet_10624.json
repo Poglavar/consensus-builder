@@ -1,0 +1,13 @@
+{
+  "taskId": "packet:10624",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-10624-yuhu.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/yuhu-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T10:49:07.387457Z",
+  "reason": "Official Hunan material supports Xiangtan registry custody and certificate-linked cadastral map access. No anonymous full polygon or native ID response was preserved; the Yuhu viewer timed out. All runtime qualification and headed Details gates remain unproven; parcel availability remains unresolved."
+}

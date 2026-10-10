@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-10T08:18:20.056343Z",
+  "officialWupSource": {
+    "archiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "cityCode": 2303,
+    "year": 2025,
+    "rank": 1579,
+    "location": "Canada",
+    "iso2": "CA",
+    "iso3": "CAN",
+    "cityName": "London",
+    "pointLatLon": [
+      42.9854320723653,
+      -81.246421845116
+    ],
+    "populationThousands": 362.006,
+    "populationPersons": 362006
+  },
+  "municipalResponse": {
+    "url": "https://london.ca/immigration/life-london/about-london-ontario",
+    "httpStatus": 200,
+    "responseBytes": 218094,
+    "sha256": "e00923f1be208b89d9636da60b44244944c2386c7c4f9049cd833c5ae79359f6",
+    "extractedText": "London, Ontario, which is proudly known as The Forest City, is home to nearly 400,000 residents."
+  },
+  "priorFirstPartyGeometry": {
+    "sourceUrl": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/City_of_Westminster.zip",
+    "operator": "HM Land Registry",
+    "originalResponseFile": "world-parcels/research/retry/cities/london-parcel-response.json",
+    "crs": "EPSG:27700",
+    "sourceScope": "City of Westminster, England, from HM Land Registry; not Ontario"
+  }
+}

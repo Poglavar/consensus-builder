@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3243-sanhur.json",
+  "cityCode": 3243,
+  "purpose": "Document first-party discovery, current public ESA/Fayoum land-record routes, bounded anonymous access review, and evidence limits.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "unsafeFieldsRequested": false, "citywideCompletenessAsserted": false},
+  "assessment": "ESA public pages describe digital and paper map products, spatial data, and surveying services, but the digital-map route is a request/quotation workflow and does not expose an anonymous parcel feature service. Fayoum GIS-unit evidence confirms local administrative GIS/state-property work, not open cadastral geometry.",
+  "registryAssessment": "ESA is the national survey/cadastral custodian; Fayoum local GIS/state-property work is separately evidenced. No current Sanhur-specific public cadastral registry/map endpoint was established, so registryFound remains null.",
+  "queries": [
+    {"language": "English", "query": "Sanhur Egypt official cadastral parcel map land registry GIS service", "outcome": "Official ESA and Ministry sources found; no anonymous Sanhur parcel-vector service found.", "actualResultUrls": ["https://www.esa.gov.eg/services.aspx", "https://www.esa.gov.eg/sellingmaproomdigital.aspx", "https://www.mwri.gov.eg/mwri2/?lang=en&page_id=33317", "https://gopp.gov.eg/%D8%AA%D9%88%D9%82%D9%8A%D8%B9-%D9%84%D9%88%D8%AD%D8%A7%D8%AA-%D8%A7%D9%84%D8%AD%D8%B5%D8%B1-%D9%88%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%AF%D9%84%D8%A7%D9%84-%D8%A7%D9%84%D9%85%D8%AD%D8%AF%D8%AB%D8%A9-2/"]},
+    {"language": "Arabic", "query": "سنهور الفيوم خريطة كادسترية سجل عقاري خرائط قطع الأراضي خدمة حكومية", "outcome": "Official ESA/Fayoum map and GIS references found; no separate Sanhur parcel API or map route found.", "actualResultUrls": ["https://www.esa.gov.eg/main.aspx", "https://www.esa.gov.eg/services.aspx", "https://gate.ahram.org.eg/News/1829510.aspx", "https://www.esa.gov.eg/files/Topographic_Maps.pdf"]}
+  ],
+  "attempts": [
+    {"url": "https://www.esa.gov.eg/services.aspx", "method": "GET", "httpStatus": 200, "result": "Official ESA services page loaded. It lists paper/digital/historical maps, coordinate certificates, boundary separation, and related surveying services; no public parcel query endpoint was present."},
+    {"url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx", "method": "GET", "httpStatus": 200, "result": "Official digital-map page loaded. It requires a customer request specifying location, scale, layers, format, and projection, followed by inspection/quotation/payment; no anonymous parcel schema, layer URL, or geometry response was exposed."},
+    {"url": "https://www.esa.gov.eg/egypt_maps.aspx", "method": "GET", "httpStatus": 200, "result": "Official Egypt maps page loaded; page source exposed ordinary site scripts/navigation only, not a cadastral feature service."},
+    {"url": "https://www.esa.gov.eg/testmap.aspx", "method": "GET", "httpStatus": 200, "result": "Official directorates/map page loaded; page source exposed an image-map/navigation presentation and ordinary site scripts, not a parcel API."},
+    {"url": "https://www.mwri.gov.eg/mwri2/?lang=en&page_id=33317", "method": "GET", "httpStatus": 200, "result": "Ministry page loaded and confirmed ESA spatial-data/map responsibilities; no anonymous parcel query route."},
+    {"url": "https://gate.ahram.org.eg/News/1829510.aspx", "method": "GET", "httpStatus": 200, "result": "Report loaded documenting the Fayoum GIS unit and digitization of state-property records across centres and villages; it does not publish parcel geometry or schema."},
+    {"url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf", "method": "GET", "httpStatus": 200, "result": "Official Fayoum topographic-map index downloaded/reviewed; it identifies map coverage/scales, not machine-readable parcels."}
+  ],
+  "geometryEvidence": {"sourceUrl": null, "sampleFile": null, "nativeIdField": null, "nativeFieldMapping": {}, "compositeKeyProvenance": null, "sampleCount": 0, "crs": null, "queryExtent": null},
+  "geometryDecision": {"verified": false, "sourceId": null, "nativeIdField": null, "sampleCount": 0, "exactWupPointTest": "No anonymous parcel query route was available; the exact WUP point [29.3587646999166, 30.7141082780011] was not shifted or treated as an absence test.", "retentionNote": "No GeoJSON retained because no safe native parcel identity plus full polygon response was obtained."},
+  "remainingUncertainty": "ESA and Fayoum administrative GIS holdings may contain cadastral/state-property layers not published anonymously. Map purchase/request pages do not establish current open access, parcel identity, CRS, or citywide coverage. No login, CAPTCHA, credentials, private-token, unsafe-field, or TLS-bypass attempt was made.",
+  "safeFieldAllowlist": ["native parcel ID if publicly exposed", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter",
+  "researchAttempt": 1
+}

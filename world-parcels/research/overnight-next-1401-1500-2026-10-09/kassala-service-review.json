@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5531-kassala.json",
+  "purpose": "Document first-party Sudan land-registry and bounded anonymous parcel-service review for Kassala.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Sudan's Judiciary land-registration administration, Sudan Survey Authority, and National Information Center spatial-portal project are first-party national leads. The reviewed pages and current Aqari landing page do not expose a Kassala parcel viewer, concrete WMS/WFS URL, parcel schema/CRS, or anonymous native-ID-plus-geometry response. The failed exact public endpoint probes are not evidence of citywide absence.",
+  "registryAssessment": "A national land-registration and surveying custodian is evidenced, but a Kassala-specific local registry or public parcel service is not sufficiently evidenced; registryFound remains null.",
+  "officialPrimarySources": [
+    {"url": "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A", "observation": "Official Judiciary page describes the General Land Registrations Administration, branch offices, and survey/registration procedures; no Kassala parcel API is published."},
+    {"url": "https://ggim.un.org/country-reports/documents/Sudan-2024-Country-Report.pdf", "observation": "Sudan Survey Authority country report identifies SSA as the official surveying and mapping authority and describes national basemap work; it does not provide an open Kassala parcel layer."},
+    {"url": "https://nic.gov.sd/public/projectDetails/3", "observation": "Official NIC page describes a national spatial portal and mentions OGC WMS/WFS, without a concrete endpoint or public parcel schema."},
+    {"url": "https://aqari.nctr.sd/ar", "observation": "Aqari landing page describes Judiciary real-estate services; public JavaScript references user/service routes but no anonymous Kassala map layer."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Kassala Sudan official cadastral map land registry parcel GIS", "result": "First-party national land-registration, surveying, and spatial-portal leads found; no public Kassala parcel service identified.", "method": "Separate English web search followed by first-party page/PDF inspection.", "scope": "Identify local custodian and safe anonymous parcel geometry."},
+    {"language": "Arabic (local/native)", "query": "كسلا السودان خريطة كادستر قطع الأراضي السجل العقاري المساحة", "result": "First-party Arabic Judiciary and NIC pages found; no Kassala-specific public parcel layer or anonymous geometry response identified.", "method": "Separate Arabic web search followed by first-party source inspection.", "scope": "Cross-check native-language discovery for a city-specific land map or registry service."}
+  ],
+  "attempts": [
+    {"url": "https://nic.gov.sd/public/projectDetails/3", "method": "GET", "httpStatus": 200, "result": "Spatial-portal description loaded; WMS/WFS named but no endpoint or parcel layer exposed."},
+    {"url": "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A", "method": "GET", "httpStatus": 200, "result": "Land-registration procedure and national/branch-office description loaded; no geometry service."},
+    {"url": "https://aqari.nctr.sd/ar", "method": "GET", "httpStatus": 200, "result": "Aqari landing page loaded; public HTML/JavaScript inspected for viewer/API configuration."},
+    {"url": "https://aqari.nctr.sd/slr/api/states; /slr/api/cities; /slr/api/neighborhoods; /slr/api/blocks; /slr/api/offices; /slr/api/land/plots?partner_id=0", "method": "GET", "httpStatus": 404, "result": "All anonymous probes returned site 404 HTML, not JSON; no parcel response, schema, CRS, or native ID obtained."}
+  ],
+  "safeFieldAllowlist": ["native parcel/survey identity", "geometry", "source CRS", "layer/service name"],
+  "nativeFieldMapping": null,
+  "geometryDecision": "No sample GeoJSON written; no qualifying public geometry response.",
+  "coverageAssessment": {"claimedScope": "Official Sudan national land-registration, survey, and spatial-portal leads relevant to Kassala.", "verifiedOpenScope": null, "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeDecision": "held",
+  "remainingUncertainty": "A public parcel service may exist outside the reviewed pages or behind an ordinary official workflow. No login, CAPTCHA bypass, credential/private-token use, unsafe field request, or TLS exception was used."
+}

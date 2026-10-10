@@ -1,0 +1,131 @@
+{
+  "schemaVersion": "1.0",
+  "cityCode": 2926,
+  "queueRank": 1626,
+  "name": "Temuco",
+  "country": "Chile",
+  "countryCode": "CL",
+  "iso3": "CHL",
+  "locId": 152,
+  "point": [-38.7378808982456, -72.6061192362359],
+  "population2025": 352200,
+  "population2025k": 352.2,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Temuco Chile official cadastral parcel map GIS predios cadastre municipalidad Temuco",
+        "result": "First-party discovery found the Municipalidad de Temuco interactive parcel/address plan, the official IDE Temuco ArcGIS REST directory, and the municipal Catastro/DOM references. The public directory exposed an anonymous parcel geocoder but no public parcel-polygon feature layer.",
+        "actualResultUrls": [
+          "https://www.temuco.cl/download/plano-interactivo-de-predios-y-direcciones-de-la-comuna-de-temuco/",
+          "https://ide.temuco.cl/public/rest/services",
+          "https://ide.temuco.cl/public/rest/services/ESTUDIOS"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Temuco Chile mapa predial catastro parcelas sitio oficial",
+        "result": "Spanish first-party discovery identified the municipal interactive parcel/address plan and the municipal IDE. The official ArcGIS directory describes Geolocalizador_Predios as a role geolocator for parcels in the Temuco commune, but the exposed service is GeocodeServer and did not provide an anonymous polygon response.",
+        "actualResultUrls": [
+          "https://www.temuco.cl/download/plano-interactivo-de-predios-y-direcciones-de-la-comuna-de-temuco/",
+          "https://ide.temuco.cl/public/rest/services/ESTUDIOS/Geolocalizador_Predios_202411041143_202504011222/GeocodeServer?f=pjson",
+          "https://transparencia.temuco.cl/a_estructura/Organigrama/FacultadesFunciones.htm"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.temuco.cl/download/plano-interactivo-de-predios-y-direcciones-de-la-comuna-de-temuco/",
+      "observation": "Official Municipalidad de Temuco page for the interactive parcel and address plan; the accessible page body contains only the placeholder acceso_pagina_enlaces.php, so the embedded viewer configuration was not exposed in this fetch."
+    },
+    {
+      "url": "https://ide.temuco.cl/public/rest/services/ESTUDIOS/Geolocalizador_Predios_202411041143_202504011222/GeocodeServer?f=pjson",
+      "observation": "Official municipal ArcGIS metadata describes a monthly-updated geolocator of parcel roles in the Temuco commune, with Geocode/ReverseGeocode/Suggest capabilities and native spatial reference WKID 32718. It is a geocoder, not a parcel polygon feature service."
+    },
+    {
+      "url": "https://transparencia.temuco.cl/a_estructura/Organigrama/FacultadesFunciones.htm",
+      "observation": "Official municipal transparency page identifies Departamento de Catastro within the Dirección de Obras Municipales and assigns it municipal cadastral cartography/database and certificate functions. This is local custodian evidence, distinct from general national-agency prose."
+    },
+    {
+      "url": "https://ide.temuco.cl/public/rest/services",
+      "observation": "Official IDE Temuco REST root listed CATASTRO and ESTUDIOS folders. Anonymous CATASTRO folder inspection returned Token Required; ESTUDIOS listed the parcel GeocodeServer."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://ide.temuco.cl/public/rest/services?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Returned the official REST root and listed CATASTRO, ESTUDIOS and other folders."
+    },
+    {
+      "url": "https://ide.temuco.cl/public/rest/services/CATASTRO?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "ArcGIS JSON response was error code 499 Token Required. No login, token, credential or bypass was attempted; this route did not expose service metadata."
+    },
+    {
+      "url": "https://ide.temuco.cl/public/rest/services/ESTUDIOS?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Listed the official parcel GeocodeServer and other ESTUDIOS services."
+    },
+    {
+      "url": "https://ide.temuco.cl/public/rest/services/ESTUDIOS/Geolocalizador_Predios_202411041143_202504011222/GeocodeServer?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Returned service metadata: parcel-role geolocator description, Geocode/ReverseGeocode/Suggest capabilities, and WKID 32718. No parcel polygon layer, safe native ID field schema, or polygon geometry was returned."
+    },
+    {
+      "url": "https://ide.temuco.cl/public/rest/services/ESTUDIOS/Geolocalizador_Predios_202411041143_202504011222/GeocodeServer/findAddressCandidates?SingleLine=Temuco&f=pjson&outSR=4326&maxLocations=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Anonymous bounded geocoder request returned an empty candidates array. This is not a parcel-polygon query and is not evidence of citywide parcel absence."
+    },
+    {
+      "url": "https://www.temuco.cl/download/plano-interactivo-de-predios-y-direcciones-de-la-comuna-de-temuco/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official page loaded, but its content exposed a placeholder rather than a viewer URL or JavaScript configuration. No browser automation, login, CAPTCHA bypass or private token was used."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The official Municipalidad de Temuco transparency page evidences a local Departamento de Catastro within the Dirección de Obras Municipales, and the official municipal IDE exposes a parcel-role geolocator for the Temuco commune. This establishes local cadastral custody/public mapping infrastructure, not an open parcel-polygon adapter.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": "https://ide.temuco.cl/public/rest/services/ESTUDIOS/Geolocalizador_Predios_202411041143_202504011222/GeocodeServer",
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Temuco commune parcel-role geolocator and municipal cadastral mapping.",
+    "verifiedOpenScope": "Official local custodian and anonymous geocoder metadata only; no city-bounded parcel polygon response was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "excludedFields": [
+    "owner or titleholder names",
+    "addresses and contact data",
+    "tax/account/registration details beyond a safe native parcel ID",
+    "credentials and private tokens"
+  ],
+  "nativeIdentityPolicy": "No native parcel identity was observed in a polygon response; no synthetic identity was created. A future retained sample must use exactly one stable native identity in GeoJSON properties and document source mapping in service review metadata.",
+  "nativeFieldMapping": null,
+  "crs": "Service metadata reports EPSG:32718 / WGS 84 UTM zone 18S for the geocoder; no parcel polygon CRS was verified.",
+  "geometryQuality": "not applicable; no parcel geometry retrieved",
+  "runtimeReadiness": "held_no_verified_public_parcel_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "remainingUncertainty": "The token-protected CATASTRO folder, current interactive viewer configuration, parcel polygon layer/schema, stable native parcel identity, exact WUP-point coverage and citywide completeness remain unresolved. The exact WUP point was preserved and was not shifted or used to infer presence/absence.",
+  "retainedSample": null
+}

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8660-modinagar.json",
+  "purpose": "Independent first-party registry/map discovery and bounded anonymous geometry access review.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false, "exactPointMissNotInterpretedAsAbsence": true},
+  "assessment": "UP BhuNaksha is a real first-party cadastral map service with Modinagar tehsil metadata, EPSG:32644 extent responses, and safe native plot identifiers/bounding boxes. Its current full polygon endpoint rejected the anonymous request with HTTP 403, so no GeoJSON sample is retained and runtime remains held.",
+  "registryAssessment": "Nagar Palika Parishad Modinagar is the evidenced local municipal custodian; the UP Board of Revenue/BhuLekh and BhuNaksha services are state cadastral custodians. This does not establish citywide open parcel-vector availability.",
+  "officialPrimarySources": [
+    {"url": "https://www.nppmodinagar.in/", "operator": "Nagar Palika Parishad Modinagar", "observation": "Official municipal site identifies the local body and property-tax/public-service context; no parcel geometry API was exposed."},
+    {"url": "https://upbhulekh.gov.in/", "operator": "Board of Revenue, Uttar Pradesh", "observation": "Official real-time Khatauni land-record service."},
+    {"url": "https://upbhunaksha.gov.in/", "operator": "Government of Uttar Pradesh cadastral map viewer", "observation": "Current public viewer configuration and service routes expose District/Tehsil/Village selection and map/plot operations."},
+    {"url": "https://upbhulekh.gov.in/GeoDashboard/public_report", "operator": "Government of Uttar Pradesh", "observation": "Official cadastral-map digitization and georeferencing status dashboard."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Modinagar official GIS cadastral parcel map land records Uttar Pradesh", "result": "Official UP BhuLekh/BhuNaksha, cadastral dashboard and Modinagar municipality found; no anonymous full polygon retained.", "actualResultUrls": ["https://upbhunaksha.gov.in/", "https://upbhulekh.gov.in/", "https://upbhulekh.gov.in/GeoDashboard/public_report", "https://www.nppmodinagar.in/"]},
+    {"language": "Hindi", "query": "मोदीनगर नगर पालिका GIS नक्शा भूखंड भू-अभिलेख आधिकारिक", "result": "Hindi discovery confirmed the same first-party custodians and services; full polygon access remained authorization-gated.", "actualResultUrls": ["https://www.nppmodinagar.in/", "https://upbhunaksha.gov.in/", "https://bor.up.nic.in/?search_key=HOMECENTER"]}
+  ],
+  "attempts": [
+    {"attempt": "Viewer HTML, JavaScript/configuration and level discovery", "result": "HTTP 200; endpoints identified; district 140, tehsil 00738 and EPSG:32644 map metadata verified.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "Bounded anonymous map extent and plot lookup", "result": "HTTP 200 village extents and safe native ID/bounding-box responses obtained for Modinagar-tehsil village routes; not a citywide polygon dataset.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "Full polygon retrieval", "result": "HTTP 403 Missing or invalid Authorization header. No authentication or bypass attempted.", "credentialsUsed": false, "personalPropertyFieldsRequested": false}
+  ],
+  "requests": [{"url": "https://upbhunaksha.gov.in/bhunakshaserver/v1/khasramap/plot", "method": "POST", "outcome": "HTTP 403 for safe bhucode/id request; authorization required", "safeRequest": true}],
+  "geometryDecision": {"publicParcelGeometryFound": false, "sampleFile": null, "details": "No full parcel polygon was obtained. The exact WUP point was not treated as a coverage test or absence evidence."},
+  "coverageAssessment": {"claimedScope": "UP BhuNaksha/BhuLekh, UP cadastral dashboard and Modinagar municipal source.", "verifiedOpenScope": "First-party service, schema/CRS, tehsil/village metadata and bounded ID-box responses; full geometry and citywide extent unresolved.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "safeFieldAllowlist": ["stable native parcel or kide identifier", "geometry", "CRS", "source layer/service metadata"],
+  "remainingUncertainty": "The viewer may expose geometry after an authorized public session or via another official route; current anonymous access is insufficient.",
+  "runtimeDecision": "held_not_enabled_no_verified_public_geometry"
+}

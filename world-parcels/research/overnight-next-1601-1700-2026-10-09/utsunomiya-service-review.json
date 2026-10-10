@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-5992-utsunomiya.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "cityCode": 5992,
+  "queueRank": 1622,
+  "city": "Utsunomiya",
+  "country": "Japan",
+  "countryCode": "JP",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Utsunomiya City publishes a citywide 地籍図/地番図 Shapefile dataset. A bounded anonymous inspection of the split covering the preserved WUP point returned six parcel polygons; three were retained with only BUKKEN_NO-derived canonical IDs. The city warning makes this a tax-assessment reference map, not a legal parcel-boundary source, so runtime remains held.",
+  "queryOutcomes": "Separate English and Japanese first-party discovery queries are recorded in the city record. They found the city publication and catalog, plus Ministry of Justice national map-data context. The city catalog states all-Utsunomiya scope, JGD2011 Japan Plane Rectangular CS IX, six split ZIP resources, and Creative Commons Attribution; the city warning limits the map to reference/tax-assessment use.",
+  "requestOutcomes": "GET of the official catalog page returned HTTP 200. GET of the official field-definition PDF returned HTTP 200. GET of the official 01_01 Shapefile ZIP returned HTTP 200/application-zip. The archive was inspected locally with OGR: layer 筆界線01 is Polygon, EPSG:6677, and a bounded native-coordinate query around the exact preserved WUP point returned six features. The 02_02 through 06_06 official ZIP download URLs were discovered but not downloaded because one split was sufficient for a bounded sample and the citywide claim is recorded as claimed scope. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe-field request, or TLS-disable action was used.",
+  "attemptedRoutes": [
+    {"url": "https://www.city.utsunomiya.lg.jp/kurashi/zeikin/koteishisanzei/1041437.html", "method": "GET", "httpStatus": 200, "outcome": "Official city publication and catalog link found."},
+    {"url": "https://catalog.city.utsunomiya.tochigi.jp/dataset/chibannzu-070101", "method": "GET", "httpStatus": 200, "outcome": "Official CKAN-like dataset page exposed scope, CRS, resources, field-definition PDF, and license."},
+    {"url": "https://catalog.city.utsunomiya.tochigi.jp/dataset/cfb84636-4468-4051-ab14-ea3485653934/resource/336eb550-3dc5-457a-88ab-24c0f345c72b/download/gis_.pdf", "method": "GET", "httpStatus": 200, "outcome": "Field-definition PDF downloaded and read; BUKKEN_NO and related native fields documented; CRS stated as JGD2011 Zone IX."},
+    {"url": "https://catalog.city.utsunomiya.tochigi.jp/dataset/cfb84636-4468-4051-ab14-ea3485653934/resource/85dcff85-23b0-4b30-95cc-c16f02f2bb73/download/01_01.zip", "method": "GET", "httpStatus": 200, "outcome": "01_01 ZIP downloaded to ignored scratch; 筆界線01 polygon layer inspected and bounded query returned six features."},
+    {"url": "https://www.moj.go.jp/MINJI/minji05_00494.html", "method": "GET", "httpStatus": 403, "outcome": "National MOJ page was blocked to this fetch; search result still identified it as national G-Space context, not local-service evidence."}
+  ],
+  "scopeLimits": [
+    "Exact WUP point [36.5514923896268, 139.885051050438] was preserved; no coordinate shift was made.",
+    "One split archive and one bounded area were inspected; no claim is made that the exact point is a parcel hit or that all city parcels are complete.",
+    "The city explicitly says the map does not prove legal boundaries, exact position/shape, or rights.",
+    "National MOJ documentation is not treated as the local Utsunomiya source.",
+    "No owner, address, titleholder, contact, tax/account or personal fields were requested or retained."
+  ],
+  "safeFieldAllowlist": ["BUKKEN_NO-derived stable native parcel identity", "full parcel polygon geometry", "geometry CRS", "source layer and public service metadata"],
+  "excludedFields": ["owner or titleholder names", "addresses and contact data", "tax/account/registration details beyond safe native parcel ID", "credentials and private tokens"],
+  "nativeIdentityPolicy": "Retained GeoJSON contains exactly one canonical id property derived from BUKKEN_NO. Native field mapping and composite-key considerations remain in this review; no synthetic row number was used.",
+  "nativeFieldMapping": {"id": "BUKKEN_NO", "locationComponents": ["SYO_CHO_CD", "SYO_AZA_CD", "SYO_HON", "SYO_EDA", "SYO_KOEDA"], "displayFields": ["MISAI_NO", "HYOJI", "ANGLE"]},
+  "crs": "EPSG:6677 / JGD2011 Japan Plane Rectangular CS IX; retained sample reprojected to GeoJSON EPSG:4326 with longitude/latitude coordinate order.",
+  "geometryQuality": "Three complete Polygon features retained from the bounded response; no raw native attribute set retained.",
+  "runtimeReadiness": "held_tax_assessment_reference_map_and_serial_review_required",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The source is a public citywide reference dataset and locally evidenced, but legal cadastral status, completeness across all split archives, and adapter suitability remain unresolved.",
+  "retainedSample": "utsunomiya-parcel-samples.geojson"
+}

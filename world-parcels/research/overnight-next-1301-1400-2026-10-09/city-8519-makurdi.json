@@ -1,0 +1,49 @@
+{
+  "cityCode": 8519,
+  "queueRank": 1382,
+  "name": "Makurdi",
+  "aliases": ["makurdi"],
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "iso3": "NGA",
+  "point": [7.71679050070715, 8.53831284036563],
+  "population2025": 408753,
+  "population2025k": 408.753,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": null,
+  "registryAssessment": "A local/provincial custodian is evidenced: Benue Geographic Information System (BENGIS), a Benue State Government service agency operating from the Ministry of Lands, Survey and Solid Minerals service centre in Makurdi. Its public portal documents digital mapping and land services, but no anonymous parcel geometry endpoint was established; registryFound remains null.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Makurdi Nigeria cadastral parcel map land registry official Benue State GIS",
+        "result": "Found the official Benue State Government site identifying BENGIS and the Ministry of Lands, Survey & Solid Minerals, the official BENGIS portal, application guidance, survey service, and Makurdi-specific fees. No anonymous public parcel-vector service or safe parcel response was found.",
+        "actualResultUrls": ["https://benuestate.gov.ng/", "https://bengis.benuestate.gov.ng/", "https://bengis.benuestate.gov.ng/application-guidelines/", "https://bengis.benuestate.gov.ng/service/survey/", "https://bengis.benuestate.gov.ng/fees/"]
+      },
+      {
+        "language": "native/local",
+        "query": "Makurdi taswirar filaye rajistar ƙasa Benue official",
+        "result": "The local-language query did not surface a separate local-language cadastral map or anonymous parcel API. English-language official BENGIS results were the relevant first-party sources; Benue's listed major languages include Tiv, Idoma, Igede, and English, and no reliable Tiv/Idoma cadastral search phrase was established.",
+        "actualResultUrls": ["https://bengis.benuestate.gov.ng/", "https://bengis.benuestate.gov.ng/application-guidelines/", "https://bengis.benuestate.gov.ng/contact-us/"]
+      }
+    ]
+  },
+  "officialSources": [
+    {"url": "https://bengis.benuestate.gov.ng/", "role": "Benue State Government BENGIS public site", "observation": "Identifies BENGIS as a state-owned geospatial and land-service agency and advertises digital mapping, land administration, surveying, and an Explore Map entry, but the reviewed public content did not expose parcel features or a public API schema."},
+    {"url": "https://bengis.benuestate.gov.ng/portal", "role": "BENGIS application portal", "observation": "Public page is a sign-in screen with email/phone, password, and verification image. No login, registration, CAPTCHA bypass, credential, or private-token attempt was made."},
+    {"url": "https://bengis.benuestate.gov.ng/application-guidelines/", "role": "BENGIS official application procedure", "observation": "Directs applicants to the BENGIS Service Centre at the Ministry of Lands, Survey and Solid Minerals on Beach Road, Makurdi; says survey reports are vetted by the Cadastral Unit and plotted/saved into the system. It does not publish parcel geometry or schema."},
+    {"url": "https://bengis.benuestate.gov.ng/service/survey/", "role": "BENGIS survey service", "observation": "Describes parcel survey as a licensed-surveyor process subject to Surveyor-General authorization; no anonymous map/API response is provided."},
+    {"url": "https://bengis.benuestate.gov.ng/fees/", "role": "BENGIS official fees page", "observation": "Includes ground-rent fees for Makurdi Urban Area, confirming local service scope; no parcel features or native identity field are exposed."}
+  ],
+  "serviceReview": "makurdi-service-review.json",
+  "geometryDecision": {"verified": false, "sampleCount": 0, "sampleFile": null, "reason": "No safe anonymous native parcel ID plus full polygon response was available from the current official public routes; no GeoJSON retained."},
+  "coverageAssessment": {"claimedScope": "Benue State BENGIS and Ministry of Lands, Survey and Solid Minerals public land-service routes in Makurdi.", "verifiedOpenScope": "Official service and procedure evidence only; no open parcel-vector coverage verified.", "exactWupPointParcelSample": false, "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "sourceFieldMapping": {"nativeIdentity": null, "nativeIdentityEvidence": "No parcel feature response obtained.", "geometryField": null, "sourceCrs": null, "compositeKey": null},
+  "safeFieldAllowlist": ["native parcel ID if publicly exposed", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

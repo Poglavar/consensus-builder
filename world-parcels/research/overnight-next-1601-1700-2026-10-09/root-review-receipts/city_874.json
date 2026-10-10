@@ -1,0 +1,20 @@
+{
+  "taskId": "city:874",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-874-galle.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/galle-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T12:03:57Z",
+  "reason": "Official Galle cadastral sheet and fabric KMZ downloads exist, but no stable native parcel-level ID is proven. The cached ArcGIS Parcel Fabrics extent excludes the WUP point; its bounded response is empty, which does not establish absence.",
+  "qualificationGaps": [
+    "fresh native-ID parcel reads",
+    "forced paging",
+    "13 bounded cells",
+    "metric GEOS validity and overlap checks",
+    "source binding",
+    "headed Details-panel verification"
+  ]
+}

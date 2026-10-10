@@ -1,0 +1,12 @@
+{
+  "taskId": "city:6316",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-6316-city.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T15:20:45Z",
+  "reason": "Queue identity matches rank 1787, Russian Federation, point and 321680 persons; English and Russian searches are recorded. Official Timofeevka planning directory and Samara MFC material support planning/cadastral procedures, but no safe native-ID parcel polygon response was obtained. The 403 and Rosreestr/NSPD timeouts do not prove absence. Fresh ID reads, paging, 13 cells, metric GEOS checks, source binding and headed Details verification are unevidenced; hold without admission."
+}

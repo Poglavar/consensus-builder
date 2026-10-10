@@ -1,0 +1,13 @@
+{
+  "taskId": "city:12030",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-12030-linhai.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/linhai-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T10:16:34.391259Z",
+  "reason": "WUP identity and English/Chinese search records checked. Official Linhai water-infrastructure registration notice supports local natural-resources custody context, but the portal responses were 403/401/420 or province-level service discovery only. registryFound remains null; no native-ID full polygon response or admission metrics exist. No citywide absence inferred."
+}

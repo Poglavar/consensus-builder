@@ -1,0 +1,15 @@
+{
+  "taskId": "city:7690",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-7690-valsad.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/valsad-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T19:16:01.234732Z",
+  "reviewFinding": "Immutable WUP rank 1950, India point and 296851 persons match roster and queue. English and Gujarati search records contain executed queries and result URLs. First-party Valsad DILR page confirms local land-record/property-card custody. No native-ID parcel response or full polygon sample is retained; reported portal timeouts and application shell do not establish absence. Fresh exact-ID read, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are missing.",
+  "firstPartyUrlsChecked": [
+    "https://valsad.nic.in/d-i-l-r/"
+  ]
+}

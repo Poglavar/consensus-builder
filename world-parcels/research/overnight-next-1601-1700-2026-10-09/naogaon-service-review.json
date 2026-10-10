@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-3029-naogaon.json",
+  "cityCode": 3029,
+  "queueRank": 1688,
+  "city": "Naogaon",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Bangladesh DLRS sources establish a Naogaon district cadastral/map custodian and a public Settlement map-search workflow. The current anonymous route returned no survey rows for the bounded Naogaon request, so no parcel identity-plus-geometry response was verified and runtime remains held.",
+  "queryOutcomes": "Separate English and Bengali first-party discovery queries, their actual text, outcomes and URLs are recorded in city-3029-naogaon.json.",
+  "requestOutcomes": "The public viewer and current JavaScript loaded successfully. Division and district enumeration returned Naogaon identifiers. The bounded survey and exploratory thana requests returned empty arrays; no sheet or GeoJSON parcel request was made from unverified parameters.",
+  "scopeLimits": [
+    "Exact WUP point [24.8081959533893, 88.9503061704767] was preserved; no coordinate shift or exact-point hit/miss inference was made.",
+    "Naogaon district naming is not treated as proof of full city polygon coverage.",
+    "No parcel geometry, stable native parcel identity, source schema or CRS was retrieved or retained.",
+    "A zero result, map extent miss, timeout, login wall or unusable route is not evidence of citywide cadastral absence.",
+    "No owner, address, contact, titleholder, tax/account or personal fields were requested or retained.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains pending."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No parcel geometry query reached a usable Naogaon service. The exact WUP point was preserved but no hit/miss inference was made.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Bangladesh DLRS Settlement map-search and official Naogaon district route.",
+    "verifiedOpenScope": "Institutional custody and public workflow only; anonymous parcel geometry and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current viewer/API route is identified, but Naogaon survey enumeration, layer schema, CRS, stable native parcel identity, geometry access and coverage remain unresolved. No claim is made about parcel absence, legal title, ownership, tax records or completeness of Bangladesh cadastral data.",
+  "retainedSample": null
+}

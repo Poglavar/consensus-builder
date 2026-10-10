@@ -1,0 +1,13 @@
+{
+  "taskId": "city:7835",
+  "decision": "held",
+  "reason": "Vladivostok identity and English/Russian searches match the queue. Original viewer-backed WFS response reports 182 features in one bounded query; three safe-ID polygon samples were inspected. Sample reprojection differs from a fresh EPSG:3857-to-4326 transform by about 2.3e-8 degrees, so exact unchanged-geometry equivalence is not independently proven. No live adapter exact-ID/paging/13-cell/metric topology/binding/headed Details qualification.",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-7835-vladivostok.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/vladivostok-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/vladivostok-parcel-samples.geojson",
+    "tmp/valhalla-parcel-research/vladivostok-attempt-3/wfs.json"
+  ],
+  "checkedAt": "2026-10-09T11:44:40.361507Z"
+}

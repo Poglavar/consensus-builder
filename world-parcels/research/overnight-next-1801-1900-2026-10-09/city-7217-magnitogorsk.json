@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 7217,
+  "queueRank": 1810,
+  "cityId": "queue:1810",
+  "name": "Magnitogorsk",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "point": [53.4009207599711, 59.0039817989917],
+  "centerLatLon": [53.4009207599711, 59.0039817989917],
+  "population2025": 317107,
+  "population2025k": 317.107,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Magnitogorsk official cadastral map public parcel map Rosreestr Magnitogorsk land plots",
+        "result": "Results identified the official Magnitogorsk municipal GIS portal, Rosreestr/National Spatial Data public cadastral-map references, and a municipal land-auction procedure referring users to the city GIS portal. No currently usable anonymous parcel ID-plus-geometry endpoint was exposed in discovery.",
+        "actualResultUrls": [
+          "https://gisportal.magnitogorsk.ru/button_html/about/",
+          "https://www.verstov.info/news/society/70020-vidno-absolyutno-vse-v-magnitogorske-zapuschen-gis-portala-s-ortofotoplanami",
+          "https://www.rosreestr.ru/",
+          "https://torgi.gov.ru/"
+        ]
+      },
+      {
+        "language": "native/local (Russian)",
+        "query": "Магнитогорск официальная кадастровая карта публичная карта земельные участки Росреестр геопортал",
+        "result": "Russian-language discovery identified the official municipal GIS portal as a city spatial-data portal publishing administration GIS data, land-auction information and planning zones; official/first-party references also direct users to the Rosreestr public cadastral map. No usable anonymous parcel geometry response was obtained.",
+        "actualResultUrls": [
+          "https://gisportal.magnitogorsk.ru/button_html/about/",
+          "https://www.magnitogorsk.ru/",
+          "https://rosreestr.gov.ru/",
+          "https://www.sobranie74.ru/map"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Web discovery followed by bounded public GET/REST probes. No credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe fields or owner/titleholder data were requested. TLS verification was retained for the decisive retry; an earlier diagnostic fetch used curl -k after the portal's certificate error and is explicitly not treated as qualification evidence."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://gisportal.magnitogorsk.ru/button_html/about/",
+      "observation": "Official municipal GIS portal about page describes publication of spatial data used by Magnitogorsk administration, including land auctions, advertising structures, construction permits and planning-regulation zones. It establishes a local municipal GIS custodian, but the public page does not expose a parcel layer schema or API response."
+    },
+    {
+      "url": "https://www.verstov.info/news/society/70020-vidno-absolyutno-vse-v-magnitogorske-zapuschen-gis-portala-s-ortofotoplanami",
+      "observation": "Local report describes the Magnitogorsk GIS portal and its administration GIS content; it is corroborating context, not a parcel service response."
+    },
+    {
+      "url": "https://www.magnitogorsk.ru/",
+      "observation": "Official city administration domain was identified in Russian-language discovery; no parcel geometry endpoint was exposed in the bounded inspection."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://gisportal.magnitogorsk.ru/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Portal HTML returned over HTTPS, but the certificate chain failed local TLS verification. The HTML exposed a JavaScript loader but not the viewer configuration or service URL."
+    },
+    {
+      "url": "https://gisportal.magnitogorsk.ru/scripts/loader.min.js",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "TLS-verified request failed with certificate verification error; no script/configuration evidence was accepted. A prior curl -k diagnostic fetch was made, but is excluded from evidence and did not qualify a source."
+    },
+    {
+      "url": "https://maps.nso.ru/arcgis2/rest/services/Common/Boundary/MapServer/18/query",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Public ArcGIS parcel-layer point query at the exact WUP coordinate, requesting only OBJECTID, CAD_NUM and geometry, timed out. The service is a general Rosreestr-derived layer hosted by Novosibirsk regional infrastructure, not a verified Magnitogorsk local custodian; no hit/miss inference was made."
+    },
+    {
+      "url": "https://maps.rosreestr.ru/ArcGIS/rest/services/CadastreNew/Cadastre/MapServer?f=pjson",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Legacy Rosreestr ArcGIS service probe did not return a usable response within the bounded attempt. No geometry or schema was retained."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Magnitogorsk municipal territory, Chelyabinsk Oblast, Russian Federation.",
+    "verifiedOpenScope": "Municipal GIS custodian and public cadastral-map procedure references only; no anonymous parcel geometry coverage verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The current municipal viewer's JavaScript/configuration, parcel layer endpoint, schema, CRS, stable native parcel identity, update currency and citywide coverage remain unresolved. The exact WUP point was preserved and never shifted. A timeout, certificate/login/UI failure or unavailable map is not evidence of citywide cadastral absence.",
+  "nextStep": "A later attempt may inspect the municipal portal with a trusted certificate chain or a newly exposed public API, then issue only a bounded anonymous ID-plus-geometry request. Runtime integration remains held pending independent serial qualification."
+}

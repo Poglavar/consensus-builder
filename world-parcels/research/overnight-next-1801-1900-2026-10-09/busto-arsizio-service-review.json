@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-1047-busto-arsizio.json",
+  "cityCode": 1047,
+  "queueRank": 1893,
+  "city": "Busto Arsizio",
+  "country": "Italy",
+  "countryCode": "IT",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete_packet_held_for_serial_review",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "The official Comune establishes local cadastral/urbanistic procedures, and the official Agenzia delle Entrate WMS exposes CP.CadastralParcel plus a bounded safe native ID/label/reference response. No polygon geometry was retrieved, so runtime remains held.",
+  "queryOutcomes": "Separate English and Italian discovery queries are recorded in city-1047-busto-arsizio.json. They identified the municipal Catasto e urbanistica and Carta Tecnica Comunale pages and the Agenzia delle Entrate cadastral Geoportale/WMS.",
+  "requestOutcomes": "The Geoportale catalog page returned HTTP 200 and referenced its current viewer configuration. The direct geoportale WMS path led to a login-wall/redirect route. The public WMS capabilities returned HTTP 200 XML and named CP.CadastralParcel / Particelle. A bounded anonymous GetFeatureInfo request returned one safe native localId, label, and NationalCadastralReference but no geometry. A WFS capability attempt returned an XML SOAP fault.",
+  "scopeLimits": [
+    "Exact WUP point [45.6040119276554, 8.8991164856004] was preserved in latitude/longitude order; no coordinate shift was made.",
+    "The bounded GetFeatureInfo pixel/envelope was only a request attempt and is not evidence of exact-point hit, citywide coverage, or citywide absence.",
+    "No parcel polygon geometry, citywide extraction, or geometry-bearing API response was retained.",
+    "The municipal pages evidence local procedure/custody, not an anonymous parcel geometry API.",
+    "No owner, address, contact, titleholder, personal, tax/account, or unsafe fields were requested or retained.",
+    "Packet completion is research completion only; it does not qualify or admit a runtime adapter."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata", "safe parcel label/reference"],
+  "nativeFieldMapping": {"InspireId localId": "stable native parcel identity candidate", "Label": "safe display label", "NationalCadastralReference": "safe cadastral reference"},
+  "compositeKeyProvenance": null,
+  "crs": "EPSG:6706 declared by the live WMS capabilities; no feature geometry response retrieved.",
+  "geometryQuality": "not evaluated; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": "IT.AGE.PLA.E514_000500.506",
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": "IT.AGE.PLA.E514_000500.506",
+    "nativeIdField": "InspireId localId",
+    "exactWupPointTest": "No polygon geometry was returned; no exact-point hit/miss inference.",
+    "requestEvidence": ["public WMS GetCapabilities HTTP 200", "public WMS GetFeatureInfo HTTP 200 safe fields only", "WFS attempt XML SOAP fault", "geoportale WMS path redirect/login wall"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Comune di Busto Arsizio local cadastral/urbanistic procedure evidence and Agenzia delle Entrate national cadastral WMS.",
+    "verifiedOpenScope": "Institutional custody, WMS layer metadata, and one bounded safe identity response only; citywide open coverage and geometry remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "uncertainty": "The WMS may support broader visual queries or a separately configured geometry service, but the observed anonymous route did not provide polygon geometry or a proven citywide parcel API. No credentials, private token, CAPTCHA/Cloudflare bypass, TLS disablement, or formal submission was used.",
+  "retainedSample": null
+}

@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:10581",
+  "wupCityCode": 10581,
+  "queueRank": 1255,
+  "rank": 1255,
+  "name": "Thanjavur",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [10.7714485846302, 79.1313196204464],
+  "centerLatLon": [10.7714485846302, 79.1313196204464],
+  "pointBasis": "Exact immutable WUP 2025 queue point in latitude/longitude order; not shifted to force a parcel hit.",
+  "population2025": 443736,
+  "population2025k": 443.736,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "aliases": ["thanjavur"],
+  "status": "complete",
+  "resultCategory": "official_local_registry_entry_verified_but_geometry_unavailable",
+  "registryFound": true,
+  "registryBasis": "The official Thanjavur district Survey & Land page identifies the Assistant Director (Survey & Land Records), Thanjavur, with an official contact number. Official Tamil Nadu land-record and TNGIS sources describe FMB/maps and GIS/map layers, but no safe parcel response was verified in this attempt.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_pending_serial_review",
+  "blocker": "Bounded anonymous access to the current TNGIS map/viewer routes timed out before JavaScript/configuration, public layer metadata, schema, CRS, native parcel ID, or polygon geometry could be inspected. This is not evidence of citywide absence.",
+  "source": {
+    "sourceId": null,
+    "name": "Tamil Nadu Land Records e-Services / TNGIS",
+    "url": "https://eservices.tn.gov.in/",
+    "operator": "Government of Tamil Nadu; local custodian: Thanjavur District Administration, Survey & Land Records",
+    "serviceType": "Official state land-records/FMB service and state GIS platform",
+    "layer": null,
+    "geometryType": null,
+    "nativeIdField": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "sampleCount": 0,
+    "sampleFile": null
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Official Thanjavur district land-record custodian plus Tamil Nadu land-record and TNGIS services.",
+    "verifiedOpenScope": "Local custodian and state service identity only; no live anonymous parcel response or geometry obtained.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Thanjavur Tamil Nadu official cadastral parcel map GIS land records viewer API",
+        "result": "Found the official Thanjavur district Survey & Land page, Tamil Nadu land-record e-Services, TNGIS, and an official Thanjavur Corporation page. Discovery identified local survey administration and FMB/map/GIS services, but no safe parcel identity or geometry response.",
+        "actualResultUrls": [
+          "https://thanjavur.nic.in/survey-land/",
+          "https://eservices.tn.gov.in/",
+          "https://www.tngis.tn.gov.in/apps.html",
+          "https://www.tnurbantree.tn.gov.in/thanjavur/"
+        ]
+      },
+      {
+        "language": "Tamil",
+        "query": "தஞ்சாவூர் நில அளவை வரைபடம் அதிகாரப்பூர்வ இணையதளம் பட்டா",
+        "result": "Found official Tamil Nadu land-record references describing Patta/Chitta, FMB/maps and TNGIS. No safe native parcel ID, schema, CRS, or polygon response was verified.",
+        "actualResultUrls": [
+          "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu",
+          "https://tn.nic.in/news/additional-land-records-services-launch-by-honourable-minister-for-revenue-and-disaster-management-tamil-nadu/",
+          "https://tngis.tn.gov.in/apps/cumta/",
+          "https://thanjavur.nic.in/survey-land/"
+        ]
+      }
+    ],
+    "portals": [
+      {"url": "https://thanjavur.nic.in/survey-land/", "operator": "Thanjavur District Administration, Government of Tamil Nadu", "scope": "Local Survey & Land page; identifies Assistant Director (Survey & Land Records), Thanjavur."},
+      {"url": "https://eservices.tn.gov.in/", "operator": "Government of Tamil Nadu", "scope": "State land-record e-services; official description includes integrated land records combining textual records, FMB/maps and Chitta."},
+      {"url": "https://tngis.tn.gov.in/apps/cumta/", "operator": "TNGIS/TNeGA", "scope": "Official map editor UI exposes district, taluk, urban/rural and GIS layer controls, but this route is not a verified Thanjavur parcel endpoint."},
+      {"url": "https://www.tngis.tn.gov.in/apps.html", "operator": "TNGIS/TNeGA", "scope": "Official TNGIS application directory; search result lists district.thanjavur and describes informational-use limitations."}
+    ],
+    "requests": [
+      {"url": "https://thanjavur.nic.in/survey-land/", "method": "GET; anonymous public page", "httpStatus": 200, "contentType": "text/html", "assessment": "Loaded; identifies the local Survey & Land Records office."},
+      {"url": "https://tngis.tn.gov.in/apps/cumta/", "method": "GET; anonymous public page via first-party discovery", "httpStatus": 200, "contentType": "text/html", "assessment": "Loaded through indexed page representation; UI exposes map/layer controls and lat/lon location inputs, but no parcel payload was returned."},
+      {"url": "https://tngis.tn.gov.in/apps/gi_viewer/", "method": "GET; bounded anonymous request", "httpStatus": null, "contentType": null, "assessment": "Timed out after 30 seconds before HTML/JavaScript/configuration could be inspected."},
+      {"url": "https://tngis.tn.gov.in/generic_viewer/", "method": "GET; bounded anonymous request", "httpStatus": null, "contentType": null, "assessment": "Timed out after 30 seconds before HTML/JavaScript/configuration could be inspected."},
+      {"url": "https://eservices.tn.gov.in/", "method": "GET; official service discovery", "httpStatus": null, "contentType": null, "assessment": "Identified by official Tamil Nadu/NIC service notice; no parcel query was submitted and no geometry response retained."}
+    ],
+    "schemaCrs": {"nativeCrs": null, "geometryResponseSchema": "Not verified", "viewerLayers": []}
+  },
+  "safeFieldAllowlist": ["cityCode", "queueRank", "WUP point", "official service URLs", "HTTP status/content type", "public service metadata", "native CRS/ID only if returned safely", "geometry only if independently verified"],
+  "remainingUncertainty": "The current TNGIS viewer configuration, API routes, native parcel identity field, CRS, anonymous geometry capability, and citywide coverage remain unknown. No exact-point parcel query was run; the exact WUP point was preserved and not used as evidence of absence.",
+  "registryEvidenceUrls": ["https://thanjavur.nic.in/survey-land/", "https://eservices.tn.gov.in/", "https://tngis.tn.gov.in/apps/cumta/"],
+  "checkedAt": "2026-10-09",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "sourceIds": [],
+  "adapterReady": false,
+  "adapterQualification": "held_pending_serial_review",
+  "nextStep": "Serial reviewer should independently qualify the current Tamil Nadu/TNGIS service, viewer configuration, schema/CRS, and any public parcel geometry route; keep runtime held until safe native IDs and real polygon geometry are independently verified.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

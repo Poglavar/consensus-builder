@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4307-cumana.json",
+  "purpose": "Document first-party municipal cadastral discovery, public viewer/API inspection, bounded anonymous request outcomes, safe field limits, and uncertainty for Cumaná.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "exactPointHitUsedAsAbsenceEvidence": false
+  },
+  "assessment": "The official Cumaná SIGAT site identifies SAMAT, the municipal tax authority of Municipio Sucre, and links an inmueble urbano registration procedure. Its public taxpayer application uses /api/v1 and OpenLayers, and the anonymous municipality endpoint confirms id 320 as Alcaldía Bolivariana de Sucre in Estado Sucre. Property-specific contributor resources returned HTTP 403. No anonymous parcel geometry, CRS, schema, or stable native parcel identity was obtained, so no GeoJSON sample was retained.",
+  "registryAssessment": "A local municipal registry/procedure custodian is evidenced through the official SIGAT/SAMAT portal and its inmueble urbano registration workflow. This is local service evidence, not proof of an open parcel-map API or citywide cadastral coverage.",
+  "officialPrimarySources": [
+    {"url":"https://cumana.sigat.net/","observation":"Official municipal SIGAT portal for Municipio Sucre; identifies SAMAT and links the inmueble urbano procedure."},
+    {"url":"https://contribuyentes.sigat.net/?alcaldia=320","observation":"Official taxpayer application shell; current JavaScript uses /api/v1, OpenLayers, and cadastral/inmueble routes."},
+    {"url":"https://contribuyentes.sigat.net/api/v1/alcaldias","observation":"Anonymous public municipality metadata; id 320 is Alcaldía Bolivariana de Sucre, Estado Sucre, with SAMAT."}
+  ],
+  "searchQueries": [
+    {"language":"English","query":"Cumana Venezuela official cadastral parcel map GIS catastro parcelas","result":"First-party SIGAT/SAMAT municipal portal and taxpayer portal found; no open parcel geometry service identified.","actualResultUrls":["https://cumana.sigat.net/","https://contribuyentes.sigat.net/?alcaldia=320","https://contribuyentes.sigat.net/api/v1/alcaldias"]},
+    {"language":"Spanish/local","query":"Cumaná Venezuela catastro parcelas mapa oficial alcaldía Sucre","result":"Official municipal portal and inmueble urbano registration procedure found; no safe anonymous Cumaná parcel geometry endpoint found.","actualResultUrls":["https://cumana.sigat.net/","https://contribuyentes.sigat.net/?alcaldia=320","https://www.igvsb.gob.ve/"]}
+  ],
+  "viewerReview": {"viewerUrl":"https://contribuyentes.sigat.net/?alcaldia=320","apiBase":"/api/v1","observedLibrary":"OpenLayers 4.6.5","observedCrs":"Not exposed by an anonymous parcel response","nativeFieldMapping":null},
+  "safeFieldAllowlist": ["geometry", "stable native parcel identifier if returned"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {"verified":false,"sourceId":null,"sampleCount":0,"sampleFile":null,"nativeId":null,"nativeIdField":null,"exactWupPointTest":"No parcel geometry query was exposed anonymously; contributor-scoped route returned HTTP 403. No exact-point non-hit was treated as absence evidence."},
+  "attempts": [
+    {"url":"https://cumana.sigat.net/","method":"GET","httpStatus":200,"result":"Official municipal portal fetched; inmueble urbano registration link and taxpayer portal observed."},
+    {"url":"https://contribuyentes.sigat.net/?alcaldia=320","method":"GET","httpStatus":200,"result":"Public application shell fetched; current JavaScript/configuration inspected for public API and map routes."},
+    {"url":"https://contribuyentes.sigat.net/api/v1/alcaldias","method":"GET","httpStatus":200,"result":"Public municipality metadata returned id 320 and SAMAT identity; no geometry or parcel schema returned."},
+    {"url":"https://contribuyentes.sigat.net/api/v1/alcaldias/320","method":"GET","httpStatus":404,"result":"Guessed route not found; no unsafe route exploration followed."},
+    {"url":"https://contribuyentes.sigat.net/api/v1/contribuyente/alcaldias/320","method":"GET","httpStatus":403,"result":"Contributor-scoped route denied anonymous access; no login or credential use."},
+    {"url":"https://cumana.sigat.net/documentos/volantes/como_registrar_y_declarar_tu_inmueble_urbano_en_cumana.pdf","method":"GET","httpStatus":200,"result":"Official inmueble procedure PDF downloaded; image-only in bounded text inspection; no geometry or identity extracted."},
+    {"url":"https://www.igvsb.gob.ve/","method":"GET","httpStatus":null,"result":"TLS certificate hostname mismatch; verification was not disabled and no source-specific exception was used."}
+  ],
+  "coverageAssessment": {"claimedScope":"Municipal inmueble/cadastral registration and national cadastral references.","verifiedOpenScope":"Official municipal service and anonymous municipality metadata only; no open parcel geometry scope verified.","citywideVerified":false,"countrywideVerified":false,"geometryVerified":false},
+  "geometryDecisionSummary":"No GeoJSON retained. No stable native parcel identity plus public geometry response was verified.",
+  "remainingUncertainty":"Cumaná cadastral geometry may exist behind the SAMAT/SIGAT contributor workflow or another official national route. The portal's access boundary and the failed IGVSB TLS request leave source custody and current public geometry availability unresolved.",
+  "runtimeAssessment":"held; no adapter qualification because no real public parcel geometry response was independently verified."
+}

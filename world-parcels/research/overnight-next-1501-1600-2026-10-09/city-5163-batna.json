@@ -1,0 +1,42 @@
+{
+  "cityCode": 5163,
+  "queueRank": 1566,
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "point": [35.5450732393448, 6.17149038903069],
+  "population2025": 366415,
+  "population2025k": 366.415,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Batna Algeria official cadastral map parcel cadastre service",
+        "result": "Search identified the Algerian cadastre authority domain an-cadastre.dz, a local Batna cadastre directorate listing, and the official ASGA InfoGéolAlgérie map viewer. The inspected results did not expose a public parcel vector service or safe anonymous parcel response for Batna.",
+        "actualResultUrls": [
+          "https://www.an-cadastre.dz/",
+          "https://www.africabizinfo.com/ar-DZ/%D9%85%D8%AF%D9%8A%D8%B1%D9%8A%D8%A9-%D9%85%D8%B3%D8%AD-%D8%A7%D9%84%D8%A3%D8%B1%D8%A7%D8%B6%D9%8A-%D9%84%D9%88%D9%84%D8%A7%D9%8A%D8%A9-%D8%A8%D8%A7%D8%AA%D9%86%D8%A9",
+          "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx"
+        ]
+      },
+      {
+        "language": "French/Arabic",
+        "query": "Algérie Batna cadastre carte parcellaire service officiel / باتنة الجزائر مسح الأراضي خريطة عقارية موقع رسمي",
+        "result": "Les résultats ont identifié la Direction de مسح الأراضي de Batna et le portail officiel InfoGéolAlgérie; la recherche arabe a également retrouvé la fiche de la direction locale. Aucun résultat inspecté n'a fourni une couche parcellaire publique anonyme ni une réponse géométrique sûre pour la ville.",
+        "actualResultUrls": [
+          "https://www.an-cadastre.dz/",
+          "https://www.africabizinfo.com/ar-DZ/%D9%85%D8%AF%D9%8A%D8%B1%D9%8A%D8%A9-%D9%85%D8%B3%D8%AD-%D8%A7%D9%84%D8%A3%D8%B1%D8%A7%D8%B6%D9%8A-%D9%84%D9%88%D9%84%D8%A7%D9%8A%D8%A9-%D8%A8%D8%A7%D8%AA%D9%86%D8%A9",
+          "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryNote": "A Batna Wilaya cadastre directorate is evidenced by a local office listing naming Direction de مسح الأراضي لولاية باتنة and linking the national cadastre domain. This is local custodian evidence, not proof that a public parcel API is available.",
+  "parcelSource": null,
+  "geometry": null,
+  "runtimeReadiness": "held",
+  "runtimeNote": "No independently qualified adapter: no safe anonymous parcel ID-plus-geometry response was obtained.",
+  "sampleGeojson": null
+}

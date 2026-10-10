@@ -1,0 +1,14 @@
+{
+  "taskId": "city:4647",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-4647-coventry.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/coventry-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-09T14:06:08Z",
+  "reason": "Council planning map and national title-extent procedure were evidenced; local cadastral custody remains unresolved. The viewer TLS failure supplied no native parcel ID or full polygon, and no adapter qualification or headed Details proof exists.",
+  "admission": "not_integrated"
+}

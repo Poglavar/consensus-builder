@@ -1,0 +1,13 @@
+{
+  "taskId": "packet:8865",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-8865-bharatpur.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/bharatpur-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T07:57:39Z",
+  "reason": "Rajasthan public Khasra viewer configuration and Bharatpur custody are evidenced, but the configured GIS metadata timed out. No Bharatpur-scoped native ID/full polygon read, forced paging, 13 bounded cells, metric GEOS checks, source binding, or headed Details proof exists."
+}

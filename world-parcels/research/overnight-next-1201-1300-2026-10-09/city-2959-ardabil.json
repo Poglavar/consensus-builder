@@ -1,0 +1,61 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; local registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09T00:00:00Z",
+  "cityCode": 2959,
+  "queueRank": 1274,
+  "cityId": "wup:2959",
+  "name": "Ardabil",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "iso3": "IRN",
+  "centerLatLon": [38.245604918789, 48.2877089979808],
+  "point": [38.245604918789, 48.2877089979808],
+  "population2025": 437757,
+  "population2025k": 437.757,
+  "populationUnit": "persons",
+  "year": 2025,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ardabil Iran official cadastral parcel map web GIS cadastre land registry",
+        "result": "Search identified the Iranian State Organization for Registration of Deeds and Properties (SSAA), its My.SSAA portal, Shamim cadastral/GNSS service, and the National Cartographic Center Rasa catalog. No public anonymous Ardabil parcel-vector endpoint was verified.",
+        "actualResultUrls": ["https://ssaa.ir", "https://my.ssaa.ir/portal", "https://shamim.ssaa.ir", "https://rasa.ncc.org.ir"]
+      },
+      {
+        "language": "Persian",
+        "query": "سامانه نقشه کاداستر اردبیل پلاک ثبتی نقشه املاک سازمان ثبت اسناد و املاک",
+        "result": "نتایج، سازمان ثبت اسناد و املاک کشور، سامانه شمیم و فرایند نقشه‌برداری/کاداستر را نشان دادند؛ دسترسی عمومی ناشناس به هندسه پارسل اردبیل یا سرویس برداری قابل تأیید پیدا نشد.",
+        "actualResultUrls": ["https://ssaa.ir", "https://my.ssaa.ir/portal", "https://shamim.ssaa.ir", "https://cadastre.mimt.gov.ir"]
+      }
+    ]
+  },
+  "officialSources": [
+    {"url": "https://ssaa.ir", "observation": "Official SSAA domain identified by search as the national deeds and properties registration organization; direct anonymous request timed out."},
+    {"url": "https://my.ssaa.ir/portal", "observation": "Official registration portal identified by search as the public entry point for SSAA services; direct anonymous request timed out. No login was attempted."},
+    {"url": "https://shamim.ssaa.ir", "observation": "Official SSAA Shamim service identified as cadastral/GNSS surveying infrastructure; direct anonymous request timed out. No credentials were used."},
+    {"url": "https://rasa.ncc.org.ir", "observation": "National Cartographic Center product catalog identified in search as a mapping-data catalog; host DNS was unavailable from this environment."}
+  ],
+  "requests": [
+    {"url": "https://ssaa.ir", "method": "GET; anonymous; TLS verification enabled", "httpStatus": "timeout", "outcome": "No response within 8 seconds; no HTML, JavaScript, configuration, or service route inspected."},
+    {"url": "https://my.ssaa.ir/portal", "method": "GET; anonymous; TLS verification enabled", "httpStatus": "timeout", "outcome": "No response within 8 seconds; no login or personal-record route accessed."},
+    {"url": "https://shamim.ssaa.ir", "method": "GET; anonymous; TLS verification enabled", "httpStatus": "timeout", "outcome": "No response within 8 seconds; no credentials or private token requested."},
+    {"url": "https://rasa.ncc.org.ir", "method": "GET; anonymous; TLS verification enabled", "httpStatus": "DNS failure", "outcome": "Host could not be resolved from this environment."},
+    {"url": "https://cadastre.mimt.gov.ir", "method": "GET; anonymous; TLS verification enabled", "httpStatus": "not completed", "outcome": "Request window ended before a response was observed; this is the Ministry of Industry, Mine and Trade mining-cadastre route, not evidence of land-parcel coverage."}
+  ],
+  "registryFound": null,
+  "registryBasis": "National cadastral institutions and services were identified, but no first-party Ardabil local registry/map/procedure page was independently retrieved in the bounded review; registryFound remains null.",
+  "registryEvidenceUrls": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {"url": "https://shamim.ssaa.ir", "kind": "Official SSAA cadastral/GNSS service candidate", "publisher": "State Organization for Registration of Deeds and Properties (SSAA), Iran", "scope": "Cadastral surveying infrastructure was indicated by discovery material; open anonymous parcel geometry, schema, CRS, and city coverage were not verified.", "safeSampleFile": null, "sampleAttributes": "none retained", "nativeFields": []},
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not executed against a verified parcel layer; exact WUP point [38.245604918789, 48.2877089979808] was preserved and not shifted.", "requestEvidence": []},
+  "coverageAssessment": {"claimedScope": "National Iranian cadastral/registration services identified by discovery sources.", "verifiedOpenScope": "None; no anonymous parcel response.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "safeFieldAllowlist": ["safe public parcel/source ID if available", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "runtimeReadiness": "held_quality_review",
+  "resultCategory": "national_cadastral_service_candidate_no_verified_public_geometry",
+  "status": "complete",
+  "remainingUncertainty": "The national services may expose authenticated or professional cadastral workflows, but no anonymous safe endpoint was reached. Exact-point hit testing, parcel identifiers, schema, CRS, citywide completeness, and local Ardabil registry coverage remain unknown. No owner, address, contact, titleholder, tax, account, or personal data was requested or retained."
+}

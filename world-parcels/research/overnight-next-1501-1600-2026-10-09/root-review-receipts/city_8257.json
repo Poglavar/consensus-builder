@@ -1,0 +1,20 @@
+{
+  "taskId": "city:8257",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-8257-colina-de-laranjeiras.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/colina-de-laranjeiras-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/8257/root.json",
+    "tmp/valhalla-parcel-research/8257/query-213-point.json",
+    "tmp/valhalla-parcel-research/root-review-city-8257/layer-66.json",
+    "tmp/valhalla-parcel-research/root-review-city-8257/point-safe-ids.json",
+    "tmp/valhalla-parcel-research/root-review-city-8257/exact-id-125567.json",
+    "tmp/valhalla-parcel-research/runs/20261010T095746-5bd01d1a/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-10T10:02:30.571472Z",
+  "reason": "Original BaseMap parcel query returned ArcGIS error 500. Independent first-party GeoSerra_v02 FeatureServer layer 66 query returned OBJECTID 125567 and PK_INSCLOTE 00960440501 at the immutable point, then one complete 21-vertex closed-ring polygon by exact OBJECTID. The packet predates this positive discovery; its registryFound null is left unchanged pending worker-owned packet follow-through. Stable native identity, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, and headed Details verification remain unproven. No runtime admission.",
+  "sourceAdmission": "not_admitted"
+}

@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-10",
+  "cityCode": 4353,
+  "queueRank": 1587,
+  "name": "Grenoble",
+  "country": "France",
+  "countryCode": "FR",
+  "iso3": "FRA",
+  "point": [45.1806156549356, 5.72378420259572],
+  "population2025": 359128,
+  "population2025k": 359.128,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Grenoble official cadastral map parcel data API cadastre parcelles Grenoble",
+        "result": "Found the official City of Grenoble parcel dataset and the French national IGN API Carto cadastre documentation/API. The city dataset is described as parcel boundaries derived from DGFiP PCI and exposes parcel_id, section and number fields; the IGN public API documents municipal and parcel GeoJSON queries.",
+        "actualResultUrls": [
+          "https://www.data.gouv.fr/datasets/parcelles-grenoble",
+          "https://www.data.gouv.fr/dataservices/api-carto-module-cadastre",
+          "https://apicarto.ign.fr/api/cadastre"
+        ]
+      },
+      {
+        "language": "French",
+        "query": "Grenoble cadastre officiel carte parcelles données API",
+        "result": "Les sources officielles trouvées sont le jeu de données Parcelles de la Ville de Grenoble, l'API Carto cadastre de l'IGN et le service WMS/INSPIRE de cadastre.gouv.fr. La réponse publique IGN a fourni une parcelle GeoJSON pour la commune 38185 au point WUP exact.",
+        "actualResultUrls": [
+          "https://www.data.gouv.fr/datasets/parcelles-grenoble",
+          "https://data.metropolegrenoble.fr/visualisation?id=parcelles-grenoble",
+          "https://www.data.gouv.fr/dataservices/api-carto-module-cadastre",
+          "https://cadastre.gouv.fr/scpc/afficherServiceWMS.do"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official City of Grenoble open-data record identifies a city parcel-boundary dataset, and IGN's official open API returned a parcel feature for Grenoble municipality code 38185. This evidences public cadastral/map service custody, not legal title or owner data.",
+  "verifiedParcelResponse": {
+    "service": "IGN API Carto cadastre / Parcellaire Express (PCI)",
+    "request": "GET https://apicarto.ign.fr/api/cadastre/parcelle?code_insee=38185&_limit=3&geom={\"type\":\"Point\",\"coordinates\":[5.72378420259572,45.1806156549356]}",
+    "httpStatus": 200,
+    "crs": "EPSG:4326",
+    "numberReturned": 1,
+    "nativeFeatureId": "parcelle.3218540",
+    "nativeParcelIdentity": "38185000DN0001",
+    "sourceFieldsObserved": ["gid", "numero", "feuille", "section", "code_dep", "nom_com", "code_com", "com_abs", "code_arr", "idu", "contenance", "code_insee"],
+    "sampleFile": "grenoble-parcel-samples.geojson"
+  },
+  "verifiedSample": true,
+  "sourceIds": ["38185000DN0001"],
+  "coverageAssessment": {
+    "claimedScope": "Grenoble municipal parcel boundaries from the City of Grenoble dataset and French cadastral parcel services.",
+    "verifiedOpenScope": "One bounded exact-point query returned one native parcel polygon; the municipal endpoint was not bulk downloaded.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_city_and_national_cadastral_services_verified_sample",
+  "runtimeReadiness": "held",
+  "remainingUncertainty": "The exact-point response is a bounded sample and does not qualify citywide completeness, update parity, or an adapter. The full municipality query was attempted but timed out; that is not evidence of absence. No unsafe property or ownership fields were requested or retained."
+}

@@ -1,0 +1,16 @@
+{
+  "taskId": "city:1983",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-1983-ciudad-obreg-n.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ciudad-obreg-n-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T14:33:24Z",
+  "independentlyOpenedFirstPartyUrls": [
+    "https://cajeme.sonora.gob.mx/tramites-y-servicios/deslinde",
+    "https://icreson.sonora.gob.mx/acerca-de/oficinas-jurisdiccionales"
+  ],
+  "reason": "Cajeme boundary-survey workflow and official cadastral value-map references support local stewardship, but the packet retains registryFound null and no native-ID polygon response. No fresh reads, paging, 13-cell metric audit, source binding or headed Details check; city remains held. A page or endpoint miss is not citywide absence."
+}

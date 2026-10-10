@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7174-asaba.json",
+  "purpose": "Document first-party local registry evidence and bounded anonymous parcel-service review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Delta State's official pages establish a Ministry of Lands and Surveys workflow in Asaba and list an Asaba Area Planning Office. The reviewed first-party pages and linked PDFs provide administrative procedure and custodian evidence only. No public JavaScript viewer, configuration, WMS/WFS/REST endpoint, parcel schema, CRS declaration, or anonymous ID-plus-geometry response was exposed. This is not evidence of citywide absence.",
+  "registryAssessment": "Local/state registry custodian evidenced: Delta State Ministry of Lands and Surveys and the Asaba Area Planning Office. Public parcel-service integration is not evidenced.",
+  "officialPrimarySources": [
+    {
+      "url": "https://deltastate.gov.ng/process-for-obtaining-c-of-o/",
+      "observation": "Official procedure names the Ministry of Lands and Surveys, Asaba service location, survey-plan and survey-lodgment requirements, and C-of-O workflow. No map/API is advertised."
+    },
+    {
+      "url": "https://deltastate.gov.ng/appendix-1-list-of-area-planning-offices/",
+      "observation": "Official PDF lists the Area Planning Office, Asaba. No machine-readable parcel layer is published."
+    },
+    {
+      "url": "https://deltastate.gov.ng/sabzz1/",
+      "observation": "Official Delta State DLI page links the relevant property-registration and land-based administration materials."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Asaba Nigeria official cadastral map land registry parcel GIS Delta State",
+      "result": "Found official Delta State land-registration and planning-office documents; no open Asaba parcel map/API found.",
+      "method": "Separate English-language web search followed by first-party page and PDF inspection.",
+      "scope": "Identify local custodian and safe anonymous parcel geometry."
+    },
+    {
+      "language": "Igbo (local/native)",
+      "query": "Asaba Igbo map ala ndebanye ala Delta State",
+      "result": "No first-party Igbo-language cadastral map or parcel service found; official Delta State English materials were the relevant local-source leads.",
+      "method": "Separate local-language web search followed by first-party source inspection.",
+      "scope": "Cross-check local-language discovery for a city-specific land map or registry service."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://deltastate.gov.ng/sabzz1/",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official DLI page loaded and linked the Ministry of Lands and Surveys procedure and Asaba planning-office document; no viewer/API route exposed."
+    },
+    {
+      "url": "https://deltastate.gov.ng/process-for-obtaining-c-of-o/",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official embedded PDF retrieved and inspected. It is a registration procedure, not a parcel data service."
+    },
+    {
+      "url": "https://deltastate.gov.ng/appendix-1-list-of-area-planning-offices/",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official embedded PDF retrieved and inspected; Asaba office listed, but no geometry/service endpoint."
+    },
+    {
+      "url": "https://deltastate.gov.ng/statistics-of-c-of-o/",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official C-of-O statistics PDF retrieved; legacy statistics only, no parcel features."
+    },
+    {
+      "url": "https://lands.fmhud.gov.ng/billing-portal",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Federal billing portal page found but not city-scoped Asaba parcel geometry; no parcel query submitted."
+    }
+  ],
+  "safeFieldAllowlist": ["native parcel/survey identity", "geometry", "source CRS", "layer/service name"],
+  "nativeFieldMapping": null,
+  "geometryDecision": "No sample GeoJSON written; there was no qualifying public geometry response.",
+  "coverageAssessment": {
+    "claimedScope": "Official Delta State land-registration procedure and Asaba planning-office custodian evidence.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeDecision": "held",
+  "remainingUncertainty": "A public parcel map/API may exist outside the pages reviewed or may require an ordinary official workflow. No login, CAPTCHA bypass, credentials, private token, unsafe field request, or TLS exception was used."
+}

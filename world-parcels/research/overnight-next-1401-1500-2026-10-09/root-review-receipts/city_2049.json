@@ -1,0 +1,18 @@
+{
+  "taskId": "city:2049",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-2049-biratnagar.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/biratnagar-service-review.json",
+    "tmp/valhalla-parcel-research/2049/merokitta.html",
+    "tmp/valhalla-parcel-research/2049/custom.js"
+  ],
+  "checkedAt": "2026-10-09T16:27:22.006099+00:00",
+  "reviewFindings": {
+    "identity": "WUP 2025 source and immutable queue agree: Biratnagar, Nepal, rank 1420, point [26.5093824807541,87.2780030619981], 398453 persons.",
+    "searches": "Packet and paired review record executed English and Nepali queries with first-party result URLs.",
+    "sourceEvidence": "Cached first-party MeroKitta page and JavaScript expose administrative and mapsheet lookup routes; the paired review reports no anonymous native-ID polygon response. No full polygons are retained. Registry/API coverage remains unresolved (null), not false absence.",
+    "holdReason": "No native-ID parcel polygon, live adapter/source binding, forced paging, 13 bounded cells, metric GEOS overlap checks, or headed details-panel verification."
+  }
+}

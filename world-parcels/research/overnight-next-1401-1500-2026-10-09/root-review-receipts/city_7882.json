@@ -1,0 +1,18 @@
+{
+  "taskId": "city:7882",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-7882-volta-redonda.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/volta-redonda-service-review.json",
+    "tmp/valhalla-parcel-research/7882/geo-http.html",
+    "tmp/valhalla-parcel-research/7882/map.phtml",
+    "tmp/valhalla-parcel-research/7882/x_info-exact.json"
+  ],
+  "checkedAt": "2026-10-09T16:35:02Z",
+  "reason": "WUP code 7882, rank 1425, Brazil, unchanged point and 398107 persons match the roster and queue. English and Portuguese executed-search records point to the cached official municipal map/help and the service review. The original x_info cache shows lotesvr, one feature, safe native ID 240 and an extent, but no full polygon. No fresh full-polygon native-ID read, forced paging, 13 bounded cells, metric qualification, source binding or headed Details verification establishes adapter admission. Registry custody is supported; runtime remains held.",
+  "registryFoundReviewed": true,
+  "retainedFullPolygonCount": 0,
+  "admission": false
+}

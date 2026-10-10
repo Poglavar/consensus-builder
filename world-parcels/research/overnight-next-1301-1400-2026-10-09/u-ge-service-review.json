@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "city_parcel_service_review",
+  "cityRecord": "city-3179-u-ge.json",
+  "cityFile": "city-3179-u-ge.json",
+  "cityCode": 3179,
+  "queueRank": 1381,
+  "city": "Uíge",
+  "country": "Angola",
+  "countryCode": "AO",
+  "point": [-7.60700348087086, 15.0520154227901],
+  "checkedAt": "2026-10-09",
+  "attempt": 2,
+  "reviewStatus": "complete",
+  "registryFound": null,
+  "routeSummary": "National IGCA custodial evidence and MINFIN property-registration/search pages were reviewed. No public anonymous parcel geometry service was qualified, and no sample GeoJSON was retained.",
+  "queries": [
+    {"language": "English", "query": "Uíge Angola official cadastre cadastral map land registry parcel GIS portal", "outcome": "IGCA and MINFIN official-domain material found; no anonymous Uíge parcel layer found."},
+    {"language": "Portuguese", "query": "Uíge Angola cadastro predial mapa cadastral parcelas portal oficial", "outcome": "IGCA and MINFIN property workflows found; no anonymous Uíge parcel layer found."}
+  ],
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://frontoffice.minfin.gov.ao/frontoffice/cadastrar-patrimonio?operation=01&patrimonyTypeV3=03", "httpStatus": 200, "contentType": "text/html; charset=UTF-8", "outcome": "Public HTML form loaded. Province/municipality/commune controls and a Google map point-selection widget were visible in page JavaScript. No submission or location query was made."},
+    {"method": "GET", "url": "https://frontoffice.minfin.gov.ao/frontoffice/consultar-patrimonio", "httpStatus": 200, "contentType": "text/html; charset=UTF-8", "outcome": "Identifier-based taxpayer/property search page loaded with empty results. No anonymous citywide geometry or safe parcel schema exposed."},
+    {"method": "GET", "url": "https://portaldocontribuinte.minfin.gov.ao/guia-rapido-imposto-predial-urbano", "httpStatus": "not completed", "outcome": "TLS certificate chain was not trusted by the local curl runtime; no certificate-verification exception was used. Search-indexed official content was used only to identify the property-registration workflow."},
+    {"method": "GET", "url": "https://urbanismoehabitacao.ao/wp-content/uploads/2024/10/Apresentacao-Geodesia-Cartografia-e-Cadastro-para-o-Ordenamento-do-Territorio-Urbanismo-e-Habitacao-Outubro-Urbano-2024.pdf", "httpStatus": "not completed", "outcome": "DNS resolution failed in this runtime; no endpoint was inferred from the search result."}
+  ],
+  "serviceAssessment": {
+    "candidateOwner": "IGCA / Angola national cadastral authority; MINFIN hosts related property-tax and registration workflows.",
+    "ownerScope": "National custodial or tax/property-registration scope; no Uíge-local parcel service evidenced.",
+    "publicAnonymousGeometry": false,
+    "schemaObserved": "MINFIN HTML form fields only; no parcel feature schema.",
+    "crsObserved": null,
+    "nativeIdObserved": null,
+    "boundedGeometryResponse": null,
+    "exactPointHit": null,
+    "scopeLimit": "The map UI is for registering or locating a declared property and the search page requires taxpayer/property identifiers. These routes do not establish citywide parcel coverage."
+  },
+  "safeFieldAllowlist": ["source-native parcel identifier, geometry, geometry CRS, source layer/version metadata"],
+  "excludedFields": ["owner names", "NIF/taxpayer identifiers", "addresses", "contact details", "titleholder data", "tax/account values", "personal or identity-document data"],
+  "sampleGeoJSON": null,
+  "runtimeReadiness": "held",
+  "uncertainty": "No public anonymous IGCA/Uíge parcel endpoint was found. A login wall, inaccessible route, or absent exact-point hit does not prove citywide absence.",
+  "reviewDecision": "Hold adapter qualification pending an independent serial review of a real anonymous geometry-and-safe-ID response."
+}

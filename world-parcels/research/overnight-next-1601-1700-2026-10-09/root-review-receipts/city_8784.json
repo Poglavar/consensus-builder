@@ -1,0 +1,20 @@
+{
+  "taskId": "city:8784",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-8784-satara.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/satara-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T10:50:57Z",
+  "reason": "Official Satara land-record page supports city-survey custody; 404, timeout and TLS failures do not establish absence. No anonymous native-ID polygon response or adapter qualification was evidenced.",
+  "qualificationGaps": [
+    "fresh native-ID reads",
+    "forced paging",
+    "13 bounded cells",
+    "metric GEOS validity and overlap checks",
+    "source binding",
+    "headed Details-panel verification"
+  ]
+}

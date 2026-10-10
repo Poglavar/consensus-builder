@@ -1,0 +1,152 @@
+{
+  "cityCode": 3592,
+  "queueRank": 1754,
+  "name": "Tacna",
+  "country": "Peru",
+  "countryCode": "PE",
+  "iso3": "PER",
+  "locId": 604,
+  "point": [-18.0141854811811, -70.2464383989927],
+  "population2025": 327582,
+  "population2025k": 327.582,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tacna Peru official cadastral map parcels municipal catastro visor",
+        "result": "First-party discovery identified the Municipality of Tacna, the IDEP national geospatial catalogue, the GeoTakana regional viewer, and the SUNARP Base Gráfica Registral viewer. The public IDEP ArcGIS route inspected was a 1:25,000 map-sheet layer, not a parcel layer; SUNARP BGR requires DNI and issue date plus CAPTCHA.",
+        "actualResultUrls": [
+          "https://www.munitacna.gob.pe/",
+          "https://www.geoidep.gob.pe/servicios-idep/visores-de-mapas",
+          "https://www.idep.gob.pe/geoportal/rest/services/DATOS_GEOESPACIALES/PROYECCIONES_25K/MapServer/8",
+          "https://www.gob.pe/63173-acceder-al-visor-de-la-base-grafica-registral"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Tacna Perú catastro visor oficial predios parcelas mapa",
+        "result": "La búsqueda oficial en español confirmó a la Municipalidad Provincial de Tacna como custodio local, el catálogo IDEP/GeoTakana y el visor BGR de SUNARP. La evidencia municipal describe un catastro municipal y la subgerencia responsable, pero no publicó una API parcelaria anónima; el visor BGR exige identificación y CAPTCHA.",
+        "actualResultUrls": [
+          "https://www.munitacna.gob.pe/archivo/download/35488/show/2025-04-30-informe-de-evaluacion-institucional-correspondiente-al-ano-2024",
+          "https://www.munitacna.gob.pe/archivo/download/22437/show/visacion-de-planos",
+          "https://www.geoidep.gob.pe/catalogo-nacional-de-servicios-web/visores-de-mapas",
+          "https://www.gob.pe/63173-acceder-al-visor-de-la-base-grafica-registral"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official Municipality of Tacna documents identify the municipal cadastral function and Sub Gerencia de Planeamiento Urbano y Catastro; SUNARP provides the national registered-plot viewer. This establishes local/national custodians, not open anonymous parcel geometry.",
+  "registryCustodian": "Municipalidad Provincial de Tacna, Sub Gerencia de Planeamiento Urbano y Catastro; SUNARP Base Gráfica Registral for registered plots",
+  "officialSources": [
+    {
+      "url": "https://www.munitacna.gob.pe/archivo/download/35488/show/2025-04-30-informe-de-evaluacion-institucional-correspondiente-al-ano-2024",
+      "observation": "Official 2024 institutional evaluation states that municipal cadastral updating is an institutional action and names the Sub Gerencia de Planeamiento Urbano y Catastro; it reports cadastral-ficha indicators but no downloadable parcel layer."
+    },
+    {
+      "url": "https://www.munitacna.gob.pe/archivo/download/22437/show/visacion-de-planos",
+      "observation": "Official municipal procedure names the Equipo de Catastro / municipal cadastral workflow for plan review and inspection; it is a procedure, not an anonymous parcel API."
+    },
+    {
+      "url": "https://www.idep.gob.pe/geoportal/rest/services/DATOS_GEOESPACIALES/PROYECCIONES_25K/MapServer/8",
+      "observation": "First-party IDEP ArcGIS Feature Layer named TACNA, polygon geometry, EPSG:4326, public JSON/GeoJSON support. Fields are map-sheet/index fields (COD_IGN, SISTEMA, ZONA, NOM_HOJA, COD_HOJA), not parcel identities."
+    },
+    {
+      "url": "https://www.gob.pe/63173-acceder-al-visor-de-la-base-grafica-registral",
+      "observation": "Official SUNARP service describes registered-plot map viewing by location, electronic filing number, or coordinates, but requires DNI, issue date, and CAPTCHA; no anonymous request was attempted."
+    }
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "url": "https://www.idep.gob.pe/geoportal/rest/services/DATOS_GEOESPACIALES/PROYECCIONES_25K/MapServer/8?f=pjson",
+      "outcome": "HTTP 200; layer metadata returned geometryType esriGeometryPolygon, source/latest spatial reference 4326, maxRecordCount 1000, and map-sheet fields. Not a cadastral parcel service."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.idep.gob.pe/geoportal/rest/services/DATOS_GEOESPACIALES/PROYECCIONES_25K/MapServer/8/query?where=1%3D1&outFields=OBJECTID,COD_IGN,SISTEMA,ZONA,NOM_HOJA,COD_HOJA&returnGeometry=false&f=json&resultRecordCount=3",
+      "outcome": "HTTP 200; returned three map-sheet records and exceededTransferLimit=true. Returned identities were sheet/index records, so no parcel geometry or parcel sample was retained."
+    },
+    {
+      "method": "GET",
+      "url": "https://visor-bgr.sunarp.gob.pe/",
+      "outcome": "Bounded anonymous request timed out after 8 seconds. Official service documentation separately shows DNI/issue-date/CAPTCHA requirements; no retry with credentials or CAPTCHA bypass."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.munitacna.gob.pe/archivo/download/35488/show/2025-04-30-informe-de-evaluacion-institucional-correspondiente-al-ano-2024",
+      "outcome": "HTTP 200 PDF; municipal cadastral responsibility and 2024 indicator evidence readable. No public parcel feature service exposed in the bounded inspection."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.munitacna.gob.pe/archivo/download/22437/show/visacion-de-planos",
+      "outcome": "Official procedure page/PDF discovered in first-party search; it describes municipal cadastral plan review and inspection, not anonymous geometry access."
+    },
+    {
+      "method": "GET",
+      "url": "https://geotakana.regiontacna.gob.pe/visor_pot/",
+      "outcome": "First-party regional POT viewer identified through IDEP catalogue. It concerns territorial planning/ZEE/POT layers; no parcel schema or anonymous parcel endpoint was verified."
+    }
+  ],
+  "nativeFieldMapping": {
+    "idepMapSheetLayer": {
+      "OBJECTID": "ArcGIS object ID for map-sheet feature",
+      "COD_IGN": "IGN map-sheet code",
+      "SISTEMA": "coordinate system label",
+      "ZONA": "UTM zone label",
+      "NOM_HOJA": "map-sheet name",
+      "COD_HOJA": "map-sheet code"
+    },
+    "note": "These fields are not parcel fields and were not copied into retained GeoJSON. No native parcel ID was verified."
+  },
+  "compositeKeyProvenance": "No parcel composite key was returned. IDEP records use map-sheet metadata only; municipal procedure and SUNARP service documentation did not expose a safe anonymous parcel key.",
+  "crs": "EPSG:4326 verified for the IDEP map-sheet layer only; parcel CRS unverified",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "operator": "Municipalidad Provincial de Tacna / Sub Gerencia de Planeamiento Urbano y Catastro; SUNARP BGR",
+    "viewerUrls": ["https://visor-bgr.sunarp.gob.pe/", "https://geotakana.regiontacna.gob.pe/visor_pot/"],
+    "crs": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal cadastral administration and SUNARP registered-plot coverage for Tacna; IDEP/GeoTakana public geospatial viewers.",
+    "verifiedOpenScope": "Municipal custodian and public non-parcel map services only; no anonymous city-bounded parcel feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "exactPointChecked": false,
+    "note": "The exact WUP point was preserved in latitude/longitude order and was not shifted. No exact-point hit/miss inference was made."
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "public service, layer, and schema metadata"
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed against parcel geometry; no usable parcel geometry response",
+    "requestEvidence": []
+  },
+  "retainedSample": null,
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "A zero exact-point hit, timeout, login/identity wall, or non-parcel map extent is not evidence of citywide cadastral absence.",
+    "The IDEP feature layer is a map-sheet/index layer, not a parcel layer; its polygons were not retained as parcel samples.",
+    "No owner, address, titleholder, contact, tax/account, personal, or other unsafe fields were requested or retained.",
+    "No credentials, private tokens, CAPTCHA bypass, or global TLS verification disable was used.",
+    "Packet completion records executed attempts only and does not qualify or admit a runtime adapter."
+  ],
+  "uncertainty": "Current anonymous parcel endpoint, parcel schema, stable native parcel identity, citywide coverage, and parcel CRS remain unresolved. Municipal documentation proves cadastral responsibility/procedure but not open parcel geometry.",
+  "notes": null
+}

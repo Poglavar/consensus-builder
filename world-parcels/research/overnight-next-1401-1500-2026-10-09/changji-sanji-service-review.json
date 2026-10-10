@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2433-changji-sanji.json",
+  "purpose": "Document independent city-specific registry discovery and bounded anonymous geometry access investigation.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Fresh English and Chinese searches found official Xinjiang Natural Resources reporting that the Changji prefecture unified real-estate registration platform covers Changji City and stores GIS spatial information. Official pages did not yield a public viewer/API with anonymous safe parcel ID-plus-geometry output, so no GeoJSON was retained.",
+  "registryAssessment": "Local registry custody is evidenced, so registryFound is true. The official report names the prefecture/city natural-resources registration system and explicitly states coverage of all county/city systems, including Changji City. Geometry access and runtime qualification remain held.",
+  "officialPrimarySources": [
+    {"title": "Xinjiang Natural Resources: Changji unified registration platform", "url": "https://zrzyt.xinjiang.gov.cn/xjgtzy/dzdt/202407/3d5e0ef7f8a24055aa8c0f00836d07c9.shtml", "observation": "Official article says the unified platform integrates all county/city systems and includes GIS spatial information in a map-attribute-file system."},
+    {"title": "Xinjiang Natural Resources: Changji integrated mortgage-transfer reform", "url": "https://zrzyt.xinjiang.gov.cn/xjgtzy/dzdt/202409/5d0cf416e1aa41a297a74c1fbd2fa458.shtml", "observation": "Official article identifies Changji City Natural Resources Bureau and its real-estate registration hall/service operation."},
+    {"title": "China Changji government portal", "url": "https://www.cj.gov.cn/", "observation": "First-party Changji government portal fetched HTTP 200; it exposes public-service navigation but no anonymous cadastral geometry endpoint was found in the inspected homepage."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Changji Sanji China official cadastral parcel map GIS natural resources bureau public service", "executionMethod": "Executed separate web search", "resultUrls": ["https://zrzyt.xinjiang.gov.cn/xjgtzy/dzdt/202407/3d5e0ef7f8a24055aa8c0f00836d07c9.shtml", "https://zrzyt.xinjiang.gov.cn/xjgtzy/dzdt/202409/5d0cf416e1aa41a297a74c1fbd2fa458.shtml", "https://www.cj.gov.cn/"]},
+    {"language": "Chinese", "query": "昌吉市 不动产登记 地籍图 查询 自然资源局 官方 地图 服务", "executionMethod": "Executed separate local-language web search", "resultUrls": ["https://zrzyt.xinjiang.gov.cn/xjgtzy/dzdt/202407/3d5e0ef7f8a24055aa8c0f00836d07c9.shtml", "https://zrzyt.xinjiang.gov.cn/xjgtzy/dzdt/202409/5d0cf416e1aa41a297a74c1fbd2fa458.shtml", "https://www.cj.gov.cn/p121/xzcf/20250318/347699.html"]}
+  ],
+  "attempts": [
+    {"attempt": "official Xinjiang platform article", "url": "https://zrzyt.xinjiang.gov.cn/xjgtzy/dzdt/202407/3d5e0ef7f8a24055aa8c0f00836d07c9.shtml", "result": "Search-visible official report; establishes Changji prefecture unified platform, all county/city integration, Changji City coverage, and GIS map-attribute-file data. No raw endpoint, schema, CRS, or safe parcel response published.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "official Changji service reform article", "url": "https://zrzyt.xinjiang.gov.cn/xjgtzy/dzdt/202409/5d0cf416e1aa41a297a74c1fbd2fa458.shtml", "result": "Search-visible official report; confirms Changji City Natural Resources Bureau real-estate registration operations. No parcel endpoint published.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "official Changji government homepage", "url": "https://www.cj.gov.cn/", "result": "HTTP 200 via ordinary TLS-verified GET. Homepage navigation inspected for public cadastral/map service; no anonymous parcel geometry service URL identified.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "direct official article fetch", "url": "https://zrzyt.xinjiang.gov.cn/xjgtzy/dzdt/202407/3d5e0ef7f8a24055aa8c0f00836d07c1.shtml", "result": "HTTP 404; URL was a malformed/incorrect direct variant and was not used as evidence of registry or data absence.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "current JavaScript/configuration inspection", "url": "https://www.cj.gov.cn/", "result": "No public map viewer bundle or parcel API/configuration linked from the inspected official homepage; no further endpoint was guessed or probed.", "credentialsUsed": false, "personalPropertyFieldsRequested": false}
+  ],
+  "geometryDecision": {"publicParcelGeometryFound": false, "sampleFile": null, "details": "No anonymous safe parcel geometry response with stable native identity, schema, and CRS was found; no GeoJSON retained."},
+  "coverageAssessment": {"claimedScope": "Official reporting claims unified platform coverage across Changji prefecture county/city systems, including Changji City, with GIS spatial data.", "verifiedOpenScope": "Registry/platform existence and claimed Changji City coverage verified, but open parcel query coverage, schema, CRS, and geometry access were not verified.", "citywideVerified": false, "countrywideVerified": false},
+  "safeFieldAllowlist": ["id", "geometry"],
+  "remainingUncertainty": "Authenticated or browser-mediated access may expose safe parcel geometry; exact-point querying was not attempted because no anonymous usable feature request was identified.",
+  "runtimeReadiness": "held_unqualified"
+}

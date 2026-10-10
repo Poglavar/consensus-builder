@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:7669",
+  "cityCode": 7669,
+  "wupCityCode": 7669,
+  "name": "Chiniot",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso2": "PK",
+  "iso3": "PAK",
+  "rank": 1593,
+  "queueRank": 1593,
+  "point": [31.720040957881, 72.9824574022471],
+  "centerLatLon": [31.720040957881, 72.9824574022471],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 357181,
+  "population2025k": 357.181,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Punjab PULSE and PLRA materials evidence a Punjab government cadastral/map service that explicitly includes Chiniot; the Chiniot district government site identifies official land-record issuance services. This establishes a relevant government custodian and public map/service channel, not anonymous citywide parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://lis.pulse.gop.pk/",
+    "https://d2d.pulse.gop.pk/map-qc.html",
+    "https://punjab-zameen.gov.pk/",
+    "https://chiniot.punjab.gov.pk/services",
+    "https://chiniot.punjab.gov.pk/district_profile"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The current official PULSE viewer configuration exposes the Chiniot cadastral service URL, but anonymous ArcGIS REST metadata and query requests returned HTTP 499 Token Required. The PULSE parcel hierarchy API returned HTTP 401 Bearer authentication required. No login, credentials, private token, CAPTCHA, or challenge bypass was attempted.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Punjab government PULSE/PLRA cadastral and parcel-mapping channels, including an explicitly listed Chiniot layer.",
+    "verifiedOpenScope": "No anonymous complete-polygon parcel response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Chiniot Pakistan cadastral parcel map official land records GIS",
+        "scope": "Identify first-party Chiniot cadastral custody and a current public parcel-map or service route.",
+        "result": "Search located the official Punjab PULSE LIS viewer, whose Cadastral Maps list explicitly includes Chiniot; the official PULSE map-QC viewer; PLRA; and the Chiniot district government services page. The PULSE viewers exposed public shells/configuration but no anonymous parcel feature response.",
+        "actualResultUrls": [
+          "https://lis.pulse.gop.pk/",
+          "https://d2d.pulse.gop.pk/map-qc.html",
+          "https://punjab-zameen.gov.pk/",
+          "https://chiniot.punjab.gov.pk/services",
+          "https://chiniot.punjab.gov.pk/district_profile"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "native/local",
+        "query": "چنیوٹ پاکستان کادستر نقشہ سرکاری اراضی ریکارڈ GIS",
+        "scope": "Independent Urdu-language discovery of Chiniot land/cadastral custody and public parcel geometry.",
+        "result": "Search returned the official Punjab land-records authority and Chiniot district government context, but no separate Urdu-first-party parcel geometry endpoint. The official English/Urdu PLRA site describes digitized and GIS-linked land records; access to the inspected PULSE parcel endpoints remained authentication-gated.",
+        "actualResultUrls": [
+          "https://punjab-zameen.gov.pk/",
+          "https://chiniot.punjab.gov.pk/services",
+          "https://lis.pulse.gop.pk/"
+        ],
+        "executionMethod": "Separate Urdu-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "Exact PULSE token/authentication policy, anonymous parcel query syntax, native identity field, returned schema/CRS, and city coverage remain unverified. A 401/499, login wall, or zero exact-point response is not evidence of cadastral absence.",
+  "nextStep": "Serial reviewer may independently qualify a current PULSE/PLRA parcel route or geometry-only extract; do not enable runtime from this packet alone."
+}

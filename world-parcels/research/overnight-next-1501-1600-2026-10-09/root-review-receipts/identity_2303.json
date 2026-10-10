@@ -1,0 +1,16 @@
+{
+  "taskId": "identity:2303",
+  "decision": "resolved",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/identity-2303-official-geography-response.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/root-identity-decision-overlay.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/identity-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/skip-ledger.json",
+    "world-parcels/research/london.json",
+    "world-parcels/research/retry/cities/london.json",
+    "world-parcels/research/retry/cities/london-parcel-response.json"
+  ],
+  "checkedAt": "2026-10-10T08:18:42.353883Z"
+}

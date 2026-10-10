@@ -1,0 +1,93 @@
+{
+  "cityCode": 11548,
+  "queueRank": 1352,
+  "name": "Yixing",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [31.3799088831296, 119.82408263063],
+  "population2025": 415587,
+  "population2025k": 415.587,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Yixing China official cadastral map parcel service natural resources bureau 宜兴 不动产登记 地籍图 官方",
+        "result": "First-party Yixing government results identified the Yixing Natural Resources and Planning Bureau, the Yixing Real Estate Registration Center, local registration service points, and an official notice about Tianditu·Yixing. No safe anonymous parcel polygon or public parcel-vector endpoint was verified.",
+        "actualResultUrls": [
+          "https://www.yixing.gov.cn/zrzyghj/",
+          "https://www.yixing.gov.cn/doc/2022/02/24/1020872.shtml",
+          "https://www.yixing.gov.cn/doc/2026/09/26/1417938.shtml"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "宜兴市 自然资源和规划局 不动产登记 地籍 地图 官方",
+        "result": "检索到宜兴市自然资源和规划局官方站点、不动产登记中心服务网点清单，以及“天地图·宜兴”电子地图融合更新公告；未验证安全匿名地籍要素响应、原生宗地标识或宗地几何接口。",
+        "actualResultUrls": [
+          "https://www.yixing.gov.cn/zrzyghj/index.shtml",
+          "https://www.yixing.gov.cn/doc/2022/02/24/1020872.shtml",
+          "https://www.yixing.gov.cn/doc/2026/09/26/1417938.shtml"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "YIXING-NATURAL-RESOURCES-PLANNING-BUREAU-TIANDITU-YIXING",
+    "name": "Yixing Natural Resources and Planning Bureau / Yixing Real Estate Registration Center / Tianditu·Yixing public geographic-information platform",
+    "url": "https://www.yixing.gov.cn/zrzyghj/",
+    "operator": "Yixing municipal government and Yixing Natural Resources and Planning Bureau; Yixing Real Estate Registration Center is named as the registration service provider",
+    "serviceType": "Official local registry/cadastral custodian and public geographic-information platform evidence; anonymous parcel vector response not verified",
+    "layer": "Official bureau pages and Tianditu·Yixing announcement; no parcel layer response safely qualified",
+    "nativeIdField": null,
+    "nativeIdEvidence": "The reviewed official HTML and announcement describe the public geographic-information platform and service-interface history, but expose no parcel feature schema, native identity field, CRS, or safe geometry response.",
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "Official local pages establish registry/cadastral custody and public mapping infrastructure. No owner, address, titleholder, tax, contact, or other unsafe fields were requested. Runtime admission is not implied."
+  },
+  "requests": [
+    {"url": "https://www.yixing.gov.cn/zrzyghj/index.shtml", "method": "GET; anonymous with TLS verification", "httpStatus": 200, "result": "Official Yixing Natural Resources and Planning Bureau homepage retrieved. It identifies the bureau and links current notices, including the Tianditu·Yixing update article; no parcel API URL or schema was exposed in the inspected HTML."},
+    {"url": "https://www.yixing.gov.cn/doc/2022/02/24/1020872.shtml", "method": "GET; anonymous with TLS verification", "httpStatus": 200, "result": "Official Yixing Real Estate Registration Center service-point page retrieved. It lists municipal and township registration windows and confirms local registration presence; it exposes no parcel geometry service."},
+    {"url": "https://www.yixing.gov.cn/doc/2026/09/26/1417938.shtml", "method": "GET; anonymous with TLS verification", "httpStatus": 200, "result": "Official announcement retrieved. It states Tianditu·Yixing is an authoritative public geographic-information carrier, historically offered portal and service-interface modes, and is undergoing vector-data and resource-catalog updates. No current endpoint, parcel schema, native ID, or CRS was published."},
+    {"url": "https://www.mapyx.com.cn/", "method": "GET; anonymous with TLS verification", "httpStatus": 200, "result": "Legacy domain referenced by a non-first-party 2014 report responded, but current HTML appears generic/unrelated and contains no qualified cadastral layer, feature service, schema, native parcel ID, CRS, or geometry. It was not used as source integration evidence."},
+    {"url": "https://jiangsu.tianditu.gov.cn/wuxi/", "method": "GET; anonymous with TLS verification", "httpStatus": 200, "result": "Current Jiangsu Tianditu Wuxi portal responded with a small HTML shell. No parcel feature service or safe anonymous parcel response was identified in the bounded request."}
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official Yixing Natural Resources and Planning Bureau pages, official Yixing registration-center service-point page, official Tianditu·Yixing announcement, and bounded anonymous requests to the referenced/current public map portals were reviewed.",
+    "verifiedOpenScope": "Local registry/cadastral custodian and public geographic-information platform are evidenced; parcel geometry, native ID, CRS, and feature schema are unverified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "verifiedSample": false,
+  "resultCategory": "official_registry_geometry_unverified",
+  "technicalBlocker": "The current first-party pages describe public mapping and registration services but do not expose a safe anonymous parcel feature endpoint. The legacy mapyx.com.cn response is not a qualified current cadastral service, and the current Jiangsu/Wuxi portal shell did not yield parcel schema or geometry in the bounded inspection.",
+  "remainingUncertainty": "The exact unchanged WUP point may lie within cadastral coverage. No exact-point parcel query was completed, and a missing public endpoint, generic legacy page, or map extent miss is not evidence of citywide absence.",
+  "nextStep": "Serial reviewer may independently inspect only a genuinely public anonymous network response and qualify safe native ID plus geometry if actually returned; keep runtime readiness held.",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [31.3799088831296, 119.82408263063],
+  "publicParcelGeometryFound": false,
+  "sourceIds": ["YIXING-NATURAL-RESOURCES-AND-PLANNING-BUREAU", "YIXING-REAL-ESTATE-REGISTRATION-CENTER", "TIANDITU-YIXING"],
+  "registryEvidenceUrls": [
+    "https://www.yixing.gov.cn/zrzyghj/",
+    "https://www.yixing.gov.cn/doc/2022/02/24/1020872.shtml",
+    "https://www.yixing.gov.cn/doc/2026/09/26/1417938.shtml"
+  ],
+  "pointBasis": "Exact unchanged WUP 2025 settlement point (latitude, longitude); not shifted to force a parcel hit.",
+  "cohort": "overnight-next-1301-1400",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 11548,
+  "cityId": "wup2025:11548"
+}

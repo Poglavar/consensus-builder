@@ -1,0 +1,11 @@
+{
+  "taskId": "city:9127",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-9127-haldwani.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/haldwani-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T10:25:41.209624Z",
+  "reason": "Official revenue custody is recorded; parcel portals and map-service metadata timed out before HTTP. Native geometry, qualification and headed Details verification are absent; no absence inference."
+}

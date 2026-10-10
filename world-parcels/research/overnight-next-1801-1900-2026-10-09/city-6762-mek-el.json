@@ -1,0 +1,140 @@
+{
+  "cityCode": 6762,
+  "queueRank": 1881,
+  "city": "Mek'elē",
+  "country": "Ethiopia",
+  "countryCode": "ET",
+  "point": [13.5022385147911, 39.4677213013733],
+  "population2025": 305037,
+  "population2025k": 305.037,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Mekelle Ethiopia official cadastral parcel map geoportal land registry cadastre",
+        "result": "First-party discovery identified Ethiopia's official e-Land cadastral service, its maps route, the national Ethio-NSDI geoportal, and the Ministry of Urban and Infrastructure land-and-cadastre agency page. No Mek'elē-specific official parcel viewer or local registry endpoint was found in the search results.",
+        "actualResultUrls": [
+          "https://eland.addiscadaster.gov.et/",
+          "https://eland.addiscadaster.gov.et/maps",
+          "https://ethionsdi.gov.et/",
+          "https://mui.gov.et/land-and-cadastre-ceo/"
+        ]
+      },
+      {
+        "language": "Amharic",
+        "query": "መቐለ ካዳስተር የመሬት ምዝገባ ካርታ ኦፊሴላዊ",
+        "result": "First-party discovery returned Ethiopia's official e-Land service and maps route, plus federal urban-land registration/cadastre material. The results did not evidence a Mek'elē municipal parcel service or an anonymous city-bounded feature endpoint.",
+        "actualResultUrls": [
+          "https://eland.addiscadaster.gov.et/",
+          "https://eland.addiscadaster.gov.et/maps",
+          "https://www.hopr.gov.et/documents/portlet_file_entry/20181/%E1%8B%A8%E1%8A%A8%E1%89%B0%E1%88%9B%2B%E1%88%AC%E1%89%B5%2B%E1%8B%AD%E1%8B%9E%E1%89%B3%2B%E1%8A%A5%E1%8A%93%2B%E1%88%AC%E1%89%B5%2B%E1%8A%95%E1%89%A5%E1%88%A8%E1%89%B5%2B%E1%88%9D%E1%8B%9D%E1%8C%88%E1%89%A3%2B%E1%88%A8%E1%89%AA%E1%89%85%2B%E1%8A%A0%E1%8B%8B%E1%8C%85%2B.pdf/dedb22f0-3719-c9a8-ff1f-1df04f53ca8b?download=true"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryCustodian": null,
+  "registryEvidence": {
+    "localCustodianUrl": null,
+    "publicMapServiceUrl": "https://eland.addiscadaster.gov.et/maps",
+    "evidence": "The official e-Land site identifies a national Land Holding Registration and Information Agency service and GIS-based cadastral maps, but the reviewed public material did not identify Mek'elē as a served city or name a Mek'elē municipal custodian. General federal agency prose is not treated as local registry evidence."
+  },
+  "sourceReview": {
+    "service": "Ethiopia e-Land public cadastral service and national Ethio-NSDI geoportal; local Mek'elē registry coverage was not verified.",
+    "baseUrls": [
+      "https://eland.addiscadaster.gov.et/",
+      "https://eland.addiscadaster.gov.et/maps",
+      "https://ethionsdi.gov.et/",
+      "https://mui.gov.et/land-and-cadastre-ceo/"
+    ],
+    "officialAssetsInspected": [
+      "e-Land home/maps HTML shell",
+      "e-Land current runtime and main JavaScript bundle",
+      "Ministry of Urban and Infrastructure land-and-cadastre agency page",
+      "Ethio-NSDI official geoportal discovery result"
+    ],
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "crs": "unverified",
+    "safeFieldAllowlist": [
+      "stable native parcel identifier, only if feature-level stability is independently confirmed",
+      "full parcel polygon geometry",
+      "geometry CRS / coordinate reference metadata",
+      "public service, layer and coverage metadata"
+    ]
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://eland.addiscadaster.gov.et/maps",
+      "outcome": "HTTP 200 over TLS; current Angular e-Land HTML shell retrieved. The page referenced main.d3525dff4b9098d6.js, runtime.8ea72521f0889291.js and public map application assets. No feature response was returned by the HTML request."
+    },
+    {
+      "method": "GET",
+      "url": "https://eland.addiscadaster.gov.et/main.d3525dff4b9098d6.js",
+      "outcome": "HTTP 200 over TLS; current JavaScript bundle inspected for API, WMS, WMTS, GeoServer, FeatureServer, parcel and geometry routes. No directly exposed anonymous parcel feature endpoint or Mek'elē city parameter was verified."
+    },
+    {
+      "method": "GET",
+      "url": "https://eland.addiscadaster.gov.et/runtime.8ea72521f0889291.js",
+      "outcome": "HTTP 200 over TLS; runtime bundle retrieved. No parcel geometry response."
+    },
+    {
+      "method": "GET",
+      "url": "https://eland.addiscadaster.gov.et/assets/config.json",
+      "outcome": "HTTP 200 but server returned the SPA HTML shell rather than JSON configuration; no usable service configuration or parcel schema."
+    },
+    {
+      "method": "GET",
+      "url": "https://eland.addiscadaster.gov.et/api",
+      "outcome": "HTTP 200 but server returned the SPA HTML shell rather than an API response; no parcel data."
+    },
+    {
+      "method": "GET",
+      "url": "https://ethionsdi.gov.et/",
+      "outcome": "Anonymous TLS-verified request timed out during this attempt; no login, retry storm, or TLS exception was used. Search-visible official portal identity was recorded, but no response schema or parcel geometry was obtained."
+    },
+    {
+      "method": "GET",
+      "url": "https://mui.gov.et/land-and-cadastre-ceo/",
+      "outcome": "Official federal land-and-cadastre agency page identified by discovery; general agency description only, not a Mek'elē local registry or parcel response."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not completed against a usable public parcel layer. Exact WUP point [13.5022385147911, 39.4677213013733] was preserved in latitude/longitude order and not shifted.",
+    "requestEvidence": [
+      "official e-Land public map shell retrieved",
+      "current e-Land JavaScript/configuration surface inspected",
+      "no anonymous bounded parcel ID plus geometry response",
+      "Ethio-NSDI request timed out"
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Ethiopia national e-Land cadastral service and Ethio-NSDI discovery surfaces.",
+    "verifiedOpenScope": "National service identity and public SPA shell only; Mek'elē coverage, parcel schema, CRS and feature delivery remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": [
+    "Exact WUP point [13.5022385147911, 39.4677213013733] and latitude/longitude order were preserved; no coordinate was shifted.",
+    "A zero exact-point hit, map extent miss, timeout, login wall or unusable UI is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, registration, personal or other unsafe fields were requested or retained.",
+    "No raw source-specific attribute set, parcel schema or GeoJSON sample was retained because no anonymous feature geometry and stable native identity were verified.",
+    "Packet completion records executed attempts only; it does not qualify or admit a runtime adapter."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The official national e-Land service is evidenced, but local Mek'elē custodianship, city coverage, access workflow, stable native parcel identity, CRS, geometry delivery, currentness and completeness remain unresolved.",
+  "retainedSample": null
+}

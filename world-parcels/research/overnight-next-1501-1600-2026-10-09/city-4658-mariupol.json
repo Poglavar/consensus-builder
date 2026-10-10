@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:4658",
+  "cityCode": 4658,
+  "wupCityCode": 4658,
+  "name": "Mariupol",
+  "country": "Ukraine",
+  "countryCode": "UA",
+  "iso2": "UA",
+  "iso3": "UKR",
+  "rank": 1516,
+  "queueRank": 1516,
+  "point": [47.1117012906688, 37.5730967516757],
+  "centerLatLon": [47.1117012906688, 37.5730967516757],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 375504,
+  "population2025k": 375.504,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Low",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Ukraine's official Public Cadastral Map is documented as publishing State Land Cadastre information, and the first-party NSDI documentation exposes a parcel lookup by cadastral number or coordinates. This evidences a national cadastral map/API route, not a separate Mariupol municipal custodian or citywide geometry availability.",
+  "registryEvidenceUrls": [
+    "https://wikimap.dzk.gov.ua/wiki/%D0%9F%D1%83%D0%B1%D0%BB%D1%96%D1%87%D0%BD%D0%B0_%D0%BA%D0%B0%D0%B4%D0%B0%D1%81%D1%82%D1%80%D0%BE%D0%B2%D0%B0_%D0%BA%D0%B0%D1%80%D1%82%D0%B0",
+    "https://nsdi.gov.ua/docs/api/v2/geodata.html",
+    "https://e.land.gov.ua/services"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The legacy map.land.gov.ua public-map host timed out during bounded normal-TLS retrieval. The documented anonymous NSDI route https://nsdi.gov.ua/api/geo/parcel returned HTTP 403 Access restricted without a token; no credential or token was requested or used. No safe anonymous ID-plus-complete-polygon response, schema/CRS response, or current viewer JavaScript configuration was verified.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Official Ukrainian national public cadastral map and NSDI parcel API documentation; the e-land page records restricted processing for territories under active hostilities or temporary occupation.",
+    "verifiedOpenScope": "No anonymous complete-polygon feature response verified for Mariupol.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Mariupol Ukraine official cadastral map parcel public API State Land Cadastre",
+        "result": "Search identified the official Ukrainian Public Cadastral Map documentation, the official NSDI geodata API documentation with a parcel-by-coordinate route, and the official e-land service page describing access restrictions for active-hostilities or temporarily occupied territories. No Mariupol parcel geometry was obtained.",
+        "actualResultUrls": [
+          "https://wikimap.dzk.gov.ua/wiki/%D0%9F%D1%83%D0%B1%D0%BB%D1%96%D1%87%D0%BD%D0%B0_%D0%BA%D0%B0%D0%B4%D0%B0%D1%81%D1%82%D1%80%D0%BE%D0%B2%D0%B0_%D0%BA%D0%B0%D1%80%D1%82%D0%B0",
+          "https://nsdi.gov.ua/docs/api/v2/geodata.html",
+          "https://e.land.gov.ua/services"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "native/local",
+        "query": "Маріуполь офіційна кадастрова карта земельний кадастр публічна карта",
+        "result": "Ukrainian-language discovery located the official Public Cadastral Map documentation and DGC electronic-services page. The official sources describe the national cadastral map/API and restrictions affecting active-hostilities or temporarily occupied territories; no city-specific public parcel geometry was obtained.",
+        "actualResultUrls": [
+          "https://wikimap.dzk.gov.ua/wiki/%D0%9F%D1%83%D0%B1%D0%BB%D1%96%D1%87%D0%BD%D0%B0_%D0%BA%D0%B0%D0%B4%D0%B0%D1%81%D1%82%D1%80%D0%BE%D0%B2%D0%B0_%D0%BA%D0%B0%D1%80%D1%82%D0%B0",
+          "https://nsdi.gov.ua/docs/api/v2/geodata.html",
+          "https://e.land.gov.ua/services"
+        ],
+        "executionMethod": "Separate Ukrainian-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "The current viewer configuration, parcel layer schema, CRS, native identity, token/access policy, anonymous query behavior, Mariupol parcel coverage, and citywide completeness remain unverified. The exact WUP point was preserved; timeout, HTTP 403, unavailable UI, or restricted access is not evidence of citywide cadastral absence.",
+  "nextStep": "Serial reviewer may independently retry the official map/NSDI route when available and qualify a safe ID-plus-geometry response. Do not enable runtime from this packet alone."
+}

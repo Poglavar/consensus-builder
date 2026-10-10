@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:6038",
+  "cityCode": 6038,
+  "wupCityCode": 6038,
+  "name": "İskenderun",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "iso2": "TR",
+  "iso3": "TUR",
+  "rank": 1518,
+  "queueRank": 1518,
+  "point": [36.5792338938787, 36.1711530066539],
+  "centerLatLon": [36.5792338938787, 36.1711530066539],
+  "pointBasis": "Exact WUP2025 settlement point; not shifted and not a municipal boundary or parcel-coverage claim.",
+  "population2025": 375056,
+  "population2025k": 375.056,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official TKGM page identifies İskenderun Tapu Müdürlüğü under the Hatay Regional Directorate and gives its local address and contact details. This is local registry custody evidence only; it does not establish anonymous parcel geometry or citywide digital coverage.",
+  "registryEvidenceUrls": [
+    "https://www.tkgm.gov.tr/hatay-bm/bagli-mudurlukler/iskenderun-tapu-mudurlugu",
+    "https://parselsorguv2.tkgm.gov.tr/",
+    "https://www.tkgm.gov.tr/projeler/tamamlanan-projeler/megsis"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The official TKGM Parsel Sorgu route was discovered, but bounded retrieval could not expose a usable anonymous feature response: direct curl DNS resolution failed in this environment and the web fetch returned 502. The official İskenderun municipal city-map route rendered only a JavaScript-app shell. No safe native parcel ID plus complete polygon was verified. No login, credential, private token, CAPTCHA bypass, or unsafe field request was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "İskenderun Tapu Müdürlüğü / TKGM Hatay Regional Directorate local custody, TKGM Parsel Sorgu, TKGM MEGSİS, and the İskenderun municipal city-map entry point.",
+    "verifiedOpenScope": "No anonymous complete-polygon feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "İskenderun official cadastral parcel map land registry GIS Turkey parcel map API",
+        "scope": "Identify the local registry custodian and a safe public parcel geometry route.",
+        "result": "Search located the official TKGM İskenderun Tapu Müdürlüğü page, TKGM Parsel Sorgu, TKGM MEGSİS, and the İskenderun municipal city-map entry point. Local registry custody was verified; no safe anonymous parcel geometry response was verified.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/hatay-bm/bagli-mudurlukler/iskenderun-tapu-mudurlugu",
+          "https://parselsorguv2.tkgm.gov.tr/",
+          "https://www.tkgm.gov.tr/projeler/tamamlanan-projeler/megsis",
+          "https://iskenderun.bel.tr/iskenderun-sehir-haritasi"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "Turkish",
+        "query": "İskenderun resmi kadastro parsel sorgu harita tapu kadastro",
+        "scope": "Independent Turkish-language search for local registry custody and a public cadastral map/API.",
+        "result": "Search confirmed the official TKGM Parsel Sorgu service, the official İskenderun Tapu Müdürlüğü listing, TKGM MEGSİS documentation, and the municipal city-map route. The service and local office are evidenced, but no bounded anonymous native-ID polygon response was verified.",
+        "actualResultUrls": [
+          "https://parselsorguv2.tkgm.gov.tr/",
+          "https://www.tkgm.gov.tr/hatay-bm/bagli-mudurlukler/iskenderun-tapu-mudurlugu",
+          "https://www.tkgm.gov.tr/projeler/tamamlanan-projeler/megsis",
+          "https://iskenderun.bel.tr/iskenderun-sehir-haritasi"
+        ],
+        "executionMethod": "Separate Turkish-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "first_attempt",
+    "attemptEvidence": []
+  },
+  "remainingUncertainty": "The exact WUP point was preserved and not used to infer citywide absence. Public viewer configuration, request shape, schema, CRS, native parcel identity, geometry coverage, and citywide completeness remain unverified. A DNS failure, 502, JavaScript shell, timeout, login wall, or map extent miss is not evidence of parcel absence.",
+  "nextStep": "Serial reviewer should independently validate a first-party anonymous native parcel endpoint before any adapter qualification; keep runtime held."
+}

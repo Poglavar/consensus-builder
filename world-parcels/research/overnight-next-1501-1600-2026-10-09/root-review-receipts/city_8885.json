@@ -1,0 +1,17 @@
+{
+  "taskId": "city:8885",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-8885-gamboru.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/gamboru-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T08:28:41.295763Z",
+  "reason": "Official BOGIS sources support Borno state registry custody relevant to Gamboru. Its public account portal is an application route, with no verified anonymous native parcel ID plus complete polygon; fresh reads, forced paging, 13 cells, metric GEOS checks, source binding, and headed Details remain unproved. Public geometry remains unverified, not absent.",
+  "independentlyCheckedFirstPartyUrls": [
+    "https://bogis.bornostate.gov.ng/?page_id=5",
+    "https://app.bogis.bornostate.gov.ng/"
+  ],
+  "sourceAdmission": "not_admitted"
+}

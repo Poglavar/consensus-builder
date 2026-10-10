@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3342-bologna.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Review official Bologna cadastral channels and qualify bounded anonymous parcel geometry evidence.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "wupPointPreserved": [44.4942527646909, 11.3383469340327]
+  },
+  "assessment": "The official Comune di Bologna SIT CATASTO ArcGIS service was identified and queried anonymously. Its parcel layer returned a Bologna polygon in a point-intersection request around the unchanged WUP point. This is local public geometry evidence, not a citywide completeness claim.",
+  "registryAssessment": "A local registry/cadastral map custodian is evidenced: Comune di Bologna - Sistema Informativo Territoriale publishes the CATASTO MapServer and parcel layer. This is distinct from general national cadastral agency prose.",
+  "coverageAssessment": {
+    "claimedScope": "Official service metadata, parcel schema inspection, and one bounded anonymous point query around the immutable WUP point.",
+    "verifiedOpenScope": "One safe Bologna polygon with cadastral composite identity and parcel components was returned.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "officialPrimarySources": [
+    {
+      "url": "https://sitmappe.comune.bologna.it/arcgis/rest/services/CATASTO/CATASTO/MapServer",
+      "operator": "Comune di Bologna - SIT",
+      "scope": "Official municipal CATASTO ArcGIS MapServer and Bologna service extent."
+    },
+    {
+      "url": "https://sitmappe.comune.bologna.it/arcgis/rest/services/CATASTO/CATASTO/MapServer/0",
+      "operator": "Comune di Bologna - SIT",
+      "scope": "Parcel polygon layer schema, safe field list, and native EPSG:23032 metadata."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Bologna official cadastral map parcel viewer Comune Bologna catasto particelle",
+      "result": "Found the official Comune di Bologna SIT CATASTO MapServer and parcel layer.",
+      "actualResultUrls": [
+        "https://sitmappe.comune.bologna.it/arcgis/rest/services/CATASTO/CATASTO/MapServer",
+        "https://sitmappe-test.comune.bologna.it/portal/home/webmap/viewer.html?webmap=2784c4dbacc641f5b281d82b0caf0d06"
+      ]
+    },
+    {
+      "language": "Italian",
+      "query": "Bologna mappa particelle catastali ufficiale Comune di Bologna catasto",
+      "result": "Trovati il servizio ufficiale CATASTO del SIT comunale e il layer delle particelle.",
+      "actualResultUrls": [
+        "https://sitmappe.comune.bologna.it/arcgis/rest/services/CATASTO/CATASTO/MapServer",
+        "https://sit-test-mappe.comune.bologna.it/arcgis/rest/services/puc/Ricerche/MapServer/3"
+      ]
+    }
+  ],
+  "attempts": [
+    "Fetched the official municipal CATASTO MapServer metadata anonymously; HTTP 200.",
+    "Fetched parcel layer metadata anonymously; HTTP 200; observed Polygon geometry, native EPSG:23032, and safe cadastral fields.",
+    "Sent one anonymous TLS-verified point-intersection query at the unchanged WUP point transformed only for the service CRS; requested safe fields and GeoJSON output in EPSG:4326; HTTP 200.",
+    "Observed one Bologna result with COMUNE=A944, FOGLIO=187, MAPPALE=296 and PARTKEY=A944_ 187  296; retained one unchanged source polygon with only canonical id property.",
+    "An initial bounded envelope request was rejected with HTTP 400 because this legacy layer does not support pagination; this was not treated as a source failure, and the bounded point query succeeded.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, TLS exception, owner, address, contact, titleholder, tax/account, or personal field was used or retained."
+  ],
+  "safeFieldAllowlist": ["geometry", "FID", "PARTKEY", "COMUNE", "SEZIONE", "ALLEGATO", "SVILUPPO", "FOGLIO", "MAPPALE"],
+  "geometryEvidence": {
+    "verified": true,
+    "sampleCount": 1,
+    "sampleFile": "bologna-parcel-samples.geojson",
+    "nativeIdentity": "PARTKEY",
+    "nativeIdFields": ["PARTKEY"],
+    "exactWupPointTest": "A point-intersection request using the unchanged WUP point returned a Bologna parcel polygon; this is not an absence or completeness test.",
+    "requestEvidence": [
+      {
+        "url": "https://sitmappe.comune.bologna.it/arcgis/rest/services/CATASTO/CATASTO/MapServer/0/query",
+        "method": "GET; anonymous; TLS verified; safe outFields; outSR=4326; f=geojson",
+        "httpStatus": 200,
+        "assessment": "One Bologna polygon returned."
+      }
+    ]
+  },
+  "nextStep": "Root/serial review should independently qualify the public route, CRS/order, composite identity stability, rate limits, and bounded coverage before any adapter admission. Keep runtime held until then.",
+  "remainingUncertainty": "One local point query cannot establish citywide completeness or freshness; behavior outside the tested vicinity was not assessed.",
+  "researchAttempt": 1,
+  "rootReview": null,
+  "rootReviewedAt": null
+}

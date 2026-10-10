@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-2842-semey.json",
+  "cityCode": 2842,
+  "queueRank": 1924,
+  "city": "Semey",
+  "country": "Kazakhstan",
+  "countryCode": "KZ",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "A first-party East Kazakhstan geoportal documents Semey parcel/map coverage and regional land-relations custody. Its current JavaScript/configuration was inspected: GetAllSettings and GetKatoList were reachable, but the live KATO list contained no Semey entry and no Semey parcel service URL could be derived. The national public cadastral-map URL was also attempted but timed out through bounded web access; no parcel ID plus geometry response was verified.",
+  "queryOutcomes": "Separate English and Kazakh discovery queries are recorded in city-2842-semey.json. Results were limited to official government/geoportal sources and did not establish a current anonymous Semey feature endpoint.",
+  "requestOutcomes": [
+    {
+      "route": "https://vkomap.kz/",
+      "method": "GET",
+      "outcome": "200; current Kazakh viewer HTML loaded and exposed /js/mapLeaflet.js plus related configuration routes"
+    },
+    {
+      "route": "https://vkomap.kz/Public/GetAllSettings",
+      "method": "POST",
+      "outcome": "200 JSON; settings returned for configured KATO codes, but no Semey-specific code was present"
+    },
+    {
+      "route": "https://vkomap.kz/Public/GetKatoList",
+      "method": "POST",
+      "outcome": "200 JSON; live list contained East Kazakhstan locations such as Oskemen, Ridder and Zaysan, but no Semey/Semey KATO record"
+    },
+    {
+      "route": "https://vkomap.kz/Public/GetLayers",
+      "method": "POST",
+      "outcome": "Not executed for Semey because no Semey KATO/proxy record was available; no endpoint was invented"
+    },
+    {
+      "route": "https://map.gov4c.kz/egkn/",
+      "method": "GET",
+      "outcome": "Web fetch timed out; a direct curl request was not accepted because the host certificate could not be verified. No TLS bypass was used"
+    }
+  ],
+  "sourceRoutes": [
+    "https://vkomap.kz/Index/Help",
+    "https://vkomap.kz/Kaz/",
+    "https://aisgzk.kz/aisgzk/kz/content/maps?type=cosmos",
+    "https://www.gov.kz/memleket/entities/abay-semey/activities/587",
+    "https://www.adilet.zan.kz/rus/docs/V23FA016518",
+    "https://www.gov.kz/memleket/entities/aqmola-egin/press/article/details/88490"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [50.410451463955, 80.2441168695813] was preserved; no coordinate was shifted and no exact-point hit/miss inference was made.",
+    "The geoportal help describes historical Semey coverage, while the live KATO/configuration response inspected on 2026-10-10 did not include Semey; this discrepancy is unresolved.",
+    "No current Semey city boundary, parcel layer URL, service schema, CRS, stable native parcel identity or citywide geometry coverage was verified.",
+    "A timeout, certificate-validation failure, unavailable viewer route or missing live KATO entry is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, personal, tax, account or other unsafe fields were requested or retained.",
+    "Packet completion does not qualify or admit a runtime adapter; independent serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No current Semey parcel feature service was reached. The exact WUP point was preserved but no hit/miss inference was made.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Historical East Kazakhstan regional geoportal documentation claims digital parcel maps for Semey; national public cadastral map is the official broader route.",
+    "verifiedOpenScope": "Regional custody/documentation and live viewer configuration only; anonymous Semey parcel geometry was not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current Semey viewer/API route, whether Semey data moved from the East Kazakhstan portal after administrative changes, layer schema, CRS, stable native identity and citywide coverage remain unresolved. No claim is made about parcel absence, ownership, title, tax records or completeness of any Kazakhstan cadastral dataset.",
+  "retainedSample": null
+}

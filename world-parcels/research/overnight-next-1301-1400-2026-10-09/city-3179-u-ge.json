@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:3179",
+  "cityCode": 3179,
+  "wupCityCode": 3179,
+  "name": "Uíge",
+  "country": "Angola",
+  "countryCode": "AO",
+  "iso3": "AGO",
+  "queueRank": 1381,
+  "rank": 1381,
+  "point": [-7.60700348087086, 15.0520154227901],
+  "centerLatLon": [-7.60700348087086, 15.0520154227901],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 408927,
+  "population2025k": 408.927,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "cohort": "overnight-next-1301-1400-2026-10-09",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "metadataReviewFile": "u-ge-service-review.json",
+  "registryFound": null,
+  "registryBasis": "Angola's IGCA is evidenced as the national geographic and cadastral authority, and the MINFIN property portal exposes property registration workflows with province/municipality location fields. No Uíge-local registry office, public parcel viewer, or anonymous citywide parcel geometry endpoint was verified.",
+  "registryEvidenceUrls": [
+    "https://www.ucm.minfin.gov.ao/cs/groups/public/documents/document/aw4z/njg3/~edisp/minfin3687528.pdf",
+    "https://urbanismoehabitacao.ao/wp-content/uploads/2024/10/Apresentacao-Geodesia-Cartografia-e-Cadastro-para-o-Ordenamento-do-Territorio-Urbanismo-e-Habitacao-Outubro-Urbano-2024.pdf",
+    "https://governo.gov.ao/provincia/uige"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held",
+  "technicalBlocker": "No anonymous source-native response containing a safe parcel identifier, complete polygon, schema, and CRS was verified. The public MINFIN pages expose authenticated/session-oriented property registration and taxpayer/property searches; IGCA material describes a planned or existing integrated cadastre/web consultation capability but did not expose a public endpoint in the reviewed pages.",
+  "scopeLimits": "National cadastral authority and a public property-registration workflow were reviewed separately from parcel geometry. No owner, address, contact, titleholder, tax/account, or other unsafe data was requested or retained. No citywide or countrywide parcel completeness is asserted.",
+  "resultCategory": "national_custodian_verified_no_verified_public_geometry",
+  "remainingUncertainty": "The exact parcel at the preserved WUP point, any anonymous IGCA or Uíge municipal viewer/API, native parcel-ID field, CRS, and citywide coverage remain unverified. A map extent miss, unavailable route, login wall, or zero exact-point hit would not establish citywide absence.",
+  "nextStep": "Serial review may pursue an official anonymous IGCA/municipal geometry-only route if one is published, validating CRS, parcel semantics, coverage, and source-native IDs before integration.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Uíge Angola official cadastre cadastral map land registry parcel GIS portal",
+        "result": "First-party and official-domain results identified Angola's IGCA as the national cadastral authority and surfaced MINFIN property-registration material. No anonymous Uíge parcel feature service or downloadable parcel geometry was found.",
+        "actualResultUrls": [
+          "https://www.ucm.minfin.gov.ao/cs/groups/public/documents/document/aw4z/njg3/~edisp/minfin3687528.pdf",
+          "https://urbanismoehabitacao.ao/wp-content/uploads/2024/10/Apresentacao-Geodesia-Cartografia-e-Cadastro-para-o-Ordenamento-do-Territorio-Urbanismo-e-Habitacao-Outubro-Urbano-2024.pdf",
+          "https://frontoffice.minfin.gov.ao/frontoffice/cadastrar-patrimonio?operation=01&patrimonyTypeV3=03"
+        ],
+        "executionMethod": "Separate fresh English web search followed by bounded public GET and source-page inspection."
+      },
+      {
+        "language": "Portuguese",
+        "query": "Uíge Angola cadastro predial mapa cadastral parcelas portal oficial",
+        "result": "Resultados oficiais em português confirmaram o Instituto Geográfico e Cadastral de Angola (IGCA) e o fluxo MINFIN de cadastro de património/imposto predial. O portal público consultado requer dados de contribuinte/imóvel para pesquisa ou inscrição e não publicou uma camada anónima de polígonos cadastrais para Uíge.",
+        "actualResultUrls": [
+          "https://frontoffice.minfin.gov.ao/frontoffice/cadastrar-patrimonio?operation=01&patrimonyTypeV3=03",
+          "https://portaldocontribuinte.minfin.gov.ao/guia-rapido-imposto-predial-urbano",
+          "https://gerson2012.wixsite.com/igcaangola",
+          "https://governo.gov.ao/provincia/uige"
+        ],
+        "executionMethod": "Pesquisa fresca separada em português, seguida de consulta de páginas oficiais e requisições GET públicas limitadas."
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.ucm.minfin.gov.ao/cs/groups/public/documents/document/aw4z/njg3/~edisp/minfin3687528.pdf",
+      "role": "Angola IGCA institutional/legal material",
+      "observation": "Official MINFIN-hosted document describes IGCA as the body responsible for national geographic and cadastral policy/execution and discusses creating urban cadastral bases. It does not expose a public Uíge parcel endpoint."
+    },
+    {
+      "url": "https://frontoffice.minfin.gov.ao/frontoffice/cadastrar-patrimonio?operation=01&patrimonyTypeV3=03",
+      "role": "MINFIN/SIGT public property-registration front office",
+      "observation": "Anonymous GET returned HTTP 200 HTML. The page exposes a PrimeFaces form with province/municipality/commune location controls and a Google map point-selection widget. It is a registration workflow, not an anonymous parcel-polygon service; no form submission or unsafe field query was made."
+    },
+    {
+      "url": "https://frontoffice.minfin.gov.ao/frontoffice/consultar-patrimonio",
+      "role": "MINFIN property search page",
+      "observation": "Anonymous GET returned HTTP 200 HTML with empty results and fields for taxpayer/property identifiers. It is identifier-based and exposes no citywide parcel geometry or safe public feature schema."
+    },
+    {
+      "url": "https://governo.gov.ao/provincia/uige",
+      "role": "Official Government of Angola Uíge province page",
+      "observation": "Confirms Uíge municipality within Uíge Province and its local administrative structure; it is not cadastral evidence."
+    },
+    {
+      "url": "https://urbanismoehabitacao.ao/wp-content/uploads/2024/10/Apresentacao-Geodesia-Cartografia-e-Cadastro-para-o-Ordenamento-do-Territorio-Urbanismo-e-Habitacao-Outubro-Urbano-2024.pdf",
+      "role": "Ministry/IGCA cadastral presentation surfaced by official-domain search",
+      "observation": "Search result describes an integrated cadastral system and web consultation portal. Direct curl from this runtime failed DNS resolution; no endpoint was inferred or invented."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeIdField": null,
+    "outputCrs": null,
+    "exactWupPointTest": "No parcel containment test was completed. Exact WUP point [-7.60700348087086, 15.0520154227901] was preserved and not shifted."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Angola national cadastral authority, MINFIN property-registration/search front office, and official Uíge administrative page reviewed.",
+    "verifiedOpenScope": "National custodial authority and public identifier-based property workflows were verified; no anonymous parcel geometry, native ID, CRS, or citywide parcel completeness was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "researchAttempt": 2
+}

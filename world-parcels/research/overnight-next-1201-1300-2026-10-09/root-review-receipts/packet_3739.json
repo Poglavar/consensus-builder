@@ -1,0 +1,21 @@
+{
+  "taskId": "packet:3739",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-3739-matsuyama.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/matsuyama-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/sample-matsuyama-parcels.geojson",
+    "tmp/valhalla-parcel-research/matsuyama/city-chiseki.html",
+    "tmp/valhalla-parcel-research/matsuyama/package_show.json",
+    "tmp/valhalla-parcel-research/matsuyama/matsuyama-2026.geojson",
+    "tmp/valhalla-parcel-research/matsuyama/bbox.geojson",
+    "tmp/valhalla-parcel-research/matsuyama/exact.geojson"
+  ],
+  "checkedAt": "2026-10-09T13:48:53Z",
+  "reason": "Matsuyama WUP code 3739, rank 1275, Japan, point [33.8263081285138,132.766078613925], 437355 persons matches the immutable queue. English and Japanese executed searches are recorded. The saved official city cadastral page supports registryFound true. The G-Space catalog lists a Matsuyama 2026 GeoJSON resource, whose original first-party cached response names 2025. One safe-ID sample polygon covers the WUP point and has valid metric geometry, but the original resource has 42 distinct polygons with ID H000002385; ID alone is not a unique source key. The retained sample has rounded coordinates: its geometry is not identical to the point-covering original polygon (about 0.243 m2 metric symmetric difference). Preserve bounded geometry discovery only; the packet source-ID stability and unchanged-polygon claims are not accepted.",
+  "qualificationCheck": "Fresh unambiguous exact-ID full-polygon reads, forced paging, 13 bounded cells, metric GEOS duplicates/overlaps/operation checks, source binding, and headed Details-panel verification are absent. Hold unintegrated and unenabled; do not infer citywide coverage from the bounded sample."
+}

@@ -1,0 +1,16 @@
+{
+  "taskId": "city:3231",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-3231-bremen.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/bremen-service-review.json",
+    "tmp/valhalla-parcel-research/3231/services.json",
+    "tmp/valhalla-parcel-research/3231/alkis-capabilities.xml",
+    "tmp/valhalla-parcel-research/3231/point-feature-info.xml"
+  ],
+  "checkedAt": "2026-10-09T14:30:20Z",
+  "reason": "Bremen WUP identity and bilingual searches match the original source and queue. Official ALKIS WMS metadata establishes cadastral custody, but the saved exact-point GML collection is empty and contains no full parcel polygon or native-ID read. Forced paging, 13 cells, metric GEOS checks, source binding, and headed Details verification are absent; point-zero is not citywide absence."
+}

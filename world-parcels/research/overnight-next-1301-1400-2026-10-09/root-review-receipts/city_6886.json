@@ -1,0 +1,15 @@
+{
+  "taskId": "city:6886",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-6886-chandpur.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/chandpur-service-review.json",
+    "tmp/valhalla-parcel-research/6886/cascade-forDist.json",
+    "tmp/valhalla-parcel-research/6886/cascade-forThana.json",
+    "tmp/valhalla-parcel-research/6886/wms.headers"
+  ],
+  "checkedAt": "2026-10-09T14:02:49Z",
+  "reason": "Official point-specific administrative and map service evidence supports local custody, but the parcel GIS capabilities returned 503; no exact parcel polygon/native ID or adapter qualification exists. Ward containment is not parcel coverage."
+}

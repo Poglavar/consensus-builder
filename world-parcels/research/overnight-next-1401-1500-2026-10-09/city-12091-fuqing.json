@@ -1,0 +1,81 @@
+{
+  "cityCode": 12091,
+  "queueRank": 1477,
+  "name": "Fuqing",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [25.7157315479507, 119.365585390738],
+  "population2025": 385081,
+  "population2025k": 385.081,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Fuqing China official cadastral parcel map land registry GIS Natural Resources Bureau",
+        "result": "Discovery identified the official Fuqing Natural Resources and Planning Bureau site and an official Fujian Natural Resources article describing Fuqing's municipal public One Map platforms. An official local public geospatial platform URL was identified, but bounded anonymous access did not return HTML/configuration or parcel geometry.",
+        "actualResultUrls": [
+          "https://www.fuqing.gov.cn/xjwz/zwgk/jigzn/zfgzbm/fqszrzyhghj/202501/t20250114_4961650.htm",
+          "https://zrzyt.fujian.gov.cn/ztzl/sxzygwzxsqzx/zyzxzx/202408/t20240808_6499685.htm",
+          "https://www.fqghj.net/show.aspx?nid=6528&tid=75"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "福清市 地籍图 不动产登记 自然资源和规划局 官方 地图 服务",
+        "result": "官方检索结果确认福清市自然资源和规划局承担不动产统一确权登记、权籍调查、不动产测绘和成果应用职责；官方文章确认福清自然资源一张图及公众平台。未验证匿名地籍宗地要素服务、字段模式、坐标系或稳定宗地标识。",
+        "actualResultUrls": [
+          "https://www.fuqing.gov.cn/xjwz/zwgk/jigzn/zfgzbm/fqszrzyhghj/202501/t20250114_4961650.htm",
+          "https://zrzyt.fujian.gov.cn/ztzl/sxzygwzxsqzx/zyzxzx/202408/t20240808_6499685.htm",
+          "https://www.fqghj.net/show.aspx?nid=6528&tid=75"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://www.fuqing.gov.cn/xjwz/zwgk/jigzn/zfgzbm/fqszrzyhghj/202501/t20250114_4961650.htm",
+    "https://zrzyt.fujian.gov.cn/ztzl/sxzygwzxsqzx/zyzxzx/202408/t20240808_6499685.htm",
+    "https://www.fqghj.net/show.aspx?nid=6528&tid=75"
+  ],
+  "registryBasis": "Official Fuqing government material identifies the Fuqing Natural Resources and Planning Bureau and its Real Estate Registration and Transaction Center, including unified natural-resource/real-estate registration, cadastral investigation, real-estate surveying, and results application. The bureau-hosted Fuqing Smart City Planning Network publishes the public geospatial-platform notice.",
+  "source": {
+    "sourceId": "CN-12091-FUQING-ONE-MAP-REVIEW",
+    "name": "Fuqing official Natural Resources and Planning Bureau One Map / Tian地图·Fuqing public geospatial platform",
+    "url": "http://www.fqghj.net:9002/Portal/index.html",
+    "operator": "福清市自然资源和规划局 / Fuqing Natural Resources and Planning Bureau",
+    "serviceType": "Official local public geospatial/planning platform; anonymous safe parcel geometry not verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "nativeFieldMapping": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official notice says the public geospatial platform provides publicly usable survey results, including vector basemap coverage for 400 square kilometres and imagery coverage for 1,899 square kilometres; the later official article describes municipal One Map platforms and public planning information.",
+    "verifiedOpenScope": "Official local custodian and public-platform claims were verified, but the platform's current JavaScript/configuration, parcel layer, anonymous response schema, CRS, and stable native parcel identity were not verified. Coverage figures are not treated as cadastral parcel completeness.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "Bounded TLS GET to https://fqghj.net/index.aspx timed out after 12 seconds; bounded HTTP GET to http://www.fqghj.net:9002/Portal/index.html timed out after 12 seconds; bounded GET to https://fujian.tianditu.gov.cn/map also did not complete within the run window. No login, credentials, private token, CAPTCHA bypass, or TLS-verification weakening was used. Because the viewer did not yield current JavaScript/configuration or an API response, no safe ID-plus-geometry request could be made.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "registration-rights"],
+  "remainingUncertainty": "The official platform may expose public planning or cadastral layers through a responsive browser/API route, and the local registration system may expose cadastral maps under authorization. The exact WUP point was not shifted and no exact-point absence inference is made.",
+  "nextStep": "Hold runtime integration. A later researcher may qualify an anonymous first-party parcel endpoint only after independently verifying current configuration, layer semantics, schema, CRS, stable native identity, and safe ID-plus-geometry output.",
+  "runtimeReadiness": "held_unqualified",
+  "adapterReady": false,
+  "centerLatLon": [25.7157315479507, 119.365585390738],
+  "populationPlausibility2025": "High",
+  "pointBasis": "Exact immutable WUP 2025 population-weighted settlement point; not shifted to force a parcel hit.",
+  "sourceIds": [],
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "attempt": 1,
+  "priorCheck": {"attemptState": "pending", "attemptEvidence": [], "possiblePriorMatches": []},
+  "schemaVersion": "1.0"
+}

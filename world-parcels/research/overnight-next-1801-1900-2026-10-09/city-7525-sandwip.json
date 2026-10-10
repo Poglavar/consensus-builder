@@ -1,0 +1,85 @@
+{
+  "cityCode": 7525,
+  "queueRank": 1860,
+  "name": "Sandwip",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "iso3": "BGD",
+  "point": [22.4851629353438, 91.4768580398091],
+  "population2025": 309439,
+  "population2025k": 309.439,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sandwip Bangladesh cadastral parcel map official land records GIS",
+        "result": "Found Bangladesh's official Smart Land Map, DLRS Integrated Online Map Purchase System, Survey of Bangladesh map services, and the official Sandwip Upazila land office. The official map services document mouza/plot digitization or map access, but no open Sandwip parcel feature service was identified in discovery.",
+        "actualResultUrls": [
+          "https://map.land.gov.bd/",
+          "https://map.settlement.gov.bd/",
+          "https://sob.gov.bd/pages/static-pages/6922dce0933eb65569e1284b",
+          "https://acl.sandwip.chittagong.gov.bd/"
+        ]
+      },
+      {
+        "language": "Bangla",
+        "query": "সন্দ্বীপ বাংলাদেশ ভূমি নকশা খতিয়ান ক্যাডাস্ট্রাল অফিসিয়াল",
+        "result": "Found the official DLRS map-search page, DLRS mouza-map access guidance, Smart Land Map, and Sandwip Upazila land office. The live DLRS location data uses the spelling সন্দীপ and returns Sandwip mouza metadata, but no parcel geometry or public parcel feature schema was exposed.",
+        "actualResultUrls": [
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://dlrs.gov.bd/site/page/767754cd-5340-4356-851f-210c944f5ba8/Find-Mouza-Map",
+          "https://map.land.gov.bd/",
+          "https://acl.sandwip.chittagong.gov.bd/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "localCustodian": "Upazila Land Office, Sandwip, Chattogram (official site: https://acl.sandwip.chittagong.gov.bd/)",
+    "nationalProcedureOnly": [
+      "https://dlrs.gov.bd/site/page/767754cd-5340-4356-851f-210c944f5ba8/Find-Mouza-Map",
+      "https://settlement.gov.bd/Map/MapSearch"
+    ],
+    "basis": "The official DLRS portal's anonymous location API identifies Chattogram district, Sandwip upazila (spelled সন্দীপ in the API), Sandwip mouza, and two available digitized map records. This evidences a local Sandwip cadastral/mouza-map service path, but not open parcel geometry.",
+    "urls": [
+      "https://map.settlement.gov.bd/api/locations/divisions",
+      "https://map.settlement.gov.bd/api/locations/districts?division=চট্টগ্রাম",
+      "https://map.settlement.gov.bd/api/locations/upazilas?division=চট্টগ্রাম&district=চট্টগ্রাম",
+      "https://map.settlement.gov.bd/api/locations/mouzas?division=চট্টগ্রাম&district=চট্টগ্রাম&upazila=সন্দীপ",
+      "https://map.settlement.gov.bd/api/search-mouzas?search=%E0%A6%B8%E0%A6%A8%E0%A7%8D%E0%A6%A6%E0%A7%80%E0%A6%AA&page=1&limit=21"
+    ]
+  },
+  "requests": [
+    {"route":"https://map.land.gov.bd/","method":"GET","status":200,"outcome":"Official Smart Land Map landing page returned HTML. It describes digitized/georeferenced mouza sheets and plot-based land zoning; current page scripts did not expose a verified anonymous Sandwip parcel ID-plus-geometry route."},
+    {"route":"https://map.settlement.gov.bd/","method":"GET","status":200,"outcome":"Current official DLRS Integrated Online Map Purchase System returned HTML and JavaScript. Bundle inspection identified public location, search, map metadata, and preview routes; the portal is a map purchase/catalog service, not an open parcel geometry API."},
+    {"route":"https://map.settlement.gov.bd/api/locations/divisions","method":"GET","status":200,"outcome":"Returned Bangladesh division names including চট্টগ্রাম."},
+    {"route":"https://map.settlement.gov.bd/api/locations/districts?division=চট্টগ্রাম","method":"GET","status":200,"outcome":"Returned district list including চট্টগ্রাম."},
+    {"route":"https://map.settlement.gov.bd/api/locations/upazilas?division=চট্টগ্রাম&district=চট্টগ্রাম","method":"GET","status":200,"outcome":"Returned upazila list including সন্দীপ, the portal's current spelling for Sandwip."},
+    {"route":"https://map.settlement.gov.bd/api/locations/mouzas?division=চট্টগ্রাম&district=চট্টগ্রাম&upazila=সন্দীপ","method":"GET","status":200,"outcome":"Returned a long mouza catalog including সন্দীপ and other Sandwip mouzas; metadata only, with no parcel geometries."},
+    {"route":"https://map.settlement.gov.bd/api/search-mouzas?search=Sandwip&page=1&limit=21","method":"GET","status":200,"outcome":"Returned zero results; English spelling is not indexed by this endpoint."},
+    {"route":"https://map.settlement.gov.bd/api/search-mouzas?search=সন্দীপ&page=1&limit=21","method":"GET","status":200,"outcome":"Returned four mouza-map catalog records, including two Chattogram/Sandwip records with stable catalog IDs 715701469948469000 and 715701487224807000; records contained map metadata and thumbnail paths only."},
+    {"route":"https://map.settlement.gov.bd/api/maps/715701469948469000","method":"GET","status":200,"outcome":"Returned safe map metadata for Sandwip sheet ১, surveyType UNKNOWN, isDigitized true, and a preview path; no polygon geometry, parcel identity, or CRS."},
+    {"route":"https://map.settlement.gov.bd/api/maps/715701487224807000","method":"GET","status":200,"outcome":"Returned a second safe map metadata record with the same Sandwip location and a different preview path; no polygon geometry, parcel identity, or CRS."},
+    {"route":"https://map.settlement.gov.bd/api/search?division=চট্টগ্রাম&district=চট্টগ্রাম&upazila=সন্দীপ&mouza=সন্দীপ&page=1&limit=21","method":"GET","status":200,"outcome":"Returned no parcel/map result for the location search with the available Sandwip mouza name; no geometry was obtained."},
+    {"route":"https://settlement.gov.bd/Map/MapSearch","method":"GET/search discovery","status":200,"outcome":"Official DLRS search page returned HTML with division, district, survey, upazila, mouza, sheet, and dag fields; it is an interactive/formal record search and no anonymous parcel geometry response was verified."},
+    {"route":"https://acl.sandwip.chittagong.gov.bd/","method":"GET/search discovery","status":200,"outcome":"Official Sandwip Upazila Land Office site returned HTML and evidences the local land-office custodian; no parcel API or downloadable geometry was exposed."},
+    {"route":"https://sob.gov.bd/pages/static-pages/6922dce0933eb65569e1284b","method":"GET/search discovery","status":200,"outcome":"Official Survey of Bangladesh map-services page returned HTML describing topographic/map products including a Sandwip sample; this is general mapping evidence, not parcel geometry."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel ID if exposed", "polygon geometry", "service/layer metadata", "CRS metadata"],
+  "nativeFieldMapping": {"catalogRecordId":"id","mouzaName":"mouzaName","surveyType":"surveyType","sheetNo":"sheetNo","isDigitized":"isDigitized"},
+  "compositeKeyProvenance": "DLRS catalog metadata exposes id plus division, district, upazila, mouzaName, sheetNo, and surveyType. These are map-record fields, not parcel-native IDs; no parcel composite key was constructed.",
+  "crs": {"source": null, "retainedSample": null},
+  "verifiedSample": {"count":0,"sampleFile":null,"exactWupPointQuery":false,"result":"No anonymous parcel ID-plus-geometry response was obtained. This is not evidence of citywide parcel absence."},
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {"claimedScope":"Official Bangladesh national mouza/plot map and DLRS catalog, with a Sandwip local land-office path.","verifiedOpenScope":"Sandwip mouza-map catalog metadata and official local land-office evidence only; parcel schema, CRS, native parcel identity, geometry, update currency, and citywide completeness remain unverified.","citywideVerified":false,"countrywideVerified":false},
+  "runtimeReadiness":"held_pending_serial_review",
+  "serialReviewerQualification":"not qualified; no independently verified parcel adapter candidate",
+  "scopeLimits":["The exact WUP point is preserved in latitude/longitude order and was not shifted to seek a parcel hit.","No exact-point parcel query was completed because no usable anonymous parcel feature service was identified; a zero or absent search result is not evidence of citywide absence.","DLRS map catalog IDs are not asserted as parcel IDs and no synthetic row identity was created.","No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS-verification bypass was used.","Packet completion records research evidence only and does not admit source integration or runtime use."],
+  "remainingUncertainty":"The DLRS catalog indicates digitized Sandwip mouza maps and the local land-office custodian, but the public portal exposes map metadata/previews rather than anonymous parcel polygons. Parcel-level access may require a separate viewer, purchase, or formal land-record workflow; stable parcel identity, CRS, citywide coverage, and legal/update status remain unverified."
+}

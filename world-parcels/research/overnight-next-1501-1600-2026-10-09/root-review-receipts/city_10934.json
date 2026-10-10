@@ -1,0 +1,15 @@
+{
+  "taskId": "city:10934",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-10934-shuyang.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/shuyang-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/valhalla-parcel-research/shuyang/iframe.html",
+    "tmp/valhalla-parcel-research/shuyang/shuyang-home.html"
+  ],
+  "checkedAt": "2026-10-10T09:32:05.433737Z",
+  "reason": "First-party registration custodian is identified, but the linked viewer route returned HTTP 493 and no parcel schema or geometry.",
+  "admissionGates": "Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are not evidenced."
+}

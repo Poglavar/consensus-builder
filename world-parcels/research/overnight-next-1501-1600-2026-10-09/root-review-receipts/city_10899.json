@@ -1,0 +1,16 @@
+{
+  "taskId": "city:10899",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-10899-dehri.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/dehri-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/valhalla-parcel-research/dehri/levels1.json",
+    "tmp/valhalla-parcel-research/dehri/extent-32_02_07_1104_CS_00_00_.json",
+    "tmp/valhalla-parcel-research/dehri/extent-32_02_07_1104_RS_07_00_.json"
+  ],
+  "checkedAt": "2026-10-10T09:32:05.432966Z",
+  "reason": "First-party Dehri locality hierarchy exists, but cadastral extent is null and revisional extent is empty; no parcel ID or geometry.",
+  "admissionGates": "Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are not evidenced."
+}

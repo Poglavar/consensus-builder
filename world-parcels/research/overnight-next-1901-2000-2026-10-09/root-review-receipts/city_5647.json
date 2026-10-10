@@ -1,0 +1,11 @@
+{
+  "taskId": "city:5647",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-5647-ponta-grossa.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ponta-grossa-service-review.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T19:22:11Z",
+  "reason": "Municipal geoprocessing custody is evidenced; the accessible state layers are cartographic and the municipal route was unavailable. No parcel polygon/native ID or adapter qualification was obtained."
+}

@@ -1,0 +1,19 @@
+{
+  "taskId": "city:6324",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-6324-indramayu.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/indramayu-service-review.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/runs/20261010T131855-3ad663ce/stdout.jsonl",
+    "tmp/valhalla-parcel-research/6324/_api_datasets.json",
+    "tmp/valhalla-parcel-research/6324/_api_mapset.json",
+    "tmp/valhalla-parcel-research/6324/_api_geojson_indramayu.json"
+  ],
+  "checkedAt": "2026-10-10T13:24:17Z",
+  "registryFound": true,
+  "reason": "Official ATR/BPN and Indramayu Satu Peta custodial routes are evidenced; saved catalog page one and the bounded GeoJSON validation error contain no verified parcel ID or polygon, and remaining catalog coverage is unresolved.",
+  "admission": "Held: no verified parcel geometry or stable native ID; fresh adapter native-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, and headed Details-panel verification are not independently evidenced. No runtime, catalog, configuration, or coverage admission."
+}

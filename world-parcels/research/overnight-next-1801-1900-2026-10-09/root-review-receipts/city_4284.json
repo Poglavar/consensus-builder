@@ -1,0 +1,14 @@
+{
+  "taskId": "city:4284",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-4284-al-santa.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/al-santa-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "tmp/valhalla-parcel-research/al-santa/esa-services.html",
+    "tmp/valhalla-parcel-research/al-santa/esa-city-maps.html"
+  ],
+  "checkedAt": "2026-10-10T17:58:12.627545Z",
+  "reason": "Official ESA pages establish survey-service custody but no anonymous Al-Santa parcel ID and full polygon response; adapter qualification is absent."
+}

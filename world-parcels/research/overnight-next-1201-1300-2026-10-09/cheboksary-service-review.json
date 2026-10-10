@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5555-cheboksary.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Review official Russian cadastral channels and qualify bounded anonymous parcel evidence for Cheboksary.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "wupPointPreserved": [56.1183130669807, 47.2546672928967]
+  },
+  "assessment": "Rosreestr/Rosкадастр public-map channels were identified through English and Russian discovery, but bounded anonymous requests to official hosts timed out before viewer configuration or a parcel response could be inspected. No geometry is retained.",
+  "registryAssessment": "Rosreestr is the national cadastral custodian. A local Cheboksary registry/map/procedure was not independently evidenced in a usable first-party response; registryFound therefore remains null.",
+  "coverageAssessment": {"claimedScope": "First-party discovery and bounded anonymous GET attempts only.", "verifiedOpenScope": "No parcel feature, ID, schema, CRS, or geometry verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "officialPrimarySources": [
+    {"url": "https://rosreestr.gov.ru/", "operator": "Rosreestr", "scope": "National cadastral-registration authority portal; request timed out."},
+    {"url": "https://pkk.rosreestr.ru/", "operator": "Rosreestr/Rosкадастр public-map channel", "scope": "Public cadastral-map channel identified in discovery; request timed out."},
+    {"url": "https://ppk.rosreestr.ru/", "operator": "Rosreestr/Rosкадастр public-map channel", "scope": "Current/alternate public-map channel identified in discovery; no response obtained."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Cheboksary official cadastral parcel map public viewer Rosreestr cadastral map", "result": "Found public-map channel references; Cheboksary-specific third-party result was not treated as first-party evidence.", "actualResultUrls": ["https://pkk.rosreestr.ru/", "https://ppk.rosreestr.ru/", "https://roscadaster.com/map/respublika-chuvashiya/cheboksary"]},
+    {"language": "Russian", "query": "Чебоксары официальная кадастровая карта публичная кадастровая карта Росреестр", "result": "Found Rosreestr public-map references and general official-custodian material; no usable parcel response.", "actualResultUrls": ["https://pkk.rosreestr.ru/", "https://ppk.rosreestr.ru/", "https://rosreestr.gov.ru/"]}
+  ],
+  "attempts": [
+    "Attempted anonymous TLS-verified GET to rosreestr.gov.ru; timed out after 20 seconds.",
+    "Attempted anonymous TLS-verified GET to pkk.rosreestr.ru; timed out after 20 seconds and stopped the request batch.",
+    "Recorded ppk.rosreestr.ru and the Rosreestr online-request path as uncompleted follow-on routes; no parcel request was issued because viewer JavaScript/configuration was unavailable.",
+    "No owner, address, contact, titleholder, personal, tax/account, credential, or private-token fields were requested or retained.",
+    "Safe field allowlist remains empty because no response schema was obtained.",
+    "No citywide or countrywide completeness claim; runtime remains held for serial review."
+  ],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not executed against a parcel endpoint; no coordinate shift and no absence inference."},
+  "nextStep": "Root/serial review should independently retry official public-map access, inspect current client configuration and CRS/order, and qualify a safe parcel identifier before any adapter admission.",
+  "remainingUncertainty": "Official hosts may be unavailable from this network path; a timeout does not establish citywide absence or lack of cadastral coverage.",
+  "researchAttempt": 1,
+  "rootReview": null,
+  "rootReviewedAt": null
+}

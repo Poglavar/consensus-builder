@@ -1,0 +1,197 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; local registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09T00:00:00Z",
+  "cityCode": 4457,
+  "queueRank": 1259,
+  "cityId": "wup:4457",
+  "name": "Santa Marta",
+  "country": "Colombia",
+  "countryCode": "CO",
+  "iso3": "COL",
+  "centerLatLon": [11.2345904677867, -74.1864107381004],
+  "point": [11.2345904677867, -74.1864107381004],
+  "population2025": 442455,
+  "population2025k": 442.455,
+  "populationUnit": "persons",
+  "year": 2025,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Santa Marta Colombia official cadastral map land registry GIS parcel map IGAC Alcaldía Santa Marta",
+        "result": "Found the official Santa Marta Catastro Multipropósito site, the official municipal observatory map, and IGAC's official open cadastral-data and gestor services. Santa Marta is listed as an operating district cadastral gestor; no anonymous Santa Marta-specific parcel feature endpoint was verified.",
+        "actualResultUrls": [
+          "https://catastrosantamarta.gov.co/",
+          "https://observatorioinmobiliario.santamarta.gov.co/maps.html",
+          "https://www.igac.gov.co/datos-abiertos/datos-abiertos-geoespaciales",
+          "https://mapas.igac.gov.co/server/rest/services/catastro/Gestores_Catastrales/MapServer/1"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Santa Marta Colombia mapa catastral oficial predios catastro SIG Alcaldía Santa Marta IGAC",
+        "result": "La búsqueda en español identificó el sitio oficial Catastro Multipropósito Santa Marta, sus trámites de certificados, cartas y planos catastrales, el Observatorio Inmobiliario y los servicios oficiales del IGAC. El servicio de gestores registra Santa Marta (47001) en operación bajo el gestor catastral distrital habilitado. No se verificó un servicio anónimo específico de geometría parcelaria de Santa Marta.",
+        "actualResultUrls": [
+          "https://catastrosantamarta.gov.co/mapa-del-sitio",
+          "https://catastrosantamarta.gov.co/productos/cartas-catastrales",
+          "https://catastrosantamarta.gov.co/productos/planos-catastrales",
+          "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://catastrosantamarta.gov.co/",
+      "operator": "Unidad Administrativa Especial de Catastro Multipropósito del Distrito Turístico, Cultural e Histórico de Santa Marta / Alcaldía de Santa Marta",
+      "observation": "Official local cadastral site identifies the district cadastral unit, Secretaría de Hacienda affiliation, local contact and cadastral services, and links to cadastral certificates, cadastral maps/plans, and the real-estate observatory.",
+      "scope": "Local cadastral custodian and public procedure site; no anonymous parcel-vector endpoint exposed in the reviewed HTML/Next.js configuration."
+    },
+    {
+      "url": "https://catastrosantamarta.gov.co/mapa-del-sitio",
+      "operator": "Catastro Multipropósito Santa Marta",
+      "observation": "Official site map lists cadastral certificates, cadastral maps and cadastral plans as products, plus the 2025 cadastral-update process.",
+      "scope": "Local cadastral products/procedures; not a verified open feature service."
+    },
+    {
+      "url": "https://observatorioinmobiliario.santamarta.gov.co/maps.html",
+      "operator": "Observatorio Inmobiliario Catastral de Santa Marta",
+      "observation": "Official municipal observatory page describes interactive territorial, transaction, perimeter and geoeconomic-zone maps and property-market information. Direct shell retrieval hit a Cloudflare managed challenge; no challenge was bypassed.",
+      "scope": "Municipal observatory and thematic real-estate maps; not verified parcel geometry access."
+    },
+    {
+      "url": "https://mapas.igac.gov.co/server/rest/services/catastro/Gestores_Catastrales/MapServer/1",
+      "operator": "Instituto Geográfico Agustín Codazzi (IGAC)",
+      "observation": "Anonymous ArcGIS query for mpcodigo 47001 returned Santa Marta, gestor_catastral 'DISTRITO TURISTICO, CULTURAL E HISTORICO DE SANTA MARTA', status 'EN OPERACION', and gestor_contrato 'GESTOR HABILITADO POR EL IGAC'.",
+      "scope": "National official registry of cadastral service responsibility; not parcel geometry."
+    },
+    {
+      "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4",
+      "operator": "Instituto Geográfico Agustín Codazzi (IGAC)",
+      "observation": "Official public ArcGIS U_TERRENO layer exposes polygon geometry and safe candidate fields FID, CODIGO, GLOBALID_S and GlobalID, with supported JSON/GeoJSON/PBF query formats; its coverage/jurisdiction is not established as complete for Santa Marta.",
+      "scope": "National/IGAC cadastral parcel layer candidate; not accepted as Santa Marta coverage without a successful bounded city response."
+    },
+    {
+      "url": "https://www.igac.gov.co/datos-abiertos/datos-abiertos-geoespaciales",
+      "operator": "Instituto Geográfico Agustín Codazzi (IGAC)",
+      "observation": "Official open-data page describes national cadastral geographic/alfanumeric products and their jurisdiction limits; it distinguishes IGAC data from cadastral gestores.",
+      "scope": "National open-data documentation; not evidence of citywide Santa Marta geometry."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://catastrosantamarta.gov.co/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "responseBytes": 111478,
+      "outcome": "Official site returned successfully. Current Next.js HTML and referenced chunks were inspected for map/API configuration; the site exposes procedures and an external observatory link, not an anonymous parcel feature endpoint."
+    },
+    {
+      "url": "https://catastrosantamarta.gov.co/productos/{certificados-catastrales,cartas-catastrales,planos-catastrales}",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "responseBytes": 71751,
+      "outcome": "Official cadastral product pages returned successfully; no safe machine-readable parcel geometry response was exposed."
+    },
+    {
+      "url": "https://observatorioinmobiliario.santamarta.gov.co/maps.html",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 403,
+      "contentType": "text/html",
+      "responseBytes": 5395,
+      "outcome": "Cloudflare managed challenge/login-like interstitial. No CAPTCHA/Cloudflare bypass or browser challenge solving was attempted; this is not evidence of citywide absence. Indexed official content was used only to record the map scope."
+    },
+    {
+      "url": "https://mapas.igac.gov.co/server/rest/services/catastro/Gestores_Catastrales/MapServer/1/query",
+      "method": "GET; anonymous ArcGIS REST query; where=mpcodigo='47001'; outFields limited to gestor/custody fields; returnGeometry=false",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "responseBytes": 764,
+      "outcome": "Returned one Santa Marta gestor record: enabled district gestor, status EN OPERACION. No parcel or unsafe owner/address fields requested."
+    },
+    {
+      "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4?f=pjson",
+      "method": "GET; anonymous ArcGIS REST metadata request",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "responseBytes": 3805,
+      "outcome": "Returned U_TERRENO polygon layer metadata, CRS/service metadata, query formats, and safe candidate identity fields."
+    },
+    {
+      "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4/query",
+      "method": "GET; anonymous ArcGIS REST point query; exact WUP point preserved in EPSG:4326; outFields=FID,CODIGO,GLOBALID; returnGeometry=true; outSR=4326; f=geojson",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "responseBytes": 42,
+      "outcome": "Returned an empty FeatureCollection at the exact point. This is recorded as a zero exact-point hit only and is not evidence of citywide absence."
+    },
+    {
+      "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4/query",
+      "method": "GET; anonymous ArcGIS REST envelope query; envelope -74.22,11.20,-74.15,11.27 in EPSG:4326; outFields=FID,CODIGO,GLOBALID; returnGeometry=true; outSR=4326; resultRecordCount=3",
+      "httpStatus": null,
+      "contentType": null,
+      "responseBytes": 0,
+      "error": "curl timeout after 25 seconds",
+      "outcome": "No bounded city-envelope response was obtained. This is not evidence of citywide absence and no geometry was retained."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/content/items/d7f4b87a9b20482db3d3b912ff835343/data?f=json",
+      "method": "GET; anonymous public IGAC open-data item download attempt",
+      "httpStatus": null,
+      "contentType": "application/octet-stream",
+      "responseBytes": 937320685,
+      "error": "transfer timed out after 25 seconds while downloading a multi-gigabyte public GDB; incomplete scratch cache only",
+      "outcome": "The item metadata identifies a public IGAC GDB containing U_TERRENO/R_TERRENO datasets for municipalities under IGAC jurisdiction. It was not treated as Santa Marta geometry and no raw source attributes were retained in the cohort."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Official local Catastro Multipropósito Santa Marta pages identify the district cadastral unit and cadastral products/procedures; IGAC's official gestor service independently identifies Santa Marta (47001) as an operating district cadastral gestor. This establishes local cadastral custody, not anonymous open parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://catastrosantamarta.gov.co/",
+    "https://catastrosantamarta.gov.co/mapa-del-sitio",
+    "https://mapas.igac.gov.co/server/rest/services/catastro/Gestores_Catastrales/MapServer/1"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4",
+    "kind": "Official IGAC ArcGIS U_TERRENO polygon layer",
+    "publisher": "Instituto Geográfico Agustín Codazzi (IGAC)",
+    "scope": "Public national/IGAC cadastral parcel layer candidate. Metadata exposes polygon geometry and safe identity candidates, but Santa Marta-specific coverage was not verified; exact-point query was empty and envelope query timed out.",
+    "safeSampleFile": null,
+    "sampleAttributes": "none retained",
+    "nativeFields": ["FID", "CODIGO", "GLOBALID_S", "GlobalID"],
+    "fieldMapping": {
+      "nativeIdentityCandidates": ["CODIGO", "GLOBALID_S", "GlobalID"],
+      "geometry": "Shape",
+      "excludedFields": ["MANZANA_CO", "NUMERO_SUB", "CODIGO_ANT", "SHAPE_Leng", "SHAPE_Area"]
+    }
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Exact WUP point [11.2345904677867, -74.1864107381004] was queried unchanged against the public U_TERRENO layer and returned zero features. No coordinate shift was made.",
+    "requestEvidence": [
+      "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4/query returned an empty GeoJSON FeatureCollection for the exact point.",
+      "The bounded Santa Marta envelope query timed out after 25 seconds, so no geometry was accepted."
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Santa Marta district cadastral authority and official municipal observatory, plus IGAC national cadastral open-data documentation and public U_TERRENO service.",
+    "verifiedOpenScope": "Local cadastral custody and product/procedure pages; public IGAC layer metadata; no Santa Marta-specific anonymous parcel polygon response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel/cadastral identifier only if verified in a returned feature", "geometry", "CRS/layer metadata"],
+  "runtimeReadiness": "held_quality_review",
+  "resultCategory": "official_local_registry_context_no_verified_public_geometry",
+  "status": "complete",
+  "remainingUncertainty": "Santa Marta has an evidenced operating district cadastral gestor and public cadastral products, but the local site's reviewed configuration did not expose an anonymous parcel API. The official IGAC U_TERRENO service exposes parcel polygons and safe candidate IDs, yet the exact-point result was empty and a bounded city query timed out. The observatory is Cloudflare-challenged. No conclusion about citywide parcel absence or completeness is made. No owner, address, contact, titleholder, tax, account, applicant, or personal fields were requested or retained."
+}

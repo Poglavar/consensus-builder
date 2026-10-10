@@ -1,0 +1,12 @@
+{
+  "taskId": "city:86",
+  "decision": "held",
+  "reason": "Kaliningrad rank 1278 matches the immutable WUP queue (Russian Federation, unchanged point, 436555 persons); English/Russian executed-search records are present. The indexed official municipal geoportal identifies a land-parcels layer, and the municipal address-registry page references land parcels, but the paired evidence contains no first-party parcel feature payload, safe native ID, or full polygon. This supports a local records/map lead, not demonstrated cadastral geometry or citywide absence. No independent adapter or headed Details qualification is evidenced; held without admission.",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-86-kaliningrad.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/kaliningrad-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T12:55:03.396188Z"
+}

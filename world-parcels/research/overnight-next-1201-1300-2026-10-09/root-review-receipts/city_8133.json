@@ -1,0 +1,19 @@
+{
+  "taskId": "city:8133",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-8133-daska.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/daska-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T13:11:13Z",
+  "identityReview": "Code 8133, rank 1289, Pakistan/PK, point [32.3328401257637,74.3546794942495], and 433772 persons match the immutable queue.",
+  "searchReview": "The paired files record English and Urdu queries with result URLs. The official MC Daska 2023-24 PDF was fetched independently (SHA-256 f9436284bdf3ad8451b7cb983024ae730f67a0414a04d0d1595f34c7e72d373e); its legend says Parcel Boundary and its date is April 2024. This grounds local map custody without vector access.",
+  "firstPartyEvidenceUrls": [
+    "https://www.mcdaska.lgpunjab.org.pk/wp-content/uploads/2024/05/Base-Map_MC-Daska_2023-24.pdf",
+    "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer?f=pjson"
+  ],
+  "sampleReview": "No full polygons or unsafe attributes are retained. The anonymous ArcGIS metadata request independently returned HTTP 200 with error code 499 Token Required; this is an access block, not absence.",
+  "admissionReview": "No safe native-ID polygon response, fresh adapter read, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, or headed Details-panel proof. No admission or shared runtime/catalog/report edit."
+}

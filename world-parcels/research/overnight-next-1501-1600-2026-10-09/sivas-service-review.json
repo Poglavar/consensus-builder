@@ -1,0 +1,16 @@
+{
+  "cityRecord": "city-5962-sivas.json",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "purpose": "Document first-party registry/map discovery, viewer/service evidence, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Official Sivas Municipality and TKGM sources evidence local cadastral/map custody and public map entry points, but no safe anonymous parcel ID-plus-geometry response was obtained in this attempt.",
+  "registryAssessment": "Sivas Municipality's Akıllı Şehir ve Kent Bilgi Sistemleri Müdürlüğü and the TKGM Sivas Regional Directorate are local/municipal cadastral-service custodians. General TKGM MEGSİS prose was treated as national context only.",
+  "queryOutcomes": "English and Turkish discovery queries were run separately and recorded in the city record; they found the official viewer and municipal services listed there.",
+  "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"],
+  "requestOutcomes": "TKGM shell retrieval failed DNS in the shell and returned 502 through web retrieval. Municipal pages were discoverable, but no bounded WMS/GetCapabilities or parcel feature response was verified. No login, credentials, private token, CAPTCHA/Cloudflare bypass, or TLS exception was used.",
+  "geometryDecision": "No sample GeoJSON written because no complete unchanged native parcel polygon with a verified safe native identity was available.",
+  "coverageAndLimits": {"citywideVerified": false, "countrywideVerified": false, "geometryVerified": false, "exactPointTested": false, "maxRetainedPolygons": 0, "citywideAbsenceInferred": false},
+  "uncertainty": "A viewer outage, map extent limitation, absent exact-point hit, timeout, or login wall is not evidence of citywide absence. The native schema, field mapping, CRS/axis order, anonymous access policy, and service coverage remain unresolved.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."}
+}

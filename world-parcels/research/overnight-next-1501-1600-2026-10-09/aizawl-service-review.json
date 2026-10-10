@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-12033-aizawl.json",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "purpose": "Document first-party Aizawl/Mizoram land-record discovery, public route attempts, safe-field limits, and uncertainty.",
+  "assessment": "Official Mizoram evidence establishes Land Revenue & Settlement Department custody and an e-ram integrated GIS land-record system launched in Aizawl District. No safe anonymous native parcel ID plus complete polygon was obtained.",
+  "registryAssessment": "registryFound=true is supported by the official e-ram portal and official Mizoram government statement naming Aizawl District deployment. This is local/district service custody evidence only; it is not source integration, ownership evidence, or proof of citywide parcel availability.",
+  "officialPrimarySources": [
+    {"url": "https://eram.mizoram.gov.in/", "observation": "Official Land Revenue & Settlement Department portal lists land-related application forms and identifies the department."},
+    {"url": "https://eram.mizoram.gov.in/pages/about-us", "observation": "Official portal explains the department's survey, settlement, land-record, and revenue functions."},
+    {"url": "https://dipr.mizoram.gov.in/post/address-of-the-honourable-governor-of-mizoram-gen-dr-vijay-kumar-singh-pvsm-avsm-ysm-retd-to-the-fourth-session-cum-budget-session-of-the-ninth-legislative-assembly-of-mizoram-on-19th-february-2025-at-the-legislative-assembly-house-aizawl1739948354", "observation": "Official state-government address says e-ram is an integrated GIS land-record system developed by Land Revenue & Settlement and launched in Aizawl District on 5 November 2024."},
+    {"url": "https://naksha.dolr.gov.in/NakshaPortal/", "observation": "Official DoLR NAKSHA portal describes a national urban land-survey/geospatial programme; it did not provide a verified anonymous Aizawl feature response in this pass."},
+    {"url": "https://dolr.gov.in/en/ulpin/", "observation": "Official DoLR ULPIN page describes parcel identifiers and geo-referenced cadastral maps nationally; it is programme documentation, not an Aizawl parcel endpoint."}
+  ],
+  "viewerConfiguration": {
+    "candidateRoutes": ["https://eram.mizoram.gov.in/", "https://naksha.dolr.gov.in/NakshaPortal/"],
+    "schemaAndCrs": "Not verified from a successful parcel feature response.",
+    "nativeFieldNames": "Not retained; no successful safe feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "geometry type", "source CRS", "source layer", "retrieval time"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://eram.mizoram.gov.in/", "method": "GET; anonymous public read with normal TLS verification", "normalTlsVerification": true, "result": "HTTP 200 HTML page available; public department portal and application links verified; no parcel geometry or map-service configuration exposed in the page."},
+    {"url": "https://eram.mizoram.gov.in/applications", "method": "GET; anonymous public read with normal TLS verification", "normalTlsVerification": true, "result": "HTTP 200 application catalogue available; forms were listed, but no public parcel query or geometry endpoint was exposed."},
+    {"url": "https://eram.mizoram.gov.in/citizen/applications/create?form_slug=form-2-application-for-periodic-patta", "method": "GET; anonymous public read with normal TLS verification", "normalTlsVerification": true, "result": "HTTP 200 response redirected to https://eram.mizoram.gov.in/citizen/login; login wall encountered. No login or protected request attempted."},
+    {"url": "https://eram.mizoram.gov.in/build/assets/app-5cfc719a.js", "method": "GET; anonymous public read with normal TLS verification", "normalTlsVerification": true, "result": "HTTP 200 JavaScript bundle inspected for map/GIS/parcel/API/GeoJSON/WMS/ArcGIS routes; no identified public parcel feature route or schema/CRS was found."},
+    {"url": "https://naksha.dolr.gov.in/NakshaPortal/", "method": "GET; anonymous public read via first-party portal/search", "normalTlsVerification": true, "result": "National programme landing page available; it describes urban parcel mapping but did not yield an anonymous Aizawl ID-plus-geometry response. No login bypass attempted."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "exactWupPointTest": "Not run: no anonymous parcel geometry layer was verified. Exact WUP point [23.7330359417012, 92.7199494866714] was preserved unchanged.", "query": "No point or extent parcel query submitted because no public service endpoint and safe request shape were verified."},
+  "coverageAssessment": {"claimedScope": "Mizoram Land Revenue & Settlement/e-ram custody for Aizawl District plus official DoLR NAKSHA/ULPIN programme context.", "verifiedOpenScope": "No anonymous complete-polygon feature response verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "The public availability and schema of Aizawl parcel geometry, including urban coverage, CRS, stable native identity, and citywide completeness, remain unverified. Login walls, programme pages, and absence of a discovered route do not establish cadastral absence.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous ID-plus-geometry response; this packet does not qualify an adapter or enable runtime."}
+}

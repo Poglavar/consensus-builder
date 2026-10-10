@@ -1,0 +1,24 @@
+{
+  "taskId": "city:9923",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-9923-katni.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/katni-service-review.json",
+    "tmp/valhalla-parcel-research/9923/katni.headers",
+    "tmp/valhalla-parcel-research/9923/map.html",
+    "tmp/valhalla-parcel-research/9923/mpbhulekh.headers",
+    "tmp/valhalla-parcel-research/9923/webgis.headers"
+  ],
+  "checkedAt": "2026-10-10T15:16:31Z",
+  "reason": "WUP 2025 rank 1788 identity and English/Hindi searches checked. First-party Katni map HTML embeds Google Maps; MP Bhulekh/WebGIS retained no response after timeouts. Official land-record service supports registry custody, but no safe native ID/full polygon or independent admission checks. Timeouts are not citywide absence.",
+  "checks": {
+    "immutableQueueIdentity": "matched 2025 WUP source and both cohort rosters",
+    "bilingualExecutedSearches": true,
+    "retainedFullPolygons": 0,
+    "independentLiveAdapterQualified": false,
+    "runtimeAdmission": false
+  }
+}

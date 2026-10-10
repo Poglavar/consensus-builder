@@ -1,0 +1,51 @@
+{
+  "cityRecord": "city-5957-canoas.json",
+  "cityCode": 5957,
+  "queueRank": 1766,
+  "city": "Canoas",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "reviewStatus": "complete",
+  "attempt": 1,
+  "reviewedAt": "2026-10-10",
+  "service": "GeoCanoas municipal ArcGIS REST public services",
+  "officialBaseUrl": "https://geo.canoas.rs.gov.br/server/rest/services",
+  "registryFound": true,
+  "registryCustodian": "Prefeitura Municipal de Canoas",
+  "discovery": {
+    "english": {
+      "query": "Canoas Brazil official cadastral parcel map GIS municipal geoprocessing property lots",
+      "outcome": "Official GeoCanoas catalog and municipal geoprocessing documentation found.",
+      "urls": ["https://geo.canoas.rs.gov.br/server/rest/services?f=pjson", "https://www.canoas.rs.gov.br/wp-content/uploads/2021/09/EDITAL-227.2021.pdf"]
+    },
+    "native": {
+      "language": "Portuguese (Brazil)",
+      "query": "Canoas mapa cadastral lotes cadastro imobiliário geoprocessamento prefeitura GeoCanoas",
+      "outcome": "Official municipal GeoCanoas parcel-layer route and cadastral terminology confirmed.",
+      "urls": ["https://geo.canoas.rs.gov.br/server/rest/services/Lotes_portal/FeatureServer/0", "https://www.canoas.rs.gov.br/wp-content/uploads/2021/10/EDITAL-266.2021-PROC-61218.2021.pdf"]
+    }
+  },
+  "schemaAndCrs": {
+    "polygonLayers": ["Lotes_portal/0", "Lote_GeoCanoas/0", "lote_atualizacao_portal/0"],
+    "crs": "EPSG:31982 / SIRGAS 2000 UTM zone 22S",
+    "safeNativeIdentity": "OBJECTID only if returned and independently confirmed",
+    "nativeFieldMapping": "Source field names and composite sector/quadra/lote provenance are documented in the city record; none are retained in a sample."
+  },
+  "requestOutcomes": "See city-5957-canoas.json requestOutcomes; catalog/layer metadata succeeded, bounded feature queries timed out or returned HTTP 400.",
+  "geometry": {
+    "sampleRetained": false,
+    "sampleFile": null,
+    "featureCount": 0,
+    "exactPointTest": "Not performed; no geometry response.",
+    "absenceInference": false
+  },
+  "safeFieldAllowlist": ["OBJECTID stable native identity", "parcel polygon geometry", "CRS metadata", "public service/layer metadata"],
+  "scopeLimits": [
+    "Local municipal GIS custody is evidenced; open citywide parcel retrieval is not.",
+    "No unsafe owner, address, contact, titleholder, personal, tax or account fields were requested or retained.",
+    "No geometry sample was retained because anonymous feature responses were unusable.",
+    "Runtime adapter remains held pending independent serial qualification."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "uncertainty": "The official service may be operational in the intended viewer despite the observed anonymous query timeout/400 behavior; this audit does not infer absence or citywide completeness from those failures."
+}

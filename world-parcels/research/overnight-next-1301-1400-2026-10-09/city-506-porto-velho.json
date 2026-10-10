@@ -1,0 +1,159 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1301-1400-2026-10-09",
+  "cityId": "wup2025:506",
+  "cityCode": 506,
+  "wupCityCode": 506,
+  "queueRank": 1322,
+  "rank": 1322,
+  "name": "Porto Velho",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "iso2": "BR",
+  "iso3": "BRA",
+  "point": [-8.76833176347014, -63.8675122499988],
+  "centerLatLon": [-8.76833176347014, -63.8675122499988],
+  "pointBasis": "Exact immutable WUP 2025 queue point in latitude/longitude order; not shifted to force a parcel hit.",
+  "population2025": 422943,
+  "population2025k": 422.943,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "aliases": ["porto velho"],
+  "status": "complete",
+  "resultCategory": "official_municipal_geoportal_custodian_evidenced_parcel_geometry_unverified",
+  "registryFound": true,
+  "registryBasis": "Porto Velho's official GeoPortal identifies the municipal Department of Geoprocessamento (GEO/SUPLAN/SEMPOG) and describes SMIUT as progressively integrating municipal bases for a Cadastro Técnico Multifinalitário. The municipal geoservices page advertises public WMS/WFS, and the official portal links a Geo360 property/lote consultation.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_pending_serial_review",
+  "blocker": "The official portal's indexed geoservices page exposed service types and supported versions but not endpoint URLs. Live shell requests to the official viewer timed out, so no bounded anonymous parcel ID+geometry response or schema/CRS was verified. This is not evidence of citywide absence.",
+  "source": {
+    "sourceId": "porto-velho-pmpv-geoportal",
+    "name": "GeoPortal PMPV / SMIUT",
+    "url": "https://geoportal.portovelho.ro.gov.br/",
+    "operator": "Prefeitura de Porto Velho - Departamento de Geoprocessamento (GEO/SUPLAN/SEMPOG)",
+    "serviceType": "Official municipal geospatial portal; public WMS/WFS advertised; Geo360 consultation linked",
+    "layer": null,
+    "geometryType": null,
+    "nativeIdField": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "nativeCrs": null,
+    "geometryStatus": "not_verified",
+    "sampleCount": 0,
+    "fieldMapping": null,
+    "compositeKeyProvenance": null
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Municipal GeoPortal/SMIUT and linked public geoservices for Porto Velho; the portal lists thematic layers including loteamentos and public property areas, but not an explicit parcel layer in the indexed map page.",
+    "verifiedOpenScope": "Official portal pages, municipal custodian, WMS/WFS service claim, and linked Geo360 consultation were verified from first-party pages; no parcel feature response was verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Porto Velho Rondônia official cadastral map parcel GIS municipal geospatial portal",
+        "result": "Found the official Porto Velho GeoPortal, its geoservices page, public map viewer, linked Geo360 consultation, and municipal cadastral-regulation evidence.",
+        "actualResultUrls": [
+          "https://geoportal.portovelho.ro.gov.br/",
+          "https://geoportal.portovelho.ro.gov.br/geosservicos.html",
+          "https://geoportal.portovelho.ro.gov.br/mapas_municipais.html",
+          "https://atendimento-portovelho-geo360.portovelho.ro.gov.br/",
+          "https://semfaz.portovelho.ro.gov.br/uploads/arquivos/2023/01/31787/1675091870decreto-regulamento-do-ctm.pdf"
+        ]
+      },
+      {
+        "language": "Portuguese (Brazil)",
+        "query": "Porto Velho Rondônia cadastro imobiliário mapa parcelas geoprocessamento prefeitura oficial",
+        "result": "Found the official GeoPortal PMPV/SMIUT, municipal GEO/SUPLAN/SEMPOG contact and geoservices, the official Geo360 property/lote consultation, and the municipal Cadastro Imobiliário regulation.",
+        "actualResultUrls": [
+          "https://geoportal.portovelho.ro.gov.br/",
+          "https://geoportal.portovelho.ro.gov.br/geosservicos.html",
+          "https://geoportal.portovelho.ro.gov.br/download.html",
+          "https://portovelho-portal-geo360.portovelho.ro.gov.br/",
+          "https://semfaz.portovelho.ro.gov.br/uploads/arquivos/2023/01/31787/1675091870decreto-regulamento-do-ctm.pdf"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://geoportal.portovelho.ro.gov.br/",
+        "operator": "Prefeitura de Porto Velho - GEO/SUPLAN/SEMPOG",
+        "scope": "Official municipal SMIUT/GeoPortal; states that it integrates municipal geographic bases toward a Cadastro Técnico Multifinalitário."
+      },
+      {
+        "url": "https://geoportal.portovelho.ro.gov.br/geosservicos.html",
+        "operator": "Prefeitura de Porto Velho - GEO/SUPLAN/SEMPOG",
+        "scope": "Official geoservices page advertising WMS 1.1.1/1.3.0 and WFS 1.0.0/1.1.1/2.0.0; endpoint values were not visible in the indexed response."
+      },
+      {
+        "url": "https://portovelho-portal-geo360.portovelho.ro.gov.br/",
+        "operator": "Prefeitura de Porto Velho / Geo360 linked from the official GeoPortal",
+        "scope": "Official linked consultation for property/lote information; no login or unsafe lookup was attempted."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://geoportal.portovelho.ro.gov.br/",
+        "method": "GET; anonymous via indexed first-party page",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Official portal page identified SMIUT, municipal geospatial custodian, public map, geoservices, downloads, and linked Geo360 services."
+      },
+      {
+        "url": "https://geoportal.portovelho.ro.gov.br/geosservicos.html",
+        "method": "GET; anonymous via indexed first-party page",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Official page confirmed WMS/WFS service types and supported versions, but endpoint URLs were not exposed in the indexed page."
+      },
+      {
+        "url": "https://geoportal.portovelho.ro.gov.br/mapas_municipais.html",
+        "method": "GET; anonymous shell request",
+        "httpStatus": null,
+        "contentType": null,
+        "assessment": "Shell curl timed out after 20 seconds. Indexed first-party content listed public thematic layers including Loteamentos and stated the GEO contact; timeout is not evidence of absence."
+      },
+      {
+        "url": "https://geoportal.portovelho.ro.gov.br/download.html",
+        "method": "GET; anonymous via indexed first-party page",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Download page was found, but indexed content exposed no downloadable parcel schema or safe native identity."
+      },
+      {
+        "url": "https://portovelho-portal-geo360.portovelho.ro.gov.br/",
+        "method": "GET; anonymous linked consultation discovery",
+        "httpStatus": null,
+        "contentType": null,
+        "assessment": "Official portal linked the service as Consulta Prévia for imóvel/lote; no authenticated or unsafe property lookup was attempted, and the live shell was not usable in this attempt."
+      }
+    ],
+    "schemaCrs": {
+      "nativeCrs": null,
+      "geometryResponseSchema": null,
+      "viewerLayers": ["Loteamentos", "Loteamentos Distritos", "Áreas Públicas do Município"]
+    }
+  },
+  "safeFieldAllowlist": ["safe native parcel ID if later verified", "geometry", "CRS/layer metadata", "HTTP status/content type", "public service metadata"],
+  "remainingUncertainty": "No live JavaScript/configuration endpoint, parcel feature schema, native identity, CRS, or bounded geometry response was verified. The official sources evidence a municipal cadastral/geospatial program and public geoservices, but not parcel geometry availability or citywide completeness in this attempt. No owner, address, contact, titleholder, tax, inscription, or personal fields were retained.",
+  "registryEvidenceUrls": [
+    "https://geoportal.portovelho.ro.gov.br/",
+    "https://geoportal.portovelho.ro.gov.br/geosservicos.html",
+    "https://geoportal.portovelho.ro.gov.br/mapas_municipais.html",
+    "https://geoportal.portovelho.ro.gov.br/download.html",
+    "https://portovelho-portal-geo360.portovelho.ro.gov.br/",
+    "https://semfaz.portovelho.ro.gov.br/uploads/arquivos/2023/01/31787/1675091870decreto-regulamento-do-ctm.pdf"
+  ],
+  "checkedAt": "2026-10-09",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "sourceIds": ["porto-velho-pmpv-geoportal"],
+  "adapterReady": false,
+  "nextStep": "Serial reviewer should independently retrieve the current municipal WFS/WMS or Geo360 API configuration, verify safe parcel layer schema/CRS/native identity with a bounded anonymous request, and assess coverage before any runtime admission; keep held meanwhile.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

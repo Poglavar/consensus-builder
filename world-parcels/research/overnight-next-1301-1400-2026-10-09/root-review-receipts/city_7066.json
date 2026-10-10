@@ -1,0 +1,30 @@
+{
+  "taskId": "city:7066",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-7066-americana.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/americana-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-queue-extension-1301-2300-verification-2026-10-09.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz"
+  ],
+  "checkedAt": "2026-10-09T15:20:52+00:00",
+  "reason": "Municipal cadastral/geoprocessing custody confirmed by official Americana page; linked planning map timed out. No safe native-ID parcel geometry, adapter qualification, or headed Details evidence.",
+  "identity": {
+    "queueRank": 1368,
+    "countryCode": "BR",
+    "point": [
+      -22.7403656033961,
+      -47.3575438232552
+    ],
+    "populationPersons": 412133
+  },
+  "reviewFindings": {
+    "englishAndLocalSearchesRecorded": true,
+    "retainedFullPolygons": 0,
+    "safeNativeIdGeometryVerified": false,
+    "adapterQualificationComplete": false,
+    "registryFound": true,
+    "integrationState": "held"
+  }
+}

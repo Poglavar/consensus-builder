@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 3910,
+  "queueRank": 1771,
+  "cityId": "wup2025:3910",
+  "name": "Khorramabad",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "point": [33.4864827880041, 48.3510976228671],
+  "centerLatLon": [33.4864827880041, 48.3510976228671],
+  "population2025": 324110,
+  "population2025k": 324.11,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Khorramabad Iran cadastral parcel map GIS official registry",
+        "result": "No Khorramabad-specific first-party parcel viewer or public feature service was found. Results identified Iran's national registration/cadastre custodian, a legacy MIMT cadastral map reference, and general geographic context.",
+        "actualResultUrls": [
+          "https://ssaa.ir/",
+          "https://cadastre.mimt.gov.ir/Map/Map.aspx?PNid=0",
+          "https://map.mimt.gov.ir:8006/maptile.ashx?x=41&y=25&z=6&r=19d775e599cb90aa33108d674cf56701",
+          "https://gadm.org/maps/IRN/lorestan/khorramabad.html"
+        ]
+      },
+      {
+        "language": "Persian (local/national working language)",
+        "query": "خرم آباد کاداستر نقشه پارسل ثبت اسناد سامانه رسمی",
+        "result": "No Khorramabad-specific first-party parcel viewer, public schema, or anonymous geometry endpoint was found. Results identified the national Registration Organization, the national land-management portal, and a report about rollout in Lorestan, without a safe parcel response.",
+        "actualResultUrls": [
+          "https://ssaa.ir/",
+          "https://shamim.ssaa.ir/",
+          "https://zamin.gov.ir/",
+          "https://khabarfarsi.com/u/143160174"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://ssaa.ir/",
+      "operator": "Iran National Organization for Registration of Deeds and Properties; national land/property registration and cadastre custodian",
+      "observation": "First-party national custodian lead; direct request timed out from this environment. No Khorramabad-specific public map/API or local office evidence was exposed."
+    },
+    {
+      "url": "https://zamin.gov.ir/",
+      "operator": "Iran national single-window land-management portal",
+      "observation": "Direct GET returned HTTP 200 once, but no parcel layer, public feature endpoint, schema, CRS, or safe parcel identity/geometry response was exposed by the bounded check."
+    },
+    {
+      "url": "https://cadastre.mimt.gov.ir/Map/Map.aspx?PNid=0",
+      "operator": "Legacy Iranian cadastral map reference associated with the Ministry of Industry, Mine and Trade domain",
+      "observation": "Indexed legacy map lead; direct request timed out. No current viewer JavaScript/configuration, schema, CRS, or parcel response was verified."
+    },
+    {
+      "url": "https://khabarfarsi.com/u/143160174",
+      "operator": "Secondary index reproducing an ISNA report about Lorestan land-management portal rollout",
+      "observation": "Lorestan-specific institutional context only; not a parcel service and not sufficient for registryFound=true."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://ssaa.ir/",
+      "method": "GET",
+      "status": "connection timeout after 3 seconds",
+      "summary": "National registration site was unreachable; no login or retry beyond the bounded request was attempted."
+    },
+    {
+      "url": "https://shamim.ssaa.ir/",
+      "method": "GET",
+      "status": "connection timeout after 3 seconds",
+      "summary": "Registration Organization positioning/cadastre portal was unreachable; no credentials or access-control bypass was attempted."
+    },
+    {
+      "url": "https://zamin.gov.ir/",
+      "method": "GET",
+      "status": "HTTP 200 on one bounded request; subsequent fetch timed out during DNS resolution",
+      "summary": "Portal reachability was inconsistent. No public parcel JavaScript/configuration, schema, CRS, or anonymous ID+geometry response was obtained."
+    },
+    {
+      "url": "https://iraneland.ir/",
+      "method": "GET",
+      "status": "DNS resolution timeout after 3 seconds",
+      "summary": "Related land-management portal hostname was not reachable."
+    },
+    {
+      "url": "https://cadastre.mimt.gov.ir/Map/Map.aspx?PNid=0",
+      "method": "GET",
+      "status": "connection timeout after 3 seconds",
+      "summary": "Legacy cadastral map host yielded no viewer, schema, CRS, identity, or geometry response."
+    },
+    {
+      "url": "http://map.mimt.gov.ir:8006/maptile.ashx?x=41&y=25&z=6&r=19d775e599cb90aa33108d674cf56701",
+      "method": "GET",
+      "status": "connection timeout after 3 seconds",
+      "summary": "Indexed legacy tile route was unreachable; it was not treated as a parcel endpoint and no tile was retained."
+    },
+    {
+      "url": "https://lorestan.mrud.ir/",
+      "method": "GET",
+      "status": "DNS resolution failure",
+      "summary": "Potential provincial planning lead was not reachable; no cadastral service or geometry was inferred from the failure."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Iranian national cadastral/registration institutions and the Lorestan land-management context were searched; no Khorramabad-specific open parcel coverage was demonstrated.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "citywideParcelCoverageVerified": false
+  },
+  "qualityAssessment": {
+    "geometryQuality": "not sampled",
+    "identityReadiness": "not ready; no safe native parcel identity and geometry response retrieved",
+    "attributesRequested": "none beyond public service/schema discovery; no owner, address, contact, titleholder, tax, or account fields requested",
+    "safeFieldAllowlist": ["native parcel identifier if publicly exposed", "geometry", "source layer name", "CRS", "service metadata"]
+  },
+  "sourceFields": null,
+  "crs": null,
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "national_cadastral_custodian_leads_no_verified_open_geometry",
+  "blocker": "No anonymous first-party Khorramabad parcel viewer, API, schema response, CRS response, or geometry-plus-native-ID extract was verified after bounded English and Persian discovery.",
+  "remainingUncertainty": "A local registration office or restricted national cadastral service may hold parcel coverage. Search failure, timeout, DNS failure, or unavailable UI does not establish citywide absence, and the exact WUP point was not shifted or used as an absence test.",
+  "nextStep": "On a later attempt, locate a current official Iranian cadastral viewer or documented Lorestan/local service, inspect its JavaScript/configuration, and request only a bounded geometry-plus-native-ID response around the unchanged WUP point.",
+  "registryBasis": null,
+  "registryEvidenceUrls": [],
+  "identityPolicy": "No GeoJSON retained because no safe, verified native parcel identity and geometry response was available."
+}

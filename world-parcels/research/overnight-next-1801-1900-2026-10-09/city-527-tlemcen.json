@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 527,
+  "queueRank": 1898,
+  "cityId": "queue:1898",
+  "name": "Tlemcen",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "iso3": "DZA",
+  "point": [34.898427486163, -1.32243003806092],
+  "centerLatLon": [34.898427486163, -1.32243003806092],
+  "population2025": 301980,
+  "population2025k": 301.98,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Algeria official cadastral map parcel viewer API Tlemcen cadastre",
+        "result": "First-party discovery identified InfoGéolAlgérie, the official ASGA national cartography viewer at 1:200,000, and the official DGDN domain. The indexed viewer description exposes national map layers such as wilaya and communes, but does not evidence a public parcel layer or parcel API for Tlemcen.",
+        "actualResultUrls": [
+          "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+          "https://a.dgdn.dz/"
+        ]
+      },
+      {
+        "language": "native/local (French/Arabic)",
+        "query": "Algérie site officiel cadastre carte parcelles Tlemcen مسح الأراضي تلمسان خريطة",
+        "result": "Native-language discovery found official Algerian agency material describing cadastral and land-register functions, and official Tlemcen tourism/wilaya material, but no publicly documented anonymous parcel viewer or safe ID-plus-geometry endpoint. A non-first-party service explainer was not used as evidence of an official endpoint.",
+        "actualResultUrls": [
+          "https://www.anfu.dz/",
+          "https://tlemcen.mta.gov.dz/fr/",
+          "https://a.dgdn.dz/DOCUMENTS/Decret_n_76_63_du_25_mars_1976.pdf"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Separate English and French/Arabic discovery, followed by bounded TLS-verified GET attempts; no credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe fields, or global TLS disablement."
+  },
+  "registryFound": null,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+      "observation": "Official ASGA InfoGéolAlgérie viewer indexed as a 1:200,000 cartography application with wilaya and commune layers; parcel-layer availability was not established."
+    },
+    {
+      "url": "https://a.dgdn.dz/",
+      "observation": "Official DGDN domain referenced by official cadastral legal material; no anonymous parcel map/API response was obtained."
+    },
+    {
+      "url": "https://www.anfu.dz/",
+      "observation": "Official National Urban Land Agency describes coordination with domain, cadastre and land-registration services, but is general agency information rather than a Tlemcen parcel service."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "TLS-verified bounded request timed out; viewer HTML, JavaScript/configuration, map extent, service URL, schema and CRS were not obtained. Not evidence of citywide absence."
+    },
+    {
+      "url": "https://bndg.asga.dz",
+      "method": "HEAD",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "TLS-verified bounded host request timed out; no route inspection was possible."
+    },
+    {
+      "url": "https://a.dgdn.dz",
+      "method": "HEAD",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "TLS-verified bounded request timed out; no public map/API route or parcel schema was obtained."
+    },
+    {
+      "url": "https://a.dgdn.dz/DOCUMENTS/Decret_n_76_63_du_25_mars_1976.pdf",
+      "method": "GET via first-party indexed official document",
+      "httpStatus": null,
+      "contentType": "application/pdf",
+      "assessment": "Official legal material establishes cadastral/legal-record functions but contains no anonymous parcel geometry service. No unsafe fields requested or retained."
+    }
+  ],
+  "safeFieldAllowlist": ["stable native parcel id", "full parcel polygon or multipolygon geometry", "service/layer metadata", "CRS metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": null,
+  "geometryQuality": "No parcel geometry obtained; no sample GeoJSON written.",
+  "coverageAssessment": {
+    "claimedScope": "Official Algerian national cartography/cadastre-related portals discovered for possible Tlemcen coverage.",
+    "verifiedOpenScope": "National map-viewer existence only; anonymous parcel ID-plus-geometry coverage was not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review remains required",
+  "remainingUncertainty": "The viewer's current JavaScript/configuration, any public parcel service, layer schema, safe native identity, CRS, map extent and citywide completeness remain unresolved because official hosts timed out and the indexed viewer only exposes broad cartographic layer descriptions. This is an access/inspection limit, not evidence of cadastral absence. The exact WUP point was preserved and never shifted; no exact-point hit or miss was inferred.",
+  "nextStep": "A later attempt may retry the official ASGA/DGDN hosts, inspect the viewer configuration if reachable, and issue only a bounded anonymous ID-plus-geometry request if a public parcel layer is exposed."
+}

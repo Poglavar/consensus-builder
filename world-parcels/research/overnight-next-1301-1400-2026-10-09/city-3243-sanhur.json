@@ -1,0 +1,49 @@
+{
+  "cityCode": 3243,
+  "queueRank": 1364,
+  "name": "Sanhur",
+  "aliases": ["sanhur"],
+  "country": "Egypt",
+  "countryCode": "EG",
+  "iso3": "EGY",
+  "point": [29.3587646999166, 30.7141082780011],
+  "population2025": 412618,
+  "population2025k": 412.618,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": null,
+  "registryAssessment": "The Egyptian General Survey Authority (ESA) is evidenced as the national survey and cadastral-map custodian, and an official/first-party report documents a Fayoum GIS unit for inventorying state property across centres and villages. ESA's public route offers map products and paid/request-based digital map services, but no current anonymous Sanhur parcel layer, schema, or geometry API was established; registryFound remains null.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sanhur Egypt official cadastral parcel map land registry GIS service",
+        "result": "Found the official Egyptian General Survey Authority service pages and Ministry of Water Resources and Irrigation description of ESA, including digital/topographic map and spatial-data responsibilities. A public anonymous Sanhur parcel-vector service was not found.",
+        "actualResultUrls": ["https://www.esa.gov.eg/services.aspx", "https://www.esa.gov.eg/sellingmaproomdigital.aspx", "https://www.mwri.gov.eg/mwri2/?lang=en&page_id=33317", "https://gopp.gov.eg/%D8%AA%D9%88%D9%82%D9%8A%D8%B9-%D9%84%D9%88%D8%AD%D8%A7%D8%AA-%D8%A7%D9%84%D8%AD%D8%B5%D8%B1-%D9%88%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%AF%D9%84%D8%A7%D9%84-%D8%A7%D9%84%D9%85%D8%AD%D8%AF%D8%AB%D8%A9-2/"]
+      },
+      {
+        "language": "Arabic",
+        "query": "سنهور الفيوم خريطة كادسترية سجل عقاري خرائط قطع الأراضي خدمة حكومية",
+        "result": "Arabic-language results identified ESA services, Fayoum state-property/GIS work, and official Egyptian map-service material. No separate public Sanhur cadastral viewer or anonymous parcel API was exposed.",
+        "actualResultUrls": ["https://www.esa.gov.eg/main.aspx", "https://www.esa.gov.eg/services.aspx", "https://gate.ahram.org.eg/News/1829510.aspx", "https://www.esa.gov.eg/files/Topographic_Maps.pdf"]
+      }
+    ]
+  },
+  "officialSources": [
+    {"url": "https://www.esa.gov.eg/main.aspx", "role": "Egyptian General Survey Authority official overview", "observation": "Describes ESA's historical role in topographic/cadastral mapping and property records and lists map and surveying services."},
+    {"url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx", "role": "ESA official digital-map service", "observation": "States that digital GIS maps can be requested by location, scale, layers, format, and projection through a quotation/purchase workflow; no anonymous feature service is exposed in the page."},
+    {"url": "https://www.mwri.gov.eg/mwri2/?lang=en&page_id=33317", "role": "Ministry description of ESA", "observation": "Confirms ESA map production, spatial data, state-property inventory, and citizen/entity surveying services; it does not publish Sanhur parcel geometry."},
+    {"url": "https://gate.ahram.org.eg/News/1829510.aspx", "role": "Fayoum GIS-unit report", "observation": "Reports a Fayoum GIS unit for inventorying and digitizing state property across centres and villages and mentions work in the Senورس centre; this is evidence of a local custodian/workflow, not an open cadastral API."},
+    {"url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf", "role": "ESA official topographic-map index", "observation": "Shows Fayoum map coverage and map scales, including village maps, but is a map index/document rather than parcel-vector data."}
+  ],
+  "serviceReview": "sanhur-service-review.json",
+  "geometryDecision": {"verified": false, "sampleCount": 0, "sampleFile": null, "reason": "No safe anonymous native parcel ID plus full polygon response was obtained from the official public routes; no GeoJSON retained."},
+  "coverageAssessment": {"claimedScope": "Egyptian General Survey Authority national survey/cadastral services and Fayoum GIS/state-property documentation.", "verifiedOpenScope": "Official service descriptions and Fayoum GIS-unit evidence only; no open parcel-vector coverage verified for Sanhur.", "exactWupPointParcelSample": false, "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "sourceFieldMapping": {"nativeIdentity": null, "nativeIdentityEvidence": "No parcel feature response obtained.", "geometryField": null, "sourceCrs": null, "compositeKey": null},
+  "safeFieldAllowlist": ["native parcel ID if publicly exposed", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

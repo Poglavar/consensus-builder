@@ -1,0 +1,21 @@
+{
+  "taskId": "packet:5758",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-5758-tangail.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/tangail-service-review.json",
+    "tmp/valhalla-parcel-research/tangail-5758/main.js",
+    "tmp/valhalla-parcel-research/tangail-5758/admin-level_forDiv_column_division_n.json",
+    "tmp/valhalla-parcel-research/tangail-5758/admin-level_forDist_division_code_30.json",
+    "tmp/valhalla-parcel-research/tangail-5758/admin-level_forThana_division_code_30_district_code_3093.json",
+    "tmp/valhalla-parcel-research/tangail-5758/admin-level_forThana_division_code_30_district_code_3090.json",
+    "tmp/valhalla-parcel-research/tangail-5758/admin-level_forThana_division_code_30_district_code_3091.json"
+  ],
+  "checkedAt": "2026-10-09T13:32:24Z",
+  "reason": "Official Tangail zonal settlement source and DLRS portal support local mouza-record/map custody; English and Bengali searches are recorded. Cached viewer JavaScript names admin/geometry routes and gid, but no Tangail native-ID parcel response exists. Saved district lookup returned three districts without Tangail and three tested thana lookups were empty; saved division lookup is a CSRF error, so its reported seven divisions are not independently confirmed from that cache. Reported WMS/WFS 503 has no saved response here. None of these bounded failures establishes absence.",
+  "identityDecision": "Queue code, rank, country, exact point, and 2025 population in persons match the immutable ranked roster; both English and native-language search records have result URLs.",
+  "admissionDecision": "Held: no independent fresh exact native-ID reads, forced pagination, 13 aligned bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. No runtime, catalog, or report admission."
+}

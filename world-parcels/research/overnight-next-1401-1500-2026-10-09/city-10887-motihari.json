@@ -1,0 +1,143 @@
+{
+  "cityCode": 10887,
+  "queueRank": 1450,
+  "name": "Motihari",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [26.6469686893545, 84.9171209230658],
+  "population2025": 392303,
+  "population2025k": 392.303,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Motihari Bihar official cadastral map land records parcel GIS",
+        "result": "Found Bihar Government BhuNaksha, Bihar Revenue and Land Reforms, East Champaran district land-information pages, and Bihar GIS. BhuNaksha is the official cadastral mapping portal; its public service exposes administrative selections and map REST endpoints.",
+        "actualResultUrls": [
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://land.bihar.gov.in/landbihar/Default.aspx",
+          "https://eastchamparan.nic.in/service/view-khata-jamabandi-records-online/",
+          "https://gis.bihar.gov.in/DEPTS/Default.aspx"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "मोतिहारी बिहार आधिकारिक भू नक्शा खतियान भूमि अभिलेख नक्शा",
+        "result": "Hindi-language discovery found the official Bihar BhuNaksha portal and the East Champaran/Motihari district land-information page. The public map interface identifies Purbi Champaran, Motihari Sadar, Motihari circle and मोतिहारी(122) mauza, but no safe public polygon response was retained.",
+        "actualResultUrls": [
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://eastchamparan.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%9C%E0%A4%BE%E0%A4%A8%E0%A4%95%E0%A4%BE%E0%A4%B0%E0%A5%80-%E0%A4%B8%E0%A5%87%E0%A4%B5%E0%A4%BE%E0%A4%8F%E0%A4%82/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "BhuNaksha Bihar",
+        "operator": "Directorate of Land Records & Survey, Department of Revenue and Land Reforms, Government of Bihar / NIC",
+        "homeUrl": "https://bhunaksha.bihar.gov.in/index.jsp",
+        "observation": "Current public JavaScript uses /rest/Levels, /rest/MapInfo, /ScalarDatahandler and WMS endpoints. Administrative discovery returned Purbi Champaran code 02, Motihari Sadar code 01, Motihari circle code 01 and मोतिहारी(122) mauza code 0009."
+      },
+      {
+        "name": "East Champaran district land-information services",
+        "operator": "District Administration, East Champaran, Government of Bihar",
+        "homeUrl": "https://eastchamparan.nic.in/service/view-khata-jamabandi-records-online/",
+        "observation": "Official district page identifies the Motihari land-record office and links Bihar online Khata/Jamabandi services; it is local registry-custodian evidence, not a parcel-vector API."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+        "method": "GET",
+        "httpStatus": 200,
+        "result": "Public viewer HTML retrieved; current assets/configuration inspected. No login or credentials used."
+      },
+      {
+        "url": "https://bhunaksha.bihar.gov.in/assets/misc/config.js",
+        "method": "GET",
+        "httpStatus": 200,
+        "result": "SERVICE_PATH and public REST/WMS routing confirmed."
+      },
+      {
+        "url": "https://bhunaksha.bihar.gov.in/rest/Levels/count",
+        "method": "POST",
+        "httpStatus": 200,
+        "request": "state=10",
+        "result": "Returned 7 administrative/map-selection levels."
+      },
+      {
+        "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+        "method": "POST",
+        "httpStatus": 200,
+        "request": "state=10; administrative selections through 02,01,01,0009",
+        "result": "Returned Motihari selections, survey types and map/sheet choices. Cadastral Survey CS exposes map instance 06 and sheets 01/02."
+      },
+      {
+        "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref",
+        "method": "POST",
+        "httpStatus": 200,
+        "request": "state=10; gisLevels=02,01,01,0009,CS,06,01; srs=0",
+        "result": "Returned gisCode CS02010100091220601, CRS EPSG:32645, extent xmin 292180.8141, ymin 2949515.4383, xmax 294045.6768, ymax 2952300.3122. Sheet 02 also returned a valid EPSG:32645 extent."
+      },
+      {
+        "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY",
+        "method": "POST",
+        "httpStatus": 200,
+        "request": "state=10; giscode=CS02010100091220601; bounded test points x=293000,y=2950000 and x=294000,y=2951000",
+        "result": "Returned JSON with safe response fields id and kide: opaque ids JgE86iG3TtmfMYCbCrRDeA / 0yvGk-lZTeq85i3YjrX-RA and plot numbers 1652 / 1215. No geometry or public field schema was included. The exact WUP point transforms to approximately EPSG:32645 x=292677.8654,y=2949025.3411, outside sheet 01's returned extent; this is not treated as citywide absence."
+      },
+      {
+        "url": "https://bhunaksha.bihar.gov.in/ScalarDatahandler?OP=5",
+        "method": "GET",
+        "httpStatus": 404,
+        "result": "The direct bounded metadata attempt with the discovered plot numbers and levels returned the site's generic error page; no unsafe fields were requested."
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://bhunaksha.bihar.gov.in/index.jsp",
+    "https://eastchamparan.nic.in/service/view-khata-jamabandi-records-online/",
+    "https://land.bihar.gov.in/landbihar/Default.aspx"
+  ],
+  "registryBasis": "Bihar's official BhuNaksha identifies the cadastral map service and Motihari administrative selections; the official East Champaran district page identifies the local Motihari land-record office and online land-record workflow. This establishes registry custody and public map access, not complete citywide parcel coverage.",
+  "source": {
+    "sourceId": "IN-10887-MOTIHARI-BIHAR-BHUNAKSHA",
+    "name": "BhuNaksha Bihar official cadastral map service",
+    "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+    "operator": "Directorate of Land Records & Survey, Government of Bihar / NIC",
+    "serviceType": "Public cadastral map viewer with REST administrative/map endpoints and WMS rendering",
+    "layer": "VILLAGE_MAP / PLOT_LIST",
+    "geometryType": null,
+    "outputCrs": "EPSG:32645 for the verified Motihari cadastral sheet extents",
+    "nativeIdField": "id (opaque response field; stability not independently qualified)",
+    "nativeIdEvidence": "getPlotAtXY returned id and kide for bounded anonymous point probes; no feature schema or geometry response was exposed.",
+    "nativeFieldMapping": {"id": "opaque parcel response id", "kide": "plot number label; not retained in GeoJSON"}
+  },
+  "coverageAssessment": {
+    "claimedScope": "BhuNaksha Bihar provides cadastral maps by district, subdivision, circle, mauza, survey type, map instance and sheet.",
+    "verifiedOpenScope": "Motihari mauza (0009) was enumerated and two Cadastral Survey sheet extents were returned anonymously. No citywide completeness or feature-vector coverage was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": {"idsOnly": true, "count": 2, "geometry": false},
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_cadastral_map_geometry_unverified",
+  "technicalBlocker": "The current public BhuNaksha routes returned map extents and point-hit identifiers but not full polygon geometry or a queryable safe feature schema. WMS rendering was available, but raster output is not retained as parcel geometry.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "registration-rights"],
+  "remainingUncertainty": "The viewer may expose polygon selection or geometry through a UI-specific route not discovered in this attempt. The exact WUP point was outside the tested sheet-01 extent; no exact-point miss or extent miss is used as evidence of citywide absence.",
+  "nextStep": "Hold runtime integration. A later serial reviewer should independently qualify a stable native identity plus safe polygon geometry before any adapter admission.",
+  "runtimeReadiness": "held_unqualified",
+  "adapterReady": false,
+  "centerLatLon": [26.6469686893545, 84.9171209230658],
+  "populationPlausibility2025": "High",
+  "pointBasis": "Exact immutable WUP 2025 population-weighted settlement point; not a municipal boundary or parcel-coverage claim.",
+  "sourceIds": [],
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "attempt": 1,
+  "priorCheck": {"attemptState": "pending", "attemptEvidence": [], "possiblePriorMatches": []},
+  "schemaVersion": "1.0"
+}

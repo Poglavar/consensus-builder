@@ -1,0 +1,34 @@
+{
+  "cityRecord": "city-5854-mcallen.json",
+  "cityCode": 5854,
+  "queueRank": 1606,
+  "name": "McAllen",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "sourceReview": "The City of McAllen GIS portal is a local city custodian and exposes ParcelEditing/MapServer/11 (McAllen Parcels). The layer is polygonal and supports anonymous GeoJSON queries. A bounded geometry-only query at the exact WUP point returned three records.",
+  "queryReview": {
+    "englishDiscovery": "Completed; official city portal and parcel layer found.",
+    "localLanguageDiscovery": "For the United States, English is the local/native language; a separate English wording was executed and recorded in the city record.",
+    "exactPoint": [26.2212316871423, -98.2340869585896],
+    "bboxLonLat": [-98.2440869585896, 26.2112316871423, -98.2240869585896, 26.2312316871423],
+    "returned": 3,
+    "ids": [4664292, 4664303, 4664345],
+    "geometry": "Polygon, GeoJSON output in EPSG:4326",
+    "mapExtentOrPointMiss": false
+  },
+  "requestOutcomes": "Portal, item metadata, layer schema, and bounded query all returned HTTP 200. Full raw query response is ignored scratch evidence under tmp/valhalla-parcel-research/mcallen/.",
+  "safeFieldAllowlist": ["OBJECTID", "geometry"],
+  "nativeFieldMapping": {"id": "OBJECTID", "geometry": "SHAPE"},
+  "compositeKeyProvenance": null,
+  "retainedSample": null,
+  "scopeLimits": [
+    "Three intersecting polygons establish a local public response only; they do not prove citywide completeness.",
+    "Schema includes owner, address, legal-description, value, and other unsafe fields; none were requested or retained.",
+    "Service is marked editable in the layer metadata; no writes were attempted.",
+    "Runtime readiness remains held pending independent serial adapter review."
+  ],
+  "uncertainty": "No claim is made about parcel absence outside the tested envelope, legal title, ownership, tax records, or service completeness.",
+  "runtimeReadiness": "held_serial_review"
+}

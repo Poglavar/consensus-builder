@@ -1,0 +1,126 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:3287",
+  "wupCityCode": 3287,
+  "cityCode": 3287,
+  "queueRank": 1298,
+  "rank": 1298,
+  "name": "Florence",
+  "country": "Italy",
+  "countryCode": "IT",
+  "iso2": "IT",
+  "iso3": "ITA",
+  "point": [43.7814801703684, 11.2283419834417],
+  "centerLatLon": [43.7814801703684, 11.2283419834417],
+  "pointBasis": "Immutable WUP 2025 queue point copied unchanged in latitude/longitude order; no coordinate adjustment.",
+  "population2025": 430806,
+  "population2025k": 430.806,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "status": "complete",
+  "resultCategory": "official_local_viewer_and_metadata_found_geometry_unverified",
+  "registryFound": true,
+  "registryBasis": "The official Comune di Firenze SIGS viewer exposes a Catasto group and a cadastral parcel layer. This evidences a local public map custodian, not citywide geometry extraction or cadastral title records.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_quality_review",
+  "blocker": "The official viewer configuration and metadata were inspected, but the anonymous proxy/API requests did not return a usable bounded parcel feature response. No geometry sample is retained.",
+  "source": {
+    "operator": "Comune di Firenze (SIGS); cadastral metadata also references Agenzia delle Entrate",
+    "custodianScope": "Municipal public map viewer for Florence; the RNDT metadata record identifies Agenzia delle Entrate as metadata/resource contact for national cadastral cartography.",
+    "viewerUrl": "https://sigs.comune.fi.it/",
+    "parcelLayer": "catasto:Cat_ParticelleCatastali_CatastoTerreni",
+    "crs": "Viewer configuration exposes EPSG:3857/EPSG:900913 basemap and does not expose a usable parcel feature response in this attempt; no output CRS is asserted.",
+    "nativeFieldMapping": {
+      "safeParcelFields": ["FOGLIO", "PARTICELLA"],
+      "configuredIdentityField": "id",
+      "note": "The viewer's getInfo configuration names FOGLIO and PARTICELLA as parcel attributes. No stable native composite identity was proven from a successful feature response, so none is retained."
+    }
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official viewer HTML/JavaScript configuration inspection, RNDT metadata discovery, and bounded anonymous service/proxy attempts around the unchanged WUP point.",
+    "verifiedOpenScope": "Florence municipal cadastral viewer route and parcel-layer configuration were verified; parcel geometry and citywide completeness were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "A proxy request failure, map extent/zoom behavior, or unusable UI is not evidence of citywide parcel absence. No owner, address, contact, titleholder, tax/account, or personal fields were requested or retained.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Florence Italy official cadastral map parcels Comune di Firenze catasto map",
+        "result": "First-party discovery found the Comune di Firenze Catasto e urbanistica page, the SIGS official map viewer, the Comune geographic-data catalogue, and the RNDT metadata record for Cartografia catastale - Comune di FIRENZE.",
+        "actualResultUrls": [
+          "https://sigs.comune.fi.it/",
+          "https://www.comune.firenze.it/servizi/catasto-e-urbanistica",
+          "https://geodati.gov.it/geoportale/visualizzazione-metadati/scheda-metadati?metadataid=age%3AD_D612_FIRENZE"
+        ]
+      },
+      {
+        "language": "Italian",
+        "query": "Firenze mappa catastale particelle servizio ufficiale Comune SIGS catasto",
+        "result": "La ricerca in italiano ha trovato il visualizzatore ufficiale SIGS del Comune di Firenze con il gruppo Catasto e il layer Cat. Particelle, oltre alla scheda RNDT della cartografia catastale del Comune di FIRENZE.",
+        "actualResultUrls": [
+          "https://sigs.comune.fi.it/",
+          "https://geodati.gov.it/geoportale/visualizzazione-metadati/scheda-metadati?metadataid=age%3AD_D612_FIRENZE",
+          "https://www.regione.toscana.it/servizi-catastali"
+        ]
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://sigs.comune.fi.it/",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "assessment": "Official viewer loaded. Its current inline configuration exposes the Catasto group and parcel layer catasto:Cat_ParticelleCatastali_CatastoTerreni, queryable=true, minZoom=16, and getInfo fieldNames FOGLIO/PARTICELLA."
+      },
+      {
+        "url": "https://sigs.comune.fi.it/proxy/proxy-cofi.php?url=SERVER_R_I&service=WMS&request=GetCapabilities&version=1.3.0",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "assessment": "Proxy returned a GeoServer ServiceException for missing request routing; no capabilities or schema response was obtained. The placeholder SERVER_R_I is viewer configuration, not a usable native endpoint by itself."
+      },
+      {
+        "url": "https://sigs.comune.fi.it/proxy/proxy-cofi.php?url=SERVER_R_I&request=GetMap&service=WMS&version=1.1.1&layers=catasto:Cat_ParticelleCatastali_CatastoTerreni&styles=&bbox=11.20,43.75,11.25,43.80&srs=EPSG:4326&width=256&height=256&format=image/png",
+        "method": "GET; anonymous; TLS verification enabled; bounded bbox around the WUP point",
+        "httpStatus": 200,
+        "assessment": "No usable map image/parcel feature response was obtained; the configured proxy route could not be resolved to a public service endpoint in this attempt."
+      },
+      {
+        "url": "https://geodati.gov.it/geoportale/visualizzazione-metadati/scheda-metadati?metadataid=age%3AD_D612_FIRENZE",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "assessment": "RNDT metadata identifies Cartografia catastale - Comune di FIRENZE, responsible contact Agenzia delle Entrate, reviewed 2025-02-11, with RDN2008-6706 metadata CRS. This is metadata evidence, not a parcel geometry API response."
+      }
+    ],
+    "inspectedConfiguration": {
+      "viewer": "https://sigs.comune.fi.it/",
+      "parcelLayer": "catasto:Cat_ParticelleCatastali_CatastoTerreni",
+      "responseSchemaObserved": "No parcel response schema observed; only viewer getInfo configuration was observed.",
+      "safeFieldsObserved": ["FOGLIO", "PARTICELLA"],
+      "nativeIdentityMapping": null
+    }
+  },
+  "registryEvidenceUrls": [
+    "https://sigs.comune.fi.it/",
+    "https://www.comune.firenze.it/servizi/catasto-e-urbanistica",
+    "https://geodati.gov.it/geoportale/visualizzazione-metadati/scheda-metadati?metadataid=age%3AD_D612_FIRENZE",
+    "https://www.regione.toscana.it/servizi-catastali"
+  ],
+  "checkedAt": "2026-10-09",
+  "researchAttempt": 1,
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "adapterReady": false,
+  "runtimeAssessment": {
+    "status": "held_quality_review",
+    "reason": "A real local cadastral viewer is evidenced, but public parcel geometry and stable native identity were not independently verified in this attempt."
+  },
+  "sampleRetention": {
+    "sampleFile": null,
+    "retainedFeatureProperties": [],
+    "fullGeometryChanged": false,
+    "featureReferencesChanged": false
+  }
+}

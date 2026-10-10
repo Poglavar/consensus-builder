@@ -1,0 +1,59 @@
+{
+  "cityCode": 6047,
+  "queueRank": 1814,
+  "country": "Viet Nam",
+  "countryCode": "VN",
+  "point": [12.6770054028024, 108.041647928753],
+  "population2025": 316052,
+  "population2025k": 316.052,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Buon Ma Thuot cadastral map official parcel land information portal",
+        "result": "Found the official Đắk Lắk citizen portal planning-map viewer and the national land-inventory map; the local viewer exposes a public cadastral GeoJSON layer for Phường Buôn Ma Thuột.",
+        "actualResultUrls": ["https://tuongtaccongdan.daklak.gov.vn/chi-tiet-ban-do/42/15_MD_QHSDD2030.html", "https://maps.gdla.gov.vn/"]
+      },
+      {
+        "language": "Vietnamese",
+        "query": "Đắk Lắk Buôn Ma Thuột bản đồ địa chính tra cứu thửa đất cổng thông tin chính thức",
+        "result": "Found the official Đắk Lắk citizen portal map viewer. Its current JavaScript calls the first-party cadastral endpoint for Phường Buôn Ma Thuột and identifies the layer as 2024 parcel-sheet data.",
+        "actualResultUrls": ["https://tuongtaccongdan.daklak.gov.vn/chi-tiet-ban-do/42/15_MD_QHSDD2030.html", "https://iocqh.vnptdaklak.vn/ban_do_quy_hoach/api_lay_dm_xa_sap_nhap.php"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "localCustodian": "Đắk Lắk citizen portal / Phường Buôn Ma Thuột cadastral-map viewer",
+    "url": "https://tuongtaccongdan.daklak.gov.vn/chi-tiet-ban-do/42/15_MD_QHSDD2030.html",
+    "basis": "The first-party viewer's current code exposes the local cadastral layer and the public data endpoint for Phường Buôn Ma Thuột (Id 3); this evidences a local public map service, not legal ownership or title data."
+  },
+  "sourceDiscovery": {
+    "officialViewer": "Đắk Lắk citizen portal cadastral/planning map",
+    "viewerUrl": "https://tuongtaccongdan.daklak.gov.vn/chi-tiet-ban-do/42/15_MD_QHSDD2030.html",
+    "publicService": "https://iocqh.vnptdaklak.vn/ban_do_quy_hoach/sapnhap/phuong_bmt_merged.geojson",
+    "layerDescription": "Phường Buôn Ma Thuột; Note: Dữ liệu tờ thửa năm 2024",
+    "schemaCrs": "urn:ogc:def:crs:OGC:1.3:CRS84",
+    "featureCount": 82935,
+    "publicGeometry": true
+  },
+  "attempts": [
+    {"route": "https://tuongtaccongdan.daklak.gov.vn/chi-tiet-ban-do/42/15_MD_QHSDD2030.html", "method": "GET", "outcome": "200; current JavaScript/configuration inspected. It names the public cadastral API flow and the source GeoJSON URL pattern."},
+    {"route": "https://iocqh.vnptdaklak.vn/ban_do_quy_hoach/api_lay_dm_xa_sap_nhap.php", "method": "GET", "outcome": "200; returned Id 3, Phường Buôn Ma Thuột, center 12.6680045252051/108.04419070144637, and 2024 parcel-sheet note."},
+    {"route": "https://iocqh.vnptdaklak.vn/ban_do_quy_hoach/api_lay_bddc_xa_sap_nhap.php?idXa=3", "method": "GET", "outcome": "200; returned source basename phuong_bmt_merged."},
+    {"route": "https://iocqh.vnptdaklak.vn/ban_do_quy_hoach/sapnhap/phuong_bmt_merged.geojson", "method": "GET", "outcome": "200; 153,979,617-byte GeoJSON, 82,935 features, CRS84; bounded local parsing found one polygon containing the exact WUP point with OBJECTID 3216 and source label Text 8(51)."},
+    {"route": "https://maps.gdla.gov.vn/api/config", "method": "GET", "outcome": "200; national land-inventory application configuration, not used as the retained local parcel source."},
+    {"route": "https://maps.gdla.gov.vn/api/no-auth/config-data", "method": "GET", "outcome": "401; no login or credentials used; not treated as evidence of absence."}
+  ],
+  "geometry": {"verified": true, "sourceId": "OBJECTID:3216", "nativeIdField": "OBJECTID", "sampleCount": 1, "sampleFile": null, "exactWupPointTest": "hit; exact point was tested without coordinate shifting", "sourceLabel": "8(51)"},
+  "nativeFieldMapping": {"canonicalId": "OBJECTID", "sourceFieldsObserved": ["OBJECTID", "Join_Count", "TARGET_FID", "Layer", "Text", "SHAPE_Length"], "retainedFields": ["OBJECTID", "geometry"], "note": "Only the stable-looking source OBJECTID and geometry were selected for safe use; no raw source attribute set was retained."},
+  "compositeKeyProvenance": {"sourceLabelField": "Text", "sourceLabelValue": "8(51)", "interpretation": "display label indicating thửa 8 on tờ 51; recorded as provenance only, not used as the canonical identity"},
+  "crs": "CRS84 / longitude-latitude GeoJSON coordinates",
+  "coverage": {"citywideVerified": false, "countrywideVerified": false, "verifiedOpenScope": "Public parcel geometry for the Phường Buôn Ma Thuột viewer layer; citywide completeness and legal cadastral coverage are not established."},
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The public layer is identified as 2024 tờ/thửa data and contains geometry at the exact WUP point, but the viewer's completeness, update cadence, legal status, and correspondence to the full 2025 city boundary are not independently verified. No owner, address, titleholder, contact, tax/account, or personal fields were requested or retained.",
+  "retainedSample": null
+}

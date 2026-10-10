@@ -1,0 +1,14 @@
+{
+  "taskId": "city:6650",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-6650-plano.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/plano-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261010T093612-de86b846/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-10T09:40:52.625921Z",
+  "reviewNote": "Official Plano Owner Parcels metadata confirms polygon layer and documented PARCEL_ID, but bounded anonymous count and ID-plus-geometry queries timed out. No feature response, retained polygon, fresh native-ID read, adapter pagination/13-cell/metric-GEOS/source-binding proof, or headed Details check. The timeout does not establish citywide absence.",
+  "searchReview": "Packet records English and local-language searches; reviewer executed an additional local-language query on 2026-10-10. Search results establish source leads and custody only, not parcel geometry."
+}

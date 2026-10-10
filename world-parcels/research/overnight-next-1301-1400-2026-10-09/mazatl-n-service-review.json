@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2447-mazatl-n.json",
+  "cityCode": 2447,
+  "purpose": "Document first-party discovery, current public cadastral viewer review, bounded anonymous access, safe-field handling, and uncertainty.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "ICES is a real first-party cadastral custodian for Sinaloa and publishes a Mazatlán manzanero viewer route. The route embeds an ices-oblix backend, but the backend returned Cloudflare 522 during this attempt. The separate cadastral-information portal exposes a ClaveCatastral lookup and payment workflow, not an anonymous parcel geometry endpoint. No geometry sample is retained.",
+  "registryAssessment": "registryFound=true is supported by the official state cadastral institution, its Mazatlán-specific viewer route, and its cadastral-information service. This is local/state cadastral evidence, not proof of current complete parcel coverage or source integration readiness.",
+  "safeFieldAllowlist": ["ClaveCatastral only as a lookup-key field", "geometry if returned anonymously", "stable native parcel identity if returned", "CRS", "non-personal layer/schema metadata"],
+  "queries": [
+    {
+      "language": "English",
+      "query": "Mazatlán Mexico official GIS cadastral parcel map API cadastre parcels",
+      "outcome": "Official ICES and Sinaloa cadastral sources found; no anonymous parcel geometry API exposed in results.",
+      "actualResultUrls": ["https://ices.gob.mx/", "https://www.ices.gob.mx/sistema/visor/manzanero/mazatlan/", "https://pagoscatastro.sinaloa.gob.mx/InformacionCatastral", "https://portalregistral.sinaloa.gob.mx/"]
+    },
+    {
+      "language": "Spanish",
+      "query": "Mazatlán Sinaloa mapa catastral oficial parcelas GIS predial",
+      "outcome": "Official ICES Mazatlán viewer and cadastral-information sources found; no bounded anonymous parcel geometry endpoint exposed in results.",
+      "actualResultUrls": ["https://www.ices.gob.mx/sistema/visor/manzanero/mazatlan/", "https://pagoscatastro.sinaloa.gob.mx/InformacionCatastral", "https://transparencia.sinaloa.gob.mx/p/datos-abiertos-instituto-catastral-del-estado-de-sinaloa", "https://portalregistral.sinaloa.gob.mx/"]
+    }
+  ],
+  "attempts": [
+    {"url":"https://ices.gob.mx/","method":"GET","httpStatus":200,"result":"Official ICES home page loaded; cadastral custodian and viewer/service links confirmed."},
+    {"url":"https://www.ices.gob.mx/sistema/visor/manzanero/mazatlan/","method":"GET","httpStatus":200,"result":"Official Mazatlán viewer wrapper loaded; iframe source identified as http://ices-oblix.sinaloa.gob.mx/visores/mazatlanmanzanero/."},
+    {"url":"https://ices-oblix.sinaloa.gob.mx/visores/mazatlanmanzanero/","method":"GET","httpStatus":522,"result":"Viewer backend unavailable at Cloudflare edge; no JavaScript/configuration, schema, CRS, ID, or geometry response obtained."},
+    {"url":"https://pagoscatastro.sinaloa.gob.mx/InformacionCatastral","method":"GET","httpStatus":200,"result":"Cadastral-information page loaded. Current JavaScript exposed ClaveCatastral lookup and payment-related POST routes; no anonymous geometry route was present and no cadastral key was submitted."},
+    {"url":"https://portalregistral.sinaloa.gob.mx/","method":"GET","httpStatus":200,"result":"Official public registry portal loaded and lists the Mazatlan municipal registry office; no parcel geometry service was exposed."},
+    {"url":"https://transparencia.sinaloa.gob.mx/p/datos-abiertos-instituto-catastral-del-estado-de-sinaloa","method":"GET","httpStatus":200,"result":"Official ICES open-data page found; visible records concern institutional/statistical data, not an anonymous parcel polygon API."}
+  ],
+  "geometryEvidence": {"sampleFile":null,"sampleCount":0,"nativeIdentityField":null,"serviceObjectField":null,"requestedFields":[],"retainedProperties":[]},
+  "geometryDecision": {"verified":false,"sourceId":"https://www.ices.gob.mx/sistema/visor/manzanero/mazatlan/","nativeIdField":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"Not executed because the viewer backend was unavailable; the WUP point was preserved without shifting."},
+  "remainingUncertainty": "The backend failure prevents schema/CRS and parcel geometry qualification. The attempt did not validate complete current citywide coverage, exact-point containment, or a safe stable native parcel identity. The paid lookup workflow was not used because it would require a cadastral key and payment-related personal/billing fields.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter"
+}

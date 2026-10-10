@@ -1,0 +1,16 @@
+{
+  "taskId": "city:2515",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-2515-kuala-terengganu.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/kuala-terengganu-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T14:30:38Z",
+  "independentlyOpenedFirstPartyUrls": [
+    "https://myland.gov.my/MyCharting-WebView/",
+    "https://spgis.mbsp.gov.my/geoportal/rest/services/Kadaster/KADASTER/FeatureServer"
+  ],
+  "reason": "Official MyLand viewer and JUPEM-attributed service metadata support cadastral custody, but do not establish Kuala Terengganu geometry. Layer timeout, Terengganu TLS failure and login route yielded no native-ID full polygon; adapter/Details qualification is missing."
+}

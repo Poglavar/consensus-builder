@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-11352-xinghua.json",
+  "purpose": "Document first-party registry/map discovery, current viewer-route outcomes, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Official Xinghua sources establish a local natural-resources and real-estate-registration custodian and an official report documenting the Tianditu·Xinghua public geospatial platform. The documented portal URL returned 404 and no anonymous safe ID-plus-complete-polygon response was obtained.",
+  "registryAssessment": "Local registry custody found through the official Xinghua Natural Resources and Planning Bureau page and the official government service listing for real-estate registration. The official surveying-institute report is general geospatial-platform evidence, not proof of current parcel geometry availability.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.xinghua.gov.cn/fdzdgknr/jggk/jgzyzn/art/2024/art_84a989c46abc492080301cd2cad34437.html",
+      "observation": "Official bureau responsibilities include real-estate confirmation and registration, cadastral surveys, real-estate surveying, management and public sharing/use of survey and geospatial information."
+    },
+    {
+      "url": "https://tzxh.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=1132128101442233504000715001007&iddept_yw_inf=113212810144223350400071500100701&ql_kind=07&webId=70",
+      "observation": "Official Xinghua government service page identifies the Xinghua Natural Resources and Planning Bureau as the implementation body for a real-estate registration service and gives the public service-center location."
+    },
+    {
+      "url": "https://www.jschy.cn/zxzx/detail.aspx?id=14225&mtt=14",
+      "observation": "Official Jiangsu Surveying Institute report says the Tianditu·Xinghua project produced citywide vector, place-name and POI data, built a Tianditu·Xinghua portal and updated a public geospatial-platform service. It does not publish a current parcel API or parcel schema."
+    }
+  ],
+  "viewerConfiguration": {
+    "documentedHomeUrl": "http://jiangsu.tianditu.gov.cn/xinghua/",
+    "observedServiceTypes": ["Tianditu city portal", "public geospatial platform", "citywide vector/place-name/POI data", "real-estate registration service"],
+    "schemaAndCrs": "Not verified from a successful parcel feature response.",
+    "nativeFieldNames": "Not retained; no successful feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {
+      "url": "https://www.xinghua.gov.cn/fdzdgknr/jggk/jgzyzn/art/2024/art_84a989c46abc492080301cd2cad34437.html",
+      "method": "GET/web open",
+      "normalTlsVerification": true,
+      "result": "Official page opened successfully; local bureau cadastral, registration and geospatial responsibilities observed. No parcel geometry."
+    },
+    {
+      "url": "https://tzxh.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=1132128101442233504000715001007&iddept_yw_inf=113212810144223350400071500100701&ql_kind=07&webId=70",
+      "method": "GET/web open",
+      "normalTlsVerification": true,
+      "result": "Official service page opened successfully; local real-estate-registration implementation body and service location observed. No parcel geometry."
+    },
+    {
+      "url": "https://www.jschy.cn/zxzx/detail.aspx?id=14225&mtt=14",
+      "method": "GET/web open and public GET",
+      "normalTlsVerification": true,
+      "result": "Official project report opened/retrieved; it documents Tianditu·Xinghua and citywide vector/place-name/POI outputs, but exposes no current parcel service URL or schema."
+    },
+    {
+      "url": "http://jiangsu.tianditu.gov.cn/xinghua/",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 404 Not Found. The documented portal route is not currently available at this URL; no JavaScript/configuration, schema, CRS or feature response obtained."
+    },
+    {
+      "url": "https://jiangsu.tianditu.gov.cn/xinghua/",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 404 Not Found over HTTPS. No certificate exception used."
+    },
+    {
+      "url": "https://xinghua.tianditu.gov.cn/; https://tianditu.xinghua.gov.cn/; https://xinghua.jiangsu.tianditu.gov.cn/",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "DNS resolution failed for guessed alternate hosts. These guesses were not treated as official service routes and produced no geometry evidence."
+    }
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {
+    "sampleFile": null,
+    "featureCount": 0,
+    "query": "No WUP-point parcel query submitted because the only documented city portal route returned 404 and no current public parcel endpoint was identified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official local bureau and government-service sources cover Xinghua registration/cadastral responsibilities; the official surveying-institute report claims citywide public geospatial-platform/vector-data outputs.",
+    "verifiedOpenScope": "Official custody and historical/public platform evidence verified; no current anonymous complete-polygon feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "remainingUncertainty": "The 404 and DNS findings are route/access limitations only, not evidence of cadastral absence. Current service URL, parcel schema, CRS, native identity, geometry availability and citywide completeness remain unverified.",
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."
+  }
+}

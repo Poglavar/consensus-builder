@@ -1,0 +1,113 @@
+{
+  "cityCode": 7177,
+  "queueRank": 1876,
+  "name": "Dessie",
+  "country": "Ethiopia",
+  "countryCode": "ET",
+  "iso3": "ETH",
+  "point": [11.1371919966031, 39.6366976691077],
+  "population2025": 306979,
+  "population2025k": 306.979,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dessie Ethiopia cadastral parcel map land registry official GIS",
+        "result": "Search found Ethiopia's official e-Land cadastral portal, the Ethio-NSDI geoportal, general land-administration material, and a Dessie city land-administration directory listing. No anonymous Dessie parcel geometry response or city-bounded public parcel API was verified.",
+        "actualResultUrls": [
+          "https://eland.addiscadaster.gov.et/",
+          "https://eland.addiscadaster.gov.et/maps",
+          "https://ethionsdi.gov.et/",
+          "https://www.africabizinfo.com/ET/%E1%8B%A8%E1%8B%B0%E1%88%B4-%E1%8A%A8%E1%89%B0%E1%88%9B-%E1%8A%A0%E1%88%B5%E1%89%B0%E1%8B%B3%E1%8B%B0%E1%88%AD-%E1%88%98%E1%8D%88%E1%88%AA%E1%8B%AB-dessie-city-033-111-4016"
+        ]
+      },
+      {
+        "language": "Amharic (local/native)",
+        "query": "ደሴ ኢትዮጵያ ካዳስተር መሬት ካርታ የመሬት ምዝገባ",
+        "result": "Search found Ethiopia's official e-Land cadastral-service portal and national land-registration guidance. Results did not verify a Dessie-local anonymous map/API, parcel schema, CRS, stable parcel identity, or parcel geometry.",
+        "actualResultUrls": [
+          "https://eland.addiscadaster.gov.et/",
+          "https://eland.addiscadaster.gov.et/maps",
+          "https://www.hopr.gov.et/documents/portlet_file_entry/20181/%E1%8B%A8%Eከተማ%2Bመሬት%2Bይዞታ%2Bእና%2Bመሬት%2Bነክ%2Bንብረት%2Bምዝገባ%2Bረቂቅ%2Bአዋጅ%2B.pdf/dedb22f0-3719-c9a8-ff1f-1df04f53ca8b?download=true"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": {
+    "localCustodian": null,
+    "nationalOrGeneralSources": [
+      "https://eland.addiscadaster.gov.et/",
+      "https://eland.addiscadaster.gov.et/maps",
+      "https://ethionsdi.gov.et/",
+      "https://www.hopr.gov.et/documents/portlet_file_entry/20181/%E1%8B%A8%Eከተማ%2Bመሬት%2Bይዞታ%2Bእና%2Bመሬት%2Bነክ%2Bንብረት%2Bምዝገባ%2Bረቂቅ%2Bአዋጅ%2B.pdf/dedb22f0-3719-c9a8-ff1f-1df04f53ca8b?download=true"
+    ],
+    "directoryLeadOnly": "https://www.africabizinfo.com/ET/%E1%8B%A8%Eደሴ-%Eከተማ-%Eአስተዳደር-%Eመሬት-%Eመምሪያ-dessie-city-033-111-4016",
+    "basis": "The official e-Land portal describes digital cadastral services and a GIS-based map system, but the inspected public route did not expose a Dessie parcel response. A third-party directory names a Dessie city land department, but it is not sufficient evidence of an open registry/map service; therefore registryFound remains null."
+  },
+  "requests": [
+    {
+      "route": "https://eland.addiscadaster.gov.et/",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Official e-Land landing page returned HTML describing digital cadastral services, parcel registration, GIS-based mapping, online applications, and integrated urban land information. No parcel feature response was obtained."
+    },
+    {
+      "route": "https://eland.addiscadaster.gov.et/maps",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Official public map page returned HTML. Current JavaScript assets were retrieved and inspected for public configuration/API routes. The page references api.config.json and application API clients, but no anonymous Dessie parcel ID-plus-geometry response was verified."
+    },
+    {
+      "route": "https://eland.addiscadaster.gov.et/main.d3525dff4b9098d6.js",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Current map JavaScript bundle retrieved and inspected. It exposed application route/configuration references, including api.config.json and public/private API client scaffolding, but not a verified unauthenticated parcel query with safe geometry fields. No login, credentials, private tokens, CAPTCHA bypass, or unsafe fields were attempted."
+    },
+    {
+      "route": "https://eland.addiscadaster.gov.et/api.config.json",
+      "method": "GET",
+      "status": "timeout",
+      "outcome": "Anonymous configuration fetch timed out after 25 seconds. No TLS-verification bypass was used; no retry or private endpoint access was attempted."
+    },
+    {
+      "route": "https://ethionsdi.gov.et/",
+      "method": "GET via discovery result",
+      "status": "not independently fetched",
+      "outcome": "Official national spatial-data infrastructure portal was identified in discovery, but it was not treated as a Dessie cadastral registry and no parcel geometry was retained."
+    },
+    {
+      "route": "https://www.africabizinfo.com/ET/%E1%8D%A8%E1%8D%A8%E1%88%B4-%E1%8A%A8%E1%89%B0%E1%88%9B-%E1%8A%A0%E1%88%B5%E1%89%B0%E1%8B%B3%E1%8B%B0%E1%88%AD-%E1%88%98%E1%88%AC%E1%89%B5-%E1%88%98%E1%88%9D%E1%88%AA%E1%8B%AB-dessie-city-033-111-4016",
+      "method": "GET via discovery result",
+      "status": "not independently fetched",
+      "outcome": "Third-party directory result names a Dessie city administration land department. It is recorded as a local-custodian lead only, not as verified public registry/API evidence."
+    }
+  ],
+  "safeFieldAllowlist": ["stable native parcel ID if exposed", "polygon geometry", "service/layer metadata", "CRS metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": {"source": null, "retainedSample": null},
+  "verifiedSample": {"count": 0, "sampleFile": null, "exactWupPointQuery": false, "result": "No anonymous parcel ID-plus-geometry response was obtained. This is not evidence of citywide parcel absence."},
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Ethiopia-wide digital cadastral/GIS portal and national spatial-data sources, plus a Dessie land-department directory lead.",
+    "verifiedOpenScope": "Official portal HTML and JavaScript only; Dessie-local service coverage, parcel schema, stable identity, CRS, geometry, and citywide completeness remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; no independently verified parcel adapter candidate",
+  "scopeLimits": [
+    "The exact WUP point is preserved in latitude/longitude order and was not shifted to seek a parcel hit.",
+    "No exact-point query was completed because no usable anonymous parcel service was identified; this is not evidence of parcel absence.",
+    "No owner, address, titleholder, contact, tax/account, personal, or other unsafe fields were requested or retained.",
+    "No credentials, private tokens, CAPTCHA/Cloudflare bypass, or global TLS-verification bypass was used.",
+    "Packet completion records research evidence only and does not admit source integration or runtime use."
+  ],
+  "remainingUncertainty": "Dessie or Amhara land offices may maintain records or a non-indexed/internal viewer. The official national e-Land portal advertises cadastral GIS services, but this attempt did not establish an anonymous Dessie parcel endpoint, native identity, CRS, geometry, update currency, or citywide coverage."
+}

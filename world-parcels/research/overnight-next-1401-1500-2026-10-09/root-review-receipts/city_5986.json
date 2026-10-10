@@ -1,0 +1,14 @@
+{
+  "taskId": "city:5986",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-5986-mahesana.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/mahesana-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T16:56:37Z",
+  "reason": "Queue code, rank 1441, India, point and 394304 persons match the packet; English and Gujarati searches are recorded. Official district and Gujarat pages support land-record custody, but the AnyRoR request timed out before service inspection. No full parcel polygon or safe native ID was obtained, and none of the live adapter, paging, 13-cell, metric GEOS, binding or headed Details gates is evidenced. Timeout does not establish citywide absence.",
+  "fullPolygonCount": 0,
+  "runtimeAdmission": false
+}

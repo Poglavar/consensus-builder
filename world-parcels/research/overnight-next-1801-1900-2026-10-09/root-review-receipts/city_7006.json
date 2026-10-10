@@ -1,0 +1,40 @@
+{
+  "taskId": "city:7006",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-7006-emeishan.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/emeishan-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T16:55:08Z",
+  "identityCheck": {
+    "rank": 1853,
+    "country": "China",
+    "pointLatLon": [
+      29.6021934252249,
+      103.501209615595
+    ],
+    "populationPersons": 310503,
+    "source": "WUP 2025 compressed archive; SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114"
+  },
+  "bilingualSearches": "English and local-language queries with outcomes/URLs are recorded in the packet and were independently repeated during review.",
+  "registryFound": true,
+  "firstPartyUrlsChecked": [
+    "https://www.emeishan.gov.cn/emss/czyjs/2024030411292161666200000.html",
+    "https://www.emeishan.gov.cn/emss/gsgg/202312/ffe35b11a1ae4b8fb3ef78c77f9dc5fa.shtml",
+    "https://sichuan.tianditu.gov.cn/"
+  ],
+  "reason": "Official local natural-resources page substantiates registration/cadastral-survey custody. The city government map is a public-service locator; inspected Sichuan Tianditu configuration exposes basemaps, not a parcel feature response. The other platform timed out.",
+  "parcelSampleCount": 0,
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "admitted": false,
+  "absenceFinding": null
+}

@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 10594,
+  "queueRank": 1815,
+  "cityId": "queue:1815",
+  "name": "Guiping",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [23.3803950748801, 110.072833011985],
+  "centerLatLon": [23.3803950748801, 110.072833011985],
+  "population2025": 315905,
+  "population2025k": 315.905,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Guiping China official cadastral parcel map natural resources property registration GIS",
+        "result": "Results identified the Guangxi Natural Resources Department, Guigang Natural Resources Bureau and Guigang real-estate registration procedure pages. No public Guiping parcel ID-plus-geometry service was exposed.",
+        "actualResultUrls": [
+          "https://gg.dnr.gxzf.gov.cn/bdcdj/djyjcxjyj/t10005077.shtml",
+          "https://gg.dnr.gxzf.gov.cn/bdcdj/djyjcxjyj/t3186494.shtml",
+          "https://dnr.gxzf.gov.cn/zxgz/yhyshj/twjd/t18070099.shtml",
+          "https://gg.dnr.gxzf.gov.cn/xxgk/tzgg/P020250402627254332016.pdf"
+        ]
+      },
+      {
+        "language": "native/local (Simplified Chinese)",
+        "query": "贵港市 桂平市 不动产登记 地籍图 官方",
+        "result": "First-party results identified Guigang's real-estate registration center procedure for registration-file and cadastral-map copies, Guangxi guidance describing public cadastral-map inquiry channels, and an official survey-industry record naming 桂平市不动产登记存量信息测量调查落宗服务项目. No anonymous parcel geometry endpoint was exposed.",
+        "actualResultUrls": [
+          "https://gg.dnr.gxzf.gov.cn/bdcdj/djyjcxjyj/t10005077.shtml",
+          "https://dnr.gxzf.gov.cn/zxgz/yhyshj/twjd/t18070099.shtml",
+          "https://www.gxchxh.com/upload/editor/file/20221207/20221207103708_76336.pdf",
+          "https://gg.dnr.gxzf.gov.cn/bdcdj/djyjcxjyj/t19265268.shtml"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "First-party web discovery followed by bounded TLS-verified GET attempts; no credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe lookup or TLS disablement."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://gg.dnr.gxzf.gov.cn/bdcdj/djyjcxjyj/t10005077.shtml",
+      "observation": "Official Guigang Natural Resources Bureau / Guigang Real Estate Registration Center procedure page identifies the regional registration custodian and permits qualifying applicants to request registration files including cadastral maps; it is not an anonymous parcel vector service."
+    },
+    {
+      "url": "https://dnr.gxzf.gov.cn/zxgz/yhyshj/twjd/t18070099.shtml",
+      "observation": "Official Guangxi Natural Resources Department guidance describes cadastral-map inquiry channels and registration information services across Guangxi, but exposes no Guiping parcel schema or public geometry endpoint."
+    },
+    {
+      "url": "https://www.gxchxh.com/upload/editor/file/20221207/20221207103708_76336.pdf",
+      "observation": "Official Guangxi surveying association project listing names the Guiping existing real-estate-registration information measurement/investigation and parcel-location service project; this establishes project/custody evidence, not public data access."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://gg.dnr.gxzf.gov.cn/bdcdj/djyjcxjyj/t10005077.shtml",
+      "method": "GET",
+      "httpStatus": "timeout",
+      "contentType": null,
+      "assessment": "TLS-verified curl request timed out after 15 seconds; no retry or bypass was attempted. Search-indexed official content was recorded separately."
+    },
+    {
+      "url": "https://gg.dnr.gxzf.gov.cn/",
+      "method": "GET",
+      "httpStatus": "not_attempted_after_timeout",
+      "contentType": null,
+      "assessment": "Not executed because the bounded registration-page request timed out; no inference about service absence was made."
+    },
+    {
+      "url": "https://www.guiping.gov.cn/",
+      "method": "GET",
+      "httpStatus": "not_attempted_after_timeout",
+      "contentType": null,
+      "assessment": "Not executed because the bounded official registration-page request timed out; no inference about service absence was made."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Guiping county-level city within Guigang, Guangxi, under the Guigang/Guangxi natural-resources and real-estate registration system.",
+    "verifiedOpenScope": "Regional registration custody and Guiping cadastral-survey project evidence only; anonymous parcel geometry and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The current Guiping/Guigang public viewer or API route, access controls, parcel schema, CRS, stable native parcel identity, update currency and citywide coverage remain unresolved. The exact WUP point was preserved and never shifted; no exact-point hit or miss inference was made. Formal registration queries may require qualifying applicant information. No claim is made about parcel absence, legal title, ownership, tax records or completeness of any Chinese cadastral dataset.",
+  "nextStep": "A later attempt may inspect an officially exposed Guigang/Guiping map viewer or service configuration and test only a bounded anonymous ID-plus-geometry query."
+}

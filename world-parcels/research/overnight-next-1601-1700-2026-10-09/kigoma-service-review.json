@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-114-kigoma.json",
+  "cityCode": 114,
+  "queueRank": 1677,
+  "city": "Kigoma",
+  "country": "United Republic of Tanzania",
+  "countryCode": "TZ",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Tanzania Ministry of Lands e-Ardhi sources and the current public GeoServer catalogue were verified. WFS schema exposes taspro:spatial_units with native id/uid and geom, but the exact WUP point returned no feature and a bounded nearby query timed out. No safe parcel feature row or polygon was retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Swahili first-party discovery queries are recorded in city-114-kigoma.json. They found e-Ardhi, the Ministry's Kigoma/Tabora plot-service report, and the official Kigoma regional page.",
+  "requestOutcomes": "The e-Ardhi viewer shell, WMS capabilities, WFS capabilities, and spatial_units schema returned anonymously with TLS verification. The exact-point WFS query returned valid empty GeoJSON; a bounded approximately 20 m WFS query timed out after 30 seconds. A direct curl to the published Ministry news URL failed hostname verification; no TLS exception was used.",
+  "attemptedRoutes": [
+    "Official e-Ardhi viewer shell and current JavaScript/configuration",
+    "Official e-Ardhi GeoServer WMS GetCapabilities",
+    "Official e-Ardhi GeoServer WFS GetCapabilities",
+    "WFS DescribeFeatureType for taspro:spatial_units",
+    "WFS exact WUP-point GeoJSON query",
+    "WFS bounded nearby GeoJSON query",
+    "Official Ministry Kigoma/Tabora e-Ardhi report URL"
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "excludedFields": [
+    "owner or titleholder names",
+    "addresses and contact data",
+    "tax/account, valuation, legal-title and personal fields",
+    "credentials, private tokens and authentication artifacts"
+  ],
+  "nativeIdentityPolicy": "If a future feature row is retained, use exactly one confirmed stable native identity (preferably id or uid) in GeoJSON properties and keep all source field mapping here. No synthetic identity was created.",
+  "nativeFieldMapping": {"sourceLayer": "taspro:spatial_units", "candidateIdFields": ["id", "uid"], "geometryField": "geom"},
+  "compositeKeyProvenance": null,
+  "crs": "EPSG:4326 was requested for output; native source CRS remains unverified without a returned feature.",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Exact WUP point query returned zero features; no absence inference was made.",
+    "requestEvidence": ["WFS capabilities/schema succeeded", "exact point returned empty GeoJSON", "nearby bounded query timed out"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Tanzania Ministry of Lands e-Ardhi public land-service/map infrastructure with reported Kigoma plot activity.",
+    "verifiedOpenScope": "Public service catalogue and parcel-like layer schema only; Kigoma citywide coverage and usable anonymous parcel geometry were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": [
+    "WUP point remains [-4.88342756153032, 29.6523006847059] in latitude/longitude order.",
+    "No exact-point hit/miss, map extent, timeout, or viewer limitation was treated as citywide absence.",
+    "Local ministry service activity is evidenced, but an open Kigoma city-bounded parcel adapter was not established.",
+    "No unsafe property fields, credentials, login, CAPTCHA/Cloudflare bypass, private token, or global TLS disablement was used.",
+    "This packet is research evidence only and must not be treated as source integration or runtime admission."
+  ],
+  "uncertainty": "The e-Ardhi public service may contain Kigoma parcels, but feature retrieval was not sufficiently bounded/reliable in this attempt to establish coverage or retain geometry. Independent serial review is required.",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required"
+}

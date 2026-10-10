@@ -1,0 +1,15 @@
+{
+  "taskId": "city:8753",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-8753-kundulun.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/kundulun-service-review.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "tmp/valhalla-parcel-research/8753/bagis.html",
+    "tmp/valhalla-parcel-research/8753/osgof.html",
+    "tmp/valhalla-parcel-research/8753/engis-bbox.json"
+  ],
+  "checkedAt": "2026-10-09T18:06:05Z",
+  "reviewNotes": "Bauchi government BAGIS property-record listings and cached BAGIS/OSGOF pages support state or federal custody only. Enugu bbox zero is out of source scope. No Kundulun parcel response or runtime qualification proof. Packet pointOrder says longitude,latitude, but the immutable WUP coordinates are latitude,longitude; numeric point was preserved."
+}

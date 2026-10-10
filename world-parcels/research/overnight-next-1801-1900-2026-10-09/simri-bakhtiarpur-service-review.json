@@ -1,0 +1,59 @@
+{
+  "cityRecord": "city-11357-simri-bakhtiarpur.json",
+  "schemaVersion": "1.0",
+  "cityCode": 11357,
+  "queueRank": 1841,
+  "city": "Simri Bakhtiarpur",
+  "country": "India",
+  "countryCode": "IN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Bihar BhuNaksha and DILRMP evidence establishes a local cadastral-map custodian and an accessible public hierarchy for Simri Bakhtiarpur, but bounded anonymous requests did not produce a parcel ID-plus-geometry response. No sample GeoJSON is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Hindi first-party queries, actual URLs and outcomes are recorded in city-11357-simri-bakhtiarpur.json.",
+  "requestOutcomes": "The current BhuNaksha HTML/JavaScript was retrieved and inspected. Public hierarchy endpoints returned Bihar/Saharsa/Simri Bakhtiarpur metadata and mauza code 0402 for Simri(80). The bounded ScalarDatahandler probe returned has_data=N and getPlotAtXY returned HTTP 204; no safe parcel feature was retrieved.",
+  "attemptedRoutes": [
+    "Government of Bihar BhuNaksha viewer",
+    "BhuNaksha current JavaScript/configuration",
+    "BhuNaksha rest/Levels/count",
+    "BhuNaksha rest/Levels/ListsAfterLevel",
+    "BhuNaksha ScalarDatahandler",
+    "BhuNaksha rest/MapInfo/getPlotAtXY",
+    "BhuNaksha rest/MapInfo/getVVVVExtentGeoref",
+    "Bihar Department of Revenue and Land Reforms portal",
+    "Government of India DILRMP village map-digitization record"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [25.7023284134512, 86.5931675970423] was preserved in latitude/longitude order and never shifted.",
+    "The apparent projected service coordinates were used only for a bounded probe; the extent miss/204 response is not evidence of citywide absence.",
+    "No parcel geometry, stable native parcel identity, source attribute schema or authoritative CRS was retrieved or retained.",
+    "Local cadastral-map custody and DILRMP digitization status do not prove complete citywide open-vector coverage.",
+    "No owner, address, titleholder, contact, tax/account, personal or other unsafe fields were requested or retained.",
+    "Packet completion is research evidence only; serial reviewer qualification and runtime adapter admission remain pending."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable parcel response; no hit/miss inference.",
+    "requestEvidence": []
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The correct public feature route, map-instance semantics, stable native ID, CRS, update currency and citywide completeness remain unresolved."
+}

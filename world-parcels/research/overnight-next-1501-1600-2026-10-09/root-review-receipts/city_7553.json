@@ -1,0 +1,18 @@
+{
+  "taskId": "city:7553",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-7553-oyigbo.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/oyigbo-service-review.json",
+    "tmp/valhalla-parcel-research/oyigbo/rsipa.html",
+    "tmp/valhalla-parcel-research/oyigbo/rsipa.headers",
+    "tmp/valhalla-parcel-research/oyigbo/sgriv.html",
+    "tmp/valhalla-parcel-research/oyigbo/sgriv.headers"
+  ],
+  "checkedAt": "2026-10-10T09:13:02.972980Z",
+  "reason": "Immutable WUP identity and separate English/Igbo queries checked. First-party cached Rivers ministry page supports state land/survey custody; no anonymous native-ID plus complete-polygon response. No adapter qualification or admission.",
+  "sourceAdmission": "not_admitted"
+}

@@ -1,0 +1,72 @@
+{
+  "cityRecord": "city-6308-ciudad-victoria.json",
+  "schemaVersion": "1.0",
+  "cityCode": 6308,
+  "queueRank": 1781,
+  "city": "Ciudad Victoria",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete_packet_held_for_serial_review",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Tamaulipas sources evidence state cadastral custody and digital-cartography responsibilities, plus a public Servicios Catastrales route. Current anonymous access was blocked by an anti-bot challenge or timed out before a safe parcel ID plus full polygon response could be verified. No sample GeoJSON is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Spanish discovery queries, exact text, outcomes, and actual first-party URLs are recorded in city-6308-ciudad-victoria.json.",
+  "requestOutcomes": "The official Finance services page returned HTTP 200 and exposed the Servicios Catastrales iframe. The iframe and direct IRCT page returned anti-bot hCaptcha/perfdrive challenges; the official SIETam cartography page timed out; the official Victoria PDF is general cartography rather than parcel geometry. No credentials, login, CAPTCHA bypass, private token, unsafe field request, or TLS-disable action was used.",
+  "custodians": [
+    {
+      "name": "Instituto Registral y Catastral de Tamaulipas / Secretaría de Finanzas",
+      "role": "State cadastral and property-registration institution; official page describes current and historical digital cartography and support to municipalities.",
+      "evidence": "https://www.tamaulipas.gob.mx/secretariageneral/instituto-registral-y-catastral/"
+    },
+    {
+      "name": "Government of Tamaulipas, Secretaría de Finanzas",
+      "role": "Official public entry point for Servicios Catastrales.",
+      "evidence": "https://finanzas.tamaulipas.gob.mx/pago-de-contribuciones/Servicios-Catastrales.php"
+    }
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no parcel geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable anonymous parcel geometry endpoint was reached; no exact-point hit/miss inference.",
+    "requestEvidence": [
+      "https://finanzas.tamaulipas.gob.mx/pago-de-contribuciones/Servicios-Catastrales.php",
+      "https://finanzas.tamaulipas.gob.mx/ingresos/pagosnet/view/opd/opd_13.php?Id=13&Inst=SERVICIOS%20CATASTRALES",
+      "https://www.tamaulipas.gob.mx/secretariageneral/instituto-registral-y-catastral/",
+      "https://sie.tamaulipas.gob.mx/cartografia.html",
+      "https://www.tamaulipas.gob.mx/informaciongeografica/wp-content/uploads/sites/41/2018/05/cdvictoria_localidad.pdf"
+    ]
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate-reference metadata",
+    "source layer and public service metadata"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [23.7390229166815, -99.1491926457333] was preserved in latitude/longitude order and was not shifted.",
+    "A zero exact-point hit, map extent miss, timeout, anti-bot challenge, or unusable UI is not evidence of citywide cadastral absence.",
+    "General Victoria cartography and institutional custody do not establish parcel identities, vector geometry, CRS, or citywide open coverage.",
+    "No full parcel polygon or raw source-specific attribute set is retained.",
+    "Packet completion is research evidence only and does not qualify or admit a runtime adapter; independent serial review remains required."
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Tamaulipas cadastral institution and public state cadastral/cartographic routes.",
+    "verifiedOpenScope": "Custodian and route evidence only; no anonymous parcel feature response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review required",
+  "uncertainty": "The current parcel viewer/API, access controls, schema, CRS, native parcel identity, city coverage, currentness and completeness remain unknown. No claim is made about parcel absence, ownership, title, legal status, or tax records.",
+  "retainedSample": null
+}

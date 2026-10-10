@@ -1,0 +1,83 @@
+{
+  "cityCode": 4669,
+  "queueRank": 1283,
+  "name": "Pabna",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "iso3": "BGD",
+  "point": [24.0069361559384, 89.2376788585173],
+  "population2025": 436119,
+  "population2025k": 436.119,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": true,
+  "registryAssessment": "Bangladesh's Department of Land Records and Surveys (DLRS) and its Pabna Zonal Settlement Office are first-party cadastral custodians. The official public settlement map viewer exposes Bangladesh survey and plot/mouza lookup routes. Public anonymous parcel-vector access was verified at the service level, but exact WUP-point inclusion and citywide completeness were not verified.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pabna Bangladesh official cadastral map land records parcel GIS",
+        "result": "Found the official DLRS online land-record and survey map viewer, the official Smart Bhumi Naksha mouza/plot map project, the official Pabna Zonal Settlement Office, and a DLRS digital-survey notice covering Pabna. The viewer's current JavaScript exposes anonymous JSON/GeoJSON map routes; no safe exact-point parcel match was established.",
+        "actualResultUrls": [
+          "https://settlement.gov.bd/home/",
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://map.land.gov.bd/",
+          "https://zso.pabna.gov.bd/",
+          "https://dlrs.gov.bd/"
+        ]
+      },
+      {
+        "language": "Bengali",
+        "query": "পাবনা বাংলাদেশ সরকারি ক্যাডাস্ট্রাল মানচিত্র জমির রেকর্ড জিআইএস",
+        "result": "Found the official DLRS settlement viewer, the official Smart Bhumi Naksha project describing digitized and georeferenced mouza sheets, and the official Pabna Zonal Settlement Office. The Pabna district route returned a BDS survey entry and Pabna Sadar administrative/mouza metadata; no exact-point parcel match was established.",
+        "actualResultUrls": [
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://map.land.gov.bd/",
+          "https://zso.pabna.gov.bd/",
+          "https://dlrs.gov.bd/site/page/359236ae-4c8a-49e0-b2ab-1e9b13994908/Digital-BRS-%28Search-Map/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://settlement.gov.bd/Map/MapSearch",
+      "role": "Official DLRS public map viewer",
+      "observation": "Current viewer page exposes division, district, survey, upazila/thana, mouza, sheet, and dag selectors. Its JavaScript references anonymous POST endpoints and a GeoJSON sheet endpoint; owner/address data was not requested or retained."
+    },
+    {
+      "url": "https://zso.pabna.gov.bd/",
+      "role": "Official Pabna Zonal Settlement Office",
+      "observation": "First-party local settlement-office portal lists Pabna and Sirajganj mouza-list and survey-related services."
+    },
+    {
+      "url": "https://map.land.gov.bd/",
+      "role": "Official Ministry of Land Smart Bhumi Naksha project",
+      "observation": "First-party project describes mouza- and plot-based national digital land zoning and digitization/georeferencing of mouza map sheets."
+    },
+    {
+      "url": "https://dlrs.gov.bd/site/page/359236ae-4c8a-49e0-b2ab-1e9b13994908/Digital-BRS-%28Search-Map/",
+      "role": "Official DLRS digital BRS map/khatian page",
+      "observation": "First-party DLRS page links digital BRS map/khatian functions."
+    }
+  ],
+  "serviceReview": "pabna-service-review.json",
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "A bounded anonymous GeoJSON response was obtained from the official sheet endpoint and declared EPSG:4326, with parcel-like polygons and native Dag_No values in the response. The tested sheet's returned extent was not the WUP point [24.0069361559384, 89.2376788585173], and the viewer provides no citywide point query. No polygon was retained to avoid misattributing a sheet to Pabna city."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official DLRS settlement-map service for Bangladesh survey/mouza/plot records, with a Pabna Zonal Settlement Office as local custodian.",
+    "verifiedOpenScope": "Anonymous service metadata and a CRS-declared GeoJSON sheet response were verified; exact Pabna city coverage, WUP-point inclusion, and citywide completeness were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

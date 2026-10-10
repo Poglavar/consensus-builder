@@ -1,0 +1,124 @@
+{
+  "cityCode": 4499,
+  "queueRank": 1877,
+  "name": "Wakefield",
+  "country": "United Kingdom",
+  "countryCode": "GB",
+  "iso3": "GBR",
+  "point": [53.6961440580871, -1.60677258999069],
+  "population2025": 306684,
+  "population2025k": 306.684,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Wakefield Council official map GIS land parcels cadastral map",
+        "result": "First-party results identified Wakefield Council's Local Plan Portal and HM Land Registry's official INSPIRE Index Polygons download service. The HM Land Registry result explicitly lists Wakefield Metropolitan District Council as a local-authority download area; the Council viewer is documented for planning policies and map layers, not cadastral parcels.",
+        "actualResultUrls": [
+          "https://mapping.wakefield.gov.uk/localplan/home.aspx?base=Mapbase+BW&mapcfg=WMDCmap&zoom=3",
+          "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+          "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data"
+        ]
+      },
+      {
+        "language": "English (local/native administrative language)",
+        "query": "Wakefield official cadastral parcels land registry map download",
+        "result": "The official UK source is HM Land Registry INSPIRE Index Polygons for England and Wales. The official Wakefield Council pages provide planning-policy and general GIS information, but no first-party local cadastral parcel API was evidenced.",
+        "actualResultUrls": [
+          "https://use-land-property-data.service.gov.uk/datasets/inspire",
+          "https://www.wakefield.gov.uk/about-the-council/access-to-information/stats-facts-and-maps",
+          "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "localCustodian": "Wakefield Metropolitan District Council is evidenced as the local authority in the HM Land Registry INSPIRE download index and maintains an official planning map portal; no local cadastral custodian endpoint was found.",
+    "nationalService": "HM Land Registry INSPIRE Index Polygons",
+    "basis": "The first-party HM Land Registry dataset describes indicative extents and positions of registered freehold properties in England and Wales, with a unique Land Registry-INSPIRE ID, and lists Wakefield Metropolitan District Council as a downloadable authority area.",
+    "urls": [
+      "https://use-land-property-data.service.gov.uk/datasets/inspire",
+      "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+      "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data"
+    ]
+  },
+  "requests": [
+    {
+      "route": "https://use-land-property-data.service.gov.uk/datasets/inspire",
+      "method": "GET/search fetch",
+      "status": 200,
+      "outcome": "Search-indexed first-party dataset page was available and states that INSPIRE Index Polygons are freehold registered-property extents, divided by local authority, with unique Land Registry-INSPIRE IDs. No owner, address, title, or other unsafe fields were requested or retained."
+    },
+    {
+      "route": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+      "method": "GET",
+      "status": "302 redirect loop",
+      "outcome": "Direct anonymous fetch redirected repeatedly to the same path; no GML file or download URL was obtained. This is an access failure, not evidence of absent Wakefield coverage."
+    },
+    {
+      "route": "https://use-land-property-data.service.gov.uk/api/v1/datasets",
+      "method": "GET",
+      "status": 403,
+      "outcome": "Returned 'Access denied: You need to provide your API Key'. No API key or credentials were used."
+    },
+    {
+      "route": "https://mapping.wakefield.gov.uk/localplan/home.aspx?base=Mapbase+BW&mapcfg=WMDCmap&zoom=3",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Official Wakefield Local Plan Portal HTML returned. Page describes address/location search, adopted and consultation planning layers, aerial photography, and policy information; it does not evidence a cadastral parcel feature service."
+    },
+    {
+      "route": "https://mapping.wakefield.gov.uk/localplan/Search.aspx",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Official Wakefield address-search page returned and describes Local Plan policy-map contents. No parcel geometry or safe native parcel identity was returned."
+    },
+    {
+      "route": "https://www.wakefield.gov.uk/about-the-council/access-to-information/stats-facts-and-maps",
+      "method": "GET/search fetch",
+      "status": 200,
+      "outcome": "Official Council page confirms Wakefield District Council is a unitary local authority and lists general downloadable GIS maps, but not cadastral parcel data."
+    },
+    {
+      "route": "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data",
+      "method": "GET/search fetch",
+      "status": 200,
+      "outcome": "HM Land Registry guidance confirms INSPIRE polygons are indicative registered freehold-property extents and that title plans/registers are needed for full legal detail."
+    }
+  ],
+  "safeFieldAllowlist": ["stable HM Land Registry-INSPIRE ID", "full parcel polygon geometry", "source/layer metadata", "CRS metadata"],
+  "nativeFieldMapping": {
+    "sourceDataset": "HM Land Registry INSPIRE Index Polygons",
+    "sourceIdFieldExpected": "Land Registry-INSPIRE ID",
+    "geometryFieldExpected": "INSPIRE polygon geometry",
+    "retainedProperties": null
+  },
+  "compositeKeyProvenance": null,
+  "crs": {"source": "Not inspected because the official GML download was inaccessible", "retainedSample": null},
+  "verifiedSample": {"count": 0, "sampleFile": null, "exactWupPointQuery": false, "result": "No geometry retained; the official download/API route was inaccessible anonymously."},
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "HM Land Registry INSPIRE Index Polygons for England and Wales, partitioned by local authority.",
+    "verifiedOpenScope": "Wakefield Metropolitan District Council is listed by the first-party download page, but the actual Wakefield file and response schema could not be fetched in this attempt.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent adapter qualification remains required",
+  "scopeLimits": [
+    "Exact WUP latitude/longitude [53.6961440580871, -1.60677258999069] was preserved; no coordinate shift was applied.",
+    "No parcel geometry was retained because no bounded anonymous feature response was available.",
+    "The Council viewer is a planning-policy map, not evidence of cadastral parcel geometry.",
+    "The download redirect loop and API-key wall are access limitations, not evidence of citywide absence.",
+    "No owner, address, contact, titleholder, tax/account, personal, or unsafe fields were requested or retained.",
+    "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS-verification bypass was used.",
+    "Packet completion records source research only and does not admit source integration or runtime use."
+  ],
+  "remainingUncertainty": "The official national cadastral source is identified and Wakefield coverage is advertised, but the current file, schema/CRS, bounded geometry response, update snapshot, and citywide completeness remain unverified because anonymous download/API access failed."
+}

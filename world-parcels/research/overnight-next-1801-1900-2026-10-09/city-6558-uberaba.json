@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 6558,
+  "queueRank": 1834,
+  "cityId": "queue:1834",
+  "name": "Uberaba",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "point": [-19.7541876108787, -47.9309470007834],
+  "centerLatLon": [-19.7541876108787, -47.9309470007834],
+  "population2025": 312745,
+  "population2025k": 312.745,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Uberaba Brazil official cadastral parcel map parcel API municipality GIS property cadastre",
+        "result": "First-party results identified Uberaba municipal IPTU/property-cadastre services, the municipal portal, an official municipal records schedule describing cadastral plans, and IBGE's municipal map download. No public Uberaba parcel ID-plus-geometry viewer or API was exposed.",
+        "actualResultUrls": [
+          "https://iptu.uberaba.mg.gov.br/tributos/unidades_terreno.php",
+          "https://iptu.uberaba.mg.gov.br/tributos/faq.php",
+          "https://www.uberaba.mg.gov.br/portal/acervo/administracao/GSDIM/plano_classificacao_funcional.pdf",
+          "https://geoftp.ibge.gov.br/cartas_e_mapas/mapas_municipais/colecao_de_mapas_municipais/2020/MG/uberaba/"
+        ]
+      },
+      {
+        "language": "native/local (Brazilian Portuguese)",
+        "query": "Uberaba mapa cadastral oficial prefeitura cadastro imobiliário geoprocessamento parcela lote",
+        "result": "First-party Portuguese results identified the Prefeitura's Consulta Unidades no Terreno and FAQ, official records describing cadastro imobiliário and plantas cadastrais, the municipal plan-director requirement for a georeferenced cadastral register, and a municipal georeferencing/CTM project. No anonymous parcel geometry endpoint or current public map configuration was exposed.",
+        "actualResultUrls": [
+          "https://iptu.uberaba.mg.gov.br/tributos/unidades_terreno.php",
+          "https://iptu.uberaba.mg.gov.br/tributos/faq.php",
+          "https://www.uberaba.mg.gov.br/portal/acervo/administracao/GSDIM/plano_classificacao_funcional.pdf",
+          "https://uberaba.mg.gov.br/portal/acervo/plano_diretor/arquivos/plano_diretor_e_legislacao_urbanistica/lei_plano_diretor/lc_359/lc_359.pdf",
+          "https://portal.uberaba.mg.gov.br/adm_indireta_noticias/governo-municipal-da-inicio-ao-planejamento-do-georreferenciamento-rural"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Separate first-party English and Brazilian-Portuguese discovery followed by bounded TLS-verified GETs and static HTML/configuration inspection; no credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe lookup or TLS disablement."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://iptu.uberaba.mg.gov.br/tributos/unidades_terreno.php",
+      "observation": "Official municipal IPTU service exposes a Consulta Unidades no Terreno form requiring quadrante/setor/lote/unidade identifiers. It is an identifier-based property lookup, not an anonymous parcel geometry service; no form was submitted because the response could expose unsafe property data and no safe geometry route was documented."
+    },
+    {
+      "url": "https://iptu.uberaba.mg.gov.br/tributos/faq.php",
+      "observation": "Official municipal FAQ states that Identificação Cadastral is the property's municipal cadastral number and identifies the Secretaria Municipal da Fazenda / Departamento de Cadastro Imobiliário as the custodian. It establishes local custody, not public vector access."
+    },
+    {
+      "url": "https://www.uberaba.mg.gov.br/portal/acervo/administracao/GSDIM/plano_classificacao_funcional.pdf",
+      "observation": "Official municipal records schedule lists cadastro imobiliário, cadastral plans, block plans and subdivision plans as municipal records. This is local cadastral-record evidence, not a parcel API."
+    },
+    {
+      "url": "https://geoftp.ibge.gov.br/cartas_e_mapas/mapas_municipais/colecao_de_mapas_municipais/2020/MG/uberaba/",
+      "observation": "IBGE national agency download directory exposes a 2020 municipal map PDF for Uberaba. It is general cartography and not evidence of parcel-level geometry or local registry custody."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://iptu.uberaba.mg.gov.br/tributos/unidades_terreno.php",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "TLS-verified GET returned the public identifier-based property lookup form. Static inspection found no map, WMS, WFS, ArcGIS, GeoServer or parcel-geometry endpoint."
+    },
+    {
+      "url": "https://iptu.uberaba.mg.gov.br/tributos/faq.php",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "TLS-verified GET returned municipal cadastral-custody and identifier documentation; no geometry service route was exposed."
+    },
+    {
+      "url": "https://portal.uberaba.mg.gov.br/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "TLS-verified GET returned the municipal portal; static inspection found no parcel viewer or public parcel API route."
+    },
+    {
+      "url": "https://geoftp.ibge.gov.br/cartas_e_mapas/mapas_municipais/colecao_de_mapas_municipais/2020/MG/uberaba/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "TLS-verified GET returned the official IBGE download directory and a municipal-map PDF listing; no parcel vector service was present."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Uberaba municipality, Minas Gerais, under the Prefeitura Municipal / Secretaria Municipal da Fazenda / Departamento de Cadastro Imobiliário cadastral system.",
+    "verifiedOpenScope": "Municipal cadastral custody and identifier-based inquiry evidence only; anonymous parcel geometry, source schema, CRS and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "The current municipal GIS viewer/API route, access controls, parcel schema, CRS, stable native parcel identity, update currency and citywide coverage remain unresolved. The exact WUP point was preserved and never shifted; no exact-point hit or miss inference was made. No claim is made about parcel absence, legal title, ownership, tax records or completeness of any Brazilian cadastral dataset.",
+  "nextStep": "A later attempt may inspect an officially exposed Uberaba geospatial viewer or service configuration and test only a bounded anonymous ID-plus-geometry query."
+}

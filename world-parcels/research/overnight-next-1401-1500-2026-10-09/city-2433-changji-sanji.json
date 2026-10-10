@@ -1,0 +1,81 @@
+{
+  "cityCode": 2433,
+  "queueRank": 1490,
+  "name": "Changji/Sanji",
+  "aliases": ["changji sanji"],
+  "country": "China",
+  "countryCode": "CN",
+  "point": [44.0070879093269, 87.3058271139229],
+  "population2025": 381391,
+  "population2025k": 381.391,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Changji Sanji China official cadastral parcel map GIS natural resources bureau public service",
+        "result": "Search found an official Xinjiang Natural Resources article documenting the Changji prefecture unified real-estate registration platform, including Changji City coverage and a GIS-based map-attribute-file system. No public anonymous parcel endpoint or downloadable safe geometry was identified.",
+        "actualResultUrls": [
+          "https://zrzyt.xinjiang.gov.cn/xjgtzy/dzdt/202407/3d5e0ef7f8a24055aa8c0f00836d07c9.shtml",
+          "https://zrzyt.xinjiang.gov.cn/xjgtzy/dzdt/202409/5d0cf416e1aa41a297a74c1fbd2fa458.shtml",
+          "https://www.cj.gov.cn/"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "昌吉市 不动产登记 地籍图 查询 自然资源局 官方 地图 服务",
+        "result": "搜索到新疆维吾尔自治区自然资源厅关于昌吉州不动产统一登记平台的官方报道，明确平台覆盖昌吉市并包含地、房、林、田、草等不动产GIS空间信息；未发现无需登录即可取得安全地块ID加几何的公开接口。",
+        "actualResultUrls": [
+          "https://zrzyt.xinjiang.gov.cn/xjgtzy/dzdt/202407/3d5e0ef7f8a24055aa8c0f00836d07c9.shtml",
+          "https://zrzyt.xinjiang.gov.cn/xjgtzy/dzdt/202409/5d0cf416e1aa41a297a74c1fbd2fa458.shtml",
+          "https://www.cj.gov.cn/p121/xzcf/20250318/347699.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://zrzyt.xinjiang.gov.cn/xjgtzy/dzdt/202407/3d5e0ef7f8a24055aa8c0f00836d07c9.shtml",
+    "https://zrzyt.xinjiang.gov.cn/xjgtzy/dzdt/202409/5d0cf416e1aa41a297a74c1fbd2fa458.shtml",
+    "https://www.cj.gov.cn/"
+  ],
+  "registryBasis": "Official Xinjiang Natural Resources reporting states that the Changji prefecture unified real-estate registration platform integrates all county/city systems, covers Changji City, and maintains GIS spatial information in a map-attribute-file system. The Changji government site independently identifies the Changji City Natural Resources Bureau as an enforcement/land custodian.",
+  "source": {
+    "sourceId": "CN-2433-CHANGJI-UNIFIED-REAL-ESTATE-REGISTRATION-REVIEW",
+    "name": "Changji prefecture unified real-estate registration platform",
+    "url": "https://zrzyt.xinjiang.gov.cn/xjgtzy/dzdt/202407/3d5e0ef7f8a24055aa8c0f00836d07c9.shtml",
+    "operator": "昌吉州自然资源局 / 昌吉市自然资源局",
+    "serviceType": "Official local/county-city registry platform with GIS spatial data; anonymous parcel geometry not verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "nativeFieldMapping": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official report says the unified platform integrates all county/city registration systems in Changji prefecture and includes GIS spatial information for multiple real-estate classes.",
+    "verifiedOpenScope": "The official report establishes platform existence and Changji City coverage, but no public viewer/API, schema, CRS, or anonymous ID-plus-geometry response was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "Official first-party pages describe the platform but do not publish a usable public map-service URL or machine-readable parcel endpoint. The Changji government homepage was fetched successfully; no anonymous parcel service link or current JavaScript/configuration exposing safe geometry was found. A stale/incorrect direct article URL attempt returned HTTP 404 and was not treated as evidence of absence.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "registration-rights"],
+  "remainingUncertainty": "The official platform may expose parcel geometry through an authenticated, browser-mediated, or non-indexed service. No exact-point hit or citywide absence inference is made, and the WUP point was not shifted.",
+  "nextStep": "Hold runtime integration. A later researcher may qualify a public first-party parcel endpoint only after independently verifying current JavaScript/configuration, schema, CRS, stable native identity, and safe ID-plus-geometry output.",
+  "runtimeReadiness": "held_unqualified",
+  "adapterReady": false,
+  "centerLatLon": [44.0070879093269, 87.3058271139229],
+  "pointBasis": "Exact immutable WUP 2025 population-weighted settlement point; not shifted to force a parcel hit.",
+  "sourceIds": [],
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "attempt": 1,
+  "priorCheck": {"attemptState": "pending", "attemptEvidence": [], "possiblePriorMatches": []},
+  "schemaVersion": "1.0"
+}

@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-5647-ponta-grossa.json",
+  "cityFile": "city-5647-ponta-grossa.json",
+  "wupCityCode": 5647,
+  "queueRank": 1953,
+  "city": "Ponta Grossa",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "point": [-25.0913949234323, -50.1591332487979],
+  "serviceReviewStatus": "complete_research_held_for_serial_qualification",
+  "registryFound": true,
+  "custodianAssessment": {
+    "localRegistry": "The Prefeitura/IPLAN municipal GeoWeb and Cadastro Técnico Municipal are evidenced by official municipal announcements and service procedures. The municipal platform is the local custodian evidence, but its parcel API was not verified.",
+    "nationalOrStateAgency": "Paraná Interativo is a state-level cartographic publication service. Its Ponta Grossa group exposes text, line, and raster layers, not a verified cadastral parcel polygon layer.",
+    "distinction": "Municipal GeoWeb/CTM evidence is local-custodian evidence; the Paraná Interativo service is separate state cartographic infrastructure and is not treated as a cadastral parcel registry."
+  },
+  "attempts": [
+    {
+      "route": "English first-party discovery",
+      "query": "Ponta Grossa official cadastral parcel map geoserver prefeitura cadastro imobiliario mapa",
+      "outcome": "Official municipal GeoWeb announcement/service guide and Paraná Interativo ArcGIS service found; no public municipal parcel polygon API verified.",
+      "urls": ["https://www.pontagrossa.pr.gov.br/2022/09/19/prefeitura-moderniza-sistema-de-georreferenciamento/", "https://www.pontagrossa.pr.gov.br/guia-de-servicos/", "https://paranainterativo.pr.gov.br/interativo2/rest/services/Base_Cartografica/Base_Cartografica_Municipal/MapServer"]
+    },
+    {
+      "route": "Portuguese first-party discovery",
+      "query": "Ponta Grossa cadastro territorial mapa lotes prefeitura serviço oficial",
+      "outcome": "Official municipal pages document GeoWeb, Cadastro Técnico Municipal/geoprocessamento, and property/lot procedures; current GeoWeb access requires the current platform route and could not be anonymously fetched.",
+      "urls": ["https://pontagrossa.pontagrossa.pr.gov.br/2025/01/09/prefeitura-de-ponta-grossa-adota-nova-forma-de-autenticacao-no-sistema-de-geoprocessamento/", "https://pontagrossa.pontagrossa.pr.gov.br/2025/04/29/populacao-de-pg-pode-consultar-servico-de-viabilidade-de-construcao-no-site-da-prefeitura/", "https://geo.pontagrossa.pr.gov.br/sistema/mapa"]
+    },
+    {
+      "route": "Municipal GeoWeb anonymous access",
+      "method": "GET",
+      "url": "https://geo.pontagrossa.pr.gov.br/sistema/mapa",
+      "outcome": "DNS resolution timed out after 20 seconds. No login, credentials, CAPTCHA/Cloudflare bypass, or TLS exception was used."
+    },
+    {
+      "route": "State ArcGIS group metadata",
+      "method": "GET",
+      "url": "https://paranainterativo.pr.gov.br/interativo2/rest/services/Base_Cartografica/Base_Cartografica_Municipal/MapServer/277?f=pjson",
+      "outcome": "HTTP 200 JSON. Group layer 277 named Ponta Grossa; sublayers 1736/1756/4665 and Guaragi 1755/1757/4666. Group extent is EPSG:31982. No parcel polygon sublayer listed."
+    },
+    {
+      "route": "State ArcGIS sublayer schema",
+      "method": "GET",
+      "url": "https://paranainterativo.pr.gov.br/interativo2/rest/services/Base_Cartografica/Base_Cartografica_Municipal/MapServer/1736?f=pjson",
+      "outcome": "HTTP 200 JSON. Layer is Annotation, not parcels; fields include OBJECTID and annotation/text fields. No parcel identity or parcel polygon schema established."
+    },
+    {
+      "route": "Exact WUP point hit-test on accessible map layer",
+      "method": "GET",
+      "url": "https://paranainterativo.pr.gov.br/interativo2/rest/services/Base_Cartografica/Base_Cartografica_Municipal/MapServer/1756/query",
+      "payloadSummary": "point -50.1591332487979,-25.0913949234323 in EPSG:4326; esriSpatialRelIntersects; outFields=OBJECTID; returnGeometry=true; outSR=4326",
+      "outcome": "HTTP 200 JSON with zero features on the Ponta Grossa polyline layer. This is recorded only as a point/layer miss, not citywide absence."
+    }
+  ],
+  "safeFieldAllowlist": [],
+  "nativeIdentity": {
+    "preferred": null,
+    "compositeKey": null,
+    "provenance": "No parcel feature response was obtained, so no native parcel identity is asserted and no synthetic identity is retained.",
+    "unsafeFieldsNotRequestedForRetention": ["owner", "address", "contact", "titleholder", "tax", "account", "personal fields"]
+  },
+  "scopeLimits": [
+    "The exact WUP point was not shifted to force a hit.",
+    "The point query was against a polyline map layer, not a parcel layer.",
+    "The municipal GeoWeb host timed out before its current JavaScript/configuration/API could be inspected.",
+    "The state ArcGIS group proves cartographic publication but not a cadastral parcel dataset or citywide parcel coverage.",
+    "No owner, address, contact, titleholder, tax, account, or personal fields were requested or retained.",
+    "No login, credentials, CAPTCHA/Cloudflare bypass, or TLS exception was used.",
+    "No GeoJSON sample is retained because no safe parcel polygon response was obtained."
+  ],
+  "runtimeReadiness": "held",
+  "uncertainty": "A local municipal cadastral/GeoWeb system is evidenced, but the anonymous public parcel endpoint, current layer schema, native identity, CRS handling for parcels, and citywide coverage remain unverified."
+}

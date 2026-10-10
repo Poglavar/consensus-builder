@@ -1,0 +1,17 @@
+{
+  "taskId": "packet:7744",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-7744-irkutsk.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/irkutsk-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/root-review-receipts/city_7744.json"
+  ],
+  "checkedAt": "2026-10-09T13:36:14Z",
+  "identityReview": "WUP code 7744, rank 1256, Russian Federation, point [52.2725093828849,104.300484423056], population 442807 persons match immutable queue and roster.",
+  "searchReview": "English and Russian executed searches and first-party national/regional URLs are present.",
+  "decisionReason": "National custody is identified but local registryFound remains null. NSPD/Rosreestr timeouts and regional viewer TLS failure yielded no native-ID polygon or adapter qualification. Neither route failure is citywide absence.",
+  "admissionGates": "Fresh native-ID read, forced pagination, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are not independently evidenced; no runtime/catalog/report admission."
+}

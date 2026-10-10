@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:4994",
+  "cityCode": 4994,
+  "queueRank": 1576,
+  "rank": 1576,
+  "name": "Jakdo-dong",
+  "country": "Dem. People's Republic of Korea",
+  "countryCode": "KP",
+  "iso2": "KP",
+  "iso3": "PRK",
+  "point": [39.8425452003986, 127.609763727222],
+  "centerLatLon": [39.8425452003986, 127.609763727222],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 363071,
+  "population2025k": 363.071,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "No local DPRK cadastral registry, cadastre viewer, or public land-record procedure was evidenced. Public place references identify Jakdo-dong/작도동 but are not registry custody evidence.",
+  "registryEvidenceUrls": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "Separate English and Korean discovery located place references and a DPRK-related official-affiliated publication, but no first-party public cadastral viewer/API, current JavaScript/configuration, safe parcel schema, CRS, native parcel ID, or anonymous ID-plus-complete-polygon response was found. No login, credential, token, CAPTCHA bypass, or unsafe field request was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "no_registry_or_public_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "No local registry custodian or public cadastral service was verified for Jakdo-dong or the DPRK.",
+    "verifiedOpenScope": "No anonymous parcel feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jakdo-dong DPRK official cadastral map parcel land registry public map",
+        "scope": "Identify a first-party local cadastral custodian and a safe public parcel-geometry route.",
+        "result": "Search found a DPRK-related English publication mentioning Jakdo-dong and non-first-party locality/population pages. No first-party cadastral registry, viewer, API, parcel schema, or geometry route was found.",
+        "actualResultUrls": [
+          "https://kkfonline.com/2023/03/24/important-weapon-test-and-firing-drill-for-strategic-purpose-conducted-in-dprk/",
+          "https://mapcarta.com/16104508",
+          "https://censuswall.com/city/jakdo-dong-north-korea"
+        ],
+        "executionMethod": "Separate English web search and first-party-affiliated publication review."
+      },
+      {
+        "language": "native/local",
+        "query": "작도동 북한 함흥 지적도 지적공부 토지등록 지도",
+        "scope": "Independent Korean-language discovery of local cadastral custody and public parcel geometry.",
+        "result": "Korean-language discovery returned South Korean cadastral services and general cadastral terminology, plus a locality reference for 작도동; no DPRK first-party cadastral service or safe parcel geometry response was identified.",
+        "actualResultUrls": [
+          "https://kgeop.go.kr/info/infoMap.do",
+          "https://eum.go.kr/web/am/amMain.jsp",
+          "https://mapcarta.com/16104508"
+        ],
+        "executionMethod": "Separate Korean-language web search; South Korean services were rejected as wrong-country sources."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "first_attempt",
+    "attemptEvidence": []
+  },
+  "remainingUncertainty": "The exact WUP point was preserved and not shifted. A zero point hit, unavailable UI, search miss, or lack of a public service is not evidence of citywide parcel absence. The DPRK local registry custodian, official viewer/API, native parcel identity, schema, CRS, anonymous query shape, parcel coverage, and citywide completeness remain unverified.",
+  "nextStep": "Serial reviewer may independently search for a first-party DPRK cadastral source or qualify a newly evidenced route; do not enable runtime from this packet alone."
+}

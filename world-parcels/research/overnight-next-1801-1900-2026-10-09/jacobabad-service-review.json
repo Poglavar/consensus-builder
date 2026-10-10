@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-3523-jacobabad.json",
+  "cityCode": 3523,
+  "queueRank": 1867,
+  "city": "Jacobabad",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete_packet_held_for_serial_review",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Sindh Board of Revenue/Sindh Zameen sources establish the provincial land-record and cadastral-map custodian and document district/deh record availability, but the public map route was unavailable and no safe anonymous parcel ID plus polygon response was verified.",
+  "queryOutcomes": "Separate English and Urdu/Sindhi discovery queries are recorded in city-3523-jacobabad.json. They identified official Sindh Zameen, Board of Revenue, and the linked Deh Maps route; the official Jacobabad education GIS page was distinguished from cadastral evidence.",
+  "requestOutcomes": "Sindh Zameen FAQ returned HTTP 200 and documented the service. Direct Sindh Zameen portal retrieval timed out, the linked map.sindhzameen.gos.pk host returned HTTP 502, and bor.sindh.gov.pk timed out. No login, credentials, private token, owner/name/CNIC/address/titleholder lookup, CAPTCHA/Cloudflare bypass, TLS disablement, or formal submission was used.",
+  "scopeLimits": [
+    "Exact WUP point [28.2789076566865, 68.439797597988] was preserved; no exact-point hit or miss was inferred.",
+    "Official custodian and service documentation are not proof of an open parcel geometry API or citywide Jacobabad coverage.",
+    "Timeouts, HTTP 502, and an unavailable map service are not evidence of cadastral absence.",
+    "No parcel geometry, stable native parcel identity, source schema, CRS, or bounded parcel extent was retrieved or retained.",
+    "No owner, address, titleholder, contact, tax/account, CNIC, or other personal fields were requested or retained.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains pending."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeIdentityPolicy": "No native parcel identity was observed; do not synthesize one from search results, directory rows, response order, or internal records.",
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel geometry response obtained",
+  "geometryQuality": "not evaluated; no parcel geometry retained",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public parcel geometry query was reached; no hit/miss inference was made.",
+    "requestEvidence": ["Sindh Zameen FAQ HTTP 200", "Sindh Zameen portal timeout", "Deh Maps HTTP 502", "BOR Sindh timeout"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Sindh Board of Revenue land records and Deh Maps, including Jacobabad district/dehs if present in the service.",
+    "verifiedOpenScope": "Custodian and service documentation only; public Jacobabad parcel geometry and citywide coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "uncertainty": "A browser-only or intermittently available Sindh Deh Maps service may exist. Current public endpoint availability, Jacobabad deh selection, native identity, CRS, geometry schema, and coverage remain unresolved.",
+  "retainedSample": null
+}

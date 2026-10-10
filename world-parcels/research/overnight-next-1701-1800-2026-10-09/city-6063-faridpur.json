@@ -1,0 +1,113 @@
+{
+  "cityCode": 6063,
+  "queueRank": 1744,
+  "city": "Faridpur",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "point": [23.6018965288419, 89.8357681474394],
+  "population2025": 329383,
+  "population2025k": 329.383,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Faridpur Bangladesh official cadastral parcel map land registry GIS site:gov.bd",
+        "result": "First-party discovery identified the Department of Land Records and Surveys (DLRS), its Integrated Online Map Purchase System, the public Settlement map search, and the Land Zoning map portal. These establish official survey/map services, but discovery did not identify a citywide open parcel vector endpoint.",
+        "actualResultUrls": [
+          "https://dlrs.gov.bd/",
+          "https://map.settlement.gov.bd/",
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://map.land.gov.bd/"
+        ]
+      },
+      {
+        "language": "Bengali",
+        "query": "ফরিদপুর সরকারি ভূমি নকশা খতিয়ান ক্যাডাস্ট্রাল মানচিত্র ভূমি রেকর্ড",
+        "result": "বাংলা অনুসন্ধানে DLRS-এর সরকারি ম্যাপ/খতিয়ান অনুসন্ধান, ফরিদপুর জোনাল সেটেলমেন্ট অফিসের উল্লেখ, এবং সরকারি Land Zoning map portal পাওয়া গেছে। কোনও অজ্ঞাতনামা শহরব্যাপী parcel vector API নিশ্চিত হয়নি।",
+        "actualResultUrls": [
+          "https://dlrs.portal.gov.bd/",
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://map.land.gov.bd/?trk=public_post-text",
+          "https://doict.faridpur.pabna.gov.bd/pages/static-pages/697fd8cc35ce18e1c06d6825"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": "Bangladesh Department of Land Records and Surveys (DLRS), with the Faridpur Zonal Settlement Office listed for the Faridpur district area",
+  "registryEvidence": {
+    "officialPages": [
+      "https://dlrs.gov.bd/",
+      "https://dlrs.portal.gov.bd/",
+      "https://settlement.gov.bd/Map/MapSearch"
+    ],
+    "custodySummary": "DLRS is the first-party land-record and survey authority. Its official portal exposes survey/map and khatian services, and the portal's zone listing includes a Faridpur Zonal Settlement Office covering Faridpur. This is custodian evidence, not proof of open citywide parcel geometry.",
+    "localityEvidence": "The public hierarchy request selected Dhaka division (010000000), Faridpur district (010600000; comcod 4191), and returned the BDS survey (201901). The following public BDS upazila request returned an empty array."
+  },
+  "sourceReview": {
+    "service": "DLRS Settlement MapSearch and related official map portals",
+    "baseUrls": [
+      "https://settlement.gov.bd/Map/MapSearch",
+      "https://map.settlement.gov.bd/",
+      "https://map.land.gov.bd/"
+    ],
+    "officialAssetsInspected": [
+      "https://settlement.gov.bd/Map/MapSearch",
+      "https://settlement.gov.bd/js/MapSearch.js?v=yIrkacclePMWogM6Pmn4B9h1nLF0RbM3YSk70pezUfQ",
+      "https://map.land.gov.bd/"
+    ],
+    "nativeFieldMapping": "MapSearch JavaScript visibly refers to Dag_No in returned GeoJSON/vector features, but no parcel feature response was obtained; no native parcel identity is retained.",
+    "compositeKeyProvenance": null,
+    "crs": "unverified; no parcel geometry response"
+  },
+  "requestOutcomes": [
+    {"method":"GET","url":"https://dlrs.gov.bd/","outcome":"200/first-party DLRS landing page; identifies official map, khatian and survey services."},
+    {"method":"GET","url":"https://dlrs.portal.gov.bd/","outcome":"200/first-party portal; lists Faridpur Zonal Settlement Office and public survey/map service links."},
+    {"method":"GET","url":"https://map.settlement.gov.bd/","outcome":"200/official Integrated Online Map Purchase System; describes CS, SA, RS, BRS and BDS survey maps and location selectors. Purchase/search workflow, not verified open parcel vector API."},
+    {"method":"GET","url":"https://map.land.gov.bd/","outcome":"200/public official land-zoning landing page; selector-based mouza/plot land-use service, no anonymous parcel geometry response."},
+    {"method":"GET","url":"https://settlement.gov.bd/Map/MapSearch","outcome":"200/public map-search HTML; current JavaScript/configuration inspected. It uses public POST endpoints and can load GeoJSON by survey/mouza/sheet when records are available; no login was used."},
+    {"method":"POST","url":"https://settlement.gov.bd/Map/GetDivisionList","outcome":"200; returned division list and identified Dhaka division unitcod 010000000."},
+    {"method":"POST","url":"https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise","outcome":"200 with divid=010000000; returned Faridpur district unitcod 010600000 and comcod 4191."},
+    {"method":"POST","url":"https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise","outcome":"200 with districtid=010600000 and comcod=4191; returned BDS survey rsnum 201901."},
+    {"method":"POST","url":"https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap","outcome":"200 with comcod=4191, rsno1=201901, districtid=010600000; returned an empty array, so no downstream mouza/sheet/parcel geometry request was made."},
+    {"method":"GET","url":"https://settlement.gov.bd/js/MapSearch.js?v=yIrkacclePMWogM6Pmn4B9h1nLF0RbM3YSk70pezUfQ","outcome":"200; inspected current endpoint names, public hierarchy parameters, GeoJSON route names and visible Dag_No field reference."}
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed against parcel geometry; the public Faridpur BDS hierarchy stopped at an empty upazila response. No hit/miss inference is made.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Bangladesh DLRS survey and land-record services, including the Faridpur zonal settlement remit and official map-search portals.",
+    "verifiedOpenScope": "Official custodian and public service hierarchy only; no parcel geometry, schema, CRS, safe native ID, or citywide coverage was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "public service, layer and schema metadata"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [23.6018965288419, 89.8357681474394] was preserved and not shifted.",
+    "An empty hierarchy response, map extent miss, inaccessible route or absent public endpoint is not evidence of citywide parcel absence.",
+    "No owner, address, titleholder, contact, title, tax/account, personal or other unsafe fields were requested or retained.",
+    "No raw source-specific attribute set or GeoJSON sample was retained.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The official Settlement map viewer is publicly reachable and its current JavaScript shows GeoJSON sheet loading, but the Faridpur BDS hierarchy returned no upazilas, preventing a bounded parcel geometry request. Older or other survey records may exist outside this route. No claim is made about parcel absence, legal title, ownership, or completeness.",
+  "retainedSample": null
+}

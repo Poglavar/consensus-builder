@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 5838,
+  "cityId": "wup2025:5838",
+  "name": "Minya Al-Qamh",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "iso3": "EGY",
+  "centerLatLon": [30.5273285783756, 31.3419565755039],
+  "point": [30.5273285783756, 31.3419565755039],
+  "queueRank": 1405,
+  "population2025": 402716,
+  "population2025k": 402.716,
+  "populationUnit": "persons",
+  "cohorts": ["overnight-next-1401-1500-2026-10-09"],
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Minya Al-Qamh Egypt cadastral parcel map official GIS هيئة المساحة المنيا القمح",
+        "result": "Search identified the official Egyptian General Survey Authority (ESA) site and its digital-map service, but no public Minya Al-Qamh parcel viewer or parcel API was found.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://www.esa.gov.eg/testmap.aspx"
+        ]
+      },
+      {
+        "language": "Arabic (local/native)",
+        "query": "الشهر العقاري منيا القمح السجل العيني الشرقية الموقع الرسمي",
+        "result": "Search found a Minya Al-Qamh real-estate registration-office listing and official ESA material describing Egypt’s surveying and map-production role. No first-party Arabic cadastral viewer or anonymous parcel API was found.",
+        "actualResultUrls": [
+          "https://dalil140.com/company/ar/273707-real-estate-registration-office-minya-el-qamh",
+          "https://www.esa.gov.eg/main2.aspx",
+          "https://www.esa.gov.eg/sellingMapRoom.aspx"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Egypt’s official Egyptian General Survey Authority states that it creates and maintains topographic/property maps and cadastral records and publishes a digital-map ordering workflow. The Arabic discovery also identifies a Minya Al-Qamh real-estate registration office, but no open parcel-data endpoint is evidenced.",
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "operator": "Egyptian General Survey Authority (ESA)",
+      "observation": "Official ESA history describes creation of maps and property books for agricultural land and built property; services include digital maps, coordinate certificates, and boundary separation. No open parcel layer is advertised."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "operator": "Egyptian General Survey Authority (ESA)",
+      "observation": "Official digital-map page requires a customer request specifying location, scale, layers, format, and projection, followed by quotation and payment. It is a procurement workflow, not a public parcel API."
+    },
+    {
+      "url": "https://www.esa.gov.eg/testmap.aspx",
+      "operator": "Egyptian General Survey Authority (ESA)",
+      "observation": "Official directorate page is a static image map of Egypt with links/areas, not a JavaScript parcel viewer or machine-readable geometry service."
+    },
+    {
+      "url": "https://dalil140.com/company/ar/273707-real-estate-registration-office-minya-el-qamh",
+      "operator": "Directory listing for Minya Al-Qamh real-estate registration office",
+      "observation": "Lists a local real-estate registration office in Minya Al-Qamh; directory evidence only and no parcel layer or API."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official ESA home page inspected. Service links include digital maps and directorate map, but no parcel service endpoint was exposed."
+    },
+    {
+      "url": "https://www.esa.gov.eg/testmap.aspx",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official page inspected; HTML contains a static Egypt image map and ordinary site scripts only. No WMS/WFS/REST/ArcGIS endpoint, parcel layer, schema, or CRS declaration."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official digital-map procurement page inspected. It describes requesting GIS/CAD/PDF/JPG/orthophoto products with a specified projection, but publishes no downloadable parcel response or anonymous query route."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingMapRoom.aspx",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official paper-map sales page inspected; maps are sold through ESA map rooms/directorates. No public parcel geometry service."
+    },
+    {
+      "url": "https://dalil140.com/company/ar/273707-real-estate-registration-office-minya-el-qamh",
+      "method": "GET",
+      "status": "Search result/page found",
+      "summary": "Local office listing reviewed for custodian discovery only; no service request made and no parcel data exposed."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Egyptian national surveying/map custodian and Minya Al-Qamh registration-office discovery.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "geometryDecision": "No GeoJSON retained. No qualifying safe anonymous native parcel ID-plus-geometry response was available from an official Minya Al-Qamh/Egypt service. The exact WUP point was not used to infer absence.",
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "safeFieldAllowlist": ["stable native parcel or survey identity if publicly exposed", "geometry", "source CRS", "service layer name"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax/account", "private credentials or tokens"],
+  "remainingUncertainty": "A public parcel viewer/API may exist outside the reviewed ESA pages or may require an ordinary official procurement workflow. Public parcel-layer schema, CRS, exact-point inclusion, and citywide coverage remain unverified.",
+  "nextStep": "A serial reviewer should independently check whether ESA, the Sharqia surveying directorate, or the local real-estate registry exposes a current anonymous geometry service, then qualify a small geometry-only sample before any adapter consideration."
+}

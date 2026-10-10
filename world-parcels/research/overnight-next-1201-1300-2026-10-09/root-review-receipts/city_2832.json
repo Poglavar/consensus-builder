@@ -1,0 +1,13 @@
+{
+  "taskId": "city:2832",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-2832-quelimane.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/quelimane-service-review.json",
+    "tmp/valhalla-parcel-research/2832/quelimane-mapserver.json",
+    "tmp/valhalla-parcel-research/2832/services-root.json"
+  ],
+  "checkedAt": "2026-10-09T12:44:32Z",
+  "reason": "Queue identity and English/Portuguese searches match. The original MOZGIS service response has thematic layers only; the official 2020 PDUL diagnostic documents municipal cadastral records, an inactive LIMS, and an outdated physical register. No anonymous native-ID parcel polygons or adapter qualification; no citywide absence conclusion."
+}

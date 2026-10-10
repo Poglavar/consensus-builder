@@ -1,0 +1,16 @@
+{
+  "taskId": "city:10734",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-10734-tonghua.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/tonghua-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T17:14:07Z",
+  "reviewNotes": "Tonghua Natural Resources Bureau institutional page supports local real-estate registration and cadastral surveying custody. Official pages returned HTML, with no anonymous parcel vector response, native ID, CRS, or polygon. English and Simplified Chinese searches are recorded. Controlled registration access is not citywide absence.",
+  "identityCheck": "2025 WUP archive SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114, ranked roster, and pending queue agree on code, rank, country, point and population persons.",
+  "admissionGate": "Held: no independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. Zero retained full polygons; no runtime/catalog/report admission."
+}

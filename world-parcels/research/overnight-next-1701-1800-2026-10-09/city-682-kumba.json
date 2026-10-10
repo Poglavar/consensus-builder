@@ -1,0 +1,112 @@
+{
+  "cityCode": 682,
+  "queueRank": 1745,
+  "city": "Kumba",
+  "country": "Cameroon",
+  "countryCode": "CM",
+  "iso3": "CMR",
+  "point": [4.63313448755687, 9.44653654019007],
+  "population2025": 329340,
+  "population2025k": 329.34,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kumba Cameroon cadastral parcel map official land registry GIS",
+        "result": "Found official MINDCAF public documents describing Cameroon cadastral responsibilities, an official MINHDU web GIS viewer, and a third-party ArcGIS administrative-boundary layer labelled Cadaster. No Kumba-specific public parcel service was found.",
+        "actualResultUrls": [
+          "https://www.mindcaf.gov.cm/en/docs/",
+          "https://www.minhdu.gov.cm/sigwebminhdu/public/index.php/home",
+          "https://services1.arcgis.com/31jFBv7Ds3VnVoYf/ArcGIS/rest/services/Cameroon_Admin_Layers/FeatureServer/1"
+        ]
+      },
+      {
+        "language": "French (Cameroon official language)",
+        "query": "Kumba Cameroun cadastre parcelles carte officielle registre foncier GIS",
+        "result": "Found official MINDCAF documents and a MINDCAF Kumba-related urban-governance publication reference, but no public Kumba parcel viewer, parcel API, safe native parcel ID response, or polygon geometry.",
+        "actualResultUrls": [
+          "https://mindcaf.gov.cm/fr/docs/",
+          "https://mindcaf.gov.cm/fr/publications/359/",
+          "https://www.minhdu.gov.cm/sigwebminhdu/public/index.php/home"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "requestsAndEndpointChecks": [
+    {
+      "route": "MINDCAF English public documents",
+      "url": "https://www.mindcaf.gov.cm/en/docs/",
+      "method": "GET",
+      "outcome": "Readable official institutional and cadastral mandate prose; no Kumba parcel endpoint or geometry. National custodian evidence only."
+    },
+    {
+      "route": "MINDCAF French public documents",
+      "url": "https://mindcaf.gov.cm/fr/docs/",
+      "method": "GET",
+      "outcome": "Readable official institutional and cadastral mandate prose; no Kumba parcel endpoint or geometry. National custodian evidence only."
+    },
+    {
+      "route": "MINHDU official public web GIS",
+      "url": "https://www.minhdu.gov.cm/sigwebminhdu/public/index.php/home",
+      "method": "GET",
+      "outcome": "Viewer readable; thematic interface includes secured-parcel information, but no Kumba-specific public parcel layer/API or safe parcel geometry was exposed in the inspected page."
+    },
+    {
+      "route": "ArcGIS Cameroon Admin Layers Cadaster layer metadata",
+      "url": "https://services1.arcgis.com/31jFBv7Ds3VnVoYf/ArcGIS/rest/services/Cameroon_Admin_Layers/FeatureServer/1",
+      "method": "GET",
+      "outcome": "Metadata readable: polygon layer in EPSG:4326, fields are administrative names/codes and OBJECTID; it is an administrative boundary layer, not parcel geometry."
+    },
+    {
+      "route": "ArcGIS bounded Kumba query",
+      "url": "https://services1.arcgis.com/31jFBv7Ds3VnVoYf/ArcGIS/rest/services/Cameroon_Admin_Layers/FeatureServer/1/query?where=adm3_name%3D%27Kumba%27&outFields=OBJECTID%2Cadm3_name%2Cadm2_name%2Cadm1_name&returnGeometry=true&outSR=4326&f=pjson",
+      "method": "GET",
+      "outcome": "Web request tool reported inaccessible; local TLS-verified curl attempt timed out after 20 seconds. Not treated as a coverage or absence result."
+    },
+    {
+      "route": "MINDCAF Kumba-related publication",
+      "url": "https://mindcaf.gov.cm/fr/publications/359/",
+      "method": "GET",
+      "outcome": "Official project prose references parcel identification/cartography in an urban-governance initiative, but no machine-readable Kumba parcel IDs or geometry."
+    }
+  ],
+  "scopeLimits": [
+    "Exact WUP point [4.63313448755687, 9.44653654019007] was preserved and was not shifted; no exact-point parcel hit/miss inference was made.",
+    "MINDCAF evidence is national institutional mandate/procedure evidence, not a verified local Kumba registry or open parcel service; registryFound remains null.",
+    "MINHDU is a national ministry viewer and its page mentions secured-parcel thematic information, but Kumba coverage, parcel schema, native identity, CRS and geometry endpoint remain unverified.",
+    "The ArcGIS layer labelled Cadaster contains administrative boundary attributes, not full cadastral parcel polygons, and was not retained as a parcel sample.",
+    "Timeouts, inaccessible UI, absent anonymous endpoint, or non-parcel administrative data are not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, personal, or other unsafe fields were requested or retained.",
+    "Packet completion records research attempts only; runtime adapter qualification/admission remains held for independent serial review."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier", "full parcel polygon geometry", "geometry CRS", "public source layer/service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": null,
+  "geometryQuality": "not evaluated; no parcel geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed; no usable public parcel geometry response.",
+    "requestEvidence": ["MINDCAF public documents", "MINHDU public web GIS", "ArcGIS administrative layer metadata", "ArcGIS bounded query inaccessible/timeout"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Cameroon cadastral institutions and public national GIS resources relevant to Kumba.",
+    "verifiedOpenScope": "Institutional mandate and public viewer pages only; no open Kumba parcel geometry scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review required",
+  "uncertainty": "Local registry custody, current public parcel endpoint, native parcel identity, schema, CRS, geometry, update currency, and citywide completeness remain unresolved.",
+  "retainedSample": null
+}

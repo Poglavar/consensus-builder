@@ -1,0 +1,36 @@
+{
+  "cityRecord": "city-4540-toulon.json",
+  "cityCode": 4540,
+  "queueRank": 1925,
+  "city": "Toulon",
+  "country": "France",
+  "countryCode": "FR",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "IGN API Carto cadastre, corroborated by DGFiP Cadastre WMS; local procedure evidence from City of Toulon",
+  "serviceUrl": "https://apicarto.ign.fr/api/cadastre",
+  "scope": "Official anonymous cadastral commune/parcel geometry service, with bounded requests around Toulon WUP point.",
+  "schemaAndCrs": "API Carto returned GeoJSON in WGS84/EPSG:4326, coordinates longitude,latitude. Parcel responses exposed idu, gid, numero, feuille, section and code_insee; only id and geometry are safe retention fields.",
+  "nativeIdentity": "idu, a composite native cadastral identity; no synthetic row number used.",
+  "fieldMapping": {
+    "id": "API Carto idu",
+    "geometry": "API Carto GeoJSON geometry",
+    "sourceAttributes": "gid, numero, feuille, section, code_dep, code_insee and related fields observed but not retained"
+  },
+  "requestOutcome": "English and French first-party discovery succeeded. IGN commune and parcel GETs succeeded. Exact-point and smaller bounded geometry requests returned zero features; a wider bounded polygon returned five parcel features. DGFiP WMS GetCapabilities succeeded.",
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON retained; unchanged request evidence is under ignored tmp/valhalla-parcel-research/toulon/.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeDataPolicy": "Owner, address, contact, titleholder, tax/account, legal-description, and ownership/rights fields were not requested or retained.",
+  "officialCustodyEvidence": "IGN is the official national geospatial operator for API Carto; DGFiP operates the Toulon cadastral WMS. The City of Toulon page directs users to the official cadastral plan but does not expose a municipal parcel API in this attempt.",
+  "limits": [
+    "Exact WUP point miss is not evidence of citywide absence.",
+    "Wider bounded response demonstrates local service availability, not complete citywide coverage or freshness.",
+    "No owner, address, title, contact, tax, account, or rights data was requested.",
+    "No login, credentials, private tokens, CAPTCHA bypass, or TLS exception was used.",
+    "RuntimeReadiness remains held pending independent serial review."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "Independent review must confirm current schema and idu stability, representative coverage, freshness, and adapter compatibility before source admission."
+}

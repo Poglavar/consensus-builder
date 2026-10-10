@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-10229-tirunelveli.json",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "purpose": "Document first-party Tirunelveli/Tamil Nadu registry discovery, current public route attempts, safe-field limits, and uncertainty.",
+  "assessment": "Official Tirunelveli District Administration evidence establishes a local Assistant Director of Survey and Land Records and links the Tamil Nadu land-record e-Services. District maps are administrative maps, not parcel geometry. No safe anonymous ID-plus-complete-polygon response was obtained.",
+  "registryAssessment": "registryFound=true is supported by the official Tirunelveli District Administration page naming the Assistant Director of Survey and Land Records at the Collector office in Kokkirakulam, Tirunelveli. This establishes local service custody only; it is not source integration, ownership evidence, or proof of citywide parcel availability.",
+  "officialPrimarySources": [
+    {
+      "url": "https://tirunelveli.nic.in/service/e-services-land-records/",
+      "observation": "Official district page lists Patta/FMB/Chitta/TSLR, A-Register, verification services, links Tamil Nadu e-Services, and names the Assistant Director of Survey and Land Records in Tirunelveli."
+    },
+    {
+      "url": "https://tirunelveli.nic.in/maps/",
+      "observation": "Official district page provides district, revenue-division, and taluk administrative maps; no parcel feature service or parcel schema is exposed on the reviewed page."
+    },
+    {
+      "url": "https://www.tngis.tn.gov.in/apps.html",
+      "observation": "Official TNGIS application page identifies Tamil Nadu GIS and its public-information disclaimer; no usable parcel response was obtained in this pass."
+    },
+    {
+      "url": "https://tnglms.in/",
+      "observation": "Official Tamil Nadu Government Land Management System describes land-parcel and land-survey modules, but the reviewed portal presents department login with email/mobile, password, and CAPTCHA."
+    },
+    {
+      "url": "https://tn.nic.in/news/additional-land-records-services-launch-by-honourable-minister-for-revenue-and-disaster-management-tamil-nadu/",
+      "observation": "Official NIC Tamil Nadu notice describes Integrated Land Record combining textual records, FMB/maps, and Chitta, and links the official services; it does not document a safe anonymous parcel feature endpoint."
+    }
+  ],
+  "viewerConfiguration": {
+    "candidateRoutes": [
+      "https://eservices.tn.gov.in/eservicesnew/home.html",
+      "https://www.tngis.tn.gov.in/generic_viewer/",
+      "https://tnglms.in/"
+    ],
+    "schemaAndCrs": "Not verified from a successful parcel feature response.",
+    "nativeFieldNames": "Not retained; no successful safe feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "geometry type", "source CRS", "source layer", "retrieval time"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {
+      "url": "https://tirunelveli.nic.in/service/e-services-land-records/",
+      "method": "GET; anonymous public read",
+      "normalTlsVerification": true,
+      "result": "HTTP 200; official local service page readable. It named local survey-and-land-record custody and linked the state portal; no parcel geometry response."
+    },
+    {
+      "url": "https://tirunelveli.nic.in/maps/",
+      "method": "GET; anonymous public read",
+      "normalTlsVerification": true,
+      "result": "HTTP 200 via official source review; administrative district/division/taluk maps listed, not a parcel feature API."
+    },
+    {
+      "url": "https://tnglms.in/",
+      "method": "GET; anonymous public read",
+      "normalTlsVerification": true,
+      "result": "HTTP 200; portal HTML inspected. Land-parcel/land-survey modules are described, but the public page exposes a department login requiring email/mobile, password, and CAPTCHA. No login attempted."
+    },
+    {
+      "url": "https://www.tngis.tn.gov.in/generic_viewer/",
+      "method": "GET; anonymous public read",
+      "normalTlsVerification": true,
+      "result": "Timed out before an HTTP response in the shell attempt; the web retriever also reported the route inaccessible. No absence inference."
+    },
+    {
+      "url": "https://eservices.tn.gov.in/eservicesnew/home.html",
+      "method": "GET; anonymous public read",
+      "normalTlsVerification": true,
+      "result": "The official district page and search result identify the route and its survey-number-based land-record services, but the direct shell retrieval did not complete within the bounded request window. No survey-number query or unsafe record request was made."
+    }
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {
+    "sampleFile": null,
+    "featureCount": 0,
+    "exactWupPointTest": "Not run: no anonymous parcel geometry layer was verified. Exact WUP point [8.72181540695111, 77.6797647402921] was preserved unchanged.",
+    "query": "No point or extent parcel query submitted because the public service route and safe request shape were not verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Tirunelveli District Administration local survey-and-land-record service custody plus Tamil Nadu state e-Services/TNGIS/TNGLMS entry points.",
+    "verifiedOpenScope": "No anonymous complete-polygon feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "remainingUncertainty": "The public availability and schema of Tirunelveli parcel geometry, including urban coverage, CRS, stable native identity, and citywide completeness, remain unverified. Timeouts, login walls, and administrative map availability do not establish cadastral absence.",
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "No independent anonymous ID-plus-geometry response; this packet does not qualify an adapter or enable runtime."
+  }
+}

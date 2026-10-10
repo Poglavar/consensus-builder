@@ -1,0 +1,14 @@
+{
+  "taskId": "city:3604",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-3604-birnin-kebbi.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/birnin-kebbi-service-review.json",
+    "tmp/valhalla-parcel-research/birnin-kebbi/kebgis.html",
+    "tmp/valhalla-parcel-research/birnin-kebbi/state.html"
+  ],
+  "checkedAt": "2026-10-10T19:27:18Z",
+  "reason": "Queue identity matches rank 1954, Nigeria, point [12.4522438477914,4.20568589599672], and 296331 persons. English and Hausa search queries and official destinations are recorded. Cached first-party KEBGIS and Kebbi State pages establish land-administration custody; the state page links kebgis.org, while the packet also inspected kebgis.com. The application login route yielded no anonymous feature response. No safe native parcel ID, full polygon, or independent adapter qualification exists; access limits do not prove absence."
+}

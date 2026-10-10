@@ -1,0 +1,94 @@
+{
+  "cityRecord": "city-6038-i-skenderun.json",
+  "schemaVersion": "1.0",
+  "cityCode": 6038,
+  "queueRank": 1518,
+  "name": "İskenderun",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "point": [36.5792338938787, 36.1711530066539],
+  "outcome": "registry_found_public_geometry_unverified",
+  "registryCustodian": {
+    "found": true,
+    "type": "local registry office",
+    "name": "İskenderun Tapu Müdürlüğü",
+    "parent": "Tapu ve Kadastro XII. Hatay Bölge Müdürlüğü",
+    "evidenceUrl": "https://www.tkgm.gov.tr/hatay-bm/bagli-mudurlukler/iskenderun-tapu-mudurlugu",
+    "scopeNote": "This official page establishes a city-specific local tapu office and custody relationship. It is not evidence that the office exposes an anonymous parcel API or that all city parcels are digitally available."
+  },
+  "attempts": [
+    {
+      "route": "English discovery",
+      "query": "İskenderun official cadastral parcel map land registry GIS Turkey parcel map API",
+      "result": "Found official TKGM local office, TKGM Parsel Sorgu, TKGM MEGSİS, and İskenderun municipal city-map routes.",
+      "urls": [
+        "https://www.tkgm.gov.tr/hatay-bm/bagli-mudurlukler/iskenderun-tapu-mudurlugu",
+        "https://parselsorguv2.tkgm.gov.tr/",
+        "https://www.tkgm.gov.tr/projeler/tamamlanan-projeler/megsis",
+        "https://iskenderun.bel.tr/iskenderun-sehir-haritasi"
+      ]
+    },
+    {
+      "route": "Turkish discovery",
+      "query": "İskenderun resmi kadastro parsel sorgu harita tapu kadastro",
+      "result": "Confirmed the same first-party TKGM routes and local İskenderun office; no anonymous safe native-ID polygon response was found.",
+      "urls": [
+        "https://parselsorguv2.tkgm.gov.tr/",
+        "https://www.tkgm.gov.tr/hatay-bm/bagli-mudurlukler/iskenderun-tapu-mudurlugu",
+        "https://www.tkgm.gov.tr/projeler/tamamlanan-projeler/megsis",
+        "https://iskenderun.bel.tr/iskenderun-sehir-haritasi"
+      ]
+    },
+    {
+      "route": "TKGM Parsel Sorgu public viewer",
+      "request": "GET https://parselsorguv2.tkgm.gov.tr/",
+      "result": "Web retrieval returned 502 Bad Gateway; direct curl also failed DNS resolution in the execution environment. No JavaScript/configuration or feature request could be inspected.",
+      "safeFieldsRequested": ["native parcel identifier", "geometry"],
+      "responseSchema": null,
+      "crs": null,
+      "geometry": null
+    },
+    {
+      "route": "İskenderun municipal city map",
+      "request": "GET https://iskenderun.bel.tr/iskenderun-sehir-haritasi",
+      "result": "First-party page returned a JavaScript application shell requiring client-side execution; no public layer URL, schema, CRS, or parcel feature response was exposed in the bounded text retrieval.",
+      "safeFieldsRequested": ["native parcel identifier", "geometry"],
+      "responseSchema": null,
+      "crs": null,
+      "geometry": null
+    },
+    {
+      "route": "TKGM MEGSİS documentation",
+      "request": "GET https://www.tkgm.gov.tr/projeler/tamamlanan-projeler/megsis",
+      "result": "Official prose describes cadastral technical data, parcel geometry, and WMS/WFS access for institutional/professional workflows, but does not expose a city-specific anonymous feature endpoint in the bounded retrieval.",
+      "safeFieldsRequested": ["native parcel identifier", "geometry"],
+      "responseSchema": null,
+      "crs": null,
+      "geometry": null
+    }
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldHandling": "No source feature response was retained. Native source field names, field mapping, and composite-key provenance are therefore not established.",
+  "sampleGeojson": null,
+  "retention": {
+    "fullParcelPolygonsRetained": 0,
+    "rawSourceAttributeSetsRetained": false,
+    "ownerAddressContactTitleholderTaxFieldsRequested": false,
+    "credentialsPrivateTokensLoginCaptchaBypassUsed": false,
+    "temporaryEvidencePath": "tmp/valhalla-parcel-research/6038/",
+    "citywideAbsenceClaimed": false
+  },
+  "qualification": {
+    "publicParcelGeometryVerified": false,
+    "adapterReady": false,
+    "runtimeReadiness": "held_pending_serial_reviewer",
+    "reason": "No bounded first-party anonymous response containing a safe native parcel ID and complete polygon was verified."
+  },
+  "uncertainty": [
+    "The exact WUP point was not shifted.",
+    "DNS failure, 502, JavaScript shell, login wall, timeout, or map extent miss is not evidence of citywide parcel absence.",
+    "Viewer internals, schema, CRS, native identity, coverage, and completeness remain unverified."
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 3317,
+  "queueRank": 1919,
+  "name": "Bukittinggi",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso3": "IDN",
+  "point": [-0.309320238800289, 100.380747689581],
+  "population2025": 299353,
+  "population2025k": 299.353,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bukittinggi Indonesia official cadastral parcel map ATR BPN BHUMI",
+        "result": "Found the official ATR/BPN BHUMI interactive map, ATLAS portal, and published Bidang Tanah metadata. No distinct Bukittinggi-specific public parcel API was found.",
+        "actualResultUrls": ["https://bhumi.atrbpn.go.id/peta", "https://atlas.atrbpn.go.id/", "https://bhumi.atrbpn.go.id/bantuan/katalog_data"]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Bukittinggi peta bidang tanah resmi ATR BPN",
+        "result": "Results identified the same official BHUMI/ATLAS cadastral map and ATR/BPN documentation; no separate public Kantor Pertanahan Kota Bukittinggi feature service was identified.",
+        "actualResultUrls": ["https://bhumi.atrbpn.go.id/bantuan/peta", "https://bhumi.atrbpn.go.id/bantuan/unsur_peta", "https://bhumi.atrbpn.go.id/bantuan/landing"]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://bhumi.atrbpn.go.id/peta",
+      "operator": "Ministry of Agrarian Affairs and Spatial Planning / National Land Agency (ATR/BPN)",
+      "evidence": "Live official BHUMI map HTML and current JavaScript application route retrieved over verified TLS."
+    },
+    {
+      "url": "https://atlas.atrbpn.go.id/",
+      "operator": "ATR/BPN",
+      "evidence": "Official ATLAS portal describes land-parcel data and attributes including area, kelurahan, NIB, object name, rights status, and land use; unsafe attributes were not requested or retained."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+      "operator": "ATR/BPN",
+      "evidence": "Official help page states BHUMI is integrated with ATLAS."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://bhumi.atrbpn.go.id/peta",
+      "method": "GET",
+      "status": 200,
+      "summary": "Official public map HTML retrieved over verified TLS; current Next.js JavaScript route inspected."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/panel/items/layers?filter%5Bdefault%5D%5B_eq%5D=true&filter%5Bstatus%5D%5B_eq%5D=published&fields=*,fields.*",
+      "method": "GET",
+      "status": 200,
+      "summary": "Anonymous published-layer metadata retrieved. Bidang Tanah is configured as Geoserver map service /bhumigs/umum, layer umum:Persil; safe published fields are penggunaan, tipehak, luas, nib, akurasibidang."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/ows?service=WFS&version=1.0.0&request=GetCapabilities",
+      "method": "GET",
+      "status": 404,
+      "summary": "Returned the BHUMI web application 404 HTML rather than WFS capabilities; no schema or CRS response retained."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=umum%3APersil&outputFormat=application%2Fjson&bbox=100.370%2C-0.320%2C100.390%2C-0.300%2CEPSG%3A4326&propertyName=nib",
+      "method": "GET",
+      "status": 200,
+      "summary": "Returned BHUMI 404 HTML/UI content, not a GeoJSON feature response. No parcel hit or citywide absence is inferred."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": "nib",
+    "fallbackOidField": null,
+    "compositeKey": null,
+    "fieldMapping": {
+      "nib": "Published native Nomor Identifikasi Bidang field for the Bidang Tanah layer; no feature value was retrieved.",
+      "geometry": "Parcel polygon geometry expected from umum:Persil; no usable geometry response was retrieved."
+    },
+    "crs": "Not confirmed from a usable feature response; no transformation applied.",
+    "geometryType": "Not confirmed from a usable feature response."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Published ATR/BPN Bidang Tanah metadata has national map bounds that include West Sumatra and Bukittinggi.",
+    "verifiedOpenScope": "National layer metadata only; Bukittinggi parcel geometry coverage was not independently verified.",
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "No usable point or feature response was obtained; this is an endpoint/UI limitation, not evidence of parcel absence."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["nib", "geometry"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "tax", "account", "legal description", "status-of-rights details"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_national_cadastral_map_metadata_geometry_unverified",
+  "remainingUncertainty": "The public map exposes current layer metadata, but the discovered anonymous OWS route does not yield capabilities or geometry. Local Kantor Pertanahan Kota Bukittinggi custody and native identity stability were not separately evidenced."
+}

@@ -1,0 +1,58 @@
+{
+  "cityCode": 10924,
+  "cityName": "Zhanjiang",
+  "cityRecord": "city-10924-zhanjiang.json",
+  "checkedAt": "2026-10-09T12:35:00Z",
+  "reviewType": "cadastral_source_service_review",
+  "queryOutcomes": {
+    "englishDiscovery": "Official Zhanjiang Natural Resources Bureau, standard-map notice and joint-survey viewer identified; no parcel vector dataset found.",
+    "nativeDiscovery": "Chinese official pages identified local real-estate-registration and cadastral-survey procedure context; no anonymous parcel vector download found.",
+    "viewerFollowed": "Yes. Current dchy shell, config.js and mapTable JavaScript were fetched and inspected.",
+    "metadataRequest": "Configured GeoScene MapServer metadata request timed out after 15 seconds.",
+    "exactPointRequest": "Configured layer-0 point query at the unchanged WUP point timed out after 15 seconds.",
+    "otherRequest": "Guangdong public map landing-page request returned an empty reply; no bypass was attempted."
+  },
+  "attemptedRoutes": [
+    "https://www.zhanjiang.gov.cn/nr/",
+    "https://www.zhanjiang.gov.cn/zjsfw/bmdh/zrzyj/yhyshj/bdcdjzt/bsrk/mindex.html",
+    "https://zrzyj.zhanjiang.gov.cn/dchy/",
+    "https://zrzyj.zhanjiang.gov.cn/dchy/config.js",
+    "https://zrzyj.zhanjiang.gov.cn/dchy/assets/mapTable-7581cadc.js",
+    "http://19.145.4.15:6080/geoscene/rest/services/zhanjianggis/ggjc_xzq_xjxzq/MapServer?f=pjson",
+    "http://19.145.4.15:6080/geoscene/rest/services/zhanjianggis/ggjc_xzq_xjxzq/MapServer/0/query",
+    "https://nr.gd.gov.cn/map/"
+  ],
+  "scopeLimits": [
+    "The configured MapServer is an administrative-boundary viewer layer (layerId 0, xzqhmc), not verified cadastral parcel coverage.",
+    "Timeout and empty-reply outcomes are transport/access limitations, not evidence of citywide absence.",
+    "No login, credentials, private tokens, CAPTCHA or Cloudflare bypass was used.",
+    "No unsafe owner, address, contact, titleholder, tax, account or personal fields were requested or retained.",
+    "No retained GeoJSON sample was created because no safe parcel feature response was received."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel/cadastral identifier only if exposed by a future anonymous safe endpoint",
+    "geometry",
+    "CRS/layer metadata",
+    "transport status and response metadata"
+  ],
+  "sourceFieldMapping": {
+    "observedViewerConfigFields": ["mapUrl", "layerId", "xzqhName"],
+    "observedQueryParameters": ["returnGeometry", "spatialRel", "geometry", "geometryType", "inSR", "outFields", "outSR"],
+    "parcelIdentity": null,
+    "compositeKeyProvenance": null
+  },
+  "registryAssessment": {
+    "registryFound": true,
+    "custodian": "Zhanjiang Municipal Natural Resources Bureau",
+    "basis": "Official municipal bureau and real-estate-registration pages plus the current official joint-survey/results-sharing viewer.",
+    "notEstablished": "No public parcel schema, stable parcel identity, CRS for parcel geometry, or citywide parcel coverage was verified."
+  },
+  "geometryAssessment": {
+    "sampleCount": 0,
+    "sampleFile": null,
+    "runtimeReadiness": "held_quality_review",
+    "decision": "Do not admit or integrate a parcel adapter from this attempt."
+  },
+  "uncertainty": "The local registry context is strong, but the only exposed service route was unreachable and not proven to be cadastral. A later attempt may inspect the service from an allowed network path or identify a separate public parcel layer; this packet makes no absence claim.",
+  "status": "complete"
+}

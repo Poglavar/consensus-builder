@@ -1,0 +1,36 @@
+{
+  "cityRecord": "city-7868-burewala.json",
+  "cityCode": 7868,
+  "queueRank": 1614,
+  "name": "Burewala",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "sourceReview": "The official Municipal Committee Burewala basemap, published through Punjab’s municipal GIS program, is local map evidence and explicitly includes parcel boundaries. It is a static PDF rather than an anonymous parcel API. Punjab PLRA/PULSE public infrastructure was also inspected; detailed parcel access is login/token-gated or otherwise did not expose a safe Burewala feature response.",
+  "queryReview": {
+    "englishDiscovery": "Completed; official PMDFC Burewala GIS listing, municipal basemap, PLRA, and PULSE sources found.",
+    "localLanguageDiscovery": "Completed in Urdu; official Punjab land-record and municipal-map results found, but no anonymous parcel-feature endpoint.",
+    "exactPoint": [30.1593515650401, 72.6808197136685],
+    "returned": null,
+    "ids": [],
+    "geometry": "No machine-readable parcel geometry returned; no GeoJSON retained.",
+    "mapExtentOrPointMiss": false
+  },
+  "requestOutcomes": "The official municipal basemap PDF returned HTTP 200 and documents parcel boundaries. PULSE returned HTTP 200; its current JavaScript identified the official ArcGIS host, while the public page says complete parcel details require login. The public GPC parcel service returned ArcGIS 499 Token Required. PLRA/Jamabandi pages returned HTTP 200 but exposed interactive/service workflows rather than anonymous parcel geometry. PMDFC direct GET timed out; its Burewala listing was corroborated by first-party search discovery.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "retainedSample": null,
+  "scopeLimits": [
+    "The PDF is municipal cartography, not a queryable cadastral feature layer.",
+    "No native parcel identity, CRS, or full parcel polygon was verified, so no sample GeoJSON was written.",
+    "A token requirement, login wall, timeout, or lack of public API is not evidence of citywide parcel absence.",
+    "No owner, address, contact, titleholder, personal, tax, account, legal-description, or value fields were requested or retained.",
+    "Runtime readiness remains held pending independent serial adapter review."
+  ],
+  "uncertainty": "The local map evidence supports a municipal mapping custodian but not open cadastral API integration or complete parcel coverage. No claim is made about parcel absence, ownership, title, tax records, or completeness of PLRA/PULSE/internal datasets.",
+  "runtimeReadiness": "held_serial_review"
+}

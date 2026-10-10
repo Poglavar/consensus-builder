@@ -1,0 +1,83 @@
+{
+  "cityCode": 5845,
+  "queueRank": 1331,
+  "name": "Bathinda",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [30.2120777898521, 74.9443981502469],
+  "population2025": 421753,
+  "population2025k": 421.753,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": true,
+  "registryAssessment": "Punjab's official BhuNaksha public cadastral viewer is available for Bathinda district, and the official DILRMP Bathinda status page reports digitized cadastral-map and parcel totals. This evidences a local/state cadastral map service, but not an exact city-point parcel response.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bathinda Punjab official cadastral parcel map Bhu Naksha land records",
+        "result": "Found Punjab's official BhuNaksha viewer, the official DILRMP Bathinda map-status page, and the official District Bathinda property-registration route. The viewer exposes District, Tehsil, Kanungo, Patwar and Village selectors.",
+        "actualResultUrls": [
+          "https://gisbhunaksha.punjab.gov.in/",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/46",
+          "https://bathinda.nic.in/service/property-registration-online/"
+        ]
+      },
+      {
+        "language": "Punjabi",
+        "query": "ਬਠਿੰਡਾ ਪੰਜਾਬ ਅਧਿਕਾਰਤ ਭੂ ਨਕਸ਼ਾ ਖਸਰਾ ਪਲਾਟ ਨਕਸ਼ਾ",
+        "result": "Found the official Punjabi Punjab Land Records portal and Punjabi District Bathinda portal, plus the Punjab BhuNaksha viewer. The accessible viewer hierarchy identified district 04 ਬਠਿੰਡਾ and tehsil 039 ਬਠਿੰਡਾ, but no safe parcel geometry for the supplied city point.",
+        "actualResultUrls": [
+          "https://jamabandi.punjab.gov.in/",
+          "https://bathinda.nic.in/pa/",
+          "https://gisbhunaksha.punjab.gov.in/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://gisbhunaksha.punjab.gov.in/",
+      "role": "Punjab Government BhuNaksha public cadastral map viewer",
+      "observation": "HTTP 200 viewer page; current JavaScript/configuration exposes state 03, REST hierarchy endpoints, getVVVVExtentGeoref, getPlotAtXY, ScalarDatahandler, and WMS map layers. The selector response identifies district 04 ਬਠਿੰਡਾ and tehsil 039 ਬਠਿੰਡਾ."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/46",
+      "role": "Government of India DILRMP Bathinda cadastral-status page",
+      "observation": "The official Bathinda table reports 125 villages, 231789 land parcels, and 231789 geo-referenced parcels for the Bathinda tehsil row; it is status evidence, not an individual parcel feature response."
+    },
+    {
+      "url": "https://jamabandi.punjab.gov.in/",
+      "role": "Punjab Land Records official portal",
+      "observation": "Official Punjabi/English land-record service portal exposing public Jamabandi, Khasra, mutation and map-related navigation; no owner or address data was requested or retained."
+    }
+  ],
+  "viewerRoute": {
+    "sourceId": "punjab-bhunaksha",
+    "stateCode": "03",
+    "districtCode": "04",
+    "tehsilCode": "039",
+    "levelCount": 5,
+    "levelLabels": ["District", "Tehsil", "Kanungo", "Patwar", "Village"],
+    "safeNativeIdentityObservation": "The current client uses plot response fields id, ID, plotNo and kide; no plot response was returned for the bounded exact-point tests, so no native identity is asserted."
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No bounded anonymous response containing a safe native parcel identifier and full polygon was obtained. The exact WUP point was preserved and not shifted. Empty getPlotAtXY responses for tested village extents are bounded misses, not evidence of citywide absence."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Punjab BhuNaksha viewer route for Bathinda district and the Bathinda tehsil hierarchy.",
+    "verifiedOpenScope": "Viewer availability, hierarchy, map extent endpoint, projected coordinates, and WMS route were verified. Exact city-point containment, parcel schema/geometry response, CRS authority, and citywide urban coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

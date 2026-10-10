@@ -1,0 +1,16 @@
+{
+  "taskId": "city:10466",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-10466-city.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T13:11:13Z",
+  "identityReview": "Code 10466, rank 1290, China/CN, point [34.862914136582,117.543919330528], and 433213 persons match the immutable queue.",
+  "searchReview": "The paired files record English and Simplified Chinese queries with result URLs. The indexed first-party district government bulletin assigns real-estate registration inquiry and copying service to 区自然资源局, supporting local procedure custody. Direct HTTPS access to that PDF failed in this environment, so its current contents could not be fetched independently.",
+  "firstPartyEvidenceUrl": "https://www.zzszq.gov.cn/zw/zwgkzt/zfgb/202012/P020201218339127617794.pdf",
+  "sampleReview": "No full polygons or unsafe attributes are retained. The unavailable district host is not evidence of parcel absence.",
+  "admissionReview": "No safe native-ID polygon response, fresh adapter read, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, or headed Details-panel proof. No admission or shared runtime/catalog/report edit."
+}

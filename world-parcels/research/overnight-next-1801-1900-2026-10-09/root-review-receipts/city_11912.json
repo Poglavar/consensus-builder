@@ -1,0 +1,14 @@
+{
+  "taskId": "city:11912",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-11912-raoping.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/raoping-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T16:22:59Z",
+  "reviewNotes": "WUP identity and English/Chinese search records checked. Official Raoping registration artifact supports custody, but no anonymous native-ID polygon response or source schema was obtained. No admission gates evidenced; unresolved access is not absence.",
+  "admissionGate": "No independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. No runtime or coverage admission."
+}

@@ -1,0 +1,19 @@
+{
+  "taskId": "city:5377",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-5377-jamalpur.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/jamalpur-service-review.json",
+    "tmp/valhalla-parcel-research/5377/mymensingh-districts.json",
+    "tmp/valhalla-parcel-research/5377/surveys.json",
+    "tmp/valhalla-parcel-research/5377/mouzas.json",
+    "tmp/valhalla-parcel-research/5377/sheet-071001043-001.json",
+    "tmp/valhalla-parcel-research/5377/sheet-071001055-008.json"
+  ],
+  "checkedAt": "2026-10-10T12:12:23+00:00",
+  "reason": "Saved first-party Jamalpur district, BDS survey, and mouza metadata support local map custody; sheet geometry cache files are empty, with no native parcel ID or full polygon.",
+  "firstPartyUrlChecked": "https://settlement.gov.bd/Map/MapSearch",
+  "admissionGates": "No verified safe native-ID full polygon; fresh ID reads, forced paging, 13 cells, metric GEOS checks, source binding and headed Details remain unverified."
+}

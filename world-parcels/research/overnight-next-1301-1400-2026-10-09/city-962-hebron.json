@@ -1,0 +1,154 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:962",
+  "cityCode": 962,
+  "wupCityCode": 962,
+  "name": "Hebron",
+  "country": "State of Palestine",
+  "countryCode": "PS",
+  "countryIso3": "PSE",
+  "rank": 1396,
+  "queueRank": 1396,
+  "locId": 275,
+  "point": [31.5314285857518, 35.0895746163314],
+  "centerLatLon": [31.5314285857518, 35.0895746163314],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 405079,
+  "population2025k": 405.079,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1301-1400-2026-10-09",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Palestine Land Authority identifies the authority as responsible for property registration, real-property information, surveying and development of the national geographic information system; its official Hebron office is listed. The official Geocortex viewer labels the parcel layer as PLA-sourced registered parcels.",
+  "registryEvidenceUrls": [
+    "https://www.pla.pna.ps/ar/Article/19/سلطة-الأراضي-تطلق-تطبيقات-خدماتية-وإرشادية-حديثة-عبر-بوابتها-الإلكترونية",
+    "https://geomolg.ps/Geocortex/Essentials/REST/sites/ParcelSearch/map",
+    "https://www.pla.pna.ps/ar/Category/22/الخدمات-الالكترونية"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sourceIds": ["PS-PLA-PARCELS-ALL-REGISTERED"],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_independent_serial_review",
+  "technicalBlocker": "Anonymous parcel geometry was verified through the public viewer's service route, but runtime adapter admission remains held pending independent serial review. The viewer-issued public token is not retained.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "official_local_registry_public_parcel_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "Palestine Land Authority registered-parcel layer exposed by the GeoMOLG Geocortex ParcelSearch viewer; service full extent is Palestine Grid EPSG:28191.",
+    "verifiedOpenScope": "Three safe ID+polygon records returned from a bounded 3 km envelope centered on the exact WUP point; this proves an open sample near Hebron, not citywide completeness.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "runtimeAssessment": {
+    "status": "held_pending_independent_serial_review",
+    "reason": "A real public parcel source is present, but runtime enablement is intentionally held until a serial reviewer independently qualifies endpoint stability, token lifecycle, schema/CRS handling and coverage semantics."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hebron Palestine cadastral parcel map official land registry GIS viewer",
+        "result": "Found the official GeoMOLG Geocortex ParcelSearch viewer and its PLA-registered parcel service. A bounded anonymous query returned three polygon records with safe OBJECTID-only attributes.",
+        "actualResultUrls": [
+          "https://geomolg.ps/Geocortex/Essentials/REST/sites/ParcelSearch/map",
+          "https://orthophotos.geomolg.ps/adaptor/rest/services/Parcels_All_PLA/MapServer",
+          "https://www.pla.pna.ps/ar/Article/19/سلطة-الأراضي-تطلق-تطبيقات-خدماتية-وإرشادية-حديثة-عبر-بوابتها-الإلكترونية"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "الخليل فلسطين خريطة قطع الأراضي سلطة الأراضي نظام معلومات جغرافي",
+        "result": "Found the official Palestine Land Authority electronic-services material and official GeoMOLG parcel viewer. The viewer identifies registered parcels sourced from the Land Authority; the same bounded safe-field query returned three polygons near Hebron.",
+        "actualResultUrls": [
+          "https://www.pla.pna.ps/ar/Category/22/الخدمات-الالكترونية",
+          "https://geomolg.ps/Geocortex/Essentials/REST/sites/ParcelSearch/map",
+          "https://orthophotos.geomolg.ps/adaptor/rest/services/Parcels_All_PLA/MapServer"
+        ]
+      }
+    ],
+    "executionMethod": "Separate English and Arabic web discovery, official viewer inspection, CRS transformation from WGS84 to Palestine Grid, and bounded anonymous GET query requesting only OBJECTID and geometry.",
+    "portals": [
+      {
+        "name": "GeoMOLG Geocortex ParcelSearch",
+        "operator": "GeoMOLG viewer exposing a Palestine Land Authority parcel layer",
+        "homeUrl": "https://geomolg.ps/Geocortex/Essentials/REST/sites/ParcelSearch/map",
+        "observation": "Viewer HTML lists Parcels_All_PLA, layer 0 `Parcels -Registered- Source: PLA`, native primary key OBJECTID, polygon feature type, and Palestine_1923_Palestine_Grid WKID 28191.",
+        "requestOutcome": "Viewer page returned HTTP 200. Geocortex REST configuration returned the service URL and a viewer-issued public token; token value redacted from all retained evidence."
+      },
+      {
+        "name": "Palestine Land Authority",
+        "operator": "Palestine Land Authority",
+        "homeUrl": "https://www.pla.pna.ps/",
+        "observation": "Official authority material describes property registration, real-property information, surveying and GIS modernization; an official Hebron office is listed. This is custody evidence, distinct from the GeoMOLG service implementation.",
+        "requestOutcome": "Official pages were reachable through web discovery; no owner or titleholder information was requested."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://geomolg.ps/Geocortex/Essentials/REST/sites/ParcelSearch/map",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=utf-8",
+        "assessment": "Viewer/configuration page; exposed service route, parcel layer, native key and EPSG:28191."
+      },
+      {
+        "url": "https://geomolg.ps/Geocortex/Essentials/REST/sites/ParcelSearch/map/mapservices/0?f=pjson",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "assessment": "Viewer configuration; public token present and redacted, service URL confirmed."
+      },
+      {
+        "url": "https://orthophotos.geomolg.ps/adaptor/rest/services/Parcels_All_PLA/MapServer?f=pjson",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/plain",
+        "assessment": "Without the viewer token the service returned ArcGIS error 499 Token Required; this is an expected credentialed-service route, not a login wall."
+      },
+      {
+        "url": "https://orthophotos.geomolg.ps/adaptor/rest/services/Parcels_All_PLA/MapServer/0/query",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/geo+json",
+        "assessment": "With the viewer-issued public token, browser headers, viewer Referer, inSR=28191 and outSR=4326, bounded 3 km envelope query returned 3 Polygon features; requested outFields=OBJECTID only. Raw unchanged response is in ignored tmp/valhalla-parcel-research/hebron/hebron-parcel-response-3km.json."
+      },
+      {
+        "url": "https://orthophotos.geomolg.ps/adaptor/rest/services/Parcels_All_PLA/MapServer/0/query",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/geo+json",
+        "assessment": "A tighter 800 m envelope around the exact transformed WUP point returned an empty feature list; this is not treated as absence."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "PS-PLA-PARCELS-ALL-REGISTERED",
+    "name": "Parcels_All_PLA / Parcels -Registered-",
+    "url": "https://orthophotos.geomolg.ps/adaptor/rest/services/Parcels_All_PLA/MapServer",
+    "operator": "GeoMOLG-hosted public viewer route; layer attribution says Palestine Land Authority (PLA)",
+    "serviceType": "ArcGIS REST MapServer FeatureLayer query exposed through official/public Geocortex viewer configuration",
+    "layer": "0",
+    "geometryType": "Polygon",
+    "outputCrs": "EPSG:4326 for retained response; native service/viewer CRS EPSG:28191 (Palestine_1923_Palestine_Grid)",
+    "nativeIdField": "OBJECTID",
+    "nativeIdEvidence": "Geocortex layer metadata marks OBJECTID as primaryKeyField and the ArcGIS response repeats the same native identity as feature id and OBJECTID property.",
+    "attributesRequested": ["OBJECTID", "geometry"],
+    "sampleCount": 3,
+    "sampleFile": "hebron-parcel-samples.geojson",
+    "operatorNote": "Viewer configuration contained a public token; its value is intentionally not retained. Composite key not needed because OBJECTID is documented as the layer primary key."
+  },
+  "rootReviewedAt": "2026-10-09T16:50:00Z",
+  "rootReview": {
+    "checkedAt": "2026-10-09T16:50:00Z",
+    "basis": "Separate English and Arabic discovery, first-party authority review, official viewer/configuration inspection, schema/CRS review and bounded safe-field geometry query. No citywide completeness or runtime admission is asserted.",
+    "primarySourceAuditFile": "hebron-service-review.json"
+  }
+}

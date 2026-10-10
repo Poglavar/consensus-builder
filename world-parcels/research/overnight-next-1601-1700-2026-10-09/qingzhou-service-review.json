@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-10290-qingzhou.json",
+  "cityCode": 10290,
+  "queueRank": 1673,
+  "city": "Qingzhou",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": null,
+  "summary": "Official Shandong map/API documentation was verified, but no Qingzhou-specific public cadastral service or safe parcel ID-plus-geometry response was found. The Qingzhou government domain timed out. No sample GeoJSON is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Chinese discovery queries are recorded in city-10290-qingzhou.json with actual first-party URLs. They found the official provincial platform and API documentation, but no accessible Qingzhou local registry or parcel layer.",
+  "requestOutcomes": "Official provincial platform and API documentation returned HTTP 200 over public HTTPS. The candidate Qingzhou government domain timed out after 20 seconds. No credentials, private tokens, CAPTCHA bypass, unsafe fields or TLS-disable action was used.",
+  "scopeLimits": [
+    "Exact WUP point [36.6924481195941, 118.479728838923] was preserved; no exact-point hit/miss inference was made.",
+    "No Qingzhou city boundary or complete city coverage was established for an open parcel geometry service.",
+    "No parcel geometry, stable native parcel identity, source schema or CRS was retrieved or retained.",
+    "The provincial platform is general map/API infrastructure and is not treated as proof of a local Qingzhou registry custodian.",
+    "A timeout, map extent miss, login wall or unusable viewer is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account or personal fields were requested or retained.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains pending."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No parcel geometry query reached a usable public service. The exact WUP point was preserved but no hit/miss inference was made.",
+    "requestEvidence": [
+      "GET https://www.sdmap.gov.cn/ returned HTTP 200 with general platform content.",
+      "GET https://sdmap.gov.cn/mapAPI.html returned HTTP 200 with general API documentation.",
+      "GET https://www.qingzhou.gov.cn/ timed out after 20 seconds."
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Shandong provincial public geographic-information map/API platform.",
+    "verifiedOpenScope": "General map/API documentation only; no Qingzhou parcel geometry, native ID or citywide open coverage was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current local viewer/API route, access controls, layer schema, CRS, stable native parcel identity and citywide coverage remain unresolved. No claim is made about parcel absence, legal title, ownership, tax records or completeness of any Chinese cadastral dataset.",
+  "retainedSample": null
+}

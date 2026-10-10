@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-2789-gumi-si.json",
+  "cityCode": 2789,
+  "queueRank": 1955,
+  "city": "Gumi-si",
+  "country": "Republic of Korea",
+  "countryCode": "KR",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Gumi City pages establish a municipal cadastral-survey/land-information procedure, while the national K-GeoP public viewer supplied a bounded anonymous parcel lookup. The exact WUP point was queried without shifting it; the service returned one address/parcel result with safe native PNU identity and a WGS84 geometry string. No retained sample is included because the response also contained many source-specific land, building, valuation and ownership-adjacent fields, and the geometry was not independently normalized into a review-safe file.",
+  "queryOutcomes": "Separate English and Korean first-party discovery queries are recorded in city-2789-gumi-si.json. Results identified Gumi City map/cadastral pages and the national K-GeoP viewer. The municipal map was inspected as a general map and did not expose a cadastral parcel API in its HTML/JavaScript.",
+  "requestOutcomes": [
+    {
+      "route": "https://www.gumi.go.kr/map/main.do",
+      "method": "GET",
+      "outcome": "200; current municipal comprehensive-map HTML and /map/js/map.js loaded. Categories are civic facilities and services; no cadastral parcel layer or parcel endpoint was exposed in the inspected page/scripts."
+    },
+    {
+      "route": "https://www.gumi.go.kr/city/contents.do?mid=0303000000",
+      "method": "GET",
+      "outcome": "200; official Gumi City cadastral-survey procedure page. It identifies land-information work and provides the cadastral-survey contact path, but is not a parcel feature service."
+    },
+    {
+      "route": "https://www.kgeop.go.kr/info/infoMap.do?initMode=L",
+      "method": "GET",
+      "outcome": "200; current national K-GeoP land-information viewer loaded. Its JavaScript/configuration exposed the public geopass address and parcel-information routes, WFS route configuration, and map projection EPSG:5179."
+    },
+    {
+      "route": "https://www.kgeop.go.kr/geopass/api/getJusoList.do?type=5&keyword=128.367049228517%2C36.1089634843612",
+      "method": "GET",
+      "outcome": "200 JSON; exact WUP longitude/latitude query returned one result: Gumi-si, Gongdan-dong 212, PNU 4719011300102120000, with parcelX/parcelY and a MULTIPOLYGON geometry in longitude/latitude order. No coordinate shift was used."
+    },
+    {
+      "route": "https://www.kgeop.go.kr/geopass/api/selectOneParcelInfo.do?pnu=4719011300102120000",
+      "method": "GET",
+      "outcome": "200 JSON; parcel-information response returned the same PNU plus extensive land/building/valuation/record fields. These were inspected only for schema qualification and were not retained. No owner name, owner registration number, address, contact, tax/account or other unsafe field was requested as a targeted field."
+    },
+    {
+      "route": "https://map.kgeop.go.kr:20000/bag/api/map/wfs?service=WFS&request=GetCapabilities&version=1.0.0",
+      "method": "GET",
+      "outcome": "DNS resolution failed from the bounded environment; no TLS bypass or alternate host was attempted. This does not negate the successful K-GeoP application/API response above."
+    }
+  ],
+  "sourceRoutes": [
+    "https://www.gumi.go.kr/map/main.do",
+    "https://www.gumi.go.kr/city/contents.do?mid=0303000000",
+    "https://www.kgeop.go.kr/",
+    "https://www.kgeop.go.kr/info/infoMap.do?initMode=L",
+    "https://www.kgeop.go.kr/geopass/api/getJusoList.do",
+    "https://www.kgeop.go.kr/geopass/api/selectOneParcelInfo.do"
+  ],
+  "scopeLimits": [
+    "The exact WUP point [36.1089634843612, 128.367049228517] was preserved in latitude/longitude order; the K-GeoP request used the equivalent longitude,latitude query parameter required by its JavaScript.",
+    "The one returned parcel is a bounded point lookup, not evidence of citywide coverage or absence outside the queried location.",
+    "The municipal Gumi map was not shown to be the parcel custodian; national K-GeoP supplied the verified parcel response. Local municipal custody is evidenced only for cadastral-survey procedure/contact, not a municipal geometry API.",
+    "The WFS host configured by the viewer was not DNS-resolvable in this environment; no layer-name/schema enumeration was completed.",
+    "No owner, titleholder, personal, contact, tax, account or other unsafe fields were requested or retained. The parcel-info response was not copied into the cohort directory.",
+    "Packet completion does not qualify or admit a runtime adapter; independent serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier (PNU) only",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": {
+    "nativeIdentity": "pnu",
+    "nativeGeometrySource": "jusoResult.jusoList[].geom",
+    "coordinateOrder": "longitude,latitude",
+    "crs": "WGS84 / EPSG:4326 as returned by the address route; viewer map projection is EPSG:5179"
+  },
+  "compositeKeyProvenance": "Not used; PNU 4719011300102120000 was returned directly by the first-party K-GeoP address lookup and is the sole retained candidate identity in metadata.",
+  "crs": "WGS84 / EPSG:4326 for the returned geometry string; EPSG:5179 is the viewer display projection.",
+  "geometryQuality": "One complete MULTIPOLYGON was returned by the exact-point address lookup; no normalization or retained sample file was produced.",
+  "geometryDecision": {
+    "verified": true,
+    "sourceId": "kgeop-getJusoList-type5",
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": "4719011300102120000",
+    "nativeIdField": "pnu",
+    "exactWupPointTest": "Exact WUP point queried as 128.367049228517,36.1089634843612; one parcel/address response returned. This is a point-lookup result only, not a citywide claim.",
+    "requestEvidence": [
+      "tmp/valhalla-parcel-research/gumi-2789/address-point.json",
+      "tmp/valhalla-parcel-research/gumi-2789/parcel-info.json"
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "K-GeoP is a national land-information service; Gumi City separately documents municipal cadastral-survey administration.",
+    "verifiedOpenScope": "Anonymous exact-point address-to-parcel lookup and parcel-information response for one Gumi parcel.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Current K-GeoP WFS layer names, stable geometry endpoint contract, update cadence, citywide completeness, and whether the municipal viewer has any separate parcel service remain unresolved. The returned PNU is safe native identity evidence; no claim is made about ownership, title, tax status, or parcel absence outside the queried point.",
+  "retainedSample": null
+}

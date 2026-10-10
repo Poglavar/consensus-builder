@@ -1,0 +1,33 @@
+{
+  "taskId": "city:424",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-424-plovdiv.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/plovdiv-service-review.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T14:09:41.099235Z",
+  "registryFound": true,
+  "reviewReason": "KAIS first-party map returned 200; its configured public ArcGIS metadata route returned 403 Request Rejected. No native-ID parcel polygon response or adapter qualification exists.",
+  "identityCheck": {
+    "queueRank": 1741,
+    "cityCode": 424,
+    "country": "Bulgaria",
+    "point": [
+      42.1407936933214,
+      24.757117492438
+    ],
+    "population2025Persons": 329838,
+    "matchesImmutableQueue": true
+  },
+  "bilingualQueriesRecorded": true,
+  "retainedFullPolygonCount": 0,
+  "admission": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

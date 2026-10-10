@@ -1,0 +1,18 @@
+{
+  "taskId": "city:3739",
+  "decision": "held",
+  "reason": "Matsuyama rank 1275, Japan, immutable point and 437355 persons match the SHA-256 verified WUP roster. Packet and review record English and Japanese searches. The official city page supports local cadastral custody; the published first-party catalog and GeoJSON support one unchanged, valid exact-point sample polygon with only ID retained. The full cached source has 316467 features and repeats native ID H000002385 on 42 polygons at distinct locations, so ID alone is not a unique parcel key and source binding fails. Fresh unique-ID reads, forced paging, 13 bounded cells, metric full-source validity/overlap checks, proposal binding, and headed Details verification are absent. Published geometry is a held discovery, not runtime admission or citywide completeness.",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-3739-matsuyama.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/matsuyama-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/sample-matsuyama-parcels.geojson",
+    "tmp/valhalla-parcel-research/matsuyama/package_show.json",
+    "tmp/valhalla-parcel-research/matsuyama/matsuyama-2026.geojson",
+    "tmp/valhalla-parcel-research/matsuyama/exact.geojson",
+    "tmp/valhalla-parcel-research/matsuyama/city-chiseki.html"
+  ],
+  "checkedAt": "2026-10-09T12:50:56.005Z"
+}

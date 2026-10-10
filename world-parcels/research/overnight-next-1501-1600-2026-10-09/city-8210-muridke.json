@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:8210",
+  "cityCode": 8210,
+  "queueRank": 1540,
+  "name": "Muridke",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso2": "PK",
+  "iso3": "PAK",
+  "rank": 1540,
+  "point": [31.7916104396334, 74.2567081193507],
+  "centerLatLon": [31.7916104396334, 74.2567081193507],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 370563,
+  "population2025k": 370.563,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Punjab Urban Land Systems Enhancement (PULSE), a Government of Punjab land-system project, exposes a public GIS viewer and the Punjab Land Records Authority ArcGIS service. The Sheikhupura service layer includes Muridke Tehsil and returned a safe parcel polygon at the exact WUP point.",
+  "registryEvidenceUrls": [
+    "https://www.punjab-zameen.gov.pk/",
+    "https://www.pulse.gop.pk/",
+    "https://lis.pulse.gop.pk/",
+    "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sourceIds": ["3070826"],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "sampleFile": "muridke-parcel-samples.geojson",
+  "technicalResult": "The official PULSE viewer configuration exposed /api/gis/token; using that anonymous viewer flow, the ArcGIS REST service was queried without login. The Sheikhupura layer (31) returned one polygon intersecting the exact WUP point. Query output was requested as GeoJSON in EPSG:4326; source layer metadata reports WKID 102100/latestWkid 3857.",
+  "sourceFieldMapping": {
+    "canonicalIdentity": "OBJECTID -> properties.id",
+    "nativeIdentityEvidence": "OBJECTID is the ArcGIS esriFieldTypeOID field in layer metadata; retained sample id is the string form of 3070826.",
+    "locationQualification": "Returned feature fields identify District=Sheikhupura, Tehsil=Muridke, QH=Muridke, PC=Muridkey, Mouza=Muridke Zari. These source attributes are not retained in the sample GeoJSON.",
+    "otherNativeFieldsObserved": ["District", "Dist_ID", "Tehsil", "Tehsil_ID", "QH", "QH_ID", "PC", "PC_ID", "Mouza", "Mouza_ID", "Type", "M", "A", "K", "SK", "Karam", "Remarks", "Label", "Shape", "Shape.STArea()", "Shape.STLength()", "Join_Shp", "Khasra_ID", "Shape_Leng", "B", "MN", "Khewat_ID", "propstatus"]
+  },
+  "safeFieldAllowlist": ["OBJECTID as stable native parcel identity", "complete polygon geometry", "source CRS metadata", "non-personal administrative layer metadata"],
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 3,
+    "fullPolygonsRetained": 1,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "queryWasPointBounded": true
+  },
+  "resultCategory": "registry_found_public_geometry_verified_point_sample",
+  "coverageAssessment": {
+    "claimedScope": "PULSE/PLRA Punjab cadastral-map service, with district layers including Sheikhupura.",
+    "verifiedOpenScope": "Anonymous viewer flow, service metadata, and one safe ID-plus-polygon response at the exact WUP point.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Muridke Punjab Pakistan official land records cadastral map site:punjab-zameen.gov.pk OR site:plra.punjab.gov.pk",
+        "result": "Search identified the official Punjab Land Records Authority and PULSE sources; PULSE provides a public GIS viewer with parcel/cadastral-map references.",
+        "actualResultUrls": ["https://www.punjab-zameen.gov.pk/", "https://lis.pulse.gop.pk/", "https://www.pulse.gop.pk/"]
+      },
+      {
+        "language": "native/local",
+        "query": "مریدکے پنجاب زمین ریکارڈ نقشہ سرکاری; مریدکے اراضی ریکارڈ پنجاب سرکاری نقشہ",
+        "result": "Urdu discovery returned official Punjab land-record and PULSE-related results, including the Punjab Land Records Authority portal; no separate local municipal cadastral endpoint was identified.",
+        "actualResultUrls": ["https://www.punjab-zameen.gov.pk/", "https://lis.pulse.gop.pk/"]
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "One point-intersects hit does not establish citywide parcel completeness, legal cadastral status, or stable identity semantics beyond the ArcGIS OBJECTID field. The service is token-gated at the REST layer but the public viewer supplies the token anonymously; token value was not retained. No owner, address, titleholder, contact, tax, or account data was requested or retained.",
+  "nextStep": "Serial reviewer may independently qualify the PULSE/PLRA service and identity mapping; do not enable runtime from this packet alone."
+}

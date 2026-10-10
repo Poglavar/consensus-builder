@@ -1,0 +1,60 @@
+{
+  "cityCode": 1993,
+  "queueRank": 1447,
+  "country": "Argentina",
+  "countryCode": "AR",
+  "point": [-27.7856815392775, -64.2614257262865],
+  "population2025": 393257,
+  "population2025k": 393.257,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-09",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Santiago del Estero Argentina official cadastral map parcel cadastre GIS",
+        "result": "First-party/official leads found: Instituto Geográfico Nacional provincial office identifies the provincial Dirección General de Catastro and links its site; the official provincial DGC site advertises Servicios Catastrales Online, GIS, and WMS/WFS. No open parcel geometry was found in the search result itself.",
+        "actualResultUrls": [
+          "https://www.ign.gob.ar/AreaInstitucional/OficinasProvinciales/SantiagodelEstero",
+          "https://app.dgcsantiago.gob.ar/index.html",
+          "https://app.dgcsantiago.gob.ar/page.construccion.html"
+        ]
+      },
+      {
+        "language": "Spanish (local)",
+        "query": "Santiago del Estero catastro visor parcelas sitio oficial",
+        "result": "Official provincial DGC and IDE Santiago del Estero leads found. The DGC GIS access page is marked en construcción; IDE Argenmap is a public map viewer, but its accessible default configuration exposes national IGN thematic WMS layers and no parcel/cadastre layer.",
+        "actualResultUrls": [
+          "https://app.dgcsantiago.gob.ar/index.html",
+          "https://app.dgcsantiago.gob.ar/page.construccion.html",
+          "https://www.idesantiago.gob.ar/",
+          "https://www.idesantiago.gob.ar/argenmap/"
+        ]
+      }
+    ],
+    "requestSummary": "Anonymous first-party GETs and public OGC metadata checks were executed; see the paired service review for every route and outcome. No credentials, CAPTCHA bypass, unsafe fields, or TLS verification disablement were used."
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Dirección General de Catastro de la Provincia de Santiago del Estero",
+    "basis": "The IGN provincial office names the DGC and gives its official site; the DGC site identifies the provincial cadastral authority and advertises GIS/WMS/WFS services.",
+    "urls": [
+      "https://www.ign.gob.ar/AreaInstitucional/OficinasProvinciales/SantiagodelEstero",
+      "https://app.dgcsantiago.gob.ar/index.html",
+      "https://app.dgcsantiago.gob.ar/page.normativas.html"
+    ]
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "runtimeReadiness": "held",
+  "coverageAssessment": {
+    "claimedScope": "Provincial cadastral authority and its advertised online GIS services; IDE Santiago public map viewer was also inspected.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "citywideAbsenceInferred": false
+  },
+  "resultCategory": "official_local_registry_found_public_parcel_service_unverified",
+  "remainingUncertainty": "The WUP point was not shifted and no bounded anonymous parcel ID+geometry response was available. The accessible public viewer/configuration did not expose a Santiago cadastral parcel layer, and the DGC GIS access page was under construction.",
+  "nextStep": "Retry the provincial DGC public GIS when its advertised service is restored; follow its current anonymous bootstrap and request only geometry plus a stable parcel identifier in a small bbox around the exact WUP point."
+}

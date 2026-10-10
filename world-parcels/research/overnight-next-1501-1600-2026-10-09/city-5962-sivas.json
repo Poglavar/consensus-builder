@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityCode": 5962,
+  "queueRank": 1551,
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "point": [39.7472798753576, 37.0120436902672],
+  "population2025": 368209,
+  "population2025k": 368.209,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sivas Türkiye official cadastral parcel map parsel sorgu TKGM Sivas belediyesi GIS",
+        "result": "Found the official TKGM Parsel Sorgu v2 viewer, TKGM MEGSİS description, Sivas TKGM regional-directorate page, and Sivas Municipality map services.",
+        "actualResultUrls": [
+          "https://parselsorguv2.tkgm.gov.tr/",
+          "https://www.tkgm.gov.tr/projeler/tamamlanan-projeler/megsis",
+          "https://www.tkgm.gov.tr/sivas-bm/ba%C4%9Fl%C4%B1-m%C3%BCd%C3%BCrl%C3%BCkler",
+          "https://harita.sivas.bel.tr/",
+          "https://tucbs.sivas.bel.tr/"
+        ]
+      },
+      {
+        "language": "Turkish (native/local)",
+        "query": "Sivas Türkiye resmi kadastro parsel haritası TKGM parsel sorgu",
+        "result": "Found the official TKGM Parsel Sorgu application, Sivas Municipality KentOS vector map, Sivas Municipality e-İmar parcel search, and Sivas Municipality Kent Bilgi Sistemleri WMS page.",
+        "actualResultUrls": [
+          "https://parselsorguv2.tkgm.gov.tr/",
+          "https://harita.sivas.bel.tr/",
+          "https://keos.sivas.bel.tr/imardurumu/",
+          "https://tucbs.sivas.bel.tr/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "Sivas Municipality identifies its Akıllı Şehir ve Kent Bilgi Sistemleri Müdürlüğü as the operator of the city map/vector and WMS services; official municipal material describes cadastral parcel data maintained in its GIS. TKGM's official Sivas Regional Directorate page identifies the local tapu/kadastro directorate network. This is local custody/service evidence, not proof of open citywide parcel geometry.",
+  "officialPrimarySources": [
+    {"url": "https://parselsorguv2.tkgm.gov.tr/", "observation": "Current official TKGM Parsel Sorgu v2 public viewer landing page."},
+    {"url": "https://www.tkgm.gov.tr/projeler/tamamlanan-projeler/megsis", "observation": "Official TKGM description says MEGSİS centralizes cadastral map, coordinate, and parcel geometry data and shares map services."},
+    {"url": "https://www.tkgm.gov.tr/sivas-bm/ba%C4%9Fl%C4%B1-m%C3%BCd%C3%BCrl%C3%BCkler", "observation": "Official TKGM Sivas Regional Directorate list of local tapu/kadastro directorates."},
+    {"url": "https://harita.sivas.bel.tr/", "observation": "Current Sivas Municipality KentOS vector map page exposes public style and vector-tile route patterns."},
+    {"url": "https://tucbs.sivas.bel.tr/", "observation": "Current Sivas Municipality Kent Bilgi Sistemleri page states that a WMS service provides city map layers and displays WGS84/TUREF map context."},
+    {"url": "https://keos.sivas.bel.tr/imardurumu/", "observation": "Current official municipal e-İmar interface includes district, tapu neighborhood, and ada/parsel search controls."}
+  ],
+  "viewerConfiguration": {
+    "homeUrls": ["https://parselsorguv2.tkgm.gov.tr/", "https://harita.sivas.bel.tr/", "https://tucbs.sivas.bel.tr/", "https://keos.sivas.bel.tr/imardurumu/"],
+    "observedTechnology": "TKGM public web viewer; Sivas Municipality KentOS vector map; municipal WMS/Kent Bilgi Sistemleri page; municipal e-İmar search UI.",
+    "observedControls": ["TKGM fast/public entry", "municipal vector map", "municipal WMS service", "ada/parsel search", "haritadan seç"],
+    "schemaAndCrs": "Municipal WMS page visibly reports WGS84 and TUREF coordinates, but no GetCapabilities or feature response was retrieved. Native parcel schema, geometry CRS, and axis order remain unverified.",
+    "nativeFieldNames": [],
+    "sourceFieldMapping": "No parcel feature response was obtained; no source fields or synthetic identity were assigned.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://parselsorguv2.tkgm.gov.tr/", "method": "GET", "normalTlsVerification": true, "result": "Shell request from the research environment failed DNS resolution; no response body."},
+    {"url": "https://parselsorguv2.tkgm.gov.tr/", "method": "GET", "normalTlsVerification": true, "result": "Official web retrieval returned 502 Bad Gateway; JavaScript/configuration and API could not be inspected."},
+    {"url": "https://harita.sivas.bel.tr/", "method": "GET", "normalTlsVerification": true, "result": "Search-indexed official page exposed vector style and tile URL patterns, but no bounded parcel feature endpoint or parcel attributes."},
+    {"url": "https://tucbs.sivas.bel.tr/", "method": "GET", "normalTlsVerification": true, "result": "Search-indexed official page exposed a public WMS service claim and displayed WGS84/TUREF context; no GetCapabilities or feature response was obtained."},
+    {"url": "https://keos.sivas.bel.tr/imardurumu/", "method": "GET", "normalTlsVerification": true, "result": "Search-indexed official e-İmar UI exposed ada/parsel and map-selection controls; no parcel feature response was obtained."},
+    {"url": "https://www.tkgm.gov.tr/sivas-bm/ba%C4%9Fl%C4%B1-m%C3%BCd%C3%BCrl%C3%BCkler", "method": "GET", "normalTlsVerification": true, "result": "Official page retrieved by search and identifies local Sivas-area tapu/kadastro directorates."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous parcel ID-plus-geometry response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "query": "No parcel geometry query was submitted after the TKGM viewer failed retrieval and the municipal pages exposed no directly verified feature endpoint."},
+  "coverageAssessment": {"claimedScope": "Sivas Municipality map/WMS/e-İmar channels and TKGM Sivas cadastral custody channels.", "verifiedOpenScope": "No anonymous complete-polygon feature response verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "The current TKGM viewer's JavaScript/API route, municipal WMS layer names and GetCapabilities response, native parcel identity field, CRS/axis order, anonymous policy, and exact citywide coverage remain unverified. DNS failure, 502, missing feature route, or lack of an exact-point hit would not establish citywide absence.",
+  "runtimeReadiness": "held"
+}

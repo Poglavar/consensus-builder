@@ -1,0 +1,13 @@
+{
+  "taskId": "city:10641",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-10641-viluppuram.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/viluppuram-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T08:40:40.144599Z",
+  "reason": "The official Viluppuram district land-record page supports local survey and land-record custody. No anonymous native-ID plus complete-polygon response or adapter qualification is evidenced; timeouts do not establish absence. No admission.",
+  "sourceAdmission": "not_admitted"
+}

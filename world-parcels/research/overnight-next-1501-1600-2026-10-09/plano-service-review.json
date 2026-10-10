@@ -1,0 +1,38 @@
+{
+  "cityRecord": "city-6650-plano.json",
+  "cityCode": 6650,
+  "queueRank": 1553,
+  "city": "Plano",
+  "country": "United States of America",
+  "countryCode": "US",
+  "reviewedAt": "2026-10-10",
+  "disposition": "hold",
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "summary": "Plano has an official city-maintained polygon Owner Parcels service with documented native PARCEL_ID and WKID 102738, but bounded anonymous feature requests timed out. The packet is complete as research evidence, with no retained GeoJSON sample and no source admission.",
+  "queryAndRequestOutcomes": "See city-6650-plano.json requestsAndEndpointChecks. English and English-local discovery queries were executed and their actual URLs recorded. Metadata discovery succeeded through indexed official REST pages; direct service-directory and bounded query requests timed out.",
+  "scopeLimits": [
+    "The Owner Parcels description claims parcels in Collin and Denton counties within Plano city limits; this scope was not independently verified by returned features.",
+    "The exact WUP point was preserved and was not shifted. Exact-point timeout and absent geometry are not citywide absence evidence.",
+    "No polygon was retained because no unchanged native geometry response was received.",
+    "No owner, address, contact, titleholder, tax, account, or other unsafe fields were requested or retained."
+  ],
+  "safeFieldAllowlist": ["PARCEL_ID", "OBJECTID", "geometry"],
+  "nativeIdentityReview": {
+    "preferredIdentity": "PARCEL_ID",
+    "fallback": "OBJECTID only as an Esri source identifier if PARCEL_ID is unavailable",
+    "compositeKeyProvenance": null,
+    "syntheticIdentityUsed": false
+  },
+  "uncertainty": [
+    "Service availability and response behavior may be transient.",
+    "The official layer metadata establishes a relevant city custodian and a plausible parcel source, not a verified usable response or citywide coverage.",
+    "A separate Active Parcels with Appraisal Information layer was discovered but not queried for records."
+  ],
+  "qualification": {
+    "verifiedGeometrySample": false,
+    "adapterQualified": false,
+    "serialReviewerRequired": true,
+    "packetCompletionIsNotSourceAdmission": true
+  }
+}

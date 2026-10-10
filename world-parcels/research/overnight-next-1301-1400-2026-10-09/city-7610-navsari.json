@@ -1,0 +1,57 @@
+{
+  "cityCode": 7610,
+  "queueRank": 1336,
+  "name": "Navsari",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [20.9438336006543, 72.9317661585922],
+  "population2025": 421121,
+  "population2025k": 421.121,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": true,
+  "registryAssessment": "Navsari district's official land-records procedure identifies the district administration as custodian for the local service and directs users to Gujarat's AnyRoR portal; the Gujarat Revenue Department identifies the Settlement Commissioner and Superintendent of Land Records and city-survey functions. A Navsari-specific DILRMP cadastral-status page and an official NAKSHA report naming Navsari as an approved urban pilot were also found. This establishes registry/service provenance, but not open parcel-vector integration.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Navsari Gujarat official cadastral parcel map land records Bhu Naksha survey map",
+        "result": "Found the official Navsari district Land Records page linking AnyRoR, the Navsari-specific DILRMP Map Digitization/Geo-Referenced/ULPIN status page, Gujarat Revenue Department land-record and city-survey functions, and an official NAKSHA report naming Navsari among Gujarat's approved urban pilots. No public anonymous parcel-vector endpoint was exposed by discovery.",
+        "actualResultUrls": [
+          "https://navsari.nic.in/service/land-records/",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/492",
+          "https://revenuedepartment.gujarat.gov.in/branch/h-branch",
+          "https://www.lbsnaa.gov.in/storage/uploads/pdf_data/1765364935_NAKSHA%20REPORT-%2027th%2028th%20October-1.pdf",
+          "https://anyror.gujarat.gov.in/"
+        ]
+      },
+      {
+        "language": "Gujarati",
+        "query": "નવસારી ગુજરાત અધિકૃત જમીન નકશો ભુ નકશો સર્વે નકશો",
+        "result": "Gujarati discovery found the official Gujarati Navsari district links page and Gujarati Land Records page, which describe land-record lookup by survey number, khata number, entry number and 135-D notice and link the official land-record service. It did not identify a public anonymous parcel geometry API.",
+        "actualResultUrls": [
+          "https://navsari.nic.in/gu/%E0%AA%85%E0%AA%97%E0%AA%A4%E0%AB%8D%E0%AA%AF%E0%AA%A8%E0%80%80%E0%AA%B2%E0%AA%BF%E0%AA%82%E0%AA%95%E0%AB%8D%E0%AA%B8/",
+          "https://navsari.nic.in/gu/service/%e0%aa%9c%e0%aa%ae%e0%ab%80%e0%aa%a8-%e0%aa%b0%e0%ab%87%e0%aa%95%e0%aa%b0%e0%ab%8d%e0%aa%a1%e0%ab%8d%e0%aa%b8/",
+          "https://anyror.gujarat.gov.in/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {"url": "https://navsari.nic.in/service/land-records/", "role": "Navsari district government land-record procedure", "observation": "States that Gujarat land records are online, identifies mamlatdar/prant/collector offices for mutations, and links AnyRoR; page fetched successfully."},
+    {"url": "https://navsari.nic.in/gu/%E0%AA%85%E0%AA%97%E0%AA%A4%E0%AB%8D%E0%AA%AF%E0%AA%A8%E0%80%80%E0%AA%B2%E0%AA%BF%E0%AA%82%E0%AA%95%E0%AB%8D%E0%AA%B8/", "role": "Navsari district government Gujarati important-links page", "observation": "Gujarati page identifies the land-record service and describes lookup inputs including survey, khata and entry numbers; fetched through discovery."},
+    {"url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/492", "role": "Government of India DILRMP Navsari district status", "observation": "Search result is explicitly scoped to State Gujarat and District Navsari and presents cadastral-map, parcel and ULPIN status fields; direct open returned an internal error in the web client, so no numeric status was copied."},
+    {"url": "https://revenuedepartment.gujarat.gov.in/branch/h-branch", "role": "Gujarat Revenue Department / land-record custodian reference", "observation": "Official page assigns survey, settlement and city-survey matters to the Revenue Department and links AnyRoR, property cards, and the Settlement Commissioner/Superintendent of Land Records."},
+    {"url": "https://www.lbsnaa.gov.in/storage/uploads/pdf_data/1765364935_NAKSHA%20REPORT-%2027th%2028th%20October-1.pdf", "role": "Official NAKSHA programme report", "observation": "Report states that Gujarat's approved NAKSHA urban local bodies include Navsari and describes Map-1/Map-2/Map-3 workflow; this is programme provenance, not proof of a public parcel API."},
+    {"url": "https://anyror.gujarat.gov.in/", "role": "Gujarat official AnyRoR land-record service", "observation": "Referenced by the Navsari district page and Gujarat Revenue Department; anonymous HTTPS and HTTP requests timed out during this attempt, so no viewer configuration, schema, CRS, ID, or geometry was obtained."}
+  ],
+  "geometryDecision": {"verified": false, "sampleCount": 0, "sampleFile": null, "reason": "No safe native parcel ID plus full polygon was obtained from an anonymous public response. The exact WUP point was preserved and was not shifted; service timeout and absent public endpoint evidence do not establish citywide absence."},
+  "coverageAssessment": {"claimedScope": "Navsari district land-record procedure, Gujarat Revenue Department custodians, DILRMP Navsari status, and NAKSHA Navsari pilot references.", "verifiedOpenScope": "Official service and custodian provenance was established, but anonymous parcel-vector access, schema, CRS, native identity, exact-point containment, and citywide coverage were not verified.", "exactWupPointParcelSample": false, "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "safeFieldAllowlist": ["safe parcel identifier only if publicly exposed and non-personal", "geometry", "CRS or coordinate-system metadata", "non-personal layer/schema metadata", "administrative hierarchy codes and names"],
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

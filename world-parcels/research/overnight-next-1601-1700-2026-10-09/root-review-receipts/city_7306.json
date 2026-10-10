@@ -1,0 +1,17 @@
+{
+  "taskId": "city:7306",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-7306-balyana.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/balyana-service-review.json",
+    "tmp/valhalla-parcel-research/balyana/egis-layer-1.json",
+    "tmp/valhalla-parcel-research/balyana/egis-point-query.json",
+    "tmp/valhalla-parcel-research/balyana/egis-services.json"
+  ],
+  "checkedAt": "2026-10-10T10:58:49Z",
+  "reviewNote": "The WUP identity and English/Arabic searches were checked. The original IDSC response is an administrative Egy layer with OBJECTID 20 at the point, not a parcel response. Local Balyana registry custody remains unresolved; no parcel sample or adapter qualification exists.",
+  "runtimeAdmission": "held; independent live adapter qualification gates not evidenced"
+}

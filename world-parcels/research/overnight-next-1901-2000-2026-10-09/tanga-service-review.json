@@ -1,0 +1,37 @@
+{
+  "cityRecord": "city-3619-tanga.json",
+  "cityCode": 3619,
+  "queueRank": 1956,
+  "city": "Tanga",
+  "country": "United Republic of Tanzania",
+  "countryCode": "TZ",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "Official e-Ardhi GeoServer WFS operated under Tanzania's Ministry of Lands; no separate Tanga City parcel endpoint was verified.",
+  "serviceUrl": "https://eardhi.lands.go.tz/map/geoserver/taspro/ows",
+  "scope": "Bounded BBOX queries around the immutable WUP point returned parcel/spatial-unit geometries in Tanga. This verifies local map coverage in the tested extent, not citywide completeness.",
+  "schemaAndCrs": "WFS 1.0.0 capabilities returned EPSG:4326 and GeoJSON support. Tested layers included tp_spatial_units, current_tp_spatial_units, and qualified_spatial_units; geometry was MultiPolygon with GeoJSON property name geom.",
+  "nativeIdentity": "properties.id, a numeric native database identity observed in each returned feature. uid and parcel_id/parcel_no were observed as source fields but are not used as retained properties.",
+  "fieldMapping": {
+    "geometry": "GeoJSON feature.geometry from WFS geom",
+    "native identity": "WFS properties.id",
+    "source fields observed but not retained": ["uid", "parcel_id", "parcel_no", "block_number", "locality", "council", "ward", "region", "title/registration-related fields"]
+  },
+  "requestOutcome": "English and Swahili first-party discovery located the Ministry site, e-Ardhi, and Tanga City Council. e-Ardhi HTML and main.js were retrieved; current configuration exposed the GeoServer endpoint. GetCapabilities returned 200. Three bounded WFS GetFeature requests returned three features each. A survey_polygons request timed out after 30 seconds. No login, credentials, private tokens, CAPTCHA bypass, or unsafe owner/title query was used.",
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON retained in this packet; raw bounded responses remain only in ignored tmp/valhalla-parcel-research/tanga/ for qualification evidence.",
+  "safeFieldAllowlist": ["native parcel identifier: id", "geometry"],
+  "unsafeDataPolicy": "Owner, address, contact, titleholder, NIN, tax/account, legal-description, rights/title, and other personal or unsafe fields were not requested for retention.",
+  "officialCustodyEvidence": "The Ministry of Lands first-party site links to e-Ardhi; e-Ardhi's current JavaScript identifies its GeoServer; the GeoServer response contains Tanga-area parcel geometries. Tanga City Council was confirmed as the local government context, but no separate city-operated parcel service was evidenced.",
+  "limits": [
+    "The BBOX was bounded and returned only up to three features per request; it is not a citywide inventory.",
+    "The exact WUP point was not shifted to force a hit; no exact-point hit was claimed.",
+    "A timeout on survey_polygons is an endpoint limitation, not evidence of citywide absence.",
+    "Raw source attribute sets are not retained in cohort artifacts.",
+    "No adapter admission or source integration is implied by packet completion.",
+    "runtimeReadiness remains held pending independent serial review."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "Independent review should confirm whether numeric id remains stable across updates, select the canonical layer, test wider Tanga coverage within request limits, and verify whether WFS use is authorized for production adapter access."
+}

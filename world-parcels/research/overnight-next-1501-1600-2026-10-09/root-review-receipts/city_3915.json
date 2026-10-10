@@ -1,0 +1,17 @@
+{
+  "taskId": "city:3915",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-3915-junagadh.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/junagadh-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T08:58:39.777920Z",
+  "reason": "Official Junagadh DILR and City Survey pages establish local custody. No verified anonymous native-ID polygon response or adapter qualification evidence. Reported AnyRoR timeout does not prove citywide absence.",
+  "independentlyCheckedFirstPartyUrls": [
+    "https://junagadh.nic.in/dilr/",
+    "https://junagadh.nic.in/city-survey/"
+  ],
+  "sourceAdmission": "not_admitted"
+}

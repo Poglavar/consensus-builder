@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-6413-arlington.json",
+  "cityCode": 6413,
+  "queueRank": 1843,
+  "city": "Arlington",
+  "country": "United States of America",
+  "countryCode": "US",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "City of Arlington first-party material and a current anonymous ArcGIS Tax Parcel layer were verified. The exact WUP point returned zero; a bounded envelope returned three safe parcel polygons. Coverage is not citywide-verified and runtime remains held pending serial review.",
+  "requestOutcomes": [
+    {"route":"https://www.arlingtontx.gov/Government/Data-Information/Data-Information-Directory/Open-Data/Plat-Search","method":"GET via first-party page","status":"200/indexed","outcome":"City page says Arlington Maps Online can identify Tax Parcel features and provides the official plat-search workflow."},
+    {"route":"https://gis2.arlingtontx.gov/agsext2/rest/services/OpenData/OD_Property/MapServer/2?f=pjson","method":"GET","status":"200","outcome":"Current ArcGIS Feature Layer named Tax Parcel; polygon geometry; service CRS WKID 102738/latest 2276; fields include stable TaxParcelId and unsafe fields were not requested."},
+    {"route":"https://gis2.arlingtontx.gov/agsext2/rest/services/OpenData/OD_Property/MapServer/2/query","method":"GET query, point intersect","status":"200, zero features","outcome":"Exact WUP point [-97.0729125498606,32.7174112900959] was queried as longitude/latitude in EPSG:4326; no feature returned. This is not evidence of citywide absence."},
+    {"route":"https://gis2.arlingtontx.gov/agsext2/rest/services/OpenData/OD_Property/MapServer/2/query","method":"GET query, bounded envelope","status":"200, 3 features plus exceededTransferLimit=true","outcome":"Envelope -97.08,32.71,-97.06,32.73 in EPSG:4326 returned three parcel polygons with TaxParcelId values 4201521, 4201522 and 4201523; output reprojected to EPSG:4326 and retained as a bounded sample."}
+  ],
+  "requestCoordinates": {"wupPointLatLon":[32.7174112900959,-97.0729125498606],"queryAttempted":true,"coordinateOrderNote":"WUP point preserved exactly in latitude/longitude order; service request used the corresponding longitude/latitude query encoding; no coordinate was shifted."},
+  "safeFieldAllowlist": ["stable native parcel ID", "parcel polygon geometry", "source layer metadata", "CRS metadata"],
+  "nativeFieldMapping": {"TaxParcelId":"stable parcel identifier", "Shape":"parcel polygon geometry"},
+  "compositeKeyProvenance": null,
+  "crs": {"sourceWkid":102738,"sourceLatestWkid":2276,"retainedSampleWkid":4326},
+  "geometryQuality": "Three bounded parcel polygons retained unchanged from the GeoJSON response except for removing all source properties other than canonical id; geometries are closed polygons and are not exact-point hits.",
+  "geometryDecision": {"verified":true,"sourceId":"TaxParcelId","sampleCount":3,"sampleFile":"arlington-parcel-samples.geojson","exactWupPointTest":"performed; zero features","requestEvidence":"tmp/valhalla-parcel-research/6413/"},
+  "coverageAssessment": {"claimedScope":"City of Arlington, Texas OpenData property service.","verifiedOpenScope":"Anonymous access to the Tax Parcel layer and a bounded ID-plus-geometry response.","citywideVerified":false,"countrywideVerified":false},
+  "scopeLimits": ["A bounded sample does not establish citywide completeness or update currency.","The exact WUP point miss is not evidence of citywide parcel absence.","The ArcGIS response indicated exceededTransferLimit=true; no larger raw response was retained.","No owner, address, titleholder, contact, personal, tax/account, or other unsafe fields were requested, logged or retained.","Packet completion is research evidence only and does not admit a runtime adapter."],
+  "runtimeReadiness":"held_pending_serial_review",
+  "serialReviewerQualification":"not qualified; independent serial review and adapter qualification still required",
+  "uncertainty":"The city service is public and the layer schema/CRS are exposed, but this attempt did not prove citywide coverage, completeness, temporal currency, or adapter compatibility."
+}

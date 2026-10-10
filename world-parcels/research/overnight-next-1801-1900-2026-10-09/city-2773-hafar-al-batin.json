@@ -1,0 +1,69 @@
+{
+  "cityCode": 2773,
+  "queueRank": 1895,
+  "name": "Hafar Al-Batin",
+  "country": "Saudi Arabia",
+  "countryCode": "SA",
+  "iso3": "SAU",
+  "point": [28.4204021186554, 45.9661851753622],
+  "population2025": 302534,
+  "population2025k": 302.534,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hafar Al-Batin Saudi Arabia official cadastral parcel map public viewer municipality land registry",
+        "result": "Found the official Hafar Al-Batin Municipality Geographic Explorer (UMap) service page and its public UMaps portal link. The official REGA geospatial real-estate portal was also identified as national context. No anonymous parcel ID-plus-geometry response was verified.",
+        "actualResultUrls": [
+          "https://hafar.momah.gov.sa/en/node/3777",
+          "https://umaps.balady.gov.sa/",
+          "https://rega.gov.sa/rega-services/platforms/geospatial-real-estate-portal/"
+        ]
+      },
+      {
+        "language": "Arabic (local/native)",
+        "query": "خريطة عقارية حفر الباطن رسمية قطع الأراضي منصة / السجل العقاري حفر الباطن خريطة قطع الأراضي رسمي",
+        "result": "Found the Arabic Hafar Al-Batin Municipality Geographic Explorer page and the official REGA description of the geospatial real-estate portal, which describes interactive maps including land parcels. No anonymous parcel ID-plus-geometry response was verified.",
+        "actualResultUrls": [
+          "https://hafar.momah.gov.sa/ar/node/3777",
+          "https://rega.gov.sa/ar/rega-services/platforms/geospatial-real-estate-portal/",
+          "https://umaps.balady.gov.sa/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "source": {
+    "provider": "Hafar Al-Batin Municipality Geographic Explorer (UMap), operated through the official Balady/MOMAH UMaps portal",
+    "viewerUrl": "https://hafar.momah.gov.sa/en/node/3777",
+    "localCustodianEvidence": "The official Hafar Al-Batin Municipality service page labels Geographic Explorer (UMap) as an electronic inquiry service and links to https://umaps.balady.gov.sa/.",
+    "serviceRoutePublishedByViewer": "https://umaps.momah.gov.sa/",
+    "serviceType": "Official municipal geographic explorer/public map portal; parcel service endpoint and anonymous parcel response not verified",
+    "parcelLayerConfirmed": false,
+    "nativeIdField": null,
+    "geometryField": null,
+    "safeFieldsRequested": ["stable native parcel ID if publicly exposed", "polygon geometry", "service/layer metadata", "CRS metadata"],
+    "crs": null,
+    "viewerConfigurationEvidence": "The current portal HTML references main-73KWGRT7.js. That bundle publishes Config.Api, App.Api, App2.Api and portal base URLs; no parcel endpoint or public parcel schema was exposed by the bounded anonymous requests below."
+  },
+  "verifiedSample": {
+    "count": 0,
+    "exactWupPointQuery": false,
+    "result": "No parcel feature response obtained; no GeoJSON retained. This is not evidence of citywide parcel absence.",
+    "requestEvidence": "tmp/valhalla-parcel-research/2773/"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Hafar Al-Batin municipal Geographic Explorer and Saudi national geospatial real-estate portal documentation.",
+    "verifiedOpenScope": "Official local viewer link and current anonymous portal HTML/JavaScript configuration retrieved; parcel schema, CRS, stable identity, geometry response and citywide completeness remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; no independently verified parcel adapter candidate",
+  "notes": "Research evidence only; not source integration or runtime admission. Exact WUP point preserved in latitude/longitude order; no coordinate shift applied. No owner, address, titleholder, contact, tax/account, personal or other unsafe fields were requested or retained."
+}

@@ -1,0 +1,21 @@
+{
+  "taskId": "city:5767",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-5767-caxias-do-sul.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/caxias-do-sul-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261009T174353-77f6b95d/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-09T17:49:40Z",
+  "reason": "Immutable WUP code 5767, rank 1481, Brazil, point and 383774 persons match the checksum-verified 2025 UN archive and queue. Worker run logs confirm English and local-language searches. Municipal custody and a polygon layer are confirmed, but the bounded feature query timed out. No native parcel ID or full polygon was returned. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed Details verification are not independently evidenced. Access failures do not establish citywide absence.",
+  "firstPartyPagesChecked": [
+    "https://caxias.rs.gov.br/servicos/planejamento/diretoria-de-informacoes-geoespaciais",
+    "https://gis.caxias.rs.gov.br/server/rest/services/Cadastro_Territorial/MapServer/3"
+  ],
+  "registryFoundReviewed": true,
+  "retainedFullPolygonCount": 0,
+  "admission": false
+}

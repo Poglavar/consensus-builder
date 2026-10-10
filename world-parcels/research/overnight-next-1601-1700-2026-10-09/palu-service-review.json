@@ -1,0 +1,46 @@
+{
+  "cityRecord": "city-8402-palu.json",
+  "schemaVersion": "1.0",
+  "cityCode": 8402,
+  "queueRank": 1638,
+  "name": "Palu",
+  "country": "Indonesia",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete_packet_held",
+  "queryAndRequestOutcome": "Separate English and Indonesian first-party discovery was completed. Official local and national land-information pages loaded, and current BHUMI HTML/JavaScript plus ATLAS HTML were inspected. No safe anonymous Palu parcel response containing a stable native identity and full polygon geometry was obtained.",
+  "registryFound": true,
+  "registryBasis": "Local custody is evidenced by the official Kantor Pertanahan Kota Palu / ATR-BPN office and the municipal Dinas Penataan Ruang dan Pertanahan Kota Palu. National ATR/BPN BHUMI and ATLAS are general public channels, not proof of citywide open coverage.",
+  "attemptedRoutes": [
+    "https://kot-palu.atrbpn.go.id/",
+    "https://bpnpalu.id/",
+    "https://bhumi.atrbpn.go.id/",
+    "https://atlas.atrbpn.go.id/",
+    "https://tataruang.palukota.go.id/beranda/"
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "excludedFields": [
+    "owner or titleholder names",
+    "address or contact details",
+    "personal identifiers",
+    "tax, account, certificate or transaction details"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "sampleGeojson": null,
+  "coverageLimits": [
+    "No citywide or countrywide parcel coverage was verified.",
+    "No CRS or native field schema was obtained from a feature response.",
+    "The exact WUP point was not altered and no point-hit or point-miss conclusion was made.",
+    "No raw source-specific attributes were retained.",
+    "No retained GeoJSON sample was created because no safe feature geometry was retrieved."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "BHUMI/ATLAS public documentation and local office pages establish a plausible source path, but the anonymous feature endpoint, Palu layer selection, stable native identity, CRS and geometry access remain unresolved. Packet completion records executed attempts only and is not source integration/admission."
+}

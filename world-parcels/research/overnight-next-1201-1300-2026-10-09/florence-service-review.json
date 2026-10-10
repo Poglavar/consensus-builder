@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3287-florence.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Review official Florence/Italian cadastral channels and qualify bounded anonymous parcel geometry evidence.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "wupPointPreserved": [43.7814801703684, 11.2283419834417]
+  },
+  "assessment": "The official Comune di Firenze SIGS viewer is a local public cadastral map custodian and exposes a Catasto parcel layer. Its current configuration was inspected, but the configured proxy route did not produce a usable feature/schema response. No geometry sample is retained.",
+  "registryAssessment": "Local registry/map custodian evidenced: Comune di Firenze SIGS. National metadata custodian/contact evidenced separately through RNDT/Agenzia delle Entrate. This does not establish citywide downloadable coverage or title-record access.",
+  "coverageAssessment": {
+    "claimedScope": "Official viewer configuration, RNDT metadata, and bounded anonymous proxy attempts around the exact immutable WUP point.",
+    "verifiedOpenScope": "Viewer route, Catasto group, parcel layer name, queryability, minimum zoom, and safe display field names.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "officialPrimarySources": [
+    {
+      "url": "https://sigs.comune.fi.it/",
+      "operator": "Comune di Firenze",
+      "scope": "Official SIGS viewer; inline JavaScript config exposes Catasto and Cat. Particelle."
+    },
+    {
+      "url": "https://geodati.gov.it/geoportale/visualizzazione-metadati/scheda-metadati?metadataid=age%3AD_D612_FIRENZE",
+      "operator": "RNDT / Agenzia delle Entrate metadata",
+      "scope": "Cartografia catastale - Comune di FIRENZE metadata record; metadata CRS RDN2008-6706."
+    },
+    {
+      "url": "https://www.regione.toscana.it/servizi-catastali",
+      "operator": "Regione Toscana",
+      "scope": "Official explanation of regional cadastral services and access boundaries."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Florence Italy official cadastral map parcels Comune di Firenze catasto map",
+      "result": "Found the Comune di Firenze SIGS viewer, municipal Catasto e urbanistica page, and RNDT Florence cadastral metadata.",
+      "actualResultUrls": ["https://sigs.comune.fi.it/", "https://www.comune.firenze.it/servizi/catasto-e-urbanistica", "https://geodati.gov.it/geoportale/visualizzazione-metadati/scheda-metadati?metadataid=age%3AD_D612_FIRENZE"]
+    },
+    {
+      "language": "Italian",
+      "query": "Firenze mappa catastale particelle servizio ufficiale Comune SIGS catasto",
+      "result": "Trovati il visualizzatore SIGS ufficiale del Comune di Firenze con il layer Cat. Particelle e la scheda RNDT della cartografia catastale.",
+      "actualResultUrls": ["https://sigs.comune.fi.it/", "https://geodati.gov.it/geoportale/visualizzazione-metadati/scheda-metadati?metadataid=age%3AD_D612_FIRENZE", "https://www.regione.toscana.it/servizi-catastali"]
+    }
+  ],
+  "attempts": [
+    "Fetched official SIGS viewer anonymously; HTTP 200; inspected current inline JavaScript configuration.",
+    "Recorded parcel layer catasto:Cat_ParticelleCatastali_CatastoTerreni, queryable=true, minZoom=16, and configured safe fields FOGLIO/PARTICELLA.",
+    "Attempted anonymous TLS-verified WMS GetCapabilities through the configured proxy; proxy returned a routing/missing-request ServiceException and no capabilities.",
+    "Attempted anonymous TLS-verified bounded GetMap request for the parcel layer around the unchanged WUP point; no usable parcel image/feature response was obtained.",
+    "Fetched RNDT Florence cadastral metadata anonymously; recorded metadata evidence only, with no owner, address, contact, titleholder, tax/account, or personal fields requested or retained.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, TLS exception, or synthetic identity was used."
+  ],
+  "safeFieldAllowlist": ["geometry", "FOGLIO", "PARTICELLA"],
+  "geometryEvidence": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeIdentity": null,
+    "nativeIdFields": [],
+    "exactWupPointTest": "The bounded proxy attempt was made around the unchanged WUP point but did not return usable geometry; this is not evidence of parcel absence.",
+    "requestEvidence": [
+      {
+        "url": "https://sigs.comune.fi.it/proxy/proxy-cofi.php?url=SERVER_R_I&service=WMS&request=GetCapabilities&version=1.3.0",
+        "method": "GET; anonymous; TLS verified",
+        "httpStatus": 200,
+        "assessment": "ServiceException response; no capabilities returned."
+      },
+      {
+        "url": "https://sigs.comune.fi.it/proxy/proxy-cofi.php?url=SERVER_R_I&request=GetMap&service=WMS&version=1.1.1&layers=catasto:Cat_ParticelleCatastali_CatastoTerreni&styles=&bbox=11.20,43.75,11.25,43.80&srs=EPSG:4326&width=256&height=256&format=image/png",
+        "method": "GET; anonymous; TLS verified; bounded bbox",
+        "httpStatus": 200,
+        "assessment": "No usable map/feature response obtained."
+      }
+    ]
+  },
+  "nextStep": "Root/serial review should independently qualify whether the SIGS proxy endpoint can be resolved from the live viewer, confirm CRS/order and stable FOGLIO+PARTICELLA identity, and keep runtime held until a real adapter is independently qualified.",
+  "remainingUncertainty": "Proxy routing and map-serving behavior outside the inspected viewer page remain unresolved; no citywide completeness, parcel freshness, or exact-point hit/miss conclusion is made.",
+  "researchAttempt": 1,
+  "rootReview": null,
+  "rootReviewedAt": null
+}

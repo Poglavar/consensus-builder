@@ -1,0 +1,41 @@
+{
+  "cityRecord": "city-7097-sidfa.json",
+  "cityCode": 7097,
+  "queueRank": 1697,
+  "city": "Sidfa",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": null,
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "summary": "Separate English and Arabic discovery identified ESA and an Egyptian public-services land-survey procedure, but no anonymous Sidfa parcel ID plus geometry response was verified.",
+  "attemptedRoutes": [
+    {"url": "https://www.esa.gov.eg/main.aspx", "method": "GET", "httpStatus": 200, "outcome": "Fetched; confirms ESA survey/mapping remit and lists services, but no parcel feature endpoint or schema."},
+    {"url": "https://www.esa.gov.eg/services.aspx", "method": "GET", "httpStatus": 200, "outcome": "Fetched; links to paper, digital and historical maps and surveying services only."},
+    {"url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx", "method": "GET", "httpStatus": 200, "outcome": "Fetched; Arabic page requires a customer request specifying location, scale, layers, format and projection, followed by review/payment. No anonymous parcel API, schema, CRS or geometry exposed."},
+    {"url": "https://www.esa.gov.eg/testmap.aspx", "method": "GET", "httpStatus": 200, "outcome": "Fetched; static governorate/directories image-map page, not a cadastral parcel viewer or feature service."},
+    {"url": "https://psm.gov.eg/Services/233?serviceName=-طلب_بيان_مساحي_عن_قطعة_الأرض", "method": "GET", "httpStatus": "not_completed", "outcome": "TLS certificate validation failed because the remote certificate was expired; no TLS exception was used and no data was requested."}
+  ],
+  "custodianAssessment": {
+    "nationalAgency": "Egyptian Survey Authority (ESA), evidenced at https://www.esa.gov.eg/",
+    "localCustodian": null,
+    "reason": "No Sidfa municipal/governorate public registry or parcel service was evidenced. ESA is recorded as national survey/cadastral custodian only, not as a city-specific integration."
+  },
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometry": {"retained": false, "reason": "No bounded native parcel geometry response was available from a public source."},
+  "scopeLimits": [
+    "No city boundary or complete Sidfa coverage was established.",
+    "The exact WUP point [26.9777312751515, 31.409472351581] was preserved and no exact-point hit/miss was used as an absence claim.",
+    "A timeout, unavailable UI, certificate failure, or map extent miss is not evidence of citywide absence.",
+    "No owner, address, contact, titleholder, personal, tax/account, private-token, login, CAPTCHA or Cloudflare-bypass request was made."
+  ],
+  "uncertainty": "High: a national official cadastral/map custodian is evidenced, but public parcel access, local scope, schema, CRS, stable native identity and geometry remain unverified.",
+  "serialReviewerDisposition": "hold",
+  "completion": "Research packet complete for attempt 1 of 3; runtime qualification remains held pending independent serial review of a real adapter/source."
+}

@@ -1,0 +1,18 @@
+{
+  "taskId": "city:264",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-264-brest.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/brest-service-review.json",
+    "tmp/valhalla-parcel-research/brest/map.html",
+    "tmp/valhalla-parcel-research/brest/app.js",
+    "tmp/valhalla-parcel-research/brest/wfs.headers",
+    "tmp/valhalla-parcel-research/brest/describe.xml"
+  ],
+  "checkedAt": "2026-10-10T09:27:52.943495Z",
+  "reason": "Immutable WUP code/rank/country/point/population match the original archive. English and Russian/local queries are recorded. Cached first-party public cadastral map and JavaScript expose a candidate WFS route, but the saved schema response and WFS headers are HTTP 403; no safe parcel polygon or native ID was retrieved. Zero polygons retained. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed Details verification are absent. No admission or citywide absence claim.",
+  "sourceAdmission": "not_admitted"
+}

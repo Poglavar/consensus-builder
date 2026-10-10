@@ -1,0 +1,45 @@
+{
+  "cityRecord": "city-9178-yanjiao.json",
+  "cityCode": 9178,
+  "queueRank": 1968,
+  "city": "Yanjiao",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "summary": "A first-party Yanjiao government announcement evidences a local real-property registration hall, and Sanhe government information evidences the municipal Natural Resources and Planning Bureau. No public anonymous parcel geometry/schema endpoint was verified. The packet is complete as research, but runtime readiness remains held.",
+  "queryOutcomes": {
+    "english": "Official Yanjiao and Sanhe sources were found; no anonymous parcel map/API or geometry was exposed.",
+    "native": "Chinese searches found the Yanjiao real-property registration hall and Sanhe natural-resources authority; no anonymous parcel feature service, schema, CRS, or safe geometry was exposed."
+  },
+  "requestOutcomes": [
+    "https://www.yanjiao.gov.cn/ GET succeeded with HTTP 200 under verified TLS; no parcel endpoint in retrieved HTML.",
+    "https://www.yanjiao.gov.cn/shows/12/9586.html was available through the official indexed page and documented the local registration hall.",
+    "https://xxgk.san-he.gov.cn/Contentx?articleid=17334313822675968 direct GET timed out during the bounded connection attempt; not interpreted as source absence.",
+    "No login, credentials, CAPTCHA bypass, private token, unsafe owner/title/address/tax/account fields, or global TLS exception was used."
+  ],
+  "custodianAssessment": {
+    "local": "Yanjiao real-property registration hall is directly named in a first-party Yanjiao government announcement.",
+    "municipal": "Sanhe Municipal Natural Resources and Planning Bureau is identified in first-party Sanhe government information.",
+    "national_or_general": "No national-only prose was used as the sole basis for registryFound."
+  },
+  "scopeLimits": [
+    "No anonymous parcel feature response was obtained.",
+    "No native parcel identifier field, geometry type, CRS, field schema, or citywide coverage was verified.",
+    "No exact-point query was performed because no usable parcel endpoint was exposed; this does not establish absence at the WUP point or citywide.",
+    "No GeoJSON sample is retained."
+  ],
+  "safeFieldAllowlist": ["native parcel identifier if later exposed", "geometry"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "tax", "account", "legal description", "rights/title details"],
+  "sample": {
+    "retained": false,
+    "file": null,
+    "reason": "No safe native ID plus unchanged parcel geometry response was available."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "The official local service custodian is evidenced, but public parcel integration remains unverified and the Sanhe information host was intermittently unreachable from this environment.",
+  "serialReviewAction": "Independently inspect the current official portal and qualify any adapter only after confirming anonymous access, native ID, CRS, geometry, and Yanjiao coverage."
+}

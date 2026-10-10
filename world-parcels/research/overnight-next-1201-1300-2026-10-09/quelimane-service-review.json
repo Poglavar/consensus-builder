@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "kind": "parcel_service_review",
+  "checkedAt": "2026-10-09",
+  "attempt": 1,
+  "cityRecord": "city-2832-quelimane.json",
+  "cityCode": 2832,
+  "queueRank": 1271,
+  "city": "Quelimane",
+  "country": "Mozambique",
+  "countryCode": "MZ",
+  "wupPoint": [-17.8603350032055, 36.9022475404492],
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "serviceScope": {
+    "localRegistryOrCustodian": {
+      "name": "Conselho Municipal da Cidade de Quelimane cadastral records (LIMS and physical register, per official PDUL diagnostic)",
+      "url": "https://www.pdul.gov.mz/layout/set/print/content/download/203/1098/version/3/file/DIISB4_QUELIMANE_Final%2B12%2B11%2B2020.pdf",
+      "evidence": "The official diagnostic identifies the municipal cadastral system as LIMS, says it was deactivated, and describes an outdated physical register whose parcel count could not be determined."
+    },
+    "generalAgencyEvidence": [
+      {
+        "name": "ADE, IP / MOZGIS",
+        "url": "https://www.mozgis.gov.mz/serverfederated/rest/services/Munic%C3%ADpio_de_Quelimane/MapServer",
+        "evidence": "Official public city MapServer with EPSG:4326 thematic layers; no parcel layer was published."
+      },
+      {
+        "name": "Registos e Notariado / SRN",
+        "url": "https://utente.srn.gov.mz/v71/Entrada",
+        "evidence": "Official general Predial procedure portal; no anonymous parcel-vector response."
+      }
+    ]
+  },
+  "queriesAndRequests": "See city-2832-quelimane.json freshResearch. English and Portuguese discovery were performed separately. Anonymous GETs inspected the current official city ArcGIS service metadata, Bairros layer metadata, public service directory, bounded portal search, and official registry/procedure pages. No login or unsafe property-record query was attempted.",
+  "requestOutcomes": [
+    "Quelimane MapServer metadata: HTTP 200; EPSG:4326 and layers 2-7 returned, with no parcel layer.",
+    "Bairros layer metadata: HTTP 200; polygon schema returned, but it is neighbourhood data, not parcel data; no geometry retained.",
+    "MOZGIS service directory: HTTP 200; no cadastral or parcel service identified.",
+    "Bounded MOZGIS portal search: HTTP 200; zero results for owner:ade_mozgis Quelimane; not treated as citywide absence.",
+    "Official PDUL diagnostic and SRN procedure page: HTTP 200; local cadastral/procedure evidence returned, no public parcel geometry.",
+    "No exact-point parcel query was attempted after no parcel endpoint was identified; no map-extent miss, timeout, login wall, or UI failure is treated as citywide absence."
+  ],
+  "safeFieldAllowlist": ["stable native parcel ID", "parcel geometry", "source CRS", "source field names in metadata only"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "personal data", "private credentials", "folio contents"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "sampleGeojson": null,
+  "uncertainty": [
+    "Local municipal cadastral custody/status is evidenced, but the documented LIMS was inactive and the physical register outdated.",
+    "The official city MapServer is public and correctly scoped, but its published layers are thematic rather than cadastral.",
+    "No exact-point hit, map extent miss, or citywide absence conclusion was made.",
+    "Runtime readiness remains held until a serial reviewer independently qualifies a real adapter and safe parcel response."
+  ],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held",
+  "reviewNote": "Packet records executed discovery and request outcomes only. It is not source integration or adapter admission."
+}

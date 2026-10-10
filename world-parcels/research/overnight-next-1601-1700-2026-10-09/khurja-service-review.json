@@ -1,0 +1,36 @@
+{
+  "cityRecord": "city-8832-khurja.json",
+  "cityCode": 8832,
+  "queueRank": 1623,
+  "name": "Khurja",
+  "country": "India",
+  "countryCode": "IN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "sourceReview": "Official Uttar Pradesh Bhulekh, Board of Revenue and Bhunaksha services evidence state/tehsil revenue cadastral-map custody. Bhunaksha metadata resolved Bulandshahar district 142 and Khurja tehsil 00751, but no anonymous safe parcel feature response was verified.",
+  "queryReview": {
+    "englishDiscovery": "Completed with official Bhulekh, Board of Revenue, Bhunaksha and Khurja digitization-dashboard results.",
+    "localLanguageDiscovery": "Completed in Hindi; official dashboard and revenue-service results found.",
+    "exactPoint": [28.2478685699603, 77.8534420775922],
+    "returned": null,
+    "ids": [],
+    "geometry": "No machine-readable parcel geometry returned; no GeoJSON retained.",
+    "mapExtentOrPointMiss": true
+  },
+  "requestOutcomes": "Official HTML and current Bhunaksha JavaScript returned HTTP 200. Anonymous metadata calls returned district, tehsil, village selectors and GIS code 0914200751. Map-info requests returned HTTP 200 with zero extents and no attribution or parcel geometry. No login, credentials, CAPTCHA bypass, unsafe-field request, or TLS exception was used.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "retainedSample": null,
+  "scopeLimits": [
+    "Tehsil map-service custody is not proof of a citywide open parcel layer.",
+    "No native parcel identity, CRS, or full polygon was verified, so no sample GeoJSON was written.",
+    "The zero map extent and lack of an exact-point parcel response are not evidence of citywide parcel absence.",
+    "No owner, address, contact, titleholder, personal, tax, account, legal-description, or value fields were requested or retained.",
+    "Runtime readiness remains held pending independent serial adapter review."
+  ],
+  "uncertainty": "Official sources evidence a local/tehsil revenue map custodian and digitization metadata, but not anonymous parcel API access, native schema/CRS, city coverage, or completeness. No claim is made about parcel absence, ownership, title, tax records, or completeness of Uttar Pradesh systems.",
+  "runtimeReadiness": "held_serial_review"
+}

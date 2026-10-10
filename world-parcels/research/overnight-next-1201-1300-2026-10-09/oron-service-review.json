@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09T12:57:00Z",
+  "cityRecord": "city-8399-oron.json",
+  "purpose": "Document first-party Akwa Ibom/Oron registry context and bounded anonymous geometry access review.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "assessment": "Official AkwaGIS and Akwa Ibom State Government material evidence a state land-registry/GIS custodian relevant to Oron. The current public viewer exposes validation by Land PIN or Plan/COD number and a paid parcel-detail workflow, but no anonymous open parcel-vector response was verified.",
+  "registryAssessment": "State registry/GIS custody is evidenced through first-party Akwa Ibom material; this is institutional context, not admission of a public source or runtime integration.",
+  "safeFieldAllowlist": ["safe public parcel/source ID if available", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "officialPrimarySources": [
+    {"url": "https://akwagis.akwaibomstate.gov.ng/land-search", "observation": "Official AkwaGIS public land-search page describes free validation and paid parcel details including a polygon, but does not expose a public downloadable layer."},
+    {"url": "https://akwagis.akwaibomstate.gov.ng/", "observation": "Official portal describes a centralized Akwa Ibom digital land-administration and aerial-mapping system."},
+    {"url": "https://akwaibomstate.gov.ng/online-services/", "observation": "Official state page identifies AkwaGIS as the state GIS for digitally capturing land for management."},
+    {"url": "https://osgof.gov.ng/", "observation": "Federal cadastral/survey context only; not city-specific geometry evidence."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Oron Nigeria cadastral parcel map official land registry GIS Akwa Ibom", "result": "First-party AkwaGIS and Akwa Ibom sources found; no anonymous open Oron parcel polygon route verified.", "resultUrls": ["https://akwagis.akwaibomstate.gov.ng/land-search", "https://akwagis.akwaibomstate.gov.ng/", "https://akwaibomstate.gov.ng/online-services/"]},
+    {"language": "Oro (Oron local language)", "query": "Oron Nigeria official cadastral map land registry GIS Oro language ilẹ̀ Oron", "result": "No distinct Oro-language first-party cadastral viewer found; English AkwaGIS is the relevant state route.", "resultUrls": ["https://akwagis.akwaibomstate.gov.ng/land-search", "https://akwagis.akwaibomstate.gov.ng/", "https://orununion.org/culture.html"]}
+  ],
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not performed against a verified cadastral parcel endpoint; exact point [4.81068197745614, 8.23916597186041] remains unchanged and no absence inference is made.", "requestEvidence": []},
+  "attempts": [
+    {"url": "https://akwagis.akwaibomstate.gov.ng/land-search", "method": "GET; anonymous; TLS verification enabled", "httpStatus": 200, "result": "Current public viewer read; validation/payment workflow, no open parcel layer."},
+    {"url": "https://akwagis.akwaibomstate.gov.ng/_next/static/chunks/0sih1zv6q79bc.js and 13.knjnxfpmfg.js", "method": "GET; anonymous; TLS verification enabled", "httpStatus": 200, "result": "Current JS followed to /api/v1/search/validate and transaction result/parcel routes; no public geometry endpoint, schema, or CRS exposed."},
+    {"url": "https://akwagis.akwaibomstate.gov.ng/api/v1/services", "method": "GET; anonymous; TLS verification enabled", "httpStatus": 200, "result": "Public service catalog returned; no parcel features."},
+    {"url": "https://akwagis.akwaibomstate.gov.ng/api/v1/search/validate", "method": "GET; anonymous; TLS verification enabled", "httpStatus": 405, "result": "Method not allowed."},
+    {"url": "https://akwagis.akwaibomstate.gov.ng/api/v1/search/validate", "method": "POST anonymous JSON {}", "httpStatus": 400, "result": "Safe validation schema error disclosed BY_PIN and BY_DOCUMENT_NO types; no credentials or unsafe fields used."},
+    {"url": "https://akwagis.akwaibomstate.gov.ng/api/v1/search/validate", "method": "POST anonymous JSON {type: BY_PIN, criteria: {pin: AK-UYO-076-6GQC7P-00042-G}}", "httpStatus": 200, "result": "Published example PIN returned valid=false, reason PIN_NOT_FOUND; no parcel identity or geometry returned. Not an Oron absence test."}
+  ],
+  "coverageAssessment": {"claimedScope": "AkwaGIS describes state-wide digital land administration; the state government describes digital capture of all lands for management.", "verifiedOpenScope": "Official registry context and public validation workflow only; parcel geometry access, schema, CRS, and citywide coverage remain unverified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "A valid Oron Land PIN or Plan/COD number might produce a parcel polygon in the official workflow, but no such safe identifier was available and no open vector route was exposed. The published example PIN no-match response is an access/result limitation, not evidence of citywide absence."
+}

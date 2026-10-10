@@ -1,0 +1,115 @@
+{
+  "cityCode": 11975,
+  "queueRank": 1717,
+  "name": "Nagaon",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [26.3480261536036, 92.686222152057],
+  "population2025": 333706,
+  "population2025k": 333.706,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Nagaon Assam official cadastral parcel map GIS land records government",
+        "result": "First-party discovery identified the Nagaon district revenue-services page describing Assam ILRMS/Dharitree, the public Assam Jamabandi/ILRMS viewers, the Directorate of Land Records, and the Government of India DILRMP Nagaon cadastral-status page. No anonymous city-bounded parcel geometry response was found.",
+        "actualResultUrls": [
+          "https://nagaon.assam.gov.in/information-and-services/revenue-related-services-0",
+          "https://ilrms.assam.gov.in/dhar/index.php/Welcome/SelectLOC",
+          "https://landhub.assam.gov.in/jamabandiLanguage/index.php/Welcome/SelectLOC",
+          "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/313",
+          "https://dlrs.assam.gov.in/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "নগাঁও অসম চৰকাৰ ভূ নক্সা ভূমি ৰেকৰ্ড মানচিত্ৰ",
+        "result": "First-party discovery identified Assamese/English Assam ILRMS Dharitree and Jamabandi services, including Nagaon district selection, and an Assamese Directorate of Land Records page stating that land records include Chitha, Jamabandi and maps. No anonymous parcel ID-plus-geometry payload was obtained.",
+        "actualResultUrls": [
+          "https://ilrms.assam.gov.in/dhar/index.php/Welcome/SelectLOC",
+          "https://landhub.assam.gov.in/jamabandiLanguage/index.php/Welcome/SelectLOC",
+          "https://dlrar.assam.gov.in/as/how-to/%E0%A6%AD%E0%A7%82%E0%A6%AE%E0%A6%BF-%E0%A7%B0%E0%A7%87%E0%A6%95%E0%A7%B0%E0%A7%8D%E0%A6%A1%E0%A7%B0-%E0%A6%AA%E0%A7%8D%E0%A7%B0%E0%A6%A4%E0%A6%BF%E0%A6%B2%E0%A6%BF%E0%A6%AA%E0%A6%BF-%E0%A6%AA%E0%A7%8D%E0%A7%B0%E0%A6%BE%E0%A6%AA%E0%A7%8D%E0%A6%A4-%E0%A6%95%E0%A7%B0%E0%A6%95",
+          "https://nagaon.assam.gov.in/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Official Nagaon district revenue services identify Assam ILRMS implementation in all seven historical Nagaon circles and provide land-record/trace-map services; the current Assam ILRMS public viewer exposes Nagaon district selection. This evidences a local/state land-record custodian, not an open citywide parcel geometry API.",
+  "officialSources": [
+    {
+      "url": "https://nagaon.assam.gov.in/information-and-services/revenue-related-services-0",
+      "observation": "Nagaon district government page describes ILRMS implementation in Nagaon and citizen land-record services including Jamabandi copies and land-holding trace maps. No parcel geometry endpoint is provided on the page."
+    },
+    {
+      "url": "https://ilrms.assam.gov.in/dhar/index.php/Welcome/SelectLOC",
+      "observation": "Current public Dharitree page lists Nagaon in the district selector and loads a public location workflow. The page requires district/circle/village selection and does not expose a citywide vector layer in its initial HTML."
+    },
+    {
+      "url": "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/313",
+      "observation": "Government of India DILRMP page is explicitly scoped to Assam, District Nagaon and reports cadastral-map/digitization status fields. It is status metadata, not a parcel geometry service."
+    },
+    {
+      "url": "https://dlrar.assam.gov.in/as/how-to/%E0%A6%AD%E0%A7%82%E0%A6%AE%E0%A6%BF-%E0%A7%B0%E0%A7%87%E0%A6%95%E0%A7%B0%E0%A7%8D%E0%A1%ড%E0%A7%B0-%E0%A6%AA%E0%A7%8D%E0%A6%B0%E0%A6%A4%E0%A6%BF%E0%A6%B2%E0%A6%BF%E0%A6%AA%E0%A6%BF-%E0%A6%AA%E0%A7%8D%E0%A7%99%E0%A6%BE%E0%A6%AA%E0%A7%8D%E0%A6%A4-%E0%A6%95%E0%A7%8B%E0%A7%B0%E0%A6%95",
+      "observation": "Assamese first-party guidance states that land records include Chitha, Jamabandi and maps. It documents records/procedure, not a public parcel vector response."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://ilrms.assam.gov.in/dhar/index.php/Welcome/SelectLOC",
+      "method": "GET",
+      "outcome": "bounded TLS-verified GET succeeded; HTML and current JavaScript asset were retrieved. The page exposed the public district selector and no parcel geometry/schema/CRS payload."
+    },
+    {
+      "url": "https://ilrms.assam.gov.in/dhar/application/views/js/dharitreecore.js",
+      "method": "GET",
+      "outcome": "bounded TLS-verified GET succeeded; current JavaScript exposed POST routes Welcome/getCirdivJson, Welcome/getVillCodeJson and village search, plus form navigation toward ROR records. No map/GeoJSON endpoint was present in the inspected script."
+    },
+    {
+      "url": "https://ilrms.assam.gov.in/dhar/index.php/Welcome/getCirdivJson",
+      "method": "POST",
+      "requestData": {"district_code": "33"},
+      "outcome": "HTTP 200 JSON response returned 8 Nagaon circles, including নগাওঁ with cir_code 01 01. Only safe administrative location codes/names were retained in ignored scratch evidence; no parcel or personal fields were requested."
+    },
+    {
+      "url": "https://ilrms.assam.gov.in/dhar/index.php/Welcome/getVillCodeJson",
+      "method": "POST",
+      "requestData": {"district_code": "33", "subdiv_code": "01", "circle_code": "01"},
+      "outcome": "HTTP 500 with empty response body; no village payload, parcel IDs, geometry, schema or CRS captured. This failure is not evidence of parcel absence or citywide absence."
+    },
+    {
+      "url": "https://landhub.assam.gov.in/jamabandiLanguage/index.php/Welcome/SelectLOC",
+      "method": "GET",
+      "outcome": "bounded TLS-verified GET succeeded; public Jamabandi page and location.js were retrieved. It exposed administrative lookup/form routes and captcha-gated record display, but no parcel geometry response was obtained."
+    },
+    {
+      "url": "https://gistcp.assam.gov.in/geoportal/index.aspx",
+      "method": "GET",
+      "outcome": "bounded request timed out; no portal configuration or service payload captured. Timeout is not evidence of absence."
+    },
+    {
+      "url": "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/313",
+      "method": "GET",
+      "outcome": "certificate verification failed in the local curl environment; the official page was independently discoverable through first-party web search. No TLS bypass was used and no payload was retained from the failed request."
+    }
+  ],
+  "source": "Assam ILRMS/Dharitree and Nagaon district revenue land-record services",
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Assam public ILRMS/Dharitree land-record workflow with Nagaon district and circle selectors, plus Nagaon district revenue services and Government of India cadastral-status metadata.",
+    "verifiedOpenScope": "Nagaon administrative lookup route and official local/state service custody; no parcel geometry response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": "Exact WUP point preserved in latitude/longitude order. No exact-point hit/miss inference was made. A zero exact-point hit, map extent miss, timeout, HTTP 500, certificate problem or captcha/login wall is not evidence of citywide cadastral absence. No owner, address, titleholder, contact, tax/account, personal or unsafe fields were requested or retained. Packet completion is not source integration or runtime admission."
+}

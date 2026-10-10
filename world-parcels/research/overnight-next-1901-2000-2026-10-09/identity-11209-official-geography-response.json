@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-10T18:08:43.559411Z",
+  "unSource": {
+    "url": "https://population.un.org/wup/assets/Download/Cities/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "localArchive": "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "sha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "year": 2025,
+    "rows": [
+      {
+        "City_Code": "11209",
+        "City_Name": "Nawada",
+        "Location": "India",
+        "ISO2_Code": "IN",
+        "Year": "2025",
+        "PWCent_Latitude": "24.8896035518647",
+        "PWCent_Longitude": "85.5407309971938",
+        "Pop": "290.657",
+        "Pop_plausibility": "Moderate"
+      },
+      {
+        "City_Code": "11285",
+        "City_Name": "Nawada",
+        "Location": "India",
+        "ISO2_Code": "IN",
+        "Year": "2025",
+        "PWCent_Latitude": "26.1919216548581",
+        "PWCent_Longitude": "86.4585859656502",
+        "Pop": "259.262",
+        "Pop_plausibility": "Moderate"
+      }
+    ]
+  },
+  "firstPartyPageResponses": {
+    "nawadaDistrict": {
+      "url": "https://nawada.nic.in/about-district/district-profile/",
+      "httpStatus": 200,
+      "responseBytes": 131280,
+      "sha256": "5cbe42d54d6eb08ff32c14600b147323f7fabfbdf331ba7c2d4edb2a268b1e59",
+      "observedText": [
+        "Nawada town serves as the administrative headquarters",
+        "24.88°N",
+        "85.53°E"
+      ]
+    },
+    "madhubaniBlocks": {
+      "url": "https://madhubani.nic.in/subdivision-blocks/",
+      "httpStatus": 200,
+      "responseBytes": 135286,
+      "sha256": "8fa1828bd1b9c6ca2d161bdde96edd3187727d8168c2e35984099946a8a8a8ab",
+      "observedText": [
+        "21 blocks and circles in the district",
+        "Madhepur"
+      ]
+    }
+  },
+  "scope": "Geographic identity only. Government district page point is not a cadastral boundary or parcel proof."
+}

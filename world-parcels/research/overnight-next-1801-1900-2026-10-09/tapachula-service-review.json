@@ -1,0 +1,41 @@
+{
+  "cityRecord": "city-6889-tapachula.json",
+  "cityCode": 6889,
+  "queueRank": 1871,
+  "city": "Tapachula",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "reviewedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "serviceSummary": "A local municipal cadastral custodian is evidenced by the official Dirección de Catastro Municipal lookup, while the state GeoWeb/GeoServer provides public GIS infrastructure. No verified urban parcel geometry was admitted.",
+  "queryOutcomes": [
+    "English first-party discovery found the municipal Treasury lookup, state GeoWeb and official WMS catalog.",
+    "Spanish first-party discovery found the same local cadastral lookup and official Chiapas map/administrative references.",
+    "The municipal host timed out twice; no login, CAPTCHA bypass, unsafe lookup, or owner/address request was attempted."
+  ],
+  "requestOutcomes": [
+    "GeoWeb HTML: HTTP 200; current JS references inspected.",
+    "GeoServer WMS GetCapabilities: HTTP 200; CRS and layer catalog inspected.",
+    "WFS parcelas bounded query: HTTP 200, zero features.",
+    "WFS RAN parcel-zone bounded query: HTTP 200, one MultiPolygon outside the target urban extent; not retained."
+  ],
+  "scopeLimits": [
+    "The exact WUP point [14.89697903262, -92.268743483956] was preserved and not moved to force a hit.",
+    "A zero exact/bounded response is not treated as citywide absence.",
+    "State thematic layers and RAN zone parcels are not assumed to be Tapachula municipal cadastral coverage.",
+    "No raw source attribute set, owner data, address, titleholder, tax/account detail, or contact data was retained."
+  ],
+  "safeFieldAllowlist": ["id", "nuc_poligo", "zpar_zona", "edo_clv", "mun_clv", "nuc_clv", "programa", "geometry"],
+  "identityAndMapping": "No retained GeoJSON sample. The RAN response exposed nuc_poligo as the apparent native polygon key; this remains unqualified because the feature was outside the target urban extent. Source-specific field mapping is documented in the city record only.",
+  "uncertainty": "The municipal portal's underlying service contract and any urban cadastral geometry remain unverified due to timeout and the portal's tax-account scope. Public GeoServer presence does not prove citywide or municipal parcel coverage.",
+  "runtimeReadiness": "held",
+  "adapterAdmission": "not admitted",
+  "evidenceUrls": [
+    "https://tesoreria.tapachula.gob.mx/Impuestos/BuscaCuenta/1",
+    "https://geoweb.chiapas.gob.mx/geoweb/",
+    "https://mapas.siese.chiapas.gob.mx/geoserver/POSTGISSER/wms?service=WMS&request=GetCapabilities",
+    "https://www.ceieg.chiapas.gob.mx/info-geografica/servicio-wms",
+    "https://chiapas.gob.mx/mapas/"
+  ]
+}

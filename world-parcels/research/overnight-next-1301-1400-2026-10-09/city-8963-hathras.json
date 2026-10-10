@@ -1,0 +1,88 @@
+{
+  "cityCode": 8963,
+  "queueRank": 1362,
+  "name": "Hathras",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [27.5960398715243, 78.0517222203948],
+  "population2025": 413122,
+  "population2025k": 413.122,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": true,
+  "registryAssessment": "The official District Hathras land-records page identifies the local land-record computer room and directs users to Uttar Pradesh Bhulekh. The official UP Bhu-Naksha viewer and Hathras-specific government digitization dashboard establish a relevant state/local cadastral-map service, but no safe native parcel identity and polygon were independently retrieved.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hathras Uttar Pradesh official land records cadastral map parcel Bhu Naksha",
+        "result": "Found the official District Hathras land-records page, the Uttar Pradesh Bhulekh portal, the official UP Bhu-Naksha viewer, and the Hathras cadastral-map digitization dashboard.",
+        "actualResultUrls": [
+          "https://hathras.nic.in/service/land-records/",
+          "https://upbhulekh.gov.in/",
+          "https://upbhunaksha.gov.in/bhunaksha/",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=144"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "हाथरस उत्तर प्रदेश भू नक्शा खसरा नक्शा आधिकारिक",
+        "result": "Found the Hindi District Hathras land-records page, the UP Bhulekh portal, the UP Bhu-Naksha viewer, and the Hathras-specific digitization report. The accessible official material did not expose a safe parcel ID plus polygon for the WUP point.",
+        "actualResultUrls": [
+          "https://hathras.nic.in/hi/service/भूमि-रिकॉर्ड्स/",
+          "https://upbhulekh.gov.in/",
+          "https://upbhunaksha.gov.in/bhunaksha/",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=144"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://hathras.nic.in/service/land-records/",
+      "role": "District Hathras, Government of Uttar Pradesh official land-records service page",
+      "observation": "Identifies the land-record computer room at the Collectorate and directs citizens to UP Bhulekh; this is local registry/service evidence, not parcel-vector evidence."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=144",
+      "role": "Government of Uttar Pradesh cadastral-map digitization and georeferencing dashboard",
+      "observation": "The Hathras tehsil row reports 257 linked villages and 282 geo-referenced villages/mapsheet indicators with five remaining geo-reference entries; the report is aggregate status evidence and contains no individual parcel geometry."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunaksha/",
+      "role": "Current Uttar Pradesh Government/NIC Bhu-Naksha public viewer",
+      "observation": "Current HTML and JavaScript were fetched. The application identifies state code 09, hierarchy labels District/Tehsil/Village, and the public server host upbhunaksha.gov.in/bhunakshaserver."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/",
+      "role": "Board of Revenue, Uttar Pradesh official land-record portal",
+      "observation": "Describes public Bhulekh records and links land-record/map-related services; no owner, address, titleholder, tax, contact, or personal fields were requested or retained."
+    }
+  ],
+  "viewerRoute": {
+    "sourceId": "up-bhunaksha",
+    "stateCode": "09",
+    "levelLabels": ["District", "Tehsil", "Village"],
+    "safeNativeIdentityObservation": "No anonymous plot response was obtained, so no native parcel identity or field name is asserted.",
+    "crs": null
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No bounded anonymous response containing a safe native parcel identifier and full polygon was obtained. The exact WUP point [27.5960398715243, 78.0517222203948] was preserved and not shifted. A viewer route miss or unavailable endpoint is not treated as citywide absence."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Uttar Pradesh Bhu-Naksha public viewer and Hathras district/tehsil cadastral digitization status.",
+    "verifiedOpenScope": "Official service existence, Hathras aggregate digitization status, viewer state code and hierarchy labels were verified. Parcel API schema, CRS, exact-point containment, native identity and citywide open polygon coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

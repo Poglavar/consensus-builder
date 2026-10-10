@@ -1,0 +1,107 @@
+{
+  "purpose": "City-specific parcel-source research; official registry custody and public geometry are assessed separately.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "cityCode": 9116,
+  "queueRank": 1317,
+  "cityId": "wup:CN:9116",
+  "name": "Ranghulu",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [46.6119097522878, 124.856110545558],
+  "centerLatLon": [46.6119097522878, 124.856110545558],
+  "pointBasis": "Exact WUP queue point; not shifted to force a parcel hit.",
+  "population2025": 424460,
+  "population2025k": 424.46,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "capital": false,
+  "aliases": ["ranghulu", "让胡路区"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ranghulu Daqing China official cadastral parcel map GIS land registry",
+        "result": "Search located the official Ranghulu district government service portal and evidence of Daqing municipal real-estate registration services, but no public parcel vector service or safe parcel API.",
+        "actualResultUrls": ["https://dqrhlq.zwfw.hlj.gov.cn/", "https://dq.zwfw.hlj.gov.cn/", "https://www.hlj.gov.cn/hlj/c107856/202310/c00_31678223.shtml"]
+      },
+      {
+        "language": "Chinese (local/native-language query)",
+        "query": "让胡路区 大庆 官方 地籍 地图 GIS 不动产 登记",
+        "result": "Search located the official Ranghulu district government service portal, which advertises eighteen real-estate registration and transaction guides, and provincial-government reporting naming Daqing Natural Resources Bureau and the Ranghulu real-estate registration center; no anonymous parcel geometry endpoint was found.",
+        "actualResultUrls": ["https://dqrhlq.zwfw.hlj.gov.cn/", "https://dq.zwfw.hlj.gov.cn/", "https://www.hlj.gov.cn/hlj/c107856/202310/c00_31678223.shtml", "https://zrzyt.hlj.gov.cn/zrzyt/c112207/202603/c00_31921585.shtml"]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://dqrhlq.zwfw.hlj.gov.cn/",
+      "operator": "让胡路区政务服务网 / Heilongjiang government service portal",
+      "scope": "Official district service portal. The rendered page identifies Ranghulu and advertises ‘十八类不动产登记及交易事项指南’ (eighteen real-estate registration and transaction guides), but not a public parcel map or vector download."
+    },
+    {
+      "url": "https://www.hlj.gov.cn/hlj/c107856/202310/c00_31678223.shtml",
+      "operator": "Heilongjiang Provincial Government",
+      "scope": "Official provincial report identifies Daqing Natural Resources Bureau and describes registration work for a Ranghulu property; this supports municipal registration custody, not open geometry."
+    },
+    {
+      "url": "https://zrzyt.hlj.gov.cn/zrzyt/c112207/202603/c00_31921585.shtml",
+      "operator": "Heilongjiang Provincial Department of Natural Resources",
+      "scope": "Official provincial report states Daqing municipal and Ranghulu district real-estate registration departments coordinate registration service; no parcel data endpoint is provided."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://dqrhlq.zwfw.hlj.gov.cn/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "outcome": "Anonymous TLS-verified request returned the official district service portal. Page exposed registration-guide navigation but no cadastral layer schema, map viewer, parcel ID, CRS, or geometry endpoint."
+    },
+    {
+      "url": "https://dq.zwfw.hlj.gov.cn/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "outcome": "Anonymous TLS-verified request returned the official Daqing government service portal; it exposed an Internet-plus real-estate-registration service label but no public parcel geometry/API."
+    },
+    {
+      "url": "https://www.hlj.gov.cn/hlj/c107856/202310/c00_31678223.shtml",
+      "method": "GET via official search/open",
+      "httpStatus": 200,
+      "outcome": "Official provincial report reviewed for local registration-custodian evidence; descriptive registration prose only, no geometry."
+    },
+    {
+      "url": "https://zrzyt.hlj.gov.cn/zrzyt/c112207/202603/c00_31921585.shtml",
+      "method": "GET via official search/open",
+      "httpStatus": 200,
+      "outcome": "Official provincial natural-resources report reviewed for Daqing/Ranghulu registration-custodian evidence; no public parcel service or geometry."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Official Ranghulu district service portal provides real-estate registration service guidance, and official Heilongjiang government/natural-resources reporting identifies Daqing municipal and Ranghulu district real-estate registration departments. This is local registry/custodian evidence only; no citywide geometry completeness is claimed.",
+  "registryEvidenceUrls": ["https://dqrhlq.zwfw.hlj.gov.cn/", "https://www.hlj.gov.cn/hlj/c107856/202310/c00_31678223.shtml", "https://zrzyt.hlj.gov.cn/zrzyt/c112207/202603/c00_31921585.shtml"],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Ranghulu district registration-service custody and Daqing municipal registration reporting.",
+    "verifiedOpenScope": "Official service pages and custodian prose only; no anonymous parcel response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "resultCategory": "city_registry_evidenced_geometry_unverified",
+  "status": "complete",
+  "researchGroup": "east-asia",
+  "remainingUncertainty": "The current public map/API service, native parcel identity field, schema, CRS, anonymous geometry capability, and citywide coverage remain unverified. A zero exact-point hit or absence of a public viewer in these pages is not evidence of parcel absence.",
+  "nextStep": "Independent serial review may inspect any current official Daqing/Ranghulu natural-resources viewer or public service configuration. Keep runtime held until safe native IDs and bounded full parcel polygons are independently qualified.",
+  "safeFieldAllowlist": ["cityCode", "queueRank", "WUP point", "official service URLs", "HTTP status/content type", "public service metadata", "native CRS/ID only if returned safely", "geometry only if independently verified"]
+}

@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "parcel_service_review",
+  "checkedAt": "2026-10-09",
+  "cityCode": 989,
+  "queueRank": 1370,
+  "cityRecord": "city-989-city.json",
+  "city": "塔什科瑞克乡",
+  "country": "China",
+  "countryCode": "CN",
+  "wupPoint": [43.9288592045439, 81.3166262556781],
+  "status": "held",
+  "registryFound": null,
+  "registryBasis": "The first-party Xinjiang geographic-information platform is an official regional custodian and its public map is reachable, but no local cadastral registry, parcel map, or public registration procedure was actually evidenced for this township.",
+  "assessment": "The official regional portal and current public map bundle are reachable anonymously. Their inspected configuration exposes basemap/tile and general Tianditu search/geocoder services but no cadastral parcel layer, native parcel identity field, CRS-backed feature endpoint, or safe ID-plus-geometry response. Runtime readiness remains held.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "unsafeFieldsRequested": false, "citywideCompletenessAsserted": false, "exactPointHitTest": false},
+  "searchQueries": [
+    {"language": "English", "query": "Tashkourike Township Yining China official cadastral map parcel GIS natural resources", "outcome": "Official Xinjiang portal and public map found; no anonymous safe parcel response.", "actualResultUrls": ["https://xinjiang.tianditu.gov.cn/portal/", "https://xinjiang.tianditu.gov.cn/map/"]},
+    {"language": "native/local", "script": "Simplified Chinese", "query": "伊宁市 塔什科瑞克乡 地籍图 宗地 不动产登记 地图 自然资源 官方", "outcome": "官方平台及在线地图入口找到；当前配置未取得匿名安全宗地编号、服务 schema、CRS 或几何。", "actualResultUrls": ["https://xinjiang.tianditu.gov.cn/portal/", "https://xinjiang.tianditu.gov.cn/map/", "https://map.baidu.com/mobile/webapp/search/search/qt%3Ds%26wd%3D%E6%96%B0%E7%96%86%E4%BC%8A%E7%8A%B2%E5%B7%9E%E4%BC%8A%E5%AE%81%E5%B8%82%E5%A1%94%E4%BB%80%E7%A7%91%E7%91%9E%E5%85%8B%E4%B9%A1%E5%A1%94%E4%BB%80%E5%BA%93%E5%8B%92%E5%85%8B%E6%9D%91/"]}
+  ],
+  "requestOutcomes": [
+    {"url": "https://xinjiang.tianditu.gov.cn/portal/", "method": "GET", "outcome": "HTTP 200; portal HTML retrieved and official map link identified."},
+    {"url": "https://xinjiang.tianditu.gov.cn/portal/static/config.js", "method": "GET", "outcome": "HTTP 200; public platform/map configuration inspected; no cadastral endpoint."},
+    {"url": "https://xinjiang.tianditu.gov.cn/map/", "method": "GET", "outcome": "HTTP 200; Cesium map HTML retrieved."},
+    {"url": "https://xinjiang.tianditu.gov.cn/map/static/config.js", "method": "GET", "outcome": "HTTP 200; current map service configuration inspected; no cadastral parcel layer."},
+    {"url": "https://xinjiang.tianditu.gov.cn/map/index.js", "method": "GET", "outcome": "HTTP 200; current map bundle inspected; no safe ID-plus-geometry parcel request evidenced."}
+  ],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "crs": null, "exactWupPointTest": "Not completed; exact WUP point preserved and not shifted."},
+  "safeFieldAllowlist": ["safe native parcel identifier only if publicly returned", "geometry", "source CRS", "public layer/schema metadata", "HTTP status/content type"],
+  "coverageAssessment": {"claimedScope": "Xinjiang regional first-party portal and public online map.", "verifiedOpenScope": "Public portal/map HTML and current JavaScript/configuration only; no anonymous parcel geometry.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "qualification": {"verifiedParcelGeometry": false, "verifiedNativeIdentity": false, "runtimeReadiness": "held"},
+  "uncertainty": "A local Yining cadastral service may exist outside the discovered public configuration. No login, credentials, CAPTCHA/Cloudflare bypass, TLS disablement, or unsafe-field request was used. A missing endpoint or exact-point test does not prove citywide cadastral absence.",
+  "conclusion": "No adapter qualification or GeoJSON sample is justified on attempt 1 of 3."
+}

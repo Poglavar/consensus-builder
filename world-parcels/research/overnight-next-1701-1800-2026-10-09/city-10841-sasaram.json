@@ -1,0 +1,84 @@
+{
+  "cityCode": 10841,
+  "queueRank": 1726,
+  "name": "Sasaram",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "point": [24.9520568188232, 84.0245718623021],
+  "population2025": 332715,
+  "population2025k": 332.715,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sasaram Bihar cadastral map parcel land records official GIS",
+        "result": "First-party discovery identified the Government of Bihar Bhu-Naksha cadastral viewer, Directorate of Land Records & Survey services, and the Rohtas district government map pages.",
+        "actualResultUrls": [
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://dlrs.bihar.gov.in/services.html",
+          "https://rohtas.nic.in/map-of-district/"
+        ]
+      },
+      {
+        "language": "Hindi/local",
+        "query": "India Bihar Rohtas Sasaram cadastral map official भू नक्शा सासाराम रोहतास",
+        "result": "First-party discovery identified the Hindi Rohtas district map page and the Bihar Bhu-Naksha viewer; the district map is administrative/cartographic context, while Bhu-Naksha is the cadastral-map route.",
+        "actualResultUrls": [
+          "https://rohtas.nic.in/hi/document-category/%E0%A4%B0%E0%A5%8B%E0%A4%B9%E0%A4%A4%E0%A4%BE%E0%A4%B8-%E0%A4%95%E0%A4%BE-%E0%A4%AE%E0%A4%BE%E0%A4%A8%E0%A4%9A%E0%A4%BF%E0%A4%A4%E0%A5%8D%E0%A4%B0/",
+          "https://bhunaksha.bihar.gov.in/index.jsp"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Directorate of Land Records & Survey, Government of Bihar",
+    "service": "Bhu-Naksha Bihar public cadastral mapping viewer",
+    "locality": "Rohtas district / Sasaram subdivision / Sasaram circle / Sasaram mauza",
+    "sourceUrls": [
+      "https://bhunaksha.bihar.gov.in/index.jsp",
+      "https://dlrs.bihar.gov.in/services.html"
+    ]
+  },
+  "sourceReview": {
+    "viewer": "https://bhunaksha.bihar.gov.in/index.jsp",
+    "viewerConfiguration": "Public HTML references assets/misc/config.js and index.js. index.js documents REST endpoints /rest/Levels/count, /rest/Levels/ListsAfterLevel, /rest/MapInfo/getVVVVExtentGeoref, /rest/MapInfo/getPlotAtXY and ScalarDatahandler, plus WMS.",
+    "selection": "state=10 Bihar, district code 32 ROHTAS, subdivision code 01 सासाराम, circle code 01 Sasaram, mauza code 0027 सासाराम(126), Special Survey, First Map, sheet 00",
+    "crs": "EPSG:32645",
+    "extent": {
+      "xmin": 197676.23089999985,
+      "ymin": 2761786.3850999996,
+      "xmax": 199552.43230000045,
+      "ymax": 2763004.8507000003
+    },
+    "exactPointProjected": [199546.42187871446, 2762932.174425789],
+    "requestOutcomes": [
+      "GET https://bhunaksha.bihar.gov.in/index.jsp -> public viewer HTML loaded.",
+      "GET https://bhunaksha.bihar.gov.in/assets/misc/config.js -> SERVICE_PATH empty; public same-host service configuration.",
+      "GET https://bhunaksha.bihar.gov.in/index.js -> current REST/WMS route and field usage inspected.",
+      "POST /rest/Levels/count state=10 -> 7 levels.",
+      "POST /rest/Levels/ListsAfterLevel state=10 level=0 -> Bihar districts; code 32 is ROHTAS.",
+      "POST /rest/Levels/ListsAfterLevel state=10 level=1 codes=32 -> Sasaram subdivision code 01 and map levels.",
+      "POST /rest/Levels/ListsAfterLevel state=10 level=2 codes=32,01 -> Sasaram circle code 01 and mauza list.",
+      "POST /rest/Levels/ListsAfterLevel state=10 level=3 codes=32,01,01 -> Sasaram mauza code 0027 and survey choices.",
+      "POST /rest/MapInfo/getVVVVExtentGeoref state=10 gisLevels=32,01,01,0027,SS,00,00, srs=0 -> extent and EPSG:32645 returned.",
+      "POST /rest/MapInfo/getPlotAtXY state=10 giscode=SS32010100271260000 at the projected WUP point -> {has_data:N}; extent echoed but no parcel ID.",
+      "GET /ScalarDatahandler OP=4 at the projected WUP point -> empty response; no safe parcel ID or geometry.",
+      "GET /WMS GetFeatureInfo attempt on VILLAGE_MAP -> PNG image response rather than usable feature JSON; no geometry retained.",
+      "POST extent requests for Cadastral Survey and Revisional Survey returned null/no usable extent for the selected Sasaram mauza route."
+    ]
+  },
+  "geometry": null,
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review required",
+  "notes": [
+    "The exact WUP point is inside the verified Special Survey map extent, but the point query returned no data; this is not evidence of citywide parcel absence.",
+    "No owner, address, contact, titleholder, tax, account, personal or unsafe fields were requested or retained.",
+    "No retained GeoJSON sample: no stable native parcel identity plus full safe polygon was obtained.",
+    "Packet completion records executed research only; it does not constitute source integration or adapter admission."
+  ]
+}

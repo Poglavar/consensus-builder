@@ -1,0 +1,13 @@
+{
+  "taskId": "city:8488",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-8488-campina-grande.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/campina-grande-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T09:32:05.432045Z",
+  "reason": "No safe anonymous parcel ID and full geometry from the inspected municipal service routes.",
+  "admissionGates": "Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are not evidenced."
+}

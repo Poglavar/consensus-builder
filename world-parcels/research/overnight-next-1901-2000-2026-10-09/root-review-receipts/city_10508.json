@@ -1,0 +1,12 @@
+{
+  "taskId": "city:10508",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-10508-guigang.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/guigang-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T19:00:25.973533Z",
+  "reason": "First-party registry/query procedure supports local record custody, but bureau access timed out and no bounded native-ID polygon response or admission qualification is evidenced."
+}

@@ -1,0 +1,42 @@
+{
+  "cityCode": 11882,
+  "queueRank": 1749,
+  "country": "China",
+  "countryCode": "CN",
+  "point": [30.0119380700636, 120.859416767948],
+  "population2025": 328545,
+  "population2025k": 328.545,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Shangyu District Zhejiang cadastral parcel map official GIS",
+        "result": "Search identified the official Zhejiang Geographic Information Public Service Platform and an official Shangyu natural-resources bureau organizational document. No city-specific public parcel feature endpoint was found in search results.",
+        "actualResultUrls": [
+          "https://ditu.zjzwfw.gov.cn/platform-main/index.html",
+          "https://www.shangyu.gov.cn/module/download/downfile.jsp?classid=0&filename=0985bd497037427bbeb4477412064103.pdf"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "上虞区 不动产 登记 地图 地籍 图 官方",
+        "result": "Search identified the official Shangyu natural-resources branch document describing unified natural-resource/real-estate registration, cadastral investigation and the district registration information platform, plus an official basic-survey plan describing a district natural-resources atlas. No anonymous public parcel geometry service was identified.",
+        "actualResultUrls": [
+          "https://www.shangyu.gov.cn/module/download/downfile.jsp?classid=0&filename=0985bd497037427bbeb4477412064103.pdf",
+          "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web2328/site/attach/0/d1afb052721d428b9b493086ff0ef0d9.pdf",
+          "https://ditu.zjzwfw.gov.cn/platform-main/index.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "The official Shangyu government-hosted natural-resources branch document identifies the branch as responsible for unified natural-resource and real-estate registration, cadastral investigation, cadastral surveying, and management/sharing of registration materials. This establishes a local custodial authority, not an open parcel API.",
+  "sourceScope": "Shangyu District, Shaoxing, Zhejiang, China; local custodial evidence and the province-wide public GIS portal were inspected. Citywide open parcel coverage was not established.",
+  "attempt": 1,
+  "aliases": ["shangyu district"],
+  "timeMid": 2025.5,
+  "plausibility": "Moderate",
+  "notes": "5"
+}

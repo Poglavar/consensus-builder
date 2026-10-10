@@ -1,0 +1,39 @@
+{
+  "cityRecord": "city-1204-borama.json",
+  "schemaVersion": 1,
+  "cityCode": 1204,
+  "queueRank": 1571,
+  "city": "Borama",
+  "country": "Somalia",
+  "countryCode": "SO",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "outcome": "complete_no_verified_open_geometry",
+  "registryFound": true,
+  "registryScope": "Borama Local Government land-registration/property and land-registration services; no anonymous open parcel geometry service was verified.",
+  "exactPointLatLon": [9.93749024650022, 43.1846231646884],
+  "queries": [
+    {
+      "language": "English",
+      "query": "Borama Somalia cadastral map parcel official land registry",
+      "outcome": "Local-government land-registration procedure and service references found; no anonymous parcel feature response.",
+      "urls": ["https://boramalocalgov.com/", "https://www.borama.govsomaliland.online/article/online-land-registration"]
+    },
+    {
+      "language": "Somali",
+      "query": "Borama Somaliland khariidadda dhulka diiwaangelinta dhulka kaadastralka rasmiga ah",
+      "outcome": "Somali-language local-government registration context found; general Somaliland map material was not parcel-level and no open geometry endpoint was verified.",
+      "urls": ["https://www.borama.govsomaliland.online/article/online-land-registration", "https://www.govsomaliland.org/uploads/files/2023/09/2023-09-06-11-22-45-9256-1693999365.pdf"]
+    }
+  ],
+  "requestOutcomes": "GET https://boramalocalgov.com/ returned an interactive Cloudflare challenge page, so the public homepage JavaScript/configuration and any map route could not be inspected without defeating the challenge. Direct curl to https://www.borama.govsomaliland.online/article/online-land-registration and the www-less hostname failed DNS resolution in this environment; the indexed first-party page states that applicants must log in/register, submit a land-registration application, await technical review/approval, and download a certificate. No parcel ID, geometry, CRS, schema, WFS/REST endpoint, or bounded anonymous feature response was obtained. No login, credentials, CAPTCHA bypass, private token, or unsafe property field was used.",
+  "schemaCrs": "Not available; no parcel feature response was received.",
+  "safeFieldAllowlist": ["stable native parcel identifier", "geometry", "source CRS", "non-sensitive administrative scope"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "mortgage/lien details"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "sampleGeojson": null,
+  "runtimeReadiness": "held",
+  "uncertainty": "Local registration custody is evidenced, but the public availability, extent, currency, schema, CRS, native identity, and citywide completeness of any underlying parcel database remain unknown. A challenge, DNS failure, login wall, or map extent miss is not evidence of citywide absence.",
+  "completion": "All executed discovery and request attempts are recorded; packet is complete for attempt 1, with no retained GeoJSON sample. This packet is not source integration or adapter admission."
+}

@@ -1,0 +1,14 @@
+{
+  "taskId": "city:243",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-243-mo-medes.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/mo-medes-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T15:04:54.645626Z",
+  "reason": "WUP city code 243, rank 1355, Angola point and 415361 persons match the original source. English and Portuguese queries are recorded. No anonymous safe native-ID polygon response or adapter qualification is evidenced; IGCA TLS failure and portal workflows cannot prove citywide absence. Registry custody remains unresolved."
+}

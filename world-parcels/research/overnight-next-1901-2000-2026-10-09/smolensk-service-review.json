@@ -1,0 +1,66 @@
+{
+  "cityRecord": "city-1393-smolensk.json",
+  "cityCode": 1393,
+  "queueRank": 1945,
+  "city": "Smolensk",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "Smolensk municipal public GIS; federal public cadastral-map successor identified as NSPD/Rosreestr",
+  "serviceUrl": "https://map.smoladmin.ru/",
+  "secondaryServiceUrl": "https://nspd.gov.ru/",
+  "scope": "Local city public map and official federal cadastral-map discovery only; citywide parcel completeness was not verified.",
+  "configurationEvidence": "The municipal viewer HTML loads /js/core.js, /js/common.js, and /js/tools.js. The current JavaScript constructs GET requests to /map.asp, /infoTool.asp, and /searchTool.asp with map, viewport, center, zoom, layer, and screen-coordinate parameters. The page defines map=Smolensk, cx=1221878, cy=460072, zoom=800 and exposes layers labelled for cadastral land value and planning/zoning.",
+  "schemaAndCrs": "No parcel feature schema or CRS was exposed. The municipal /map.asp response was image/gif raster map output. The /infoTool.asp response at the WUP-centered bounded viewport returned only HTML layer metadata (map type, map name, layer name), with no parcel ID or geometry. The NSPD root request timed out after 20 seconds.",
+  "nativeIdentity": "Not observed; no synthetic identity used.",
+  "fieldMapping": {
+    "id": "Not available because no native parcel feature response returned.",
+    "geometry": "Not available because no native parcel feature response returned.",
+    "sourceAttributes": "No source attributes requested or retained."
+  },
+  "requestAttempts": [
+    {
+      "method": "GET",
+      "url": "https://map.smoladmin.ru/",
+      "outcome": "HTTP 200; viewer HTML and current JavaScript/configuration retrieved."
+    },
+    {
+      "method": "GET",
+      "url": "https://map.smoladmin.ru/map.asp?map=Smolensk&mapw=1000&maph=700&cx=1221878&cy=460072&zoom=800",
+      "outcome": "HTTP 200 image/gif raster response; no vector parcel features or native IDs."
+    },
+    {
+      "method": "GET",
+      "url": "https://map.smoladmin.ru/searchTool.asp?map=Smolensk&mask=%D0%BA%D0%B0%D0%B4%D0%B0%D1%81%D1%82%D1%80%D0%BE%D0%B2%D1%8B%D0%B9",
+      "outcome": "HTTP 200 HTML response with no matching result; response identified the available map as a city/general map rather than returning a parcel feature."
+    },
+    {
+      "method": "GET",
+      "url": "https://map.smoladmin.ru/infoTool.asp?map=Smolensk&mapw=1000&maph=700&cx=1221878&cy=460072&zoom=800&scrx=500&scry=350",
+      "outcome": "HTTP 200 HTML response containing map/layer metadata only; no safe parcel ID or geometry."
+    },
+    {
+      "method": "GET",
+      "url": "https://nspd.gov.ru/",
+      "outcome": "Timed out after 20 seconds; not evidence of citywide absence."
+    }
+  ],
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON retained; no unchanged native safe-ID-plus-geometry response was returned.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeDataPolicy": "Owner, address, contact, titleholder, tax/account, legal-description, and ownership/rights fields were not requested or retained.",
+  "officialCustodyEvidence": "The municipal viewer is hosted on the official smoladmin.ru city-administration domain. The official city notice states that the former public cadastral map was transferred to NSPD; regional official pages describe cadastral-plan and land services. These distinguish local map evidence from general federal agency prose, but no parcel API custody or adapter contract was verified.",
+  "limits": [
+    "The exact WUP point was preserved and was not shifted to force a hit.",
+    "No exact-point parcel hit, parcel polygon, native parcel identity, vector schema, or CRS was obtained.",
+    "The municipal viewer is raster/HTML oriented in the inspected path; its map image is not retained as parcel evidence.",
+    "The NSPD root timeout is not evidence of citywide absence.",
+    "No login, credentials, private tokens, CAPTCHA bypass, or TLS exception was used.",
+    "No raw source-specific attribute set was retained.",
+    "RuntimeReadiness remains held pending independent serial review and a real safe parcel response."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "A real local public map/registry is evidenced, but current parcel-level integration is unverified because the municipal service returned raster/map metadata only and NSPD was unreachable by timeout."
+}

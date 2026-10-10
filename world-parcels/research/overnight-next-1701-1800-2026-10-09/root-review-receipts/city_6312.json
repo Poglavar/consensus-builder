@@ -1,0 +1,16 @@
+{
+  "taskId": "city:6312",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-6312-ikare.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ikare-service-review.json",
+    "tmp/valhalla-parcel-research/6312/ondo-land-registration.pdf",
+    "tmp/valhalla-parcel-research/6312/portal-root.html",
+    "tmp/valhalla-parcel-research/6312/map.html"
+  ],
+  "checkedAt": "2026-10-10T14:03:09Z",
+  "reason": "Immutable WUP identity and English/Yoruba searches checked. Original Ondo government registration guide names the Akoko office in Ikare-Akoko; cached portal/map pages show a registry shell, not a parcel feature service. No safe native-ID polygon, CRS or qualification evidence exists. This is unresolved public geometry, not citywide absence."
+}

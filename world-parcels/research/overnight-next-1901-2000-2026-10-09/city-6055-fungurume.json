@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "wupCityCode": 6055,
+  "cityId": "wup2025:6055",
+  "name": "Fungurume",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "centerLatLon": [-10.6190040878108, 26.3302679663275],
+  "queueRank": 1928,
+  "population2025": 298713,
+  "population2025k": 298.713,
+  "populationUnit": "persons",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Fungurume Democratic Republic of the Congo official cadastral land registry parcel map",
+        "result": "Search identified the DRC Ministry of Land Affairs registry/circonscriptions pages, the public-service registry-consultation procedure, and a non-official Fungurume locality page; no first-party Fungurume parcel map or public geometry service was found.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://servicepublic.gouv.cd/service/4671",
+          "https://armp-rdc.cd/commune-de-fungurume/"
+        ]
+      },
+      {
+        "language": "French (local official language)",
+        "query": "Fungurume cadastre République démocratique du Congo registre foncier carte parcelles",
+        "result": "Search identified the official Ministry of Land Affairs registry/circonscriptions directory and formal land-search procedure. It did not identify an anonymous Fungurume parcel viewer, API, schema, CRS, or safe parcel geometry response.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://servicepublic.gouv.cd/service/4671",
+          "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official DRC Ministry of Land Affairs directory documents 143 land/cadastral circonscriptions and lists Lualaba and Lubudi among the covered administrative areas. The official public-service catalogue documents consultation of cadastral and real-estate registers through the Conservateur des Titres Immobiliers or Chef de Division du Cadastre. This evidences relevant registry custody and procedure, but not an open Fungurume parcel geometry service.",
+  "status": "complete",
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted",
+  "nativeIdReadiness": "not_applicable_no_verified_parcel_source",
+  "coverageAssessment": {
+    "claimedScope": "National DRC land/cadastral registry and the Ministry directory of provincial/local circonscriptions; Fungurume-specific parcel coverage was not published or verified.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_registry_procedure_no_verified_open_geometry",
+  "sourceIds": [],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official Ministry directory loaded. It lists Lualaba and Lubudi circonscriptions, but no Fungurume parcel layer, service URL, schema, or geometry endpoint was exposed."
+    },
+    {
+      "url": "https://servicepublic.gouv.cd/service/4671",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official public-service page loaded. It describes formal register consultation and delivery of a signed parcel-information record; it does not expose anonymous parcel geometry."
+    },
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+      "method": "GET (search result/open)",
+      "status": "official procedure page found",
+      "summary": "Formal land-search workflow is application-based and includes unsafe identity/title fields; no request was submitted and no such fields were queried."
+    },
+    {
+      "url": "https://bic.cd/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Non-government BIC site advertises a digital cadastral platform and data for 26 provinces, but no public Fungurume parcel response or documented anonymous geometry endpoint was established."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Fungurume%20parcel&f=json&num=100",
+      "method": "GET",
+      "status": "HTTP 200 JSON",
+      "summary": "Public ArcGIS item search returned total=0; this is not evidence of citywide cadastral absence."
+    }
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel geometry response obtained",
+  "geometryQuality": "not evaluated; no geometry retained",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "remainingUncertainty": "A restricted, application-based, locally held, or not-yet-published cadastral service may exist. No statement is made about parcel absence, ownership, title, completeness, or citywide coverage. The exact WUP point was preserved and was not used to infer a hit or miss.",
+  "retainedSample": null
+}

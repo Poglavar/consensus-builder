@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-10508-guigang.json",
+  "purpose": "Document first-party local registry context and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Guigang local registry/procedure activity is evidenced by first-party Guangxi Guigang Natural Resources Bureau pages. The official bureau homepage timed out anonymously, and no current public parcel-vector viewer/API or geometry response was verified.",
+  "registryAssessment": "Local registry/procedure evidenced: Guigang Natural Resources Bureau and its Guigang Real Estate Registration Certification Center/service. This is local procedure evidence, not source admission or runtime integration.",
+  "officialPrimarySources": [
+    {"url": "https://gg.dnr.gxzf.gov.cn/bdcdj/djyjcxjyj/t10005077.shtml", "observation": "First-party Guigang registration-material query guide identifies the local registration service and lists natural-condition information and parcel-map (宗地图) materials; no parcel geometry payload is exposed."},
+    {"url": "https://gg.dnr.gxzf.gov.cn/bdcdj/djyjcxjyj/t3186494.shtml", "observation": "First-party Guigang procedure page requires qualified survey-produced parcel maps, boundary coordinates, and cadastral survey materials for a registration procedure; this is procedure evidence, not an open parcel dataset."},
+    {"url": "https://gg.dnr.gxzf.gov.cn/bdcdj/djyjcxjyj/t19265268.shtml", "observation": "First-party Guigang procedure page references changed parcel boundaries, cadastral survey forms, parcel maps, and boundary-point coordinates; no anonymous map/API response is exposed."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Guigang China cadastral parcel map official natural resources bureau", "result": "Found first-party Guigang registry/procedure pages; no verified anonymous parcel geometry route.", "resultUrls": ["https://gg.dnr.gxzf.gov.cn/bdcdj/djyjcxjyj/t10005077.shtml", "https://gg.dnr.gxzf.gov.cn/bdcdj/djyjcxjyj/t3186494.shtml"]},
+    {"language": "Chinese", "query": "贵港 不动产登记 地籍图 宗地图 官方 自然资源局", "result": "Found first-party local registry/procedure evidence and references to parcel maps/boundary coordinates; no verified anonymous parcel geometry route.", "resultUrls": ["https://gg.dnr.gxzf.gov.cn/bdcdj/djyjcxjyj/t10005077.shtml", "https://gg.dnr.gxzf.gov.cn/bdcdj/djyjcxjyj/t19265268.shtml"]}
+  ],
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not performed against a verified cadastral parcel endpoint; exact point [23.1029510016224, 109.598226062243] remains unchanged and no absence inference is made.", "requestEvidence": []},
+  "attempts": [
+    {"url": "https://gg.dnr.gxzf.gov.cn/", "method": "GET", "httpStatus": "timeout after 20 seconds", "result": "Official bureau homepage did not return in the bounded anonymous request; no viewer/configuration could be inspected."},
+    {"url": "https://gg.dnr.gxzf.gov.cn/bdcdj/djyjcxjyj/t10005077.shtml", "method": "GET via first-party search/open", "httpStatus": "web result available", "result": "Local registration-material query guide read; procedure context only, no parcel geometry response."},
+    {"url": "https://gg.dnr.gxzf.gov.cn/bdcdj/djyjcxjyj/t3186494.shtml", "method": "GET via first-party search/open", "httpStatus": "web result available", "result": "Local registration procedure read; references parcel maps and cadastral survey materials, no open geometry response."},
+    {"url": "https://gg.dnr.gxzf.gov.cn/bdcdj/djyjcxjyj/t19265268.shtml", "method": "GET via first-party search/open", "httpStatus": "web result available", "result": "Local boundary/area-change procedure read; references parcel maps and boundary-point coordinates, no open geometry response."}
+  ],
+  "safeFieldAllowlist": ["safe public parcel/source ID if available", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "sourceFieldMapping": null,
+  "coverageAssessment": {"claimedScope": "Official local Guigang registry/procedure evidence plus attempted official bureau access.", "verifiedOpenScope": "Local registry/procedure only; parcel geometry access unverified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "An authenticated or separately published cadastral service may exist but was not accessed. Exact-point hit testing, CRS/schema, native identity, and citywide parcel completeness are unknown.",
+  "nextStep": "A serial reviewer may independently qualify a first-party Guigang parcel adapter only after confirming a current public route, CRS/schema, safe ID fields, and bounded geometry response."
+}

@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-6312-ikare.json",
+  "purpose": "Document first-party discovery, official service routes, anonymous request outcomes, safe field limits and uncertainty.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "registryAssessment": "Local/state official custody is evidenced by the Ondo State Government land-registration guide, which names an Akoko area office at State Secretariat Annex, Tanimowo Complex, Ikare-Akoko. The public portal is branded Ondo State Land Registry and identifies the Ministry of Lands, Akure; this establishes registry/service custody, not open parcel geometry.",
+  "officialPrimarySources": [
+    {
+      "url": "https://ondostate.gov.ng/wp-content/uploads/2022/11/ONDO-STATE-LAND-REGISTRATION-1.pdf",
+      "operator": "Ondo State Government / Ministry of Lands and Housing",
+      "scope": "Official land-title registration procedure; lists the Akoko area office in Ikare-Akoko and describes digitization/e-archiving. Direct GET returned HTTP 200 application/pdf."
+    },
+    {
+      "url": "https://www.ondolandportal.org/",
+      "operator": "Ondo State Land Registry (portal branding)",
+      "scope": "Public registry landing page with search, verification, map and services navigation. Direct GET returned HTTP 200 HTML."
+    },
+    {
+      "url": "https://www.ondolandportal.org/help/",
+      "operator": "Ondo State Land Registry (portal branding)",
+      "scope": "Help page; public navigation links to /search/, /verify/, /map/ and /services/. Direct GET returned HTTP 200 HTML."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Ikare Akoko Ondo State official cadastral parcel map land registry GIS",
+      "result": "Found the official Ondo land-registration guide and Ondo Land Registry portal; no anonymous parcel geometry endpoint found.",
+      "actualResultUrls": ["https://ondostate.gov.ng/wp-content/uploads/2022/11/ONDO-STATE-LAND-REGISTRATION-1.pdf", "https://www.ondolandportal.org/", "https://www.ondolandportal.org/help/"]
+    },
+    {
+      "language": "Yoruba",
+      "query": "Ikare Akoko ìforúkọsílẹ ilẹ maapu kadasita GIS Ondo",
+      "result": "No distinct first-party Yoruba/local-language parcel-map service surfaced; the same official Ondo sources remained relevant.",
+      "actualResultUrls": ["https://ondostate.gov.ng/wp-content/uploads/2022/11/ONDO-STATE-LAND-REGISTRATION-1.pdf", "https://www.ondolandportal.org/"]
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://ondostate.gov.ng/wp-content/uploads/2022/11/ONDO-STATE-LAND-REGISTRATION-1.pdf",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/pdf",
+      "outcome": "Read official procedure guide. It names the Akoko area office at Tanimowo Complex, Ikare-Akoko and describes land-title registration/digitization; it contains no public parcel geometry service or safe feature schema."
+    },
+    {
+      "url": "https://www.ondolandportal.org/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "outcome": "Read public Ondo State Land Registry landing page. Public navigation exposes Search, Verify, Map and Services; no anonymous geometry payload was present in the page."
+    },
+    {
+      "url": "https://www.ondolandportal.org/help/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "outcome": "Read help page and followed public navigation route list."
+    },
+    {
+      "url": "https://www.ondolandportal.org/map/",
+      "method": "GET plus public JavaScript/config inspection",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "outcome": "The page loads Leaflet and a generic public search component, but exposes no map initialization, parcel layer URL, feature-service URL, CRS, or geometry request."
+    },
+    {
+      "url": "https://www.ondolandportal.org/api/v1/public/search/?q=__parcel_research_probe__",
+      "method": "GET anonymous harmless non-record probe",
+      "httpStatus": 404,
+      "contentType": "text/html; charset=utf-8",
+      "outcome": "Route returned the portal 404 page; no response schema or geometry. This is an access/route result, not evidence of no parcels."
+    },
+    {
+      "url": "https://www.ondolandportal.org/api/v1/public/properties/search/?type=property_id&q=__parcel_research_probe__",
+      "method": "GET anonymous harmless non-record probe",
+      "httpStatus": 404,
+      "contentType": "text/html; charset=utf-8",
+      "outcome": "Route returned the portal 404 page; no response schema or geometry. No real property identifier, owner, address, titleholder, tax or contact lookup was attempted."
+    }
+  ],
+  "safeFieldAllowlist": ["stable native parcel id if publicly exposed", "geometry", "source URL", "layer name", "geometry type", "CRS", "public schema metadata"],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not performed because no public anonymous parcel geometry endpoint was exposed; exact WUP point [7.53786333451326, 5.76938491486402] was not shifted.",
+    "citywideAbsenceInferred": false
+  },
+  "coverageAssessment": {
+    "geometryVerified": false,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "note": "Official registry custody and service pages are separate from open geometry and coverage evidence."
+  },
+  "remainingUncertainty": "Exact-point parcel coverage, native parcel identity, CRS, geometry availability, legal/title scope, completeness and currentness remain unverified. The public portal may expose authenticated or non-public record workflows not tested.",
+  "nextStep": "Keep runtime held until serial review independently qualifies a real public adapter and safe geometry response.",
+  "runtimeAssessment": "held_pending_serial_review",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

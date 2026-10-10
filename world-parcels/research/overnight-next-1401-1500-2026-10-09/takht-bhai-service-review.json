@@ -1,0 +1,105 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5293-takht-bhai.json",
+  "purpose": "Document first-party local registry evidence and bounded anonymous parcel-service review for WUP cityCode 5293.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official KP Revenue & Estate Department establishes a local land-record service custodian through SDC Takht Bhai in District Mardan. The public portal and current route inspection exposed service-center and e-Fard workflows, but no anonymous parcel viewer, JavaScript configuration, map/API endpoint, parcel schema, CRS declaration, or safe ID-plus-geometry response. This is not evidence of citywide absence.",
+  "registryAssessment": "Local registry/service custodian evidenced: KP Revenue & Estate Department SDC Takht Bhai, Main Tehsil Building, Malakand Road, Takht Bhai, District Mardan, contact 0937-553304. Public parcel-service integration is not evidenced.",
+  "officialPrimarySources": [
+    {
+      "url": "https://revenue.kp.gov.pk/sdcs/",
+      "observation": "Official SDC directory lists Takht Bhai and describes computerized land-record services, including Fard issuance and record updates; no public parcel geometry service is published."
+    },
+    {
+      "url": "https://kplr.gkp.pk/SDCCenters",
+      "observation": "Official appointment page lists Tekht Bhai/Takht Bhai under Mardan; it is a center/appointment interface without parcel geometry."
+    },
+    {
+      "url": "https://kplr.gkp.pk/",
+      "observation": "Official KP land-record portal was inspected, including current HTML navigation and scripts. SearchLandRecord leads to an Admin Portal Access login page."
+    },
+    {
+      "url": "https://revenue.kp.gov.pk/wp-content/uploads/2020/08/Establishment-of-SDCs.pdf",
+      "observation": "Official SDC establishment PDF lists SDC Takht Bhai as completed under Mardan; it contains administrative evidence only."
+    },
+    {
+      "url": "https://efard.kplr.gkp.pk/",
+      "observation": "Official e-Fard page documents account, biometric, ownership-search, and payment steps. It is not a public parcel map/API and no personal-data workflow was attempted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Takht Bhai Pakistan official cadastral land records map parcel viewer",
+      "result": "Found official KP Revenue & Estate Department SDC and land-record portal sources; no public anonymous parcel viewer/API identified.",
+      "method": "Separate English-language web search followed by first-party page, PDF, HTML, and linked-script inspection.",
+      "scope": "Identify local custodian and safe anonymous parcel geometry."
+    },
+    {
+      "language": "Urdu (local/native)",
+      "query": "خیبر پختونخوا تخت بھائی زمین ریکارڈ نقشہ کادسترال",
+      "result": "Found the same official KP land-record and SDC sources, including Takht Bhai. No first-party Urdu public parcel map/API or safe ID-plus-geometry response found.",
+      "method": "Separate Urdu-language web search followed by official-source inspection.",
+      "scope": "Cross-check local-language discovery for a city-specific land map or registry service."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://revenue.kp.gov.pk/sdcs/",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Loaded official directory; Takht Bhai SDC address and contact confirmed. No viewer/API route or parcel fields exposed."
+    },
+    {
+      "url": "https://kplr.gkp.pk/",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Loaded official portal and inspected current HTML/script links. SDC and appointment routes were visible; no public parcel viewer/configuration exposed."
+    },
+    {
+      "url": "https://kplr.gkp.pk/SDCCenters",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Loaded official SDC page; Tekht Bhai/Takht Bhai listed under Mardan. Inline AJAX routes concern center/appointment interactions, not parcel geometry."
+    },
+    {
+      "url": "https://kplr.gkp.pk/SearchLandRecord",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Current route rendered the LRMIS Admin Portal Access login form. No login or credential attempt made."
+    },
+    {
+      "url": "https://efard.kplr.gkp.pk/",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official e-Fard workflow page loaded; it requires identity/biometric/account information and does not provide public parcel geometry. No request submitted."
+    },
+    {
+      "url": "https://revenue.kp.gov.pk/wp-content/uploads/2020/08/Establishment-of-SDCs.pdf",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official PDF retrieved; SDC Takht Bhai listed as completed under District Mardan. No parcel geometry or service schema."
+    }
+  ],
+  "safeFieldAllowlist": ["native parcel/survey identity", "geometry", "source CRS", "layer/service name"],
+  "nativeFieldMapping": null,
+  "geometryDecision": "No sample GeoJSON written; there was no qualifying public geometry response.",
+  "coverageAssessment": {
+    "claimedScope": "Official KP Revenue & Estate Department SDC and land-record custodian evidence for Takht Bhai.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeDecision": "held",
+  "remainingUncertainty": "The local custodian and service center are evidenced, but public map/API availability, parcel-layer schema, CRS, exact-point inclusion, and citywide coverage remain unverified. No exact-point miss or map-extent miss was used as an absence claim.",
+  "nextStep": "Serial reviewer should independently inspect any current official KP parcel-map endpoint and qualify a bounded geometry-only sample with stable native IDs before adapter or runtime admission."
+}

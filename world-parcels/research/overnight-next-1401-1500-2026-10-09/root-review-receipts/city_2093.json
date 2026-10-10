@@ -1,0 +1,16 @@
+{
+  "taskId": "city:2093",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-2093-gdansk.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/gdansk-service-review.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/gdansk-parcel-samples.geojson",
+    "tmp/valhalla-parcel-research/gdansk/capabilities.xml",
+    "tmp/valhalla-parcel-research/gdansk/dzialki-schema.xml",
+    "tmp/valhalla-parcel-research/gdansk/query4.gml"
+  ],
+  "checkedAt": "2026-10-09T17:43:39.924836Z",
+  "reason": "Queue identity and English/Polish searches match. Raw municipal WFS GML has three native-ID polygons; retained sample matches the full source rings after CRS conversion. Fresh exact-ID reads, forced pagination, thirteen bounded cells, adapter/source binding, and headed Details verification are not evidenced. Hold runtime admission."
+}

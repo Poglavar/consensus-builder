@@ -1,0 +1,23 @@
+{
+  "taskId": "city:5688",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-5688-pegu.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pegu-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T16:53:55Z",
+  "reason": "National land-record custody is evidenced but Pegu local registry accessibility remains unresolved; the SLRD anonymous response was a challenge and the inspected general ArcGIS directory contained no cadastral layer. No native parcel geometry or adapter qualification is evidenced.",
+  "bilingualSearchRecheck": [
+    {
+      "language": "English",
+      "query": "Pegu Bago Myanmar official cadastral parcel map land records GIS"
+    },
+    {
+      "language": "Burmese",
+      "query": "ပဲခူး မြေစာရင်း မြေကွက် မြေပုံ GIS အစိုးရ"
+    }
+  ],
+  "retainedFullPolygons": 0
+}

@@ -1,0 +1,31 @@
+{
+  "cityRecord": "city-7992-ado.json",
+  "cityCode": 7992,
+  "queueRank": 1907,
+  "city": "Ado",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "Nasarawa Geographic Information Service (NAGIS), Nasarawa State Government",
+  "serviceUrl": "https://nagis.na.gov.ng/",
+  "scope": "Nasarawa State GIS and digital land administration; official site lists a service office in Ado, Nasarawa. No open parcel geometry endpoint was verified.",
+  "schemaAndCrs": "Unavailable: no anonymous parcel service, layer schema, geometry response, or CRS metadata was exposed by the inspected public routes.",
+  "nativeIdentity": "Unavailable; no parcel feature response was obtained. No synthetic identity was created.",
+  "fieldMapping": {},
+  "requestOutcome": "Verified-TLS GETs to official homepage, about, registration procedure, registration form page, robots.txt, and candidate api/map/viewer/gis routes. Official pages succeeded; candidate parcel/API routes were absent or not parcel services. No login, CAPTCHA bypass, unsafe records, or private fields were accessed.",
+  "retainedSample": null,
+  "retainedProperties": null,
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeDataPolicy": "No owner, address, contact, titleholder, tax/account, legal-description, application, or other personal/property-record fields were requested or retained.",
+  "officialCustodyEvidence": "NAGIS’s official pages identify it as the state’s official GIS data source and host of digital land administration; the homepage lists a NAGIS Karo service office in Ado, Nasarawa.",
+  "limits": [
+    "Official custodian evidence does not equal open parcel-service integration.",
+    "No parcel geometry, native ID, schema, CRS, or bounded anonymous feature response was obtained.",
+    "No exact-point query was possible; no absence conclusion is drawn.",
+    "RuntimeReadiness remains held pending independent serial qualification."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "A public, authenticated, staff-mediated, or otherwise unlinked NAGIS cadastral service may exist, but it was not safely discoverable as an anonymous public endpoint during this attempt."
+}

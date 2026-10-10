@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 5082,
+  "queueRank": 1822,
+  "cityId": "queue:1822",
+  "name": "Safadasht",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "point": [35.6846543345962, 50.8269519308257],
+  "centerLatLon": [35.6846543345962, 50.8269519308257],
+  "population2025": 315054,
+  "population2025k": 315.054,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "searchedAt": "2026-10-10",
+    "method": "First-party web discovery followed by TLS-verified bounded GETs and current JavaScript/configuration inspection; no credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe-field request, coordinate shift, or TLS disablement.",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Safadasht Iran official cadastral map parcel GIS land registry",
+        "result": "Discovery found no Safadasht-local official parcel viewer or public ID-plus-geometry service. It identified Iran's official Zamin single-window land-management portal and national cadastral custodial context, but those results do not expose Safadasht parcel geometry anonymously.",
+        "actualResultUrls": [
+          "https://zamin.gov.ir",
+          "https://iraneland.ir",
+          "https://ssaa.ir",
+          "https://nezamat.ir/post-44174/"
+        ]
+      },
+      {
+        "language": "native/local (Persian)",
+        "query": "ایران صفادشت نقشه کاداستر قطعه زمین سامانه رسمی سازمان ثبت اسناد املاک",
+        "result": "Native-language discovery found national Zamin land-management material and general Iranian cadastral references, but no Safadasht-local cadastral map/API or anonymous parcel geometry response.",
+        "actualResultUrls": [
+          "https://zamin.gov.ir",
+          "https://iraneland.ir",
+          "https://nezamat.ir/post-44174/"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "sourceFields": null,
+  "crs": null,
+  "coverageAssessment": {
+    "claimedScope": "Iran national land-management and cadastral institutional context; Safadasht-local open cadastral coverage was not established.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "resultCategory": "national_cadastral_context_no_verified_local_open_endpoint",
+  "runtimeReadiness": "held_quality_review",
+  "remainingUncertainty": "No anonymous parcel ID-plus-geometry response, native schema, CRS, stable identity, or local Safadasht registry/map custodian was verified. The unchanged WUP point was preserved; no exact-point hit or miss, map-extent miss, timeout, or unavailable route is treated as evidence of citywide absence.",
+  "nextStep": "Retry with a Safadasht-local official cadastral/map viewer or an explicitly published public service, following its current JavaScript/configuration and requesting only bounded geometry plus safe native parcel identifiers. Independently qualify any adapter before runtime admission."
+}

@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7759-jijiga.json",
+  "cityCode": 7759,
+  "purpose": "Document first-party discovery, current viewer access outcomes, and bounded anonymous parcel-geometry review for Jijiga.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Jigjiga city portal is under maintenance. The official Somali Regional State bureau establishes a local/regional land-administration custodian and general registration mandate, while Ethiopia's e-Land and Ethio-NSDI establish national geospatial service routes. No anonymous Jijiga parcel feature response, safe native parcel ID, CRS, or full polygon was obtained. No login, credentials, private token, CAPTCHA/Cloudflare bypass, or unsafe field request was used.",
+  "registryAssessment": "registryFound remains null: a local/regional custodian is evidenced, but no public Jijiga cadastral map/API or parcel geometry was verified. General legal and agency prose is not treated as source integration.",
+  "safeFieldAllowlist": ["safe parcel/native plot identifier if exposed", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "queries": [
+    {"language":"English","query":"Jijiga Ethiopia official cadastral map parcel registry GIS","outcome":"Official city, regional land-administration, e-Land, and NSDI routes found; no anonymous Jijiga parcel feature response or safe geometry found.","actualResultUrls":["https://www.jigjiga.gov.et/contact-us/","https://srseprlab.gov.et/contact-us/","https://eland.addiscadaster.gov.et/maps","https://www.ethionsdi.gov.et/"]},
+    {"language":"Amharic","query":"ጅጅጋ ካዳስተር የመሬት ምዝገባ ካርታ ይፋዊ","outcome":"Official Ethiopian cadastral legal material and general land-registration references found; no Jijiga-specific anonymous parcel geometry or public schema found.","actualResultUrls":["https://www.metaappz.com/pdf/ethiopian_laws/federal/2025/pr_1381_2025.pdf","https://www.ddacouncil.gov.et/public/uploads/proclamations/file-60.pdf","https://eland.addiscadaster.gov.et/maps"]}
+  ],
+  "attempts": [
+    {"url":"https://www.jigjiga.gov.et/contact-us/","method":"GET/search-open","result":"Official city page loaded and explicitly reported website maintenance; interactive map was a placeholder and no parcel layer or API was exposed."},
+    {"url":"https://srseprlab.gov.et/contact-us/","method":"GET/search-open","result":"Official bureau page loaded; it states the rural land-administration mandate and Jigjiga address/contact, but exposed no public parcel schema or geometry."},
+    {"url":"https://eland.addiscadaster.gov.et/registration","method":"GET/search-open","result":"Official e-Land registration portal was found and opened; no inspectable anonymous parcel schema or feature response was available."},
+    {"url":"https://eland.addiscadaster.gov.et/maps","method":"GET/search-open","result":"Official e-Land map portal was found and opened; no inspectable anonymous parcel schema, CRS, native ID, or geometry response was available."},
+    {"url":"https://www.ethionsdi.gov.et/","method":"GET/search-open","result":"Official NSDI geoportal was found, but the open request timed out before a public parcel layer or service configuration could be inspected."},
+    {"url":"https://www.ffic.gov.et/Portals/0/1381-2017.pdf","method":"GET/search-index","result":"Official gazette text was indexed and describes cadastral maps and unique parcel identification codes; it is not a live Jijiga parcel endpoint."},
+    {"url":"https://eland.addiscadaster.gov.et/maps","method":"GET/curl","result":"TLS verification failed because the host presented a self-signed certificate. TLS verification was not disabled and no certificate exception was used; this is recorded as an access limitation, not absence evidence."}
+  ],
+  "geometryEvidence": null,
+  "geometryDecision": {"verified":false,"sourceId":null,"nativeIdField":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"No parcel containment test completed. The exact WUP point [9.3557236983248, 42.7953343409497] was preserved and not shifted; no hit/miss was used as citywide evidence."},
+  "remainingUncertainty": "Jijiga's exact parcel, stable native parcel identifier, parcel CRS, anonymous API request shape, and citywide coverage remain unverified. The national portals may require UI/session context or may not publish parcel vectors for this locality.",
+  "runtimeAssessment": "not enabled; serial reviewer must independently qualify any adapter"
+}

@@ -1,0 +1,17 @@
+{
+  "taskId": "city:2134",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-2134-seremban.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/seremban-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/seremban-parcel-samples.geojson",
+    "tmp/valhalla-parcel-research/seremban/layer52.json",
+    "tmp/valhalla-parcel-research/seremban/query-first.json",
+    "tmp/valhalla-parcel-research/seremban/sample.geojson",
+    "tmp/valhalla-parcel-research/seremban/query-point.json"
+  ],
+  "checkedAt": "2026-10-09T13:07:01Z",
+  "reason": "Queue identity matches. Paired English and Malay searches and first-party cache support local custody and a three-polygon public sample with native UPI IDs. Metadata says supportsPagination=false; the cached 2,000-feature response has exceededTransferLimit=true and the point query errored. Fresh exact-ID reads, complete forced paging, 13 bounded cells, metric full-polygon checks, source binding and headed Details verification are not independently evidenced. Public geometry stays held, with no citywide coverage inference."
+}

@@ -1,0 +1,32 @@
+{
+  "cityRecord": "city-8927-amroha.json",
+  "cityCode": 8927,
+  "queueRank": 1904,
+  "city": "Amroha",
+  "country": "India",
+  "countryCode": "IN",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "District Amroha, Government of Uttar Pradesh, referring to UP Bhulekh / UP Bhu-Naksha",
+  "serviceUrl": "https://upbhunaksha.gov.in/",
+  "scope": "Official district land-records referral and Uttar Pradesh public cadastral viewer; Amroha tehsil digitization coverage is reported by the official dashboard.",
+  "schemaAndCrs": "Viewer level labels District/Tehsil/Village were retrieved. No parcel schema or CRS was obtained because the bounded anonymous level-value/map requests did not return a usable parcel response.",
+  "nativeIdentity": "Not qualified; no native parcel ID was received. No synthetic identity was created.",
+  "fieldMapping": null,
+  "requestOutcome": "Official discovery pages and current viewer JavaScript/configuration were retrieved. Viewer label metadata succeeded; state-code and level-value requests timed out or returned no usable response. No exact-point hit or parcel geometry claim is made.",
+  "retainedSample": null,
+  "retainedProperties": null,
+  "safeFieldAllowlist": ["native parcel ID if independently obtained", "geometry if independently obtained"],
+  "unsafeDataPolicy": "Owner, address, contact, titleholder, tax/account, legal-description and mutation fields were not requested or retained.",
+  "officialCustodyEvidence": "The District Amroha government page is local-custodian evidence for the land-records referral. The parcel viewer and digitization dashboard are state-level Revenue Council/UP Bhulekh services, not a separately evidenced Amroha municipal parcel service.",
+  "limits": [
+    "No parcel polygon or native parcel ID was retained.",
+    "No exact WUP-point query was completed; this is not evidence of citywide absence.",
+    "Administrative digitization counts do not prove every urban parcel is publicly queryable.",
+    "Timeout and unusable anonymous UI/API responses were recorded rather than treated as source absence.",
+    "RuntimeReadiness remains held pending independent serial review."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "A serial reviewer must independently qualify current public viewer selection, endpoint behavior, CRS, safe identity stability, and Amroha coverage before any adapter admission."
+}

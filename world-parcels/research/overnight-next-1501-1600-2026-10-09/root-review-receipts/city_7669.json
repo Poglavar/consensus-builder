@@ -1,0 +1,15 @@
+{
+  "taskId": "city:7669",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-7669-chiniot.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/chiniot-service-review.json",
+    "tmp/valhalla-parcel-research/chiniot/cadastral-mapserver.json",
+    "tmp/valhalla-parcel-research/chiniot/query-sample.json",
+    "tmp/valhalla-parcel-research/chiniot/lis.html"
+  ],
+  "checkedAt": "2026-10-10T10:38:17.220986Z",
+  "reason": "Official PULSE viewer lists Chiniot, but original ArcGIS metadata/layer/query bodies return 499 Token Required. No safe native-ID full polygon response or independent admission gates; preserve registryFound=true and hold without absence inference."
+}

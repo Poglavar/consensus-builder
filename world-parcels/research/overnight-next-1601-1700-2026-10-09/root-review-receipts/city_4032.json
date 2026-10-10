@@ -1,0 +1,14 @@
+{
+  "taskId": "city:4032",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-4032-sakarya.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/sakarya-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T11:44:22Z",
+  "reason": "Official TKGM directory supports local cadastral custody. The viewer was unavailable in the worker attempt and no bounded native-ID polygon response was recovered; DNS/502 and static municipal maps are not evidence of citywide absence.",
+  "admissionGates": "No parcel polygon or native-ID response. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are not evidenced.",
+  "sourceCacheSha256": {}
+}

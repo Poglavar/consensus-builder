@@ -1,0 +1,79 @@
+{
+  "cityCode": 6811,
+  "queueRank": 1215,
+  "name": "Barishal",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "iso3": "BGD",
+  "point": [22.6994140071446, 90.3591689216315],
+  "population2025": 457323,
+  "population2025k": 457.323,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": true,
+  "registryAssessment": "Bangladesh's official Ministry of Land map.land.gov.bd viewer is a public mouza-and-plot-based digital land zoning map. Its current page explicitly lists বরিশাল সদর (Barishal Sadar) among the areas noted by the service. This evidences an official public map/service relevant to the city, but not complete cadastral coverage or legal title records.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Barishal Bangladesh official cadastral map land parcel GIS land records map",
+        "result": "Found official Bangladesh sources: the Ministry of Land map viewer, the DLRS/Settlement online land-record and survey portal, Survey of Bangladesh map services, Barishal City Corporation, and an official LGED Barishal map directory. The map.land.gov.bd page describes digitized and georeferenced mouza/plot maps and lists Barishal Sadar in its service notice.",
+        "actualResultUrls": [
+          "https://map.land.gov.bd/",
+          "https://settlement.gov.bd/Home/",
+          "https://dlrs.gov.bd/",
+          "https://sob.gov.bd/pages/static-pages/6922dce0933eb65569e1284b",
+          "https://www.barishalcity.gov.bd/",
+          "https://oldweb.lged.gov.bd/uploadeddocument/Map/BARISAL/Barishal/"
+        ]
+      },
+      {
+        "language": "Bengali (Bangla)",
+        "query": "বরিশাল বাংলাদেশ সরকারি ভূমি মানচিত্র জমি রেকর্ড অনলাইন",
+        "result": "Found the official Bengali Ministry of Land map viewer and DLRS/Settlement portal. The map viewer describes mouza- and plot-based national digital land zoning, provides বিভাগ/জেলা/থানা-উপজেলা/মৌজা/সিট/প্লট selectors, and names বরিশাল সদর in its current notice. The DLRS portal identifies the official Barishal zonal settlement office and related survey services.",
+        "actualResultUrls": [
+          "https://map.land.gov.bd/",
+          "https://settlement.gov.bd/Home/",
+          "https://dlrs.portal.gov.bd/",
+          "https://barisaldiv.gov.bd/pages/static-pages/6978949e35ce18e1c06687e5",
+          "https://barishal.judiciary.gov.bd/bn/servicve-box-detail/mouza-rate"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://map.land.gov.bd/",
+      "role": "Ministry of Land public mouza/plot map viewer",
+      "observation": "HTTP 200. Page describes digitized/georeferenced mouza maps, exposes plot and mouza selectors, and lists Barishal Sadar among areas in the service notice. The page's JavaScript identifies an OpenLayers/GeoServer backend and plot geometry route."
+    },
+    {
+      "url": "https://settlement.gov.bd/Home/",
+      "role": "DLRS online land-record and survey portal",
+      "observation": "HTTP 200. Official portal states it displays draft-stage khatians from ongoing surveys and directs completed surveys to land.gov.bd; it is not itself proof of citywide parcel-vector availability."
+    },
+    {
+      "url": "https://dlrs.portal.gov.bd/",
+      "role": "DLRS government portal",
+      "observation": "Search result identifies the official Barishal zonal settlement office covering Barishal district, Pirojpur and Jhalokathi, plus survey/map services."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No safe anonymous full parcel polygon response was obtained. The official viewer exposes plot geometry through a GeoServer backend and POST routes, but the GIS host returned HTTP 503 and no bounded geometry-only response was available to retain."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official national mouza/plot digital land-zoning viewer with Barishal Sadar named in the current service notice.",
+    "verifiedOpenScope": "Official viewer presence and Barishal Sadar service mention verified; exact WUP-point parcel inclusion, complete city coverage, cadastral/legal status, and public vector response were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

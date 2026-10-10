@@ -1,0 +1,14 @@
+{
+  "taskId": "city:7514",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-7514-yan-an.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/yan-an-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T12:53:46Z",
+  "reason": "Immutable rank 1687 identity, China, exact point and 338883 persons agree with queue. English and Chinese source searches are recorded. The cached first-party Yan’an bureau HTML identifies the authority and registration notices; paired evidence reports a government service 403. No original anonymous native-ID parcel polygon response is retained. Fresh ID reads, forced paging, 13 cells, metric GEOS checks, source binding and headed Details verification are unevidenced. A 403 or missing public endpoint is not citywide parcel absence.",
+  "runtimeAdmission": false
+}

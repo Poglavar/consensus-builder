@@ -1,0 +1,40 @@
+{
+  "cityRecord": "city-6694-nuevo-laredo.json",
+  "cityCode": 6694,
+  "queueRank": 1733,
+  "city": "Nuevo Laredo",
+  "country": "Mexico",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "runtimeReadiness": "held",
+  "summary": "Municipal/state cadastral custodians and a public municipal predial service were evidenced, but no anonymous public parcel geometry service was found. No sample GeoJSON was retained.",
+  "queryOutcomes": "English and Spanish discovery queries are recorded verbatim in city-6694-nuevo-laredo.json under freshResearch.queries. Results were limited to official municipal/state cadastral mandate, regulation, valuation, and predial-service evidence.",
+  "requestOutcomes": "Executed first-party GET checks and outcomes are recorded under requestsAndEndpointChecks. The public predial metadata routes returned no parcel geometry. The account consultation route was not queried because it is account/property-data oriented. No login, CAPTCHA bypass, credentials, private token, unsafe field, or TLS exception was used.",
+  "scopeLimits": [
+    "The municipal predial service is not a parcel geometry service and requires an account/cadastral key for consultation.",
+    "The state institute's mandate evidences a cadastral custodian but does not expose an anonymous parcel endpoint on the inspected page.",
+    "The municipal regulation and valuation decree establish cadastral context but contain no machine-readable geometry or safe native parcel IDs.",
+    "The 403 response from the predial page is a request/UI limitation, not evidence of citywide absence.",
+    "No exact-point hit, extent test, timeout, unavailable UI, or search failure was treated as evidence of citywide absence."
+  ],
+  "safeFieldAllowlist": ["native parcel identifier", "geometry", "source layer name", "CRS", "service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryRetention": {
+    "sampleGeoJSON": null,
+    "featureCount": 0,
+    "reason": "No safe, verified native parcel geometry response was available."
+  },
+  "uncertainty": "Open parcel coverage, schema, CRS, native identity semantics, and citywide completeness remain unverified. Registry existence is documented, but runtime integration is not admitted.",
+  "qualificationDecision": "hold",
+  "completionSummary": {
+    "recordWritten": true,
+    "serviceReviewWritten": true,
+    "sampleGeoJSONWritten": false,
+    "openParcelEndpointVerified": false,
+    "adapterQualified": false
+  }
+}

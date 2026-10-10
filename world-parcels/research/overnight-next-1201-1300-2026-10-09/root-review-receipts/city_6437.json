@@ -1,0 +1,17 @@
+{
+  "taskId": "city:6437",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-6437-shashamane.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/shashamane-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261009T114700-91c9b9b4/stdout.jsonl",
+    "tmp/valhalla-parcel-research/shashamane/city.html",
+    "tmp/valhalla-parcel-research/shashamane/api.config.json"
+  ],
+  "checkedAt": "2026-10-09T11:51:28Z",
+  "review": "No verified fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel check. No adapter admission.",
+  "reason": "Immutable code 6437, rank 1230, Ethiopia, [7.19972406980754,38.6017855741764], 452945 persons match roster and queue. English and Amharic web searches are recorded as executed. The cached official city page advertises land management; e-Land public config is Addis-focused (AA-ADS), the OR-SHA API attempt returned 401, and WFS requests timed out. No safe native ID or full polygon response was obtained. Registry/procedure custody is supported; public parcel geometry and citywide presence remain unresolved."
+}

@@ -1,0 +1,123 @@
+{
+  "cityCode": 7041,
+  "queueRank": 1747,
+  "city": "Abu Tig",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "countryCode3": "EGY",
+  "locId": 818,
+  "point": [27.0529870151594, 31.3089748298407],
+  "population2025": 328639,
+  "population2025k": 328.639,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Abu Tig Egypt cadastral map parcel official GIS",
+        "result": "Discovery found the official Egyptian General Survey Authority (ESA) services and digital-map pages, the official IDSC ArcGIS service directory, and general official cadastral/national-data references. No Abu Tig-specific public parcel viewer or parcel API was identified.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://www.egis.idsc.gov.eg/server/rest/services/Map/FeatureServer"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "أبو تيج مصر خريطة كادسترية أراضي مساحية بوابة جغرافية رسمية",
+        "result": "Discovery found ESA Arabic land-map/topographic services, official references to the Egyptian cadastral/title-registration program, and an official topographic-map index listing Abu Tig. No Abu Tig-specific anonymous parcel geometry service was identified.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+          "https://www.esa.gov.eg/benya.aspx"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "The official Egyptian General Survey Authority is the national cadastral/survey custodian and publishes land-map, digital-map, coordinate-certificate and cadastral/title-registration services. Official government material also references an Asyut Survey Directorate in survey documentation. This establishes institutional/procedural registry evidence, not an open Abu Tig parcel endpoint.",
+  "attemptedRoutes": [
+    {
+      "route": "Egyptian General Survey Authority services",
+      "url": "https://www.esa.gov.eg/services.aspx",
+      "outcome": "HTTP 200; official Arabic service catalogue lists paper/digital/historical maps, coordinate certificates, topographic mapping, boundary separation and land-allocation services; no public parcel query endpoint exposed."
+    },
+    {
+      "route": "Egyptian General Survey Authority digital maps",
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "outcome": "HTTP 200; official page says digital GIS/CAD maps are supplied through a request and paid delivery workflow; no anonymous parcel geometry API exposed."
+    },
+    {
+      "route": "Egyptian General Survey Authority cadastral program",
+      "url": "https://www.esa.gov.eg/benya.aspx",
+      "outcome": "HTTP 200; official page describes the national cadastral/title-registration information-system program and protected national property database; no public Abu Tig parcel layer exposed."
+    },
+    {
+      "route": "Official IDSC ArcGIS Map FeatureServer root",
+      "url": "https://www.egis.idsc.gov.eg/server/rest/services/Map/FeatureServer?f=pjson",
+      "outcome": "HTTP 200; service schema exposes Building, CITY, CENTER, STATE polygon layers and an Equipments table only; no parcel/cadastral layer. Service CRS is EPSG:4326."
+    },
+    {
+      "route": "Official IDSC CITY layer metadata",
+      "url": "https://www.egis.idsc.gov.eg/server/rest/services/Map/FeatureServer/1?f=pjson",
+      "outcome": "HTTP 200; administrative CITY polygon layer, not cadastral parcels."
+    },
+    {
+      "route": "Official IDSC CITY bounded point query",
+      "url": "https://www.egis.idsc.gov.eg/server/rest/services/Map/FeatureServer/1/query?where=1%3D1%26geometry=31.3089748298407%2C27.0529870151594%26geometryType=esriGeometryPoint%26inSR=4326%26spatialRel=esriSpatialRelIntersects%26outFields=OBJECTID%26returnGeometry=false%26f=pjson",
+      "outcome": "HTTP 200; returned two administrative CITY features (OBJECTID 108 and 262) with no geometry requested and no parcel identity. This was not treated as parcel coverage or a citywide absence test."
+    },
+    {
+      "route": "CAPMAS Egy-GeoInfo portal lead",
+      "url": "https://geoportal.capmas.gov.eg/",
+      "outcome": "TLS-verified request timed out after 20 seconds (HTTP 000). No conclusion about coverage or absence was drawn."
+    },
+    {
+      "route": "Official ESA topographic-map index",
+      "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+      "outcome": "Official PDF/index identifies Abu Tig topographic-map coverage; it is not parcel geometry and was not retained as a parcel sample."
+    }
+  ],
+  "requestsAndEndpointChecks": {
+    "tls": "Default certificate verification used; no TLS exception.",
+    "authentication": "No login, credentials, private token, CAPTCHA/Cloudflare bypass, or unsafe field request used.",
+    "safeFieldsRequested": ["public layer/service metadata", "OBJECTID only for bounded administrative point check"],
+    "parcelResponse": null,
+    "parcelEndpointVerified": false,
+    "parcelGeometryRetrieved": false,
+    "nativeParcelId": null,
+    "crs": "EPSG:4326 for the inspected IDSC administrative service; parcel CRS unverified"
+  },
+  "scopeLimits": [
+    "Exact WUP point [27.0529870151594, 31.3089748298407] was preserved in latitude/longitude order; no coordinate shift or parcel-forcing was attempted.",
+    "The IDSC service is administrative CITY/CENTER/STATE data, not a cadastral parcel service; returned features cannot be used as parcel samples.",
+    "ESA digital-map and cadastral-program pages establish official institutional/procedural custody, not anonymous machine-readable parcel access.",
+    "The CAPMAS portal timeout, any map extent limitation, and the absence of a public endpoint are not evidence of citywide cadastral absence.",
+    "No owner, address, contact, titleholder, tax/account, personal or other unsafe fields were requested or retained.",
+    "Packet completion records research attempts only and does not qualify or admit a runtime adapter."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier if independently confirmed", "full parcel polygon geometry", "geometry CRS", "source layer/service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public parcel geometry service was available; no hit/miss inference.",
+    "reason": "Only administrative polygons were exposed; no safe native parcel identity plus full polygon response was obtained."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Egyptian national survey/cadastral institutional services and official IDSC administrative GIS service relevant to Abu Tig.",
+    "verifiedOpenScope": "Institutional/procedure pages and administrative GIS metadata only.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Abu Tig-specific parcel coverage, public access controls, native parcel identity, schema, CRS, geometry endpoint, update currency and citywide completeness remain unresolved. No claim is made about parcel absence, ownership, title, taxation or completeness."
+}

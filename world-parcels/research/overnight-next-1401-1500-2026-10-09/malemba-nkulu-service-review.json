@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6313-malemba-nkulu.json",
+  "purpose": "Document fresh first-party discovery and bounded anonymous parcel-service review for Malemba-Nkulu.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official DRC Ministry of Land Affairs and its land-search workflow are reachable. Its current circonscriptions page lists Haut-Lomami entries Kamina and Kanyama, but no Malemba-Nkulu service or public parcel layer. Candidate cadastre/geoportal hosts were unavailable, and ArcGIS public search returned zero for the city query. These are route and discovery limits, not evidence of citywide absence.",
+  "registryAssessment": "National land-administration custodian evidenced; a Malemba-Nkulu local registry/cadastre custodian or public parcel service was not evidenced, so registryFound remains null.",
+  "officialPrimarySources": [
+    {"url": "https://www.affairesfoncieres.gouv.cd/", "observation": "Official ministry homepage with land/cadastre materials and services; no city parcel API exposed."},
+    {"url": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes", "observation": "Official land-search form requires identity and property references; no anonymous request was submitted."},
+    {"url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions", "observation": "Official current list shows 143 circonscriptions; Haut-Lomami shows Kamina and Kanyama, not Malemba-Nkulu."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Malemba-Nkulu cadastral parcels land registry GIS Democratic Republic of the Congo", "result": "Found official Ministry of Land Affairs and related land-administration pages; no official city parcel viewer/API found.", "method": "Separate English web search followed by first-party source inspection.", "scope": "Find a local custodian and safe anonymous parcel geometry."},
+    {"language": "French (local/official)", "query": "Malemba-Nkulu cadastre parcelles registre foncier carte GIS RDC", "result": "Found official French ministry workflow and circonscriptions listing; no public Malemba-Nkulu parcel service found.", "method": "Separate French web search followed by first-party source inspection.", "scope": "Cross-check local-language discovery for a city-specific land map or registry service."}
+  ],
+  "attempts": [
+    {"url": "https://www.affairesfoncieres.gouv.cd/", "method": "GET", "httpStatus": 200, "result": "Official homepage loaded; no public map/API route exposed."},
+    {"url": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes", "method": "GET", "httpStatus": 200, "result": "Official identity-bearing search form loaded; no submission made."},
+    {"url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions", "method": "GET", "httpStatus": 200, "result": "Official list loaded; Haut-Lomami has Kamina and Kanyama only in the rendered content; no parcel service route exposed."},
+    {"url": "https://bic.cd/", "method": "GET", "httpStatus": 200, "result": "Cadastral information landing page loaded; no anonymous city parcel response exposed."},
+    {"url": "https://www.cadastre.gouv.cd/", "method": "GET", "httpStatus": 0, "result": "DNS failure; unavailable, not evidence of absence."},
+    {"url": "https://www.rdc-cadastre.cd/", "method": "GET", "httpStatus": 0, "result": "Connection failure; unavailable, not evidence of absence."},
+    {"url": "https://geoportail-rdc.cd/", "method": "GET", "httpStatus": 0, "result": "DNS failure; unavailable, not evidence of absence."},
+    {"url": "https://www.arcgis.com/sharing/rest/search?q=Malemba-Nkulu%20cadastre&f=json", "method": "GET", "httpStatus": 200, "result": "Public ArcGIS search returned zero results; not treated as national or citywide absence."}
+  ],
+  "safeFieldAllowlist": ["native parcel/survey identity", "geometry", "source CRS", "layer/service name"],
+  "nativeFieldMapping": null,
+  "geometryDecision": "No sample GeoJSON written; no qualifying public geometry response was found.",
+  "coverageAssessment": {"claimedScope": "Official national land-administration pages and city-specific discovery.", "verifiedOpenScope": null, "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeDecision": "held",
+  "remainingUncertainty": "A local or unpublished service may exist outside the reviewed pages. No login, CAPTCHA bypass, credentials, private token, unsafe field request, or TLS exception was used."
+}

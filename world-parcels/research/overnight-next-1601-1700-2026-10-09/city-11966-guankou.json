@@ -1,0 +1,118 @@
+{
+  "schemaVersion": "1.0",
+  "cityCode": 11966,
+  "queueRank": 1661,
+  "name": "Guankou",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "point": [24.5770091121157, 118.026098381416],
+  "population2025": 344468,
+  "population2025k": 344.468,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Guankou Xiamen China official cadastral parcel map land registry GIS natural resources bureau",
+        "result": "First-party discovery identified Xiamen's Natural Resources and Planning Bureau, the Xiamen property-registration authentication portal, and the Xiamen Surveying and Basic Geographic Information Center service listed by the official iXiamen portal. The sources describe cadastral-map and parcel-map services, but no anonymous parcel feature endpoint or safe ID-plus-geometry response was identified.",
+        "actualResultUrls": [
+          "https://zygh.xm.gov.cn/zfxxgk/zfxxgkml/zzjg/jgcs/",
+          "https://bdc.zygh.xm.gov.cn/yhrzpt/",
+          "https://ixm.xm.gov.cn/yyzx/202209/t20220909_94940.htm",
+          "https://chzx.zygh.xm.gov.cn/",
+          "https://map.zygh.xm.gov.cn/"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "灌口镇 厦门 集美 不动产登记 地籍图 宗地图 自然资源和规划局 官方",
+        "result": "中文 first-party discovery connected 灌口镇 with Xiamen/Jimei and found official Xiamen natural-resources, property-registration, and surveying/geographic-information services. The official iXiamen listing explicitly describes 地籍图 and 宗地图 query/use services. No public anonymous parcel polygon and stable native parcel identity were obtained.",
+        "actualResultUrls": [
+          "https://zygh.xm.gov.cn/zfxxgk/zfxxgkml/zzjg/jgcs/",
+          "https://bdc.zygh.xm.gov.cn/yhrzpt/",
+          "https://ixm.xm.gov.cn/yyzx/202209/t20220909_94940.htm",
+          "https://www.jimei.gov.cn/xxgk/zdxxgk/gytdsyq/zsbcfa/202209/P020220909403056411277.pdf"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://zygh.xm.gov.cn/zfxxgk/zfxxgkml/zzjg/jgcs/",
+      "observation": "Official Xiamen Natural Resources and Planning Bureau organizational page identifies the natural-resources survey/monitoring and rights-registration office and the surveying/information office; this is local institutional custody evidence, not an open parcel API."
+    },
+    {
+      "url": "https://ixm.xm.gov.cn/yyzx/202209/t20220909_94940.htm",
+      "observation": "Official iXiamen service listing identifies the Xiamen Surveying and Basic Geographic Information Center online hall and states that it provides cadastral maps, parcel maps, and basic surveying-result query/use services."
+    },
+    {
+      "url": "https://bdc.zygh.xm.gov.cn/yhrzpt/",
+      "observation": "Official Xiamen property-registration portal states that users are managed through unified authentication and real-name verification; the public page did not expose an anonymous parcel geometry service."
+    },
+    {
+      "url": "https://www.jimei.gov.cn/xxgk/zdxxgk/gytdsyq/zsbcfa/202209/P020220909403056411277.pdf",
+      "observation": "Official Jimei government document names 灌口镇人民政府 in a land-acquisition procedure, supporting the locality match but not parcel geometry or cadastral API availability."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://map.zygh.xm.gov.cn/",
+      "method": "GET",
+      "outcome": "TLS-verified bounded request timed out after 20 seconds; current JavaScript/configuration and service routes could not be inspected. This is not evidence of citywide cadastral absence."
+    },
+    {
+      "url": "https://chzx.zygh.xm.gov.cn/",
+      "method": "GET",
+      "outcome": "TLS-verified bounded request did not produce usable public HTML within the request window; the official iXiamen listing was available, but no endpoint/schema/CRS or parcel response was obtained."
+    },
+    {
+      "url": "https://bdc.zygh.xm.gov.cn/yhrzpt/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official registration portal loaded anonymously but presented unified authentication and real-name/account fields. No login, credentials, private token, CAPTCHA bypass, or unsafe lookup was attempted."
+    },
+    {
+      "url": "https://zygh.xm.gov.cn/zfxxgk/zfxxgkml/zzjg/jgcs/",
+      "method": "GET",
+      "outcome": "Official page was readable through public web access; it established the city natural-resources custodian but exposed no public parcel layer, schema or CRS."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Official Xiamen/Jimei sources establish local natural-resources, surveying, and property-registration custodians and named cadastral/parcel-map services. This evidences local custody and procedure, not open anonymous parcel geometry access.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Xiamen municipal cadastral, parcel-map, surveying, and property-registration services, including Guankou in Jimei District.",
+    "verifiedOpenScope": "Local institutional custody and named map services were verified; no anonymous parcel feature response, native parcel ID, schema or CRS was retrieved.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "excludedFields": [
+    "owner or titleholder names",
+    "addresses and contact data",
+    "tax/account/registration details beyond a safe native parcel ID",
+    "credentials and private tokens"
+  ],
+  "nativeIdentityPolicy": "No native parcel identity was observed; no synthetic identity was created. A future retained sample must use exactly one stable native identity and document source field mapping in review metadata.",
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "remainingUncertainty": "The current viewer/API route, access controls, parcel schema, CRS, stable native parcel identity and citywide coverage remain unresolved. The exact WUP point was preserved and was not shifted; no exact-point hit/miss or citywide-absence inference was made.",
+  "retainedSample": null
+}

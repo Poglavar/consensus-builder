@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "wupCityCode": 2069,
+  "cityCode": 2069,
+  "cityId": "wup2025:2069",
+  "name": "Cap-Haitien",
+  "country": "Haiti",
+  "countryCode": "HT",
+  "centerLatLon": [19.7389872740487, -72.2081885139174],
+  "point": [19.7389872740487, -72.2081885139174],
+  "population2025": 331899,
+  "population2025k": 331.899,
+  "populationUnit": "persons",
+  "queuePriority": 1731,
+  "queueRank": 1731,
+  "cohorts": ["overnight-next-1701-1800-2026-10-09"],
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Cap-Haitien Haiti official cadastral map parcel cadastre",
+        "result": "First-party discovery found IHSI geographic maps, CIAT land/cadastre policy material, and Cap-Haïtien-specific official project documentation. No public parcel viewer or open parcel geometry service was identified.",
+        "actualResultUrls": [
+          "https://ihsi.gouv.ht/statistiques/banque_de_donnee_geographique",
+          "https://ciat.gouv.ht/legislation-institutions-foncier/",
+          "https://www.mtptc.gouv.ht/accueil/publications/media/upload/doc/publications/MDUR-PAR_%20Bassin_Rhodo-Janvier2021.pdf"
+        ]
+      },
+      {
+        "language": "French / Haitian Creole",
+        "query": "Cap-Haïtien Haïti carte cadastrale officiel / Kap Ayisyen Ayiti kat cadastral tè",
+        "result": "French and Haitian-Creole discovery found the official CIAT and IHSI sources, and HaitiDocs administrative boundary data. HaitiDocs is administrative-boundary data (ADM1-ADM3), not parcel data; no local open parcel service was found.",
+        "actualResultUrls": [
+          "https://ciat.gouv.ht/legislation-institutions-foncier/",
+          "https://ihsi.gouv.ht/statistiques/banque_de_donnee_geographique",
+          "https://www.haitidocs.org/map/layers/boundaries-admin?lang=ht"
+        ]
+      }
+    ],
+    "officialViewer": null,
+    "resolvedHierarchy": null,
+    "requests": [
+      {
+        "method": "GET",
+        "url": "https://ciat.gouv.ht/legislation-institutions-foncier/",
+        "status": 503,
+        "outcome": "Official CIAT page was discovered but unavailable during direct TLS-verified fetch; search-indexed official content describes cadastre and land institutions. No retry storm or bypass attempted."
+      },
+      {
+        "method": "GET",
+        "url": "https://ihsi.gouv.ht/statistiques/banque_de_donnee_geographique",
+        "status": 200,
+        "outcome": "Official IHSI geographic-data page loaded. It exposes departmental and urban-percentage JPG maps, including Département du Nord; no parcel layer, schema, or parcel API was exposed."
+      },
+      {
+        "method": "GET",
+        "url": "https://dgi.gouv.ht/plan-du-site/",
+        "status": 200,
+        "outcome": "Official DGI site map loaded. No public cadastral viewer, parcel download, or safe parcel-geometry endpoint was exposed in the inspected site map."
+      },
+      {
+        "method": "GET",
+        "url": "https://www.haitidocs.org/map/layers/boundaries-admin?lang=ht",
+        "status": 200,
+        "outcome": "Public boundary dataset loaded; the advertised GeoJSON is OCHA COD-AB administrative boundaries (ADM1-ADM3), not cadastral parcels. Not retained as a parcel sample."
+      },
+      {
+        "method": "GET",
+        "url": "https://www.haitidocs.org/map/data/boundaries/hti-adm2.geojson",
+        "status": "not fetched",
+        "outcome": "The page identifies this as administrative ADM2 GeoJSON, outside the parcel-safe target scope; no request was needed."
+      }
+    ],
+    "sourceFindings": [
+      {
+        "url": "https://www.mtptc.gouv.ht/accueil/publications/media/upload/doc/publications/MDUR-PAR_%20Bassin_Rhodo-Janvier2021.pdf",
+        "scope": "Cap-Haïtien project documentation",
+        "finding": "Official report states that DGI determines land status, acts are supplied to ONACA for Plan foncier de base georeferencing, and a DGI Cap-Haïtien annex is involved; it also says the study did not provide cadastral plans."
+      },
+      {
+        "url": "https://ciat.gouv.ht/legislation-institutions-foncier/",
+        "scope": "National land/cadastre institutional policy",
+        "finding": "CIAT presents cadastral and land-security policy material; this is institutional context, not an open parcel service."
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "A Cap-Haïtien-specific official MTPTC project report identifies the DGI Cap-Haïtien annex and describes DGI/ONACA cadastral-plan responsibilities. This evidences a local cadastral custodian/procedure, but not an open public parcel viewer or downloadable geometry service.",
+  "verifiedParcelResponse": null,
+  "statusDetail": "official_local_cadastral_custodian_evidenced_no_open_parcel_geometry",
+  "coverageAssessment": {
+    "claimedScope": "DGI/ONACA cadastral procedures and public official geographic sources relevant to Cap-Haïtien.",
+    "verifiedOpenScope": "IHSI departmental/urban maps and administrative boundary data only; no parcel geometry or parcel schema verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "resultCategory": "local_cadastral_custodian_procedure_no_open_vector_geometry",
+  "sourceIds": [],
+  "technicalBlocker": "No public cadastral viewer, anonymous parcel endpoint, or open parcel vector service was exposed by the inspected first-party sources. The CIAT page returned HTTP 503 on direct fetch, while the Cap-Haïtien-specific official report explicitly notes cadastral plans were not provided.",
+  "remainingUncertainty": "The WUP point was preserved and never used to force a parcel query. Public availability, current update currency, legal boundary status, municipal coverage, parcel identifiers, and geometry access remain unresolved. A timeout, unavailable page, or absent public endpoint is not evidence of citywide cadastral absence.",
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification required",
+  "sampleGeojson": null
+}

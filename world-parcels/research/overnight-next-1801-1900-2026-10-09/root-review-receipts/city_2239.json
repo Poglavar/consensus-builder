@@ -1,0 +1,33 @@
+{
+  "taskId": "city:2239",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-2239-rouen.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/rouen-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/rouen-parcel-sample.geojson",
+    "tmp/valhalla-parcel-research/rouen-parcelle-IK-0110.json",
+    "tmp/valhalla-parcel-research/rouen-bbox.json",
+    "tmp/valhalla-parcel-research/rouen-commune.json"
+  ],
+  "checkedAt": "2026-10-10T16:41:38.942941Z",
+  "reason": "Original IGN commune and filtered parcel responses support public Rouen cadastre geometry and native idu. The retained full polygon matches the filtered response exactly. The bounded response reports 10,711 matches but returns 1,000, with an unproven next-page URL pointing at localhost; an exact-point miss is non-diagnostic. Fresh exact-ID adapter reads, stable complete manifests and forced paging, 13 bounded cells, independent metric GEOS validity/duplicates/overlap/operation checks, source binding, and headed Details-panel verification are not evidenced. No runtime admission.",
+  "identity": {
+    "city": "Rouen",
+    "cityCode": 2239,
+    "queueRank": 1844,
+    "country": "France",
+    "point": [
+      49.4334014958952,
+      1.08426580718412
+    ],
+    "populationPersons": 311071,
+    "verifiedAgainst": "2025 WUP archive and pending queue"
+  },
+  "searchLanguagesRecorded": [
+    "English",
+    "French"
+  ],
+  "retainedFullPolygons": 1
+}

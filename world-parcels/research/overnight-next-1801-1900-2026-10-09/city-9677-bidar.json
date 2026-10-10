@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 9677,
+  "queueRank": 1837,
+  "cityId": "queue:1837",
+  "name": "Bidar",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [17.9093292688742, 77.5145528508122],
+  "centerLatLon": [17.9093292688742, 77.5145528508122],
+  "population2025": 312534,
+  "population2025k": 312.534,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bidar Karnataka official cadastral parcel map land records GIS site:gov.in",
+        "result": "First-party discovery found the Bidar District Government of Karnataka Land Records page, which links to Karnataka Bhoomi/land-record services and states that present/old RTC and mutation extracts can be viewed by survey number. It also found the DILRMP Bidar map-digitization/ULPIN status pages and the current national NAKSHA portal. No anonymous Bidar parcel feature response was returned by discovery.",
+        "actualResultUrls": [
+          "https://bidar.nic.in/en/service/land-records/",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/560",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/MapDiditizaionDistrictList/29",
+          "https://naksha.dolr.gov.in/NakshaPortal/"
+        ]
+      },
+      {
+        "language": "native/local (Kannada)",
+        "query": "ಬೀದರ್ ಕರ್ನಾಟಕ ಅಧಿಕೃತ ಭೂ ದಾಖಲೆ ಜಿಐಎಸ್ ಪಾರ್ಸೆಲ್ ನಕ್ಷೆ",
+        "result": "First-party Kannada discovery found the Kannada Bidar District Government of Karnataka Land Records page, linking to the Karnataka land-record portal and describing current/old RTC and mutation-extract access by survey number. It also found the Kannada district revenue/administrative pages, but no public Bidar parcel polygon response.",
+        "actualResultUrls": [
+          "https://bidar.nic.in/service/%E0%B2%AD%E0%B3%82-%E0%B2%A6%E0%B2%BE%E0%B2%96%E0%B2%B2%E0%B3%86%E0%B2%97%E0%B2%B3%E0%B3%81/",
+          "https://bidar.nic.in/%E0%B2%95%E0%B2%82%E0%B2%A6%E0%B2%BE%E0%B2%AF-%E0%B2%87%E0%B2%B2%E0%B2%BE%E0%B2%96%E0%B3%86-%E0%B2%8E%E0%B2%B2%E0%B3%8D%E0%B2%B2%E0%B2%BE-%E0%B2%AF%E0%B3%8B%E0%B2%9C%E0%B2%A8%E0%B3%86%E0%B2%ಗ%E0%B2%B3%E0%B3%81/",
+          "https://bidar.nic.in/%E0%B2%B8%E0%B2%82%E0%B2%B8%E0%B3%8D%E0%B2%A5%E0%B3%86-%E0%B2%A8%E0%B2%95%E0%B2%BE%E0%B2%B6%E0%B3%86/"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Separate English and Kannada first-party discovery, followed by bounded anonymous TLS-verified GET requests. No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS disablement were used."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://bidar.nic.in/en/service/land-records/",
+      "observation": "Official Bidar District Government of Karnataka page identifies Bidar DC Office as the local custodian context and links to the official Karnataka land-record service for survey-number RTC and mutation-extract viewing. It does not expose parcel geometry in the page response."
+    },
+    {
+      "url": "https://bidar.nic.in/service/%E0%B2%AD%E0%B3%82-%E0%B2%A6%E0%B2%BE%E0%B2%96%E0%B2%B2%E0%B3%86%E0%B2%97%E0%B2%B3%E0%B3%81/",
+      "observation": "Official Kannada Bidar District land-record page with the same Bhoomi/land-record service link and survey-number RTC/mutation description."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/560",
+      "observation": "Official DILRMP Bidar status page reports cadastral-map digitization, geo-referencing and ULPIN-related status. This is programme/status evidence, not an open parcel feature service."
+    },
+    {
+      "url": "https://naksha.dolr.gov.in/NakshaPortal/",
+      "observation": "Official NAKSHA viewer. Its current JavaScript configuration exposed the Karnataka state parcel service URL, EPSG:32643 and a FeatureServer query route, but the route required a token anonymously."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://landrecords.karnataka.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Anonymous TLS-verified request timed out after 25 seconds. No Bhoomi viewer configuration, schema, CRS, native ID or geometry was obtained. This is not evidence of cadastral absence."
+    },
+    {
+      "url": "https://naksha.dolr.gov.in/NakshaPortal/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Viewer HTML and current JavaScript/configuration were retrieved. Configuration identified the Karnataka NAKSHA parcel service at https://nakshagis.dolr.gov.in/utm4243/rest/services/Naksha_43/Naksha_ka_29_43/FeatureServer/0, with EPSG:32643 and a /query route."
+    },
+    {
+      "url": "https://nakshagis.dolr.gov.in/utm4243/rest/services/Naksha_43/Naksha_ka_29_43/FeatureServer/0",
+      "method": "GET",
+      "httpStatus": 499,
+      "contentType": "application/json",
+      "assessment": "ArcGIS service metadata returned {error:{code:499,message:'Token Required'}}. No anonymous schema or feature response was available."
+    },
+    {
+      "url": "https://nakshagis.dolr.gov.in/utm4243/rest/services/Naksha_43/Naksha_ka_29_43/FeatureServer/0/query?f=geojson&where=1%3D1&outFields=OBJECTID&returnGeometry=true&geometryType=esriGeometryEnvelope&geometry=766100,1981650,766700,1982250&inSR=32643&spatialRel=esriSpatialRelIntersects&outSR=4326&resultRecordCount=3",
+      "method": "GET",
+      "httpStatus": 499,
+      "contentType": "application/json",
+      "assessment": "Bounded anonymous ID-plus-geometry query around the exact WUP point (transformed only for the request to EPSG:32643) returned Token Required. No polygon was retained; no hit/miss inference was made."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Bidar district local land-record custody, Karnataka Bhoomi survey-number services, DILRMP cadastral status, and the current NAKSHA Karnataka parcel service configuration.",
+    "verifiedOpenScope": "Local registry custody and programme/viewer configuration were verified, but no anonymous Bidar parcel geometry coverage was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The Bhoomi service's current route/schema and the NAKSHA token-gated service's accessible authorization path, parcel schema, native identity, citywide coverage and update currency remain unresolved. The exact WUP point [17.9093292688742, 77.5145528508122] was preserved in latitude/longitude order and never shifted. Runtime readiness remains held pending independent serial qualification."
+}

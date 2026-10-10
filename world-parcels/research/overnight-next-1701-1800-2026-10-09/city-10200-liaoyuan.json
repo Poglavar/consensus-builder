@@ -1,0 +1,122 @@
+{
+  "cityCode": 10200,
+  "queueRank": 1732,
+  "name": "Liaoyuan",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [42.9134046547361, 125.134337986289],
+  "population2025": 331469,
+  "population2025k": 331.469,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Liaoyuan China official cadastral parcel map GIS land registry",
+        "result": "First-party discovery identified the Liaoyuan municipal government portal, its linked Liaoyuan Natural Resources Bureau site, the official Jilin Natural Resources portal, and the official Jilin Tianditu public geospatial platform. No public anonymous Liaoyuan parcel feature service with a safe native parcel ID and full geometry was identified.",
+        "actualResultUrls": [
+          "https://www.liaoyuan.gov.cn/",
+          "https://zrzyj.liaoyuan.gov.cn/",
+          "https://zrzy.jl.gov.cn/",
+          "https://jilin.tianditu.gov.cn/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "辽源市 不动产登记 地籍图 查询 官方 自然资源",
+        "result": "First-party discovery identified the Liaoyuan Natural Resources Bureau and Jilin Natural Resources / Tianditu materials describing public geospatial services and local natural-resources administration. The inspected public pages did not expose an anonymous cadastral parcel ID-plus-geometry query or schema.",
+        "actualResultUrls": [
+          "https://zrzyj.liaoyuan.gov.cn/",
+          "https://zrzy.jl.gov.cn/jlsbdcdj/",
+          "https://zrzy.jl.gov.cn/ztzlp/sshjs/202311/t20231122_8841287.html",
+          "https://jilin.tianditu.gov.cn/"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryBasis": "Liaoyuan has a first-party Natural Resources Bureau site linked from the municipal government portal, but no public local cadastral viewer/API response with a safe parcel identity and geometry was verified.",
+  "officialSources": [
+    {
+      "url": "https://www.liaoyuan.gov.cn/",
+      "observation": "Municipal government portal links to the Liaoyuan Natural Resources Bureau at zrzyj.liaoyuan.gov.cn."
+    },
+    {
+      "url": "https://zrzyj.liaoyuan.gov.cn/",
+      "observation": "First-party Liaoyuan Natural Resources Bureau homepage fetched successfully; it exposes government-information and service navigation but no anonymous parcel geometry endpoint was found in the inspected page."
+    },
+    {
+      "url": "https://jilin.tianditu.gov.cn/",
+      "observation": "Official Jilin public geospatial viewer fetched. Current HTML loads /static/config.js and /static/js/home.ead29c4b.js; config identifies an anonymous /api backend, Web Mercator map mode, and public map/catalog functionality."
+    },
+    {
+      "url": "https://zrzy.jl.gov.cn/ztzlp/sshjs/202311/t20231122_8841287.html",
+      "observation": "Official Jilin Natural Resources notice describes Jilin Tianditu city/county public geospatial platform construction and its support for natural-resources workflows, including cadastral registration as an administrative use; it does not publish a Liaoyuan parcel feature schema or open geometry endpoint."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.liaoyuan.gov.cn/",
+      "method": "GET",
+      "outcome": "HTTP 200; homepage HTML inspected and local Natural Resources Bureau link recorded."
+    },
+    {
+      "url": "https://zrzyj.liaoyuan.gov.cn/",
+      "method": "GET",
+      "outcome": "HTTP 200; first-party Natural Resources Bureau homepage HTML inspected. No cadastral map/API link or safe parcel response was exposed in the inspected page."
+    },
+    {
+      "url": "https://jilin.tianditu.gov.cn/",
+      "method": "GET",
+      "outcome": "HTTP 200; current viewer HTML and JavaScript/configuration fetched for route inspection."
+    },
+    {
+      "url": "https://jilin.tianditu.gov.cn/static/config.js",
+      "method": "GET",
+      "outcome": "HTTP 200; configuration states backendApi as same-origin /api, isMercator=true, and public map/catalog settings. No credentials or private tokens used."
+    },
+    {
+      "url": "https://jilin.tianditu.gov.cn/static/js/home.ead29c4b.js",
+      "method": "GET",
+      "outcome": "HTTP 200; current bundle inspected. It contains generic online-map and analysis/catalog query routes, but no Liaoyuan-specific public cadastral layer was established."
+    },
+    {
+      "url": "https://jilin.tianditu.gov.cn/api/mapconfig/queryMapConfigByMode.json?mode=1",
+      "method": "GET",
+      "outcome": "HTTP 200; returned only vector/image basemap configuration and map CRS metadata (srs=2, unit=degrees in the map config response). No parcel layer, native ID field, or parcel geometry."
+    },
+    {
+      "url": "https://jilin.tianditu.gov.cn/api/analysisCatalog/listCatalogTree.json?flag=new",
+      "method": "GET",
+      "outcome": "HTTP 404; no catalog response. This is a route miss, not evidence of citywide parcel absence."
+    },
+    {
+      "url": "https://jilin.tianditu.gov.cn/api/one-map-item-new/list-layer?key=220000&type=2",
+      "method": "GET",
+      "outcome": "HTTP 404; no layer response. This is a route miss, not evidence of citywide parcel absence."
+    },
+    {
+      "url": "http://zrzyj.liaoyuan.gov.cn/",
+      "method": "GET",
+      "outcome": "Connection reset before response; HTTPS was then used successfully. No TLS verification was disabled."
+    }
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Liaoyuan municipal Natural Resources Bureau and Jilin provincial public geospatial platform.",
+    "verifiedOpenScope": "Municipal agency website plus public basemap/configuration services; no open cadastral geometry scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": "Exact WUP point retained in latitude/longitude order. No exact-point hit/miss inference was made. A zero exact-point hit, map extent miss, timeout, route miss, inaccessible viewer or absent public endpoint is not evidence of citywide cadastral absence. No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields or global TLS-disable action was used. Packet completion is not source integration or runtime admission."
+}

@@ -1,0 +1,43 @@
+{
+  "cityRecord": "city-820-franceville.json",
+  "cityCode": 820,
+  "queueRank": 1969,
+  "city": "Franceville",
+  "country": "Gabon",
+  "countryCode": "GA",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "Conservation de la Propriété Foncière et des Hypothèques, Ministère de l'Economie, République Gabonaise",
+  "serviceUrl": "https://info.cpfh-gabon.com/",
+  "scope": "Official public terrain/property-registry search with Franceville in the G2 Haut-Ogooué hierarchy; public record search is evidenced, but open parcel geometry is not.",
+  "schemaAndCrs": "Record schema was partially observed from anonymous JSON: id, num_ri, date_ri, section, parcelle, lot, lieu_dit, ville_id, operation and registry workflow dates. No geometry field, geometry endpoint, CRS, or spatial layer schema was returned.",
+  "nativeIdentity": "id (official terrain-record database identity) was observed. No composite identity was promoted and no synthetic identity was created.",
+  "fieldMapping": {
+    "safe native fields observed": ["id", "num_ri", "section", "parcelle", "ville_id"],
+    "retained feature properties": "None; no GeoJSON sample because no geometry was returned.",
+    "unsafe fields": "Not requested or retained."
+  },
+  "requestOutcome": "Verified-TLS anonymous GETs succeeded for the official homepage, city-filtered search, and one record-detail route. Search returned total=1112 and page_count=75 for ville_id=4. The current JS route pattern was inspected for map/API calls; no geometry route was exposed. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe owner/address/contact/titleholder/tax/account fields, or TLS exception was used.",
+  "attemptedRoutes": [
+    {"method": "GET", "url": "https://info.cpfh-gabon.com/", "outcome": "200; official application and Franceville city metadata retrieved."},
+    {"method": "GET", "url": "https://info.cpfh-gabon.com/recherche?ville_id=4", "outcome": "200; anonymous JSON, 1,112 records, 15 records in first page, no geometry."},
+    {"method": "GET", "url": "https://info.cpfh-gabon.com/terrain/58", "outcome": "200; bounded detail for native id 58, no geometry."},
+    {"method": "GET", "url": "https://interieur.gouv.ga/decoupage-administratif/", "outcome": "Official administrative custody/context page found; not a parcel API."},
+    {"method": "GET", "url": "https://mines.gouv.ga/object.getObject.do?id=978&mime=file-mime&object=file", "outcome": "Official journal document reachable; no parcel geometry."}
+  ],
+  "officialCustodyEvidence": "The Conservation Foncière first-party application itself lists Franceville as a city and returns city-filtered property-terrain records. The Interior Ministry page separately identifies the Franceville/Mpassa administrative context. This is local/city registry custody evidence, not source integration or admission.",
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON retained because no full native parcel polygon was obtained.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeDataPolicy": "No owner, address, contact, titleholder, tax/account, legal-description, rights/interests, or other personal/property-record fields were requested or retained.",
+  "limits": [
+    "Registry record coverage is not the same as parcel geometry coverage.",
+    "No exact WUP-point query was available and no citywide absence conclusion is drawn.",
+    "No CRS or polygon geometry was returned, so no sample GeoJSON is retained.",
+    "No raw source-specific attribute set is retained in repository artifacts.",
+    "runtimeReadiness remains held pending independent serial qualification."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "A current public map/API may exist behind the application or through a separate unpublished route. Serial review must qualify geometry, CRS, stable parcel identity, and citywide coverage before adapter admission."
+}

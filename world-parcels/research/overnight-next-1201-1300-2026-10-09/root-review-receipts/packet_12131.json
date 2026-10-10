@@ -1,0 +1,19 @@
+{
+  "taskId": "packet:12131",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-12131-chiayi.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/chiayi-service-review.json",
+    "tmp/valhalla-parcel-research/chiayi/capabilities.xml",
+    "tmp/valhalla-parcel-research/chiayi/cadas_schema.xml",
+    "tmp/valhalla-parcel-research/chiayi/point.gml",
+    "tmp/valhalla-parcel-research/chiayi/point2.gml"
+  ],
+  "checkedAt": "2026-10-09T13:52:52Z",
+  "reason": "Chiayi code 12131, rank 1280, TW/TWN, WUP point [23.4788024733936,120.452751544633] and 436393 persons match the immutable roster. English and Traditional Chinese searches are recorded. First-party NLSC capabilities advertise CADAS_MERGE and its schema includes CITY, SECT, LANDNO and polygon geometry, but both saved point response bodies say Permission Denied. Official Chiayi land service supports institutional custody only. No full public parcel polygon or returned native ID is evidenced; denial is not citywide absence.",
+  "qualificationCheck": "No independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/duplicate/overlap checks, source binding, or headed Details-panel verification. Keep held and unenabled; research packet completion is not admission."
+}

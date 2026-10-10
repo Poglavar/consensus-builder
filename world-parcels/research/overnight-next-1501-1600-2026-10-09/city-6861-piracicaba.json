@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 6861,
+  "queueRank": 1590,
+  "name": "Piracicaba",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "cityId": "wup2025:6861",
+  "point": [-22.7253874086848, -47.653078712206],
+  "centerLatLon": [-22.7253874086848, -47.653078712206],
+  "population2025": 357844,
+  "population2025k": 357.844,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted; anonymous metadata/feature attempts produced no usable parcel geometry",
+  "nativeIdReadiness": "undetermined; the public configuration identifies the cadastral theme as Lotes but did not expose a safe native ID field in a returned feature response",
+  "sourceIds": [],
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Piracicaba official GIS cadastral map parcel lots Prefeitura ArcGIS",
+        "result": "Found the official municipal cadastral-information page, municipal geoprocessing portal, and current map configuration. The official service describes property location and cadastral block/lot plans.",
+        "actualResultUrls": [
+          "https://piracicaba.sp.gov.br/servicos/informacao-cadastral-imobiliaria/",
+          "https://piracicaba.sp.gov.br/servicos/sistema-de-geoprocessamento/",
+          "https://geo.piracicaba.sp.gov.br/app/glue-piracicaba/map.html"
+        ]
+      },
+      {
+        "language": "native/local (Portuguese)",
+        "query": "Piracicaba cadastro imobiliário mapa lotes geoprocessamento Prefeitura",
+        "result": "Found the same first-party Prefeitura pages and the current municipal geoprocessing application. The municipal page states access through the Portal de Geoprocessamento Corporativo and identifies cadastral property location and quadra/lote plans.",
+        "actualResultUrls": [
+          "https://piracicaba.sp.gov.br/servicos/informacao-cadastral-imobiliaria/",
+          "https://piracicaba.sp.gov.br/servicos/sistema-de-geoprocessamento/",
+          "https://geo.piracicaba.sp.gov.br/app/glue-piracicaba/map.html"
+        ]
+      }
+    ]
+  },
+  "officialLeads": [
+    {
+      "url": "https://piracicaba.sp.gov.br/servicos/informacao-cadastral-imobiliaria/",
+      "operator": "Prefeitura do Município de Piracicaba, municipal cadastral/technical division",
+      "observation": "First-party service page updated 2025-05-12. It explicitly lists property location, cadastral block plan, subdivision plan, roads, and aerial imagery, and directs users to the municipal geoprocessing portal. This is local municipal custodian evidence, not merely general agency prose."
+    },
+    {
+      "url": "https://geo.piracicaba.sp.gov.br/app/glue-piracicaba/map.html",
+      "operator": "Prefeitura do Município de Piracicaba geoprocessing portal",
+      "observation": "Current public map HTML and JavaScript were inspected. ServerURLs.js identifies the municipal WMS at https://geo.piracicaba.sp.gov.br/app/geoserver/glue_piracicaba/wms, REST base /app/glue-piracicaba_server/rest/json, and the configured current layer name Lotes. The configuration is evidence of an official parcel/lots map route, not a returned feature sample."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://piracicaba.sp.gov.br/servicos/informacao-cadastral-imobiliaria/",
+      "method": "GET",
+      "status": "200 / official page observed",
+      "summary": "Municipal cadastral service page states that cadastral property location and quadra/lote plans are available through the municipal geoprocessing portal. No personal or owner fields were requested."
+    },
+    {
+      "url": "https://geo.piracicaba.sp.gov.br/app/glue-piracicaba/map.html",
+      "method": "GET",
+      "status": "200 / current map HTML observed",
+      "summary": "Public map application loaded. Its HTML references current JavaScript/configuration files used for the official viewer."
+    },
+    {
+      "url": "https://geo.piracicaba.sp.gov.br/app/glue-piracicaba/js/ServerURLs.js",
+      "method": "GET",
+      "status": "200 / current JavaScript configuration observed",
+      "summary": "Configuration exposed the official WMS URL, REST base, municipal data host, map center, and configured layer name Lotes. No credentials, private token, or login was used."
+    },
+    {
+      "url": "https://geo.piracicaba.sp.gov.br/app/glue-piracicaba_server/rest/json/getCacheVersion",
+      "method": "GET",
+      "status": "200 / body 1",
+      "summary": "Anonymous REST health/configuration probe succeeded. It did not return parcel IDs or geometry."
+    },
+    {
+      "url": "https://geo.piracicaba.sp.gov.br/app/glue-piracicaba_server/rest/json/getLayerTree?prf_id=0",
+      "method": "GET",
+      "status": "200 / empty response",
+      "summary": "Anonymous layer-tree request with profile 0 returned no usable JSON, so layer schema and native identity fields could not be established."
+    },
+    {
+      "url": "https://geo.piracicaba.sp.gov.br/app/glue-piracicaba_server/rest/json/getOpenLayerMap?prf_id=0",
+      "method": "GET",
+      "status": "200 / empty response",
+      "summary": "Anonymous map-layer request with profile 0 returned no usable JSON; no feature query was fabricated from the empty response."
+    },
+    {
+      "url": "https://geo.piracicaba.sp.gov.br/app/geoserver/glue_piracicaba/wms?service=WMS&request=GetCapabilities",
+      "method": "GET",
+      "status": "timeout after 20 seconds",
+      "summary": "Official configured WMS capabilities request did not complete. This is not evidence of absence or of map extent miss."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Municipal cadastral/geoprocessing portal for Piracicaba; the official service page concerns municipal property location and cadastral quadra/lote plans.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "citywideGeometryVerified": false
+  },
+  "safeFieldAllowlist": ["native parcel/lot identity when documented", "geometry"],
+  "sourceFieldMapping": {
+    "nativeIdentity": null,
+    "fallbackEsriIdentity": null,
+    "geometryField": "geometry, if returned by the official map/API",
+    "nativeCrs": null,
+    "compositeKey": null
+  },
+  "resultCategory": "official_municipal_cadastral_portal_documented_no_geometry_response",
+  "blocker": "Anonymous profile/layer REST calls returned empty bodies and the configured official WMS GetCapabilities request timed out; no safe bounded ID-plus-geometry response was obtained.",
+  "remainingUncertainty": "The viewer may require a profile/session or a currently unavailable map backend. Native parcel identity, CRS, geometry response format, and citywide coverage remain unverified. The exact WUP point was preserved and was not shifted.",
+  "runtimeReadiness": "held",
+  "nextStep": "Retry the official municipal portal with an anonymous public profile if the backend becomes responsive, request only a small bounded lot/parcel ID-plus-geometry response around the exact WUP point, document CRS and native identity, and require independent serial review before adapter qualification."
+}

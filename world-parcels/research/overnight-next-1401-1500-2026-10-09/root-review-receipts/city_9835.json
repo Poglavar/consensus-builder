@@ -1,0 +1,12 @@
+{
+  "taskId": "city:9835",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-9835-palakkad.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/palakkad-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T16:08:07Z",
+  "reason": "Official Kerala Palakkad survey/digitization custody and parcel-map portal are evidenced, but viewer TLS failures and portal login gating left no anonymous native ID/full polygon response or independent adapter, paging, 13-cell, metric GEOS, binding, or headed Details proof."
+}

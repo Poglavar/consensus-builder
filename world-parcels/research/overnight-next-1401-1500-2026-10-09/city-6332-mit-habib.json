@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:1431",
+  "cityCode": 6332,
+  "queueRank": 1431,
+  "name": "Mit Habib",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "iso3": "EGY",
+  "centerLatLon": [30.4651743589646, 31.460163902665],
+  "point": [30.4651743589646, 31.460163902665],
+  "population2025": 397104,
+  "population2025k": 397.104,
+  "populationUnit": "persons",
+  "year": 2025,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "portalsFound": [
+    {"url": "https://www.esa.gov.eg/main.aspx", "observation": "Official Egyptian General Authority for Survey homepage; agency history and mapping/cadastral responsibilities, but no anonymous parcel viewer/API."},
+    {"url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx", "observation": "Official digital-map service page; says requested maps/layers are assessed, quoted and supplied through the Authority, with no public parcel-vector endpoint."},
+    {"url": "https://geoportal.capmas.gov.eg/", "observation": "Historical CAPMAS Egy-GeoInfo host identified in first-party/officially referenced discovery, but it did not respond within the bounded anonymous request window."}
+  ],
+  "requests": [
+    {"url": "https://www.esa.gov.eg/main.aspx", "method": "GET", "httpStatus": 200, "contentType": "text/html; charset=utf-8", "assessment": "Reachable with browser headers; HTML inspection exposed ordinary official pages and no parcel feature service."},
+    {"url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx", "method": "GET", "httpStatus": 200, "contentType": "text/html; charset=utf-8", "assessment": "Reachable official digital-map catalogue; describes purchase/quotation workflow, not anonymous parcel geometry."},
+    {"url": "https://geoportal.capmas.gov.eg/", "method": "GET", "httpStatus": null, "contentType": null, "assessment": "Timed out from this client under the bounded request; temporary reachability failure, not evidence of absence."},
+    {"url": "https://www.egis.idsc.gov.eg/server/rest/services/LivedHere/MapServer?f=pjson", "method": "GET", "httpStatus": 200, "contentType": "text/plain; charset=UTF-8", "assessment": "General IDSC map service discovered in search; not identified as a cadastral parcel layer and no parcel query was made."}
+  ],
+  "freshResearch": {"queries": [
+    {"language": "English", "query": "Egypt official cadastral map parcel viewer Mit Habib Egyptian Survey Authority", "result": "Found the official Egyptian General Authority for Survey homepage and digital-map service page; no public Mit Habib parcel API or viewer was exposed.", "actualResultUrls": ["https://www.esa.gov.eg/main.aspx", "https://www.esa.gov.eg/sellingmaproomdigital.aspx"]},
+    {"language": "Arabic", "query": "خريطة كادسترية رسمية ميت حبيب هيئة المساحة المصرية قطع الأراضي", "result": "Found the official Arabic Egyptian General Authority for Survey pages describing digital maps and cadastral-related responsibilities; no anonymous parcel geometry endpoint was exposed.", "actualResultUrls": ["https://www.esa.gov.eg/main.aspx", "https://www.esa.gov.eg/sellingmaproomdigital.aspx"]}
+  ]},
+  "coverageAssessment": {"claimedScope": "Egyptian General Authority for Survey national mapping/cadastral mandate and digital-map service catalogue; CAPMAS geospatial portal lead.", "verifiedOpenScope": "None: no bounded anonymous parcel response with stable native ID and geometry was verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "The official authority may hold parcel/cadastral data for Mit Habib, but the inspected public pages expose a request/quotation workflow rather than an open feature service. CAPMAS portal reachability and any non-indexed/local service remain unknown. No exact-point or extent miss was used as an absence claim.",
+  "nextStep": "A later researcher may retry the CAPMAS portal from another network path or qualify a documented public Egyptian parcel service. Runtime integration remains held pending independent adapter qualification."
+}

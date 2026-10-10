@@ -1,0 +1,32 @@
+{
+  "cityRecord": "city-4936-biskra.json",
+  "cityCode": 4936,
+  "queueRank": 1912,
+  "city": "Biskra",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "Agence Nationale du Cadastre / Direction du Cadastre de la wilaya de Biskra",
+  "serviceUrl": "https://a.dgdn.dz/biskra.html",
+  "scope": "Official local Biskra cadastral-directorate page and national cadastral procedure material; parcel geometry coverage was not verified.",
+  "schemaAndCrs": "No usable feature schema, CRS, geometry type, or native parcel-ID field was returned. The ASGA viewer exposed only general 1:200,000 cartographic layers.",
+  "nativeIdentity": "None established. No synthetic identity, internal row number, OBJECTID, or guessed parcel key was used.",
+  "fieldMapping": {},
+  "requestOutcome": "English and French discovery found the official local custodian. The Biskra page was indexed successfully; its public e-service URL was malformed and timed out, document-guide routes timed out, and the ASGA map was general cartography. Direct workspace curl also timed out after 20 seconds. No login or unsafe data route was attempted.",
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON retained because no safe native-ID-plus-geometry response was obtained.",
+  "safeFieldAllowlist": ["native parcel identifier if later exposed", "geometry"],
+  "unsafeDataPolicy": "Owner, address, contact, titleholder, tax/account, legal-description, and rights/title fields were not requested or retained.",
+  "officialCustodyEvidence": "The official Biskra directorate page gives a local cadastral-office address and official agency email/telephone. This is local registry-custodian evidence; the ASGA viewer is recorded separately as a general national cartographic source.",
+  "limits": [
+    "A public local-cadastre page does not prove open parcel API availability or complete city coverage.",
+    "No exact-point feature response was available; this is not evidence of parcel absence.",
+    "Timeouts and the malformed e-service URL may reflect a changed or unavailable public route.",
+    "No raw source attribute set or parcel polygon was retained.",
+    "RuntimeReadiness remains held pending independent serial review."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "Independent review must confirm the current anonymous cadastral viewer/API, CRS, Biskra city coverage, native parcel identity stability, and safe field exposure before adapter admission."
+}

@@ -1,0 +1,18 @@
+{
+  "taskId": "city:7979",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-7979-wazirabad.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/wazirabad-service-review.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/wazirabad-parcel-sample.geojson",
+    "tmp/valhalla-parcel-research/wazirabad/viewer.html",
+    "tmp/valhalla-parcel-research/wazirabad/layer35-token.json",
+    "tmp/valhalla-parcel-research/wazirabad/exact-query-token.json"
+  ],
+  "checkedAt": "2026-10-10T12:45:17Z",
+  "reason": "Immutable WUP rank, country, point and 340058 persons match source. English and Urdu searches were executed. First-party cached layer 35 metadata identifies Wazirabad polygon geometry and native OBJECTID; one point-hit polygon with OBJECTID 6911537 exactly matches the safe retained full-geometry sample. This is bounded positive discovery, not citywide coverage.",
+  "admissionGates": "No independently evidenced fresh exact-ID reread, forced paging, 13 bounded cells, metric full-polygon GEOS validity/duplicate/overlap/operation audit, source binding or headed Details-panel verification."
+}

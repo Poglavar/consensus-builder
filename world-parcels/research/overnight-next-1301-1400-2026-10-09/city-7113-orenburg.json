@@ -1,0 +1,70 @@
+{
+  "cityCode": 7113,
+  "queueRank": 1312,
+  "name": "Orenburg",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso3": "RUS",
+  "point": [51.795436024663, 55.1172994900619],
+  "population2025": 426263,
+  "population2025k": 426.263,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": null,
+  "registryAssessment": "Orenburg-region Rosreestr and cadastral-chamber custodians and a federal public cadastral-map service were evidenced. The accessible evidence did not establish an anonymous local or federal parcel-vector response with safe ID and geometry, so registryFound remains null.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Orenburg official cadastral map parcel public map API Rosreestr Orenburg Russian Federation",
+        "result": "Search located the National Spatial Data System public cadastral map route, official Rosreestr/Orenburg cadastral-chamber service references, and Orenburg-region public-service material. The official map route timed out in the available fetch client; no parcel API, schema, CRS, or geometry was asserted.",
+        "actualResultUrls": [
+          "https://nspd.gov.ru/map?thematic=PKK",
+          "https://orenmfc.orb.ru/services/departments/upravlenie-federalnoj-sluzhby-gosudarstvennoy-registracii-kadastra-i-kartografii-po-orenburgskoy-oblasti-rosreestr-i-filial-fgbu-fkp-rosreestra-po-orenburgskoy-oblasti-kadastrovaya-palata/gosudarstvennaya-usluga-po-gosudarstvennomu-kadastrovomu-uchetu-nedvizhimogo-imushchestva-i-ili-gosudarstvennoy-registratsii-prav-na-nedvizhimoe-imushchestvo-i-sdelok-s-nim/",
+          "https://www.kartgeocentre.ru/produkty-i-uslugi/orenburzhcy-mogut-vospolzovatsya-servisom-publichnaya-kadastrovaya-karta-na-onlayn"
+        ]
+      },
+      {
+        "language": "Russian",
+        "query": "Оренбург официальная публичная кадастровая карта Росреестр кадастровые кварталы API",
+        "result": "Search located official Orenburg-region Rosreestr/cadastral-chamber references and descriptions of the public cadastral map on the National Spatial Data System. The official map fetch timed out; no bounded anonymous ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://nspd.gov.ru/map?thematic=PKK",
+          "https://orenmfc.orb.ru/services/departments/upravlenie-federalnoj-sluzhby-gosudarstvennoy-registracii-kadastra-i-kartografii-po-orenburgskoy-oblasti-rosreestr-i-filial-fgbu-fkp-rosreestra-po-orenburgskoy-oblasti-kadastrovaya-palata/gosudarstvennaya-usluga-po-gosudarstvennomu-kadastrovomu-uchetu-nedvizhimogo-imushchestva-i-ili-gosudarstvennoy-registratsii-prav-na-nedvizhimoe-imushchestvo-i-sdelok-s-nim/",
+          "https://www.rkc56.ru/attach/orenburg/docs/Pisma_Rosreestra/2025/Pismo-Rosreestra-ot-13.12.2024-N06-02428_24_.pdf"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://nspd.gov.ru/map?thematic=PKK",
+      "role": "Federal National Spatial Data System public cadastral map",
+      "observation": "Official route identified by discovery as the current public cadastral-map location. Browser fetch returned a timeout and a direct HTTPS GET also timed out after 20 seconds; viewer JavaScript/configuration and service endpoints could not be inspected."
+    },
+    {
+      "url": "https://orenmfc.orb.ru/services/departments/upravlenie-federalnoj-sluzhby-gosudarstvennoy-registracii-kadastra-i-kartografii-po-orenburgskoy-oblasti-rosreestr-i-filial-fgbu-fkp-rosreestra-po-orenburgskoy-oblasti-kadastrovaya-palata/gosudarstvennaya-usluga-po-gosudarstvennomu-kadastrovomu-uchetu-nedvizhimogo-imushchestva-i-ili-gosudarstvennoy-registratsii-prav-na-nedvizhimoe-imushchestvo-i-sdelok-s-nim/",
+      "role": "Orenburg-region public-service page naming Rosreestr and the cadastral chamber",
+      "observation": "Search result identifies the Orenburg-region Rosreestr administration and cadastral chamber as service custodians. This establishes procedural/local custodian context, not an open parcel-vector endpoint."
+    },
+    {
+      "url": "https://www.rkc56.ru/attach/orenburg/docs/Pisma_Rosreestra/2025/Pismo-Rosreestra-ot-13.12.2024-N06-02428_24_.pdf",
+      "role": "Orenburg cadastral-chamber-hosted Rosreestr correspondence",
+      "observation": "Discovery result describes the public cadastral map and its official placement in the National Spatial Data System; no parcel geometry response was downloaded or retained."
+    }
+  ],
+  "requestAttempts": [
+    {"url":"https://nspd.gov.ru/map?thematic=PKK","method":"GET","httpStatus":"timeout","result":"Official map route timed out in the web fetch client; no HTML, JavaScript, configuration, API route, schema, CRS, or parcel response was available."},
+    {"url":"https://nspd.gov.ru/map?thematic=PKK","method":"GET","httpStatus":"timeout after 20s","result":"Direct curl attempt also timed out before receiving a response. TLS verification was not disabled and no certificate exception was used."},
+    {"url":"https://rosreestr.gov.ru/","method":"GET","httpStatus":"timeout","result":"Federal Rosreestr home page fetch timed out; no viewer/API route was inferred from failure."},
+    {"url":"https://56.rosreestr.gov.ru/","method":"GET","httpStatus":"not accessible","result":"Regional Rosreestr host was not accessible to the web fetch client; no retry with credentials or TLS bypass was attempted."},
+    {"url":"https://orenmfc.orb.ru/services/departments/upravlenie-federalnoj-sluzhby-gosudarstvennoy-registracii-kadastra-i-kartografii-po-orenburgskoy-oblasti-rosreestr-i-filial-fgbu-fkp-rosreestra-po-orenburgskoy-oblasti-kadastrovaya-palata/gosudarstvennaya-usluga-po-gosudarstvennomu-kadastrovomu-uchetu-nedvizhimogo-imushchestva-i-ili-gosudarstvennoy-registratsii-prav-na-nedvizhimoe-imushchestvo-i-sdelok-s-nim/","method":"GET/search review","httpStatus":200,"result":"Search evidence reviewed for Orenburg-region Rosreestr/cadastral-chamber custodians and service procedure; no safe anonymous parcel geometry endpoint exposed."}
+  ],
+  "geometryDecision": {"verified":false,"sampleCount":0,"sampleFile":null,"reason":"No safe native parcel ID plus full polygon was obtained. The official map timed out and the exact WUP point was not shifted or treated as evidence of absence."},
+  "coverageAssessment": {"claimedScope":"Federal NSDI public cadastral map and Orenburg-region Rosreestr/cadastral-chamber procedures.","verifiedOpenScope":"Service existence and procedural custodian context only; citywide parcel-vector access, native identity field, schema, CRS, exact-point containment, and open coverage were not verified.","citywideVerified":false,"countrywideVerified":false,"geometryVerified":false},
+  "runtimeReadiness":"held",
+  "researchAttempt":1,
+  "checkedAt":"2026-10-09"
+}

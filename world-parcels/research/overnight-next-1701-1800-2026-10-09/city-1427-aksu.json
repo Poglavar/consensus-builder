@@ -1,0 +1,91 @@
+{
+  "cityCode": 1427,
+  "queueRank": 1796,
+  "name": "Aksu",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [41.1717236028291, 80.2656522320985],
+  "population2025": 320179,
+  "population2025k": 320.179,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Aksu China cadastral parcel map official natural resources cadastral service",
+        "result": "Results identified the official Xinjiang Natural Resources Department and its Xinjiang natural-resources map-service platform, plus official descriptions of the Digital Aksu geospatial data service platform. No anonymous public parcel ID plus geometry endpoint was exposed.",
+        "actualResultUrls": [
+          "https://zrzyt.xinjiang.gov.cn/xjgtzy/mtxc/202310/f86d5c0fadfd405bb63448486a495ab5.shtml",
+          "https://zrzyt.xinjiang.gov.cn/xjgtzy/mtxc/202310/8154dd218de34c458cdbe3221e96c0ad.shtml",
+          "https://www.xinjiang.gov.cn/xinjiang/dzdt/202309/cc026d683d1549998f467dbb85ce9cee.shtml"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "阿克苏市 自然资源局 不动产登记 地图 地籍 官方",
+        "result": "Official Chinese-language results describe the Aksu geospatial platform, Aksu-area natural-resources digital land monitoring, Xinjiang property-registration procedures, and an Aksu-area natural-resources contact. They did not expose an anonymous parcel feature response or public schema/CRS.",
+        "actualResultUrls": [
+          "https://zrzyt.xinjiang.gov.cn/xjgtzy/dzdt/202412/40b8e67ea26a4623a84529d5bc47d947.shtml",
+          "https://zrzyt.xinjiang.gov.cn/xjgtzy/c114961/202405/7c6c2647f8a24055aa8c0f00836d07c9.shtml",
+          "https://zrzyt.xinjiang.gov.cn/xjgtzy/tzgg/202202/55c2dd001cbf4762bcb2712e4738c7da.shtml"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryBasis": "Official sources establish Aksu-area natural-resources custody and a Digital Aksu geospatial platform, but no city-local public registry viewer or anonymous parcel geometry response was verified; custody/platform description is not treated as registry integration evidence.",
+  "officialSources": [
+    {
+      "url": "https://zrzyt.xinjiang.gov.cn/xjgtzy/mtxc/202310/8154dd218de34c458cdbe3221e96c0ad.shtml",
+      "observation": "Xinjiang Natural Resources Department describes the Digital Aksu geospatial data service platform as integrating two-/three-dimensional data services, GIS analysis, natural-resources one-map applications and standardized interfaces for departmental sharing; no public parcel endpoint is listed."
+    },
+    {
+      "url": "https://zrzyt.xinjiang.gov.cn/xjgtzy/dzdt/202412/40b8e67ea26a4623a84529d5bc47d947.shtml",
+      "observation": "Official Xinjiang source says Aksu-area natural resources uses the Digital Aksu platform for full-coverage agricultural-land monitoring and spatial data integration; this is an institutional data-platform description, not an open cadastral parcel API."
+    },
+    {
+      "url": "https://zwfw.xinjiang.gov.cn/akss/index.html",
+      "observation": "Official Aksu municipal government-services portal loaded over HTTPS and exposed public service/navigation pages, but no anonymous cadastral parcel layer or geometry service was found."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://zwfw.xinjiang.gov.cn/akss/index.html",
+      "method": "GET",
+      "outcome": "HTTP 200; public portal HTML retrieved. No parcel viewer/API route identified."
+    },
+    {
+      "url": "https://xinjiang.tianditu.gov.cn/portal/",
+      "method": "GET",
+      "outcome": "HTTP 200; official Xinjiang geographic-information public-service portal HTML retrieved. No Aksu parcel layer or anonymous feature endpoint identified."
+    },
+    {
+      "url": "https://zwfw.xinjiang.gov.cn/xjzw/mpyw/",
+      "method": "GET",
+      "outcome": "HTTP 200; public map/service shell and current JavaScript bundle retrieved. Bundle exposed general government-service APIs and map demonstrations, but no public cadastral parcel layer/schema/CRS."
+    },
+    {
+      "url": "https://zwfw.xinjiang.gov.cn/api-gateway/jpaas-jsearch-web-server/search?serviceId=PFrqhvPQkng8ER36eoQL3&cateid=XTpWZd2Ndt2Qoglq6CZiK&websiteid=650000000000&q=%E4%B8%8D%E5%8A%A8%E4%BA%A7",
+      "method": "GET",
+      "outcome": "HTTP 404; bounded public search route did not return a result payload. No retry with credentials or private parameters."
+    }
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Aksu-area natural-resources and Digital Aksu geospatial data services described by official Xinjiang sources.",
+    "verifiedOpenScope": "Institutional/platform description only; no anonymous parcel geometry service verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": "Exact WUP point retained in latitude/longitude order. No exact-point hit/miss inference was made. A map extent miss, timeout, login wall, unusable UI or absent public endpoint is not evidence of citywide cadastral absence. No owner, address, titleholder, contact, tax/account or personal fields were requested or retained. Packet completion is not source integration or runtime admission."
+}

@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-10",
+  "wupCityCode": 874,
+  "cityCode": 874,
+  "cityId": "wup2025:874",
+  "name": "Galle",
+  "country": "Sri Lanka",
+  "countryCode": "LK",
+  "iso2": "LK",
+  "iso3": "LKA",
+  "queueRank": 1651,
+  "locId": 144,
+  "capital": false,
+  "aliases": ["galle"],
+  "point": [6.06146732901066, 80.2126280668052],
+  "centerLatLon": [6.06146732901066, 80.2126280668052],
+  "population2025": 346263,
+  "population2025k": 346.263,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sri Lanka official cadastral parcel map Galle land registry Survey Department GIS",
+        "result": "Found the first-party Survey Department Land Information System description, Galle KML download index, and Sri Lanka NSDI Planning Cadastre ArcGIS service.",
+        "actualResultUrls": [
+          "https://survey.gov.lk/sdweb/pages_service_land_info.php?id=817122c8f9f9958a8a7688733ed95c9c58fcb688",
+          "https://it.survey.gov.lk/nsdi/lis/kml_service_tmp.php",
+          "https://www.nsdi.gov.lk/planning-cadastre"
+        ]
+      },
+      {
+        "language": "Sinhala (සිංහල)",
+        "query": "ගාල්ල ඉඩම් කඩඉම් සිතියම නිල වෙබ් අඩවිය",
+        "result": "Search results led to the official Survey Department land-information pages; no separate Galle-local Sinhala parcel API was identified.",
+        "actualResultUrls": [
+          "https://survey.gov.lk/sdweb/home.php",
+          "https://survey.gov.lk/sdweb/pages_service_land_info.php?id=817122c8f9f9958a8a7688733ed95c9c58fcb688"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Sri Lanka Survey Department is the national surveying/mapping and cadastral authority; its public LIS page describes parcel-based land information and its public KML index lists Galle cadastral, fabric and sporadic downloads. This establishes an official source and public service, not a local municipal registry custodian.",
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://survey.gov.lk/sdweb/pages_service_land_info.php?id=817122c8f9f9958a8a7688733ed95c9c58fcb688",
+      "operator": "Sri Lanka Survey Department",
+      "scope": "National LIS; searching is described by plan, location, district, DS and GN levels.",
+      "observation": "First-party page says LIS contains spatial and non-spatial parcel information and can expose parcel number, extent, land use and related map information, while private ownership data is censored."
+    },
+    {
+      "url": "https://it.survey.gov.lk/nsdi/lis/kml_service_tmp.php",
+      "operator": "Sri Lanka Survey Department IT/NSDI",
+      "scope": "Public downloadable Galle layers.",
+      "observation": "Index lists Cadastre(Galle).kmz, Frabricwgs_LayerToKML(Galle).kmz and Sporadic(Galle).kmz. Anonymous downloads of Galle_Cad.kmz and Galle_Fabric.kmz succeeded."
+    },
+    {
+      "url": "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer",
+      "operator": "Sri Lanka NSDI / ICTA",
+      "scope": "National planning-cadastre map service with Parcel Fabrics, Road Right of ways, SLTDA Parcels and Landuse layers.",
+      "observation": "Public ArcGIS REST service advertises JSON/GeoJSON query support and WGS84 (EPSG:4326)."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://survey.gov.lk/sdweb/pages_service_land_info.php?id=817122c8f9f9958a8a7688733ed95c9c58fcb688",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official LIS description loaded; no credentials or unsafe fields requested."
+    },
+    {
+      "url": "https://it.survey.gov.lk/nsdi/lis/kml_service_tmp.php",
+      "method": "GET",
+      "status": "HTTP 200 via public web inspection",
+      "summary": "Galle cadastral/fabric/sporadic download links were enumerated."
+    },
+    {
+      "url": "https://it.survey.gov.lk/nsdi/lis/pf_download.php?file=Galle_Cad.kmz&filepath=downloads%2F&folder=Galle",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Downloaded 568 KiB KMZ to ignored scratch. It contains 199 KML placemarks with cadastral-sheet style metadata such as CM No, Block_No and Sheet No; no stable parcel identity was established."
+    },
+    {
+      "url": "https://it.survey.gov.lk/nsdi/lis/pf_download.php?file=Galle_Fabric.kmz&filepath=downloads%2F&folder=Galle",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Downloaded 201 KiB KMZ to ignored scratch. It contains 121 fabric polygons with fields including objectid, district_c, plan_no and FID; these are fabric/plan coverage records, not independently verified parcel identities at the WUP point."
+    },
+    {
+      "url": "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer?f=pjson",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Inspected service configuration: layer 2 is Parcel Fabrics, polygon geometry, EPSG:4326, maxRecordCount 1000."
+    },
+    {
+      "url": "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer/2?f=pjson",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Inspected schema: objectid and parcel_id are present, plus plan/fabric fields; published layer extent is 79.869526706,6.716161691 to 81.324957813,8.107223758, north of the exact Galle WUP point."
+    },
+    {
+      "url": "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer/2/query",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Bounded WGS84 envelope 80.202,6.051 to 80.222,6.071 with where=1=1 and geometry return produced an empty GeoJSON FeatureCollection because the published layer extent does not cover Galle. No absence inference was made."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Survey Department national LIS and public Galle KML exports; NSDI Planning Cadastre service is national in presentation.",
+    "verifiedOpenScope": "Galle-specific downloadable cadastral/fabric coverage is evidenced, but parcel-level stable identity and exact citywide parcel coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "sourceIds": [],
+  "runtimeEligible": false,
+  "resultCategory": "official_galle_cadastral_downloads_but_no_verified_safe_parcel_feature_response",
+  "remainingUncertainty": "The Galle downloads may be useful cadastral or parcel-fabric coverage, but their public KML descriptions expose sheet/fabric metadata rather than a confirmed parcel-level native identity at the exact WUP point. The NSDI parcel-fabric REST layer excludes the point by its published extent. No claim is made about parcel absence, title, ownership, registry completeness or citywide coverage.",
+  "nextStep": "A serial reviewer should independently inspect the Galle KML layer semantics and, if parcel-level identity can be confirmed, qualify a bounded adapter using only safe IDs and geometry."
+}

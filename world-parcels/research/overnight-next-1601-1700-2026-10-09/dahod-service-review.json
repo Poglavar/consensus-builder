@@ -1,0 +1,36 @@
+{
+  "cityRecord": "city-8134-dahod.json",
+  "schemaVersion": "1.0",
+  "cityCode": 8134,
+  "queueRank": 1634,
+  "name": "Dahod",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [22.8420144481058, 74.2541052026989],
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "routeSummary": "Official Dahod district land-record custody and Gujarat Revenue/AnyRoR service routes were researched in English and Gujarati. The district page loaded and documented cadastral survey/e-Dhara procedure; the direct AnyRoR host timed out. No anonymous parcel ID-plus-geometry response was retrieved.",
+  "queryOutcomes": "Recorded in city-8134-dahod.json under freshResearch.queries, including actual English and Gujarati query text and first-party result URLs.",
+  "requestOutcomes": "Recorded in city-8134-dahod.json under requests, including the successful official pages and the bounded AnyRoR timeout.",
+  "scopeLimits": [
+    "Dahod district land-record custody is evidenced, but city-bounded cadastral coverage is not.",
+    "No exact-point parcel hit/miss inference was made.",
+    "No native field names, parcel ID, schema, CRS, or geometry were obtained.",
+    "No unsafe owner, address, titleholder, contact, personal, tax/account, or similar fields were requested.",
+    "No GeoJSON sample is retained because no safe verified parcel response was available.",
+    "Packet completion does not qualify source integration/admission; serial review remains required."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "uncertainty": "AnyRoR viewer configuration and anonymous request contract remain unresolved; timeout/login/CAPTCHA behavior must not be generalized to absence.",
+  "serialReviewerQualification": "not qualified; independent serial review still required"
+}

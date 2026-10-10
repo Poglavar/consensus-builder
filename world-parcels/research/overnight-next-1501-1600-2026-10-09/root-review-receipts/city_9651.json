@@ -1,0 +1,16 @@
+{
+  "taskId": "city:9651",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-9651-yavatmal.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/yavatmal-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/yavatmal/district.html",
+    "tmp/valhalla-parcel-research/runs/20261010T095746-d161704a/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-10T10:02:30.572542Z",
+  "reason": "First-party district HTML names the Land Records and Village Form 7/12 service at District Collector Office, Yavatmal and links Mahabhulekh, grounding registryFound true as local custody. The official Bhu-Naksha route timed out in the bounded attempt; no safe native-ID polygon response or retained polygon. Forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, and headed Details verification are absent. Timeout is not parcel absence; no runtime admission.",
+  "sourceAdmission": "not_admitted"
+}

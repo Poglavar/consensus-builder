@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10616-xinxing.json",
+  "purpose": "Document independent city-specific registry discovery and bounded anonymous geometry access investigation.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Fresh English and Chinese searches identified the point as Xinxing District, Qitaihe, Heilongjiang and found the official provincial Tianditu portal. The local government site returned an empty reply. Current public portal configuration exposed basemap, imagery, administrative-boundary and parking-map services only; no anonymous cadastral feature service, schema, CRS, native parcel ID, or geometry response was found.",
+  "registryAssessment": "Local registry custody is unresolved and therefore registryFound remains null. The official local-government domain was identified but not inspectable; the provincial geospatial portal is general geospatial infrastructure, not evidence of a local cadastral registry service.",
+  "officialPrimarySources": [
+    {"title": "Xinxing District government website", "url": "https://www.hljxinxing.gov.cn/", "observation": "Official local government domain identified; direct request returned an empty reply."},
+    {"title": "Heilongjiang Tianditu public geospatial portal", "url": "https://heilongjiang.tianditu.gov.cn/", "observation": "Official provincial platform; current public configuration was inspected."},
+    {"title": "Heilongjiang Tianditu resource center", "url": "https://heilongjiang.tianditu.gov.cn/iportal/web-ui/resource-center/map", "observation": "HTTP 200 public application route; no parcel layer was exposed in its current configuration."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Xinxing District Qitaihe Heilongjiang China official cadastral parcel map GIS natural resources bureau", "executionMethod": "Executed separate web search", "resultUrls": ["https://heilongjiang.tianditu.gov.cn/iportal/web-ui/resource-center/map", "https://www.hljxinxing.gov.cn/"]},
+    {"language": "Chinese", "query": "新兴区 七台河 地籍图 不动产登记 自然资源局 官方", "executionMethod": "Executed separate local-language web search", "resultUrls": ["https://heilongjiang.tianditu.gov.cn/iportal/web-ui/resource-center/map", "https://www.hljxinxing.gov.cn/"]}
+  ],
+  "attempts": [
+    {"attempt": "official local government homepage", "url": "https://www.hljxinxing.gov.cn/", "result": "Empty reply; no registry or map page inspected.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "provincial Tianditu resource center", "url": "https://heilongjiang.tianditu.gov.cn/iportal/web-ui/resource-center/map", "result": "HTTP 200. Current HTML loads public config and application JavaScript.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "current public portal configuration", "url": "https://heilongjiang.tianditu.gov.cn/iportal/web-ui/config.js", "result": "HTTP 200. Basemap, imagery, administrative-boundary and parking endpoints only; no cadastral/parcel service or safe field schema.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "portal service route", "url": "https://heilongjiang.tianditu.gov.cn/ljj4", "result": "HTTP 200 login page; no login or credentials attempted.", "credentialsUsed": false, "personalPropertyFieldsRequested": false},
+    {"attempt": "portal API route", "url": "https://heilongjiang.tianditu.gov.cn/tdtserver/api/hlj", "result": "HTTP 200 JSON Not Found; no parcel response.", "credentialsUsed": false, "personalPropertyFieldsRequested": false}
+  ],
+  "geometryDecision": {"publicParcelGeometryFound": false, "sampleFile": null, "details": "No anonymous safe parcel geometry response was found; no GeoJSON retained."},
+  "coverageAssessment": {"claimedScope": "The provincial portal provides Heilongjiang-wide general geospatial services.", "verifiedOpenScope": "No open parcel geometry or citywide query coverage verified.", "citywideVerified": false, "countrywideVerified": false},
+  "safeFieldAllowlist": ["id", "geometry"],
+  "remainingUncertainty": "A separate authenticated or non-indexed local cadastral viewer may exist; exact-point and citywide parcel coverage were not tested because no public parcel endpoint was identified.",
+  "runtimeReadiness": "held_unqualified"
+}

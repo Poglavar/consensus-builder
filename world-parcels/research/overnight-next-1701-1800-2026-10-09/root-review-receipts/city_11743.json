@@ -1,0 +1,12 @@
+{
+  "taskId": "city:11743",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-11743-balurghat.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/balurghat-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T15:32:09Z",
+  "reason": "The immutable WUP identity and English/Bengali searches match the queue. West Bengal land-record procedures and Balurghat offices support custody, while portal timeout/502 yields no parcel geometry or native ID. No live adapter, forced paging, 13 cells, metric GEOS checks, source binding or headed Details proof. Service failure is not citywide absence."
+}

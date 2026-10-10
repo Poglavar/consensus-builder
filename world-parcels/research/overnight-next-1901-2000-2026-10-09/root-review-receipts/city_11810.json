@@ -1,0 +1,13 @@
+{
+  "taskId": "city:11810",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/provenance.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-11810-pinghu.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pinghu-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T19:41:59.198121Z",
+  "reason": "Local land/cadastre administration is evidenced, but no anonymous parcel polygon response or native ID; independent adapter and headed details gates are missing."
+}

@@ -1,0 +1,17 @@
+{
+  "taskId": "packet:220",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-220-belfast.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/belfast-service-review.json",
+    "tmp/valhalla-parcel-research/belfast/hub.html"
+  ],
+  "checkedAt": "2026-10-09T13:40:14Z",
+  "identityReview": "Belfast, WUP 220, rank 1262, United Kingdom GB/GBR, point [54.602197727664,-5.93500686517269], 441925 persons matches roster, queue, and ledger.",
+  "sourceReview": "Separate English and Irish executed queries and first-party result URLs are recorded. Official LPS sources support registry custody. The cached Spatial NI Hub entry HTML contains no parcel or FeatureServer reference; its MapServer reference is an ArcGIS Online world topographic basemap. No safe native parcel ID or full polygon response was verified. Bounded viewer inspection does not prove citywide absence.",
+  "admissionReview": "Zero durable sample polygons. Fresh exact native-ID reads, forced paging, 13 bounded cells, independent metric GEOS validity and overlap checks, source binding, and headed Details verification are missing; runtime remains held."
+}

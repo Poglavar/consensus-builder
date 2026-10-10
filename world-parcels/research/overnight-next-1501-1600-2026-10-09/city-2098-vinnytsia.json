@@ -1,0 +1,82 @@
+{
+  "cityCode": 2098,
+  "queueRank": 1572,
+  "name": "Vinnytsia",
+  "country": "Ukraine",
+  "countryCode": "UA",
+  "point": [49.2323486254212, 28.4788953191052],
+  "population2025": 363466,
+  "population2025k": 363.466,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Vinnytsia official cadastral map parcel GIS land registry Ukraine",
+        "result": "Separate English-language discovery identified official Ukrainian cadastral and national geoportal documentation, plus an official Vinnytsia municipal geoportal reference. No anonymous parcel feature response was verified.",
+        "actualResultUrls": [
+          "https://nsdi.gov.ua/docs/portal/1start/4poshukZD.html",
+          "https://new.vmr.gov.ua/map",
+          "https://e.land.gov.ua/"
+        ]
+      },
+      {
+        "language": "Ukrainian",
+        "query": "Вінниця офіційна кадастрова карта земельний кадастр геопортал ділянки",
+        "result": "Separate Ukrainian-language discovery identified the Vinnytsia city urban-cadastre office, the regional StateGeoCadastre office, and municipal services for State Land Cadastre extracts. Public parcel geometry/API was not verified.",
+        "actualResultUrls": [
+          "https://vmr.gov.ua/departament-arkhitektury-ta-mitobuduvannia-vinnytskoi-miskoi-rady",
+          "https://vinnytska.land.gov.ua/kadastr/",
+          "https://www.vmr.gov.ua/perelik-posluh-tsnap",
+          "https://map.land.gov.ua/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "Vinnytsia municipal urban-cadastre and StateGeoCadastre public-map routes",
+    "url": "https://vmr.gov.ua/departament-arkhitektury-ta-mitobuduvannia-vinnytskoi-miskoi-rady",
+    "operator": "Vinnytsia City Council / State Service of Ukraine for Geodesy, Cartography and Cadastre",
+    "serviceType": "Official local custodial and national public cadastral routes reviewed; no anonymous safe full-parcel geometry response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Vinnytsia City Council documents organization and maintenance of urban-cadastre and land-cadastre information; StateGeoCadastre provides the national cadastral map and land-cadastre services.",
+    "verifiedOpenScope": "No anonymous public full parcel polygon with a stable native identity was verified in this investigation.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "map.land.gov.ua and map.vmr.gov.ua timed out during bounded anonymous GET checks; newmap.land.gov.ua did not resolve. The official pages and documentation describe cadastral map/search services but did not expose a verified safe ID+geometry response in this pass.",
+  "remainingUncertainty": "A timeout, DNS failure, or unusable public viewer does not establish absence of parcels. Viewer JavaScript/API configuration and CRS/native schema remain unverified.",
+  "nextStep": "Revisit the official map when reachable, follow its current JavaScript configuration, and qualify a bounded ID-plus-geometry response before any adapter consideration.",
+  "runtimeReadiness": "held_not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "checkedAt": "2026-10-10",
+  "queueRecord": {
+    "rank": 1572,
+    "cityCode": 2098,
+    "locId": 804,
+    "aliases": ["vinnytsia"],
+    "year": 2025,
+    "timeMid": 2025.5,
+    "populationUnitSource": "thousands",
+    "plausibility": "Moderate"
+  }
+}

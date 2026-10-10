@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8519-makurdi.json",
+  "cityCode": 8519,
+  "purpose": "Document first-party discovery, current public land-record routes, bounded anonymous access review, and evidence limits.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "unsafeFieldsRequested": false, "citywideCompletenessAsserted": false},
+  "assessment": "BENGIS is an evidenced local/provincial land and geospatial custodian for Makurdi. Its public site documents digital mapping, cadastral-unit processing, survey, land administration, and Makurdi urban fees. The public portal route reviewed is a sign-in page and no anonymous parcel map/API, schema, CRS, native parcel ID, or geometry response was established.",
+  "registryAssessment": "Benue State Government BENGIS and the Ministry of Lands, Survey and Solid Minerals are evidenced as local/provincial custodians in Makurdi. No current city-specific public cadastral registry/map endpoint was established, so registryFound remains null.",
+  "queries": [
+    {"language": "English", "query": "Makurdi Nigeria cadastral parcel map land registry official Benue State GIS", "outcome": "Official Benue State and BENGIS pages found, including the local service centre, application procedure, survey service, and Makurdi fees; no anonymous parcel-vector service found.", "actualResultUrls": ["https://benuestate.gov.ng/", "https://bengis.benuestate.gov.ng/", "https://bengis.benuestate.gov.ng/application-guidelines/", "https://bengis.benuestate.gov.ng/service/survey/", "https://bengis.benuestate.gov.ng/fees/"]},
+    {"language": "native/local", "query": "Makurdi taswirar filaye rajistar ƙasa Benue official", "outcome": "No separate local-language cadastral map or anonymous parcel API surfaced; relevant first-party BENGIS pages were English-language.", "actualResultUrls": ["https://bengis.benuestate.gov.ng/", "https://bengis.benuestate.gov.ng/application-guidelines/", "https://bengis.benuestate.gov.ng/contact-us/"]}
+  ],
+  "attempts": [
+    {"url": "https://bengis.benuestate.gov.ng/", "method": "GET/search-open", "httpStatus": 200, "result": "Official BENGIS site loaded through public web retrieval. It describes Benue State digital mapping and land services and identifies the Makurdi service centre; no public feature collection or API configuration was exposed in reviewed content."},
+    {"url": "https://bengis.benuestate.gov.ng/portal", "method": "GET/search-open", "httpStatus": 200, "result": "Official portal resolved to a sign-in page requiring email/phone, password, and a verification image. No login, registration, CAPTCHA bypass, credential, or private-token attempt was made."},
+    {"url": "https://bengis.benuestate.gov.ng/portal", "method": "GET/curl", "httpStatus": null, "result": "Direct curl from the research host failed to connect to port 443; this is recorded as a transport failure, not evidence of source absence. The same URL was independently readable through public web retrieval as a sign-in page."},
+    {"url": "https://bengis.benuestate.gov.ng/application-guidelines/", "method": "GET/search-open", "httpStatus": 200, "result": "Official procedure loaded. It names the BENGIS Service Centre at the Ministry of Lands, Survey and Solid Minerals in Makurdi and states that survey reports are vetted by the Cadastral Unit and plotted/saved into the system; no geometry or schema published."},
+    {"url": "https://bengis.benuestate.gov.ng/service/survey/", "method": "GET/search-open", "httpStatus": 200, "result": "Official survey-service page loaded; it describes licensed survey and Surveyor-General authorization but no anonymous parcel endpoint."},
+    {"url": "https://bengis.benuestate.gov.ng/fees/", "method": "GET/search-open", "httpStatus": 200, "result": "Official fees page loaded and includes Makurdi Urban Area ground-rent categories; it contains no parcel features or native identity field."}
+  ],
+  "geometryEvidence": {"sourceUrl": null, "sampleFile": null, "nativeIdField": null, "nativeFieldMapping": {}, "compositeKeyProvenance": null, "sampleCount": 0, "crs": null, "queryExtent": null},
+  "geometryDecision": {"verified": false, "sourceId": null, "nativeIdField": null, "sampleCount": 0, "exactWupPointTest": "No anonymous parcel query route was available; the exact WUP point [7.71679050070715, 8.53831284036563] was not shifted or treated as an absence test.", "retentionNote": "No GeoJSON retained because no safe native parcel identity plus full polygon response was obtained."},
+  "remainingUncertainty": "The BENGIS portal may expose additional land records after account/verification, but credentials, CAPTCHA defeat, and personal/owner/address/title fields are out of scope. Public documentation confirms cadastral processing but not current open parcel coverage, schema, CRS, or citywide completeness. No TLS bypass or unsafe-field request was made.",
+  "safeFieldAllowlist": ["native parcel ID if publicly exposed", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter",
+  "researchAttempt": 1
+}

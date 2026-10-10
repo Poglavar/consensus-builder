@@ -1,0 +1,14 @@
+{
+  "taskId": "city:10616",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-10616-xinxing.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/xinxing-service-review.json",
+    "tmp/valhalla-parcel-research/10616/config.js",
+    "tmp/valhalla-parcel-research/10616/probe-a7ae158f.txt"
+  ],
+  "checkedAt": "2026-10-09T16:49:37.369867Z",
+  "reason": "No anonymous cadastral geometry or native ID response. First-party portal cache shows map layers and a login page; local registry custody remains unresolved, so no absence or admission is inferred."
+}

@@ -1,0 +1,14 @@
+{
+  "taskId": "city:1168",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-1168-brno.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/brno-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/brno-parcel-sample.geojson"
+  ],
+  "checkedAt": "2026-10-10T16:46:12Z",
+  "reason": "Held: live first-party exact-point response matched retained native ID 1417958702 and full polygon; one metric-valid point sample does not prove forced paging, 13 bounded cells, broad overlap checks, source binding, or headed Details."
+}

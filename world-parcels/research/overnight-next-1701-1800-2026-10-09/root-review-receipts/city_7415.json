@@ -1,0 +1,16 @@
+{
+  "taskId": "city:7415",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-7415-sikar.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/sikar-service-review.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "tmp/valhalla-parcel-research/7415/Config.js",
+    "tmp/valhalla-parcel-research/7415/map.js"
+  ],
+  "checkedAt": "2026-10-10T13:44:21Z",
+  "registryFound": true,
+  "reason": "Rajasthan cadastral custody and Sikar land-record administration are evidenced. The inspected public Urban GIS Khasra configuration points to a JDA Settlement_JDA service, with no Sikar native parcel ID or full polygon response. BhuNaksha/Apna Khata timeouts leave city availability unresolved.",
+  "admission": "Held: no independently verified full native parcel polygon and ID; fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, and headed Details-panel verification are missing. No runtime, catalog, city configuration, or generated coverage admission."
+}

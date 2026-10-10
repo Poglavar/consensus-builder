@@ -1,0 +1,12 @@
+{
+  "taskId": "city:453",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-453-ganja.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ganja-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T17:27:15Z",
+  "reason": "Ganja identity matches queue and ranked WUP roster at rank 1470, Azerbaijan, point [40.6870715860686,46.3454287780589], 386822 persons. English and Azerbaijani searches are recorded. First-party emlak.gov.az/az/news/view/265 and dedkr.gov.az/az/news/view/80 independently substantiate Ganja cadastral-map custody, supporting registryFound=true. Original map.headers cache at tmp/valhalla-parcel-research/ganja/map.headers is empty after timeout; no parcel response, full polygon, or native ID. Fresh ID reads, forced paging, 13 cells, metric GEOS checks, source binding, and headed Details verification are absent. Timeout is not absence; no admission."
+}

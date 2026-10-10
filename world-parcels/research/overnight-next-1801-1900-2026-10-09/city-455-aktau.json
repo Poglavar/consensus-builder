@@ -1,0 +1,70 @@
+{
+  "cityCode": 455,
+  "queueRank": 1850,
+  "name": "Aktau",
+  "country": "Kazakhstan",
+  "countryCode": "KZ",
+  "iso3": "KAZ",
+  "point": [43.660115839165, 51.1876575639079],
+  "population2025": 310607,
+  "population2025k": 310.607,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Aktau Kazakhstan official cadastral parcel map public viewer API cadastral map",
+        "result": "Found the official EGKN Public Cadastral Map, an Aktau akimat page linking to it, an official Aktau city land-relations department document naming the same map, and an official Mangystau geoportal. No anonymous parcel ID-plus-geometry response was verified.",
+        "actualResultUrls": [
+          "https://www.gov.kz/memleket/entities/akimat-goroda-aktau/press/article/details/117476",
+          "https://map.gov4c.kz/egkn/",
+          "https://map.e-mangistau.kz/",
+          "https://hearings.ndbecology.gov.kz/Public/PubHearings/LoadFile/256593"
+        ]
+      },
+      {
+        "language": "Kazakh/Russian (local)",
+        "query": "Ақтау кадастрлық карта жер учаскелері ресми / Актау публичная кадастровая карта официальный земельный кадастр",
+        "result": "Found the official Aktau city land-relations department, the EGKN Public Cadastral Map, official government descriptions of public cadastral-map contents, and the AIS GZK viewer. No anonymous parcel geometry was obtained.",
+        "actualResultUrls": [
+          "https://hearings.ndbecology.gov.kz/Public/PubHearings/LoadFile/256593",
+          "https://www.gov.kz/memleket/entities/kostanai-saulet/press/media/details/53765",
+          "https://aisgzk.kz/aisgzk/ru/content/maps?type=pch_kart",
+          "https://map.e-mangistau.kz/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "source": {
+    "provider": "Kazakhstan EGKN Public Cadastral Map and official Aktau city land-relations department",
+    "viewerUrl": "https://map.gov4c.kz/egkn/",
+    "localCustodianEvidence": "Official Aktau city land-relations department document identifies the EGKN Public Cadastral Map for exact cartographic materials covering Aktau and Mangystau.",
+    "serviceRoutePublishedByViewer": null,
+    "serviceType": "Official public cadastral viewer; underlying anonymous parcel service route not verified",
+    "parcelLayerConfirmed": false,
+    "nativeIdField": null,
+    "geometryField": null,
+    "safeFieldsRequested": ["stable native parcel ID if publicly exposed", "polygon geometry"],
+    "crs": null
+  },
+  "verifiedSample": {
+    "count": 0,
+    "exactWupPointQuery": false,
+    "result": "No parcel feature response obtained. This is not evidence of citywide parcel absence.",
+    "requestEvidence": "tmp/valhalla-parcel-research/455/"
+  },
+  "coverageAssessment": {
+    "claimedScope": "National EGKN public cadastral-map infrastructure with official Aktau and Mangystau references.",
+    "verifiedOpenScope": "Official viewer and local custodian references retrieved; anonymous parcel schema, CRS, stable identity, geometry response, and citywide completeness unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; no independently verified parcel adapter candidate",
+  "notes": "Research evidence only; not source integration or runtime admission. Exact WUP point preserved in latitude/longitude order; no coordinate shift applied. No owner, address, titleholder, contact, tax/account, personal or other unsafe fields were requested or retained."
+}

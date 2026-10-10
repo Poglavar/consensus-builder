@@ -1,0 +1,12 @@
+{
+  "taskId": "city:2001",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-2001-cardiff.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/cardiff-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T17:10:55Z",
+  "reason": "Identity matches rank 1455, United Kingdom, immutable point and 390692 persons. English and Welsh executed searches agree across paired files. Cardiff Council supports local land-charges custody and HM Land Registry documents indicative INSPIRE polygons; official Cardiff download route returned a redirect loop, so no first-party Cardiff feature bytes or polygons were available. Fresh reads, paging, 13 cells, metric GEOS, source binding and headed Details are unproved. Redirect is not citywide absence."
+}

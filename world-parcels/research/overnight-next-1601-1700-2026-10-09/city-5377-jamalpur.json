@@ -1,0 +1,50 @@
+{
+  "cityCode": 5377,
+  "queueRank": 1659,
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "point": [24.9209921555422, 89.9461779185304],
+  "population2025": 345132,
+  "population2025k": 345.132,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jamalpur Bangladesh cadastral map parcel land records official",
+        "result": "Found the official Department of Land Records and Surveys online record/map service and the official Bangladesh land-map viewer; official local Jamalpur district administration pages also expose land-service links. No open downloadable citywide parcel file was found in search results.",
+        "actualResultUrls": [
+          "https://settlement.gov.bd/",
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://jamalpur.gov.bd/",
+          "https://dlrs.gov.bd/"
+        ]
+      },
+      {
+        "language": "Bengali",
+        "query": "জামালপুর বাংলাদেশ ক্যাডাস্ট্রাল মানচিত্র দাগ জমির রেকর্ড সরকারি",
+        "result": "Found the official ভূমি নকশা viewer, the DLRS online land-record/map service, and official DLRS material explaining mouza maps and plot/dag identifiers. The viewer exposed Jamalpur district, BDS survey metadata, Jamalpur Sadar, and three returned mouza-sheet entries, but no geometry response was usable.",
+        "actualResultUrls": [
+          "https://map.land.gov.bd/",
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://dlrs.portal.gov.bd/pages/static-pages/6922e04e933eb65569e266ad"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "The official DLRS settlement viewer is a first-party national cadastral/map service and its live administrative cascade returned Jamalpur district (unitcod 071000000, comcod 4176), BDS digital survey 201901, Jamalpur Sadar upazila, and mouza records. This is service evidence, not proof that a complete city polygon dataset was retrieved.",
+  "sourceReview": {
+    "officialViewer": "https://settlement.gov.bd/Map/MapSearch",
+    "mapViewer": "https://map.land.gov.bd/",
+    "custodian": "Department of Land Records and Surveys (DLRS), Ministry of Land, Bangladesh",
+    "nativeIdentity": "The viewer identifies plots by native dag/plot number in the selected mouza sheet; no native parcel feature identity was returned because sheet geometry requests failed.",
+    "crs": "Not exposed by the successful metadata responses; no geometry was retained.",
+    "safeFieldAllowlist": ["native dag/plot identifier if returned", "full parcel polygon geometry if returned", "survey/mouza/sheet identifiers", "public service and CRS metadata"],
+    "excludedFields": ["owner names", "addresses", "titleholder or contact data", "tax/account/registration details", "credentials and private tokens"]
+  },
+  "runtimeReadiness": "held_no_geometry_and_independent_serial_review_required",
+  "uncertainty": "The exact WUP point was preserved and no coordinate shift was made. A zero or missing geometry response is not treated as citywide absence. The service returned only a Jamalpur Sadar metadata subset and its sheet endpoint returned HTTP 500 with empty bodies for attempted sheets; coverage, geometry availability, CRS, and adapter suitability remain unresolved.",
+  "retainedSample": null
+}

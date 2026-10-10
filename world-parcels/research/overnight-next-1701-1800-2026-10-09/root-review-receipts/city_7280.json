@@ -1,0 +1,12 @@
+{
+  "taskId": "city:7280",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-7280-girga.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/girga-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T14:24:57Z",
+  "reason": "National mapping/survey and Girga tax-office pages do not establish a local cadastral custodian or public parcel service; registry custody remains unresolved. No native parcel ID or full polygon response was verified. Fresh adapter reads, paging, 13 cells, metric GEOS checks, source binding, and headed Details verification are absent. Certificate/502 limits do not prove citywide absence."
+}

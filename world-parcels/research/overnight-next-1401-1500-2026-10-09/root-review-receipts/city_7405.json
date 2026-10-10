@@ -1,0 +1,11 @@
+{
+  "taskId": "city:7405",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-7405-madiun.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/madiun-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T16:38:29Z",
+  "reason": "WUP archive and queue identity match; English and Indonesian searches are recorded. ATR/BPN documents parcel layers and Madiun land-office cadastral custody, but cached viewer responses contain no safe native-ID polygon read or independent adapter qualification. The packet's local-office URL omits 'selisih'; the first-party article is accessible at the corrected URL. Parcel coverage and admission remain unresolved."
+}

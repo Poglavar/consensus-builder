@@ -1,0 +1,23 @@
+{
+  "taskId": "city:10290",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-10290-qingzhou.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/qingzhou-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T12:34:04Z",
+  "reason": "Shandong public map and API documentation does not evidence a Qingzhou-specific parcel layer; the local government route timed out. Custody remains unresolved (null), without an absence finding.",
+  "identityCheck": "Queue, ranked roster, and original WUP 2025 CSV agree on code, rank, country, point and population in persons.",
+  "searchCheck": "Packet records separate English and local-language queries with result URLs; first-party source pages were independently inspected.",
+  "custody": {
+    "registryFound": null,
+    "firstPartyUrls": [
+      "https://www.sdmap.gov.cn/",
+      "https://sdmap.gov.cn/mapAPI.html"
+    ]
+  },
+  "sampleCheck": "No full parcel polygons retained; no unsafe ID attributes in a retained sample.",
+  "admissionGates": "No native-ID parcel polygon response. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding and headed details-panel verification are not evidenced. No runtime admission."
+}

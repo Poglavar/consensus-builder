@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3436-corrientes.json",
+  "purpose": "Document first-party local-government discovery and bounded anonymous cadastral/map-service review for Corrientes, Argentina.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Municipalidad de la Ciudad de Corrientes IDEMCC is a locally scoped geospatial portal. Its official description says it provides municipal cadastral base information and 144 geographic layers; the current indexed viewer lists Parcelario Catastral and Parcelas PH. The municipal procedure page directs users to that viewer for parcel location. No safe anonymous feature response, native parcel ID, geometry, or CRS was obtained from this environment.",
+  "registryAssessment": "registryFound=true is justified by first-party municipal evidence of a local cadastral map/procedure: the official municipal page names the Dirección General de Catastro and directs users to the municipal Parcelario Catastral viewer. This does not establish downloadable open geometry or citywide completeness.",
+  "officialPrimarySources": [
+    {
+      "url": "https://gis.ciudaddecorrientes.gov.ar/que_es_idemcc.php",
+      "observation": "Official IDEMCC description identifies the Municipalidad de la Ciudad de Corrientes, its municipal geoservice mission, and cadastral base information; it states the infrastructure contains 144 geographic layers and 9 raster layers."
+    },
+    {
+      "url": "https://gis.ciudaddecorrientes.gov.ar/idemcc/",
+      "observation": "Official municipal viewer indexed the Informacion catastral group, including Parcelario Catastral, Parcelas PH, and Manzanas."
+    },
+    {
+      "url": "https://gis.ciudaddecorrientes.gov.ar/geoservicios.php",
+      "observation": "Official IDEMCC geoservices page documents municipal WMS/WFS service types. The page was not safely retrievable over HTTPS from this environment; indexed first-party content was used only for route discovery, and no credentials were used."
+    },
+    {
+      "url": "https://ciudaddecorrientes.gov.ar/tramites/viviendas-e-inmuebles/responsable-del-pago-de-impuestos",
+      "observation": "Official municipal procedure names the Dirección General de Catastro and directs users to Información Geográfica / Información Catastral / Parcelario Catastral for parcel location."
+    },
+    {
+      "url": "https://rpi.corrientes.gob.ar/",
+      "observation": "Official provincial Registro de la Propiedad Inmueble establishes the property-registry context, distinct from the municipal cadastral map; no owner/title data was requested or retained."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Corrientes Argentina official cadastral parcel map GIS cadastre land registry",
+      "result": "Official municipal IDEMCC viewer and cadastral-procedure sources found; no safe anonymous geometry response verified.",
+      "actualResultUrls": [
+        "https://gis.ciudaddecorrientes.gov.ar/idemcc/",
+        "https://gis.ciudaddecorrientes.gov.ar/que_es_idemcc.php",
+        "https://ciudaddecorrientes.gov.ar/tramites/viviendas-e-inmuebles/responsable-del-pago-de-impuestos"
+      ]
+    },
+    {
+      "language": "Spanish",
+      "query": "Corrientes Argentina mapa catastral oficial catastro parcelas GIS registro inmobiliario",
+      "result": "Official Spanish municipal pages confirm Parcelario Catastral guidance and IDEMCC geoservices; no safe anonymous geometry response verified.",
+      "actualResultUrls": [
+        "https://gis.ciudaddecorrientes.gov.ar/idemcc/",
+        "https://gis.ciudaddecorrientes.gov.ar/geoservicios.php",
+        "https://ciudaddecorrientes.gov.ar/tramites/viviendas-e-inmuebles/informes-varios"
+      ]
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://gis.ciudaddecorrientes.gov.ar/idemcc/",
+      "method": "GET",
+      "httpStatus": 0,
+      "result": "TLS certificate could not be validated by the local client. No source-specific certificate exception was authorized, so the request was not retried with verification disabled."
+    },
+    {
+      "url": "http://gis.ciudaddecorrientes.gov.ar/idemcc/",
+      "method": "GET",
+      "httpStatus": 403,
+      "result": "Origin returned a Web Application Firewall block page. No viewer configuration, feature schema, CRS, ID, or geometry response was obtained."
+    },
+    {
+      "url": "http://gis.ciudaddecorrientes.gov.ar/geoservicios.php",
+      "method": "GET",
+      "httpStatus": 403,
+      "result": "Origin returned a Web Application Firewall block page. Indexed first-party search content documents WMS/WFS service types, but no service URL was safely retrieved from the response."
+    },
+    {
+      "url": "https://ciudaddecorrientes.gov.ar/tramites/viviendas-e-inmuebles/responsable-del-pago-de-impuestos",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official municipal procedure page reviewed. It directs users to the municipal map viewer and names the local Dirección General de Catastro; it does not itself return parcel geometry."
+    },
+    {
+      "url": "https://rpi.corrientes.gob.ar/",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official provincial property-registry landing page reviewed for custodian distinction; no owner, title, address, or personal fields were queried or retained."
+    }
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed against a verified public feature service; a zero hit, certificate failure, WAF block, timeout, or unusable UI is not treated as citywide absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal IDEMCC scope with official cadastral-viewer/procedure evidence; provincial RPI is property-registry context only.",
+    "verifiedOpenScope": "No anonymous parcel feature response, native ID schema, CRS, or citywide completeness was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "The current WMS/WFS endpoint URLs, authentication requirements, layer schema, CRS, safe parcel identity field, geometry format, and coverage remain unverified because the municipal GIS origin blocked direct retrieval in this environment. The indexed first-party viewer evidence is sufficient for local registry discovery but not for source integration.",
+  "runtimeAssessment": "held; no adapter admission or source integration implied"
+}

@@ -1,0 +1,21 @@
+{
+  "taskId": "city:5555",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-5555-cheboksary.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/cheboksary-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T10:47:10Z",
+  "reason": "English and Russian discovery was recorded, but official public-map requests timed out before city-specific first-party registry or parcel response. Registry custody remains unresolved (null), not absent.",
+  "identityCheck": "City code, rank, country, immutable point and 2025 population persons match the SHA-256 verified WUP roster, pending queue and ledger. English plus native-language executed search queries and result URLs were checked in both paired files.",
+  "polygonCheck": "Zero full polygons retained for this city; no unsafe ID attributes were retained in a polygon sample.",
+  "qualificationGates": "No independently evidenced fresh native-ID full-polygon reads, forced paging, 13 bounded cells, metric GEOS validity/duplicates/overlap checks, source binding or headed pointer/Details-panel verification. City remains held, unintegrated and unenabled.",
+  "sourceUrlsRecorded": [
+    "https://rosreestr.gov.ru/",
+    "https://pkk.rosreestr.ru/"
+  ]
+}

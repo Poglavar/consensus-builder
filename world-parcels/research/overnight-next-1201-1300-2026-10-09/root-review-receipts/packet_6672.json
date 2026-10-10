@@ -1,0 +1,21 @@
+{
+  "taskId": "packet:6672",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-6672-bishoftu.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/bishoftu-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/root-review-receipts/city_6672.json",
+    "tmp/valhalla-parcel-research/bishoftu/getfeature.json",
+    "tmp/valhalla-parcel-research/bishoftu/parcel-publish.json",
+    "tmp/valhalla-parcel-research/bishoftu/wfs.xml",
+    "tmp/valhalla-parcel-research/bishoftu/parcel-schema.xsd"
+  ],
+  "checkedAt": "2026-10-09T13:36:14Z",
+  "identityReview": "WUP code 6672, rank 1257, Ethiopia, point [8.75862197493687,38.9583814728029], population 442776 persons match immutable queue and roster.",
+  "searchReview": "English and Amharic executed searches and first-party URLs are present. Official Bishoftu city-page search crawl lists a city Land Office.",
+  "decisionReason": "Local land-office evidence supports registryFound=true. Original registered-parcel and parcel-publish WFS responses each have zero features for bounded point-area requests; advertised layer extents are Addis-oriented. No Bishoftu native-ID polygon or adapter qualification exists. Bounded zero does not establish citywide absence.",
+  "admissionGates": "Fresh native-ID read, forced pagination, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are not independently evidenced; no runtime/catalog/report admission."
+}

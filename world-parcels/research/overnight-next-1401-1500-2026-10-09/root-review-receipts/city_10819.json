@@ -1,0 +1,22 @@
+{
+  "taskId": "city:10819",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-10819-eluru.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/eluru-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261009T174353-14fd8cd4/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-09T17:49:40Z",
+  "reason": "Immutable WUP code 10819, rank 1483, India, point and 383068 persons match the checksum-verified 2025 UN archive and queue. Worker run logs confirm English and local-language searches. State cadastral custody and district/municipal leads are confirmed, but Bhunaksha timed out, the district land-record page is a placeholder, and the municipal map is a Sachivalayam locator. No city-scoped parcel feature response, safe native ID, or full polygon was returned. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed Details verification are not independently evidenced. Access failures do not establish citywide absence.",
+  "firstPartyPagesChecked": [
+    "https://bhunaksha.ap.gov.in/",
+    "https://eluru.ap.gov.in/service/land-records/",
+    "https://eluru.cdma.ap.gov.in/ulbprofile/eluru/gis-map/"
+  ],
+  "registryFoundReviewed": true,
+  "retainedFullPolygonCount": 0,
+  "admission": false
+}

@@ -1,0 +1,12 @@
+{
+  "taskId": "city:10073",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-10073-karimnagar.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/karimnagar-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T11:25:34Z",
+  "reason": "District land-record custody and TGRAC cadastral-layer metadata are supported, but no Karimnagar parcel feature row was obtained. The inaccessible point query and viewer error do not establish citywide absence."
+}

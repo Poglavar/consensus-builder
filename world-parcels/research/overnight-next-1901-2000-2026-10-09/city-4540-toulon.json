@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 4540,
+  "queueRank": 1925,
+  "name": "Toulon",
+  "country": "France",
+  "countryCode": "FR",
+  "iso3": "FRA",
+  "point": [43.1183148051142, 5.91190474692264],
+  "population2025": 298777,
+  "population2025k": 298.777,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Toulon official cadastral parcel map cadastre parcels API",
+        "result": "Found the official French API Carto cadastre documentation, the official cadastre.gouv.fr parcel-map service, the DGFiP INSPIRE WMS route, and the official Toulon urban-planning page referring users to the cadastral plan.",
+        "actualResultUrls": ["https://www.data.gouv.fr/dataservices/api-carto-module-cadastre", "https://cadastre.gouv.fr/scpc/rechercherPlan.do?codeDepartement=083&codePostal=83056&ville=Toulon", "https://toulon.fr/les-autorisations-durbanisme"]
+      },
+      {
+        "language": "French",
+        "query": "Toulon carte cadastrale officielle parcelles API cadastre",
+        "result": "Found the same first-party routes in French: API Carto/IGN, cadastre.gouv.fr, and the Toulon city service page. The city page explicitly directs users to download a cadastral plan and identifies the municipal urban-rights service.",
+        "actualResultUrls": ["https://www.data.gouv.fr/dataservices/api-carto-module-cadastre", "https://cadastre.gouv.fr/scpc/afficherServiceWMS.do", "https://toulon.fr/les-autorisations-durbanisme"]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://apicarto.ign.fr/api/cadastre",
+      "operator": "IGN API Carto cadastre",
+      "evidence": "Official open REST API documentation describes commune and parcel geometry operations, GeoJSON responses, and WGS84 longitude/latitude output."
+    },
+    {
+      "url": "https://inspire.cadastre.gouv.fr/scpc/83137.wms?service=WMS&request=GetCapabilities",
+      "operator": "DGFiP Cadastre WMS",
+      "evidence": "Verified GetCapabilities response identifies the Toulon (83137) cadastral WMS, parcel layers, DGFiP operator, and no-conditions access."
+    },
+    {
+      "url": "https://toulon.fr/les-autorisations-durbanisme",
+      "operator": "City of Toulon, Direction du Développement Urbain",
+      "evidence": "Official city page says the service handles urban-rights procedures and directs users to the cadastral plan at cadastre.gouv.fr; this is local custodian/procedure evidence, not a municipal parcel API."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://apicarto.ign.fr/api/cadastre/commune?code_insee=83137",
+      "method": "GET",
+      "status": "success",
+      "summary": "Returned a Toulon commune GeoJSON feature with geometry."
+    },
+    {
+      "url": "https://apicarto.ign.fr/api/cadastre/parcelle?code_insee=83137",
+      "method": "GET",
+      "status": "success",
+      "summary": "Returned parcel GeoJSON with native fields including gid, numero, feuille, section, code_insee, and idu; response was bounded only in ignored scratch evidence because the unfiltered response is larger."
+    },
+    {
+      "url": "https://apicarto.ign.fr/api/cadastre/parcelle?geom=<exact WUP Point GeoJSON>",
+      "method": "GET",
+      "status": "success_empty",
+      "summary": "Exact point [longitude 5.91190474692264, latitude 43.1183148051142] returned zero features. This is a point-query result only and is not evidence of citywide absence."
+    },
+    {
+      "url": "https://apicarto.ign.fr/api/cadastre/parcelle?geom=<bounded polygon around WUP point>",
+      "method": "GET",
+      "status": "success_empty",
+      "summary": "A smaller polygon around the WUP point returned zero features; a wider 0.004-degree bounded polygon returned five parcel features. Full unchanged responses are in ignored tmp/valhalla-parcel-research/toulon/."
+    },
+    {
+      "url": "https://inspire.cadastre.gouv.fr/scpc/83137.wms?service=WMS&request=GetCapabilities",
+      "method": "GET",
+      "status": "success",
+      "summary": "DGFiP WMS capabilities retrieved over verified TLS; service identifies cadastral parcel visualization for commune 83137/Toulon. No feature-info request was needed or used."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": "idu (parcel identity), with API feature id as service identifier",
+    "fallbackOidField": "gid",
+    "compositeKey": "idu is a composite cadastral identity containing department, commune, section and parcel number; source fields observed but not retained as sample properties",
+    "fieldMapping": {
+      "id": "idu, canonical native parcel identity",
+      "geometry": "geometry, GeoJSON MultiPolygon",
+      "numero": "native parcel number, not retained",
+      "section": "native cadastral section, not retained",
+      "feuille": "native cadastral sheet, not retained",
+      "code_insee": "commune code, not retained",
+      "gid": "source numeric identifier, fallback metadata only"
+    },
+    "crs": "EPSG:4326 / WGS84 GeoJSON output; request geometry supplied as longitude,latitude per API contract",
+    "geometryType": "MultiPolygon"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official IGN API Carto cadastral parcels for commune Toulon (INSEE 83137), with DGFiP commune WMS as a corroborating official map service.",
+    "verifiedOpenScope": "Anonymous API access returned Toulon commune geometry and parcel GeoJSON; bounded wider-area request returned five parcel features. Exact point and smaller polygon were empty.",
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "No exact-point parcel hit; this does not establish absence because cadastral geometry, point-on-boundary behavior, and bounded query semantics can differ."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "tax", "account", "legal description", "ownership or rights details"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_cadastral_service_verified_bounded_geometry",
+  "remainingUncertainty": "The public API is confirmed and exposes safe parcel IDs plus geometry, but no retained sample was created, the exact WUP point was empty, and citywide freshness/completeness plus adapter compatibility were not independently qualified.",
+  "nextStep": "Serial reviewer should independently verify current API schema, native idu stability, representative citywide coverage, and adapter compatibility before admission."
+}

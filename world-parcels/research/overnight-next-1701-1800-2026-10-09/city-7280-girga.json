@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 7280,
+  "queueRank": 1756,
+  "cityId": "wup2025:7280",
+  "name": "Girga",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "point": [26.3344461728533, 31.8824140309426],
+  "centerLatLon": [26.3344461728533, 31.8824140309426],
+  "population2025": 327081,
+  "population2025k": 327.081,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Girga Egypt cadastral parcels GIS land registry official",
+        "result": "Search identified Egypt’s first-party Survey Authority as the national producer of topographic/digital maps and land-survey services, plus no public Girga parcel feature service or anonymous parcel API.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+          "https://psm.gov.eg/Services/233?serviceName=-%D8%B7%D9%84%D8%A8-%D8%A8%D9%8A%D8%A7%D9%86-%D9%85%D8%B3%D8%A7%D8%AD%D9%8A-%D8%B9%D9%86-%D9%82%D8%B7%D8%B9%D8%A9-%D8%A7%D9%84%D8%A3%D8%B1%D8%B6"
+        ]
+      },
+      {
+        "language": "Arabic (native/local)",
+        "query": "جيرجا مصر خريطة كادسترية قطع الأراضي السجل العقاري موقع رسمي",
+        "result": "Search found official Egyptian Survey Authority map/survey information and an official Girga tax-office page covering Girga administrative boundaries, but no public cadastral map/API, safe parcel identity response, geometry, schema, or CRS for Girga.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+          "https://www.eta.gov.eg/ar/node/1108",
+          "https://gopp.gov.eg/%D9%85%D9%86%D8%B8%D9%88%D9%85%D8%A9-%D8%A7%D9%84%D8%AA%D8%AE%D8%B7%D9%8A%D8%B7-%D8%A7%D9%84%D9%85%D9%83%D8%A7%D9%86%D9%8A-%D9%84%D8%A3%D8%BA%D8%B1%D8%A7%D8%B6-%D8%A7%D9%84%D8%AA%D9%86%D9%85%D9%8A%D8%A9-%D8%A7%D9%84%D8%B9%D9%85%D8%B1%D8%A7%D9%86%D9%8A%D8%A9-%D8%A7%D9%84%D9%85%D8%B3%D8%AA%D8%AF%D8%A7%D9%85%D8%A9"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "operator": "Egyptian General Survey Authority (national surveying and mapping authority)",
+      "observation": "The official site describes national mapping, land-survey, digital-map, coordinate-certificate, and parcel-allocation services. It does not expose an anonymous public Girga parcel viewer or feature endpoint in the inspected page links."
+    },
+    {
+      "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+      "operator": "Egyptian General Survey Authority",
+      "observation": "The official map guide says detailed maps can depict private-land boundaries and numbers and that paper/digital map products support land registration; it is a product/service description, not a downloadable Girga parcel layer."
+    },
+    {
+      "url": "https://www.eta.gov.eg/ar/node/1108",
+      "operator": "Egyptian Tax Authority, Girga office",
+      "observation": "Official Girga-specific administrative coverage page for the tax office in Sohag Governorate. It is not evidence of a cadastral registry or parcel geometry service."
+    },
+    {
+      "url": "https://gopp.gov.eg/%D9%85%D9%86%D8%B8%D9%88%D9%85%D8%A9-%D8%A7%D9%84%D8%AA%D8%AE%D8%B7%D9%8A%D8%B7-%D8%A7%D9%84%D9%85%D9%83%D8%A7%D9%86%D9%8A-%D9%84%D8%A3%D8%BA%D8%B1%D8%A7%D8%B6-%D8%A7%D9%84%D8%AA%D9%86%D9%85%D9%8A%D8%A9-%D8%A7%D9%84%D8%B9%D9%85%D8%B1%D8%A7%D9%86%D9%8A%D8%A9-%D8%A7%D9%84%D9%85%D8%B3%D8%AA%D8%AF%D8%A7%D9%85%D8%A9",
+      "operator": "General Organization for Physical Planning (GOPP), Egypt",
+      "observation": "Official page describes national spatial-planning basemap and urban-boundary data integration, not cadastral parcel identities or a public parcel geometry endpoint."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "method": "GET via official page inspection",
+      "status": "HTTP page available to search inspection; direct curl blocked by expired certificate",
+      "summary": "Inspected official navigation and linked service pages. No public parcel viewer/API URL was exposed. TLS verification was not disabled and no certificate exception was used."
+    },
+    {
+      "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+      "method": "GET via official indexed document",
+      "status": "official document found; direct large-PDF retrieval not retained",
+      "summary": "Read search-indexed official description of map products and land-boundary/number content. No machine-readable parcel response, native IDs, or CRS endpoint."
+    },
+    {
+      "url": "https://psm.gov.eg/Services/233?serviceName=-%D8%B7%D9%84%D8%A8-%D8%A8%D9%8A%D8%A7%D9%86-%D9%85%D8%B3%D8%A7%D8%AD%D9%8A-%D8%B9%D9%86-%D9%82%D8%B7%D8%B9%D8%A9-%D8%A7%D9%84%D8%A3%D8%B1%D8%B6",
+      "method": "GET via official public-service listing",
+      "status": "search result found; fetch returned 502",
+      "summary": "Official service listing indicates a request for a survey statement for a land parcel and requires selecting governorate/area. It did not provide public parcel geometry or an anonymous data endpoint."
+    },
+    {
+      "url": "https://www.eta.gov.eg/ar/node/1108",
+      "method": "GET",
+      "status": "HTTP page found",
+      "summary": "Girga tax-office coverage page read; no cadastral map, parcel schema, or parcel geometry route."
+    },
+    {
+      "url": "https://gopp.gov.eg/%D9%85%D9%86%D8%B8%D9%88%D9%85%D8%A9-%D8%A7%D9%84%D8%AA%D8%AE%D8%B7%D9%8A%D8%B7-%D8%A7%D9%84%D9%85%D9%83%D8%A7%D9%86%D9%8A-%D9%84%D8%A3%D8%BA%D8%B1%D8%A7%D8%B6-%D8%A7%D9%84%D8%AA%D9%86%D9%85%D9%8A%D8%A9-%D8%A7%D9%84%D8%B9%D9%85%D8%B1%D8%A7%D9%86%D9%8A%D8%A9-%D8%A7%D9%84%D9%85%D8%B3%D8%AA%D8%AF%D8%A7%D9%85%D8%A9",
+      "method": "GET",
+      "status": "HTTP page found",
+      "summary": "Spatial-planning basemap/urban-boundary integration page read; no public cadastral parcel service or safe native parcel IDs."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Egyptian Survey Authority describes national map and survey products; GOPP describes national spatial-planning basemap integration; Girga tax office coverage is administrative only.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "citywideParcelCoverageVerified": false
+  },
+  "qualityAssessment": {
+    "geometryQuality": "not sampled",
+    "identityReadiness": "not ready; no public native parcel identity plus geometry response",
+    "attributesRequested": "none beyond public service/schema discovery; no owner, address, contact, titleholder, tax, or account fields requested",
+    "safeFieldAllowlist": ["native parcel identifier if publicly exposed", "geometry", "source layer name", "CRS", "service metadata"]
+  },
+  "sourceFields": null,
+  "crs": null,
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "national_mapping_services_no_open_geometry",
+  "blocker": "No anonymous first-party Girga parcel viewer/API, schema response, CRS response, or geometry-only extract was verified after bounded English and Arabic discovery. Direct ESA curl access also encountered an expired certificate; TLS verification was preserved.",
+  "remainingUncertainty": "Survey Authority digital products or local cadastral records may be available through an offline/request workflow. Search failure, the PSM 502, TLS certificate failure, and lack of an exact-point hit do not establish citywide absence.",
+  "nextStep": "On a later attempt, locate a current first-party Egyptian Survey Authority or Sohag/Girga cadastral viewer/API and inspect its JavaScript/configuration for a safe geometry-plus-native-ID response before considering adapter qualification.",
+  "registryBasis": null,
+  "registryEvidenceUrls": [],
+  "identityPolicy": "No GeoJSON retained because no safe, verified native parcel identity and geometry response was available."
+}

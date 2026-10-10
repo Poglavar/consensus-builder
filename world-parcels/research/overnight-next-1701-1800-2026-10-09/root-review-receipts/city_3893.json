@@ -1,0 +1,12 @@
+{
+  "taskId": "city:3893",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-3893-montpellier.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/montpellier-service-review.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/montpellier-parcels-sample.geojson"
+  ],
+  "checkedAt": "2026-10-10T14:47:52.944415Z",
+  "reason": "Municipal source shapefile confirms three full safe native-ID sample polygons with valid metric geometry and no pairwise area overlap; full adapter and headed Details qualification remain absent."
+}

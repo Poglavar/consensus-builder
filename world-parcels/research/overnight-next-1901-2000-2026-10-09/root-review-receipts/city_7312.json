@@ -1,0 +1,19 @@
+{
+  "taskId": "city:7312",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-7312-moulvibazar.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/moulvibazar-service-review.json",
+    "tmp/valhalla-parcel-research/7312/MapSearch.js",
+    "tmp/valhalla-parcel-research/7312/map-land.html",
+    "tmp/valhalla-parcel-research/7312/https___gis_land_gov_bd_geoserver_wfs_service_WFS_request_GetCapabilities.out"
+  ],
+  "checkedAt": "2026-10-10T19:16:01.233583Z",
+  "reviewFinding": "Immutable WUP rank 1948, Bangladesh point and 297098 persons match roster and queue. English and Bengali search records contain executed queries and result URLs. Official district land-record custody and DLRS map service are evidenced; cached first-party map script advertises parcel routes, but the saved GeoServer WFS response is 503 and no Moulvibazar native-ID polygon response is retained. No fresh exact-ID read, forced paging, 13 bounded cells, metric GEOS checks, source binding, or headed Details verification exists. 503 and empty district survey selection do not establish absence.",
+  "firstPartyUrlsChecked": [
+    "https://settlement.gov.bd/Map/MapSearch",
+    "https://www.moulvibazar.gov.bd/en/site/view/DcofficeSection"
+  ]
+}

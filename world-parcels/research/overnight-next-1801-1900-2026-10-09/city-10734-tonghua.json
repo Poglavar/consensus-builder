@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 10734,
+  "queueRank": 1868,
+  "cityId": "queue:1868",
+  "name": "Tonghua",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [41.7211015273954, 125.924769057052],
+  "centerLatLon": [41.7211015273954, 125.924769057052],
+  "population2025": 308016,
+  "population2025k": 308.016,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tonghua China official cadastral parcel map land registration GIS natural resources",
+        "result": "Search identified the official Tonghua Natural Resources Bureau website, its institutional responsibilities for unified natural-resource and real-estate registration, cadastral surveying and mapping, and an official Jilin government report describing Tonghua's registration service and provincial one-window platform. No public anonymous parcel feature endpoint was exposed by the inspected first-party pages.",
+        "actualResultUrls": [
+          "https://www.tonghua.gov.cn/gtj/",
+          "https://www.tonghua.gov.cn/gtj/jgsz/202204/t20220425_607768.html",
+          "https://www.jl.gov.cn/yaowen/202509/t20250908_3496673.html"
+        ]
+      },
+      {
+        "language": "native/local (Simplified Chinese)",
+        "query": "通化市 不动产登记 地籍图 宗地图 GIS 自然资源 官方",
+        "result": "Official Chinese results identify Tonghua Natural Resources Bureau's real-estate registration center and its official publication of the real-estate registration-record query rules. The pages establish local custody and controlled query procedures, including digital registration infrastructure and self-service/query channels, but no anonymous public parcel vector service, schema, CRS, or parcel response was available to inspect.",
+        "actualResultUrls": [
+          "https://www.tonghua.gov.cn/gtj/bdc/",
+          "https://www.tonghua.gov.cn/gtj/bdc/ycxgz/202607/t20260722_778499.html",
+          "https://www.jl.gov.cn/yaowen/202509/t20250908_3496673.html"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "First-party web discovery followed by TLS-verified bounded GETs and source HTML inspection; no credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe fields, or global TLS disablement used."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.tonghua.gov.cn/gtj/",
+      "observation": "Official Tonghua Natural Resources Bureau site exposes the local bureau and a dedicated real-estate registration center section; no parcel feature service was exposed on the loaded homepage."
+    },
+    {
+      "url": "https://www.tonghua.gov.cn/gtj/jgsz/202204/t20220425_607768.html",
+      "observation": "Official institutional page states that the bureau performs unified natural-resource and real-estate rights registration, cadastral investigation, real-estate surveying and mapping, and establishes a citywide registration information-management platform. This establishes local institutional custody, not open vector access."
+    },
+    {
+      "url": "https://www.tonghua.gov.cn/gtj/bdc/ycxgz/202607/t20260722_778499.html",
+      "observation": "Official registration-center publication describes controlled access to registration records and digital query infrastructure; it requires qualifying identity/interest and does not expose an anonymous parcel geometry API."
+    },
+    {
+      "url": "https://www.jl.gov.cn/yaowen/202509/t20250908_3496673.html",
+      "observation": "Official Jilin government report states Tonghua registration services operate in the city government service hall and use the provincial natural-resources one-window platform for registration, tax, archive, and electronic-certificate queries. It does not provide public parcel vector data."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.tonghua.gov.cn/gtj/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official bureau homepage loaded; navigation exposed the real-estate registration center section, but no parcel map/API endpoint or parcel response was present in inspected HTML."
+    },
+    {
+      "url": "https://www.tonghua.gov.cn/gtj/bdc/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official real-estate registration center index loaded; it exposed registration notices and query-related sections but no anonymous parcel geometry service."
+    },
+    {
+      "url": "https://www.tonghua.gov.cn/gtj/jgsz/202204/t20220425_607768.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official institutional page loaded and confirmed local registration, cadastral surveying/mapping, and information-platform responsibilities; no parcel response."
+    },
+    {
+      "url": "https://www.tonghua.gov.cn/gtj/bdc/ycxgz/202607/t20260722_778499.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official registration-query rules loaded; the procedure is controlled and identity/interest-based, with no anonymous ID-plus-geometry response. No unsafe query was attempted."
+    },
+    {
+      "url": "https://www.jl.gov.cn/yaowen/202509/t20250908_3496673.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official provincial report loaded and confirmed Tonghua service and provincial platform custody; no public parcel geometry endpoint was exposed."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Tonghua City Natural Resources Bureau and Tonghua real-estate registration services under Jilin Province, China.",
+    "verifiedOpenScope": "Local registry and registration-platform custody only; no anonymous parcel geometry scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The current public viewer/API route, access controls, layer schema, CRS, stable native parcel identity, geometry quality, update currency, legal status, and citywide open coverage remain unresolved. No exact-point hit or miss was inferred from the absence of an exposed endpoint. A map extent miss, login wall, or unusable UI would not establish citywide absence.",
+  "nextStep": "A later attempt may inspect any officially linked public viewer/API route if one becomes discoverable, retaining at most three full polygons only after independently confirming a safe native parcel identity and CRS."
+}

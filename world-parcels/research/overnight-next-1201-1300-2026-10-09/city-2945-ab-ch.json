@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "attempt": 1,
+  "cityId": "wup2025:2945",
+  "wupCityCode": 2945,
+  "queueRank": 1254,
+  "name": "Abéché",
+  "country": "Chad",
+  "countryCode": "TD",
+  "region": "Ouaddaï",
+  "centerLatLon": [13.825454472527, 20.8296055719745],
+  "population2025": 443793,
+  "population2025k": 443.793,
+  "populationUnit": "persons",
+  "cohorts": ["overnight-next-1201-1300-2026-10-09"],
+  "status": "complete",
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": null,
+  "verifiedSample": false,
+  "sourceIdCandidate": null,
+  "operator": "ANATS / Chad public land-title services (custodian relationship not established for parcel data)",
+  "source": null,
+  "nativeIdentity": null,
+  "coverageAssessment": {
+    "verifiedOpenScope": null,
+    "exactWupPointParcelSample": false,
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Abéché Chad official cadastral parcel map cadastre registre foncier service public",
+        "result": "Search did not identify a public Abéché parcel viewer or downloadable cadastral layer. It surfaced the official Chad e-government land-title service reference and the official ANATS site, whose stated remit is secure identity/title documents and whose public map lists an ANATS center in Abéché.",
+        "actualResultUrls": ["https://e-tchad.com/", "https://www.anats.td/"]
+      },
+      {
+        "language": "French",
+        "query": "Abéché Tchad cadastre parcelle registre foncier carte service officiel",
+        "result": "Search found official Chad references to land-title procedures and an official ANATS Abéché center, but no public parcel map, feature service, schema, CRS, or city-specific geometry endpoint. Historical gazette text mentions Abéché lotissement/parcel records but is not a current open map service.",
+        "actualResultUrls": ["https://www.anats.td/", "https://e-tchad.com/", "https://journalofficiel.gouv.td/"]
+      }
+    ],
+    "requests": [
+      {
+        "method": "GET",
+        "url": "https://www.anats.td/",
+        "status": 200,
+        "observation": "Official ANATS React shell loaded. It exposes a public /map route and static JavaScript configuration; the site describes ANATS as handling secure identity and official-title documents, not as an open cadastral parcel-data service."
+      },
+      {
+        "method": "GET",
+        "url": "https://www.anats.td/map",
+        "status": "not independently retrievable as a parcel API response",
+        "observation": "The route is a general ANATS center map. Public JavaScript inspection exposed the route and service-center UI, including Abéché, but no parcel feature endpoint, safe parcel identity field, geometry response, or CRS."
+      },
+      {
+        "method": "GET",
+        "url": "https://e-tchad.com/",
+        "status": "DNS resolution failure in request environment",
+        "observation": "Search-indexed first-party description identifies an official e-Tchad land-title request service; the live host could not be fetched in this environment. This is not evidence of absence."
+      },
+      {
+        "method": "GET",
+        "url": "https://journalofficiel.gouv.td/",
+        "status": "search result only; no parcel service response",
+        "observation": "Official journal portal is a legal-publication source, not a parcel map/API; no city geometry was requested or retained."
+      }
+    ],
+    "sources": [
+      "https://www.anats.td/",
+      "https://www.anats.td/map",
+      "https://e-tchad.com/",
+      "https://journalofficiel.gouv.td/"
+    ]
+  },
+  "technicalFindings": {
+    "viewer": "ANATS public map is a service-center locator, not a cadastral parcel viewer.",
+    "schema": null,
+    "crs": null,
+    "safeFields": ["stable native parcel ID", "parcel geometry"],
+    "termsHandling": "Informational only; no login, credentials, CAPTCHA bypass, private fields, or unsafe owner/titleholder requests were used."
+  },
+  "technicalBlocker": "No current first-party public parcel map/API or bounded anonymous ID-plus-geometry response was identified for Abéché. The exact WUP point was not shifted and no citywide absence is inferred.",
+  "nextStep": "If a future attempt proceeds, identify the competent Chad cadastral/conservation-foncière custodian and verify whether it publishes an anonymous parcel map or requestable geometry endpoint for Abéché; retain only a stable native parcel identity and full polygon if safely available.",
+  "runtimeReadiness": "held"
+}

@@ -1,0 +1,17 @@
+{
+  "taskId": "city:6786",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-6786-franca.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/franca-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T13:01:34Z",
+  "reason": "WUP archive and queue agree on Franca, Brazil, rank 1692, point [-20.5278309058245,-47.396802438379], and 337878 persons. English and Portuguese queries and first-party URLs are recorded. The official municipal Cadastro Fiscal Imobiliario and public consultation establish cadastral custody, but the consultation is address and image-text based; no anonymous native parcel ID plus full polygon response or safe sample was evidenced. A timeout is not absence.",
+  "firstPartyChecks": [
+    "https://www3.franca.sp.gov.br/noticia/26066/cfi-cadastro-fiscal-imobilirio.html",
+    "https://www3.franca.sp.gov.br/cartadeservicos/servicos/consulta-pblica-do-cadastro-imobilirio-municipal"
+  ],
+  "admissionGates": "No fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification; runtime remains held."
+}

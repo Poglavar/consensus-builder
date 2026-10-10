@@ -1,0 +1,120 @@
+{
+  "cityCode": 11520,
+  "queueRank": 1700,
+  "name": "Ningguo",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [30.6231868111898, 118.975033216834],
+  "population2025": 336274,
+  "population2025k": 336.274,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10T00:00:00Z",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ningguo Anhui cadastral parcel map GIS official land registry",
+        "result": "Search identified Ningguo's official government portal and local natural-resources/real-estate registration references, but no public parcel map/API result.",
+        "actualResultUrls": [
+          "https://www.ningguo.gov.cn/InKnowledgeBase/show/3473.html",
+          "https://www.ningguo.gov.cn/OpennessContent/show/2929642.html"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "site:ningguo.gov.cn Ningguo natural resources planning bureau real estate registration cadastral map",
+        "result": "Official Ningguo pages document the local registration center and online service workflow; access requires the Anhui government-service portal/login for case queries.",
+        "actualResultUrls": [
+          "https://www.ningguo.gov.cn/OpennessContent/show/2929642.html",
+          "https://www.ningguo.gov.cn/Service/show/4028e69e901628f901903974f3a71a6b/486ea0fc3d5b4b839e16eeb5a9f69757.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "宁国市 不动产登记 地籍图 宗地图 GIS 官方",
+        "result": "宁国市人民政府搜索结果 identifies the local natural-resources bureau and registration center; a government reply says registered owners may query deed/cadastral-map records through 皖事通 or at the registration-center archive, not as an anonymous public parcel API.",
+        "actualResultUrls": [
+          "https://www.ningguo.gov.cn/InKnowledgeBase/show/3473.html",
+          "https://www.ningguo.gov.cn/Service/show/4028e69e901628f901903974f3a71a6b/486ea0fc3d5b4b839e16eeb5a9f69757.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "宁国市 自然资源和规划局 一码管地 不动产单元代码 宗地",
+        "result": "Official local policy states that the Ningguo natural-resources electronic-government system uses the real-estate-unit code as the unique parcel identifier and links cadastral/registration workflows; it does not expose anonymous geometry.",
+        "actualResultUrls": [
+          "https://www.ningguo.gov.cn/Yhyshj/show/751.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "A local official registry custodian and procedures are evidenced by Ningguo government pages: the Ningguo Natural Resources and Planning Bureau / Ningguo Real Estate Registration Center provides registration, cadastral-map/deed-record query procedures, and a local electronic-government system using the real-estate-unit code as a parcel identifier. No anonymous citywide parcel geometry endpoint was established.",
+  "registryEvidenceUrls": [
+    "https://www.ningguo.gov.cn/InKnowledgeBase/show/3473.html",
+    "https://www.ningguo.gov.cn/OpennessContent/show/2929642.html",
+    "https://www.ningguo.gov.cn/Yhyshj/show/751.html",
+    "https://www.ningguo.gov.cn/Service/show/4028e69e901628f901903974f3a71a6b/486ea0fc3d5b4b839e16eeb5a9f69757.html"
+  ],
+  "requests": [
+    {
+      "url": "https://www.ningguo.gov.cn/InKnowledgeBase/show/3473.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official government reply fetched successfully. It directs registered owners to 皖事通 or the local registration-center archive for rural house cadastral maps and certificates; no public feature response or geometry was present."
+    },
+    {
+      "url": "https://www.ningguo.gov.cn/Yhyshj/show/751.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official local policy fetched successfully. It describes the local electronic-government system and real-estate-unit code as a unique parcel identifier; no public map/API endpoint was present."
+    },
+    {
+      "url": "https://www.ningguo.gov.cn/OpennessContent/show/2929642.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official service guide fetched successfully. Online progress lookup requires selecting Anhui-Xuancheng and logging in to the Ningguo online registration hall; this route was not used beyond documenting the access boundary."
+    },
+    {
+      "url": "https://www.ningguo.gov.cn/Service/show/4028e69e901628f901903974f3a71a6b/486ea0fc3d5b4b839e16eeb5a9f69757.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official service listing fetched successfully. It identifies the Ningguo registration counter and states that registration records are queried at the city/county registration agency; it is not an anonymous parcel geometry service."
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 418,
+      "outcome": "National map portal request returned HTTP 418 from the public site; no parcel schema or bounded Ningguo geometry was obtained. This is treated as access failure, not evidence of absence."
+    }
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "verifiedParcelResponse": null,
+  "safeFieldAllowlist": [
+    "stable native parcel identifier or real-estate-unit code only when publicly returned",
+    "parcel polygon geometry",
+    "source service metadata",
+    "CRS and response-format metadata"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner or right-holder names",
+    "addresses or contact details",
+    "title/certificate details",
+    "tax, account, identity, or application fields"
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Ningguo city/county registration and natural-resources systems as described by official local sources.",
+    "verifiedOpenScope": "No anonymous public parcel geometry or schema response verified. Local registry procedures and a parcel-identifier policy were verified only.",
+    "countrywideVerified": false,
+    "citywideGeometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "Held pending independent serial qualification of a real public parcel adapter. This packet has no verified anonymous parcel geometry and is not source integration/admission.",
+  "resultCategory": "local_registry_evidenced_no_public_geometry",
+  "remainingUncertainty": "The local registry and cadastral records clearly exist, but the public availability, endpoint, schema, CRS, and citywide coverage of anonymous parcel geometry remain unknown. The official online workflow has an authentication boundary; no login or protected query was attempted."
+}

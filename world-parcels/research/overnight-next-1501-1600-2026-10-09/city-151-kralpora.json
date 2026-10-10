@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "wupCityCode": 151,
+  "queueRank": 1503,
+  "cityId": "wup2025:151",
+  "name": "Kralpora",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [34.5064952849221, 74.196330303603],
+  "population2025": 377602,
+  "population2025k": 377.602,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kralpora Kashmir official cadastral parcel map land records Kupwara Jammu Kashmir",
+        "result": "Official District Kupwara Revenue Department page found; official JK-Revenue land-records viewer found. No anonymous parcel geometry was verified.",
+        "actualResultUrls": [
+          "https://kupwara.nic.in/service/revenue-department/",
+          "https://d14fnjoywemmi.cloudfront.net/jklr/"
+        ]
+      },
+      {
+        "language": "Urdu/Hindi",
+        "query": "کرالپورہ کپواڑہ سرکاری زمین ریکارڈ نقشہ / क़रालपोरा कुपवाड़ा आधिकारिक भू-अभिलेख नक्शा",
+        "result": "Search returned the official JK-Revenue viewer and District Kupwara Revenue Department; no public parcel geometry response was found.",
+        "actualResultUrls": [
+          "https://d14fnjoywemmi.cloudfront.net/jklr/",
+          "https://kupwara.nic.in/service/revenue-department/"
+        ]
+      }
+    ]
+  },
+  "administrativeIdentity": {
+    "district": "Kupwara",
+    "tehsilOrTaluk": "Kralpora",
+    "revenueVillage": null,
+    "identityEvidence": "Official search results identify Kralpora as a tehsil/village in Kupwara district; the exact revenue-village boundary for the WUP point was not independently resolved."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Jammu and Kashmir Government Revenue Department land-record digitization system; District Kupwara Revenue Department is the local custodian lead.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_local_registry_found_no_verified_open_parcel_geometry",
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://kupwara.nic.in/service/revenue-department/",
+      "operator": "District Administration, Kupwara / Revenue Department",
+      "observation": "Official district page identifies the Revenue Department and Revenue Office at the Deputy Commissioner Office Complex, Kupwara. This is local custodial evidence, not a parcel geometry service."
+    },
+    {
+      "url": "https://d14fnjoywemmi.cloudfront.net/jklr/",
+      "operator": "Government of Jammu and Kashmir, Revenue Department",
+      "observation": "Current public JK-Revenue viewer loads an SPA titled JK-Revenue and describes secure land-record digitization for Jammu and Kashmir."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://kupwara.nic.in/service/revenue-department/",
+      "method": "GET via official page/search inspection",
+      "status": "HTTP 200",
+      "summary": "Official District Kupwara page identifies the local Revenue Department and office location; it links the J&K Revenue site. No parcel feature endpoint is exposed on the page."
+    },
+    {
+      "url": "https://d14fnjoywemmi.cloudfront.net/jklr/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Public viewer HTML returned; current JavaScript bundle inspected."
+    },
+    {
+      "url": "https://d14fnjoywemmi.cloudfront.net/jklr/assets/index-CKGBOSSj.js",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Current configuration uses API base https://d14fnjoywemmi.cloudfront.net/jklr-api and exposes land-record routes including district, tehsil, village, khewat, khata and khasra operations. No geometry/CRS route was identified in the bundle."
+    },
+    {
+      "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-district-list",
+      "method": "POST with {}",
+      "status": "HTTP 401 Unauthorized",
+      "summary": "Anonymous request rejected; no login, credentials, token, CAPTCHA bypass or private fields attempted."
+    },
+    {
+      "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-districts",
+      "method": "POST with {}",
+      "status": "HTTP 401 Unauthorized",
+      "summary": "Anonymous request rejected."
+    },
+    {
+      "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-tehsil-by-district",
+      "method": "POST with {}",
+      "status": "HTTP 401 Unauthorized",
+      "summary": "Anonymous request rejected."
+    },
+    {
+      "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-village-by-tehsil",
+      "method": "POST with {}",
+      "status": "HTTP 401 Unauthorized",
+      "summary": "Anonymous request rejected. No village or parcel records requested after the authentication wall."
+    }
+  ],
+  "safeFieldAllowlist": ["native parcel identifier if publicly exposed", "geometry", "source CRS", "non-sensitive administrative scope"],
+  "sourceFields": null,
+  "crs": null,
+  "nativeIdReadiness": "not_ready_no_verified_parcel_response",
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "The official viewer's public UI is reachable, but its current land-record API requires authentication for bounded metadata routes, and no public anonymous geometry/CRS endpoint was identified. No geometry sample is retained.",
+  "remainingUncertainty": "An authenticated or separately published official GIS service may exist. The authentication wall and absence of an identified geometry route do not establish citywide cadastral absence.",
+  "nextStep": "Recheck the official viewer or a documented public GIS endpoint when an anonymous geometry-only route is published; validate a geographically bounded Kralpora response and native parcel identity before adapter qualification.",
+  "registryEvidenceUrls": [
+    "https://kupwara.nic.in/service/revenue-department/",
+    "https://d14fnjoywemmi.cloudfront.net/jklr/"
+  ],
+  "identityPolicy": "Do not infer a parcel identity from a synthetic row number; retain only a stable native identifier with geometry if a safe public response becomes available."
+}

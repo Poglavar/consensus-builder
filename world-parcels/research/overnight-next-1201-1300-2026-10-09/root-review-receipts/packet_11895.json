@@ -1,0 +1,20 @@
+{
+  "taskId": "packet:11895",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-11895-canning.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/canning-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/root-review-receipts/city_11895.json"
+  ],
+  "checkedAt": "2026-10-09T13:25:36Z",
+  "identityAndSearchReview": "Canning, India/IN, WUP code 11895, rank 1242, point [22.3459469110544, 88.7375117722278], population 447522 persons. English/Bengali search queries and result URLs recorded; zero full polygons retained.",
+  "sourceReview": "West Bengal NIC identifies SARTHAC as Law Department litigation software, so the cited case file does not prove a Canning cadastral service. NIC separately documents eBhuchitra/Banglarbhumi state land-record custody and plot maps; UDMA describes a district/block/mouza/plot workflow behind OTP login. State custody is supported, but Canning-specific service access and public geometry remain unresolved. Packet registryFound=true is accepted only at state-custody scope.",
+  "firstPartyUrlsReviewed": [
+    "https://wb.nic.in/profile/",
+    "https://udma.wb.gov.in/page/cms/know_your_property_procedure_a353e3"
+  ],
+  "originalCacheSha256": {},
+  "admissionReview": "No verified safe native-ID full polygon response. Fresh exact ID reads, forced paging, 13 bounded cells, metric GEOS validity/duplicate/overlap/operation checks, source binding, and headed Details-panel verification are not evidenced. No runtime/catalog/report admission or absence claim."
+}

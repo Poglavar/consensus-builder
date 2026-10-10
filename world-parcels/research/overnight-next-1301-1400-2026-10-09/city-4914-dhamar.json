@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:4914",
+  "cityCode": 4914,
+  "wupCityCode": 4914,
+  "name": "Dhamar",
+  "country": "Yemen",
+  "countryCode": "YE",
+  "countryIso3": "YEM",
+  "rank": 1389,
+  "queueRank": 1389,
+  "locId": 887,
+  "point": [14.5407208032909, 44.4025288778041],
+  "centerLatLon": [14.5407208032909, 44.4025288778041],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 406929,
+  "population2025k": 406.929,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1301-1400-2026-10-09",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Yemen land-authority material identifies the General Authority for Lands, Survey and Urban Planning and a Dhamar branch; first-party reporting also describes an electronic cadastral map project in Dhamar. This establishes local registry/map custody evidence, not anonymous parcel geometry availability.",
+  "registryEvidenceUrls": [
+    "https://galsup.gov.ye/",
+    "https://althawrah.ye/archives/1167995",
+    "https://t.me/s/galsubthamar?before=45",
+    "https://althawrah.ye/wp-content/uploads/2021/04/30-4-2021.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No public first-party parcel viewer/API with safe anonymous parcel ID and geometry was verified. A reachable ArcGIS service is an administrative-boundary layer only; its schema and CRS were inspected and its Dhamar geometry query returned a boundary, not parcels. No credentials, private tokens, owner/address data, or property-specific lookup was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "official_local_custody_no_verified_public_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Yemen national land authority, Dhamar branch/cadastral-map reporting, official cadastral law, and a reachable Yemen administrative-boundary GIS layer.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "held_not_enabled_no_verified_public_geometry",
+    "reason": "A real public parcel adapter requires independently verified anonymous geometry, schema, CRS, and stable native IDs; those were not obtained here."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dhamar Yemen cadastral parcel map official land registry GIS",
+        "result": "Found official Yemen land-authority material and reporting about the Dhamar branch/electronic cadastral map project. No public parcel geometry endpoint was found; a third-party-hosted ArcGIS administrative-boundary layer was reachable.",
+        "actualResultUrls": ["https://galsup.gov.ye/", "https://althawrah.ye/archives/1167995", "https://services1.arcgis.com/0MSEUqKaxRlEPj5g/ArcGIS/rest/services/Yemen_IDR_Map_WFL1/FeatureServer/7"]
+      },
+      {
+        "language": "Arabic",
+        "query": "اليمن ذمار السجل العقاري خريطة قطع الأراضي كادستر",
+        "result": "Found the official General Authority site, Dhamar-branch material, an official-publicity report on an electronic cadastral map in Dhamar, and the cadastral-law description of parcel registers/maps. No anonymous parcel geometry service was verified.",
+        "actualResultUrls": ["https://galsup.gov.ye/", "https://t.me/s/galsubthamar?before=45", "https://althawrah.ye/wp-content/uploads/2021/04/30-4-2021.pdf", "https://agoye.gov.ye/page.php?id=374"]
+      }
+    ],
+    "executionMethod": "Separate English and Arabic web discovery, official-source review, and bounded anonymous GET requests.",
+    "portals": [
+      {
+        "name": "General Authority for Lands, Survey and Urban Planning",
+        "operator": "Yemen General Authority for Lands, Survey and Urban Planning",
+        "homeUrl": "https://galsup.gov.ye/",
+        "observation": "Official national authority site; Dhamar branch and electronic cadastral-map reporting were separately evidenced. No public viewer/API/configuration exposing parcel geometry was identified.",
+        "requestOutcome": "Homepage fetch timed out from this environment; official search-result content and linked first-party pages were reviewed."
+      },
+      {
+        "name": "Yemen IDR administrative boundaries ArcGIS layer",
+        "operator": "ArcGIS-hosted public service; not identified as Yemen cadastral custody",
+        "homeUrl": "https://services1.arcgis.com/0MSEUqKaxRlEPj5g/ArcGIS/rest/services/Yemen_IDR_Map_WFL1/FeatureServer/7",
+        "observation": "Layer metadata identifies YemenAdministrativeBoundaries_CopyFeatures1, fields including OBJECTID and administrative names, and service spatial reference EPSG:4326 support. It is administrative geography, not parcel data.",
+        "requestOutcome": "Layer metadata GET succeeded; bounded query with where=1=1, outFields=*, returnGeometry=true, outSR=4326, f=geojson returned administrative polygons. No parcel fields or parcel IDs were present."
+      }
+    ],
+    "requests": [
+      {"url": "https://galsup.gov.ye/", "method": "GET", "outcome": "TLS/DNS request timed out after 20 seconds; no page body or viewer configuration obtained."},
+      {"url": "https://services1.arcgis.com/0MSEUqKaxRlEPj5g/ArcGIS/rest/services/Yemen_IDR_Map_WFL1/FeatureServer/7?f=pjson", "method": "GET", "outcome": "Succeeded; administrative-boundary layer schema inspected. Not a parcel service."},
+      {"url": "https://services1.arcgis.com/0MSEUqKaxRlEPj5g/ArcGIS/rest/services/Yemen_IDR_Map_WFL1/FeatureServer/7/query?where=1%3D1&outFields=*&returnGeometry=true&outSR=4326&f=geojson", "method": "GET", "outcome": "Succeeded; administrative polygons returned in EPSG:4326. No parcel geometry retained."},
+      {"url": "https://althawrah.ye/wp-content/uploads/2021/04/30-4-2021.pdf", "method": "GET", "outcome": "Official-publication result reviewed; Dhamar branch property-registration notice, not an open parcel API."}
+    ]
+  },
+  "source": {
+    "sourceId": "YE-DHAMAR-LOCAL-LAND-AUTHORITY",
+    "name": "Yemen land authority and Dhamar branch custody evidence",
+    "url": "https://galsup.gov.ye/",
+    "operator": "Yemen General Authority for Lands, Survey and Urban Planning; Dhamar branch",
+    "serviceType": "Official local registry/cadastral custody evidence reviewed; public parcel geometry remains unverified",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No parcel response was obtained, so no parcel native field or composite-key rule can be asserted.",
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "operatorNote": "Local Dhamar custody evidence is distinct from the general cadastral-law prose and from the non-cadastral ArcGIS administrative-boundary layer."
+  },
+  "rootReviewedAt": "2026-10-09T00:00:00Z",
+  "rootReview": {
+    "checkedAt": "2026-10-09T00:00:00Z",
+    "basis": "Reviewed separate English and Arabic searches, official national/local custody evidence, cadastral-law context, reachable GIS layer metadata, and bounded geometry response. No parcel geometry was obtained; citywide absence is not inferred.",
+    "primarySourceAuditFile": null
+  }
+}

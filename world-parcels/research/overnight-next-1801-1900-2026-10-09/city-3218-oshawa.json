@@ -1,0 +1,45 @@
+{
+  "cityCode": 3218,
+  "queueRank": 1842,
+  "name": "Oshawa",
+  "country": "Canada",
+  "countryCode": "CA",
+  "iso3": "CAN",
+  "point": [43.9038793922422, -78.8826450091796],
+  "population2025": 311294,
+  "population2025k": 311.294,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {"language":"English","query":"Oshawa Ontario official cadastral parcel map GIS API property boundaries Durham Region","result":"Found the official City of Oshawa ArcGIS parcel layer and official metadata describing parcel/property-boundary coverage; also found Durham regional parcel viewer references.","actualResultUrls":["https://map.oshawa.ca/arcgis/rest/services/Operational/Parcels_AddPts/MapServer/1","https://map.oshawa.ca/OpenData/Metadata/Parcel%20Metadata.pdf","https://geoapps.durham.ca/Geocortex/Essentials/REST/sites/YourDurham/map/mapservices/23"]},
+      {"language":"French (Canada)","query":"Oshawa Ontario carte cadastrale parcelles officielle GIS API limites de propriété","result":"No distinct French-language Oshawa parcel endpoint was found; the official English City of Oshawa ArcGIS parcel service is the applicable local public source for this Canadian municipality.","actualResultUrls":["https://map.oshawa.ca/arcgis/rest/services/Operational/OpenData/MapServer/1","https://map.oshawa.ca/","https://opendata.durham.ca/"]}
+    ]
+  },
+  "registryFound": true,
+  "source": {
+    "provider": "City of Oshawa GIS / Open Data",
+    "service": "Operational/Parcels_AddPts",
+    "layer": 1,
+    "layerName": "Parcels",
+    "serviceUrl": "https://map.oshawa.ca/arcgis/rest/services/Operational/Parcels_AddPts/MapServer",
+    "queryUrl": "https://map.oshawa.ca/arcgis/rest/services/Operational/Parcels_AddPts/MapServer/1/query",
+    "serviceType": "ArcGIS REST MapServer polygon layer",
+    "geometryType": "esriGeometryPolygon",
+    "sourceCrs": "EPSG:26917",
+    "outputCrs": "EPSG:4326",
+    "nativeIdField": "PARCELID",
+    "geometryField": "geometry",
+    "safeFieldsRequested": ["PARCELID", "geometry"],
+    "parcelLayerConfirmed": true,
+    "sourceMetadata": "https://map.oshawa.ca/OpenData/Metadata/Parcel%20Metadata.pdf"
+  },
+  "verifiedSample": {"count":3,"sampleFile":"oshawa-parcel-samples.geojson","ids":["PCL000001","PCL000002","PCL000003"],"exactWupPointQuery":true,"result":"Exact WUP point returned zero parcel features. A bounded nearby extent query returned three full parcel polygons with stable PARCELID values; this is not evidence that the exact point lacks a parcel or that coverage is absent citywide.","requestEvidence":"tmp/valhalla-parcel-research/oshawa/bounded-sample.geojson"},
+  "coverageAssessment": {"claimedScope":"City of Oshawa parcel/property-boundary layer; official metadata states city parcel coverage and reference-only legal limitation.","verifiedOpenScope":"Anonymous layer metadata plus bounded ID-and-geometry query access; service full extent is within Oshawa-area UTM zone 17N bounds.","citywideVerified":false,"countrywideVerified":false},
+  "runtimeReadiness":"held_pending_serial_review",
+  "serialReviewerQualification":"not qualified; independent serial review remains required",
+  "notes":"Research evidence only, not source integration or runtime admission. No owner, address, titleholder, contact, tax/account, personal or unsafe fields were requested or retained. WUP point remains exact latitude/longitude and was not shifted; ArcGIS request geometry used longitude/latitude as required by the API. Sample properties intentionally contain only the canonical native identity under id."
+}

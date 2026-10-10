@@ -1,0 +1,111 @@
+{
+  "cityCode": 9129,
+  "queueRank": 1724,
+  "name": "Rudrapur",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [28.9838291671624, 79.4048209101558],
+  "population2025": 332826,
+  "population2025k": 332.826,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Rudrapur Uttarakhand official cadastral parcel map land records GIS viewer",
+        "result": "First-party results identified the Uttarakhand Stamps and Registration GIS portal, the department's e-Registration property-services portal, the Government of India's NAKSHA urban land-mapping portal, and official Rudrapur/Urban Development pages. No anonymous Rudrapur parcel-ID-plus-geometry response was found.",
+        "actualResultUrls": [
+          "https://gis.eregistrationukgov.in/gisportal/",
+          "https://eregistrationukgov.in/",
+          "https://naksha.dolr.gov.in/NakshaPortal/",
+          "https://udd.uk.gov.in/document/rudrapur/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "रुद्रपुर उत्तराखंड आधिकारिक भू नक्शा खसरा मानचित्र भूलेख",
+        "result": "First-party discovery surfaced Uttarakhand's official e-Registration/GIS services and the national NAKSHA portal; no Rudrapur-specific public cadastral vector endpoint or native parcel identity was exposed.",
+        "actualResultUrls": [
+          "https://registration.uk.gov.in/",
+          "https://gis.eregistrationukgov.in/gisportal/",
+          "https://naksha.dolr.gov.in/NakshaPortal/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The first-party Uttarakhand Stamps and Registration GIS/property portal is a local state property-registration map/procedure custodian, and its public ArcGIS map query intersected the exact WUP point with Rudrapur administrative/circle-rate records. This is not evidence of an open cadastral parcel layer.",
+  "officialSources": [
+    {
+      "url": "https://gis.eregistrationukgov.in/gisportal/",
+      "observation": "Public Uttarakhand GIS application portal; links to the Citizen Portal and help documentation."
+    },
+    {
+      "url": "https://gis.eregistrationukgov.in/gisportal/CitizenPortal/config.json",
+      "observation": "Current Web AppBuilder configuration points to public Web Map item 3cccaa6a8cb54d3990d471d30a252a88."
+    },
+    {
+      "url": "https://gis.eregistrationukgov.in/portal/sharing/rest/content/items/3cccaa6a8cb54d3990d471d30a252a88/data?f=pjson",
+      "observation": "Operational map service is SRO_Circle_Rate_Main_Basemap; layers include roads, villages, wards and circle rates, but no cadastral parcel layer."
+    },
+    {
+      "url": "https://naksha.dolr.gov.in/NakshaPortal/",
+      "observation": "Official national NAKSHA portal describes urban GIS land mapping, but the public page is an application/login shell and did not expose an anonymous Rudrapur parcel response."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://gis.eregistrationukgov.in/gisportal/",
+      "method": "GET",
+      "outcome": "200; public portal HTML retrieved."
+    },
+    {
+      "url": "https://gis.eregistrationukgov.in/gisportal/CitizenPortal/index.html",
+      "method": "GET",
+      "outcome": "200; current Web AppBuilder shell retrieved and JavaScript/configuration route followed."
+    },
+    {
+      "url": "https://gis.eregistrationukgov.in/gisportal/CitizenPortal/config.json",
+      "method": "GET",
+      "outcome": "200; public configuration identified Web Map item 3cccaa6a8cb54d3990d471d30a252a88."
+    },
+    {
+      "url": "https://gis.eregistrationukgov.in/server/rest/services/UKSTAMPS/SRO_Circle_Rate_Main_Basemap/MapServer?f=pjson",
+      "method": "GET",
+      "outcome": "200; service metadata lists 0-22 and 31-45 as non-cadastral administrative, transport, POI and circle-rate layers."
+    },
+    {
+      "url": "https://gis.eregistrationukgov.in/server/rest/services/UKSTAMPS/SRO_Circle_Rate_Main_Basemap/MapServer/21?f=pjson",
+      "method": "GET",
+      "outcome": "200; Circle Rates Main is polygon geometry in EPSG:3857/ArcGIS WKID 102100. It has OBJECTID and administrative/rate fields, not parcel identity fields."
+    },
+    {
+      "url": "https://gis.eregistrationukgov.in/server/rest/services/UKSTAMPS/SRO_Circle_Rate_Main_Basemap/MapServer/21/query",
+      "method": "GET",
+      "outcome": "200; bounded point-intersects query at exact WUP coordinate returned two safe administrative circle-rate records (Rudrapur ULB/ward and Rudrapur revenue village). No parcel geometry or parcel ID was requested or returned."
+    },
+    {
+      "url": "https://naksha.dolr.gov.in/NakshaPortal/",
+      "method": "GET",
+      "outcome": "200; official application shell retrieved; no anonymous parcel API or Rudrapur geometry response was verified."
+    }
+  ],
+  "source": "Uttarakhand Stamps and Registration GIS / e-Registration property-services portal",
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Uttarakhand property-registration GIS with public circle-rate and administrative map layers; national NAKSHA urban land-mapping programme.",
+    "verifiedOpenScope": "Official public map configuration, service metadata, and a safe exact-point administrative circle-rate response only.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": "Exact WUP point preserved in latitude/longitude order. No exact-point parcel hit/miss inference was made. A circle-rate polygon is not a cadastral parcel. No owner, address, titleholder, contact, tax/account or personal fields were requested or retained. Packet completion is not source integration or runtime admission."
+}

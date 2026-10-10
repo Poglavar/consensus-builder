@@ -1,0 +1,15 @@
+{
+  "taskId": "city:96",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-96-hrodna.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/hrodna-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/hrodna-parcel-samples.geojson",
+    "tmp/valhalla-parcel-research/hrodna/parcel-query-full.json"
+  ],
+  "checkedAt": "2026-10-10T08:53:58.138536Z",
+  "reason": "Original WFS response has three full Polygon features with native feature IDs; retained geometry matches exactly and safe properties contain only id. A zero exact-point response does not establish citywide absence. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed Details-panel verification are not independently evidenced; discovery remains held.",
+  "sourceAdmission": "not_admitted"
+}

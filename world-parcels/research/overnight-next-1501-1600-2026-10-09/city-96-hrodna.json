@@ -1,0 +1,44 @@
+{
+  "cityCode": 96,
+  "queueRank": 1522,
+  "name": "Hrodna",
+  "country": "Belarus",
+  "countryCode": "BY",
+  "point": [53.6796751398206, 23.8287909682828],
+  "population2025": 374464,
+  "population2025k": 374.464,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hrodna Belarus official public cadastral map parcel cadastre GIS",
+        "result": "Search identified Belarus's official Public Cadastral Map at map.nca.by and the Hrodna territorial registration/cadastre agency; the official map was then fetched and its current JavaScript configuration followed to the public WFS.",
+        "actualResultUrls": ["https://map.nca.by/", "https://kadastr.grodno.by/"]
+      },
+      {
+        "language": "Russian/Belarusian local-language discovery",
+        "query": "Гродно Беларусь публичная кадастровая карта земельные участки официальный сайт",
+        "result": "Search identified the official Belarus Public Cadastral Map at map.nca.by and the Hrodna registration/cadastre agency; official map access and WFS service were verified anonymously.",
+        "actualResultUrls": ["https://map.nca.by/", "https://gismap.by/"]
+      }
+    ],
+    "sourceUrls": [
+      "https://map.nca.by/",
+      "https://map.nca.by/js/app.9ad00b1f.js",
+      "https://map.nca.by/api/config/2/",
+      "https://map.nca.by/geoserver/pcm/ows"
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "name": "Belarus Public Cadastral Map / National Cadastral Agency public map",
+    "url": "https://map.nca.by/",
+    "scope": "National public cadastral map; Hrodna parcel coverage evidenced by WFS response.",
+    "localCustodian": "Hrodna Agency for State Registration and Land Cadastre was identified during discovery, but no separate local public API was evidenced."
+  },
+  "serviceReview": "hrodna-service-review.json",
+  "sampleGeoJson": "hrodna-parcel-samples.geojson",
+  "runtimeReadiness": "held"
+}

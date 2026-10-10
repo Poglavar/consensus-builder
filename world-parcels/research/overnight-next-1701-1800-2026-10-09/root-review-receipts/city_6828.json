@@ -1,0 +1,25 @@
+{
+  "taskId": "city:6828",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-6828-bodeh.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/bodeh-service-review.json",
+    "tmp/valhalla-parcel-research/6828/bhumi.html"
+  ],
+  "checkedAt": "2026-10-10T14:50:34Z",
+  "findings": {
+    "identity": "WUP code 6828, rank 1774, Indonesia/ID, exact point and 323511 persons match immutable queue and roster.",
+    "searches": "English and Indonesian query texts, outcome narratives and actual URLs recorded in city packet.",
+    "custody": "registryFound null retained: first-party Pemalang PTSL article names Bodeh activity and ATR/BPN office, but no Bodeh parcel registry endpoint or local vector service was shown.",
+    "geometry": "No sample polygon, safe native parcel ID or anonymous Bodeh parcel feature response; no citywide absence inference.",
+    "admission": "No fresh native-ID read, paging, 13 bounded cells, metric GEOS checks, source binding or headed Details verification."
+  },
+  "sourceUrls": [
+    "https://ppid.pemalangkab.go.id/berita/detail/ptsl-2024-ditargetkan-lebih-dari-32-ribu-bidang-tanah-di-pemalang-tersertifikat",
+    "https://bhumi.atrbpn.go.id/"
+  ],
+  "retainedFullPolygons": 0,
+  "runtimeAdmitted": false
+}

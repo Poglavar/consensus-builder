@@ -1,0 +1,106 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:8119",
+  "cityCode": 8119,
+  "wupCityCode": 8119,
+  "name": "Pakpattan",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso2": "PK",
+  "iso3": "PAK",
+  "rank": 1524,
+  "queueRank": 1524,
+  "point": [30.350024562134, 73.3863839725262],
+  "centerLatLon": [30.350024562134, 73.3863839725262],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 374389,
+  "population2025k": 374.389,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Punjab Land Records Authority is the provincial land-record custodian, Pakpattan district administration documents local revenue/land-record duties, and the official PULSE viewer exposes a Pakpattan cadastral-map layer.",
+  "registryEvidenceUrls": [
+    "https://www.punjab-zameen.gov.pk/",
+    "https://pakpattan.punjab.gov.pk/administration",
+    "https://lis.pulse.gop.pk/",
+    "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/26"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sourceIds": ["OBJECTID=13944240"],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The public viewer obtains a short-lived ArcGIS token from its own public /api/gis/token route; this packet does not retain the token. The feature response was safely bounded to OBJECTID and complete geometry, but citywide completeness and adapter behavior were not independently qualified.",
+  "sourceService": {
+    "viewerUrl": "https://lis.pulse.gop.pk/",
+    "serviceUrl": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer",
+    "layerId": 26,
+    "layerName": "Pakpattan",
+    "nativeIdentityField": "OBJECTID",
+    "nativeGeometryType": "esriGeometryPolygon",
+    "nativeSpatialReference": "WKID 102100, latest WKID 3857",
+    "sourceFieldMapping": "Retained sample maps GeoJSON properties.id to native OBJECTID. Other native fields were inspected only in ignored scratch evidence and are not retained.",
+    "compositeKeyProvenance": null
+  },
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 1,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "exactPointHitIsNotCitywideCoverage": true
+  },
+  "resultCategory": "registry_found_public_polygon_verified",
+  "coverageAssessment": {
+    "claimedScope": "Official Punjab PULSE cadastral-map service publishes a Pakpattan layer in the Punjab cadastral map service.",
+    "verifiedOpenScope": "Layer metadata and one exact-point anonymous ID-plus-polygon response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pakpattan Punjab official land records cadastral map parcel map Board of Revenue Punjab Pakistan",
+        "scope": "Identify the official provincial/local land-record custodian and a public cadastral-map route.",
+        "result": "Discovery located the official Punjab Land Records Authority, Pakpattan district administration revenue/land-record duties, and the official PULSE viewer. First-party inspection of the viewer exposed the Punjab cadastral ArcGIS service and Pakpattan layer 26.",
+        "actualResultUrls": [
+          "https://www.punjab-zameen.gov.pk/",
+          "https://pakpattan.punjab.gov.pk/administration",
+          "https://lis.pulse.gop.pk/"
+        ],
+        "executionMethod": "Separate English web search followed by first-party viewer HTML/configuration inspection and bounded ArcGIS requests."
+      },
+      {
+        "language": "native/local",
+        "query": "پاکپتن پنجاب سرکاری اراضی ریکارڈ نقشہ کادسترہ پارسل",
+        "scope": "Independent Urdu discovery for a local-language official land-record or cadastral-map route.",
+        "result": "The Urdu search did not produce a separate local-language cadastral endpoint; first-party Punjab PLRA/PULSE and Pakpattan district administration sources were the relevant official results. The verified map service is English-language but explicitly exposes the Pakpattan layer.",
+        "actualResultUrls": [
+          "https://www.punjab-zameen.gov.pk/",
+          "https://lis.pulse.gop.pk/",
+          "https://pakpattan.punjab.gov.pk/administration"
+        ],
+        "executionMethod": "Separate Urdu web search followed by first-party source inspection."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "first_attempt",
+    "attemptEvidence": []
+  },
+  "geometryEvidence": {
+    "sampleFile": "pakpattan-parcel-samples.geojson",
+    "featureCount": 1,
+    "query": "Exact WUP point [30.350024562134, 73.3863839725262] submitted as an ArcGIS point in EPSG:4326 with esriGeometryIntersects; outFields=OBJECTID; returnGeometry=true; outSR=4326; resultRecordCount=3.",
+    "nativeIdentity": "OBJECTID=13944240",
+    "nativeGeometry": "One Polygon returned; retained GeoJSON is unchanged geometry transformed by the service response to longitude/latitude coordinates and contains only canonical properties.id."
+  },
+  "remainingUncertainty": "The exact WUP point produced one verified polygon, but this is not evidence of citywide parcel completeness. The service's complete native field schema includes administrative and cadastral attributes; those fields were not retained because they are unnecessary for safe integration. CRS, schema and layer identity are verified; service coverage, update cadence, and runtime adapter qualification remain for serial review.",
+  "nextStep": "Serial reviewer may independently qualify the official Punjab cadastral adapter and broader Pakpattan coverage; do not enable runtime from this packet alone."
+}

@@ -1,0 +1,34 @@
+{
+  "cityRecord": "city-1143-safi.json",
+  "cityCode": 1143,
+  "queueRank": 1655,
+  "name": "Safi",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": null,
+  "sourceReview": "ANCFCC is the evidenced national cadastral custodian, and its official directory lists a Safi cadastral office. This is custodian/procedure evidence only. The Safi-Youssoufia Urban Agency atlas is an official planning atlas, not an open parcel service. No safe anonymous parcel geometry or stable native parcel identity was verified.",
+  "queryReview": {
+    "englishDiscovery": "Completed; official ANCFCC, Safi office directory, cadastral-plan service, and Safi-Youssoufia atlas sources found, but no public parcel endpoint verified.",
+    "localLanguageDiscovery": "Completed in Arabic; official ANCFCC cadastre evidence found, but no public parcel viewer/API verified.",
+    "exactPoint": [32.2888126761957, -9.23489688167225],
+    "returned": 0,
+    "ids": [],
+    "geometry": "No parcel geometry returned or retained",
+    "mapExtentOrPointMiss": false
+  },
+  "requestOutcomes": "ANCFCC root, cadastre, and cadastral-plan pages returned HTTP 403 to direct anonymous GETs; no bypass was attempted. Official discovery provided the ANCFCC mandate, Safi office directory, and service-flow evidence. The official AUSY atlas page returned HTTP 200 and its Safi province PDF was downloaded and inspected; it contains planning/territorial material, not parcel geometry. No login, credentials, private token, CAPTCHA bypass, TLS exception, or unsafe field request was used.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "retainedSample": null,
+  "scopeLimits": [
+    "ANCFCC/Safi office evidence does not prove an open parcel endpoint or citywide coverage.",
+    "The AUSY atlas is planning/territorial context and does not provide safe parcel features.",
+    "HTTP 403 and the absence of a parcel layer in the inspected atlas are not evidence of parcel absence.",
+    "No owner, address, contact, titleholder, personal, tax, account, legal-description, or value fields were requested or retained.",
+    "Runtime readiness remains held pending independent serial adapter review."
+  ],
+  "uncertainty": "No claim is made about parcel absence, geometry completeness, legal title, ownership, tax records, or internal ANCFCC/local datasets. This is a public-access qualification result only.",
+  "runtimeReadiness": "held_serial_review"
+}

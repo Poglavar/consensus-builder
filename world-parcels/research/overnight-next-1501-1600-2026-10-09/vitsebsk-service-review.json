@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-1392-vitsebsk.json",
+  "purpose": "Document first-party registry/map discovery, current viewer evidence, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Official Belarus cadastral-map custody is evidenced, but no anonymous safe parcel-ID-plus-complete-polygon response was obtained for Vitsebsk.",
+  "registryAssessment": "The National Cadastral Agency's public map is a national custodian/channel, not a verified Vitsebsk municipal registry. No city-specific registry endpoint was established.",
+  "officialPrimarySources": [
+    {"url": "https://map.nca.by/", "observation": "HTTP 200 viewer HTML; page title identifies the Public Cadastral Map of the Republic of Belarus."},
+    {"url": "https://nalog.gov.by/individuals/property_taxation/land_taxation/land_tax/", "observation": "Official Belarus tax guidance states cadastral-value information is held in the state land-cadastre register and can be searched through the National Cadastral Agency."},
+    {"url": "https://gki.gov.by/", "observation": "Official State Property Committee channel used as national cadastral institutional context; no Vitsebsk parcel feed was found there."}
+  ],
+  "viewerConfiguration": {"homeUrl": "https://map.nca.by/", "observedTechnology": "Vue application; downloaded app.9ad00b1f.js.", "observedControls": [], "observedServiceRoute": "/geoserver/pcm/ows?service=WFS&version=1.0.0&request=GetFeature", "observedWorkspace": "pcm", "schemaAndCrs": "Not verified from a successful service response.", "nativeFieldNames": "Not retained; no successful feature response.", "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"], "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]},
+  "attempts": [
+    {"url": "https://map.nca.by/", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200; viewer HTML retrieved."},
+    {"url": "https://map.nca.by/js/app.9ad00b1f.js", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200; current JavaScript retrieved and inspected for public WFS/configuration routes."},
+    {"url": "https://map.nca.by/api/config/1", "method": "GET", "normalTlsVerification": true, "result": "HTTP 404 Not Found; no configuration response."},
+    {"url": "https://map.nca.by/api/config/2", "method": "GET", "normalTlsVerification": true, "result": "HTTP 404 Not Found; no layer configuration response."},
+    {"url": "https://map.nca.by/geoserver/pcm/ows?service=WFS&version=1.0.0&request=GetCapabilities", "method": "GET", "normalTlsVerification": true, "result": "HTTP 403 Forbidden; no capabilities, schema, CRS, or layer list."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "query": "No parcel GetFeature query was submitted because the layer name and safe request shape were not verified."},
+  "coverageAssessment": {"claimedScope": "Belarus national public cadastral-map channel; Vitsebsk WUP point.", "verifiedOpenScope": "Viewer and route evidence only; no anonymous complete-polygon feature response.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "The parcel layer name, native identity field, field mapping, CRS, query shape, and coverage remain unverified. HTTP 403/404 and viewer limitations are not evidence of citywide absence.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."}
+}

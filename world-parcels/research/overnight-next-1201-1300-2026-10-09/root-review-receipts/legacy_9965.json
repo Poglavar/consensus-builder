@@ -1,0 +1,13 @@
+{
+  "taskId": "legacy:9965",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-2026-10-09/city-9965-kurnool.json",
+    "world-parcels/research/overnight-next-2026-10-09/kurnool-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T10:39:59Z",
+  "reason": "Kurnool: Andhra Pradesh cadastral-map custody is documented; the village/map-sheet remains unresolved and no full parcel polygon or native ID was read. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed Details verification are not evidenced; absence is not established."
+}

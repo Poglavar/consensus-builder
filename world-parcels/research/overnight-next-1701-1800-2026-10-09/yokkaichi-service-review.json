@@ -1,0 +1,43 @@
+{
+  "cityRecord": "city-5329-yokkaichi.json",
+  "schemaVersion": "1.0",
+  "cityCode": 5329,
+  "queueRank": 1729,
+  "city": "Yokkaichi",
+  "country": "Japan",
+  "countryCode": "JP",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Yokkaichi City’s official public GIS and official cadastral-map procedure were verified, with the Yokkaichi Branch of the Tsu Legal Affairs Bureau as the relevant real-estate registration office. No safe anonymous parcel ID plus full polygon response was retrieved; no GeoJSON sample is retained and runtime remains held.",
+  "queryOutcomes": "Separate English and Japanese first-party discovery queries, outcomes and actual URLs are recorded in city-5329-yokkaichi.json.",
+  "requestOutcomes": "The official public GIS portal, planning-map agreement route, bounded map route centered on the exact WUP point, cadastral-map application PDF and local legal-affairs office page were inspected. The GIS route returned a public-use agreement/application shell and catalog metadata, not parcel features. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request or global TLS disable was used.",
+  "attemptedRoutes": [
+    {"route": "Yokkaichi official public GIS portal", "url": "https://www2.wagmap.jp/yokkaichi/Portal", "outcome": "200; map catalog readable; no cadastral parcel layer listed or feature endpoint verified"},
+    {"route": "Yokkaichi GIS planning-map agreement", "url": "https://www2.wagmap.jp/yokkaichi/Agreement?IsPost=False&MapId=2&RequestPage=%2Fyokkaichi%2FMap", "outcome": "200; agreement text and planning-map scope readable; no parcel schema, CRS or feature response"},
+    {"route": "Yokkaichi GIS bounded map request", "url": "https://www2.wagmap.jp/yokkaichi/Map?gprj=3&mcl=13%2C14%2C140%2C1400&mid=2&mps=10000&mpx=136.637123313726&mpy=35.0087387174813&mtp=dm", "outcome": "200; agreement/application shell; no geometry returned"},
+    {"route": "Yokkaichi cadastral-map copy procedure", "url": "https://www5.city.yokkaichi.mie.jp/www/contents/1001000000762/simple/tisekizu.pdf", "outcome": "200; official application instructions; counter/request procedure, not public parcel API"},
+    {"route": "Tsu Legal Affairs Bureau Yokkaichi Branch", "url": "https://houmukyoku.moj.go.jp/tsu/table/shikyokutou/all/yokkaiti.html", "outcome": "200; local real-estate registration office and map-copy/registration services identified"}
+  ],
+  "scopeLimits": [
+    "Exact WUP point [35.0087387174813, 136.637123313726] was preserved; no exact-point parcel test was made.",
+    "No public parcel layer, native parcel ID field, feature schema, CRS, or citywide parcel completeness was established.",
+    "Official city/legal-affairs custodial and procedural evidence is not equivalent to open parcel geometry evidence.",
+    "No conclusion about cadastral absence can be drawn from the agreement shell, catalog scope or procedure-only access.",
+    "No owner, address, titleholder, contact, tax/account or personal fields were requested or retained.",
+    "Completion records executed attempts only; adapter admission remains a separate serial review decision."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": "No parcel fields returned; mapping not established.",
+  "compositeKeyProvenance": "No parcel-level composite key returned.",
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No usable public parcel geometry response; no hit/miss inference.", "requestEvidence": []},
+  "coverageAssessment": {"claimedScope": "Yokkaichi City public GIS and local cadastral/real-estate registration procedures", "verifiedOpenScope": "Public portal and procedural metadata only", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Current anonymous parcel endpoint, native parcel identity, schema, CRS and citywide coverage remain unresolved.",
+  "retainedSample": null
+}

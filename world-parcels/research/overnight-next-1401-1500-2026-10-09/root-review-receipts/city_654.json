@@ -1,0 +1,16 @@
+{
+  "taskId": "city:654",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-654-las-palmas-de-gran-canaria.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/las-palmas-de-gran-canaria-service-review.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/las-palmas-de-gran-canaria-parcel-samples.geojson",
+    "tmp/valhalla-parcel-research/654/municipal-layer-2.json",
+    "tmp/valhalla-parcel-research/654/municipal-query-bounded.geojson",
+    "tmp/valhalla-parcel-research/654/municipal-query-point.geojson"
+  ],
+  "checkedAt": "2026-10-09T17:57:59.592776Z",
+  "reason": "Immutable rank 1489 identity and English/Spanish searches checked. Original first-party municipal response has two safe native-globalid polygons; retained samples have valid metric geometry and zero overlap, but one coordinate in the second retained polygon differs from the original response by about 4.22e-10 degrees. Exact-point zero is bounded only. No independent fresh-ID read, forced paging, 13-cell qualification, source binding, or headed details-panel proof; runtime remains held."
+}

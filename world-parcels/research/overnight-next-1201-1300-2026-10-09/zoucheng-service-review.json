@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10184-zoucheng.json",
+  "purpose": "Document first-party local registry context and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Zoucheng local registry activity is evidenced by first-party Jining government reports. The current official Shandong geographic-information viewer was retrieved and inspected through its live HTML, configuration, and map bundle. No anonymous safe cadastral parcel-vector response was verified.",
+  "registryAssessment": "Local registry/procedure evidenced: Zoucheng Natural Resources and Planning Bureau and Zoucheng Real Estate Registration Center are named in first-party government material. This is local procedure evidence, not source admission or runtime integration.",
+  "safeFieldAllowlist": ["safe public parcel/source ID if available", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "officialPrimarySources": [
+    {
+      "url": "https://nrp.jining.gov.cn/art/2023/2/16/art_60571_2718852.html",
+      "observation": "First-party Jining Natural Resources and Planning Bureau report names the Zoucheng Real Estate Registration Center and describes local registration service. It exposes no parcel geometry payload."
+    },
+    {
+      "url": "https://nrp.jining.gov.cn/art/2023/4/7/art_60571_2720099.html",
+      "observation": "First-party Jining report documents Zoucheng collective-land ownership registration-results update work and the role of the Zoucheng Natural Resources and Planning Bureau. It exposes no public parcel vector response."
+    },
+    {
+      "url": "https://www.sdmap.gov.cn/map.html",
+      "observation": "First-party Shandong geographic-information viewer. HTTP 200 HTML was retrieved; the current JavaScript application and map bundle were inspected. General public map services were present, but no safe anonymous cadastral parcel-vector route was identified."
+    },
+    {
+      "url": "https://www.sdmap.gov.cn/Config_url.v002.js",
+      "observation": "Current viewer configuration was retrieved and retained only in ignored scratch cache; no credentials or private token values were used or retained in the packet."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Zoucheng China official cadastral map land parcels natural resources bureau",
+      "result": "Found first-party Jining reports naming the local registry custodians and the official Shandong geographic-information viewer; no verified anonymous parcel geometry route.",
+      "resultUrls": ["https://nrp.jining.gov.cn/art/2023/2/16/art_60571_2718852.html", "https://nrp.jining.gov.cn/art/2023/4/7/art_60571_2720099.html", "https://www.sdmap.gov.cn/map.html"]
+    },
+    {
+      "language": "Chinese",
+      "query": "邹城 官方 不动产登记 地籍图 宗地图 自然资源和规划局",
+      "result": "Found first-party local registration and collective-land registration evidence; no verified anonymous parcel geometry route.",
+      "resultUrls": ["https://nrp.jining.gov.cn/art/2023/2/16/art_60571_2718852.html", "https://nrp.jining.gov.cn/art/2023/4/7/art_60571_2720099.html", "https://www.sdmap.gov.cn/map.html"]
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not performed against a verified cadastral parcel endpoint; exact point [35.4003955374662, 116.950785835449] remains unchanged and no absence inference is made.",
+    "requestEvidence": []
+  },
+  "attempts": [
+    {
+      "url": "https://nrp.jining.gov.cn/art/2023/2/16/art_60571_2718852.html",
+      "method": "GET via first-party search/open",
+      "httpStatus": "web result available",
+      "result": "Local registration-center report read; procedure context only, no parcel geometry response."
+    },
+    {
+      "url": "https://nrp.jining.gov.cn/art/2023/4/7/art_60571_2720099.html",
+      "method": "GET via first-party search/open",
+      "httpStatus": "web result available",
+      "result": "Local collective-land registration-results report read; cadastral-work context only, no parcel geometry response."
+    },
+    {
+      "url": "https://www.sdmap.gov.cn/map.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official viewer HTML retrieved. Current asset references were followed to Config_url.v002.js and map.3fc18556.js; no safe anonymous cadastral parcel-vector route was identified."
+    },
+    {
+      "url": "https://www.sdmap.gov.cn/Config_url.v002.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Current viewer configuration retrieved and inspected in ignored scratch cache; no credentials or private tokens used."
+    },
+    {
+      "url": "https://www.sdmap.gov.cn/js/map.3fc18556.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Current map bundle retrieved and inspected. No verified anonymous cadastral parcel geometry endpoint identified."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official local Zoucheng registry/procedure evidence plus province-wide public geographic-information platform.",
+    "verifiedOpenScope": "Local registry/procedure only; parcel geometry access unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "An authenticated or separately published cadastral service may exist but was not accessed. Exact-point hit testing and citywide parcel completeness are unknown."
+}

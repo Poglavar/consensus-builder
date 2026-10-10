@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-10",
+  "wupCityCode": 11268,
+  "cityCode": 11268,
+  "cityId": "wup2025:11268",
+  "name": "Enping",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "centerLatLon": [22.1838497417146, 112.311245398831],
+  "point": [22.1838497417146, 112.311245398831],
+  "queueRank": 1961,
+  "population2025": 295651,
+  "population2025k": 295.651,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Enping China official cadastral parcel map GIS natural resources land registry",
+        "result": "First-party Enping government results identify the Enping Natural Resources Bureau and an Enping Real Estate Transaction Registration Center in official registration/procedure material. No anonymous public parcel-vector service was established.",
+        "actualResultUrls": [
+          "https://www.enping.gov.cn/",
+          "https://www.enping.gov.cn/gzjg/epszrzyj/ghgs/content/post_2737983.html",
+          "https://www.enping.gov.cn/jmepszrj/gkmlpt/content/3/3314/post_3314205.html",
+          "https://www.jiangmen.gov.cn/home/sqdt/epzx/content/post_3239085.html"
+        ]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "恩平市 自然资源局 不动产登记中心 地籍图 宗地图 地图",
+        "result": "Official Enping and Jiangmen government results document citywide rural real-estate registration work, cadastral survey outputs, and the local real-estate registration center. They expose procedure/custodian evidence, not a public safe parcel geometry endpoint.",
+        "actualResultUrls": [
+          "https://www.enping.gov.cn/zwgk/xxgkml/epsrmzfbgs/bmwj/content/post_2036861.html",
+          "https://www.enping.gov.cn/jmepszrj/gkmlpt/content/3/3314/post_3314205.html",
+          "https://www.jiangmen.gov.cn/bmpd/jmszrzyj/zwdt/tzgg/content/post_3292026.html",
+          "https://www.enping.gov.cn/attachment/0/345/345651/3324322.pdf"
+        ]
+      }
+    ],
+    "officialViewerInspection": "The official Enping government host was attempted directly over HTTPS, but this environment received an OpenSSL TLS internal-error alert before an HTTP response. The official search-indexed pages were inspected through first-party result content; no current JavaScript viewer, map configuration, public cadastral API, schema, CRS, or bounded anonymous ID-plus-geometry response was exposed. No login, CAPTCHA bypass, credential, private token, or unsafe owner/address/titleholder field was used."
+  },
+  "registryFound": true,
+  "registryBasis": "First-party Enping government material documents the citywide rural real-estate registration program and cadastral survey/registration outputs; official Enping/Jiangmen government material names the Enping Real Estate Transaction Registration Center and the Enping Natural Resources Bureau as the local registration/natural-resources custodians. This establishes a local registry/procedure custodian, not open parcel-vector access.",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Local Enping registry/procedure evidence and attempted official government/map discovery.",
+    "verifiedOpenScope": "Local registry/procedure custodian evidenced; no anonymous safe parcel polygon response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "resultCategory": "local_registry_procedure_no_verified_open_parcel_geometry",
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No bounded anonymous request returned a safe native parcel identity and full polygon geometry. The exact WUP point was not shifted, and the direct-host TLS failure plus lack of a published vector endpoint is not treated as citywide absence."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "technicalBlocker": "A current public Enping cadastral viewer/API, safe native parcel ID, schema, CRS, and bounded geometry response remain unverified. Direct HTTPS requests to the official Enping host failed during TLS negotiation in this environment.",
+  "remainingUncertainty": "The local registration center may operate an authenticated or non-indexed cadastral service, and official map services may be reachable from a different network path. Exact-point parcel coverage, CRS/schema, public accessibility, and citywide completeness remain unknown.",
+  "nextStep": "A serial reviewer may independently qualify a first-party Enping parcel adapter only after confirming a current public route, CRS/schema, safe native ID fields, and bounded anonymous geometry response."
+}

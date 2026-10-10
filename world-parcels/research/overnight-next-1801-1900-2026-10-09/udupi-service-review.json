@@ -1,0 +1,69 @@
+{
+  "cityRecord": "city-9229-udupi.json",
+  "schemaVersion": "1.0",
+  "cityCode": 9229,
+  "queueRank": 1817,
+  "city": "Udupi",
+  "country": "India",
+  "countryCode": "IN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Karnataka/Udupi land-record custody and DILRMP cadastral-status evidence were found, but no anonymous Udupi parcel ID-plus-polygon response was verified. No sample GeoJSON is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Kannada discovery queries and actual result URLs are recorded in city-9229-udupi.json. The official Udupi District page identifies local land-record officials; DILRMP search evidence reports Udupi cadastral-map status; the Karnataka API help page documents a survey-number route. These establish custody and service context, not open citywide parcel geometry.",
+  "requestOutcomes": "The Karnataka survey-number service and land-record host timed out under bounded anonymous GET attempts. The DILRMP status route returned a gateway failure and the NAKSHA page timed out. No login, credentials, private token, unsafe field request, CAPTCHA/Cloudflare bypass or TLS disablement was used.",
+  "attemptedRoutes": [
+    "Official Udupi District / Regional Commissioner page",
+    "DILRMP Udupi cadastral-map/ULPIN status route",
+    "Karnataka Sujala 3LRI survey-number API help and bounded request",
+    "Karnataka land-record host",
+    "National NAKSHA programme page"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [13.3450929336684, 74.7520974495958] was preserved in latitude/longitude order and never shifted; no exact-point hit/miss inference was made.",
+    "No Udupi parcel geometry, native stable parcel identity, source parcel schema, CRS or bounded map/API feature response was retrieved.",
+    "The official district page and DILRMP status evidence do not establish citywide parcel geometry coverage.",
+    "Timeouts, gateway failure and unresolved unit identifiers are not evidence that Udupi lacks cadastral records.",
+    "No owner, address, titleholder, contact, tax/account or other personal/sensitive fields were requested or retained.",
+    "Packet completion is research evidence only and does not qualify or admit a runtime adapter; serial reviewer qualification remains pending."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no Udupi geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No Udupi parcel geometry query reached a usable public service. The exact WUP point was preserved but no hit/miss inference was made.",
+    "requestEvidence": [
+      "https://rcmysore.gov.in/udupi-district/",
+      "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/571",
+      "https://mobservice.sujala3lri.karnataka.gov.in/Help/Api/GET-api-GetDSSSurveyNumber_village_wscode_district_taluk_hobli",
+      "https://landrecords.karnataka.gov.in/",
+      "https://www.nakshauat.dolr.gov.in/NakshaUat/index.html"
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Karnataka/Udupi district land-record custody, DILRMP status and documented survey-number API.",
+    "verifiedOpenScope": "Custodian and programme/service documentation only; no open Udupi parcel geometry coverage verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Current viewer configuration and API route, Udupi unit identifiers, parcel schema, CRS, native identity, update currency, legal status and citywide coverage remain unresolved. No claim is made about parcel absence, ownership, title or completeness of Indian cadastral data.",
+  "retainedSample": null
+}

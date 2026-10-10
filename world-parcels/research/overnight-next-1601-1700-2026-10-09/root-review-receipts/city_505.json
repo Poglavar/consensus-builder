@@ -1,0 +1,14 @@
+{
+  "taskId": "city:505",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-505-oruro.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/oruro-service-review.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T11:48:56Z",
+  "reason": "Municipal cadastral-unit documentation is described, but original GeoNode responses are 502 and no parcel layer or native-ID polygon response is evidenced. Custody remains unresolved at registryFound null; adapter and headed Details gates are absent.",
+  "runtimeAdmission": false
+}

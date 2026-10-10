@@ -1,0 +1,19 @@
+{
+  "taskId": "city:6180",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-6180-sumedang.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/sumedang-service-review.json",
+    "tmp/valhalla-parcel-research/6180/sigeol.html",
+    "tmp/valhalla-parcel-research/6180/geonode.headers",
+    "tmp/valhalla-parcel-research/6180/geonode.json"
+  ],
+  "checkedAt": "2026-10-10T14:43:33Z",
+  "reason": "Official Sumedang portal returned a Cloudflare block; the ATLAS public resource response had seven datasets without a Sumedang parcel layer. Custody is supported, but no native ID and full polygon response, paging, 13-cell metric audit, source binding, or headed Details verification exists. No citywide absence inference.",
+  "queueIdentityVerified": true,
+  "bilingualSearchesDocumented": true,
+  "retainedPolygonCount": 0,
+  "adapterQualified": false
+}

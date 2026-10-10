@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-8210-muridke.json",
+  "purpose": "Document first-party registry/map discovery, current viewer configuration, bounded anonymous request outcomes, source schema, and safety limits.",
+  "assessment": "Official Punjab Land Records Authority/PULSE material and the first-party ArcGIS service establish a Punjab cadastral-map custodian route. The Sheikhupura district layer returned one complete polygon intersecting the exact WUP point in Muridke Tehsil.",
+  "registryAssessment": "Local/provincial registry custody found through Government of Punjab PLRA/PULSE sources. The result is service evidence and a point sample, not proof of citywide geometry availability.",
+  "officialPrimarySources": [
+    {"url": "https://www.punjab-zameen.gov.pk/", "observation": "Official Punjab Land Records Authority portal describes Punjab digital land-record services and ARC network."},
+    {"url": "https://www.pulse.gop.pk/", "observation": "Official PULSE project page describes parcel mapping and cadastral-map linkage objectives."},
+    {"url": "https://lis.pulse.gop.pk/", "observation": "Official public GIS viewer; page disclaimer says property lines are indicative and not for legal boundary use."},
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer", "observation": "First-party ArcGIS MapServer lists district polygon layers, including Sheikhupura (layer 31), and reports Web Mercator service extent."}
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://lis.pulse.gop.pk/",
+    "tokenRoute": "/api/gis/token (anonymous viewer bootstrap; token value not retained)",
+    "serviceUrl": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer",
+    "layer": {"id": 31, "name": "Sheikhupura", "geometryType": "esriGeometryPolygon", "displayField": "District", "capabilities": "Map,Query,Data"},
+    "schemaAndCrs": "Layer metadata: source spatial reference WKID 102100/latestWkid 3857; output query requested outSR=4326. Native field metadata was inspected but raw attributes were not retained in the sample.",
+    "nativeFieldNames": ["OBJECTID", "District", "Dist_ID", "Tehsil", "Tehsil_ID", "QH", "QH_ID", "PC", "PC_ID", "Mouza", "Mouza_ID", "Type", "M", "A", "K", "SK", "Karam", "Remarks", "Label", "Shape", "Shape.STArea()", "Shape.STLength()", "Join_Shp", "Khasra_ID", "Shape_Leng", "B", "MN", "Khewat_ID", "propstatus"],
+    "safeFieldAllowlist": ["OBJECTID", "complete polygon geometry", "source CRS metadata", "non-personal administrative fields for qualification only"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://lis.pulse.gop.pk/", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 HTML retrieved. Viewer JavaScript exposed the anonymous token bootstrap route and first-party ArcGIS service URLs."},
+    {"url": "https://lis.pulse.gop.pk/api/gis/token", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 JSON returned success/token/expiresAt. Token was used only for the bounded public viewer request and was not retained in packet files."},
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer", "method": "GET", "normalTlsVerification": true, "result": "Without viewer token, HTTP JSON response was ArcGIS error 499 Token Required. This was an access-control observation, not a failure of the service."},
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer", "method": "GET with anonymous viewer token", "normalTlsVerification": true, "result": "HTTP 200 JSON metadata; Sheikhupura layer 31 present with polygon geometry and native OBJECTID field."},
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/31", "method": "GET with anonymous viewer token", "normalTlsVerification": true, "result": "HTTP 200 JSON layer metadata; fields and CRS inspected."},
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/31/query", "method": "GET with anonymous viewer token", "normalTlsVerification": true, "result": "Point-intersects query at geometry=74.2567081193507,31.7916104396334, geometryType=esriGeometryPoint, inSR=4326, spatialRel=esriSpatialRelIntersects, outFields=*, returnGeometry=true, outSR=4326, resultRecordCount=3, f=geojson returned one complete Polygon. Native OBJECTID=3070826; administrative fields identified Muridke Tehsil/Muridke QH/Muridke Zari Mouza. One feature retained after stripping all source attributes except canonical id."}
+  ],
+  "geometryDecision": "Retain one full polygon in muridke-parcel-samples.geojson. It has exactly one canonical property: {\"id\":\"3070826\"}. No raw source attribute set is retained.",
+  "geometryEvidence": {"sampleFile": "muridke-parcel-samples.geojson", "featureCount": 1, "query": "Exact WUP point intersects one feature in Sheikhupura layer 31; output requested EPSG:4326."},
+  "coverageAssessment": {"claimedScope": "Punjab PULSE/PLRA cadastral-map service with district layers.", "verifiedOpenScope": "Public viewer bootstrap, service metadata, and one anonymous point-bounded ID-plus-polygon response.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": true},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "The exact WUP point hit is not a citywide survey. PULSE labels property lines indicative and not legal boundaries. OBJECTID is the service's native OID and is retained as the canonical identity, but parcel identity persistence/versioning was not independently established. Runtime adapter qualification remains held.",
+  "runtimeAssessment": {"status": "held", "reason": "Serial reviewer must independently qualify service behavior and identity mapping before runtime admission; this packet alone does not enable an adapter."}
+}

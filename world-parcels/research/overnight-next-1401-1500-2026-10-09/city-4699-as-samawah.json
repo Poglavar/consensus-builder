@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:1443",
+  "cityCode": 4699,
+  "queueRank": 1443,
+  "name": "As Samawah",
+  "country": "Iraq",
+  "countryCode": "IQ",
+  "iso3": "IRQ",
+  "aliases": ["as samawah"],
+  "centerLatLon": [31.3134839412364, 45.2807814279876],
+  "point": [31.3134839412364, 45.2807814279876],
+  "population2025": 393865,
+  "population2025k": 393.865,
+  "populationUnit": "persons",
+  "year": 2025,
+  "checkedAt": "2026-10-09",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": null,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "As Samawah Iraq official cadastral parcel map GIS API municipality land registry",
+        "result": "Found official Iraqi Ministry of Justice land-registration service material and the Iraq Geographic Portal. The official material establishes national land-registration custody and general geospatial services, but no public anonymous As Samawah parcel feature service or downloadable parcel geometry was exposed.",
+        "actualResultUrls": ["https://moj.gov.iq/view.9289/", "https://igp.ur.gov.iq/Services.aspx?m=d24f0c1a-6ed8-4185-839d-aec82744694a"]
+      },
+      {
+        "language": "Arabic (local/native)",
+        "query": "السماوة العراق خريطة كادستر قطع الأراضي GIS التسجيل العقاري",
+        "result": "عُثر على صفحات رسمية لوزارة العدل وبوابة العراق الجغرافية. تُثبت الصفحات اختصاص التسجيل العقاري والخدمات الجغرافية العامة، لكن لم تظهر طبقة قطع أراضٍ عامة مجهولة الهوية أو واجهة API لمدينة السماوة.",
+        "actualResultUrls": ["https://moj.gov.iq/view.9289/", "https://ur.gov.iq/index/show-eservice/40227/10049/cat", "https://igp.ur.gov.iq/Services.aspx?m=d24f0c1a-6ed8-4185-839d-aec82744694a"]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {"url": "https://moj.gov.iq/view.9289/", "operator": "Ministry of Justice, Iraq / Real Estate Registration Department", "observation": "Official announcement describes electronic deed, property-map and real-estate-registration services; the listed initial directorates are in Baghdad, not As Samawah."},
+    {"url": "https://ur.gov.iq/index/show-eservice/40227/10049/cat", "operator": "Iraq Unified Electronic Portal / Ministry of Justice", "observation": "Official service page describes requesting a deed and property map from the competent registration directorate; it is an owner/document workflow and states online availability currently in Baghdad."},
+    {"url": "https://igp.ur.gov.iq/Services.aspx?m=d24f0c1a-6ed8-4185-839d-aec82744694a", "operator": "Iraq Geographic Portal", "observation": "Official portal page lists a Ministry of Construction/Housing/Municipalities service for state-land ownership locations by governorate and real-estate-registration circles; it is not a public parcel boundary layer."},
+    {"url": "https://www.iraqlandregistry.com/", "operator": "Iraq Land Registry (non-government lead)", "observation": "Search lead claiming property maps and records; not treated as first-party government evidence and no request was made."}
+  ],
+  "requests": [
+    {"url": "https://moj.gov.iq/view.9289/", "method": "GET", "httpStatus": 200, "assessment": "Official Ministry of Justice HTML reached anonymously; inspected current page and identified registration-department announcement and service links; no parcel geometry endpoint."},
+    {"url": "https://ur.gov.iq/index/show-eservice/40227/10049/cat", "method": "GET", "httpStatus": 200, "assessment": "Official Ur Portal page reached anonymously; describes deed/property-map request procedure, authentication/document requirements, and Baghdad-only current availability."},
+    {"url": "https://igp.ur.gov.iq/Services.aspx?m=d24f0c1a-6ed8-4185-839d-aec82744694a", "method": "GET", "httpStatus": 200, "assessment": "Official IGP services page reached anonymously; current HTML lists state-land ownership service and links to View.aspx?i=8026a1f8-8a7a-474d-8cdb-fbefea9a7ca9."},
+    {"url": "https://igp.ur.gov.iq/View.aspx?i=8026a1f8-8a7a-474d-8cdb-fbefea9a7ca9", "method": "GET", "httpStatus": 200, "assessment": "Anonymous request returned the portal homepage/news content rather than a map or documented parcel service; no further endpoint was guessed or queried."},
+    {"url": "https://eservice.ur.gov.iq/index/new-service/10360", "method": "GET", "httpStatus": 200, "assessment": "Official service application shell reached but requires JavaScript/authenticated workflow; no anonymous parcel geometry or safe ID response."}
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Iraqi national real-estate registration and official geographic-portal service pages.",
+    "verifiedOpenScope": "No anonymous parcel response with stable native ID and polygon geometry verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "geometryDecision": {"verified": false, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not run: no documented anonymous parcel endpoint was found; no coordinate shift or absence inference was used."},
+  "safeFieldAllowlist": ["stable native parcel identity", "geometry", "source CRS", "service layer name"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax/account", "private credentials or tokens"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "remainingUncertainty": "The Iraqi registration directorate may hold As Samawah cadastral records, but the inspected public pages expose service/procedure information rather than an anonymous parcel API. IGP service internals, local Dhi Qar/As Samawah endpoints, and non-indexed services remain unknown. A zero exact-point hit was not used as evidence.",
+  "nextStep": "A later researcher may identify and independently qualify an official Dhi Qar/As Samawah parcel map or public feature service. Keep runtime integration held pending serial adapter qualification."
+}

@@ -1,0 +1,145 @@
+{
+  "cityCode": 5485,
+  "queueRank": 1674,
+  "name": "Sherpur",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "iso3": "BGD",
+  "locId": 50,
+  "point": [25.0186538568602, 90.0167204415956],
+  "population2025": 341630,
+  "population2025k": 341.63,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sherpur Bangladesh official cadastral map parcel land records GIS",
+        "result": "First-party discovery found the official Sherpur district portal, the Department of Land Records and Surveys (DLRS) online map-search service, and the government Mouza/Plot land-zoning map portal. These establish official land-map routes, but no city-bounded anonymous parcel feature response was found.",
+        "actualResultUrls": [
+          "https://www.sherpur.gov.bd/en",
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://map.land.gov.bd/",
+          "https://dlrs.gov.bd/"
+        ]
+      },
+      {
+        "language": "Bengali",
+        "query": "শেরপুর বাংলাদেশ সরকারি খতিয়ান মৌজা ম্যাপ ভূমি রেকর্ড GIS",
+        "result": "সরকারি ফলাফলে শেরপুর জেলা পোর্টালের ভূমি-সংক্রান্ত সেবা এবং DLRS-এর ম্যাপ অনুসন্ধান/মৌজা ম্যাপ সেবা পাওয়া গেছে। শেরপুরের জন্য বেনামী, শহর-সীমাবদ্ধ পার্সেল জ্যামিতি বা স্থিতিশীল নিরাপদ পার্সেল আইডির প্রকাশ্য প্রতিক্রিয়া পাওয়া যায়নি।",
+        "actualResultUrls": [
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://map.land.gov.bd/",
+          "https://www.sherpur.gov.bd/en/site/view/uno",
+          "https://dlrs.portal.gov.bd/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://settlement.gov.bd/Map/MapSearch",
+      "operator": "Bangladesh Department of Land Records and Surveys",
+      "observation": "Official public map-search viewer exposing division, district, survey, upazila, mouza, sheet, and dag selectors. Sherpur district was returned in the district list, but its survey-list request returned an empty JSON array; no parcel geometry was returned."
+    },
+    {
+      "url": "https://map.land.gov.bd/",
+      "operator": "Bangladesh government Mouza and Plot Based National Digital Land Zoning Project",
+      "observation": "Official viewer JavaScript exposed anonymous administrative and geometry routes and a GeoServer WMS configuration. The live division list returned seven divisions and did not include Mymensingh, the division containing Sherpur; no Sherpur parcel request was therefore executed through this route."
+    },
+    {
+      "url": "https://www.sherpur.gov.bd/en",
+      "operator": "Sherpur District Administration",
+      "observation": "Official local district portal with land-related services and links, including land-office and khas/government-land material. It does not publish an anonymous parcel geometry layer or stable parcel identity API."
+    },
+    {
+      "url": "https://map.settlement.gov.bd/",
+      "operator": "Bangladesh Department of Land Records and Surveys",
+      "observation": "Official integrated online map-purchase portal describing CS, SA, RS, BRS, and BDS Mouza-map products. It is a map-order/catalog route, not an anonymous geometry API, and no order or formal request was submitted."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://settlement.gov.bd/Map/MapSearch",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Fetched the current viewer HTML and inspected MapSearch.js for current routes and fields."
+    },
+    {
+      "url": "https://settlement.gov.bd/Map/GetDivisionList",
+      "method": "POST; anonymous; TLS verification enabled; empty body",
+      "httpStatus": 200,
+      "outcome": "Returned the official division list."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise",
+      "method": "POST; anonymous; TLS verification enabled; divid=070000000",
+      "httpStatus": 200,
+      "outcome": "Returned Sherpur district as unit code 071700000, comcod 4176."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise",
+      "method": "POST; anonymous; TLS verification enabled; districtid=071700000, comcod=4176",
+      "httpStatus": 200,
+      "outcome": "Returned [] (empty survey list). This is an endpoint/data response only and was not treated as evidence of citywide cadastral absence."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap",
+      "method": "POST; anonymous; TLS verification enabled; comcod=4176, rsno1=1, districtid=071700000",
+      "httpStatus": 200,
+      "outcome": "Returned [] because no survey entry was available from the preceding Sherpur request; no parcel query followed."
+    },
+    {
+      "url": "https://map.land.gov.bd/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Fetched current HTML and main.js. The page exposed a CSRF-protected administrative/geometry workflow and configured public GeoServer WMS URLs."
+    },
+    {
+      "url": "https://map.land.gov.bd/getAdminByCode",
+      "method": "POST; anonymous; TLS verification enabled; level=forDiv",
+      "httpStatus": 200,
+      "outcome": "Returned seven division options; Mymensingh was not present, so no Sherpur administrative or parcel geometry request was made through this viewer."
+    },
+    {
+      "url": "http://gis.land.gov.bd/geoserver/wsDMMS/wms?service=WMS&request=GetCapabilities&version=1.3.0",
+      "method": "GET; anonymous; ordinary public request as configured by official viewer",
+      "httpStatus": 503,
+      "outcome": "GeoServer returned Service Unavailable; no layer schema, CRS, or parcel feature response was obtained."
+    },
+    {
+      "url": "http://gis.land.gov.bd/geoserver/wsIwmBase/wms?service=WMS&request=GetCapabilities&version=1.3.0",
+      "method": "GET; anonymous; ordinary public request as configured by official viewer",
+      "httpStatus": 503,
+      "outcome": "GeoServer returned Service Unavailable; no layer schema, CRS, or parcel feature response was obtained."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Official DLRS and Sherpur District Administration pages establish Bangladesh's land-record/map custodian and a local district land-service route. This is custodian/procedure evidence only; it does not establish an open Sherpur city parcel adapter.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "verifiedParcelResponse": null,
+  "sourceCandidate": {
+    "operator": "Bangladesh Department of Land Records and Surveys, with Sherpur District Administration local route",
+    "viewerUrls": ["https://settlement.gov.bd/Map/MapSearch", "https://map.land.gov.bd/"],
+    "crs": null
+  },
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Official Bangladesh land-record, Mouza-map, survey-map, and land-zoning services; Sherpur district is present in the DLRS selector route.",
+    "verifiedOpenScope": "No anonymous Sherpur city parcel feature, native parcel identity, parcel schema, or CRS was retrieved.",
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_registry_and_map_routes_no_verified_public_parcel_geometry",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "Sherpur coverage may exist in restricted, order-based, unavailable, or not-yet-published survey data. Empty selector/API responses, a map extent miss, service unavailability, or no exact-point hit do not establish citywide absence. No WUP coordinate was shifted.",
+  "identityPolicy": "No native parcel identity was observed; do not synthesize an identity from response order, selector values, or internal records.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": {},
+  "crs": "unverified; no parcel geometry response obtained",
+  "geometryQuality": "not evaluated; no parcel geometry retained",
+  "retainedSample": null
+}

@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 6290,
+  "queueRank": 1913,
+  "name": "Orizaba",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "iso3": "MEX",
+  "point": [18.8419709908217, -97.1210205418737],
+  "population2025": 300041,
+  "population2025k": 300.041,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Orizaba Veracruz official cadastral parcel map cadastre geoportal",
+        "result": "Found the official H. Ayuntamiento de Orizaba site, its municipal Treasury virtual service with cadastral-key lookup, and official state references to the Orizaba regional cadastral delegation. No public anonymous parcel geometry API or downloadable parcel feature service was exposed.",
+        "actualResultUrls": [
+          "https://www.orizaba.gob.mx/",
+          "https://tesoreria.orizaba.gob.mx/Impuestos/BuscaCuenta/2",
+          "https://www.veracruz.gob.mx/finanzas/plano-manzanero-de-localidades-catastradas/",
+          "https://www.veracruz.gob.mx/finanzas/transparencia-abrogada/fraccion-xxxiii/poa-2011/"
+        ]
+      },
+      {
+        "language": "Spanish (local/official language)",
+        "query": "Orizaba Veracruz mapa catastral oficial predios catastro geoportal",
+        "result": "Found the official municipal Catastro coordination, municipal cadastral-key lookup, municipal land-use/planning documents, and state cadastral references. The official sources evidence local custody and cadastral records but did not expose an anonymous parcel geometry response or current public map/API endpoint.",
+        "actualResultUrls": [
+          "https://transparencia.orizaba.gob.mx/author/catastro/",
+          "https://transparencia.orizaba.gob.mx/sistemas-de-datos-personales/",
+          "https://www.orizaba.gob.mx/ordenamiento-urbano/",
+          "https://www.veracruz.gob.mx/desarrollosocial/wp-content/uploads/sites/12/2022/04/Gac2022-008-Jueves-06-TOMO-I-Ext.pdf"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.orizaba.gob.mx/",
+      "operator": "H. Ayuntamiento de Orizaba / municipal government",
+      "evidence": "First-party municipal site identifies Orizaba and links to the municipal land-use map/planning area and Treasury virtual services."
+    },
+    {
+      "url": "https://tesoreria.orizaba.gob.mx/Impuestos/BuscaCuenta/2",
+      "operator": "H. Ayuntamiento de Orizaba / Tesorería Virtual",
+      "evidence": "Reachable public page provides lookup forms for a cuenta única and a structured clave catastral (delegación, municipio, localidad, región, manzana, lote, nivel, departamento, tipo). It is an account/key lookup, not a parcel geometry service; no values were submitted."
+    },
+    {
+      "url": "https://transparencia.orizaba.gob.mx/author/catastro/",
+      "operator": "Coordinación de Catastro Municipal de Orizaba",
+      "evidence": "First-party transparency site has a dedicated municipal Catastro coordination publication area, directly evidencing a local cadastral custodian."
+    },
+    {
+      "url": "https://www.veracruz.gob.mx/finanzas/transparencia-abrogada/fraccion-xxxiii/poa-2011/",
+      "operator": "Secretaría de Finanzas y Planeación del Estado de Veracruz",
+      "evidence": "Official state page lists the Delegación Regional de Catastro en Orizaba, corroborating the regional state cadastral custodian; it does not expose parcel features."
+    },
+    {
+      "url": "https://www.veracruz.gob.mx/desarrollosocial/wp-content/uploads/sites/12/2022/04/Gac2022-008-Jueves-06-TOMO-I-Ext.pdf",
+      "operator": "Gobierno del Estado de Veracruz / official Gaceta",
+      "evidence": "Official municipal planning material cites Información de Catastro Municipal and tabulates cadastral land-tenure/use references and cadastral keys, but contains no current parcel feature service."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.orizaba.gob.mx/",
+      "method": "GET via curl with verified TLS",
+      "status": 200,
+      "summary": "Municipal homepage retrieved. Current JavaScript/configuration was ordinary WordPress/Divi; no cadastral map/API endpoint was present in the page source."
+    },
+    {
+      "url": "https://www.orizaba.gob.mx/ordenamiento-urbano/",
+      "method": "GET via curl with verified TLS",
+      "status": 200,
+      "summary": "Municipal planning page retrieved. Linked assets are planning PDFs and land-use documents; no parcel geometry viewer or feature endpoint was exposed."
+    },
+    {
+      "url": "https://tesoreria.orizaba.gob.mx/Impuestos/BuscaCuenta/2",
+      "method": "GET via curl with verified TLS",
+      "status": 200,
+      "summary": "Public Treasury form retrieved. The HTML exposes POST action /Impuestos/EncuentraClave and safe cadastral-key field names, but no anonymous geometry response. No lookup was submitted because it would require a parcel/account key and could disclose unsafe property information."
+    },
+    {
+      "url": "https://www.veracruz.gob.mx/finanzas/plano-manzanero-de-localidades-catastradas/",
+      "method": "GET via first-party discovery",
+      "status": 200,
+      "summary": "Official state service page was found for plano manzanero copies/procedures; it did not provide a public anonymous Orizaba parcel feature endpoint or schema."
+    },
+    {
+      "url": "https://www.veracruz.gob.mx/finanzas/transparencia-abrogada/fraccion-xxxiii/poa-2011/",
+      "method": "GET via first-party discovery",
+      "status": 200,
+      "summary": "Official state page was found and lists the Orizaba regional cadastral delegation; no geometry, CRS, or feature API was returned."
+    },
+    {
+      "url": "https://www.inegi.org.mx/app/biblioteca/ficha.html?upc=794551131114",
+      "method": "GET via first-party discovery",
+      "status": 200,
+      "summary": "Official INEGI Orizaba municipal topographic-map record was found. It is topography/municipal mapping, not a cadastral parcel feature service; no parcel request was made."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": null,
+    "fallbackOidField": null,
+    "compositeKey": null,
+    "fieldMapping": {
+      "geometry": "Not available: no safe anonymous parcel feature response was returned.",
+      "native identity": "The Treasury form exposes a cadastral-key structure, but no feature record was returned and no key was inferred or submitted."
+    },
+    "crs": "Not confirmed.",
+    "geometryType": "Not confirmed."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal Catastro coordination and the state regional cadastral delegation are evidenced; official planning material refers to municipal cadastral records for Orizaba.",
+    "verifiedOpenScope": "Local custody and procedural/key-lookup evidence only; citywide parcel geometry coverage was not verified.",
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "No anonymous parcel feature endpoint was available for a point query. This is not evidence of parcel absence or citywide absence."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["native parcel identifier if later exposed", "geometry"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "tax", "account", "legal description", "rights/title details"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_local_cadastre_custodian_geometry_unverified",
+  "remainingUncertainty": "A local municipal Catastro and state regional cadastral service are evidenced, but no current anonymous map/API route returned parcel IDs plus geometry. The Treasury service is keyed lookup rather than an open geometry API; CRS, geometry type, native identity stability, and citywide coverage remain unverified.",
+  "nextStep": "Serial reviewer should independently inspect the current municipal/state cadastral systems and any public map configuration, determine whether an anonymous parcel feature service exists, and qualify native identity, CRS, safe fields, and Orizaba coverage before adapter admission."
+}

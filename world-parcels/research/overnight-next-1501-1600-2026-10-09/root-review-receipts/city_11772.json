@@ -1,0 +1,13 @@
+{
+  "taskId": "city:11772",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-11772-qidong.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/qidong-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T10:16:34.393855Z",
+  "reason": "WUP identity and English/Chinese search records checked. Independent HTTP 200 read of the official Qidong registration procedure named the municipal Natural Resources and Planning Bureau, supporting registryFound true. No anonymous parcel endpoint, native-ID full polygon or adapter admission metrics are evidenced. No citywide absence inferred."
+}

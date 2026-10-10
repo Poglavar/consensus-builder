@@ -1,0 +1,34 @@
+{
+  "cityCode": 7325,
+  "queueRank": 1880,
+  "city": "Golapganj",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "point": [24.8198610020619, 92.014645981473],
+  "population2025": 306017,
+  "population2025k": 306.017,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Golapganj Bangladesh official cadastral map land records parcel GIS",
+        "result": "First-party discovery found Bangladesh Department of Land Records and Surveys (DLRS) map-search and official online Mouza-map purchase portals. No Golapganj-specific public vector parcel endpoint was found in indexed results.",
+        "actualResultUrls": ["https://settlement.gov.bd/Map/MapSearch", "https://map.settlement.gov.bd/", "https://map.land.gov.bd/"]
+      },
+      {
+        "language": "Bengali",
+        "query": "গোলাপগঞ্জ বাংলাদেশ সরকারি ভূমি নকশা খতিয়ান ক্যাডাস্ট্রাল মানচিত্র",
+        "result": "বাংলা অনুসন্ধানে সরকারি DLRS অনলাইন ভূমি রেকর্ড/নকশা অনুসন্ধান, Mouza-map portal, এবং ভূমি নকশা প্রকল্প পাওয়া গেছে; Golapganj-এর জন্য বেনামী parcel ID-plus-geometry API পাওয়া যায়নি।",
+        "actualResultUrls": ["https://settlement.gov.bd/Map/MapSearch", "https://map.settlement.gov.bd/", "https://map.land.gov.bd/", "https://dlrs.portal.gov.bd/"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "The official DLRS settlement map-search service exposes Bangladesh's division/district/survey/upazila/mouza/sheet/plot workflow; this is national official cadastral-map custody and procedure evidence applicable to the Sylhet/Golapganj hierarchy, not proof of an open citywide parcel feed.",
+  "serviceReview": "golapganj-service-review.json",
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review remains required"
+}

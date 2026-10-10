@@ -1,0 +1,19 @@
+{
+  "taskId": "city:9045",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-9045-chandausi.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/chandausi-service-review.json",
+    "tmp/valhalla-parcel-research/chandausi/districts.json",
+    "tmp/valhalla-parcel-research/chandausi/tehsils.json",
+    "tmp/valhalla-parcel-research/chandausi/villages.json",
+    "tmp/valhalla-parcel-research/chandausi/extent.json",
+    "tmp/valhalla-parcel-research/chandausi/hit.json",
+    "tmp/valhalla-parcel-research/chandausi/hit.headers",
+    "tmp/valhalla-parcel-research/chandausi/main.js"
+  ],
+  "checkedAt": "2026-10-10T13:52:58Z",
+  "reason": "Queue identity and English/Hindi searches checked. First-party cache confirms the Chandausi hierarchy, EPSG:32644 village extent, and one safe native ID plus bbox; no full polygon was retained. Independent adapter and headed Details qualification are absent."
+}

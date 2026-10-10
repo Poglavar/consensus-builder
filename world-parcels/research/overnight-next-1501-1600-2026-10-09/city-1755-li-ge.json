@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:1755",
+  "cityCode": 1755,
+  "wupCityCode": 1755,
+  "name": "Liège",
+  "country": "Belgium",
+  "countryCode": "BE",
+  "iso2": "BE",
+  "iso3": "BEL",
+  "rank": 1517,
+  "queueRank": 1517,
+  "point": [50.6390289102718, 5.56841796604162],
+  "centerLatLon": [50.6390289102718, 5.56841796604162],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 375138,
+  "population2025k": 375.138,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Géoportail de la Wallonie identifies the Service public de Wallonie cadastral parcel map covering Wallonia and attributes the underlying cadastral data to the Administration Générale de la Documentation Patrimoniale (SPF Finances). This is a regional cadastral map/service route with Liège in scope, not proof of a separate municipal registry office.",
+  "registryEvidenceUrls": [
+    "https://geoportail.wallonie.be/home/ressources/georeferentiel-de-la-wallonie/parcellaire-cadastral.html",
+    "https://geoportail.wallonie.be/catalogue/2aec918f-d04a-4c9b-9407-42825ab482f0.html",
+    "https://finances.belgium.be/fr/experts-partenaires/donnees-ouvertes-patrimoine/jeux-donnees/plan-cadastral"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": true,
+  "sourceIds": ["CAPAKEY"],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The anonymous parcel response was verified, but no adapter was qualified independently. Only safe parcel identity and geometry were considered; owner, address, contact, titleholder, tax/account, and other personal or legal fields were not requested or retained.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_verified_bounded",
+  "coverageAssessment": {
+    "claimedScope": "Wallonia cadastral parcel map/service; official metadata states regional coverage and EPSG:31370.",
+    "verifiedOpenScope": "Anonymous ArcGIS feature query over a 200 m Belgian Lambert 72 envelope centered on the exact WUP point returned 71 polygon features.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "serviceEvidence": {
+    "serviceUrl": "https://geoservices.wallonie.be/arcgis/rest/services/PLAN_REGLEMENT/CADMAP_PARCELLES/MapServer",
+    "layer": "0",
+    "layerName": "Parcelles cadastrales",
+    "geometryType": "esriGeometryPolygon",
+    "sourceCrs": "EPSG:31370",
+    "nativeIdentityField": "CAPAKEY",
+    "safeRequestedFields": ["CAPAKEY", "geometry"],
+    "boundedFeatureCount": 71,
+    "boundedEnvelopeLambert72": [234757.22, 148185.0, 234957.22, 148385.0],
+    "representativeNativeIds": ["62813E0483/00B000", "62813E0481/00D000", "62813E0482/00A000"]
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Belgium official cadastral parcel map Liège Wallonia geoportail parcels cadastral",
+        "scope": "Identify an official city-in-scope cadastral custodian and a safe public parcel geometry route.",
+        "result": "Found the official Géoportail de la Wallonie cadastral parcel page, its catalogue record, the official SPF Finances cadastral-plan page, and the linked ArcGIS REST service. The official Wallonia page says the service visualizes private cadastral parcels and buildings in Wallonia and attributes the underlying data to AGDP/SPF Finances.",
+        "actualResultUrls": [
+          "https://geoportail.wallonie.be/home/ressources/georeferentiel-de-la-wallonie/parcellaire-cadastral.html",
+          "https://geoportail.wallonie.be/catalogue/2aec918f-d04a-4c9b-9407-42825ab482f0.html",
+          "https://geoservices.wallonie.be/arcgis/rest/services/PLAN_REGLEMENT/CADMAP_PARCELLES/MapServer",
+          "https://finances.belgium.be/en/experts-partners/open-data-heritage/datasets/cadastral-plan"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "French",
+        "query": "Belgique cadastre officiel Liège parcelles cadastrales carte Géoportail Wallonie",
+        "scope": "Independent local-language search for the Belgian/Walloon cadastral custodian and public map/API.",
+        "result": "Found the official French Géoportail de la Wallonie parcel page and catalogue record, which document the Wallonia parcel map, AGDP/SPF Finances provenance, Belgian Lambert 72 CRS, and ArcGIS service URL. A bounded anonymous query to the documented layer returned polygon geometry and CAPAKEY values.",
+        "actualResultUrls": [
+          "https://geoportail.wallonie.be/home/ressources/georeferentiel-de-la-wallonie/parcellaire-cadastral.html",
+          "https://geoportail.wallonie.be/catalogue/2aec918f-d04a-4c9b-9407-42825ab482f0.html",
+          "https://geoservices.wallonie.be/arcgis/rest/services/PLAN_REGLEMENT/CADMAP_PARCELLES/MapServer/0"
+        ],
+        "executionMethod": "Separate French-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "The envelope query is local and bounded; it does not establish complete Liège-city or Wallonia-wide availability, parcel freshness beyond the service metadata, or runtime adapter compatibility. The exact WUP point was preserved and not shifted to force a hit.",
+  "nextStep": "Serial reviewer may independently qualify the official ArcGIS route and adapter; do not enable runtime from this packet alone."
+}

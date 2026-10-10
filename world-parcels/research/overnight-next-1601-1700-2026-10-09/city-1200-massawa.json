@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "1.0",
+  "cityCode": 1200,
+  "queueRank": 1609,
+  "name": "Massawa",
+  "country": "Eritrea",
+  "countryCode": "ER",
+  "iso3": "ERI",
+  "locId": 232,
+  "point": [15.614546304822, 39.4488135378123],
+  "population2025": 354657,
+  "population2025k": 354.657,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Massawa Eritrea cadastral parcel map land registry official",
+        "result": "First-party discovery did not identify a Massawa-specific public cadastral viewer or parcel API. Results identified the Eritrean Ministry of Land, Water and Environment/Cadastral Office as the national custodian and an official ministry report about a cadastre office opened in Keren; no Massawa parcel service was found.",
+        "actualResultUrls": [
+          "https://cadastraltemplate.org/eritrea.php",
+          "https://shabait.com/2012/07/19/ministry-opens-cadastre-office-in-keren-city/",
+          "https://shabait.com/2020/03/28/the-northern-red-sea-region/"
+        ]
+      },
+      {
+        "language": "Tigrinya/Arabic",
+        "query": "ምጽዋ ኤርትራ መሬት ካዳስተር መዝገብ / مصوع إريتريا السجل العقاري الكادستر خريطة",
+        "result": "Tigrinya/Arabic discovery returned general Massawa map pages and place-name material, but no first-party Massawa land-registry or parcel-geometry service. No local cadastral endpoint was established.",
+        "actualResultUrls": [
+          "https://3rbmap.com/Eritrea/Massawa",
+          "https://geonames.nga.mil/geon-ags/rest/services/RESEARCH/GIS_OUTPUT/MapServer/0/4805624"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://cadastraltemplate.org/eritrea.php",
+      "observation": "Country cadastral profile identifies the Cadastral Office of the Ministry of Land, Water and Environment as the Eritrean cadastral organization and describes the national system. This is national custodian evidence, not Massawa-specific open-service evidence."
+    },
+    {
+      "url": "https://shabait.com/2012/07/19/ministry-opens-cadastre-office-in-keren-city/",
+      "observation": "Official Eritrea Ministry of Information report confirms the Ministry's cadastral department and a Keren cadastre office using land-plot-based information, master-plan surveys and tenure evidence. It does not establish a Massawa office or public API."
+    },
+    {
+      "url": "https://shabait.com/2020/03/28/the-northern-red-sea-region/",
+      "observation": "Official ministry report identifies Massawa as the center/port city of the Northern Red Sea Region. It provides regional administrative context only and no cadastral dataset or service."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?f=json&num=100&start=1&q=(Massawa%20OR%20Mitsiwa)%20(Eritrea)%20(parcel%20OR%20cadastre%20OR%20cadastral)",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Anonymous ArcGIS Online search returned total 0. This is a catalog-search result only and not evidence of countrywide or citywide absence. Raw response retained under tmp/valhalla-parcel-research/massawa-arcgis-search.json."
+    },
+    {
+      "url": "https://tiles.arcgis.com/tiles/6A16OGWeO5n9jAWS/arcgis/rest/services/ERI_SheEb_1997/MapServer?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Public ArcGIS cached map metadata loaded, but the service is ERI_SheEb_1997, a non-cadastral cached map outside Massawa. No parcel layer, native parcel identity or feature geometry was requested or retained."
+    },
+    {
+      "url": "https://shabait.com/2012/07/19/ministry-opens-cadastre-office-in-keren-city/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official ministry article loaded. It describes cadastre administration and registration procedure in Keren, not an anonymous parcel map/API for Massawa."
+    },
+    {
+      "url": "https://www.gov.er/",
+      "method": "GET",
+      "httpStatus": 0,
+      "outcome": "DNS resolution failed in the research environment. No TLS exception or retry with credentials was attempted. This is not evidence of registry absence."
+    },
+    {
+      "url": "https://www.eritrea.gov.er/",
+      "method": "GET",
+      "httpStatus": 0,
+      "outcome": "DNS resolution failed in the research environment. No TLS exception or retry with credentials was attempted. This is not evidence of registry absence."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "A national Eritrean cadastral custodian is evidenced, but no Massawa-local registry/map/procedure was directly established. Therefore registryFound remains null rather than true or false.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Eritrea national cadastral-office documentation and public web/GIS catalog discovery.",
+    "verifiedOpenScope": "Only national custodian prose, Massawa regional context, catalog search metadata and a non-cadastral Eritrea map service were verified. No Massawa parcel geometry, native ID, schema or CRS was retrieved.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "Eritrea may maintain offline, restricted or unindexed cadastral records and Massawa may have local land administration not exposed on the public web. The exact WUP point was preserved and was not used to infer presence or absence. No login, credentials, private token, CAPTCHA bypass, unsafe field request or TLS-disable action was used.",
+  "nextStep": "Serial reviewer should independently check current Eritrean Ministry/Regional Administration channels for any public Massawa cadastral map or geometry service. Qualify an adapter only after a bounded anonymous response provides a stable native parcel identity, safe polygon geometry and confirmed CRS."
+}

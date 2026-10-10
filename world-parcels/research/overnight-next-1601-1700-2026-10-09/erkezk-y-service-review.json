@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-1395-erkezk-y.json",
+  "cityCode": 1395,
+  "queueRank": 1686,
+  "city": "Çerkezköy",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Current official TKGM Parsel Sorgu configuration was followed to its public MEGSİS API. Three anonymous coordinate requests returned two distinct local parcel polygons; a two-feature safe-ID sample is retained, but citywide coverage and formal CRS remain unverified.",
+  "queryOutcomes": "Separate English and Turkish discovery queries are recorded in city-1395-erkezk-y.json. First-party results established TKGM/MEGSİS and the Çerkezköy district Tapu Müdürlüğü; no third-party source was used as registry custody evidence.",
+  "requestOutcomes": [
+    {"url": "https://parselsorgu.tkgm.gov.tr/", "method": "GET", "httpStatus": 200, "outcome": "Current viewer HTML loaded; it referenced main.js?v=76.3."},
+    {"url": "https://parselsorgu.tkgm.gov.tr/main.js?v=76.3", "method": "GET", "httpStatus": 200, "outcome": "Current JavaScript loaded; it referenced util/constants and configured the app host through the viewer configuration."},
+    {"url": "https://parselsorgu.tkgm.gov.tr/config.js", "method": "GET", "httpStatus": 200, "outcome": "Current configuration exposed https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/ as host and no private token was needed for the tested coordinate endpoint."},
+    {"url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/41.3079977291703/27.9834341443901", "method": "GET", "httpStatus": 200, "outcome": "Returned a GeoJSON Polygon for native identity 164700/938/19."},
+    {"url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/41.3085/27.9835", "method": "GET", "httpStatus": 200, "outcome": "Returned the same polygon/identity as the exact-point query; treated as a duplicate."},
+    {"url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/41.3075/27.9828", "method": "GET", "httpStatus": 200, "outcome": "Returned a second GeoJSON Polygon for native identity 164700/938/21."}
+  ],
+  "scopeLimits": [
+    "Exact WUP point [41.3079977291703, 27.9834341443901] was preserved; no coordinate was shifted to force a hit.",
+    "Three nearby point lookups are local evidence only; no city boundary, complete extent query or citywide completeness was established.",
+    "GeoJSON coordinates appear [longitude, latitude], but the API did not return a formal CRS declaration; WGS84 compatibility is unverified.",
+    "The response's native fields were not copied into retained feature properties beyond a documented composite identity.",
+    "No owner, address, titleholder, contact, personal, tax/account or other unsafe fields were requested or retained.",
+    "Packet completion is not source integration/admission; serial reviewer qualification remains pending."
+  ],
+  "safeFieldAllowlist": ["canonical stable native parcel identity", "full parcel polygon geometry", "source layer/API metadata", "CRS metadata when verified"],
+  "nativeFieldMapping": {"mahalleId": "neighborhood identifier", "adaNo": "block/island number", "parselNo": "parcel number"},
+  "compositeKeyProvenance": "The sample IDs 164700/938/19 and 164700/938/21 are composed from the API's native mahalleId/adaNo/parselNo fields and are not synthetic row numbers.",
+  "crs": "unverified; coordinate order observed as [longitude, latitude]",
+  "geometryQuality": "Two full Polygon responses, HTTP 200, bounded near-point sample; topology not independently validated.",
+  "geometryDecision": {"verified": true, "sourceId": "mahalleId/adaNo/parselNo", "sampleCount": 2, "sampleFile": "cerkezkoy-parcels-sample.geojson", "nativeIdField": "mahalleId + adaNo + parselNo", "exactWupPointTest": "Exact point returned native identity 164700/938/19; this does not establish citywide coverage.", "requestEvidence": ["HTTP 200 responses from the current viewer-configured API"]},
+  "coverageAssessment": {"claimedScope": "Çerkezköy district within TKGM/MEGSİS cadastral service.", "verifiedOpenScope": "Two distinct polygons from three nearby anonymous coordinate lookups.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": true},
+  "runtimeReadiness": "held_serial_review_required",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Formal CRS, update timestamp, citywide coverage, boundary behavior, and adapter-safe pagination/extent semantics remain unknown. A timeout, map extent miss, login wall or zero exact-point hit would not prove citywide absence; none occurred for the retained requests.",
+  "retainedSample": {"file": "cerkezkoy-parcels-sample.geojson", "featureCount": 2, "propertiesPolicy": "exactly one canonical id property per feature"}
+}

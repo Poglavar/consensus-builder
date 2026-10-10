@@ -1,0 +1,13 @@
+{
+  "taskId": "packet:8436",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-8436-bhiwadi.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/bhiwadi-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T08:01:10Z",
+  "reason": "BIDA and Rajasthan first-party viewer support land/map custody, but the cached viewer binds a JDA Khasra route and bounded requests timed out. No Bhiwadi native-ID polygon or adapter qualification; no absence inferred."
+}

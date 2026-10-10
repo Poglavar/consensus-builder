@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1533-phuket.json",
+  "purpose": "Document first-party local registry context and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Thailand's Department of Lands identifies LandsMaps as its public parcel-map service, and the official Phuket Provincial Land Office identifies a local cadastral and land-registration custodian. The LandsMaps host timed out during the bounded anonymous GET, so no current viewer configuration, API route, schema, CRS, safe parcel ID, or geometry was retained. No login, private token, owner lookup, address lookup, or unsafe attribute request was attempted.",
+  "registryAssessment": "Local registry/cadastre custodian verified: Phuket Provincial Land Office, under the Department of Lands. This establishes local registry responsibility, not open parcel-geometry availability.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.dol.go.th/home/",
+      "observation": "Official Department of Lands home page lists LandsMaps among its public services for searching land-parcel shapes."
+    },
+    {
+      "url": "https://landsmaps.dol.go.th/",
+      "observation": "Official LandsMaps host was requested anonymously with TLS verification and a 30-second timeout; it did not return a usable response."
+    },
+    {
+      "url": "https://www.phuketdol.go.th/content/cate/2",
+      "observation": "Official Phuket Provincial Land Office page names the office, address, districts served, and responsibilities including land registration, title documents, cadastral evidence, surveying, and mapping."
+    },
+    {
+      "url": "https://phuketdol.go.th/frontpage",
+      "observation": "Official Phuket Provincial Land Office portal lists the land-office services and links to cadastral/survey-related public procedures."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Phuket Thailand official cadastral map parcel land registry Department of Lands LandsMaps",
+      "result": "Found official DOL LandsMaps service and official Phuket Provincial Land Office custodian material; no anonymous geometry response was verified.",
+      "actualResultUrls": ["https://www.dol.go.th/home/", "https://landsmaps.dol.go.th/", "https://www.phuketdol.go.th/content/cate/2", "https://phuketdol.go.th/frontpage"]
+    },
+    {
+      "language": "Thai",
+      "query": "ภูเก็ต แผนที่แปลงที่ดิน กรมที่ดิน สำนักงานที่ดินจังหวัดภูเก็ต",
+      "result": "Found official Thai-language Phuket Provincial Land Office material describing local land-registration, title, cadastral, surveying, and mapping responsibilities; no anonymous geometry response was verified.",
+      "actualResultUrls": ["https://phuketdol.go.th/frontpage", "https://www.phuketdol.go.th/content/cate/2", "https://landsmaps.dol.go.th/", "https://www.dol.go.th/home/"]
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://www.dol.go.th/home/",
+      "result": "Official DOL page returned successfully; LandsMaps was listed as a public parcel-shape search service."
+    },
+    {
+      "url": "https://www.phuketdol.go.th/content/cate/2",
+      "result": "Official local-office page reviewed; Phuket Provincial Land Office responsibilities and district scope were verified."
+    },
+    {
+      "url": "https://phuketdol.go.th/frontpage",
+      "result": "Official local portal reviewed; cadastral/survey-related public service links were visible."
+    },
+    {
+      "url": "https://landsmaps.dol.go.th/",
+      "result": "Anonymous HTTPS GET with TLS verification and a 30-second timeout timed out with no response body. No retry with credentials, CAPTCHA bypass, or TLS weakening was attempted."
+    }
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed against a usable public feature service; a zero hit, timeout, login wall, or unusable UI is not treated as citywide absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "DOL LandsMaps is advertised as a national public parcel-map service; Phuket Provincial Land Office is the local land and cadastral custodian for Phuket.",
+    "verifiedOpenScope": "Local custodian and service existence verified, but anonymous parcel geometry, schema/CRS, and citywide completeness were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "The current LandsMaps viewer/API route, public endpoint behavior, response schema/CRS, safe native parcel identity, and exact-point coverage remain unknown because the official host timed out during the bounded anonymous request.",
+  "runtimeAssessment": "held; no adapter admission or source integration implied"
+}

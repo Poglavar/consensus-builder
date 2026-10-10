@@ -1,0 +1,69 @@
+{
+  "cityCode": 6560,
+  "queueRank": 1874,
+  "name": "Ughelli",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "iso3": "NGA",
+  "point": [5.49760906296287, 6.00176173686475],
+  "population2025": 307005,
+  "population2025k": 307.005,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ughelli Delta State Nigeria cadastral map land registry GIS official parcels",
+        "result": "First-party results identified Delta State Ministry of Lands and Survey land/planning administration and a 2025 reform document describing planned digitized parcel maps. No public Ughelli parcel viewer or vector service was found.",
+        "actualResultUrls": [
+          "https://deltastate.gov.ng/wp-content/uploads/2024/12/Approved-Delta-State-BERAP-2025.pdf",
+          "https://deltastate.gov.ng/wp-content/uploads/2024/06/Delta-State-Internal-Revenue-Law-2020.pdf",
+          "https://deltastate.gov.ng/sabzz1/",
+          "https://osgof.gov.ng/"
+        ]
+      },
+      {
+        "language": "Urhobo (local/native language; no dedicated public cadastral result found)",
+        "query": "Ughelli Urhobo ilẹ cadastral map parcels Delta State Nigeria official",
+        "result": "No first-party Urhobo-language cadastral result was surfaced. English-language Delta State land/survey sources were the only official material located; this is recorded as a discovery limitation, not evidence of absence.",
+        "actualResultUrls": [
+          "https://deltastate.gov.ng/wp-content/uploads/2024/12/Approved-Delta-State-BERAP-2025.pdf",
+          "https://deltastate.gov.ng/wp-content/uploads/2024/06/Delta-State-Internal-Revenue-Law-2020.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "localCustodian": "Delta State Ministry of Lands and Survey is the evidenced state land/survey custodian; the official fee schedule expressly names Ughelli as a town covered by private-land planning/plot registration services. No separate Ughelli registry office or public map endpoint was established.",
+    "basis": "Official Delta State material names the Ministry of Lands and Survey, Ughelli, plan registration, plotting and site inspection. The 2025 BERAP document describes D'LARMS digitization and intended spatial parcel mapping, but does not expose a public parcel API.",
+    "urls": [
+      "https://deltastate.gov.ng/wp-content/uploads/2024/06/Delta-State-Internal-Revenue-Law-2020.pdf",
+      "https://deltastate.gov.ng/wp-content/uploads/2024/12/Approved-Delta-State-BERAP-2025.pdf"
+    ]
+  },
+  "requests": [
+    {"route":"https://deltastate.gov.ng/","method":"GET","status":200,"outcome":"Official Delta State site loaded; no public parcel geometry endpoint was identified from the returned site."},
+    {"route":"https://deltastate.gov.ng/sabzz1/","method":"GET","status":200,"outcome":"Official state services page loaded and described property-registration/land-administration process; no anonymous parcel geometry or map API was exposed."},
+    {"route":"https://osgof.gov.ng/","method":"GET","status":200,"outcome":"Federal Office of the Surveyor-General site loaded; general cadastral/survey mandate material, but no Ughelli-specific parcel service was identified."},
+    {"route":"https://www.mol.deltastate.gov.ng/","method":"GET","status":200,"outcome":"Host responded with a very small non-service response; no usable public viewer/API was established."},
+    {"route":"https://www.arcgis.com/sharing/rest/search?q=Ughelli%20(parcel%20OR%20cadastral%20OR%20cadastre)&f=json&num=100","method":"GET","status":200,"outcome":"ArcGIS Online search returned total 0; this does not exclude non-indexed or non-ArcGIS services."},
+    {"route":"https://www.arcgis.com/sharing/rest/search?q=Delta%20State%20Nigeria%20(parcel%20OR%20cadastral%20OR%20cadastre)&f=json&num=100","method":"GET","status":200,"outcome":"ArcGIS Online search returned total 0; no candidate public parcel layer was found."},
+    {"route":"https://overpass-api.de/api/interpreter","method":"POST","status":406,"outcome":"Bounded 0.004-degree WUP-centered OSM parcel-tag query was rejected with HTTP 406 before data; no absence inference was made."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel id if exposed", "full native polygon or multipolygon geometry", "service/layer metadata", "CRS metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": null,
+  "verifiedSample": {"count":0,"sampleFile":null,"result":"No public parcel geometry was retrieved; no GeoJSON sample retained."},
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {"claimedScope":"Delta State land/survey administration and planned D'LARMS digitization.","verifiedOpenScope":null,"citywideVerified":false,"countrywideVerified":false},
+  "runtimeReadiness":"held_pending_serial_review",
+  "serialReviewerQualification":"not qualified; no public parcel adapter or geometry was independently established",
+  "scopeLimits":["Exact WUP latitude/longitude [5.49760906296287, 6.00176173686475] preserved; no coordinate shift applied.","Official registry/procedure evidence is distinct from public parcel geometry and does not establish citywide coverage.","No owner, address, contact, titleholder, tax/account, personal, or unsafe fields were requested or retained.","No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, or credentialed service was used.","Zero ArcGIS search results and the HTTP 406 Overpass response do not establish citywide absence."],
+  "remainingUncertainty":"Delta State land/survey administration and Ughelli planning/plot services are officially evidenced, while an anonymous public parcel map/API, schema, CRS, native IDs, and citywide geometry coverage remain unverified. D'LARMS is described as a digitization/spatial-mapping initiative, not as a confirmed open endpoint."
+}

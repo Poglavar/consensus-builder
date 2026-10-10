@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-11148-chuzhou.json",
+  "cityCode": 11148,
+  "queueRank": 1790,
+  "city": "Chuzhou",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Chuzhou material establishes a local Natural Resources and Planning Bureau / Real Estate Registration Center custodian and online registration services, but bounded anonymous inspection found no public parcel ID-plus-polygon response, service schema, CRS, or citywide open parcel coverage. No GeoJSON sample is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Chinese discovery queries, exact text, outcomes and actual URLs are recorded in city-11148-chuzhou.json. They identified first-party local registration/custodian material and a Chuzhou government service document, but no public parcel feature API.",
+  "requestOutcomes": "The first-party Chuzhou government homepage was requested with TLS verification enabled and returned HTTP 403 Forbidden. The first-party Chuzhou government PDF URL was identified and exposed service/procedure information through search results, but not a parcel feature endpoint. The first-party Chuzhou Natural Resources and Planning Bureau-sourced article was available through the official municipal party portal and described online registration/system work, not anonymous geometry access. No login, credential, private token, CAPTCHA/Cloudflare bypass, unsafe lookup, formal property query, or TLS exception was used.",
+  "attemptedRoutes": [
+    {
+      "route": "Chuzhou government homepage",
+      "url": "https://chuzhou.gov.cn/",
+      "outcome": "TLS-default direct GET returned HTTP 403 Forbidden from nginx/CDN. No viewer JavaScript, configuration, map layer, schema, CRS, or parcel response was exposed. The access failure is not evidence of cadastral absence."
+    },
+    {
+      "route": "Chuzhou government 2021 Yangtze River Delta government-services PDF",
+      "url": "https://www.chuzhou.gov.cn/group1/M00/25/41/CpYI8mQ3sTSAJGWGAAYpIMGKTXw641.pdf",
+      "outcome": "Official document identified the municipal Natural Resources and Planning Bureau as responsible for real-estate registration certificate and registration-proof e-certificate services. It is procedure/service evidence, not a public parcel geometry endpoint."
+    },
+    {
+      "route": "Chuzhou local official article sourced from Natural Resources and Planning Bureau",
+      "url": "https://www.ahczszgw.gov.cn/szdt/qunzhonggongzuo/2021-08-24/54669.html",
+      "outcome": "First-party local portal article states that the Chuzhou Real Estate Registration Center advanced online no-face-to-face registration and demonstrated its registration system. No anonymous parcel layer, ID field, geometry route, or CRS was exposed."
+    }
+  ],
+  "scopeLimits": [
+    "Exact WUP point [32.3000076462296, 118.314694953165] was preserved in latitude/longitude order; no coordinate shift and no exact-point hit/miss inference was made.",
+    "Local custodian and registration-procedure evidence does not establish anonymous public parcel geometry access or complete citywide open coverage.",
+    "The HTTP 403 and absence of a discovered public endpoint are availability/discovery limits, not evidence of citywide cadastral absence.",
+    "No stable native parcel identity, source parcel field schema, CRS response, or full parcel polygon was obtained; no sample GeoJSON is retained.",
+    "No owner, address, titleholder, contact, personal, tax, account, registration-detail, credential, or private-token fields were requested or retained.",
+    "Packet completion records executed attempts only; it does not qualify or admit a runtime adapter. Independent serial review remains required."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate-reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel feature or service metadata response retrieved",
+  "geometryQuality": "not applicable; no parcel geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed against a usable parcel feature service; no hit/miss inference.",
+    "requestEvidence": [
+      "Official Chuzhou government homepage direct GET returned HTTP 403 Forbidden.",
+      "Official service/procedure material and local custodian article exposed no public parcel feature endpoint."
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Chuzhou municipal real-estate registration and natural-resources custodial system.",
+    "verifiedOpenScope": "Local custodian and registration-service documentation only; anonymous parcel feature retrieval was not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "uncertainty": "A restricted, account-gated, formal-request, or unpublished cadastral service may exist behind the Chuzhou registration workflow or other government infrastructure. The current public viewer/API route, layer schema, CRS, safe native parcel identity, anonymous runtime access, city boundary relationship and citywide completeness remain unresolved. No claim is made about parcel absence, ownership, title, legal status or completeness.",
+  "retainedSample": null
+}

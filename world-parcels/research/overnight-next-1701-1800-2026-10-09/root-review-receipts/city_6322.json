@@ -1,0 +1,16 @@
+{
+  "taskId": "city:6322",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-6322-ya-an.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ya-an-service-review.json"
+  ],
+  "reason": "WUP 6322 / rank 1750 / China / [29.9938059920299,103.000840912365] / 328287 persons matches the immutable queue. English and Chinese search queries and outcomes are recorded. Official Ya'an notice and Sichuan service listing independently identify the municipal registration center and current implementing bureau. A bureau timeout and department-page redirect loop are unresolved access results, not citywide absence. No anonymous safe native-ID/full-polygon response or sample exists; fresh ID, forced paging, 13 bounded cells, metric GEOS, source binding and headed Details gates are absent.",
+  "firstPartyUrls": [
+    "https://www.yaan.gov.cn/gongkai/show/20160920170851-873980-00-000.html",
+    "https://www.sczwfw.gov.cn/jiq/front/transition/ywTransToDetail?areaCode=511800000000&deptCode=1151160073340298X3&itemCode=511F0093300093-511800000000-000-12511600MB0M34526A-1-00&taskType=7"
+  ],
+  "checkedAt": "2026-10-10T14:18:09Z"
+}

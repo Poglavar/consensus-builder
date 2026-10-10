@@ -1,0 +1,13 @@
+{
+  "taskId": "city:11778",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-11778-jiashan.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/jiashan-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T15:53:50.408136Z",
+  "reason": "WUP 2025 identity, person population, and separate English/Chinese executed searches agree with the immutable queue. First-party Jiashan bureau material supports cadastral/registration custody, while anonymous official-site requests returned HTTP 403 and no parcel feature response or safe native ID. Runtime adapter and headed Details qualification are absent; access denial is not citywide absence."
+}

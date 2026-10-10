@@ -1,0 +1,15 @@
+{
+  "taskId": "city:8399",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-8399-oron.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/oron-service-review.json",
+    "tmp/valhalla-parcel-research/oron-8399/land-search.html",
+    "tmp/valhalla-parcel-research/oron-8399/_api_v1_services.out"
+  ],
+  "checkedAt": "2026-10-09T12:59:24.946274Z",
+  "reason": "AkwaGIS first-party page and service response support state land-registry custody and a validation/paid-detail workflow. No anonymous Oron polygon or native ID was retrieved and no adapter qualification exists. The claimed Oro query is largely English and includes a Yoruba word, so local-language search quality remains uncertain; no absence is inferred.",
+  "runtimeAdmission": "held; no registry/catalog/city-config or coverage change"
+}

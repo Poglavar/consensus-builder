@@ -1,0 +1,41 @@
+{
+  "cityRecord": "city-2224-holgu-n.json",
+  "schemaVersion": "1.0",
+  "cityCode": 2224,
+  "queueRank": 1840,
+  "city": "Holguín",
+  "country": "Cuba",
+  "countryCode": "CU",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": null,
+  "summary": "Cuba's cadastral custodian model and Holguín urban-cadastre work were evidenced, but no reachable first-party public parcel viewer/API returned a safe native ID plus full polygon. No sample GeoJSON is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Spanish discovery queries, exact text, outcomes, and actual URLs are recorded in city-2224-holgu-n.json.",
+  "requestOutcomes": "Bounded TLS-verified GET probes recorded DNS failure for the historic IPF URL, connection reset for the likely municipal domain, and HTTP 403 for a Gaceta PDF. A readable secondary archive reported Holguín urban-cadastre work but exposed no parcel endpoint.",
+  "attemptedRoutes": [
+    {"route": "Historic Instituto de Planificación Física catastro page", "url": "https://www.ipf.cu/es/catastro", "outcome": "DNS resolution failed."},
+    {"route": "Likely Holguín municipal portal", "url": "https://www.holguin.gob.cu", "outcome": "TLS connection reset; no page/config/API."},
+    {"route": "Official Gaceta PDF URL", "url": "https://www.gacetaoficial.gob.cu/sites/default/files/go_x_37_2015.pdf", "outcome": "HTTP 403 HTML response."},
+    {"route": "Holguín urban-cadastre report archive", "url": "https://ufdcimages.uflib.ufl.edu/UF/00/09/89/42/01054/04-10-2021.pdf", "outcome": "Readable report confirms municipal/provincial Planning Physics and Geocuba work; no public vector service."}
+  ],
+  "scopeLimits": [
+    "No exact-point hit/miss test was possible; unavailable service access is not treated as parcel absence.",
+    "Reported urban-cadastre creation work does not prove completion or citywide public coverage.",
+    "No stable native parcel ID, source field mapping, CRS, or full parcel polygon was obtained.",
+    "No unsafe personal, ownership, address, title, contact, tax, or account fields were requested or retained.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate-reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no parcel geometry retrieved",
+  "geometryRetention": {"sampleGeoJSON": null, "featureCount": 0, "reason": "No safe, verified native parcel geometry response was available."},
+  "coverageAssessment": {"claimedScope": "Cuba cadastral framework and Holguín urban-cadastre work", "verifiedOpenScope": "Custodian/workflow evidence only; no open parcel geometry", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Public availability, completion, native identity semantics, parcel schema, CRS, geometry route, and citywide coverage remain unresolved.",
+  "completionSummary": {"recordWritten": true, "serviceReviewWritten": true, "sampleGeoJSONWritten": false, "openParcelEndpointVerified": false, "adapterQualified": false}
+}

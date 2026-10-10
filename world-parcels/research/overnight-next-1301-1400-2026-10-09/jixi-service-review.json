@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10790-jixi.json",
+  "cityCode": 10790,
+  "purpose": "Document first-party discovery, current public service routes, bounded anonymous access review, and evidence limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Jixi government pages establish the Jixi Natural Resources and Planning Bureau and Jixi Real Estate Registration Center as local registration custodians and describe registration workflows. A bounded anonymous parcel response with safe ID and geometry was not obtained. No parcel sample is retained.",
+  "registryAssessment": "Local registry custody is evidenced by first-party Jixi government pages, so registryFound is true. This is not evidence of an open public parcel-vector service or adapter readiness.",
+  "safeFieldAllowlist": ["safe parcel identifier only if publicly exposed and non-personal", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "queries": [
+    {"language":"English","query":"Jixi China official cadastral map parcel GIS natural resources land registration Jixi","outcome":"First-party Jixi results identified local registration custody and procedures; no English public parcel endpoint found.","actualResultUrls":["https://www.jixi.gov.cn/jixi/c100076/202409/c06_306577.shtml","https://www.jixi.gov.cn/jixi/c100004/202404/c06_295129.shtml"]},
+    {"language":"Chinese","query":"鸡西市 不动产登记 地籍图 地图 自然资源局","outcome":"First-party Jixi results identified 鸡西市自然资源和规划局 and 鸡西市不动产登记中心 and described registration services; no anonymous parcel geometry endpoint found.","actualResultUrls":["https://jixi.gov.cn/jixi/c100076/202409/c06_306577.shtml","https://www.jixi.gov.cn/jixi/c100004/202404/c06_295129.shtml","https://www.jixi.gov.cn/jixi/c100004/202411/c06_315153.shtml"]}
+  ],
+  "attempts": [
+    {"url":"https://www.jixi.gov.cn/","method":"GET","httpStatus":"DNS resolution timeout","result":"No root page obtained from this client; no viewer/configuration obtained."},
+    {"url":"https://jixi.gov.cn/","method":"GET","httpStatus":"DNS resolution timeout","result":"No root page obtained from this client; no viewer/configuration obtained."},
+    {"url":"https://zrzyj.jixi.gov.cn/","method":"GET","httpStatus":"DNS failure","result":"Guessed local natural-resources host did not resolve; no viewer endpoint obtained."},
+    {"url":"https://map.tianditu.gov.cn/","method":"GET","httpStatus":418,"result":"Public Tianditu host returned CloudWAF anti-automation HTML; no cadastral schema/API requested or bypassed."},
+    {"url":"https://www.tianditu.gov.cn/","method":"GET","httpStatus":418,"result":"Public Tianditu host returned CloudWAF anti-automation HTML; no cadastral schema/API requested or bypassed."},
+    {"url":"https://www.webmap.cn/main.do?method=index1","method":"GET","httpStatus":502,"result":"National geographic-information catalog returned a gateway error; no parcel layer or schema obtained."},
+    {"url":"https://www.jixi.gov.cn/jixi/c100076/202409/c06_306577.shtml","method":"GET","httpStatus":200,"result":"Official Jixi registration guidance confirmed local bureau custody and procedure context; no public parcel endpoint exposed."},
+    {"url":"https://www.jixi.gov.cn/jixi/c100004/202404/c06_295129.shtml","method":"GET","httpStatus":200,"result":"Official report confirmed Jixi Real Estate Registration Center and service coverage; no parcel geometry exposed."},
+    {"url":"https://www.jixi.gov.cn/jixi/c100004/202411/c06_315153.shtml","method":"GET via first-party search/open","httpStatus":200,"result":"Official report described online one-window registration service; not an anonymous parcel-vector response."}
+  ],
+  "geometryEvidence": null,
+  "geometryDecision": {"verified":false,"sourceId":null,"nativeIdField":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"No exact-point parcel containment test was completed. The WUP point [45.3069435829134, 130.966231335848] was preserved exactly and not shifted; endpoint failures are not evidence of citywide absence."},
+  "remainingUncertainty":"The local viewer's current JavaScript/configuration, service endpoint, CRS, native parcel identity, exact-point parcel, and open coverage remain unverified. A serial reviewer would need an independently reachable public map/API route before considering adapter qualification.",
+  "runtimeAssessment":"held; serial reviewer must independently qualify any adapter"
+}

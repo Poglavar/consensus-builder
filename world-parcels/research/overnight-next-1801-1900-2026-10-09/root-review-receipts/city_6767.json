@@ -1,0 +1,23 @@
+{
+  "taskId": "city:6767",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-6767-xichang.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/xichang-service-review.json",
+    "tmp/valhalla-parcel-research/6767/sczw.html",
+    "tmp/valhalla-parcel-research/6767/DataStructConfig.js"
+  ],
+  "checkedAt": "2026-10-10T17:06:45.973285Z",
+  "reason": "Cached first-party Xichang government service page identifies the local Natural Resources Bureau; inspected public map configuration provides no verified native parcel ID plus polygon response. No adapter qualification or headed Details evidence exists; the failed alternate URL is not parcel absence.",
+  "identity": {
+    "cityCode": 6767,
+    "queueRank": 1862,
+    "populationPersons": 309170,
+    "verifiedAgainst": "ranked-population.json and pending-queue.json"
+  },
+  "retainedFullPolygons": 0,
+  "admissionGates": "Held; independent live adapter qualification and headed Details-panel verification are not evidenced."
+}

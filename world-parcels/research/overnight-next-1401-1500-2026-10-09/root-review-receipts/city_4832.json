@@ -1,0 +1,16 @@
+{
+  "taskId": "city:4832",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-4832-strasbourg.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/strasbourg-service-review.json",
+    "tmp/valhalla-parcel-research/strasbourg/metadata.json",
+    "tmp/valhalla-parcel-research/strasbourg/records.json",
+    "tmp/valhalla-parcel-research/strasbourg/point-query.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/strasbourg-parcel-sample.geojson"
+  ],
+  "checkedAt": "2026-10-09T16:30:05.503582Z",
+  "reviewNotes": "Three unchanged native-ID polygons match the first-party point response; no independent forced paging, 13-cell metric geometry checks, source binding, or headed Details verification."
+}

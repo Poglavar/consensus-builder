@@ -1,0 +1,18 @@
+{
+  "taskId": "city:9129",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-9129-rudrapur.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/rudrapur-service-review.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "tmp/valhalla-parcel-research/9129/config.json",
+    "tmp/valhalla-parcel-research/9129/service.json",
+    "tmp/valhalla-parcel-research/9129/layer21.json",
+    "tmp/valhalla-parcel-research/9129/point-query.json"
+  ],
+  "checkedAt": "2026-10-10T13:44:21Z",
+  "registryFound": true,
+  "reason": "The official Uttarakhand GIS web map and exact-point result are for administrative circle rates. The cached service layer list contains no cadastral parcel layer, and the point response has no native parcel ID or parcel geometry. Other Rudrapur parcel availability remains unresolved.",
+  "admission": "Held: no independently verified full native parcel polygon and ID; fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, and headed Details-panel verification are missing. No runtime, catalog, city configuration, or generated coverage admission."
+}

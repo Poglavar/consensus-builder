@@ -1,0 +1,33 @@
+{
+  "cityRecord": "city-11189-madhubani.json",
+  "cityCode": 11189,
+  "queueRank": 1625,
+  "city": "Madhubani",
+  "country": "India",
+  "countryCode": "IN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Bihar BhuNaksha and Madhubani district land-record sources establish a local/state cadastral-map service route. The current public viewer hierarchy and JavaScript were inspected, but no usable anonymous city-bounded parcel ID plus geometry response was obtained. No GeoJSON sample is retained and runtime remains held.",
+  "queryOutcomes": "Separate English and Hindi discovery queries are recorded in city-11189-madhubani.json, with actual first-party result URLs.",
+  "requestOutcomes": "BhuNaksha HTML, current configuration, Bihar level count, Madhubani/Sadar selection lists and a bounded circle village list were fetched anonymously. A bounded MapInfo extent probe returned no usable body; WMS GetCapabilities returned HTTP 500. The current JavaScript exposed REST selection endpoints and a WMS route but not a directly usable parcel-feature schema. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe lookup, or TLS exception was used.",
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no usable parcel geometry response",
+  "geometryQuality": "not evaluated; no parcel geometry retained",
+  "retainedSample": null,
+  "scopeLimits": [
+    "Exact WUP point [26.3483180392326, 86.0718523656917] was preserved in latitude/longitude order; it was not shifted and no exact-point presence/absence conclusion was drawn.",
+    "Bihar/state viewer hierarchy and district service pages do not prove complete Madhubani city parcel coverage.",
+    "A no-body extent response and WMS server error are not evidence of citywide absence.",
+    "No source-specific raw attribute set was retained, and no synthetic parcel identity was created.",
+    "No owner, address, titleholder, contact, personal, tax/account or other unsafe fields were requested or retained.",
+    "This packet is not source integration/admission; serial reviewer qualification remains pending."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current selected-sheet route, parcel layer schema, CRS, stable native identity and citywide coverage remain unresolved. Future work should continue through public viewer routes only and should retain at most three full polygons with exactly one canonical native identity per feature if a safe geometry response is independently verified."
+}

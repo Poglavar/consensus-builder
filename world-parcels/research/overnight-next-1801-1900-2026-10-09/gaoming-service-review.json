@@ -1,0 +1,32 @@
+{
+  "cityRecord": "city-11294-gaoming.json",
+  "cityCode": 11294,
+  "queueRank": 1884,
+  "name": "Gaoming",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "reviewOutcome": "held_no_verified_open_parcel_service",
+  "point": [22.8907762058845, 112.859967460881],
+  "scopeLimits": [
+    "Official local registry and map-viewing procedure evidence is not equivalent to anonymous citywide parcel geometry coverage.",
+    "The Foshan real-estate portal is registration/property-workflow oriented and direct requests returned HTTP 420 blacklist pages.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, or unsafe personal/property fields were used or requested.",
+    "No parcel sample GeoJSON is retained because no safe native-ID geometry response was verified.",
+    "The exact WUP point was not shifted and no exact-point or extent miss was used as absence evidence."
+  ],
+  "safeFieldAllowlist": ["stable native parcel ID if publicly returned", "geometry", "source URL", "CRS", "bounded retrieval metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax", "account", "rights-holder", "personal data"],
+  "queryAndRequestOutcome": "Separate English and Chinese first-party discovery queries were executed and recorded in the city record. Official local custodian and portal pages were identified. Direct GET checks to the Foshan surveying and real-estate portal hosts returned HTTP 420 blacklist pages; the Gaoming government information-request page returned HTTP 200. No public parcel schema, CRS, native ID, or geometry response was obtained.",
+  "uncertainty": "registryFound is true because local Gaoming/Foshan natural-resources custody and a registered-property map procedure are evidenced. It does not imply an open parcel API or citywide geometry access. Runtime readiness remains held pending independent serial qualification.",
+  "sampleGeoJSON": null,
+  "runtimeReadiness": "held",
+  "completionSummary": {
+    "packetComplete": true,
+    "geometryVerified": false,
+    "nativeIdentityVerified": false,
+    "runtimeQualified": false,
+    "followUpRequired": true
+  }
+}

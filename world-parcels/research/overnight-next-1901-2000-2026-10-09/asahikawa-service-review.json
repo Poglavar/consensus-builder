@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-759-asahikawa.json",
+  "purpose": "Document first-party Asahikawa registry/map discovery, archive schema inspection, and bounded anonymous geometry-access attempts.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official municipal reference-map publication and public GIS are evidenced. The 2025 archive was downloaded and its polygon schema inspected, but the bounded unchanged-WUP-point query returned zero features and the publisher disclaims authoritative boundary/legal use. No GeoJSON sample was retained.",
+  "registryAssessment": "Local municipal data custody is evidenced by the Asahikawa City Asset Tax Division download page and Asahikawa Digital Map. The Legal Affairs Bureau is separately evidenced as the registry-map custodian/procedure context. This is not source admission or runtime integration.",
+  "officialPrimarySources": [
+    {"url": "https://www.city.asahikawa.hokkaido.jp/kurashi/112/113/116/d080184.html", "observation": "Asahikawa City publishes 2025-01-01 地番参考図 and 路線価図 as GIS shapefile ZIP downloads; it warns that 地番参考図 is not a 公図 and does not prove boundary, exact position/shape, or rights."},
+    {"url": "https://www2.wagmap.jp/asahikawa-city/Portal", "observation": "Official Asahikawa Digital Map public GIS portal; the portal advertises 地番参考図 and 地籍調査成果 map updates."},
+    {"url": "https://www.city.asahikawa.hokkaido.jp/kurashi/401/407/p000539.html", "observation": "Official city explanation of 地籍調査, 地籍図/地籍簿, and forwarding completed results to the Legal Affairs Bureau."},
+    {"url": "https://houmukyoku.moj.go.jp/asahikawa/page000200.html", "observation": "Official Asahikawa Legal Affairs Bureau notice for current map-making projects in Asahikawa Kagura districts."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Asahikawa official cadastral map parcel land registry GIS Japan", "result": "Municipal reference-map download, public GIS, and Legal Affairs Bureau map-making pages found; no authoritative target parcel feature verified.", "resultUrls": ["https://www.city.asahikawa.hokkaido.jp/kurashi/112/113/116/d080184.html", "https://www2.wagmap.jp/asahikawa-city/Portal", "https://houmukyoku.moj.go.jp/asahikawa/page000200.html"]},
+    {"language": "Japanese", "query": "旭川市 公式 地籍図 GIS 筆界 地図 土地 登記", "result": "Official municipal 地番参考図/GIS and Legal Affairs Bureau map context found; no authoritative target parcel feature verified.", "resultUrls": ["https://www.city.asahikawa.hokkaido.jp/kurashi/112/113/116/d080184.html", "https://www.city.asahikawa.hokkaido.jp/kurashi/401/407/p000539.html", "https://houmukyoku.moj.go.jp/asahikawa/page000200.html"]}
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Tested unchanged [43.7753917441246, 142.382627947]. Longitude/latitude was transformed for a bounded query to apparent Hokkaido plane coordinates approximately [30801.60, -24882.58]; the polygon layer returned zero features. No absence inference is made.",
+    "requestEvidence": [
+      {"url": "https://www.city.asahikawa.hokkaido.jp/kurashi/112/113/116/d080184_d/fil/012041_tiban_2025.zip", "method": "GET", "httpStatus": "200/download completed", "result": "Official 2025-01-01 ZIP downloaded to ignored scratch; archive lists 012041_Tochi_Poly.shp/.shx/.dbf and related layers."},
+      {"url": "https://www.city.asahikawa.hokkaido.jp/kurashi/112/113/116/d080184_d/fil/012041_tiban_2025.zip::012041_Tochi_Poly", "method": "local schema inspection after official download", "httpStatus": "usable", "result": "Polygon layer, 312606 features, extent (-6698.6756,-43236.5068) to (35389.6353,-5736.4116), no declared SRS; safe public fields observed: LINKKEY, GROUPKEY, SKSCD, AZACD, TXTCD, GEOCD, CRYMD, UPDATEDATE, USRID, DFLG."},
+      {"url": "https://www.city.asahikawa.hokkaido.jp/kurashi/112/113/116/d080184_d/fil/012041_tiban_2025.zip::012041_Tochi_Poly", "method": "bounded spatial query", "httpStatus": "local response; 0 features", "result": "No feature returned around transformed WUP point. This is a bounded query result only, not a citywide absence finding."},
+      {"url": "https://www2.wagmap.jp/asahikawa-city/Portal", "method": "GET via first-party search/open", "httpStatus": "official page available", "result": "Public GIS portal confirmed; no anonymous parcel-vector API response was retained."}
+    ]
+  },
+  "fieldMapping": {"nativeIdentityCandidates": ["LINKKEY", "SKSCD", "AZACD", "TXTCD"], "geometryLayer": "012041_Tochi_Poly", "mappingNote": "Composite identity provenance remains metadata-only; no candidate was promoted to a retained sample identity."},
+  "crs": {"declared": null, "inspectionNote": "Shapefile archive had no .prj in the downloaded layer listing. Apparent coordinates were tested using the Hokkaido plane-coordinate convention only for bounded qualification, not asserted as authoritative source CRS."},
+  "coverageAssessment": {"claimedScope": "Official Asahikawa City 2025 reference parcel-number shapefile and public GIS.", "verifiedOpenScope": "Archive schema and municipal publication verified; target geometry and authoritative cadastral scope unverified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "safeFieldAllowlist": ["safe public native parcel/source ID if independently qualified", "geometry", "declared CRS", "non-sensitive layer/schema metadata"],
+  "remainingUncertainty": "The exact-point zero result may be caused by reference-layer coverage, CRS/datum uncertainty, or feature placement; it does not establish a map extent miss or citywide absence. No owners, addresses, contacts, titleholders, tax/account data, credentials, or private tokens were requested or retained."
+}

@@ -1,0 +1,45 @@
+{
+  "cityRecord": "city-424-plovdiv.json",
+  "cityCode": 424,
+  "queueRank": 1741,
+  "city": "Plovdiv",
+  "country": "Bulgaria",
+  "countryCode": "BG",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "custodians": [
+    {
+      "name": "Geodesy, Cartography and Cadastre Agency (AGKK)",
+      "role": "National cadastral authority; KAIS public cadastral viewer and services",
+      "evidence": "https://kais.cadastre.bg/en and https://www.cadastre.bg/en/service/790-provision-copy-cadastral-map-excluding-ownership-data-digital-form-magnetic-medium"
+    },
+    {
+      "name": "Plovdiv Municipality, Directorate of Spatial Planning and Cadastre",
+      "role": "Local municipal planning/cadastre custodian and KKКР change-procedure office",
+      "evidence": "https://www.plovdiv.bg/administration/directorates-and-departments/ustrplankadaster/"
+    }
+  ],
+  "service": {
+    "viewer": "https://kais.cadastre.bg/en/Map",
+    "discoveredPublicApi": "https://arcgis.cadastre.bg/arcgisnopki/rest/services/InternalKais/CmcrPublic/MapServer",
+    "viewerConfigurationEvidence": "Live KAIS map HTML names CmcrPublic as the cadastre URL and exposes BGS 2005/EPSG:7801, BGS 2005 UTM/EPSG:9391, WGS84 UTM 34N/EPSG:32634, and WGS84 UTM 35N/EPSG:32635.",
+    "nativeIdentityExpected": "Cadastral identifiers are the safe native parcel identity; no returned feature was available to verify the ArcGIS layer field name.",
+    "safeFieldAllowlist": ["stable native parcel identifier", "geometry", "CRS", "area if public and non-personal"],
+    "excludedFields": ["ownership", "owner names", "addresses", "contacts", "tax/account data", "titleholder data", "personal data"]
+  },
+  "attempts": [
+    {"route": "KAIS live map GET", "url": "https://kais.cadastre.bg/en/Map", "outcome": "HTTP 200; configuration and public service route inspected."},
+    {"route": "ArcGIS service metadata pjson", "url": "https://arcgis.cadastre.bg/arcgisnopki/rest/services/InternalKais/CmcrPublic/MapServer?f=pjson", "outcome": "HTTP 403 Request Rejected; WAF support ID recorded in scratch evidence."},
+    {"route": "ArcGIS service metadata json", "url": "https://arcgis.cadastre.bg/arcgisnopki/rest/services/InternalKais/CmcrPublic/MapServer?f=json", "outcome": "HTTP 403 Request Rejected."},
+    {"route": "Bounded anonymous query", "url": "https://arcgis.cadastre.bg/arcgisnopki/rest/services/InternalKais/CmcrPublic/MapServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=false&resultRecordCount=1&f=json", "outcome": "HTTP 403 Request Rejected; no ID-only record or geometry returned."}
+  ],
+  "geometrySample": null,
+  "scopeLimits": [
+    "A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is not evidence of citywide absence.",
+    "The 403 response is an access-path limitation, not evidence that Plovdiv lacks cadastral coverage.",
+    "No sample GeoJSON is written because no unchanged native polygon was safely retrieved.",
+    "Packet completion records all executed attempts; it does not claim source integration/admission."
+  ],
+  "runtimeReadiness": "held",
+  "uncertainty": "The public viewer exposes a first-party ArcGIS route, but anonymous REST access is currently blocked by the host WAF, so layer schema, CRS response metadata, and parcel geometry remain independently unqualified."
+}

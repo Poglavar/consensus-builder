@@ -1,0 +1,23 @@
+{
+  "taskId": "city:5743",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-5743-albuquerque.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/albuquerque-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-09T15:24:25.939560Z",
+  "reason": "The official City GIS page independently confirms published parcel boundaries, but the parcel archive and REST feature read did not complete in the worker attempt. No native ID, full polygon, or adapter qualification is evidenced.",
+  "searchCheck": "English and Spanish-worded queries are recorded; the latter is mislabeled English (United States local usage) in both worker files. A Spanish-worded search was rerun during root review.",
+  "identityCheck": "Exact WUP city code, rank, country, point, and 2025 population persons match both immutable roster and pending queue.",
+  "geometryCheck": "Zero full polygons retained in the paired files; no safe native parcel ID plus full source polygon demonstrated.",
+  "missingAdmissionGates": [
+    "fresh native-ID reads",
+    "forced paging",
+    "13 bounded cells",
+    "metric GEOS validity and overlap checks",
+    "source binding",
+    "headed details-panel verification"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "taskId": "city:5992",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-5992-utsunomiya.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/utsunomiya-service-review.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/utsunomiya-parcel-samples.geojson"
+  ],
+  "reviewNote": "2025 UN source and queue identity agree: rank 1622, Japan, point [36.5514923896268,139.885051050438], 352816 persons. English and Japanese searches are recorded. Official city ZIP 01_01 (SHA-256 1fe0df5bfb53f9c44b9b7793762ef1381078f42f18706bf349d9c3e657050b5d) was opened: each of three retained full polygons matches one native BUKKEN_NO feature exactly after reprojection, is GEOS valid, and the three do not overlap. Only safe id properties are retained. Current first-party catalog lists seven parcel ZIP splits (01 through 07), while the worker packet says six; inventory and citywide completeness need correction/qualification. The tax-reference warning is a disclosure, not itself a geometry eligibility gate. Fresh ID reads, forced paging, 13 bounded cells, complete metric operation checks, source binding, and headed Details verification are not evidenced; no admission.",
+  "checkedAt": "2026-10-10T11:17:27Z",
+  "runtimeAdmission": "held; independent live adapter qualification not evidenced"
+}

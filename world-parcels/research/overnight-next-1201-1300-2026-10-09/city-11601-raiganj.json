@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:11601",
+  "wupCityCode": 11601,
+  "queueRank": 1221,
+  "rank": 1221,
+  "name": "Raiganj",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [25.6229296944296, 88.137637673296],
+  "centerLatLon": [25.6229296944296, 88.137637673296],
+  "pointBasis": "Immutable pending-queue WUP 2025 City_Code 11601 coordinate, copied without adjustment.",
+  "population2025": 456239,
+  "population2025k": 456.239,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "status": "complete",
+  "resultCategory": "official_local_registry_found_no_anonymous_vector_response",
+  "registryFound": true,
+  "registryBasis": "The official Uttar Dinajpur district land-records page directs users to Banglarbhumi, and the official District Land & Land Reforms Office identifies the Raiganj office and links Banglarbhumi as the district RoR service. These are local/state cadastral custodians, not merely general national-agency prose.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_pending_serial_review",
+  "blocker": "Banglarbhumi and its Home.action service routes timed out for anonymous GET requests from this environment. No current JavaScript/configuration, schema/CRS, safe parcel ID, or polygon response could be verified. This is an access limitation, not evidence of citywide absence.",
+  "source": {
+    "sourceId": null,
+    "name": "Banglarbhumi / Land and Land Reforms and Refugee Relief and Rehabilitation Department, Government of West Bengal",
+    "url": "https://banglarbhumi.gov.in/",
+    "operator": "Government of West Bengal, Land and Land Reforms and Refugee Relief and Rehabilitation Department; local custodian evidenced by Uttar Dinajpur District Administration and District Land & Land Reforms Office",
+    "serviceType": "Official West Bengal land-records and plot/mouza-map portal",
+    "layer": null,
+    "geometryType": null,
+    "nativeIdField": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_reached",
+    "operatorNote": "Only public service links, page metadata, and HTTP outcomes were retained. No owner, address, titleholder, tax, account, contact, or other unsafe fields were requested or retained.",
+    "outputCrs": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Official Uttar Dinajpur district land-record entry points and the West Bengal Banglarbhumi portal, with Raiganj local office evidence.",
+    "verifiedOpenScope": "Official local/state service custody and service links only; no live anonymous parcel response.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Raiganj Uttar Dinajpur official cadastral map land records GIS Banglarbhumi",
+        "result": "Found the official Uttar Dinajpur district Land Records page, the West Bengal Banglarbhumi portal, and the official District Land & Land Reforms Office portal. The district page directs land/plot information to Banglarbhumi; the district office identifies Raiganj and links Banglarbhumi as its RoR service.",
+        "actualResultUrls": [
+          "https://uttardinajpur.gov.in/service/land-records/",
+          "https://banglarbhumi.gov.in/",
+          "https://www.dllroud.in/departments"
+        ]
+      },
+      {
+        "language": "Bengali",
+        "query": "রায়গঞ্জ উত্তর দিনাজপুর সরকারি ভূমি মানচিত্র খতিয়ান বাংলা ভূমি",
+        "result": "Found the official Bengali Uttar Dinajpur land-record page, which directs land information to Banglarbhumi; the Bengali page names the Uttar Dinajpur BL&LRO office. No parcel geometry was obtained.",
+        "actualResultUrls": [
+          "https://uttardinajpur.gov.in/bn/service/%E0%A6%9C%E0%A6%AE%E0%A6%BF%E0%A6%B0-%E0%A6%B0%E0%A7%87%E0%A6%95%E0%A6%B0%E0%A7%8D%E%E0%A6%A1/",
+          "https://banglarbhumi.gov.in/"
+        ]
+      }
+    ],
+    "portals": [
+      {"url": "https://uttardinajpur.gov.in/service/land-records/", "operator": "District Administration, Uttar Dinajpur, Government of West Bengal", "scope": "Official district land-record page; directs users to Banglarbhumi and identifies the BL&LRO office."},
+      {"url": "https://uttardinajpur.gov.in/bn/service/%E0%A6%9C%E0%A6%AE%E0%A6%BF%E0%A6%B0-%E0%A6%B0%E0%A7%87%E0%A6%95%E0%A6%B0%E0%A7%8D%E0%A6%A1/", "operator": "District Administration, Uttar Dinajpur, Government of West Bengal", "scope": "Official Bengali counterpart of the district land-record entry point."},
+      {"url": "https://www.dllroud.in/departments", "operator": "District Land & Land Reforms Office, Uttar Dinajpur, Government of West Bengal", "scope": "Official district land-reforms office; identifies the Raiganj office and links Banglarbhumi (RoR), plus public mouza-map application forms."},
+      {"url": "https://banglarbhumi.gov.in/", "operator": "Government of West Bengal, Land and Land Reforms and Refugee Relief and Rehabilitation Department", "scope": "Official state land-record and plot/mouza-map service; live portal was not reachable from this environment during this attempt."}
+    ],
+    "requests": [
+      {"url": "https://uttardinajpur.gov.in/service/land-records/", "method": "GET; anonymous public page", "httpStatus": 200, "contentType": "text/html", "assessment": "Loaded; official page links to Banglarbhumi and identifies the Uttar Dinajpur BL&LRO office."},
+      {"url": "https://uttardinajpur.gov.in/bn/service/%E0%A6%9C%E0%A6%AE%E0%A6%BF%E0%A6%B0-%E0%A6%B0%E0%A7%87%E0%A6%95%E0%A6%B0%E0%A7%8D%E0%A6%A1/", "method": "GET; anonymous public page", "httpStatus": 200, "contentType": "text/html", "assessment": "Loaded; Bengali official page links to Banglarbhumi."},
+      {"url": "https://www.dllroud.in/departments", "method": "GET; anonymous public page", "httpStatus": 200, "contentType": "text/html", "assessment": "Loaded; identifies District Land & Land Reforms Office, Raiganj, and links Banglarbhumi (RoR) and mouza-map application forms."},
+      {"url": "https://banglarbhumi.gov.in/", "method": "GET; anonymous public portal", "httpStatus": null, "contentType": null, "assessment": "Timed out after 30 seconds; no HTML/JavaScript/configuration received."},
+      {"url": "https://banglarbhumi.gov.in/BanglarBhumi/Home.action", "method": "GET; anonymous public service route", "httpStatus": null, "contentType": null, "assessment": "Timed out after 12 seconds; no service response received."},
+      {"url": "https://banglarbhumi.gov.in/BanglarBhumi/", "method": "GET; anonymous public service route", "httpStatus": null, "contentType": null, "assessment": "Timed out after 12 seconds; no service response received."}
+    ],
+    "schemaCrs": {"nativeCrs": null, "geometryResponseSchema": "Not verified because the official portal timed out before HTML/JavaScript/configuration could be inspected", "viewerLayers": []}
+  },
+  "remainingUncertainty": "Whether Banglarbhumi exposes a public vector or map-download endpoint, its native CRS and safe parcel identifier fields, and whether Raiganj urban coverage is complete remain unknown. A timeout, login/captcha possibility, or unavailable UI is not evidence of citywide absence. The exact WUP point was preserved and not shifted or used as a parcel-hit test.",
+  "registryEvidenceUrls": ["https://uttardinajpur.gov.in/service/land-records/", "https://uttardinajpur.gov.in/bn/service/%E0%A6%9C%E0%A6%AE%E0%A6%BF%E0%A6%B0-%E0%A6%B0%E0%A7%87%E0%A6%95%E0%A6%B0%E0%A7%8D%E0%A6%A1/", "https://www.dllroud.in/departments", "https://banglarbhumi.gov.in/"],
+  "checkedAt": "2026-10-09",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "sourceIds": [],
+  "adapterReady": false,
+  "nextStep": "Independent serial review should retry Banglarbhumi from an available network and inspect its current public JavaScript/configuration and safe geometry response, if any. Keep runtime held until a real public parcel geometry response is independently qualified.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

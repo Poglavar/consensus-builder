@@ -1,0 +1,12 @@
+{
+  "taskId": "city:6562",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-6562-al-roda.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/al-roda-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T17:27:15Z",
+  "reason": "Al Roda identity matches queue and ranked WUP roster at rank 1469, Egypt, point [31.3310644881072,31.7251647525109], 387432 persons. English and Arabic searches are recorded. Original ESA Egypt map HTML at tmp/valhalla-parcel-research/6562/esa-egyptmap.html is an ASP.NET form with Google Maps scripts, not a parcel response. No full polygons or safe native IDs; fresh ID reads, forced paging, 13 cells, metric GEOS checks, source binding, and headed Details verification are absent. Registry custody remains unresolved (null); no admission."
+}

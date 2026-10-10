@@ -1,0 +1,17 @@
+{
+  "taskId": "city:3287",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-3287-florence.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/florence-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T13:23:24.218931Z",
+  "identityReview": "Immutable roster, pending queue, and paired packet agree on code 3287, rank 1298, Florence, Italy, exact latitude/longitude point, and population 430806 persons.",
+  "searchReview": "Paired packet and review record executed and documented English and Italian searches with result URLs.",
+  "sourceReview": "Live Comune di Firenze SIGS HTML returned HTTP 200 and contains layer catasto:Cat_ParticelleCatastali_CatastoTerreni and configured FOGLIO/PARTICELLA display fields. Municipal public map custody is supported; the failed proxy calls do not establish a usable vector response or stable native identity.",
+  "sampleReview": "Zero full source polygons retained in the paired files; no unsafe parcel attributes observed.",
+  "admissionReview": "No native polygon or ID. Viewer metadata and WMS proxy attempts do not qualify an adapter. Fresh native-ID reads, forced paging, thirteen bounded cells, independent metric GEOS validity/duplicate/overlap/operation checks, full-parcel source binding, and headed Details-panel verification are absent. Leave runtime/catalog/report state unchanged; no citywide absence is inferred."
+}

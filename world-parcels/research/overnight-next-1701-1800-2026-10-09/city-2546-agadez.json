@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 2546,
+  "queueRank": 1712,
+  "cityId": "wup2025:2546",
+  "name": "Agadez",
+  "country": "Niger",
+  "countryCode": "NE",
+  "point": [16.9719711649632, 7.98664027506147],
+  "centerLatLon": [16.9719711649632, 7.98664027506147],
+  "population2025": 335322,
+  "population2025k": 335.322,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Agadez Niger cadastral parcels GIS land registry official",
+        "result": "Search found no public Agadez parcel feature service. Relevant first-party leads were the Niger Finance/Tax authority notice on the regional conservation office, the Niger national geographic institute cartography pages, and a 2025 official Agadez project report referring to a municipal cadastral plan.",
+        "actualResultUrls": [
+          "https://www.arse.gouv.ne/index.php/communiques-de-presse/657-communique-relatif-a-l-ouverture-de-bureaux-de-la-conservation-fonciere-et-des-hypotheques-a-maradi-tahoua-et-zinder",
+          "https://ignniger.org/service-cartographie.html",
+          "https://www.bnee.ne/wp-content/uploads/2025/10/REIES-LPA-AGADEZ-version-clean-du-02102025-Ahmed-II-.pdf"
+        ]
+      },
+      {
+        "language": "French (official/local working language)",
+        "query": "Agadez Niger cadastre parcelles SIG registre foncier site officiel",
+        "result": "Search found official evidence of a regional land-registration custodian serving Agadez and references to an Agadez municipal cadastral plan, but no anonymous parcel map/API, schema, CRS response, or geometry download.",
+        "actualResultUrls": [
+          "https://www.arse.gouv.ne/index.php/communiques-de-presse/657-communique-relatif-a-l-ouverture-de-bureaux-de-la-conservation-fonciere-et-des-hypotheques-a-maradi-tahoua-et-zinder",
+          "https://ignniger.org/produits-a-lign-n.html",
+          "https://www.bnee.ne/wp-content/uploads/2025/10/REIES-LPA-AGADEZ-version-clean-du-02102025-Ahmed-II-.pdf"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.arse.gouv.ne/index.php/communiques-de-presse/657-communique-relatif-a-l-ouverture-de-bureaux-de-la-conservation-fonciere-et-des-hypotheques-a-maradi-tahoua-et-zinder",
+      "operator": "Niger Ministry of Finance / Direction Générale des Impôts; regional conservation foncière custodian",
+      "observation": "The notice says the Tahoua office's territorial jurisdiction extends to Agadez and handles urban and rural title issuance, property transfers, mortgage registrations, boundary expertise and land-publicity information. This evidences a relevant registry custodian, not an open geometry service."
+    },
+    {
+      "url": "https://ignniger.org/service-cartographie.html",
+      "operator": "Institut Géographique National du Niger (IGNN)",
+      "observation": "IGNN describes national geographic-data infrastructure and a geoportal concept; the public page exposes no current anonymous cadastral endpoint or parcel schema."
+    },
+    {
+      "url": "https://www.bnee.ne/wp-content/uploads/2025/10/REIES-LPA-AGADEZ-version-clean-du-02102025-Ahmed-II-.pdf",
+      "operator": "Niger environmental assessment authority / project document",
+      "observation": "The Agadez project report refers to a cadastral plan of the Commune urbaine d'Agadez for a new subdivision, but provides no machine-readable parcel layer or safe native parcel identifiers."
+    },
+    {
+      "url": "https://whc.unesco.org/document/152220",
+      "operator": "UNESCO/ICOMOS reference document",
+      "observation": "The historic-centre assessment states that no cadastre existed in Agadez at the time of that assessment and describes customary property procedures. This is historical, limited to the assessed context, and not evidence of citywide present-day absence."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.arse.gouv.ne/index.php/communiques-de-presse/657-communique-relatif-a-l-ouverture-de-bureaux-de-la-conservation-fonciere-et-des-hypotheques-a-maradi-tahoua-et-zinder",
+      "method": "GET via first-party page inspection",
+      "status": "HTTP page found",
+      "summary": "Official notice read; confirms Agadez jurisdiction and registry procedures. No parcel download or viewer link advertised."
+    },
+    {
+      "url": "https://ignniger.org/service-cartographie.html",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official cartography service page read. It describes geographic databases and a geoportal concept; no current public parcel/API route was exposed."
+    },
+    {
+      "url": "https://ignniger.org/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official IGNN homepage fetched and linked assets inspected; no public cadastral viewer or service URL was identified."
+    },
+    {
+      "url": "https://www.bnee.ne/wp-content/uploads/2025/10/REIES-LPA-AGADEZ-version-clean-du-02102025-Ahmed-II-.pdf",
+      "method": "GET via first-party indexed document",
+      "status": "document found",
+      "summary": "Report text confirms a municipal cadastral-plan reference for a new Agadez subdivision; no parcel geometry endpoint or safe parcel ID response."
+    },
+    {
+      "url": "https://whc.unesco.org/document/152220",
+      "method": "GET via indexed document",
+      "status": "document found",
+      "summary": "Historical contextual evidence only; not queried for owner, address, titleholder or other unsafe fields."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Regional land-registration jurisdiction covers Agadez; IGNN describes national geographic-data infrastructure; a municipal cadastral plan is referenced for a specific subdivision.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "citywideParcelCoverageVerified": false
+  },
+  "qualityAssessment": {
+    "geometryQuality": "not sampled",
+    "identityReadiness": "not ready; no parcel feature response or native parcel identity was retrieved",
+    "attributesRequested": "none beyond public service/schema discovery; no owner, address, contact, titleholder, tax or account fields requested",
+    "safeFieldAllowlist": ["native parcel identifier if publicly exposed", "geometry", "source layer name", "CRS", "service metadata"]
+  },
+  "sourceFields": null,
+  "crs": null,
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_registry_custodian_documented_no_open_geometry",
+  "blocker": "No anonymous first-party parcel viewer, API, schema response, CRS response, or geometry-only extract was verified after bounded English and French discovery.",
+  "remainingUncertainty": "A municipal cadastral plan and regional title/land-publicity services may exist offline or behind a request procedure. Search failure, historical UNESCO wording, and lack of an exact-point hit do not establish citywide absence.",
+  "nextStep": "On a later attempt, locate a documented public Agadez municipal or Niger land-information viewer/API, inspect its current JavaScript/configuration, and request only a small geometry-plus-native-ID bbox around the WUP point before considering adapter qualification.",
+  "registryBasis": "The official Niger Finance/Tax notice explicitly extends the Tahoua Conservation Foncière office's jurisdiction to Agadez and lists urban/rural title and boundary services.",
+  "registryEvidenceUrls": [
+    "https://www.arse.gouv.ne/index.php/communiques-de-presse/657-communique-relatif-a-l-ouverture-de-bureaux-de-la-conservation-fonciere-et-des-hypotheques-a-maradi-tahoua-et-zinder"
+  ],
+  "identityPolicy": "No GeoJSON retained because no safe native parcel identity and geometry response was verified."
+}

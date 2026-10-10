@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2116-sumgayit.json",
+  "cityCode": 2116,
+  "purpose": "Document first-party discovery, official map/cadastre evidence, and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official ƏMDX interactive map and TEKUIS materials are relevant first-party sources. A first-party Azerbaijani publication explicitly reports a detailed electronic real-estate cadastral database and digital cadastral map for Sumgayit. Direct anonymous retrieval of the live map host timed out, so its current JavaScript/configuration, service endpoint, schema, CRS and parcel response could not be inspected. No parcel polygon or source-specific attribute set was retained.",
+  "registryAssessment": "Local/public-service evidence is present through the State Property Service interactive map, Sumgayit-specific cadastral project evidence and the listed Sumgayit territorial office. This establishes a local cadastral-map custodian context, not a verified open parcel API or complete citywide public dataset.",
+  "safeFieldAllowlist": ["safe parcel/plot identifier if exposed", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "queries": [
+    {
+      "language": "English",
+      "query": "Sumgayit Azerbaijan official cadastral parcel map land registry GIS",
+      "outcome": "Official ƏMDX interactive map, TEKUIS page, DƏDKR services and ARXKOM interactive-map sources found; Sumgayit-specific cadastral database/map evidence found.",
+      "actualResultUrls": ["https://emlak.gov.az/mapmodule", "https://emlak.gov.az/az/page/view/32", "https://www.dedkr.gov.az/en/services", "https://www.arxkom.gov.az/en/sehersalma/interaktiv-xerite"]
+    },
+    {
+      "language": "Azerbaijani",
+      "query": "Sumqayıt Azərbaycan rəsmi kadastr xəritəsi torpaq xəritəsi daşınmaz əmlak",
+      "outcome": "Official ƏMDX interactive map and Azerbaijani TEKUIS/project pages found; first-party publication explicitly states that Sumqayıt has a detailed electronic cadastral database and digital cadastral maps; Sumgayit territorial office found.",
+      "actualResultUrls": ["https://emlak.gov.az/mapmodule", "https://kitkm.gov.az/az/news/view/161", "https://emlak.gov.az/az/page/view/32", "https://www.emlak.gov.az/az/page/view/218"]
+    }
+  ],
+  "attempts": [
+    {"url": "https://emlak.gov.az/mapmodule", "method": "GET", "httpStatus": "timeout", "result": "Direct curl request timed out after 30 seconds; no live HTML/JavaScript/configuration or public API route could be inspected."},
+    {"url": "https://emlak.gov.az/mapmodule", "method": "GET", "httpStatus": 200, "result": "Search/open index exposed the official public viewer title and provenance, but not its client configuration or parcel response."},
+    {"url": "https://kitkm.gov.az/az/news/view/161", "method": "GET/search-open", "httpStatus": 200, "result": "Official Azerbaijani publication states that detailed electronic cadastral databases and digital cadastral maps were created for Sumgayit; retained only as metadata evidence."},
+    {"url": "https://emlak.gov.az/az/page/view/32", "method": "GET/search-open", "httpStatus": 200, "result": "Official TEKUIS scope page reviewed; no anonymous parcel geometry or stable parcel identity obtained."},
+    {"url": "https://www.emlak.gov.az/az/page/view/218", "method": "GET/search-open", "httpStatus": 200, "result": "Official directory lists the Sumgayit territorial office; custodian evidence only."},
+    {"url": "https://www.dedkr.gov.az/en/services", "method": "GET/search-open", "httpStatus": 200, "result": "Official services page reviewed; it lists cadastral/land-plan and registry-information services, but owner/address/titleholder fields were not requested and no parcel geometry was obtained."}
+  ],
+  "geometryEvidence": null,
+  "geometryDecision": {"verified": false, "sourceId": null, "nativeIdField": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "No exact-point parcel containment test was completed because the live official map retrieval timed out before its public service route could be inspected. The WUP point was not shifted; this is not evidence of citywide absence."},
+  "remainingUncertainty": "The current viewer's JavaScript/API configuration, CRS, stable public parcel identifier, exact WUP-point parcel, anonymous parcel geometry and citywide public coverage remain unverified. The official project evidence may represent a database/map that is not openly queryable or may require interactive/session context.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter"
+}

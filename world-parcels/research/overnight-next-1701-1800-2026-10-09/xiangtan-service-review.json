@@ -1,0 +1,74 @@
+{
+  "cityRecord": "city-10646-xiangtan.json",
+  "schemaVersion": "1.0",
+  "cityCode": 10646,
+  "queueRank": 1757,
+  "city": "Xiangtan",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "A local Xiangtan property-registration custodian and public land-resource platforms are evidenced by official Hunan government sources, but no anonymous parcel ID plus full polygon geometry was verified. No GeoJSON sample is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Chinese discovery queries, exact text and actual result URLs are recorded in city-10646-xiangtan.json.",
+  "requestOutcomes": "Official Hunan pages were read successfully and the Hunan natural-resource platform link was attempted anonymously. The platform request timed out after 20 seconds. No public cadastral schema, CRS, safe native ID, or geometry response was obtained.",
+  "attemptedRoutes": [
+    {
+      "route": "official Hunan report on Xiangtan property-registration QR service",
+      "url": "https://zrzyt.hunan.gov.cn/xxgk/gzdt/sxxx/202310/t20231008_31619536.html",
+      "outcome": "HTTP page readable; describes Xiangtan urban parcel-map access but exposes no anonymous vector route."
+    },
+    {
+      "route": "official Hunan report on Xiangtan Land Supermarket",
+      "url": "https://zrzyt.hunan.gov.cn/xxgk/gzdt/sxxx/202402/t20240208_32848464.html",
+      "outcome": "HTTP page readable; identifies municipal Natural Resources and Planning Bureau platform and map-based land presentation, but no parcel API/schema."
+    },
+    {
+      "route": "Hunan natural-resource public platform linked as 全要素市场",
+      "url": "https://gxpt.zrzyt.hunan.gov.cn/",
+      "outcome": "Anonymous GET timed out after 20 seconds; no certificate exception or access-control bypass attempted."
+    },
+    {
+      "route": "Hunan government service catalogue",
+      "url": "https://zwfw-new.hunan.gov.cn/onething/service/hnservicepowerinfo.jsp?areacode=430301000000&business_activity_classificati=&charName=&life_event=&main=1&make_transaction=&minSeq=&orgId=&pager.desc=true&pager.offset=690&themesType=&transact_level=&type=xndtgr&typeIds=&typeid=&word=",
+      "outcome": "Catalogue readable and lists Xiangtan Natural Resources and Planning Bureau registration services; no geometry response."
+    }
+  ],
+  "scopeLimits": [
+    "Exact WUP point [27.8438177084215, 112.941008896496] was preserved; no exact-point hit/miss inference was made.",
+    "No city boundary or complete city coverage was established for an open geometry service.",
+    "No parcel geometry, stable native parcel identity, source schema or CRS was retrieved or retained.",
+    "Registry/service evidence does not establish an open vector parcel API or runtime adapter.",
+    "A timeout, inaccessible viewer, absent public endpoint or zero exact-point hit is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account or personal fields were requested or retained.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public geometry query reached; no hit/miss inference.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Xiangtan municipal property-registration service and Hunan natural-resource transaction/map platform.",
+    "verifiedOpenScope": "Institutional/service descriptions only.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Current public platform route, access controls, cadastral layer schema, CRS, stable native parcel identity and citywide coverage remain unresolved. No claim is made about parcel absence, legal title, ownership or completeness.",
+  "retainedSample": null
+}

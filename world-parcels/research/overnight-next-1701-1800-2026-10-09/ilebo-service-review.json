@@ -1,0 +1,32 @@
+{
+  "cityRecord": "city-3611-ilebo.json",
+  "cityCode": 3611,
+  "queueRank": 1791,
+  "city": "Ilebo",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "runtimeReadiness": "held",
+  "summary": "The official RDC Ministry of Land Affairs and public-service catalogue evidence a national cadastral/register custodian and formal research procedure. No anonymous Ilebo parcel geometry or stable parcel ID endpoint was verified, so no sample GeoJSON was retained.",
+  "queryOutcomes": "English and French discovery queries, actual result URLs, and outcomes are recorded verbatim in city-3611-ilebo.json under freshResearch. No separate local Ilebo service was found.",
+  "requestOutcomes": "All executed first-party and bounded public checks are recorded in city-3611-ilebo.json under requestOutcomes. The official form endpoint returned 405 to GET; its POST was not attempted because it requires identity/documents and would create a real request.",
+  "scopeLimits": [
+    "National Ministry evidence is not evidence of a citywide Ilebo open parcel layer.",
+    "The service catalogue describes register consultation through local officials but does not expose parcel geometry.",
+    "No owner, address, titleholder, contact, personal, tax/account, or other unsafe fields were requested or retained.",
+    "No exact-point hit, extent miss, timeout, login wall, or unavailable UI was treated as citywide absence.",
+    "No sample was retained because no safe native parcel identity and full polygon response was verified.",
+    "Packet completion is not source integration/admission; serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": ["native parcel identifier", "full parcel polygon geometry", "source layer metadata", "CRS"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryRetention": {"sampleGeoJSON": null, "featureCount": 0, "reason": "No safe, verified native parcel geometry response was available."},
+  "uncertainty": "Local Ilebo custodian, open parcel coverage, native identity, schema, CRS, geometry API behavior, and completeness remain unverified.",
+  "qualificationDecision": "hold",
+  "completionSummary": {"recordWritten": true, "serviceReviewWritten": true, "sampleGeoJSONWritten": false, "openParcelEndpointVerified": false, "adapterQualified": false}
+}

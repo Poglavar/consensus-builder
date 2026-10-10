@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-5796-stavropol.json",
+  "purpose": "Document first-party registry/map discovery, current viewer evidence, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Official municipal and regional sources evidence cadastral custody and procedure. The current national public-map route is NSPD, but no anonymous safe parcel-ID-plus-complete-polygon response was obtained.",
+  "registryAssessment": "Stavropol's official municipal regulation documents approval of land-plot schemes on the cadastral plan. The official Rosreestr Stavropol Krai territorial-office source establishes regional cadastral custody. NSPD is treated as a public national map channel, not proof of citywide geometry availability.",
+  "officialPrimarySources": [
+    {"url": "https://www.stavropol-gov.ru/doc/52829", "observation": "Municipal regulation describes the Stavropol service for approving a land-plot scheme on the cadastral plan and references the city administration's official service publication path."},
+    {"url": "https://rosreestr.gov.ru/about/struct/territorialnye-organy/upravlenie-rosreestra-po-stavropolskomu-krayu/", "observation": "Official Rosreestr regional territorial-office source for Stavropol Krai; regional cadastral-registration custody, not an open parcel feature feed."},
+    {"url": "https://nspd.gov.ru/", "observation": "Current first-party national spatial-data platform route identified by Rosreestr public announcement as hosting the public cadastral map."}
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://nspd.gov.ru/",
+    "observedTechnology": "Current NSPD public cadastral-map route was identified from first-party Rosreestr discovery; viewer JavaScript/configuration was not retrieved in this environment.",
+    "observedControls": [],
+    "schemaAndCrs": "Not verified from a successful service response.",
+    "nativeFieldNames": "Not retained; no successful feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://nspd.gov.ru/", "method": "GET", "normalTlsVerification": true, "result": "Bounded direct request timed out after 20 seconds; no HTML, JavaScript configuration, API route, or layer response was retrieved."},
+    {"url": "https://rosreestr.gov.ru/", "method": "GET", "normalTlsVerification": true, "result": "Bounded direct request timed out after 10 seconds; no service configuration was retrieved."},
+    {"url": "https://ставрополь.рф/", "method": "GET", "normalTlsVerification": true, "result": "Request failed certificate verification; no TLS exception was authorized or used, and no response body was retained."},
+    {"url": "https://stavropol.ru/", "method": "GET", "normalTlsVerification": true, "result": "Host resolution failed; no response was retrieved."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "query": "No WUP-point parcel query was submitted because the public service route and safe request shape were not verified."},
+  "coverageAssessment": {"claimedScope": "Municipal Stavropol cadastral-plan procedure and Rosreestr regional custody; NSPD national public map.", "verifiedOpenScope": "No anonymous complete-polygon feature response verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "Exact viewer configuration, layer schema, CRS, native parcel identity, anonymous query shape, and coverage remain unverified. Timeout, TLS failure, DNS failure, or unavailable UI is not evidence of cadastral absence.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."}
+}

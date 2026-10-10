@@ -1,0 +1,34 @@
+{
+  "taskId": "city:11768",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-11768-lufeng.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/lufeng-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T16:33:33.357769Z",
+  "reason": "First-party Lufeng natural-resources page confirms registration custody, and the map-query notice describes real-name face authentication. The documented route returned an empty reply or gateway 502; no anonymous parcel feature response was obtained.",
+  "sourceUrlsReviewed": [
+    "https://www.lufengshi.gov.cn/swlfzrj/gkmlpt/content/1/1199/post_1199473.html",
+    "https://www.lufengshi.gov.cn/gtzy/zfxxgkml/qita/gzdt/content/post_920279.html"
+  ],
+  "identity": {
+    "cityCode": 11768,
+    "queueRank": 1835,
+    "country": "China",
+    "countryCode": "CN",
+    "point": [
+      22.9435827974516,
+      115.647540555873
+    ],
+    "populationPersons": 312588,
+    "verifiedAgainst": "2025 WUP archive SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114 and cohort pending queue"
+  },
+  "searchLanguagesVerified": [
+    "English",
+    "Simplified Chinese"
+  ],
+  "retainedFullPolygons": 0,
+  "admissionGates": "No safe native-ID parcel polygon response or independent live adapter qualification. Fresh exact ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, and headed Details-panel verification remain unevidenced."
+}

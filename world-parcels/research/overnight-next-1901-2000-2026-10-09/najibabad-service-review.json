@@ -1,0 +1,48 @@
+{
+  "cityRecord": "city-8778-najibabad.json",
+  "cityCode": 8778,
+  "queueRank": 1952,
+  "city": "Najibabad",
+  "country": "India",
+  "countryCode": "IN",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "Government of Uttar Pradesh Board of Revenue / NIC Uttar Pradesh Bhulekh and Bhu-Naksha; local administrative scope evidenced by Bijnor district and Najibabad tehsil reports",
+  "serviceUrl": "https://upbhunaksha.gov.in/",
+  "discoveryUrls": [
+    "https://upbhulekh.gov.in/",
+    "https://upbhunaksha.gov.in/",
+    "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=134",
+    "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=134&tehsilCode=00712",
+    "https://bijnor.nic.in/",
+    "https://upbhulekh.gov.in/documents/landrecords-bijnor.pdf"
+  ],
+  "attemptedRoutes": [
+    {"route": "GET https://upbhulekh.gov.in/", "outcome": "succeeded; current portal HTML/CSP and JavaScript references retrieved"},
+    {"route": "GET https://upbhunaksha.gov.in/", "outcome": "succeeded; current public viewer shell retrieved"},
+    {"route": "GET https://upbhunaksha.gov.in/bhunakshaserver/Levels/levelLabels", "outcome": "timed out after 20 seconds; no schema or geometry returned"},
+    {"route": "GET https://upbhunaksha.gov.in/bhunakshaserver/Levels/stateCode", "outcome": "not completed after preceding timeout; no fabricated request result"},
+    {"route": "Najibabad exact-point query at [29.6092963454053,78.3356483515359]", "outcome": "not run because the public viewer metadata route did not respond; no exact-point hit or absence claim made"},
+    {"route": "official GeoDashboard report distCode=134, tehsilCode=00712", "outcome": "indexed/public report returned Najibabad tehsil aggregate digitization records; no parcel feature geometry"}
+  ],
+  "scope": "Public first-party discovery covered Uttar Pradesh state land records, the Bijnor district context, the Najibabad tehsil digitization report, and the current Bhu-Naksha viewer configuration. The report evidences tehsil-wide linked/georeferenced cadastral-map status but not city-boundary parcel coverage.",
+  "schemaAndCrs": "Unavailable; current viewer JavaScript names MapInfo plot/map methods and a server base URL, but no anonymous feature response was obtained and CRS/geometry type remain unconfirmed.",
+  "nativeIdentity": "Unavailable; no parcel feature was retained. Aggregate village codes were not used as parcel identity.",
+  "fieldMapping": {},
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON sample retained; therefore no source-specific attribute set was retained.",
+  "safeFieldAllowlist": ["geometry", "stable native parcel id if later exposed"],
+  "unsafeDataPolicy": "No owner, titleholder, address, contact, personal, tax/account, legal-description, rights, or other unsafe fields were requested or retained. No login, credentials, private token, CAPTCHA bypass, or TLS verification bypass was used.",
+  "officialCustodyEvidence": "The UP Bhulekh portal and Bijnor/Najibabad official reports identify the state/local revenue land-record context. This is direct local administrative registry evidence; national Bhu-Naksha informational pages were treated only as general technical context.",
+  "limits": [
+    "Najibabad city point was preserved exactly and was not shifted to force a parcel hit.",
+    "No anonymous ID+geometry response was obtained because the current viewer metadata route timed out.",
+    "Aggregate tehsil digitization counts do not prove city-boundary parcel coverage or exact-point coverage.",
+    "No absence inference was made from the timeout or lack of a point query.",
+    "No parcel polygons were retained, so the three-polygon maximum is not approached.",
+    "RuntimeReadiness remains held pending independent serial review and adapter qualification."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "A current public parcel viewer appears to exist and official Najibabad tehsil digitization is evidenced, but anonymous API availability, native parcel identity, CRS, geometry response, and urban city coverage remain unverified."
+}

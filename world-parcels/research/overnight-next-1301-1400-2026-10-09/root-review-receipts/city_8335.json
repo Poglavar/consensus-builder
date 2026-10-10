@@ -1,0 +1,25 @@
+{
+  "taskId": "city:8335",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-8335-abakaliki.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/abakaliki-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-09T15:49:46+00:00",
+  "reason": "Official Ebonyi Lands and Survey ministry and state registration procedure identify Abakaliki custody. No anonymous safe parcel vector response or native ID was evidenced; HTTP 406 is an access limit, not absence.",
+  "reviewFindings": {
+    "queueIdentityVerified": true,
+    "englishAndLocalSearchesRecorded": true,
+    "retainedFullPolygons": 0,
+    "safeNativeIdGeometryVerified": false,
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "integrationState": "held"
+  }
+}

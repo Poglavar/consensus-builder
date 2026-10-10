@@ -1,0 +1,12 @@
+{
+  "taskId": "city:2731",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-2731-manizales.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/manizales-service-review.json",
+    "tmp/valhalla-parcel-research/2731/gestor-17001.json"
+  ],
+  "checkedAt": "2026-10-09T12:35:25Z",
+  "reason": "Immutable queue identity and English/Spanish searches match. Original IGAC response supports local cadastral custody, but municipal parcel endpoints timed out and yielded no polygon. No live adapter qualification; timeout is not citywide absence."
+}

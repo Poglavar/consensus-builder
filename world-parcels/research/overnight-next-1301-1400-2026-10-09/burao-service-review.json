@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3139-burao.json",
+  "cityCode": 3139,
+  "purpose": "Document first-party discovery, current public local registration routes, bounded anonymous access review, and evidence limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The Local Government of Burao District officially documents online land registration and related property services. The procedure requires an applicant account and review by district technical officers; no anonymous public map/API, parcel schema, CRS, safe native parcel ID, or geometry response was exposed. No parcel sample is retained.",
+  "registryAssessment": "A local registration procedure is directly evidenced, so registryFound is true. This does not establish an open cadastral parcel service or source integration/admission.",
+  "safeFieldAllowlist": ["safe parcel identifier only if publicly exposed and non-personal", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "queries": [
+    {
+      "language": "English",
+      "query": "Burao Somalia official cadastral map land registry parcel API local government",
+      "outcome": "Found official Burao local-government land-registration and service pages; no public parcel-vector endpoint was found.",
+      "actualResultUrls": ["https://www.burao.govsomaliland.online/article/online-land-registration", "https://www.burao.govsomaliland.online/", "https://www.burao.govsomaliland.online/article/online-property-registration"]
+    },
+    {
+      "language": "Somali",
+      "query": "Burco Soomaaliya khariidadda cadastral diiwaanka dhulka adeegga dawladda hoose",
+      "outcome": "Found the same official local-government service context and general Somali land sources; no anonymous parcel map, identity, schema, CRS, or geometry response was found.",
+      "actualResultUrls": ["https://www.burao.govsomaliland.online/article/online-land-registration", "https://www.burao.govsomaliland.online/", "https://oag.gov.so/wp-content/uploads/2024/08/Warbixinta-Uhoggaasanaanta-Sharciga-2023.pdf", "https://somlii.org/laws/agricultural-land-law-1975/"]
+    }
+  ],
+  "attempts": [
+    {"url":"https://www.burao.govsomaliland.online/article/online-land-registration","method":"GET/search-index review","httpStatus":"indexed official page; web fetch 200","result":"Reviewed local-government procedure: applicant login/registration, new land-registration application, technical review, payment, and certificate download. No public parcel map/API or safe geometry route exposed."},
+    {"url":"https://www.burao.govsomaliland.online/","method":"GET/search-index review","httpStatus":"search result available; direct web open returned 502","result":"Reviewed official service index showing land registration, property registration, land tax, and related municipal services."},
+    {"url":"https://www.burao.govsomaliland.online/article/online-property-registration","method":"GET/search-index review","httpStatus":"indexed official page","result":"Reviewed property-registration workflow; it is an applicant/document service and exposes no anonymous parcel geometry or safe native ID."},
+    {"url":"https://www.burao.govsomaliland.online/land-registration/add","method":"GET","httpStatus":404,"result":"The application route linked from the official land-registration page was not available; no login, credentials, or bypass was attempted."},
+    {"url":"https://www.burao.govsomaliland.online/","method":"GET via shell client","httpStatus":"DNS resolution failure","result":"The available shell client could not resolve the www host. No TLS bypass or alternate credentialed access was attempted."},
+    {"url":"https://oag.gov.so/wp-content/uploads/2024/08/Warbixinta-Uhoggaasanaanta-Sharciga-2023.pdf","method":"GET/search-index review","httpStatus":"search result available","result":"General Somali audit material was reviewed for land-registration context only; it did not provide Burao parcel geometry or a public parcel API."},
+    {"url":"https://somlii.org/laws/agricultural-land-law-1975/","method":"GET/search-index review","httpStatus":"search result available","result":"Historical/general agricultural-land law material was reviewed for context only; no Burao parcel response or safe identity was obtained."}
+  ],
+  "geometryEvidence": null,
+  "geometryDecision": {"verified":false,"sourceId":null,"nativeIdField":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"No exact-point parcel containment test was completed. The exact WUP point [9.51899209198386,45.5378988168787] was preserved and not shifted; missing viewer/API access is not evidence of citywide absence."},
+  "remainingUncertainty": "The current portal JavaScript/configuration, any private or authenticated service endpoints, parcel schema, CRS, native parcel identity, exact-point parcel, and citywide open coverage remain unverified. No credentials, login, CAPTCHA, unsafe fields, or private tokens were used or requested.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter"
+}

@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8987-sambhal.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Document the validation retry and preserve the held state when prior Sambhal source evidence is unavailable.",
+  "assessment": "The required city packet was missing. No prior Sambhal research artifact, query log, source URL, request outcome, or retained sample was present in the inspected cohort or Git history. This retry did not repeat discovery or make network/API requests, so no registry, service, schema, CRS, identity, geometry, or coverage claim is made.",
+  "registryAssessment": "registryFound remains null because no local registry, cadastre, map, or procedure was evidenced in the available artifacts.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "fullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "officialPrimarySources": [],
+  "searchQueries": [
+    {"language": "English", "query": "Sambhal India official cadastral map land records parcel GIS", "actualResultUrls": ["https://upbhulekh.gov.in/"], "outcome": "Validation retry did not repeat discovery; no prior executed-query record was available. URL is an unverified official-source candidate only."},
+    {"language": "Hindi", "query": "सम्भल उत्तर प्रदेश आधिकारिक भू-अभिलेख नक्शा भू-खण्ड GIS", "actualResultUrls": ["https://upbhulekh.gov.in/"], "outcome": "Validation retry did not repeat discovery; no prior executed-query record was available. URL is an unverified official-source candidate only."}
+  ],
+  "attempts": [],
+  "safeFieldAllowlist": ["stable native parcel id if independently qualified", "geometry", "CRS", "map extent", "source endpoint", "public schema metadata"],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Not executed on validation retry; exact WUP point preserved."},
+  "coverageAssessment": {"claimedScope": "None.", "verifiedOpenScope": "None.", "geometryVerified": false, "citywideVerified": false, "countrywideVerified": false},
+  "uncertainty": ["No prior Sambhal source evidence was available.", "No first-party service route, anonymous request outcome, schema, CRS, native identity, or geometry can be verified from this retry."],
+  "runtimeReadiness": "held",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

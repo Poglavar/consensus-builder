@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:8488",
+  "cityCode": 8488,
+  "wupCityCode": 8488,
+  "name": "Campina Grande",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "iso2": "BR",
+  "iso3": "BRA",
+  "rank": 1547,
+  "queueRank": 1547,
+  "point": [-7.23215231967948, -35.8983934975757],
+  "centerLatLon": [-7.23215231967948, -35.8983934975757],
+  "pointBasis": "Exact immutable WUP2025 settlement point; not shifted to force a parcel hit and not a municipal-boundary or coverage claim.",
+  "population2025": 369184,
+  "population2025k": 369.184,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "The official Campina Grande municipal portal evidences property-tax/property-certificate services, but the bounded public review did not evidence a local cadastral map, parcel API, or public parcel geometry service. No local registry custodian is asserted from general national-agency material.",
+  "registryEvidenceUrls": [
+    "https://ecidadeonline.campinagrande.pb.gov.br/",
+    "https://ecidadeonline.campinagrande.pb.gov.br/digitamatricula.php",
+    "https://servicos.campinagrande.pb.gov.br/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The official citizen portal's current configuration and JavaScript expose public-service endpoints and a points-of-interest map, not a cadastral parcel layer. The municipal property-debt page requires a matrícula plus CPF/CNPJ and was not submitted because owner/tax/account data is unsafe and out of scope. No anonymous safe parcel ID-plus-complete-geometry response was obtained.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "no_public_parcel_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "Official Campina Grande municipal citizen portal and property-service pages; national SINTER discovery was noted as a general service but not treated as local custody or city coverage.",
+    "verifiedOpenScope": "Public portal and points-of-interest responses only; no parcel layer or complete polygon feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Campina Grande cadastral parcel map viewer land registry Brazil official municipal GIS",
+        "scope": "Find an official local cadastral custodian and a safe public parcel-geometry route.",
+        "result": "Search found the official Campina Grande municipal property-service portal and the federal SINTER service description. No official Campina Grande parcel viewer or anonymous parcel geometry endpoint was verified.",
+        "actualResultUrls": [
+          "https://ecidadeonline.campinagrande.pb.gov.br/",
+          "https://ecidadeonline.campinagrande.pb.gov.br/digitamatricula.php",
+          "https://www.gov.br/pt-br/servicos/consultar-imoveis-no-sinter?id=12870&origem=servico",
+          "https://www.gov.br/receitafederal/pt-br/acesso-a-informacao/acoes-e-programas/programas-e-atividades/sinter/entenda/como-acessar-o-visualizador-territorial"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "Portuguese (Brazil)",
+        "query": "Campina Grande cadastro imobiliário mapa parcelas prefeitura geoserver",
+        "scope": "Independent local-language discovery for municipal cadastral mapping and parcel geometry.",
+        "result": "Search returned the official municipal property-debt/certificate portal and municipal citizen portal. It did not produce a verified public cadastral parcel map or safe anonymous ID-plus-geometry response; a similarly named Campina Grande do Sul GeoPortal was excluded as the wrong municipality.",
+        "actualResultUrls": [
+          "https://ecidadeonline.campinagrande.pb.gov.br/digitamatricula.php",
+          "https://ecidadeonline.campinagrande.pb.gov.br/",
+          "https://servicos.campinagrande.pb.gov.br/"
+        ],
+        "executionMethod": "Separate Portuguese-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "A failed exact-point or anonymous route is not evidence of citywide absence. The municipal parcel layer, native identity field, schema, CRS, access policy, and coverage remain unverified. No coordinate was shifted.",
+  "nextStep": "Serial reviewer may independently investigate a municipal cadastral channel or qualify a different first-party source; do not enable runtime from this packet alone."
+}

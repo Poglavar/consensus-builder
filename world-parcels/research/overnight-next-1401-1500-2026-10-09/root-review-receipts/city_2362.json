@@ -1,0 +1,12 @@
+{
+  "taskId": "city:2362",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-2362-lop-buri.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/lop-buri-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T18:14:11.441924Z",
+  "reason": "Queue identity and paired bilingual research match. First-party DOL pages establish Lop Buri provincial land-office and national land-map custody, but no native-ID parcel geometry or independent adapter qualification exists. Fresh anonymous LandsMaps HTTPS connection timed out; availability and city coverage remain unresolved."
+}

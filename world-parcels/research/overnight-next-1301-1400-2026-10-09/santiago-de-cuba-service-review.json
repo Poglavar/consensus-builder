@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2377-santiago-de-cuba.json",
+  "purpose": "Document first-party discovery, bounded anonymous endpoint checks, and safe parcel-geometry qualification.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "exactPointAbsenceTreatedAsCitywideAbsence": false
+  },
+  "assessment": "Cuba's cadastral framework was evidenced, but no current Santiago de Cuba-specific public map/API was reached. No schema, CRS, native parcel identity, or parcel geometry was verified. No source-specific attributes were retained.",
+  "registryAssessment": "The national framework identifies municipal Planning Physics directorates as urban cadastral custodians and GEOCUBA as a principal cartographic/cadastral provider. A Santiago de Cuba local registry/map/procedure was not independently evidenced, so city registryFound remains null.",
+  "safeFieldAllowlist": ["native parcel identifier", "geometry"],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Santiago de Cuba official cadastral map parcels Cuba cadastre property registry GIS",
+      "outcome": "No city-specific first-party public parcel service found.",
+      "urls": ["https://www.cibercuba.com/s/gacetaoficial/decreto-ley-332-de-2015-de-consejo-de-estado", "https://www.catastro.hacienda.gob.es/documentos/publicaciones/ct/ct28/art6.pdf"]
+    },
+    {
+      "language": "Spanish (local/native)",
+      "query": "Cuba catastro mapa parcelas Santiago de Cuba oficina municipal catastro registro propiedad GIS",
+      "outcome": "No city-specific first-party public parcel service found.",
+      "urls": ["https://www.cibercuba.com/s/gacetaoficial/decreto-ley-332-de-2015-de-consejo-de-estado", "https://www.directoriocubano.com/servicios/gaceta-oficial/norma/goc-2022-1061-o116/"]
+    }
+  ],
+  "attempts": [
+    {"url": "https://www.geocuba.cu/", "method": "HEAD", "status": "TLS verification failure", "result": "Stopped under default TLS policy; no bypass authorized."},
+    {"url": "https://geotech.cu/", "method": "HEAD", "status": "timeout", "result": "No response within bounded request."},
+    {"url": "https://www.ipf.cu/", "method": "HEAD", "status": "DNS failure", "result": "No endpoint reached."},
+    {"url": "https://ipf.cu/", "method": "HEAD", "status": "DNS failure", "result": "No endpoint reached."}
+  ],
+  "geometryDecision": "No geometry retained; no qualifying anonymous response was available.",
+  "uncertainty": "Timeouts, DNS failures, TLS failure, and search miss are route-specific findings only. They do not establish absence of a Santiago de Cuba cadastral dataset or citywide parcel coverage.",
+  "reviewDisposition": "complete_packet_runtime_held"
+}

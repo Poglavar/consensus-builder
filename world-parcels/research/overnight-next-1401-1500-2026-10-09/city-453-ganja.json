@@ -1,0 +1,54 @@
+{
+  "cityCode": 453,
+  "queueRank": 1470,
+  "country": "Azerbaijan",
+  "countryCode": "AZ",
+  "point": [40.6870715860686, 46.3454287780589],
+  "population2025": 386822,
+  "population2025k": 386.822,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ganja Azerbaijan official cadastral parcel map GIS cadastre",
+        "result": "First-party results found the official State Service for Property Issues interactive map, the electronic land cadastre system page, and an official report describing the Ganja and Shaki Cadastral and Real Estate Registration Project. Direct anonymous retrieval of the official map was attempted but timed out; no parcel response was verified.",
+        "actualResultUrls": [
+          "https://emlak.gov.az/mapmodule",
+          "https://emlak.gov.az/az/page/view/32",
+          "https://emlak.gov.az/az/news/view/265-%E2%80%9CKadastr-v%C9%99-Da%C5%9F%C4%B1nmaz-%C6%8Em%C9%99lak%C4%B1n-Qeydiyyat%C4%B1-Layih%C9%99si%E2%80%9Dnin--%28G%C9%99nc%C9%99-v%C9%99-%C5%9E%C9%99ki-%C5%9F%C9%99h%C9%99rl%C9%99ri-%C3%BCzr%C9%99%29-yekun-%C4%B0ctimai-T%C9%99qdimat%C4%B1-ke%C3%A7irilib"
+        ]
+      },
+      {
+        "language": "Azerbaijani",
+        "query": "Gəncə Azərbaycan rəsmi kadastr xəritəsi daşınmaz əmlak xəritə",
+        "result": "First-party results found ƏMDX's interactive map and the official Azerbaijani-language report stating that the Ganja project created an electronic cadastral database and digital cadastral maps. Direct anonymous retrieval of the official map and agency pages timed out; no parcel ID, schema, CRS, or geometry was verified.",
+        "actualResultUrls": [
+          "https://emlak.gov.az/mapmodule",
+          "https://emlak.gov.az/az/page/view/32",
+          "https://dedkr.gov.az/az/news/view/80"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "custodian": "Azerbaijan Ministry of Economy, State Service for Property Issues / State Cadastre and Real Estate Registration Public Legal Entity (DEDKR).",
+    "localOffice": "The official DEDKR material identifies Ganja-specific cadastral and real-estate registration work and the agency's Ganja-area service presence; no local endpoint was reachable during this attempt.",
+    "sourceScope": "Official Azerbaijani interactive property map and electronic land-cadastre system, with a first-party report specifically covering Ganja cadastral mapping.",
+    "geometryAccess": "No anonymous parcel geometry or safe native parcel ID was obtained. No credentials, private tokens, CAPTCHA bypass, unsafe owner/address fields, or TLS weakening were used."
+  },
+  "geometry": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "The exact unchanged WUP point was preserved. Official map retrieval timed out before an exact-point request could be completed; this is not evidence of citywide absence.",
+    "crs": null
+  },
+  "runtimeReadiness": {
+    "status": "held",
+    "reason": "First-party Ganja cadastral coverage is documented, but the public map/API could not be inspected or queried anonymously in this attempt, and no native parcel identity or geometry was verified. This packet records source discovery only and does not imply source integration or admission.",
+    "adapterAdmission": false
+  }
+}

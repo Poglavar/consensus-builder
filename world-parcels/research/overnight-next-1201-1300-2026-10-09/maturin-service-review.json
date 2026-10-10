@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09T11:47:38Z",
+  "cityRecord": "city-4458-maturin.json",
+  "purpose": "Document first-party-oriented local-registry discovery and bounded anonymous requests for Maturín.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Maturín-specific ordinance and municipal-office reporting evidence a local Dirección de Catastro Municipal and cadastral register containing cadastral maps and certificates. No public parcel viewer/API, schema, CRS, safe native parcel ID, or parcel geometry response was verified.",
+  "registryAssessment": "registryFound=true is appropriate: local Maturín municipal cadastral custody and procedures are specifically evidenced. The evidence does not establish open data access or runtime adapter eligibility.",
+  "officialPrimarySources": [
+    {"url": "https://www.scribd.com/document/956314131/12-Ordinance-on-Property-Tax-of-the-Municipality-of-Maturin-in-the-State-of-Monagas", "observation": "Maturín-specific ordinance copy states that Dirección de Catastro Municipal maintains the municipal cadastral register and that its contents include a cadastral map, survey plan and cadastral certificate; document host is a mirror."},
+    {"url": "https://elorientaldemonagas.com/alcaldia-de-maturin-avanza-en-la-modernizacion-de-los-servicios-catastrales/", "observation": "Report identifies the municipal cadastral office and modernization work; no public GIS endpoint."},
+    {"url": "https://laprensademonagas.com/alcaldia-proceso-mas-de-600-cedulas-catastrales-en-el-inicio-de-2026/", "observation": "Report describes current municipal cadastral-certificate processing; no anonymous parcel data."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Maturin Venezuela official cadastral map parcel GIS land registry", "result": "Maturín municipal cadastral ordinance and office reporting found; no public parcel service."},
+    {"language": "Spanish (local/native)", "query": "Maturín Venezuela catastro mapa parcelario registro inmobiliario GIS oficial alcaldía", "result": "Se encontró evidencia del registro catastral municipal y de la Dirección de Catastro; no se encontró un visor o API parcelaria pública anónima."}
+  ],
+  "safeFieldAllowlist": ["safe parcel/cadastral identifier only if exposed by a future anonymous endpoint", "geometry", "CRS/layer metadata"],
+  "geometryDecision": "No parcel geometry retained; no parcel feature response was returned. The exact WUP point was not shifted and was not used to infer citywide absence.",
+  "attempts": [
+    {"route": "Maturín-specific cadastral ordinance discovery", "method": "GET/search-index inspection", "outcome": "Found local cadastral register/map/procedure evidence; no endpoint."},
+    {"route": "English first-party discovery query", "method": "web search", "outcome": "Found Maturín municipal cadastral sources/reporting; no verified public vector service."},
+    {"route": "Spanish first-party discovery query", "method": "web search", "outcome": "Found Maturín municipal cadastral sources/reporting; no verified public vector service."},
+    {"route": "https://alcaldiadematurin.gob.ve", "method": "HEAD via curl; anonymous; TLS verification enabled", "outcome": "Connection timeout after 10 seconds; no service inspection."},
+    {"route": "https://maturin.gob.ve", "method": "HEAD via curl; anonymous; TLS verification enabled", "outcome": "DNS resolution failure."},
+    {"route": "https://alcaldiamaturin.gob.ve", "method": "HEAD via curl; anonymous; TLS verification enabled", "outcome": "DNS resolution failure."}
+  ],
+  "coverageAssessment": {"citywideVerified": false, "countrywideVerified": false, "geometryVerified": false, "note": "Local registry custody is evidenced, but no anonymous parcel layer was identified. Non-discovery, timeout, DNS failure and lack of exact-point response are not evidence of citywide parcel absence."},
+  "remainingUncertainty": "An unpublished municipal GIS, login-gated viewer, or non-indexed service may exist; the bounded review did not authenticate or request unsafe fields.",
+  "runtimeReadiness": "held_pending_independent_serial_review"
+}

@@ -1,0 +1,31 @@
+{
+  "taskId": "city:1427",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-1427-aksu.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/aksu-service-review.json",
+    "tmp/valhalla-parcel-research/aksu/zwfw.headers",
+    "tmp/valhalla-parcel-research/aksu/tianditu.headers",
+    "tmp/valhalla-parcel-research/aksu/map.headers",
+    "tmp/valhalla-parcel-research/aksu/search.headers"
+  ],
+  "checkedAt": "2026-10-10T15:27:09Z",
+  "reason": "Official Xinjiang public portal cache shows HTML 200 responses and a bounded search 404, but no public parcel feature response, native ID or geometry. Registry custody remains unresolved rather than false absence; zero polygons are retained. No independent live adapter qualification or headed Details-panel verification; no admission.",
+  "identityVerified": {
+    "rank": 1796,
+    "cityCode": 1427,
+    "country": "China",
+    "point": [
+      41.1717236028291,
+      80.2656522320985
+    ],
+    "population2025Persons": 320179
+  },
+  "bilingualSearchesRecorded": true,
+  "retainedFullPolygonCount": 0,
+  "independentAdapterQualified": false,
+  "runtimeAdmission": false
+}

@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-11430-danyang-city.json",
+  "purpose": "Document first-party registry/map discovery, current viewer-route outcomes, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Danyang's official Natural Resources and Planning Bureau page exposes a local real-estate registration query procedure. The bounded inspection did not yield a public parcel geometry service or safe anonymous feature response.",
+  "registryAssessment": "registryFound is true because the local official page exposes a Danyang-specific 不动产登记查询 entry and the retrieved form carries administrative code 321181. This is procedure evidence, not evidence of open cadastral geometry.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zrzy.jiangsu.gov.cn/zjdy/",
+      "observation": "Official Danyang Natural Resources and Planning Bureau page. It identifies the local agency and embeds a 不动产登记查询 entry plus public natural-resources notices."
+    },
+    {
+      "url": "https://zrzy.jiangsu.gov.cn/gtapp/xxgk/wwsjcx_bdcdjcx.action?xzqhdm=321181",
+      "observation": "Official local registration-query iframe retrieved with HTTP 200. It exposes a form for an acceptance number and the Danyang administrative code 321181; it does not expose parcel geometry."
+    },
+    {
+      "url": "https://zjdy.jszwfw.gov.cn/",
+      "observation": "Official Danyang government-service portal retrieved with HTTP 200. It provides local government service navigation, but no public parcel feature endpoint was exposed in the bounded inspection."
+    }
+  ],
+  "viewerConfiguration": {
+    "documentedHomeUrl": "https://zrzy.jiangsu.gov.cn/zjdy/",
+    "observedServiceTypes": ["local natural-resources agency portal", "local real-estate registration query form", "government-service portal"],
+    "schemaAndCrs": "Not verified from a parcel feature response.",
+    "nativeFieldNames": "No parcel feature response obtained; none retained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {
+      "url": "https://zrzy.jiangsu.gov.cn/zjdy/",
+      "method": "GET/web search result inspection; direct public GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 200. The page identified the Danyang Natural Resources and Planning Bureau and exposed an iframe for local 不动产登记查询. No parcel geometry or map-service configuration was present in the bounded HTML inspection."
+    },
+    {
+      "url": "https://zrzy.jiangsu.gov.cn/gtapp/xxgk/wwsjcx_bdcdjcx.action?xzqhdm=321181",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 200. Retrieved a Danyang-specific registration query form with xzqhdm=321181 and an acceptance-number field. No record query was submitted and no geometry was returned."
+    },
+    {
+      "url": "https://zrzy.jiangsu.gov.cn/gtapp/xxgk/newfn/xqbj/xqbj_getXqbjshowListBdc_jdgt.action?xzqhdm=321181",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 200. Retrieved a public real-estate registration notice-list page, not a parcel feature response. No geometry or native parcel identity was exposed."
+    },
+    {
+      "url": "https://zrzy.jiangsu.gov.cn/gtapp/nrglIndex.action?catalogID=2c9082b55b66734a015b66a1beae007e&type=1",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 200. Retrieved local natural-resources public notices. This route was not a parcel viewer or feature service."
+    },
+    {
+      "url": "https://zjdy.jszwfw.gov.cn/",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 200. Retrieved official Danyang government-service portal. No public parcel geometry service was exposed in bounded inspection."
+    }
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous ID-plus-geometry response was verified.",
+  "geometryEvidence": {
+    "sampleFile": null,
+    "featureCount": 0,
+    "query": "No WUP-point parcel query submitted because no current public Danyang parcel endpoint or viewer configuration was identified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official local registration procedure and natural-resources portal only.",
+    "verifiedOpenScope": "Local procedure and portal pages verified; no anonymous complete-polygon feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "remainingUncertainty": "The bounded discovery result does not establish citywide absence. Current viewer configuration, parcel schema, CRS, stable native identity, safe field availability, polygon availability, and completeness remain unverified.",
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "No independent anonymous safe native-ID-plus-geometry response; packet does not qualify an adapter or enable runtime."
+  }
+}

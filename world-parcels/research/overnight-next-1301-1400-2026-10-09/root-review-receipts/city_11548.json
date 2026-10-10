@@ -1,0 +1,14 @@
+{
+  "taskId": "city:11548",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-11548-yixing.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/yixing-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-09T15:01:02.054264Z",
+  "reason": "First-party Yixing registration-center page supports local registry custody. English and Chinese searches and zero retained polygons are recorded. No original parcel feature response or native ID, fresh exact-ID read, forced paging, 13 bounded cells, metric GEOS checks, source binding, or headed Details verification; public parcel geometry and citywide absence remain unverified.",
+  "admission": "not_integrated"
+}

@@ -1,0 +1,21 @@
+{
+  "taskId": "city:8329",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-8329-narowal.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/narowal-service-review.json",
+    "tmp/valhalla-parcel-research/8329/pulse.html",
+    "tmp/valhalla-parcel-research/8329/layer24.json",
+    "tmp/valhalla-parcel-research/8329/point-query.json"
+  ],
+  "checkedAt": "2026-10-10T11:44:22Z",
+  "reason": "First-party PULSE cache confirms Narowal layer 24 and one bounded GeoJSON polygon with native OBJECTID 5921642. The cached response has 31 properties, including Khewat_ID and Mutation_N, contrary to the packet minimum-field assertion; no safe durable sample is retained.",
+  "admissionGates": "One point query is not qualification. Fresh exact-ID reads, forced paging, 13 bounded cells, independent metric GEOS validity/overlap checks, source binding, and headed Details verification are not evidenced.",
+  "sourceCacheSha256": {
+    "tmp/valhalla-parcel-research/8329/pulse.html": "1696568e3f31de8d2ed71e6b4af9904393f0c07124abb6b22a6ed8245c23ee6c",
+    "tmp/valhalla-parcel-research/8329/layer24.json": "9ab46fe88afc9e0646669e137bd2d10095a40569619a5bcbfba070ce39b979b3",
+    "tmp/valhalla-parcel-research/8329/point-query.json": "a664e27a8586b02ed6e27d5f64eee16b250a31afee9d76b8de9ec51153fb2c05"
+  }
+}

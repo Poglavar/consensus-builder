@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11040-sanya.json",
+  "purpose": "Document first-party local registry context and bounded anonymous parcel-geometry access review for Sanya, China.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Sanya's official Natural Resources and Planning Bureau site identifies a municipal real-estate-registration center and dedicated cadastral-map information materials. An official notice says cadastral-map (宗地图) information may be queried with property-owner authorization. The public Sanya geospatial-platform link timed out in a bounded anonymous GET; no parcel feature API, safe native ID, schema, or CRS was verified.",
+  "registryAssessment": "Local registry/cadastre custodian verified: 三亚市自然资源和规划局, with 三亚市不动产登记中心 evidenced in the bureau's official site and the official Sanya government search result.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zgj.sanya.gov.cn",
+      "observation": "Official Sanya Municipal Bureau of Natural Resources and Planning portal. It contains dedicated real-estate-registration and cadastral-map information sections and links the Sanya geospatial public-service platform."
+    },
+    {
+      "url": "https://search.sanya.gov.cn/s?siteCode=4602000035&column=%E5%85%A8%E7%AB%99&searchWord=%E5%9C%B0%E7%B1%8D",
+      "observation": "Official Sanya government search result for 地籍. It exposes the notice titled 关于查询房屋登记和地籍图信息有关事项的公告, stating that cadastral-map (宗地图) information lookup requires authorization from the property owner."
+    },
+    {
+      "url": "https://hainan.tianditu.gov.cn/sanya/",
+      "observation": "Official bureau-linked Sanya geographic-information public-service platform. Anonymous bounded GET timed out before HTML/configuration could be inspected."
+    },
+    {
+      "url": "https://zgj.sanya.gov.cn/zgjsite/bdcgs/newxxgklist.shtml",
+      "observation": "Official real-estate-registration public-notice section; it is an administrative notice channel, not an anonymous parcel feature service."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Sanya China official cadastral parcel map land registry GIS",
+      "result": "Google/Bing discovery was noisy; direct first-party follow-up found the official bureau portal and its public geospatial-platform link. No open parcel geometry endpoint was established.",
+      "actualResultUrls": [
+        "https://www.google.com/search?q=Sanya+China+official+cadastral+parcel+map+land+registry+GIS",
+        "https://www.bing.com/search?q=Sanya+China+official+cadastral+parcel+map+land+registry+GIS",
+        "https://zgj.sanya.gov.cn",
+        "https://hainan.tianditu.gov.cn/sanya/"
+      ]
+    },
+    {
+      "language": "Chinese",
+      "query": "三亚市 自然资源和规划局 地籍 地图 官方",
+      "result": "Official Sanya search returned the cadastral-map lookup notice and identified the Sanya Real Estate Registration Center. Baidu returned a verification page; no parcel geometry was inferred from that failure.",
+      "actualResultUrls": [
+        "https://www.baidu.com/s?wd=%E4%B8%89%E4%BA%9A%E5%B8%82+%E8%87%AA%E7%84%B6%E8%B5%84%E6%BA%90%E5%92%8C%E8%A7%84%E5%88%92%E5%B1%80+%E5%9C%B0%E7%B1%8D+%E5%9C%B0%E5%9B%BE+%E5%AE%98%E6%96%B9",
+        "https://www.bing.com/search?q=%E4%B8%89%E4%BA%9A%E8%87%AA%E7%84%B6%E8%B5%84%E6%BA%90%E5%92%8C%E8%A7%84%E5%88%92%E5%B1%80+%E5%9C%B0%E7%B1%8D",
+        "https://search.sanya.gov.cn/s?siteCode=4602000035&column=%E5%85%A8%E7%AB%99&searchWord=%E5%9C%B0%E7%B1%8D"
+      ]
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://zgj.sanya.gov.cn",
+      "httpStatus": 200,
+      "result": "Official bureau portal fetched successfully. It links the Sanya geographic-information public-service platform and contains real-estate-registration/cadastral sections."
+    },
+    {
+      "url": "https://search.sanya.gov.cn/s?siteCode=4602000035&column=%E5%85%A8%E7%AB%99&searchWord=%E5%9C%B0%E7%B1%8D",
+      "httpStatus": 200,
+      "result": "Official search fetched successfully. The cadastral-map notice was found; it documents authorized lookup rather than open parcel geometry."
+    },
+    {
+      "url": "https://hainan.tianditu.gov.cn/sanya/",
+      "result": "Bounded anonymous GET timed out after 20 seconds. No retry with credentials, CAPTCHA bypass, or TLS weakening was attempted."
+    },
+    {
+      "url": "https://www.baidu.com/s?wd=%E4%B8%89%E4%BA%9A%E5%B8%82+%E8%87%AA%E7%84%B6%E8%B5%84%E6%BA%90%E5%92%8C%E8%A7%84%E5%88%92%E5%B1%80+%E5%9C%B0%E7%B1%8D+%E5%9C%B0%E5%9B%BE+%E5%AE%98%E6%96%B9",
+      "httpStatus": 200,
+      "result": "Baidu returned a security-verification page; it was not bypassed and was not treated as source absence."
+    }
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed against a public feature service. The timeout and authorization requirement are not evidence of citywide absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal cadastral and real-estate-registration administration under the Sanya Natural Resources and Planning Bureau; official materials refer to cadastral-map information.",
+    "verifiedOpenScope": "Local custodian and procedure verified, but anonymous parcel geometry, schema/CRS, and citywide completeness were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "The public geospatial platform's current JavaScript/configuration, endpoint structure, access policy, schema/CRS, and exact-point parcel coverage remain unknown without a responsive anonymous route or authorized access.",
+  "runtimeAssessment": "held; no adapter admission or source integration implied"
+}

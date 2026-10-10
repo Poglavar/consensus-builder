@@ -1,0 +1,19 @@
+{
+  "taskId": "packet:5807",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-5807-toyohashi.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/toyohashi-service-review.json",
+    "tmp/valhalla-parcel-research/aigid-moj-23201.json",
+    "tmp/valhalla-parcel-research/toyohashi-2026.geojson",
+    "tmp/valhalla-parcel-research/toyohashi-sample-limited.geojson"
+  ],
+  "checkedAt": "2026-10-09T13:40:14Z",
+  "identityReview": "Toyohashi, WUP 5807, rank 1263, Japan JP/JPN, point [34.7670614726782,137.389808743258], 441665 persons matches roster, queue, and ledger.",
+  "sourceReview": "Separate English and Japanese executed queries and result URLs are recorded. Official Toyohashi cadastral-map application procedure supports registry custody. The cached G-Space catalog links the 2026 municipality GeoJSON; its 28068 full polygons have only 2508 distinct ID values. The three scratch polygons match source geometry, but sampled IDs H000000018, H000000017, and H000000131 each identify 126, 126, and 65 distinct geometries respectively. ID alone is not a safe unique native identity; no durable polygon sample was retained. Exact-point miss is not citywide absence.",
+  "admissionReview": "Unique identity or proven composite key, fresh exact-ID reads, forced paging, 13 bounded cells, independent metric GEOS validity and overlap checks, source binding, and headed Details verification are missing; runtime remains held."
+}

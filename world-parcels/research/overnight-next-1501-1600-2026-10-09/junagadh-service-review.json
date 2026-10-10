@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-3915-junagadh.json",
+  "purpose": "Document first-party registry/map discovery, public-service routes, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Junagadh local custody is evidenced by official DILR and City Survey Office pages. Gujarat Revenue Department lists AnyRoR rural record viewing and e-Milkat property-card viewing, but no safe anonymous native-ID-plus-complete-geometry response was verified.",
+  "registryAssessment": "The Junagadh DILR and City Survey Office are city/district custodians evidenced by the official district administration. The Gujarat Revenue Department and national CLR report are broader state/national service or reporting sources, not substitutes for proving citywide open geometry.",
+  "officialPrimarySources": [
+    {"url": "https://junagadh.nic.in/dilr/", "observation": "Official district page identifies Junagadh DILR and describes field measurement, land-acquisition measurement, record updating, and survey supervision."},
+    {"url": "https://junagadh.nic.in/city-survey/", "observation": "Official district page identifies the City Survey Office, property-card copying, survey maintenance, and Junagadh office location."},
+    {"url": "https://revenuedepartment.gujarat.gov.in/iora-service", "observation": "Official Gujarat Revenue Department page links AnyRoR rural Record of Rights viewing and e-Milkat property-card viewing; it also links the state land-records department."},
+    {"url": "https://dilrmp.gov.in/physicalProgressReports/clr/district-level/24", "observation": "National CLR report search result lists Junagadh district computerized land-record counts and linked-cadastral-map status; reporting is not an open parcel geometry API."},
+    {"url": "https://anyror.gujarat.gov.in/", "observation": "Official linked AnyRoR service host; direct anonymous GET timed out during this attempt."},
+    {"url": "https://e-milkat.gujarat.gov.in/GeneralReport.aspx", "observation": "Official linked e-Milkat property-card service URL; no parcel geometry response was retained."}
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://revenuedepartment.gujarat.gov.in/iora-service",
+    "observedTechnology": "Server-rendered Gujarat Revenue Department service directory; linked AnyRoR and e-Milkat hosts were identified from official HTML.",
+    "observedRoutes": ["https://anyror.gujarat.gov.in/", "https://e-milkat.gujarat.gov.in/GeneralReport.aspx"],
+    "schemaAndCrs": "Not verified from a successful parcel feature response.",
+    "nativeFieldNames": "Not retained; no successful parcel feature response was obtained."
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"],
+  "attempts": [
+    {"url": "https://junagadh.nic.in/dilr/", "method": "GET", "normalTlsVerification": true, "result": "HTTP page reviewed; local DILR custodian and land-record measurement/update functions documented."},
+    {"url": "https://junagadh.nic.in/city-survey/", "method": "GET", "normalTlsVerification": true, "result": "HTTP page reviewed; local City Survey Office and property-card/survey functions documented."},
+    {"url": "https://revenuedepartment.gujarat.gov.in/iora-service", "method": "GET", "normalTlsVerification": true, "result": "HTTP page reviewed; official AnyRoR and e-Milkat service links identified."},
+    {"url": "https://anyror.gujarat.gov.in/", "method": "GET", "normalTlsVerification": true, "timeoutSeconds": 20, "result": "Connection timed out; no response body, schema, native ID, or geometry. This is an endpoint-access finding only, not evidence of cadastral absence."},
+    {"url": "https://e-milkat.gujarat.gov.in/GeneralReport.aspx", "method": "GET", "normalTlsVerification": true, "result": "Attempted through the official service route; no safe parcel geometry response was obtained or retained."},
+    {"url": "https://dilrmp.gov.in/physicalProgressReports/clr/district-level/24", "method": "GET", "normalTlsVerification": true, "result": "Search result reviewed for Junagadh CLR reporting; summary statistics do not expose a bounded parcel feature response."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "query": "No parcel geometry query was submitted because the first-party service discovery did not expose a verified safe anonymous geometry route."},
+  "coverageAssessment": {"claimedScope": "Junagadh DILR and City Survey Office custody plus Gujarat Revenue Department land-record/property-card services; national CLR reporting provides context only.", "verifiedOpenScope": "Official custodian pages and service links only; no anonymous complete-polygon feature response verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "A timeout, lack of a point hit, unavailable UI, or absence of a discovered public geometry route is not evidence of citywide absence. CRS, native identity, feature schema, parcel coverage, and citywide completeness remain unverified.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous native-ID-plus-complete-geometry response; packet does not qualify an adapter or enable runtime."}
+}

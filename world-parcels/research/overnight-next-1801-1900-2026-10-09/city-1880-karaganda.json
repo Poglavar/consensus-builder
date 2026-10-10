@@ -1,0 +1,68 @@
+{
+  "cityCode": 1880,
+  "queueRank": 1831,
+  "name": "Karaganda",
+  "country": "Kazakhstan",
+  "countryCode": "KZ",
+  "iso3": "KAZ",
+  "point": [49.7950748534949, 73.1073852723723],
+  "population2025": 313529,
+  "population2025k": 313.529,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Karaganda Kazakhstan official cadastral parcel map public viewer API property boundaries",
+        "result": "Found the official Kazakhstan Public Cadastral Map references on gov.kz and the official AIS GZK cadastral-map portal. The portal exposes a current JavaScript configuration naming ArcGIS services, but the published service routes were unavailable by direct anonymous GET in this attempt; no confirmed parcel geometry response was obtained.",
+        "actualResultUrls": [
+          "https://www.gov.kz/memleket/entities/kostanai-saulet/press/media/details/53765",
+          "https://aisgzk.kz/aisgzk/ru/content/maps?type=pch_kart",
+          "https://portal.giprozem.kz/"
+        ]
+      },
+      {
+        "language": "Kazakh/Russian (local)",
+        "query": "Қарағанды кадастрлық карта жер учаскелері ресми карта / Караганда публичная кадастровая карта официальный земельный кадастр",
+        "result": "Found official Karaganda-region government material describing cadastral services and the official AIS GZK map portal. A Karaganda land-cadastral plan is published by gov.kz as an example of official parcel documentation, but it is a document for one parcel rather than a safe anonymous citywide geometry API. No parcel feature was retained.",
+        "actualResultUrls": [
+          "https://www.gov.kz/memleket/entities/karaganda/press/news/details/108903",
+          "https://www.gov.kz/memleket/entities/karaganda/press/news/details/709275",
+          "https://aisgzk.kz/aisgzk/ru/content/maps?type=pch_kart",
+          "https://www.gov.kz/uploads/2020/10/20/c954bd8781a28ae283fa4e5445ff64a2_original.3885562.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "source": {
+    "provider": "Republic of Kazakhstan official AIS GZK / Public Cadastral Map references",
+    "viewerUrl": "https://aisgzk.kz/aisgzk/ru/content/maps?type=pch_kart",
+    "serviceRoutePublishedByViewer": "https://aisgzk.kz/arcgis/rest/services/aisgzkoz/MapServer",
+    "serviceType": "ArcGIS Dynamic MapServer route published in viewer JavaScript; direct route unavailable in this attempt",
+    "parcelLayerConfirmed": false,
+    "nativeIdField": null,
+    "geometryField": null,
+    "safeFieldsRequested": ["stable parcel ID if publicly exposed", "geometry only"],
+    "crs": null
+  },
+  "verifiedSample": {
+    "count": 0,
+    "exactWupPointQuery": false,
+    "result": "No exact-point parcel query completed because the published AIS GZK ArcGIS route returned HTTP 404 and the separate giprozem portal timed out. This is not evidence of citywide parcel absence.",
+    "requestEvidence": "tmp/valhalla-parcel-research/1880/"
+  },
+  "coverageAssessment": {
+    "claimedScope": "National Kazakhstan public cadastral-map infrastructure with cadastral-map material applicable to Karaganda.",
+    "verifiedOpenScope": "Official viewer page and JavaScript configuration were retrieved; anonymous parcel ID-plus-geometry access was not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; no independently verified parcel adapter candidate",
+  "notes": "Registry evidence is limited to the official public cadastral-map viewer/procedure and Karaganda-specific official cadastral documentation. No owner, address, titleholder, contact, tax/account, personal or other unsafe fields were requested or retained. Exact WUP point preserved in latitude/longitude order; no coordinate shift applied. This packet is research evidence only and is not source integration or runtime admission."
+}

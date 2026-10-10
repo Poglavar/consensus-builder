@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-5899-ikere-ekiti.json",
+  "purpose": "Document first-party discovery, official service routes, anonymous request outcomes, safe field limits and uncertainty.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "registryAssessment": "Local official custodian evidenced by the Ekiti State Geospatial Center website and its land-registration/registration-search/title-registration procedures. This is not evidence that public parcel geometry is exposed.",
+  "officialPrimarySources": [
+    {"url": "https://www.ekitigeospatial.com/", "operator": "Ekiti State Geospatial Center / Ekiti State Government", "scope": "Official local geospatial and land-services portal; describes automated Land GIS and registration/search services."},
+    {"url": "http://lmis-frontend.staging.ekitigeospatial-lmis.com/", "operator": "Ekiti State Government EK-ILMIS", "scope": "Officially linked EK-ILMIS frontend; public pages describe centralized land records and C-of-O application workflow."},
+    {"url": "https://osgof.gov.ng/", "operator": "Office of the Surveyor-General of the Federation", "scope": "National cadastral-survey context only; not treated as Ikere-Ekiti local custody."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Ikere-Ekiti cadastral parcel map land registry official Nigeria", "result": "Official Ekiti Geospatial Center found; no public parcel geometry endpoint found.", "actualResultUrls": ["https://www.ekitigeospatial.com/", "https://www.ekitistate.gov.ng/", "https://osgof.gov.ng/"]},
+    {"language": "Yoruba", "query": "Ikere-Ekiti ìforúkọsílẹ ilẹ cadastral map Ekiti official", "result": "No first-party parcel-map result surfaced; Ekiti Geospatial Center remained the relevant local source.", "actualResultUrls": ["https://www.ekitigeospatial.com/", "https://www.ekitistate.gov.ng/"]}
+  ],
+  "attempts": [
+    {"url": "https://www.ekitigeospatial.com/", "method": "GET", "outcome": "TLS verification failed because the host certificate is expired; no certificate exception was used."},
+    {"url": "http://www.ekitigeospatial.com/", "method": "GET", "httpStatus": 200, "contentType": "text/html", "outcome": "Read official homepage; land-services links and automated Land GIS description found, but no map/API configuration or parcel geometry."},
+    {"url": "http://lmis-frontend.staging.ekitigeospatial-lmis.com/", "method": "GET", "httpStatus": 200, "contentType": "text/html", "outcome": "Read official-linked EK-ILMIS public frontend; public application/service content only."},
+    {"url": "http://lmis-frontend.staging.ekitigeospatial-lmis.com/about", "method": "GET", "httpStatus": 200, "contentType": "text/html", "outcome": "Public about page reviewed; no anonymous parcel map/API."},
+    {"url": "http://lmis-frontend.staging.ekitigeospatial-lmis.com/signin", "method": "GET", "httpStatus": 200, "contentType": "text/html", "outcome": "Login page encountered; no login attempted and no credentials used."},
+    {"url": "https://www.ekitigeospatial.com/", "method": "JavaScript/config inspection", "outcome": "Downloaded/reviewed public HTML and linked JavaScript via HTTP; no public parcel layer URL, schema, CRS or safe native-ID geometry request was exposed."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel id if publicly exposed", "geometry", "source URL", "layer name", "geometry type", "CRS", "public schema metadata"],
+  "geometryDecision": {"verified": false, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not performed because no public anonymous parcel geometry endpoint was exposed; the unchanged WUP point was not shifted.", "citywideAbsenceInferred": false},
+  "coverageAssessment": {"geometryVerified": false, "citywideVerified": false, "countrywideVerified": false, "note": "Service/custodian evidence is separate from geometry and coverage evidence."},
+  "remainingUncertainty": "Exact-point parcel coverage, native parcel identity, CRS, geometry availability, legal/title scope, completeness and currentness remain unverified. The staging frontend may not represent production data exposure.",
+  "nextStep": "Keep runtime held until serial review independently qualifies a real public adapter and safe geometry response.",
+  "runtimeAssessment": "held_pending_serial_review",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

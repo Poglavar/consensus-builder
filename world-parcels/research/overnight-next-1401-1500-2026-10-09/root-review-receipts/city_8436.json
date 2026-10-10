@@ -1,0 +1,11 @@
+{
+  "taskId": "city:8436",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-8436-bhiwadi.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/bhiwadi-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T16:14:53.914128Z",
+  "reason": "BIDA and Rajasthan map custody are supported; the configured JDA Khasra route timed out, with no Bhiwadi polygon or native ID read."
+}

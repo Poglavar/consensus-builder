@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-1056-matadi.json",
+  "purpose": "Document first-party registry discovery, bounded public-route checks, and safety and coverage limits.",
+  "assessment": "The official Ministry of Land Affairs directory lists Matadi as a Kongo-Central land and cadastral district. No anonymous public ID-plus-complete-polygon response was obtained.",
+  "registryAssessment": "Local registry/cadastre custody found through the official national Ministry directory, which separately lists Matadi under Kongo-Central. The public-service consultation page describes a formal request to the Conservateur des Titres Immobiliers or Chef de Division du Cadastre; it is not treated as an open geometry service.",
+  "officialPrimarySources": [
+    {
+      "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "observation": "Official Ministry directory lists Matadi among the Kongo-Central circonscriptions foncières and cadastrales."
+    },
+    {
+      "url": "https://cadastre.gouv.cd/page/4/",
+      "observation": "Official cadastral site references the national cadastral digitization project and an appointment affecting the Matadi and Boma land districts."
+    },
+    {
+      "url": "https://servicepublic.gouv.cd/service/4671",
+      "observation": "Official public-service catalog describes formal consultation of land, real-estate, and cadastral registers through the relevant registry/cadastre officials; it is a paid/formal register service, not an anonymous polygon API."
+    }
+  ],
+  "viewerConfiguration": {
+    "homeUrl": null,
+    "observedLayer": null,
+    "observedRelativeServiceUrl": null,
+    "observedVendor": null,
+    "schemaAndCrs": "Not verified from a successful public parcel-service response.",
+    "nativeFieldNames": "Not retained; no successful feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {
+      "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "HTTP 200 HTML; official directory contained Matadi under Kongo-Central. No parcel geometry or machine-readable service URL was exposed."
+    },
+    {
+      "url": "https://cadastre.gouv.cd/page/4/",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "Official cadastral page found in discovery; it provides institutional/news material and digitization references, not a verified anonymous parcel feature endpoint."
+    },
+    {
+      "url": "https://servicepublic.gouv.cd/service/4671",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "Official service description retrieved; consultation requires a formal request and payment, and describes legal/ownership register information. No geometry API was exposed or called."
+    },
+    {
+      "url": "https://bic.cd/",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "result": "Public landing page retrieved during route discovery; it was not treated as a government first-party Matadi registry, and no safe anonymous parcel geometry response was verified."
+    }
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {
+    "sampleFile": null,
+    "featureCount": 0,
+    "query": "No WUP-point parcel query submitted because no verified public parcel service and safe request shape were identified."
+  },
+  "nativeIdentityAndMapping": {
+    "nativeIdentity": null,
+    "sourceFieldNames": [],
+    "compositeKeyProvenance": null,
+    "note": "No feature response; no synthetic identity created."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Matadi is a listed Kongo-Central land/cadastral district; the Ministry sources are institutional, not proof of open digital geometry.",
+    "verifiedOpenScope": "No anonymous complete-polygon feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "remainingUncertainty": "Institutional custody is evidenced, but digital map availability, API configuration, CRS, schema, safe native parcel identity, parcel coverage, and citywide completeness remain unknown. A missing public endpoint is not evidence that Matadi lacks parcels.",
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "No independently verified anonymous ID-plus-geometry response; this packet does not qualify an adapter or enable runtime."
+  }
+}

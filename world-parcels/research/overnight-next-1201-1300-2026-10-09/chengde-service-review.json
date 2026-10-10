@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9176-chengde.json",
+  "purpose": "Document first-party Chengde registry context and bounded anonymous parcel-service access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Chengde material and the current first-party portal evidence the local Natural Resources and Planning Bureau / Real Estate Registration Center custody. The public portal provides registration and progress routes, while certificate lookup redirects to login. No safe anonymous parcel-vector response was verified.",
+  "registryAssessment": "Local registry/procedure evidenced through official Chengde sources; this is institutional custody evidence, not admission of a public parcel source or runtime integration.",
+  "safeFieldAllowlist": ["safe public parcel/source ID if available", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "nativeFieldMapping": {
+    "observedPortalFields": [],
+    "note": "No parcel response was obtained, so no parcel native identity field, source field mapping, or composite key was observed. Public portal and organization text were used only for custodian identification."
+  },
+  "officialPrimarySources": [
+    {
+      "url": "https://zrgh.chengde.gov.cn/online/index",
+      "observation": "Official Chengde Real Estate Registration Center online service portal; public home page exposes progress and certificate-query entry points."
+    },
+    {
+      "url": "https://zrgh.chengde.gov.cn/online/public/cms/jgjs",
+      "observation": "Official center introduction identifies the Chengde Real Estate Registration Center as subordinate to the Chengde Natural Resources and Planning Bureau and gives its public service role."
+    },
+    {
+      "url": "https://zrgh.chengde.gov.cn/online/public/search/certificate",
+      "observation": "Anonymous GET redirects to the official /online/platform/login page; the certificate/property query is account and verification-code gated."
+    },
+    {
+      "url": "https://www.chengde.gov.cn/art/2025/7/17/art_9938_1076028.html",
+      "observation": "Official city-government description assigns the bureau responsibility for unified real-estate registration, cadastral surveys, cadastral measurement, and geospatial public services."
+    },
+    {
+      "url": "https://www.chengde.gov.cn/art/2023/5/9/art_3248_929302.html",
+      "observation": "Official city-government report describes registration records and attached floor/parcel-map materials available through a certificate QR workflow; this is not an anonymous parcel-vector service."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Chengde China official cadastral parcel map land registry public map API",
+      "result": "Official local registry portal and city-government institutional material found; no verified anonymous parcel geometry route.",
+      "resultUrls": ["https://zrgh.chengde.gov.cn/online/public/cms/jgjs", "https://www.chengde.gov.cn/art/2025/7/17/art_9938_1076028.html", "https://www.chengde.gov.cn/art/2023/5/9/art_3248_929302.html"]
+    },
+    {
+      "language": "Chinese (Simplified)",
+      "query": "承德市 不动产登记 地籍图 宗地图 官方 地图 查询",
+      "result": "Official Chinese-language portal and government material found; local custody evidenced, but certificate/property lookup is login-gated and no anonymous cadastral geometry route was verified.",
+      "resultUrls": ["https://zrgh.chengde.gov.cn/online/index", "https://zrgh.chengde.gov.cn/online/public/cms/jgjs", "https://zrgh.chengde.gov.cn/col/col1039/index.html", "https://www.chengde.gov.cn/art/2023/5/9/art_3248_929302.html"]
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not performed against a verified cadastral parcel endpoint; exact point [40.962009217654, 117.922629548203] remains unchanged and no absence inference is made.",
+    "requestEvidence": []
+  },
+  "attempts": [
+    {
+      "url": "https://zrgh.chengde.gov.cn/online/index",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "result": "Official portal loaded. Public home page exposes progress and certificate-query links; no parcel-vector URL was exposed in the inspected HTML."
+    },
+    {
+      "url": "https://zrgh.chengde.gov.cn/online/public/cms/jgjs",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "result": "Official center introduction loaded. It identifies the local registration center and public contact/service role; the embedded map is a Baidu location map, not a cadastral parcel layer."
+    },
+    {
+      "url": "https://zrgh.chengde.gov.cn/online/public/search/certificate",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "result": "Redirected to https://zrgh.chengde.gov.cn/online/platform/login. Login form includes account, password/mobile and image-verification-code controls; no login or bypass was attempted."
+    },
+    {
+      "url": "https://zrgh.chengde.gov.cn/online/public/search/jindu",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "result": "Public progress-query page loaded. It is a workflow/status form, not a parcel geometry service; no safe parcel ID or geometry response was requested."
+    },
+    {
+      "url": "https://www.chengde.gov.cn/art/2025/7/17/art_9938_1076028.html",
+      "method": "GET via first-party indexed result",
+      "httpStatus": "web result available",
+      "result": "Official institutional description reviewed for registry custody and geospatial responsibilities."
+    },
+    {
+      "url": "https://www.chengde.gov.cn/art/2023/5/9/art_3248_929302.html",
+      "method": "GET via first-party indexed result",
+      "httpStatus": "web result available",
+      "result": "Official report reviewed; QR-based certificate lookup and attached map materials are described, but this is not public anonymous parcel-vector access."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official Chengde portal and government material, current public HTML and route behavior, and bounded anonymous service checks.",
+    "verifiedOpenScope": "Local registry/procedure custody only; parcel geometry access unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "A separately published municipal or provincial cadastral/map service may exist, but it was not identified from the current first-party portal. No exact-point query or citywide parcel completeness conclusion was made.",
+  "runtimeAssessment": "Held: no real adapter can be qualified from the evidence; packet completion does not imply source integration or admission."
+}

@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-10780-liuyang.json",
+  "purpose": "Document first-party registry/map discovery, current viewer-route outcomes, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "The official Liuyang government portal identifies a local Natural Resources Bureau and the official Hunan Tianditu portal lists Liuyang as an available map area. Direct bounded retrieval did not yield current viewer configuration or a safe anonymous parcel feature response.",
+  "registryAssessment": "A local government department is evidenced, but no Liuyang-specific cadastral or real-estate-registration procedure was verified in this attempt; registryFound remains null.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.liuyang.gov.cn/",
+      "observation": "Official Liuyang government portal; its department/service navigation identifies the Liuyang Natural Resources Bureau. No parcel geometry was exposed in the inspected page result."
+    },
+    {
+      "url": "https://hunan.tianditu.gov.cn/TDTHN/public/topWeb.html",
+      "observation": "Official Hunan Tianditu public portal; the inspected result lists 浏阳市 (Liuyang) among selectable Hunan city/county areas. No parcel schema or geometry response was exposed."
+    },
+    {
+      "url": "https://lbs.tianditu.gov.cn/server/search2.html",
+      "observation": "Official Tianditu API documentation; it states that the documented search services require an application key. This is general API documentation, not evidence of a Liuyang cadastral parcel layer."
+    }
+  ],
+  "viewerConfiguration": {
+    "documentedHomeUrl": "https://hunan.tianditu.gov.cn/TDTHN/public/topWeb.html",
+    "observedServiceTypes": ["Hunan Tianditu public map portal", "provincial city/county map selector", "Tianditu search API documentation"],
+    "schemaAndCrs": "Not verified from a successful parcel feature response.",
+    "nativeFieldNames": "Not retained; no successful feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {
+      "url": "https://www.liuyang.gov.cn/",
+      "method": "GET/web search result inspection; direct public GET attempted",
+      "normalTlsVerification": true,
+      "result": "First-party page was identified by web search and shows the Liuyang Natural Resources Bureau in official department navigation. Direct curl failed with TLS error: no alternative certificate subject name matches target host name. No certificate exception used; no geometry."
+    },
+    {
+      "url": "https://hunan.tianditu.gov.cn/TDTHN/public/topWeb.html",
+      "method": "GET/web search result inspection; direct public GET attempted",
+      "normalTlsVerification": true,
+      "result": "First-party page was identified and its result lists Liuyang among Hunan areas. Direct curl timed out after 20 seconds before JavaScript/configuration inspection. No geometry."
+    },
+    {
+      "url": "https://lbs.tianditu.gov.cn/server/search2.html",
+      "method": "GET/web open",
+      "normalTlsVerification": true,
+      "result": "Official API documentation opened. It documents key-gated place/search services, not a public Liuyang cadastral parcel endpoint. No parcel request submitted."
+    }
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {
+    "sampleFile": null,
+    "featureCount": 0,
+    "query": "No WUP-point parcel query submitted because no current public Liuyang parcel endpoint or viewer configuration was identified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official local portal and provincial public map portal evidence cover local department indication and map-area availability only.",
+    "verifiedOpenScope": "Official department/map portal evidence verified; no current anonymous complete-polygon feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "remainingUncertainty": "The timeout and TLS finding are access limitations only, not evidence of cadastral absence. Current service URL, parcel schema, CRS, native identity, geometry availability and citywide completeness remain unverified.",
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."
+  }
+}

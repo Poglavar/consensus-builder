@@ -1,0 +1,15 @@
+{
+  "taskId": "city:2998",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-2998-wiesbaden.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/wiesbaden-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/wiesbaden-parcel-samples.geojson",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-09T14:09:42Z",
+  "reason": "Immutable rank 1309/Germany/point/427270 persons match queue and roster. English and German search records are present. Two retained full polygons have only native ID properties; limited independent metric sample check found valid shapes and zero overlap. The original WFS response/cache is absent, so claimed response count and source geometry cannot be independently accepted. No fresh exact-ID reads, forced paging, 13 bounded cells, complete metric operation checks, source binding, or headed Details verification exists. Public geometry discovery is held; no admission.",
+  "admission": "not_integrated"
+}

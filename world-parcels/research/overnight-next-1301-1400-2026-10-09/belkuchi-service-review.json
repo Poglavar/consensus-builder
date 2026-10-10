@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5323-belkuchi.json",
+  "cityCode": 5323,
+  "purpose": "Document first-party discovery, current anonymous map/API route inspection, safe-field limits, and uncertainty.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord":0,"maxFullPolygonsRetainedInReview":0,"maxFullPolygonsRetainedInRepository":3,"ownerOrAddressDataRetained":false,"credentialsOrTokenValuesRetained":false,"unsafeFieldsRequested":false,"citywideCompletenessAsserted":false},
+  "assessment": "The official Bangladesh DLRS/Settlement portal and official Belkuchi Upazila site were found in both English and Bengali discovery. The public map viewer is available anonymously and its current JavaScript was inspected. Administrative metadata reached Sirajganj and the BDS survey, but bounded upazila discovery returned an empty list, so no current Belkuchi parcel route, safe native identity, CRS, or geometry was verified. No GeoJSON sample is retained.",
+  "registryAssessment": "DLRS/Settlement is evidenced as the national land-record and survey custodian, while the Belkuchi Upazila portal is a local administrative source. A city-specific open cadastral registry/map response was not established; registryFound remains null.",
+  "queries": [
+    {"language":"English","query":"Belkuchi Bangladesh official cadastral parcel map land records GIS service","outcome":"Official DLRS/Settlement portal, public map viewer, DLRS site, and Belkuchi Upazila portal found; no safe anonymous Belkuchi parcel ID-plus-geometry response obtained.","actualResultUrls":["https://settlement.gov.bd/","https://settlement.gov.bd/Map/MapSearch","https://dlrs.gov.bd/","https://belkuchi.sirajganj.gov.bd/"]},
+    {"language":"Bengali","query":"বেলকুচি বাংলাদেশ সরকারি ভূমি রেকর্ড ক্যাডাস্ট্রাল পার্সেল মানচিত্র জিআইএস","outcome":"Official Bengali DLRS/Settlement and Belkuchi pages found; no separate anonymous Belkuchi parcel API found.","actualResultUrls":["https://settlement.gov.bd/","https://settlement.gov.bd/Map/MapSearch","https://belkuchi.sirajganj.gov.bd/","https://belkuchi.sirajganj.gov.bd/pages/static-pages/697fbb1335ce18e1c06cbe5f"]}
+  ],
+  "attempts": [
+    {"url":"https://settlement.gov.bd/Map/MapSearch","method":"GET","httpStatus":200,"result":"Public map viewer loaded; no authentication or unsafe fields used."},
+    {"url":"https://settlement.gov.bd/js/MapSearch.js?v=yIrkacclePMWogM6Pmn4B9h1nLF0RbM3YSk70pezUfQ","method":"GET","httpStatus":200,"result":"Current JS inspected. Public hierarchy POST routes and /Khatian/GetSheetJsonBySurvey GeoJSON route identified; no parcel response retained."},
+    {"url":"https://settlement.gov.bd/Map/GetDivisionList","method":"POST","httpStatus":200,"result":"Returned division metadata; Rajshahi code 030000000 identified."},
+    {"url":"https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise","method":"POST","httpStatus":200,"result":"Returned Sirajganj district code 031000000 and comcod 4156 under Rajshahi."},
+    {"url":"https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise","method":"POST","httpStatus":200,"result":"Returned BDS survey rsnum 201901 for Sirajganj."},
+    {"url":"https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap","method":"POST","httpStatus":200,"result":"Current-configuration parameter attempts returned []; Belkuchi upazila was not exposed, so no mouza, sheet, dag, or parcel geometry request could be formed."},
+    {"url":"https://belkuchi.sirajganj.gov.bd/pages/static-pages/697fbb1335ce18e1c06cbe5f","method":"GET","httpStatus":200,"result":"Official local geography page loaded; safe geographic extent only."}
+  ],
+  "geometryEvidence": {"sourceUrl":null,"sampleFile":null,"nativeIdField":null,"nativeFieldMapping":{},"compositeKeyProvenance":null,"sampleCount":0,"crs":null,"queryExtent":null},
+  "geometryDecision": {"verified":false,"sourceId":null,"nativeIdField":null,"sampleCount":0,"exactWupPointTest":"No parcel query route was reached. Exact WUP point [24.1558909100762, 89.6088819200885] was preserved and not shifted; empty hierarchy results are not evidence of absence.","retentionNote":"No GeoJSON retained because no safe native parcel identity plus full polygon response was obtained."},
+  "remainingUncertainty":"The official viewer may require a valid survey hierarchy or may not expose all Belkuchi coverage through the current public route. Its parcel schema, native identity semantics, CRS, exact-point containment, and citywide coverage remain unverified. No owner, address, titleholder, personal, tax, account, credential, private-token, CAPTCHA, or TLS-bypass attempt was made.",
+  "safeFieldAllowlist":["safe native parcel/dag ID if publicly exposed","geometry","CRS","non-personal layer/schema metadata"],
+  "runtimeAssessment":"held; serial reviewer must independently qualify any adapter",
+  "researchAttempt":1
+}

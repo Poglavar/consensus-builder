@@ -1,0 +1,22 @@
+{
+  "taskId": "city:8107",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-8107-neijiang.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/neijiang-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T12:34:04Z",
+  "reason": "The Sichuan government service page names the Neijiang Dongxing District Real Estate Registration Center, supporting local custody. Its current title describes certificate replacement, contrary to the packet description of a record-inquiry page; this does not affect the custody finding. No parcel feature response is evidenced.",
+  "identityCheck": "Queue, ranked roster, and original WUP 2025 CSV agree on code, rank, country, point and population in persons.",
+  "searchCheck": "Packet records separate English and local-language queries with result URLs; first-party source pages were independently inspected.",
+  "custody": {
+    "registryFound": true,
+    "firstPartyUrls": [
+      "https://www.sczwfw.gov.cn/jiq/front/transition/ywTransToDetail?areaCode=511011000000&deptCode=12510902MBOP61623D&itemCode=511F0093300072-511011000000-000-12510902MBOP61623D-1-00&taskType=7"
+    ]
+  },
+  "sampleCheck": "No full parcel polygons retained; no unsafe ID attributes in a retained sample.",
+  "admissionGates": "No native-ID parcel polygon response. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding and headed details-panel verification are not evidenced. No runtime admission."
+}

@@ -1,0 +1,18 @@
+{
+  "taskId": "city:8393",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-8393-daura.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/daura-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T09:22:47.060061Z",
+  "reason": "WUP 2025 archive, ranked roster and queue agree on code 8393, rank 1543, Nigeria, point [13.0292088405912, 8.32267894132444], and 369916 persons. Packet records separate English and Hausa/local searches. First-party KATGIS and state ministry pages support Katsina land-service custody, but expose no verified public parcel feature response. Zero polygons retained. Fresh exact ID reads, forced paging, 13 cells, metric GEOS checks, source binding and headed Details-panel verification are absent; a missing viewer is not citywide absence.",
+  "independentlyCheckedFirstPartyUrls": [
+    "https://gis.katsinastate.gov.ng/",
+    "https://katgis.org.ng/e-service",
+    "https://mols.kt.gov.ng/"
+  ],
+  "sourceAdmission": "not_admitted"
+}

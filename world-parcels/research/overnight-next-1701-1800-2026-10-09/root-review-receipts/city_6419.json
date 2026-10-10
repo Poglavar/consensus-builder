@@ -1,0 +1,32 @@
+{
+  "taskId": "city:6419",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-6419-trabzon.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/trabzon-service-review.json",
+    "tmp/valhalla-parcel-research/trabzon/exact.json",
+    "tmp/valhalla-parcel-research/trabzon/coord_40.988_39.738.json",
+    "tmp/valhalla-parcel-research/trabzon/coord_40.990_39.730.json",
+    "tmp/valhalla-parcel-research/trabzon/coord_40.995_39.735.json",
+    "tmp/valhalla-parcel-research/trabzon/coord_40.997_39.728.json"
+  ],
+  "checkedAt": "2026-10-10T15:27:09Z",
+  "reason": "Original TKGM cache confirms four nearby full Polygon responses with source fields mahalleId, adaNo and parselNo; exact WUP point returned Parsel Bulunamadı. Zero durable sample polygons are retained; four original responses are temporary qualification cache. This is local positive geometry, not citywide absence or complete coverage. Fresh independent native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding and headed Details-panel verification are missing; no admission.",
+  "identityVerified": {
+    "rank": 1794,
+    "cityCode": 6419,
+    "country": "Türkiye",
+    "point": [
+      40.9928288453735,
+      39.732671671214
+    ],
+    "population2025Persons": 320468
+  },
+  "bilingualSearchesRecorded": true,
+  "retainedFullPolygonCount": 0,
+  "independentAdapterQualified": false,
+  "runtimeAdmission": false
+}

@@ -1,0 +1,15 @@
+{
+  "taskId": "city:11273",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-11273-kodarma.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/kodarma-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T16:19:06Z",
+  "reviewNotes": "Koderma district English and Hindi first-party land-record pages establish a service route; the NIC Bhu-Naksha page lists the Jharkhand viewer. A retrieved first-party page rendered a legacy jharbhoomi.nic.in link while a search cache showed the current .gov.in route, so endpoint currency remains unresolved. Viewer timeouts yielded no parcel response, native ID, or geometry.",
+  "firstPartyCustodyUrl": "https://koderma.nic.in/service/land-record-and-e-mutation/",
+  "admissionGate": "No independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. No runtime, catalog, or generated coverage admission."
+}

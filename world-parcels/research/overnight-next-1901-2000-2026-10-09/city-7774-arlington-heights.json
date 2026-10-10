@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 7774,
+  "queueRank": 1934,
+  "name": "Arlington Heights",
+  "country": "United States of America",
+  "countryCode": "US",
+  "iso3": "USA",
+  "point": [42.0940879926876, -87.9603075532043],
+  "population2025": 298081,
+  "population2025k": 298.081,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Arlington Heights Illinois official parcel GIS Cook County cadastral map",
+        "result": "Found the official Cook County GIS agency page, CookViewer, and the official Cook County ArcGIS REST parcel services. Arlington Heights is evidenced in CookViewer results and official Village GIS material.",
+        "actualResultUrls": [
+          "https://www.cookcountyil.gov/agency/geographic-information-systems-gis",
+          "https://maps.cookcountyil.gov/cookviewer/",
+          "https://gis.cookcountyil.gov/traditional/rest/services/cookviewer3DynamicLabels/MapServer/layers",
+          "https://cms2.revize.com/revize/arlington/Departments/Planning%20%26%20Community%20Development/Housing/Zoning/Zoning%20Map%202020.pdf"
+        ]
+      },
+      {
+        "language": "English (United States local-language query; no separate federally designated local language)",
+        "query": "Arlington Heights Illinois mapa parcelario GIS oficial del condado de Cook",
+        "result": "The separate local-language discovery query surfaced the same official Cook County GIS/CookViewer parcel leads; no separate Spanish-language local custodian was identified.",
+        "actualResultUrls": [
+          "https://www.cookcountyil.gov/CookCentral",
+          "https://maps.cookcountyil.gov/cookviewer/",
+          "https://datacatalog.cookcountyil.gov/stories/s/Assessor-2025-Open-Data-Refresh/gzdr-q7c4/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.cookcountyil.gov/agency/geographic-information-systems-gis",
+      "operator": "Cook County Geographic Information Systems",
+      "evidence": "Official county GIS page says Cook County maintains parcel data and provides public access through web applications."
+    },
+    {
+      "url": "https://maps.cookcountyil.gov/cookviewer/",
+      "operator": "Cook County GIS / CookViewer",
+      "evidence": "Official public viewer supports parcel search by 10- or 14-digit PIN, address, or map selection; Arlington Heights results were present in the indexed viewer response."
+    },
+    {
+      "url": "https://gis.cookcountyil.gov/traditional/rest/services/cookviewer3DynamicLabels/MapServer/layers",
+      "operator": "Cook County GIS",
+      "evidence": "Official ArcGIS REST layer metadata identifies Parcels Current as an esriGeometryPolygon feature layer with JSON/GeoJSON/PBF query support and PIN14_dash display identity."
+    },
+    {
+      "url": "https://gis.cookcountyil.gov/traditional/rest/services/CookViewer3Dynamic/MapServer/2021",
+      "operator": "Cook County GIS",
+      "evidence": "Official parcel archive layer metadata describes Cook County parcel polygons, identifies PIN10, and reports native spatial reference EPSG:3435."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://maps.cookcountyil.gov/cookviewer/",
+      "method": "GET",
+      "status": "timeout",
+      "summary": "Direct shell GET timed out after 30 seconds; this is recorded as transport failure, not service absence. Indexed official viewer content was available through discovery."
+    },
+    {
+      "url": "https://gis.cookcountyil.gov/traditional/rest/services/cookviewer3DynamicLabels/MapServer/layers",
+      "method": "GET",
+      "status": 200,
+      "summary": "Official REST metadata was retrieved by first-party discovery indexing; Parcels Current is a polygon layer with public query formats."
+    },
+    {
+      "url": "https://gis.cookcountyil.gov/traditional/rest/services/CookViewer3Dynamic/MapServer/2021",
+      "method": "GET",
+      "status": 200,
+      "summary": "Official REST parcel archive metadata was retrieved by first-party discovery indexing; fields include OBJECTID, PIN10, geometry, year, and coordinate bounds."
+    },
+    {
+      "url": "https://gis.cookcountyil.gov/traditional/rest/services/cookviewer3DynamicLabels/MapServer/0/query",
+      "method": "GET",
+      "status": "not completed",
+      "summary": "A bounded anonymous exact-point geometry query was prepared but not completed because direct shell access to the host timed out and the web retrieval tool could not open the REST query URL. No hit, miss, or geometry is claimed."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": "PIN14_dash (current viewer) or PIN10 (2021 archive)",
+    "fallbackOidField": "OBJECTID",
+    "compositeKey": null,
+    "fieldMapping": {
+      "PIN14_dash": "CookViewer current parcel identity/display field; not retained because no bounded geometry response was obtained",
+      "PIN10": "Cook County parcel archive identity field; not retained because no bounded geometry response was obtained",
+      "OBJECTID": "ArcGIS object identifier; fallback only, not a synthetic row number"
+    },
+    "crs": "Current service metadata exposes Cook County Illinois State Plane coordinates; archive metadata reports EPSG:3435. No response transformation was executed.",
+    "geometryType": "esriGeometryPolygon"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Cook County, Illinois parcel fabric and parcel archive; Arlington Heights is within Cook County.",
+    "verifiedOpenScope": "Public Cook County GIS/CookViewer parcel service and official polygon-layer metadata; no city-filtered feature response retained.",
+    "countrywideVerified": false,
+    "targetPointHit": null,
+    "targetPointHitInterpretation": "Not tested to completion; timeout/unusable retrieval is not evidence of absence."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["PIN14_dash", "PIN10", "OBJECTID", "geometry"],
+  "unsafeFieldsNotRetained": ["owner", "address", "contact", "titleholder", "tax/account", "legal description", "assessed value", "mailing address"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_county_parcel_service_verified_metadata_no_geometry",
+  "remainingUncertainty": "The service is countywide rather than an Arlington Heights municipal custodian. Current endpoint behavior, exact WUP-point coverage, native identity stability, CRS transformation, and a bounded geometry response remain independently unverified in this attempt.",
+  "nextStep": "Serial reviewer should independently open the current CookViewer REST configuration, issue a bounded Arlington Heights-safe geometry query with only PIN identity and geometry, verify CRS handling, and qualify any adapter before admission."
+}

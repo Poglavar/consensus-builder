@@ -1,0 +1,14 @@
+{
+  "taskId": "city:6083",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-6083-pingliang.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pingliang-service-review.json",
+    "tmp/valhalla-parcel-research/6083/natural-resources.html",
+    "tmp/valhalla-parcel-research/6083/gov.html"
+  ],
+  "checkedAt": "2026-10-09T16:30:05.503226Z",
+  "reviewNotes": "Municipal bureau and registration service are supported by captured first-party pages; no anonymous native-ID polygon response or adapter qualification."
+}

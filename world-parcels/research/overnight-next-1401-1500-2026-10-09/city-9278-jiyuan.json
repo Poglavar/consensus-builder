@@ -1,0 +1,79 @@
+{
+  "cityCode": 9278,
+  "queueRank": 1449,
+  "name": "Jiyuan",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [35.0800381150825, 112.576355303532],
+  "population2025": 392568,
+  "population2025k": 392.568,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jiyuan China official cadastral parcel map GIS natural resources bureau public service",
+        "result": "Search identified the official Jiyuan real-estate registration center announcement describing the local '以图查房' cadastral/real-estate map service and the official service URL. The service is local registry evidence, but no anonymous safe parcel geometry or public schema was verified.",
+        "actualResultUrls": [
+          "https://www.jiyuan.gov.cn/gov_special/yshjzjy/ysdt/gzdt_21051/t904367.html",
+          "https://zrzyghj.jiyuan.gov.cn/bmfw/"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "济源 地籍图 不动产登记 自然资源局 官方 地图 服务",
+        "result": "Search identified the official Jiyuan natural-resources/real-estate registration service and the official announcement for the visual cadastral-map query. The public entry point redirects the map route to the Henan government login flow; no anonymous parcel geometry was retained.",
+        "actualResultUrls": [
+          "https://www.jiyuan.gov.cn/gov_special/yshjzjy/ysdt/gzdt_21051/t904367.html",
+          "https://zrzyghj.jiyuan.gov.cn/14195/17138/",
+          "https://zrzyghj.jiyuan.gov.cn/bmfw/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://www.jiyuan.gov.cn/gov_special/yshjzjy/ysdt/gzdt_21051/t904367.html",
+    "https://zrzyghj.jiyuan.gov.cn/bmfw/"
+  ],
+  "registryBasis": "Official Jiyuan real-estate registration center material identifies a local visual cadastral/real-estate query service for the demonstration zone, and the official natural-resources bureau hosts its service entry point.",
+  "source": {
+    "sourceId": "CN-9278-JIYUAN-REAL-ESTATE-MAP-REVIEW",
+    "name": "Jiyuan official real-estate registration visual cadastral-map service",
+    "url": "https://zrzyghj.jiyuan.gov.cn/bmfw/",
+    "operator": "济源产城融合示范区自然资源和规划局 / 济源示范区不动产登记中心",
+    "serviceType": "Official local registry and visual cadastral-map service; anonymous parcel geometry not verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "nativeFieldMapping": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official announcement says the service covers the Jiyuan demonstration zone's completed mapped and registered parcels/buildings.",
+    "verifiedOpenScope": "The service entry page was fetched, but the visual-map route redirected to the Henan government login flow. The public application's config endpoint returned encrypted data and no anonymous parcel response, schema, CRS, or native ID was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "The official map route DZZZXZ_jy.aspx redirected through /userinfo/login.aspx and /ZWFWW/Authorized.aspx to login.hnzwfw.gov.cn. The linked public map app at http://221.13.152.245:7878/ was reachable, but its /api/ZdQsdc/readOnemapJson response was encrypted; unauthenticated /api/ZdQsdc/mainList returned 服务端加密异常. No login, credentials, private token, CAPTCHA bypass, or unsafe fields were used.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "registration-rights"],
+  "remainingUncertainty": "The official service may expose parcel geometry to an authenticated or browser-mediated session, and the public app may require encrypted request parameters. No exact-point hit or absence inference is made.",
+  "nextStep": "Hold runtime integration. A later researcher may qualify an anonymous first-party parcel endpoint only after independently verifying schema, CRS, stable native identity, and safe ID-plus-geometry output.",
+  "runtimeReadiness": "held_unqualified",
+  "adapterReady": false,
+  "centerLatLon": [35.0800381150825, 112.576355303532],
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "Exact immutable WUP 2025 population-weighted settlement point; not shifted to force a parcel hit.",
+  "sourceIds": [],
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "attempt": 1,
+  "priorCheck": {"attemptState": "pending", "attemptEvidence": [], "possiblePriorMatches": []},
+  "schemaVersion": "1.0"
+}

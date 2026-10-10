@@ -1,0 +1,13 @@
+{
+  "taskId": "city:3480",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-3480-tawau.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/tawau-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T08:40:40.145031Z",
+  "reason": "Official Sabah JTU sources support Tawau survey-office custody. JTUWMA Pro describes registered-user cadastral access; no anonymous native-ID plus complete-polygon response or adapter qualification is evidenced. No admission.",
+  "sourceAdmission": "not_admitted"
+}

@@ -1,0 +1,49 @@
+{
+  "cityRecord": "city-2069-cap-haitien.json",
+  "cityCode": 2069,
+  "queueRank": 1731,
+  "city": "Cap-Haitien",
+  "country": "Haiti",
+  "countryCode": "HT",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete_packet_held_for_serial_review",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Haitian sources establish DGI/ONACA cadastral responsibilities and a DGI Cap-Haïtien annex in project documentation, but no public parcel viewer, safe parcel ID response, schema, or polygon geometry was verified. No GeoJSON sample is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and French/Haitian-Creole discovery queries, outcomes, and actual first-party URLs are recorded in city-2069-cap-haitien.json.",
+  "requestOutcomes": "TLS-verified direct GETs reached IHSI, DGI, and HaitiDocs. IHSI exposed only departmental/urban map images; DGI site map exposed no parcel service; HaitiDocs exposed administrative boundaries only; CIAT returned HTTP 503. The Cap-Haïtien-specific official MTPTC report was used as institutional evidence, not as parcel geometry.",
+  "scopeLimits": [
+    "Exact WUP point [19.7389872740487, -72.2081885139174] and population fields were preserved; the point was not shifted and no exact-point parcel test was attempted.",
+    "DGI/ONACA procedure evidence and a local DGI Cap-Haïtien annex reference do not establish an open machine-readable parcel service or citywide coverage.",
+    "IHSI maps and HaitiDocs administrative boundaries are not cadastral parcel data and were not retained as parcel samples.",
+    "No public parcel identity, native field mapping, CRS, geometry response, or composite parcel key was obtained; no synthetic identity or geometry was created.",
+    "The CIAT direct request returned 503; unavailable UI, timeout, login wall, or missing public endpoint is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, personal, or other unsafe fields were requested or retained.",
+    "Packet completion is research evidence only and does not qualify or admit a runtime adapter."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier", "full parcel polygon geometry if returned", "geometry CRS", "source layer/service metadata"],
+  "nativeFieldMapping": {},
+  "compositeKeyProvenance": "No parcel response was obtained; no composite key was constructed.",
+  "crs": null,
+  "geometryQuality": "not evaluated; no parcel geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed; no hit/miss inference.",
+    "requestEvidence": ["IHSI official geographic-data page HTTP 200, non-parcel maps", "DGI official site map HTTP 200, no public parcel endpoint exposed", "HaitiDocs administrative-boundary page HTTP 200", "CIAT land/cadastre page HTTP 503"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Haitian cadastral institutional sources and public geographic services relevant to Cap-Haïtien.",
+    "verifiedOpenScope": "Institutional procedure evidence and non-parcel map/boundary sources only.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The local cadastral custodian and procedure are evidenced, but public parcel access, parcel identifiers, geometry, municipal extent, update currency, and linkage to registry records remain unresolved. No claim is made about parcel absence, ownership, title, taxation, or completeness."
+}

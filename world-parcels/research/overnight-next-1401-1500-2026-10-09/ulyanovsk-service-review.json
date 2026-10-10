@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6058-ulyanovsk.json",
+  "purpose": "Document first-party discovery and bounded anonymous cadastral/map-service review for Ulyanovsk, Russian Federation.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "assessment": "The official regional land-and-property information center documents the Public Cadastral Map and states that it contains public parcel boundaries and cadastral numbers. The current official national entry is NSPD. Anonymous GET requests to the current map and Rosreestr hosts timed out, so no JavaScript/configuration, public API, schema, CRS, safe native ID, or parcel geometry was verified.",
+  "registryAssessment": "registryFound=true because an official Ulyanovsk regional public-service page actually identifies and explains the cadastral map service. This is not evidence of citywide completeness or adapter admission.",
+  "officialPrimarySources": [
+    {"url": "https://regioncentr73.ru/site/servisy/publichnaya-kadastrovaya-karta/", "observation": "Official OGKU regional page, with Ulyanovsk office details, describes the Public Cadastral Map as a free real-time public service and lists parcel boundaries and cadastral numbers among its contents."},
+    {"url": "https://nspd.gov.ru/map?thematic=PKK", "observation": "Current national NSPD public-map entry identified by current references; anonymous GET timed out from this environment."},
+    {"url": "https://rosreestr.gov.ru/", "observation": "Rosreestr official host attempted as the federal cadastral-service source; anonymous GET timed out."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Ulyanovsk Russia official cadastral parcel map Rosreestr public GIS", "result": "Official regional cadastral-map documentation and current NSPD map URL found; no anonymous geometry response verified.", "actualResultUrls": ["https://regioncentr73.ru/site/servisy/publichnaya-kadastrovaya-karta/", "https://nspd.gov.ru/map?thematic=PKK", "https://rosreestr.gov.ru/"]},
+    {"language": "Russian", "query": "Публичная кадастровая карта Ульяновск Росреестр кадастровые участки официальный сервис", "result": "Официальная региональная страница подтверждает сервис и описывает границы участков и кадастровые номера; текущий анонимный доступ к карте не ответил.", "actualResultUrls": ["https://regioncentr73.ru/site/servisy/publichnaya-kadastrovaya-karta/", "https://nspd.gov.ru/map?thematic=PKK", "https://pkk.rosreestr.ru/"]}
+  ],
+  "attempts": [
+    {"url": "https://nspd.gov.ru/map?thematic=PKK", "method": "GET", "httpStatus": null, "result": "TLS connection timed out after 20 seconds; no HTML, JavaScript, configuration, schema, CRS, or parcel response obtained."},
+    {"url": "https://pkk.rosreestr.ru/", "method": "GET", "httpStatus": null, "result": "TLS connection timed out after 12 seconds; no redirect or parcel response obtained."},
+    {"url": "https://rosreestr.gov.ru/", "method": "GET", "httpStatus": null, "result": "TLS connection timed out after 12 seconds; no service configuration or parcel response obtained."}
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "No exact-point parcel request was completed because the first-party map hosts timed out. No absence inference is made.", "requestEvidence": []},
+  "coverageAssessment": {"claimedScope": "Public Cadastral Map service documented for Ulyanovsk region and hosted nationally by NSPD.", "verifiedOpenScope": "Documentation only; no anonymous machine-readable response or citywide/bulk scope verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "Endpoint paths, schema, CRS, native identity, geometry encoding, pagination, freshness, and coverage remain unknown.",
+  "runtimeAssessment": "held; no adapter admission or source integration implied"
+}

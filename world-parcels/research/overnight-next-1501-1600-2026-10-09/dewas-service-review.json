@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-8923-dewas.json",
+  "purpose": "Document first-party registry/map discovery, current viewer evidence, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Official Dewas revenue-administration pages and the Government of India DILRMP report evidence local revenue/cadastral custody and digitization status. No anonymous safe parcel-ID-plus-complete-polygon response was obtained.",
+  "registryAssessment": "Dewas district's official revenue-administration pages identify Urban Dewas and Rural Dewas revenue areas and the district's tehsil/village structure. DILRMP's official Dewas district report names Dewas tehsil and reports digitized/georeferenced cadastral maps and parcel totals. This is local registry/service evidence, not proof of open geometry availability.",
+  "officialPrimarySources": [
+    {"url": "https://dewas.nic.in/en/revenue-administration/", "observation": "Official Dewas district page lists revenue divisions, tehsils, and Urban/Rural Dewas revenue villages."},
+    {"url": "https://dewas.nic.in/%E0%A4%B0%E0%A4%BE%E0%A4%9C%E0%A4%B8%E0%A5%8D%E0%A4%B5-%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A4%B6%E0%A4%BE%E0%A4%B8%E0%A4%A8/", "observation": "Official Hindi Dewas district page gives the corresponding revenue-administration structure."},
+    {"url": "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/443", "observation": "Official DILRMP page reports Dewas tehsil cadastral-map/FMB, village, and land-parcel status, including 224 georeferenced villages and parcel totals."},
+    {"url": "https://services.india.gov.in/service/detail/check-dissemination-of-naksha-parcel-map-of-madhya-pradesh-online-1", "observation": "Official National Government Services Portal describes MP online Naksha parcel-map access by district, subdivision, tehsil, and village."},
+    {"url": "https://stategisportal.nic.in/stategisportal/Home/Map/23", "observation": "Official MP State GIS portal is publicly discoverable as a multi-layer map platform; no parcel feature schema was verified."}
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://webgis2.mpbhulekh.gov.in",
+    "observedTechnology": "Official MP WebGIS 2.0 / MP Bhulekh land-record service referenced by government pages; current JavaScript/configuration was not retrieved.",
+    "observedControls": [],
+    "schemaAndCrs": "Not verified from a successful service response.",
+    "nativeFieldNames": "Not retained; no successful feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://webgis2.mpbhulekh.gov.in/", "method": "GET", "normalTlsVerification": true, "result": "Direct anonymous request timed out after 20 seconds; no response body or viewer configuration was retrieved."},
+    {"url": "https://mpbhulekh.gov.in", "method": "GET", "normalTlsVerification": true, "result": "Direct anonymous request timed out after 15 seconds; no response body or API route was retrieved."},
+    {"url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/443", "method": "GET", "normalTlsVerification": true, "result": "Direct curl attempt was blocked by local certificate-chain verification; official search result content was reviewed instead. No certificate exception was used."},
+    {"url": "https://stategisportal.nic.in/stategisportal/Home/Map/23", "method": "GET", "normalTlsVerification": true, "result": "Direct curl attempt was blocked by local certificate-chain verification; official search result content was reviewed instead. No certificate exception was used."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "query": "No WUP-point parcel query was submitted because the public service route and safe request shape were not verified."},
+  "coverageAssessment": {"claimedScope": "Dewas local revenue/cadastral custody and tehsil digitization status are evidenced by official sources.", "verifiedOpenScope": "No anonymous complete-polygon feature response verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "The official viewer's exact parcel layer, schema, CRS, native identity, anonymous query body, and coverage remain unverified. The exact WUP point was preserved; no timeout or certificate-chain failure was interpreted as parcel absence.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."}
+}

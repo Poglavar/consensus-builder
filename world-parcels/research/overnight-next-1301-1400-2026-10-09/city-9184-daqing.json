@@ -1,0 +1,81 @@
+{
+  "cityCode": 9184,
+  "queueRank": 1394,
+  "name": "Daqing",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [46.5752337536166, 125.128483425807],
+  "population2025": 405480,
+  "population2025k": 405.48,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Daqing China official cadastral parcel map land registration GIS public service",
+        "result": "The official Daqing municipal government-service portal was found. It advertises an Internet-plus real-estate-registration service and a government map link. No safe anonymous parcel-vector response was verified.",
+        "actualResultUrls": ["https://dq.zwfw.hlj.gov.cn/daqing/", "https://dq.zwfw.hlj.gov.cn/"]
+      },
+      {
+        "language": "Chinese",
+        "query": "大庆 不动产登记 地图 地籍 图 公共 服务 官方",
+        "result": "检索到大庆市政务服务网、互联网+不动产登记入口和政务地图入口；另有黑龙江省政府关于大庆市不动产登记中心龙凤、萨尔图分中心的官方报道。未验证安全匿名宗地要素响应。",
+        "actualResultUrls": ["https://dq.zwfw.hlj.gov.cn/daqing/", "https://www.hlj.gov.cn/hlj/c107858/202509/c00_31872082.shtml"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "DAQING-MUNICIPAL-GOVERNMENT-SERVICE-PORTAL-REAL-ESTATE-REGISTRATION",
+    "name": "Daqing municipal government-service portal / Daqing real-estate registration service",
+    "url": "https://dq.zwfw.hlj.gov.cn/daqing/",
+    "operator": "Daqing municipal government service portal; Daqing real-estate registration service",
+    "serviceType": "Official local registration service and government-map entry; anonymous parcel vector response not verified",
+    "layer": "Municipal service portal; no public parcel feature layer qualified",
+    "nativeIdField": null,
+    "nativeIdEvidence": "The inspected public portal HTML exposes service links only; no parcel feature schema, native identity, CRS, or geometry response was returned.",
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "Official local service evidence establishes a Daqing real-estate-registration channel and local registration-center presence, but not an open parcel-vector API. No owner, address, titleholder, tax, account, or other unsafe fields were requested."
+  },
+  "requests": [
+    {"url": "https://dq.zwfw.hlj.gov.cn/daqing/", "method": "GET; anonymous with TLS verification", "httpStatus": 200, "result": "Official Daqing municipal service portal retrieved. HTML advertises Internet-plus real-estate registration and a government-map link."},
+    {"url": "https://dq.zwfw.hlj.gov.cn/", "method": "GET; anonymous via public web index", "httpStatus": 200, "result": "Official Daqing service portal indexed; confirms local service context and real-estate-registration offering."},
+    {"url": "http://111.41.199.246:88/emap/system/zwmap", "method": "GET; anonymous; HTTP endpoint linked from official portal", "httpStatus": null, "result": "Request timed out after 20 seconds. No login, credentials, CAPTCHA bypass, or TLS-disable workaround was used."},
+    {"url": "http://202.97.194.108:7008/idCard/bdx/", "method": "Not requested", "httpStatus": null, "result": "Official portal's real-estate-registration guide link was identified but not opened because it is a registration workflow and no anonymous parcel-vector endpoint was exposed by the referring page."},
+    {"url": "https://www.hlj.gov.cn/hlj/c107858/202509/c00_31872082.shtml", "method": "GET; official provincial-government report via public web index", "httpStatus": 200, "result": "Official report identifies Daqing real-estate registration centers at Longfeng and Sartu subcenters; it describes service workflow, not parcel-vector access."}
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official Daqing municipal service portal HTML, its linked registration and government-map routes, and an official Heilongjiang government report about Daqing registration centers were reviewed.",
+    "verifiedOpenScope": "Local registry/service presence verified; no anonymous parcel feature schema, native ID, CRS, or polygon response verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "verifiedSample": false,
+  "resultCategory": "official_registry_geometry_unverified",
+  "technicalBlocker": "The official government-map host timed out under a bounded anonymous GET, while the real-estate-registration link is a service workflow. No safe public parcel feature endpoint was exposed or qualified.",
+  "remainingUncertainty": "The exact unchanged WUP point may lie within cadastral coverage. A map timeout, registration workflow boundary, and lack of an exposed feature response are not evidence of citywide absence.",
+  "nextStep": "Serial reviewer may independently inspect only a genuinely public anonymous network response and qualify safe native ID plus geometry if actually returned; keep runtime readiness held.",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [46.5752337536166, 125.128483425807],
+  "publicParcelGeometryFound": false,
+  "sourceIds": ["DAQING-MUNICIPAL-GOVERNMENT-SERVICE-PORTAL", "DAQING-REAL-ESTATE-REGISTRATION-CENTER"],
+  "registryEvidenceUrls": ["https://dq.zwfw.hlj.gov.cn/daqing/", "https://www.hlj.gov.cn/hlj/c107858/202509/c00_31872082.shtml"],
+  "pointBasis": "Exact unchanged WUP 2025 settlement point (latitude, longitude); not shifted to force a parcel hit.",
+  "cohort": "overnight-next-1301-1400",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 9184,
+  "cityId": "wup2025:9184"
+}

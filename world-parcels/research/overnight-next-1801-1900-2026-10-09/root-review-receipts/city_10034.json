@@ -1,0 +1,15 @@
+{
+  "taskId": "city:10034",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-10034-zhangqiu.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/zhangqiu-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T15:40:02Z",
+  "reviewNotes": "Official Jinan sources corroborate Zhangqiu registration custody. WAF and TLS failures left no anonymous parcel feature response or verified native parcel identity.",
+  "admissionGate": "No independently evidenced live native-ID read, forced pagination, 13 bounded cells, metric GEOS validation and overlap checks, source binding, or headed Details-panel verification. No runtime admission or generated coverage change."
+}

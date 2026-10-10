@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityCode": 7087,
+  "queueRank": 1402,
+  "cityId": "wup2025:7087",
+  "name": "Joharabad",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "point": [32.2918972963112, 72.3079529336539],
+  "population2025": 403179,
+  "population2025k": 403.179,
+  "populationUnit": "persons",
+  "cohorts": ["overnight-next-1401-1500-2026-10-09"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Joharabad Pakistan cadastral map parcel GIS official land records",
+        "checkedAt": "2026-10-09",
+        "result": "Search identified the official Punjab PULSE urban land GIS and Punjab Land Records Authority. The PULSE viewer exposed a current official ArcGIS GPC parcel service; the exact point query was empty but a bounded nearby envelope returned three parcel polygons.",
+        "actualResultUrls": ["https://lis.pulse.gop.pk/", "https://www.punjab-zameen.gov.pk/"]
+      },
+      {
+        "language": "Urdu",
+        "query": "جوہرآباد پاکستان کادستر نقشہ اراضی ریکارڈ سرکاری",
+        "checkedAt": "2026-10-09",
+        "result": "Native-language search surfaced the official Punjab Land Records Authority and Punjab PULSE GIS routes. It did not independently establish Joharabad-specific coverage; bounded source inspection supplied the service evidence.",
+        "actualResultUrls": ["https://lis.pulse.gop.pk/", "https://www.punjab-zameen.gov.pk/"]
+      }
+    ],
+    "portals": [
+      {
+        "name": "PULSE Punjab Urban Land Systems Enhancement GIS",
+        "operator": "Government of Punjab, Pakistan",
+        "homeUrl": "https://lis.pulse.gop.pk/",
+        "mapUrl": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/GPC/GPC_Parcels/MapServer",
+        "observation": "The current viewer HTML exposes the official GPC Parcels ArcGIS MapServer and a public viewer token route. The GPC Parcel layer is polygon geometry, query-capable, and reports EPSG/WKID 4326."
+      }
+    ]
+  },
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": true,
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "contentType": "application/geo+json",
+    "featureCount": 3,
+    "geometryTypes": ["Polygon"],
+    "sampleFile": "joharabad-gpc-sample.geojson"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Punjab GPC parcel layer sampled in a bounded envelope around the WUP point.",
+    "verifiedOpenScope": "Three safe-ID polygon features returned in the envelope 72.2879529336539,32.2718972963112 to 72.3279529336539,32.3118972963112. The exact WUP point returned zero intersecting features. This is not evidence of citywide absence or completeness.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The PULSE/GPC layer returned nearby polygons but did not intersect the exact WUP point. Coverage relation to the Joharabad municipal boundary, parcel-layer completeness, and stable identity guarantees beyond the publisher's GPCParcelId field remain unverified.",
+  "sourceQuality": "Official Punjab government PULSE GIS and Punjab Land Records Authority ArcGIS service. Native sample identity is GPCParcelId; raw source attributes were not retained in the sample.",
+  "assessment": {
+    "status": "verified_sample_partial_coverage",
+    "runtimeReadiness": "technical-hold",
+    "registryFound": true,
+    "verifiedSample": true,
+    "evidenceFile": "research/overnight-next-1401-1500-2026-10-09/joharabad-service-review.json"
+  },
+  "runtimeReadiness": "technical-hold",
+  "acceptanceFile": null
+}

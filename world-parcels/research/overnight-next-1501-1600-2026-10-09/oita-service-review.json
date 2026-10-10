@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-3322-oita.json",
+  "purpose": "Document Oita first-party cadastral-program discovery, public map portal inspection, Ministry of Justice registry-map catalog inspection, request outcomes, safety limits and runtime qualification status.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "assessment": "Oita City's official cadastral-survey page evidences local cadastral work and points to the national survey-status map. The public Oita Map landing/configuration was fetched but did not expose a verified cadastral parcel API. G-Space CKAN metadata lists Ministry of Justice Oita registry-map XML archives, but no bounded safe-ID geometry response was obtained; no sample was retained and runtime readiness remains held.",
+  "registryAssessment": "Local cadastral custody/program evidence is present, but this packet does not admit an anonymous citywide parcel runtime source.",
+  "safeFieldAllowlist": ["safe public parcel/source ID", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "officialPrimarySources": [
+    {"url": "https://www.city.oita.oita.jp/o162/chiseki/chiseki.html", "observation": "Oita City describes cadastral surveying as creating cadastral maps and ledgers for parcel land information and links to the national survey-status map."},
+    {"url": "https://www2.wagmap.jp/oitacity/Portal", "observation": "Public Oita Map landing/configuration was fetched; no verified cadastral parcel layer/API was identified."},
+    {"url": "https://www.geospatial.jp/ckan/dataset/houmusyouchizu-2025-1-1913", "observation": "G-Space catalog identifies Oita City (Oita Legal Affairs Bureau) registry-office map data and 44201-3200-2024/2025 ZIP resources."},
+    {"url": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=houmusyouchizu-2025-1-1913", "observation": "Anonymous CKAN API returned HTTP 200 metadata; both listed Oita resources are large ZIP/XML archives of approximately 314 MB."},
+    {"url": "https://front.geospatial.jp/moj-chizu-xml-readme/moj-chizu-shp-download/", "observation": "Public G-Space documentation lists Oita among available converted registry-map datasets and explains the conversion caveat; no bounded feature was retained."},
+    {"url": "https://houmukyoku.moj.go.jp/oita/content/001408798.pdf", "observation": "Official Oita Legal Affairs Bureau notice about registry-office map creation in named Oita districts; not a public parcel API."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Oita City official cadastral parcel map GIS land parcel map Japan", "result": "Official city cadastral page and public map portal found; no anonymous official cadastral parcel API verified. Ministry of Justice/G-Space Oita municipality 44201 registry-map catalog found.", "resultUrls": ["https://www.city.oita.oita.jp/o162/chiseki/chiseki.html", "https://www2.wagmap.jp/oitacity/Portal", "https://www.geospatial.jp/ckan/dataset/houmusyouchizu-2025-1-1913"]},
+    {"language": "Japanese", "query": "大分市 公式 地籍図 公図 地番図 GIS", "result": "大分市公式の地籍調査制度・状況案内と大分市公開マップを確認。匿名の地籍図・公図ポリゴンAPIは確認できず、法務省登記所備付地図データの大分市44201カタログを確認した。", "resultUrls": ["https://www.city.oita.oita.jp/o162/chiseki/chiseki.html", "https://www2.wagmap.jp/oitacity/Portal", "https://www.geospatial.jp/ckan/dataset/houmusyouchizu-2025-1-1913"]}
+  ],
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "No geometry response was obtained; the unchanged WUP point [33.2290393280175, 131.638400049328] was not shifted and no exact-point absence inference was made.", "requestEvidence": [{"url": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=houmusyouchizu-2025-1-1913", "method": "GET", "status": "HTTP 200", "response": "Catalog metadata only: Oita 44201 2024/2025 ZIP/XML resources; no bounded feature response."}]},
+  "attempts": [
+    {"url": "https://www.city.oita.oita.jp/o162/chiseki/chiseki.html", "method": "GET", "status": "HTTP page found", "result": "Read official cadastral-survey remit and national survey-status link; no parcel API exposed."},
+    {"url": "https://www2.wagmap.jp/oitacity/Portal", "method": "GET", "status": "HTTP page found", "result": "Fetched public map landing/configuration; no verified cadastral parcel layer or anonymous feature endpoint identified."},
+    {"url": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=houmusyouchizu-2025-1-1913", "method": "GET; anonymous; TLS verification enabled", "status": "HTTP 200", "result": "Received Oita 44201 catalog metadata and two large ZIP/XML resource URLs."},
+    {"url": "https://front.geospatial.jp/moj-chizu-xml-readme/moj-chizu-shp-download/", "method": "GET", "status": "HTTP page found", "result": "Read public converted-data documentation and Oita availability listing; no parcel response retained."},
+    {"url": "https://houmukyoku.moj.go.jp/oita/content/001408798.pdf", "method": "GET/search discovery", "status": "Official PDF located", "result": "Confirmed a local Legal Affairs Bureau registry-map notice; not an anonymous geometry endpoint."}
+  ],
+  "coverageAssessment": {"claimedScope": "Oita City official cadastral program/public map plus Ministry of Justice registry-map catalog for municipality code 44201.", "verifiedOpenScope": "Official custody/program pages, public portal landing/configuration, catalog metadata, resource names/formats/sizes and public documentation were inspected; parcel schema, CRS, native ID, geometry and completeness were not verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "The portal's deeper JavaScript/configuration may expose other public layers; the large XML archives were not downloaded or parsed; parcel identity and CRS remain unverified. Unsafe owner/address/lot/title/tax/personal fields were not requested or retained."
+}

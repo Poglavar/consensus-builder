@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11461-deoghar.json",
+  "cityCode": 11461,
+  "purpose": "Document first-party discovery, current public map/service routes, bounded anonymous access review, safe-field limits, and uncertainty.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Deoghar district land-records page links to Jharbhoomi for Register-II, Khata/Khesra, and mutation-status services. The official NIC Bhu-Naksha implementation directory links Jharkhand's cadastral viewer at jharbhunaksha.jharkhand.gov.in. Direct anonymous requests to the Jharkhand Jharbhoomi and Bhu-Naksha hosts timed out, so no current JavaScript/configuration, API route, schema, CRS, safe parcel identity, or geometry was obtained. No parcel sample is retained.",
+  "registryAssessment": "A local government land-record service context is evidenced for Deoghar, but no local cadastral map response or public parcel-vector endpoint was independently verified. registryFound therefore remains null.",
+  "safeFieldAllowlist": ["safe parcel identifier only if publicly exposed and non-personal", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "queries": [
+    {
+      "language": "English",
+      "query": "Deoghar Jharkhand official cadastral parcel map Bhu Naksha Jharbhoomi",
+      "outcome": "Official Deoghar land-records page and official NIC Bhu-Naksha implementation listing found; Jharkhand viewer route identified.",
+      "actualResultUrls": ["https://deoghar.nic.in/service/land-records/", "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp", "https://jharbhoomi.jharkhand.gov.in/", "https://jharbhunaksha.jharkhand.gov.in/"]
+    },
+    {
+      "language": "Hindi",
+      "query": "देवघर झारखंड आधिकारिक भू नक्शा खसरा प्लॉट मानचित्र",
+      "outcome": "Official Hindi Deoghar map page and official district land-record service context found; no parcel vector or safe native identity was exposed in the accessible page content.",
+      "actualResultUrls": ["https://deoghar.nic.in/hi/%E0%A4%AE%E0%A4%BE%E0%A4%A8%E0%A4%9A%E0%A4%BF%E0%A4%A4%E0%A5%8D%E0%A4%B0/", "https://deoghar.nic.in/service/land-records/", "https://jharbhoomi.jharkhand.gov.in/"]
+    }
+  ],
+  "attempts": [
+    {"url":"https://deoghar.nic.in/service/land-records/","method":"GET/search-open","httpStatus":200,"result":"Official page loaded in web retrieval; documented Register-II, Khata/Khesra, and mutation-status services and linked Jharbhoomi."},
+    {"url":"https://deoghar.nic.in/hi/%E0%A4%AE%E0%A4%BE%E0%A4%A8%E0%A4%9A%E0%A4%BF%E0%A4%A4%E0%A5%8D%E0%A4%B0/","method":"GET/search-open","httpStatus":200,"result":"Official Hindi district map page loaded; no cadastral parcel schema, safe parcel ID, or geometry exposed."},
+    {"url":"https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp","method":"GET/search-open","httpStatus":200,"result":"Official implementation directory loaded and linked Jharkhand viewer at jharbhunaksha.jharkhand.gov.in/."},
+    {"url":"https://jharbhoomi.jharkhand.gov.in/","method":"GET","httpStatus":"timeout after 25 seconds","result":"Direct anonymous request timed out; no viewer HTML, JavaScript, configuration, schema, CRS, or geometry inferred."},
+    {"url":"https://jharbhoomi.jharkhand.gov.in/newhome2","method":"GET","httpStatus":"timeout after 15 seconds","result":"Direct anonymous request timed out; no credentials, token, or TLS bypass used."},
+    {"url":"https://jharbhunaksha.jharkhand.gov.in/","method":"GET","httpStatus":"timeout after 15 seconds","result":"Direct anonymous request timed out; no viewer HTML, API route, schema, CRS, or geometry inferred."},
+    {"url":"https://jharbhunaksha.jharkhand.gov.in/Bhunaksha/","method":"GET","httpStatus":"timeout after 15 seconds","result":"Direct anonymous request timed out; no alternate path response obtained."}
+  ],
+  "geometryEvidence": null,
+  "geometryDecision": {"verified":false,"sourceId":null,"nativeIdField":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"No exact-point parcel containment test was completed. Exact WUP point [24.4946438388827, 86.6979613009286] was preserved and not shifted; viewer timeout is not evidence of citywide absence."},
+  "remainingUncertainty": "The Jharkhand viewers' current JavaScript/configuration, service endpoints, CRS, native parcel identity, exact-point parcel, and citywide open coverage remain unverified. A future attempt may retry from a responsive trusted route and inspect only safe ID+geometry fields.",
+  "runtimeAssessment": "not enabled; serial reviewer must independently qualify any adapter"
+}

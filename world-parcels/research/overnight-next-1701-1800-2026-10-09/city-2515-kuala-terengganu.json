@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "wupCityCode": 2515,
+  "name": "Kuala Terengganu",
+  "country": "Malaysia",
+  "countryCode": "MY",
+  "iso3": "MYS",
+  "centerLatLon": [5.33670141494936, 103.114434141764],
+  "point": [5.33670141494936, 103.114434141764],
+  "population2025": 326615,
+  "population2025k": 326.615,
+  "populationUnit": "persons",
+  "queuePriority": 1759,
+  "queueRank": 1759,
+  "cohorts": ["overnight-next-1701-1800-2026-10-09"],
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kuala Terengganu cadastral parcel map official Malaysia land office GIS",
+        "result": "First-party or government-hosted results identified the JUPEM-sourced KADASTER service description, the official MyLand GIS viewer, a Terengganu eKadaster login route, and a Terengganu government GIS layer description.",
+        "actualResultUrls": [
+          "https://spgis.mbsp.gov.my/geoportal/rest/services/Kadaster/KADASTER/FeatureServer",
+          "https://myland.gov.my/MyCharting-WebView/",
+          "https://ekadaster.trg.jupem.gov.my/Account/Login",
+          "https://geoformatik.forestry.gov.my/arcgis/rest/services/TERENGGANU_2/MapServer/59"
+        ]
+      },
+      {
+        "language": "Malay (native/local)",
+        "query": "Kuala Terengganu kadaster lot tanah peta rasmi GIS Terengganu",
+        "result": "Malay-language discovery identified the same official/public routes: MyLand (Carian Koordinat and lot query UI), JUPEM KADASTER metadata, and the Terengganu eKadaster login page. No anonymous polygon response was established.",
+        "actualResultUrls": [
+          "https://myland.gov.my/MyCharting-WebView/",
+          "https://spgis.mbsp.gov.my/geoportal/rest/services/Kadaster/KADASTER/FeatureServer",
+          "https://ekadaster.trg.jupem.gov.my/Account/Login"
+        ]
+      }
+    ],
+    "officialViewer": "https://myland.gov.my/MyCharting-WebView/",
+    "requests": [
+      {
+        "method": "GET",
+        "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/TERENGGANU_2/MapServer/59?f=pjson",
+        "status": "TLS verification failed",
+        "outcome": "The host certificate was not trusted by the local curl trust store. No certificate exception was used and no retry was made. Search metadata described a polygon layer with FID, DAERAH, PA, LOT, UPI, and STATUS fields, extent in spatial reference 102062, and JUPEM 2020 source attribution; this metadata was not treated as a live response."
+      },
+      {
+        "method": "GET",
+        "url": "https://spgis.mbsp.gov.my/geoportal/rest/services/Kadaster/KADASTER/FeatureServer/3?f=pjson",
+        "status": "timeout after 20 seconds",
+        "outcome": "The JUPEM-sourced KADASTER service host did not return within the bounded request. No query or geometry response was obtained."
+      },
+      {
+        "method": "GET",
+        "url": "https://spgis.mbsp.gov.my/geoportal/rest/services/Kadaster/KADASTER/FeatureServer",
+        "status": 200,
+        "outcome": "Search-indexed official service metadata was available: layers named Lot Sementara, Lot Kadaster 2018, and Lot Kadaster 2009; supported query formats include JSON; service attribution is JUPEM. This was not sufficient to establish Kuala Terengganu coverage or retrieve geometry."
+      },
+      {
+        "method": "GET",
+        "url": "https://myland.gov.my/MyCharting-WebView/",
+        "status": 200,
+        "outcome": "Official MyLand GIS viewer loaded in text inspection. It exposes coordinate search in latitude/longitude order, state/district/mukim/lot queries, and a public map-service UI, but no parcel response was obtained in this bounded attempt."
+      },
+      {
+        "method": "GET",
+        "url": "https://ekadaster.trg.jupem.gov.my/Account/Login",
+        "status": "login wall / fetch unavailable",
+        "outcome": "Official Terengganu eKadaster route identifies a login requirement. No login, credentials, private token, or bypass was attempted."
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "First-party/public official routes are evidenced: MyLand is an official land GIS viewer, and JUPEM is identified as the cadastral data custodian in the KADASTER service metadata. A Kuala Terengganu-specific anonymous parcel polygon response was not verified.",
+  "verifiedParcelResponse": null,
+  "statusDetail": "official_cadastral_routes_found_no_verified_open_polygon_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Malaysia/JUPEM cadastral services and the Terengganu MyLand/eKadaster public routes.",
+    "verifiedOpenScope": "Service metadata and public viewer availability only; no Kuala Terengganu parcel geometry or bounded ID response.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_registry_route_no_verified_open_geometry",
+  "sourceIds": [],
+  "technicalBlocker": "The Terengganu ArcGIS host failed local TLS verification, the JUPEM-hosted service request timed out, and eKadaster required login. No unsafe workaround was used.",
+  "remainingUncertainty": "The exact WUP point was preserved and not shifted or used to infer parcel absence. Citywide coverage, current update currency, legal boundary status, public geometry availability, and any native parcel identity remain unresolved. Timeout, login wall, unusable UI, or TLS failure is not evidence of cadastral absence.",
+  "safeFieldAllowlist": ["stable native parcel identifier", "full parcel polygon geometry if returned", "geometry CRS", "source layer/service metadata"],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification required",
+  "sampleGeojson": null
+}

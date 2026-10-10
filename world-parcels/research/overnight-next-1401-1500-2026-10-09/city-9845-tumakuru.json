@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 9845,
+  "cityId": "wup2025:9845",
+  "name": "Tumakuru",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "queueRank": 1403,
+  "rank": 1403,
+  "point": [13.3370693745714, 77.1114518175071],
+  "centerLatLon": [13.3370693745714, 77.1114518175071],
+  "pointBasis": "Exact immutable WUP 2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 403109,
+  "population2025k": 403.109,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Tumakuru City Corporation publishes a public property-search procedure using municipal PID, ward and assessment identifiers. Karnataka's official Revenue Commissionerate portal documents state Bhoomi/SSLR Revenue Maps services. These establish relevant local/state land and property-record procedures, but not an open city cadastral feature service.",
+  "registryEvidenceUrls": [
+    "https://tumakurucitycorp.org/WebSite/Citizen/PropertySearch.aspx",
+    "https://landrecords.karnataka.gov.in/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_not_enabled_no_verified_public_geometry",
+  "runtimeAssessment": {
+    "status": "held_not_enabled_no_verified_public_geometry",
+    "reason": "No safe anonymous response containing a stable native parcel identity and full parcel polygon was verified. The municipal page is a PID/assessment property-search form and the state Revenue Maps service route timed out during direct retrieval."
+  },
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tumakuru Karnataka official cadastral parcel map land records GIS Bhoomi survey map",
+        "result": "Official Karnataka Revenue Commissionerate portal was found and documents Bhoomi/SSLR Revenue Maps and survey services. Tumakuru City Corporation also exposes a public municipal property-search page. No city-bound anonymous parcel geometry endpoint or schema was verified.",
+        "actualResultUrls": [
+          "https://landrecords.karnataka.gov.in/",
+          "https://tumakurucitycorp.org/WebSite/Citizen/PropertySearch.aspx",
+          "https://kla.kar.nic.in/council/house/Paperlaid/147/33.pdf"
+        ],
+        "executionMethod": "Separate web search followed by first-party page inspection."
+      },
+      {
+        "language": "Kannada",
+        "query": "ತುಮಕೂರು ಕರ್ನಾಟಕ ಅಧಿಕೃತ ಭೂ ದಾಖಲೆ ಪಾರ್ಸೆಲ್ ನಕ್ಷೆ ಭೂಮಿ",
+        "result": "Search results led to the same official Karnataka Bhoomi/Revenue Maps portal and the Tumakuru City Corporation property-search page. The city page includes Kannada instructions for searching by PID, ward and old/new assessment number; no parcel polygon service was found.",
+        "actualResultUrls": [
+          "https://landrecords.karnataka.gov.in/",
+          "https://tumakurucitycorp.org/WebSite/Citizen/PropertySearch.aspx"
+        ],
+        "executionMethod": "Independent Kannada-language web search followed by first-party page inspection."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://landrecords.karnataka.gov.in/",
+        "method": "GET",
+        "status": "HTTP 200 via web inspection",
+        "summary": "Official Karnataka Revenue Commissionerate portal identifies RTC, survey/SSLR and Revenue Maps services; page states it is a state government portal. No parcel feature schema returned."
+      },
+      {
+        "url": "https://landrecords.karnataka.gov.in/service3/",
+        "method": "GET",
+        "status": "timeout in direct anonymous request and web inspection",
+        "summary": "Revenue Maps route could not be inspected further; no retries, TLS bypass or CAPTCHA bypass used."
+      },
+      {
+        "url": "https://tumakurucitycorp.org/WebSite/Citizen/PropertySearch.aspx",
+        "method": "GET",
+        "status": "HTTP 200",
+        "summary": "Public ASP.NET property-search form retrieved. It documents PID or ward plus old/new assessment-number searches. No query was submitted because the form concerns property records and no geometry-only endpoint was exposed."
+      },
+      {
+        "url": "https://kla.kar.nic.in/council/house/Paperlaid/147/33.pdf",
+        "method": "GET via official search result",
+        "status": "official PDF found",
+        "summary": "Tumakuru Urban Development Authority annual report describes a GIS-based master-plan/base-map context, not a public parcel service."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Karnataka state Bhoomi/SSLR Revenue Maps and Tumakuru municipal property-search procedures; Tumakuru Urban Development Authority GIS master-plan context.",
+    "verifiedOpenScope": "A public municipal property-search form and official state service directory were verified. No anonymous native-ID-plus-polygon parcel response, CRS, or citywide geometry extent was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "technicalBlocker": "The state Revenue Maps subroute was unavailable by timeout, and the accessible municipal property-search page exposes PID/assessment lookups rather than safe parcel geometry. Exact-point hit status is therefore unknown and is not treated as evidence of absence.",
+  "safeFieldAllowlist": ["stable native parcel or property identifier if exposed", "geometry", "CRS", "source layer/service metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax/account", "registration or encumbrance details"],
+  "remainingUncertainty": "Whether Tumakuru-specific cadastral PDFs or a public geometry-capable service are available behind the state portal remains unresolved. Municipal PID records are not treated as cadastral parcel identities.",
+  "nextStep": "A serial reviewer may retry the official Revenue Maps route and independently qualify a geometry-only adapter if a stable native identity and geographically scoped full polygon response become available."
+}

@@ -1,0 +1,81 @@
+{
+  "cityCode": 6363,
+  "queueRank": 1397,
+  "name": "North Richland Hills",
+  "country": "United States of America",
+  "countryCode": "US",
+  "iso3": "USA",
+  "point": [32.8621940092415, -97.1985157079356],
+  "population2025": 404680,
+  "population2025k": 404.68,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": true,
+  "registryAssessment": "The City of North Richland Hills exposes an official public ArcGIS EnerGov map service whose Parcels layer is a local municipal parcel map/registry source. The service metadata describes the service as TAD Parcels; this is local GIS evidence, not a claim that the layer is a complete or current legal cadastre.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "North Richland Hills official GIS parcel map property map",
+        "result": "Found the City of North Richland Hills official Maps page and its official NRH Maps ArcGIS EnerGov service; the service exposes a Parcels polygon layer.",
+        "actualResultUrls": [
+          "https://www.nrhtx.com/265/Maps",
+          "https://nrhmaps.nrhtx.com/arcgis/rest/services/Tyler/EnerGov/MapServer",
+          "https://nrhmaps.nrhtx.com/arcgis/rest/services/Tyler/EnerGov/MapServer/15"
+        ]
+      },
+      {
+        "language": "English (United States local usage)",
+        "query": "North Richland Hills mapa parcelas catastro oficial Texas",
+        "result": "No distinct non-English local government source was found; the official English City GIS parcel service was the authoritative local result for this US locality.",
+        "actualResultUrls": [
+          "https://www.nrhtx.com/265/Maps",
+          "https://nrhmaps.nrhtx.com/arcgis/rest/services/Tyler/EnerGov/MapServer/15"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.nrhtx.com/265/Maps",
+      "role": "City of North Richland Hills official Maps page",
+      "observation": "Search discovery identified the official interactive map and municipal map context; direct fetch returned HTTP 403 during this attempt. The linked official NRH Maps service was accessible anonymously."
+    },
+    {
+      "url": "https://nrhmaps.nrhtx.com/arcgis/rest/services/Tyler/EnerGov/MapServer",
+      "role": "Official City of North Richland Hills ArcGIS EnerGov MapServer",
+      "observation": "HTTP 200; service CRS is ESRI 102738 / NAD 1983 StatePlane Texas North Central FIPS 4202 Feet; layers include Parcels (layer 15), and supported query formats include JSON and GeoJSON."
+    },
+    {
+      "url": "https://nrhmaps.nrhtx.com/arcgis/rest/services/Tyler/EnerGov/MapServer/15",
+      "role": "Official city Parcels layer metadata",
+      "observation": "HTTP 200; polygon layer with public Map/Query/Data capabilities. Safe native identity fields observed were OBJECTID and ParcelId. Unsafe owner, address, legal-description, and account fields were not requested."
+    }
+  ],
+  "geometryDecision": {
+    "verified": true,
+    "sampleCount": 1,
+    "sampleFile": "north-richland-hills-parcel-samples.geojson",
+    "reason": "The exact WUP point query returned one anonymous parcel feature with safe fields OBJECTID=21343 and ParcelId=P21485. A bounded nearby envelope query also returned three polygon geometries; one was retained after reducing properties to the canonical native ParcelId only."
+  },
+  "coverageAssessment": {
+    "claimedScope": "City of North Richland Hills official NRH Maps Parcels layer.",
+    "verifiedOpenScope": "Public service/layer metadata and anonymous exact-point and bounded ID+geometry responses were verified. Complete current citywide parcel coverage was not independently proven.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "sourceSchema": {
+    "nativeIdentity": "ParcelId; OBJECTID is the ArcGIS service object identifier.",
+    "nativeFieldsObserved": ["OBJECTID", "ParcelId", "DL", "ADDR_NUM", "FULL_ADDRESS", "ACCOUNT_NUM", "OWNER_NAME", "OWNER_ADDRESS", "LEGAL_DESC", "ACRES", "SHAPE"],
+    "safeFieldsRequested": ["OBJECTID", "ParcelId", "geometry"],
+    "unsafeFieldsNotRequested": ["OWNER_NAME", "OWNER_ADDRESS", "FULL_ADDRESS", "LEGAL_DESC", "ACCOUNT_NUM", "assessed values", "contact or titleholder data"],
+    "crs": "ESRI 102738 / NAD83 StatePlane Texas North Central FIPS 4202 Feet; query output was requested in EPSG:4326 GeoJSON.",
+    "compositeKeyProvenance": null
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

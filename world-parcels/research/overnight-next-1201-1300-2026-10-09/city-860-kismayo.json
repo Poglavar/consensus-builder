@@ -1,0 +1,171 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:860",
+  "wupCityCode": 860,
+  "queueRank": 1207,
+  "rank": 1207,
+  "name": "Kismayo",
+  "country": "Somalia",
+  "countryCode": "SO",
+  "iso3": "SOM",
+  "point": [-0.353744276075123, 42.5428176867481],
+  "centerLatLon": [-0.353744276075123, 42.5428176867481],
+  "pointBasis": "Immutable WUP 2025 City_Code 860 coordinate, copied without adjustment; latitude/longitude order preserved.",
+  "population2025": 461302,
+  "population2025k": 461.302,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Low",
+  "status": "complete",
+  "resultCategory": "official_local_registry_procedure_geometry_unverified",
+  "registryFound": true,
+  "registryBasis": "The official Kismayo Nagaad RAP states that Kismayo Municipality will process Jubaland title deeds for affected residents and describes municipal land-administration responsibilities and escalation through the Land Committee and Mayor's office. This evidences a local land-registration/title-deed procedure, not an open parcel geometry service or title conclusion.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_not_enabled_no_verified_public_geometry",
+  "blocker": "No anonymous first-party cadastral parcel layer, stable safe parcel identifier, or usable geometry query was verified. The public ArcGIS service reached during discovery is an administrative district-boundary layer, not a parcel layer. This is not evidence of citywide parcel absence.",
+  "source": {
+    "sourceId": null,
+    "name": "Kismayo City Municipality / Jubaland and Nagaad (Somalia Urban Resilience Project)",
+    "url": "https://kismayo.jl.so/",
+    "operator": "Kismayo City Municipality, Jubaland State of Somalia; Ministry of Public Works, Reconstruction and Housing / Nagaad Project",
+    "serviceType": "Official municipal land-administration procedure evidence and official project disclosure; no public cadastral parcel feature service verified",
+    "layer": null,
+    "geometryType": null,
+    "nativeIdField": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "Only safe public source metadata and administrative context retained. No owner, address, contact, titleholder, tax/account, or personal fields requested or retained.",
+    "outputCrs": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Official Kismayo municipal pages, the official Nagaad RAP, and a public Somalia administrative ArcGIS service were reviewed.",
+    "verifiedOpenScope": "Local land-registration/title-deed procedure is evidenced, but anonymous parcel geometry and a stable safe parcel identifier remain unverified. The exact WUP point was not shifted and was not used to infer absence.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "technicalBlocker": "No public first-party parcel API was identified in the reviewed municipal/project material. The reachable ArcGIS service exposes district boundaries only; no parcel schema or parcel query was available from it.",
+  "remainingUncertainty": "Whether Kismayo Municipality or Jubaland maintains a separate non-indexed or non-public cadastral/title-deed system, and whether any anonymous parcel geometry endpoint exists, remain unknown.",
+  "registryEvidenceUrls": [
+    "https://kismayo.jl.so/",
+    "https://kismayo.jl.so/neighbourhoods/",
+    "https://nagaad.mpwr.gov.so/ova_doc/kismayo-updated-package-3-rap/",
+    "https://nagaad.mpwr.gov.so/wp-content/uploads/2025/05/Kismayo-UPDATED-Package-3-RAP.pdf"
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kismayo Somalia official cadastral map land registry GIS parcel map government",
+        "result": "First-party review located the official Kismayo City Municipality site, the official Nagaad/MoPWR RAP, and a public ArcGIS Somalia district-boundary layer. No official public parcel-geometry endpoint was located.",
+        "actualResultUrls": [
+          "https://kismayo.jl.so/",
+          "https://nagaad.mpwr.gov.so/ova_doc/kismayo-updated-package-3-rap/",
+          "https://services.arcgis.com/qovwaCdMoEzUUFzS/ArcGIS/rest/services/Somalia_Situation_WFL1/FeatureServer/8"
+        ]
+      },
+      {
+        "language": "Somali",
+        "query": "Kismaayo Soomaaliya khariidadda cadastral diiwaanka dhulka GIS rasmi ah",
+        "result": "Separate Somali-language discovery found official Somali government/project material discussing land administration and title deeds, but no anonymous public cadastral parcel geometry service.",
+        "actualResultUrls": [
+          "https://nagaad.mpwr.gov.so/wp-content/uploads/2025/05/Kismayo-UPDATED-Package-3-RAP.pdf",
+          "https://kismayo.jl.so/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://kismayo.jl.so/neighbourhoods/",
+        "operator": "Kismayo City Municipality, Jubaland State of Somalia",
+        "scope": "Official municipal page identifies the municipality and its neighbourhood/planning context; it does not expose a cadastral parcel layer or public parcel query."
+      },
+      {
+        "url": "https://nagaad.mpwr.gov.so/wp-content/uploads/2025/05/Kismayo-UPDATED-Package-3-RAP.pdf",
+        "operator": "Ministry of Public Works, Reconstruction and Housing / Nagaad Project",
+        "scope": "Official RAP documents municipal title-deed processing and land-administration procedure. It is not an open parcel-geometry dataset."
+      },
+      {
+        "url": "https://services.arcgis.com/qovwaCdMoEzUUFzS/ArcGIS/rest/services/Somalia_Situation_WFL1/FeatureServer/8",
+        "operator": "Public ArcGIS-hosted Somalia situation dataset",
+        "scope": "Reachable administrative District Boundary feature layer; metadata identifies polygon geometry in EPSG:3857 and safe fields FID/admin2Name/admin2Pcod. It is not cadastral parcel coverage and no geometry was retained."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://kismayo.jl.so/",
+        "method": "GET; anonymous public read",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "bytesRead": null,
+        "error": null,
+        "assessment": "Official municipal site reachable; no parcel API or cadastral map endpoint identified from the reviewed public page."
+      },
+      {
+        "url": "https://kismayo.jl.so/neighbourhoods/",
+        "method": "GET; anonymous public read",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "bytesRead": null,
+        "error": null,
+        "assessment": "Official municipal neighbourhood page reachable; descriptive planning content only, no parcel geometry."
+      },
+      {
+        "url": "https://nagaad.mpwr.gov.so/ova_doc/kismayo-updated-package-3-rap/",
+        "method": "GET; anonymous public read",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "bytesRead": null,
+        "error": null,
+        "assessment": "Official project document page reachable and links the Kismayo RAP PDF."
+      },
+      {
+        "url": "https://nagaad.mpwr.gov.so/wp-content/uploads/2025/05/Kismayo-UPDATED-Package-3-RAP.pdf",
+        "method": "GET; anonymous public read",
+        "httpStatus": 200,
+        "contentType": "application/pdf",
+        "bytesRead": null,
+        "error": null,
+        "assessment": "Official RAP readable. It records municipal title-deed processing and land-administration procedure; no parcel geometry endpoint or safe parcel ID is supplied."
+      },
+      {
+        "url": "https://services.arcgis.com/qovwaCdMoEzUUFzS/ArcGIS/rest/services/Somalia_Situation_WFL1/FeatureServer/8?f=pjson",
+        "method": "GET; anonymous ArcGIS layer metadata only",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "bytesRead": null,
+        "error": null,
+        "assessment": "Metadata confirms a polygon District Boundary layer, EPSG:3857, fields FID/admin2Name/admin2Pcod, and supported JSON/GeoJSON/PBF query formats. Administrative boundary only; not parcel evidence."
+      },
+      {
+        "url": "https://services.arcgis.com/qovwaCdMoEzUUFzS/ArcGIS/rest/services/Somalia_Situation_WFL1/FeatureServer/8/query?where=admin2Name%3D%27Kismayo%27&outFields=FID%2Cadmin2Name%2Cadmin2Pcod&returnGeometry=false&f=pjson",
+        "method": "GET; anonymous attribute-only administrative query; geometry excluded",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "bytesRead": null,
+        "error": null,
+        "assessment": "Administrative query route responded; result was not used as parcel evidence and no geometry or identity record was retained."
+      }
+    ],
+    "historicalContext": [
+      "No prior Kismayo artifact was present in the inspected cohort directory before this attempt."
+    ]
+  },
+  "checkedAt": "2026-10-09",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "sourceIds": [],
+  "nextStep": "A serial reviewer may independently qualify a real adapter only after verifying a safe anonymous parcel geometry service and stable parcel identifier; do not infer absence from this held result.",
+  "adapterReady": false,
+  "runtimeAssessment": {
+    "status": "held_unknown_no_verified_public_geometry",
+    "reason": "Official municipal and project sources establish local land-registration procedure, while the only reachable GIS API reviewed is administrative district-boundary data. No parcel geometry response was verified."
+  }
+}

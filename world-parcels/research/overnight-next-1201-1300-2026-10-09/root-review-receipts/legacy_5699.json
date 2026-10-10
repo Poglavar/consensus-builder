@@ -1,0 +1,14 @@
+{
+  "taskId": "legacy:5699",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-2026-10-09/city-5699-annaba.json",
+    "world-parcels/research/overnight-next-2026-10-09/annaba-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T10:31:00.095478Z",
+  "reason": "The indexed first-party Annaba cadastre branch confirms local custody, while the live page was unavailable. No full-polygon response, native ID, or live adapter qualification is evidenced; network failure is not absence.",
+  "firstPartySourceReviewed": "https://a.dgdn.dz/annaba.html"
+}

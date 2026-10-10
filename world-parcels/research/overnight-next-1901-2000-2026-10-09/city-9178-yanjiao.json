@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 9178,
+  "queueRank": 1968,
+  "name": "Yanjiao",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [39.9247700248833, 116.815751863167],
+  "population2025": 294943,
+  "population2025k": 294.943,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Yanjiao China official cadastral parcel map geoportal",
+        "result": "Found the official Yanjiao High-tech Industrial Development Zone government site and a first-party announcement identifying the Yanjiao real-property registration hall. No public anonymous parcel map/API or downloadable parcel geometry was exposed by the search.",
+        "actualResultUrls": [
+          "https://www.yanjiao.gov.cn/",
+          "https://www.yanjiao.gov.cn/shows/12/9586.html",
+          "https://xxgk.san-he.gov.cn/Contentx?articleid=17334313822675968"
+        ]
+      },
+      {
+        "language": "Chinese (local/official language)",
+        "query": "燕郊 地籍图 地籍 cadastral parcel map 官方; 三河市 燕郊 不动产登记 地籍图 官方 地图",
+        "result": "Found the official Yanjiao government announcement stating that the Yanjiao real-property registration hall operates at the Yanjiao high-tech zone service location, and Sanhe government information identifying the Sanhe Natural Resources and Planning Bureau as the relevant natural-resources authority. Search results did not expose an anonymous parcel feature service, schema, CRS, or safe parcel geometry.",
+        "actualResultUrls": [
+          "https://www.yanjiao.gov.cn/shows/12/9586.html",
+          "https://xxgk.san-he.gov.cn/Contentx?articleid=17334313822675968",
+          "https://xxgk.san-he.gov.cn/gknb?departmentid=5"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.yanjiao.gov.cn/shows/12/9586.html",
+      "operator": "Yanjiao High-tech Industrial Development Zone government / Sanhe municipal government office",
+      "evidence": "First-party announcement dated 2022-09-24 says the Yanjiao real-property registration hall (燕郊不动产大厅) was moved to the Yanjiao high-tech zone service location and provides its public service telephone. This is direct local service-custodian evidence, not merely national agency prose."
+    },
+    {
+      "url": "https://www.yanjiao.gov.cn/",
+      "operator": "Yanjiao High-tech Industrial Development Zone Management Committee",
+      "evidence": "Official local government homepage identifies the Yanjiao high-tech zone and its public administration site. It was directly retrieved with HTTP 200."
+    },
+    {
+      "url": "https://xxgk.san-he.gov.cn/Contentx?articleid=17334313822675968",
+      "operator": "Sanhe Municipal Natural Resources and Planning Bureau via Sanhe government information disclosure",
+      "evidence": "First-party Sanhe government information identifies the municipal Natural Resources and Planning Bureau as the authority for natural-resources administration, including land-use and cadastral-adjacent oversight. The indexed page was not usable for direct retrieval during this attempt."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.yanjiao.gov.cn/",
+      "method": "GET",
+      "status": 200,
+      "summary": "Direct bounded curl retrieval succeeded with verified TLS. HTML contained ordinary site navigation and a site-map link, but no parcel viewer, ArcGIS service, WFS, FeatureServer, or parcel geometry endpoint was exposed."
+    },
+    {
+      "url": "https://www.yanjiao.gov.cn/shows/12/9586.html",
+      "method": "GET via first-party indexed result",
+      "status": 200,
+      "summary": "Official announcement was readable in the public search result and identified the Yanjiao real-property registration hall and service phone. No parcel feature response was returned."
+    },
+    {
+      "url": "https://xxgk.san-he.gov.cn/Contentx?articleid=17334313822675968",
+      "method": "GET",
+      "status": "timeout/unusable",
+      "summary": "Direct bounded request failed to connect within 8 seconds. This is a transport limitation, not evidence that Sanhe/Yanjiao lacks cadastral data. No login, credentials, CAPTCHA bypass, private token, or TLS-disablement was used."
+    },
+    {
+      "url": "https://xxgk.san-he.gov.cn/gknb?departmentid=5",
+      "method": "GET via first-party indexed result",
+      "status": 200,
+      "summary": "Public indexed government information page exposed the Sanhe government disclosure directory and the Natural Resources and Planning Bureau as a department. It did not expose a parcel viewer or anonymous parcel API."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": null,
+    "fallbackOidField": null,
+    "compositeKey": null,
+    "fieldMapping": {
+      "geometry": "Not available: no safe anonymous parcel feature response was returned.",
+      "native identity": "Not available: no parcel feature schema or native identifier was exposed by the attempted public routes."
+    },
+    "crs": "Not confirmed.",
+    "geometryType": "Not confirmed."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Yanjiao has a local real-property registration service, under the Sanhe municipal administration; Sanhe's Natural Resources and Planning Bureau is the relevant municipal natural-resources authority.",
+    "verifiedOpenScope": "Local custodian/service evidence only. Yanjiao city parcel geometry, feature schema, CRS, native IDs, and coverage were not verified through an anonymous public map/API.",
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "No point or parcel response was obtained. This is an endpoint/availability limitation, not evidence of citywide absence; the WUP point was not shifted."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["native parcel identifier if later exposed", "geometry"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "tax", "account", "legal description", "rights/title details"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_local_registry_custodian_geometry_unverified",
+  "remainingUncertainty": "The local registration hall and municipal natural-resources custodian are evidenced, but no current anonymous parcel map/API, schema, CRS, native parcel ID, or geometry response was available. The direct Sanhe disclosure host was unreachable during the bounded request. No parcel polygons were retained.",
+  "nextStep": "Serial reviewer should independently inspect the current official Sanhe/Yanjiao natural-resources or real-property registration portal, if publicly accessible, confirm anonymous parcel-service terms and schema, identify the native parcel ID and CRS, and verify Yanjiao coverage before any adapter admission."
+}
