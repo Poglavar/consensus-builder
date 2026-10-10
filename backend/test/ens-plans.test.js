@@ -3,49 +3,67 @@ import request from 'supertest';
 import { setupEnsPlansRoute } from '../routes/ens-plans.js';
 import { createRouteApp } from './helpers/create-route-app.js';
 
-// Minimal in-memory ens_plan store standing in for Postgres.
-function makePlanPool() {
-    const store = new Map();
+// In-memory plan store standing in for plans/plan-store.js (Postgres). Members are proposal rows;
+// any numeric id exists unless listed in `absent`.
+function makeStore({ absent = [] } = {}) {
+    const plans = new Map();
+    const proposals = new Map();
+    const memberRow = id => proposals.get(String(id)) || {
+        id: Number(id), proposal_id: `p-${id}`, title: `Proposal ${id}`, type: 'building', goal: 'buildings',
+        site: { type: 'MultiPolygon', coordinates: [[[[0, 0], [1, 0], [1, 1], [0, 0]]]] },
+        cadastre_parcel_ids: [`HR-1-${id}`], building_proposal: { parameters: { floors: 4 } }
+    };
     return {
-        async query(sql, params) {
-            if (/INSERT INTO ens_plan/i.test(sql)) {
-                const [slug, idsJson, title, city, hash] = params;
-                if (store.has(slug)) { const e = new Error('dup'); e.code = '23505'; throw e; }
-                const row = { slug, proposal_ids: JSON.parse(idsJson), title, city, edit_token_hash: hash };
-                store.set(slug, row);
-                return { rows: [row], rowCount: 1 };
-            }
-            if (/SELECT \* FROM ens_plan WHERE slug/i.test(sql)) {
-                const row = store.get(params[0]);
-                return { rows: row ? [row] : [], rowCount: row ? 1 : 0 };
-            }
-            if (/UPDATE ens_plan SET/i.test(sql)) {
-                const slug = params[params.length - 1];
-                const row = store.get(slug);
-                if (/proposal_ids = \$1/.test(sql)) row.proposal_ids = JSON.parse(params[0]);
-                return { rows: [row], rowCount: 1 };
-            }
-            return { rows: [], rowCount: 0 };
-        },
+        proposals,
+        async members(ids) { return ids.filter(id => !absent.includes(String(id))).map(memberRow); },
+        async plan(slug) { return plans.get(slug) || null; },
+        async supersededBy(slug) { return [...plans.values()].filter(plan => plan.supersedes === slug).map(plan => plan.slug); },
+        async versionsOf(base) { return new Set([...plans.keys()].filter(slug => slug === base || slug.startsWith(`${base}-v`))); },
+        async list(city) { return [...plans.values()].filter(plan => !city || plan.city === city); },
+        async insert(plan) {
+            if (plans.has(plan.slug)) { const e = new Error('dup'); e.code = '23505'; throw e; }
+            const row = { slug: plan.slug, proposal_ids: plan.proposalIds, title: plan.title, description: plan.description,
+                author: plan.author, place: plan.place, city: plan.city, member_hashes: plan.memberHashes,
+                plan_hash: plan.planHash, supersedes: plan.supersedes, onchain_data: null, has_site: true };
+            plans.set(plan.slug, row);
+            return row;
+        }
     };
 }
 
 let app;
-beforeEach(() => { app = createRouteApp(setupEnsPlansRoute, makePlanPool()); });
+let store;
+beforeEach(() => {
+    store = makeStore();
+    app = createRouteApp((application) => setupEnsPlansRoute(application, null, { store }));
+});
 
 describe('named plans CRUD', () => {
-    it('creates a plan and returns an edit token + ENS name', async () => {
+    it('creates a plan with its ENS name and a content hash, and issues no edit token', async () => {
         const res = await request(app).post('/plans').send({ slug: 'harbor-plan', proposalIds: ['1', '2', '3'], title: 'Harbor' });
         expect(res.status).toBe(201);
         expect(res.body.name).toBe('harbor-plan.proposals.urbangametheory.eth');
         expect(res.body.url).toBe('/proposals/1,2,3');
-        expect(res.body.editToken).toMatch(/^[0-9a-f]{48}$/);
+        expect(res.body.planHash).toMatch(/^[0-9a-f]{64}$/);
+        expect(res.body.editToken).toBeUndefined();
     });
 
-    it('rejects a duplicate name with 409', async () => {
+    it('answers a taken name with 409 and the next free version', async () => {
         await request(app).post('/plans').send({ slug: 'harbor-plan', proposalIds: ['1'] });
         const res = await request(app).post('/plans').send({ slug: 'harbor-plan', proposalIds: ['9'] });
         expect(res.status).toBe(409);
+        expect(res.body.suggestion).toBe('harbor-plan-v2');
+        await request(app).post('/plans').send({ slug: 'harbor-plan-v2', proposalIds: ['9'] });
+        const again = await request(app).post('/plans').send({ slug: 'harbor-plan-v2', proposalIds: ['10'] });
+        expect(again.body.suggestion).toBe('harbor-plan-v3');
+    });
+
+    it('refuses members that do not exist', async () => {
+        store = makeStore({ absent: ['404'] });
+        app = createRouteApp((application) => setupEnsPlansRoute(application, null, { store }));
+        const res = await request(app).post('/plans').send({ slug: 'ghost-plan', proposalIds: ['1', '404'] });
+        expect(res.status).toBe(400);
+        expect(res.body.error).toMatch(/404/);
     });
 
     it('rejects purely-numeric names (reserved for proposal ids)', async () => {
@@ -67,16 +85,39 @@ describe('named plans CRUD', () => {
         expect((await request(app).get('/plans/nope')).status).toBe(404);
     });
 
-    it('updates a plan with the edit token (mutable) and rejects a bad token', async () => {
-        const created = await request(app).post('/plans').send({ slug: 'living-plan', proposalIds: ['1'] });
-        const { editToken } = created.body;
+    it('has no update: a named plan never changes', async () => {
+        await request(app).post('/plans').send({ slug: 'fixed-plan', proposalIds: ['1'] });
+        const put = await request(app).put('/plans/fixed-plan').send({ proposalIds: ['1', '2', '7'] });
+        expect(put.status).toBe(404);
+        expect((await request(app).get('/plans/fixed-plan')).body.proposalIds).toEqual(['1']);
+    });
 
-        const upd = await request(app).put('/plans/living-plan').send({ editToken, proposalIds: ['1', '2', '7'] });
-        expect(upd.status).toBe(200);
-        expect(upd.body.url).toBe('/proposals/1,2,7');
+    it('records a revision as superseding the old plan, which learns of it on read', async () => {
+        await request(app).post('/plans').send({ slug: 'borovje', proposalIds: ['1'] });
+        const v2 = await request(app).post('/plans').send({ slug: 'borovje-v2', proposalIds: ['1', '2'], supersedes: 'borovje' });
+        expect(v2.status).toBe(201);
+        expect(v2.body.supersedes).toBe('borovje');
+        expect((await request(app).get('/plans/borovje')).body.supersededBy).toEqual(['borovje-v2']);
+        const bad = await request(app).post('/plans').send({ slug: 'orphan-v2', proposalIds: ['1'], supersedes: 'no-such-plan' });
+        expect(bad.status).toBe(400);
+    });
 
-        const bad = await request(app).put('/plans/living-plan').send({ editToken: 'wrong', proposalIds: ['9'] });
-        expect(bad.status).toBe(403);
+    it('flags a member whose content changed after the plan was named', async () => {
+        await request(app).post('/plans').send({ slug: 'watched-plan', proposalIds: ['1', '2'] });
+        const before = await request(app).get('/plans/watched-plan');
+        expect(before.body.members.map(member => member.changed)).toEqual([false, false]);
+        // Proposal 2 is repaired in place: one more floor.
+        const repaired = (await store.members(['2']))[0];
+        store.proposals.set('2', { ...repaired, building_proposal: { parameters: { floors: 5 } } });
+        const after = await request(app).get('/plans/watched-plan');
+        expect(after.body.members.map(member => member.changed)).toEqual([false, true]);
+    });
+
+    it('lists plans of a city', async () => {
+        await request(app).post('/plans').send({ slug: 'zg-plan', proposalIds: ['1'], city: 'zagreb', place: 'Borovje' });
+        await request(app).post('/plans').send({ slug: 'sf-plan', proposalIds: ['2'], city: 'san_francisco' });
+        const res = await request(app).get('/plans?city=zagreb');
+        expect(res.body.plans.map(plan => [plan.slug, plan.place])).toEqual([['zg-plan', 'Borovje']]);
     });
 });
 
@@ -90,7 +131,7 @@ describe('named plans CRUD', () => {
 describe('how big a named plan may be', () => {
     let app;
     beforeEach(() => {
-        app = createRouteApp((application, pool) => setupEnsPlansRoute(application, pool), makePlanPool());
+        app = createRouteApp((application) => setupEnsPlansRoute(application, null, { store: makeStore() }));
     });
 
     const ids = (count, start = 900) => Array.from({ length: count }, (_, i) => String(start + i));

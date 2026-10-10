@@ -1268,7 +1268,6 @@ function showSharePlanPanel(options) {
         planNameStatus.style.minHeight = '16px';
         planNameWrap.appendChild(planNameStatus);
 
-        const planNameToken = (slug) => `cb_plan_token_${slug}`;
         const slugifyPlanName = (s) => (s || '').toString().trim().toLowerCase()
             .replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '');
 
@@ -1289,38 +1288,31 @@ function showSharePlanPanel(options) {
             const base = (typeof window.getBackendBase === 'function') ? window.getBackendBase().replace(/\/$/, '') : '';
             const city = (window.CityConfigManager && typeof window.CityConfigManager.getCurrentCityId === 'function')
                 ? window.CityConfigManager.getCurrentCityId() : null;
-            let existingToken = null;
-            try { existingToken = localStorage.getItem(planNameToken(slug)); } catch (_) { /* ignore */ }
-
             planNameBtn.disabled = true;
             planNameStatus.style.color = '#475569';
             planNameStatus.textContent = tShare('plan.nameSaving', 'Saving…');
             try {
-                let resp;
-                if (existingToken) {
-                    resp = await fetch(`${base}/plans/${slug}`, {
-                        method: 'PUT', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ editToken: existingToken, proposalIds })
-                    });
-                } else {
-                    resp = await fetch(`${base}/plans`, {
-                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ slug, proposalIds, city })
-                    });
-                }
+                // Named plans never change (plans.md): a name is claimed once, and a revised plan
+                // takes the next version of the name, which the server suggests when it is taken.
+                const resp = await fetch(`${base}/plans`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ slug, proposalIds, city })
+                });
                 const data = await resp.json().catch(() => ({}));
                 if (resp.status === 409) {
                     planNameStatus.style.color = '#b3261e';
-                    planNameStatus.textContent = tShare('plan.nameTaken', 'That name is taken — pick another.');
+                    if (data.suggestion) {
+                        planNameInput.value = data.suggestion;
+                        planNameStatus.textContent = tShare('plan.nameTakenVersion', 'That name is taken, and a named plan never changes. Save this one as {{name}}?', { name: data.suggestion });
+                    } else {
+                        planNameStatus.textContent = tShare('plan.nameTaken', 'That name is taken — pick another.');
+                    }
                     return;
                 }
                 if (!resp.ok) {
                     planNameStatus.style.color = '#b3261e';
                     planNameStatus.textContent = data.error || tShare('plan.nameError', 'Could not save the name.');
                     return;
-                }
-                if (data.editToken) {
-                    try { localStorage.setItem(planNameToken(slug), data.editToken); } catch (_) { /* ignore */ }
                 }
                 planNameStatus.style.color = '#0a7d28';
                 planNameStatus.textContent = (data.name || `${slug}.proposals.urbangametheory.eth`)

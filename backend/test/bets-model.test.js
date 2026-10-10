@@ -154,3 +154,18 @@ describe('BetsModel.authorLabel', () => {
         expect(BetsModel.authorLabel(null)).toBe('');
     });
 });
+
+describe('named plan rows', () => {
+    it('keep their kind, slug and members, and a contest counts its plans', () => {
+        const entry = { id: 'plan:upu-borovje', kind: 'plan', planSlug: 'upu-borovje', memberCount: 2,
+            members: [{ id: 1, proposalId: 'street', title: 'Ulica' }, { id: 2, proposalId: 'slab', title: 'Zgrada' }],
+            proposalId: 'upu-borovje', proposalAccount: 'Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR', title: 'UPU Borovje',
+            market: { yesPool: '300000', noPool: '100000', poolAtomic: '400000', resolved: false }, bettable: true };
+        const row = BetsModel.row(entry);
+        expect(row).toMatchObject({ kind: 'plan', planSlug: 'upu-borovje', memberCount: 2, chanceYes: 75, state: 'open' });
+        expect(row.members.map(member => member.proposalId)).toEqual(['street', 'slab']);
+        expect(BetsModel.row({ ...entry, kind: undefined }).kind).toBe('proposal');
+        const contest = BetsModel.contest({ id: 'c', parcelIds: [], proposals: [entry, { ...entry, id: 9, kind: 'proposal' }] });
+        expect(contest.planCount).toBe(1);
+    });
+});

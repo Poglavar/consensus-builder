@@ -41,6 +41,26 @@ const PROPOSALS_SQL = `
     ORDER BY created_at DESC
     LIMIT $2`;
 
+// Named plans of the city (plans.md): members are proposal row ids; the plan's own account, if minted.
+const PLANS_SQL = `
+    SELECT slug, title, place, author, created_at, proposal_ids, onchain_data
+    FROM ens_plan
+    WHERE city = $1
+    ORDER BY created_at DESC
+    LIMIT 500`;
+
+export function rowToPlan(row) {
+    return {
+        slug: row.slug,
+        title: row.title || null,
+        place: typeof row.place === 'string' && row.place.trim() ? row.place.trim() : null,
+        author: row.author || null,
+        createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at,
+        memberIds: Array.isArray(row.proposal_ids) ? row.proposal_ids.map(String) : [],
+        proposalAccount: proposalAccountOf(row.onchain_data)
+    };
+}
+
 export function rowToProposal(row) {
     return {
         id: row.id,
@@ -130,14 +150,18 @@ export function setupMarketsRoute(app, pool, options = {}) {
             return res.json(cached.payload);
         }
         try {
-            const { rows } = await pool.query(PROPOSALS_SQL, [city, MAX_PROPOSALS]);
+            const [{ rows }, { rows: planRows }] = await Promise.all([
+                pool.query(PROPOSALS_SQL, [city, MAX_PROPOSALS]),
+                pool.query(PLANS_SQL, [city])
+            ]);
             const proposals = rows.map(rowToProposal);
-            const accounts = Array.from(new Set(proposals.map(proposal => proposal.proposalAccount).filter(Boolean)));
+            const plans = planRows.map(rowToPlan);
+            const accounts = Array.from(new Set([...proposals, ...plans].map(item => item.proposalAccount).filter(Boolean)));
             const [markets, statuses] = accounts.length
                 ? await Promise.all([readMarkets(accounts), readProposalStatuses(accounts)])
                 : [new Map(), new Map()];
             const payload = {
-                ...buildContests({ city, proposals, markets, statuses, now: now() }),
+                ...buildContests({ city, proposals, plans, markets, statuses, now: now() }),
                 cluster: 'devnet',
                 marketProgram: marketClient.constants.PROGRAM_ID,
                 stakeMint: DEVNET_USDC_MINT,

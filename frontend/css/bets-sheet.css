@@ -316,6 +316,12 @@
     margin-top: var(--cb-space-1);
 }
 
+/* A named plan's row: "Plan of N proposals" reads as the row's kind, ahead of its pool. */
+.bets-row__plan {
+    font-weight: 600;
+    color: var(--cb-text);
+}
+
 /* The row of a settled pool the wallet can still collect from. */
 .bets-row__collect {
     display: flex;
@@ -407,6 +413,24 @@
     display: flex;
     flex-wrap: wrap;
     gap: var(--cb-space-2);
+}
+
+/* What a plan builds: its member proposals, folded under the bet. */
+.bets-dialog__members {
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+.bets-dialog__members > summary {
+    cursor: pointer;
+    padding: var(--cb-space-1) 0;
+}
+
+.bets-dialog__members ul {
+    margin: var(--cb-space-1) 0 0;
+    padding-left: var(--cb-space-4);
+    max-height: 12rem;
+    overflow-y: auto;
 }
 
 .bets-dialog__rule {

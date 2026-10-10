@@ -2457,6 +2457,7 @@
                     "nameInvalid": "Koristite najmanje 3 znaka: a–z, 0–9, crtice.",
                     "nameSaving": "Spremanje…",
                     "nameTaken": "To ime je zauzeto — odaberite drugo.",
+                    "nameTakenVersion": "To ime je zauzeto, a imenovani plan se nikad ne mijenja. Spremiti ovaj kao {{name}}?",
                     "nameError": "Nije moguće spremiti ime.",
                     "nameSaved": "spremljeno (vodi na ovaj plan).",
                     "applyUnknownFailure": "Nepoznata greška tijekom primjenjivanja.",
@@ -4999,7 +5000,6 @@
         },
         "dialog": {
             "open": "Otvori okladu",
-            "onThisLand": "{{count}} prijedloga na ovom zemljištu",
             "poolLabel": "Fond",
             "paysLabel": "Isplaćuje",
             "yesPays": "Da {{multiple}}×",
@@ -5011,12 +5011,16 @@
             "amount": "Iznos",
             "max": "Maks.",
             "toWin": "Dobitak oko {{amount}} ako pobijedi {{side}}",
-            "toWinNote": "Konačna isplata ovisi o fondu pri namirenju."
+            "toWinNote": "Konačna isplata ovisi o fondu pri namirenju.",
+            "members": "Što plan gradi: {{count}} prijedloga",
+            "openPlan": "Otvori plan",
+            "onThisLandCount": "{{entries}} na ovom zemljištu"
         },
         "error": {
             "load": "Oklade se nisu mogle učitati.",
             "open": "Prijedlog se nije mogao otvoriti.",
-            "transaction": "Transakcija nije uspjela."
+            "transaction": "Transakcija nije uspjela.",
+            "openPlan": "Plan se nije mogao otvoriti."
         },
         "contest": {
             "title": "Koji će prijedlog biti izgrađen?",
@@ -5024,7 +5028,10 @@
             "land": "Čestica {{parcel}}",
             "landMore": "Čestica {{parcel}} i još {{count}}",
             "site": "Nacrtano zemljište",
-            "withoutPool": "Bez fonda: {{count}}"
+            "withoutPool": "Bez fonda: {{count}}",
+            "titlePlans": "Koji će plan biti izgrađen?",
+            "titleSinglePlan": "Hoće li ovaj plan biti izgrađen?",
+            "planCount": "{{count}} plana"
         },
         "row": {
             "chance": "{{percent}} izgleda",
@@ -5048,7 +5055,8 @@
             "untitled": "Prijedlog bez naslova",
             "paysTitle": "1 USDC na ovoj strani isplaćuje {{multiple}} USDC ako pobijedi.",
             "onlyYes": "Zasad samo oklade na da",
-            "onlyNo": "Zasad samo oklade na ne"
+            "onlyNo": "Zasad samo oklade na ne",
+            "plan": "Plan od {{count}} prijedloga"
         },
         "how": {
             "title": "Kako oklade rade",

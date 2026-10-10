@@ -95,6 +95,11 @@
         const odds = market ? chance(market.yesPool, market.noPool) : { yes: null, no: null };
         return {
             id: entry.id,
+            // 'plan' for a named plan (plans.md): its own pool over a set of member proposals.
+            kind: entry.kind === 'plan' ? 'plan' : 'proposal',
+            planSlug: entry.planSlug || null,
+            memberCount: Number.isFinite(entry.memberCount) ? entry.memberCount : 0,
+            members: Array.isArray(entry.members) ? entry.members : [],
             proposalId: entry.proposalId,
             proposalAccount: entry.proposalAccount || null,
             title: entry.title || '',
@@ -194,6 +199,7 @@
             siteName: entry.siteName || null,
             land: landLabel(entry.parcelIds),
             proposalCount: rows.length,
+            planCount: rows.filter(item => item.kind === 'plan').length,
             openCount: rows.filter(item => item.state === 'open').length,
             pool: formatAtomic(entry.poolAtomic, options.decimals),
             poolAtomic: atomic(entry.poolAtomic),

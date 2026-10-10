@@ -7,7 +7,7 @@
 
 import { createRequire } from 'node:module';
 import { buildContests } from '../markets/contests.js';
-import { PROPOSAL_COLUMNS_SQL, defaultMarketReader, defaultProposalStatusReader, rowToProposal } from './markets.js';
+import { PROPOSAL_COLUMNS_SQL, defaultMarketReader, defaultProposalStatusReader, rowToPlan, rowToProposal } from './markets.js';
 
 const require = createRequire(import.meta.url);
 // The same codecs the sheet renders with, so the preview quotes the numbers the row will show.
@@ -29,6 +29,32 @@ const PROPOSAL_BY_ACCOUNT_SQL = `
       AND $1 IN (onchain_data->>'proposalId', onchain_data->>'proposalAccount', onchain_data->>'tokenId')
     ORDER BY created_at DESC
     LIMIT 1`;
+
+// A named plan minted as its own account (plans.md), and its members for the land and the image.
+const PLAN_BY_ACCOUNT_SQL = `
+    SELECT slug, title, place, author, created_at, proposal_ids, onchain_data, city
+    FROM ens_plan
+    WHERE LOWER(COALESCE(onchain_data->>'chainId', '')) LIKE 'solana%' AND onchain_data->>'proposalId' = $1
+    LIMIT 1`;
+const PLAN_MEMBERS_SQL = `SELECT ${PROPOSAL_COLUMNS_SQL} FROM proposal WHERE id = ANY($1::int[])`;
+
+// The bet behind an account: a minted proposal, else a minted named plan. Returns what the page
+// needs ({ city, title, screenshotUrl, proposals, plans }) or null.
+async function betSubject(pool, proposalAccount) {
+    const { rows } = await pool.query(PROPOSAL_BY_ACCOUNT_SQL, [proposalAccount]);
+    if (rows.length) {
+        const proposal = rowToProposal(rows[0]);
+        return { city: proposal.city, title: proposal.title, screenshotUrl: proposal.screenshotUrl, proposals: [proposal], plans: [] };
+    }
+    const { rows: planRows } = await pool.query(PLAN_BY_ACCOUNT_SQL, [proposalAccount]);
+    if (!planRows.length) return null;
+    const plan = rowToPlan(planRows[0]);
+    const { rows: memberRows } = await pool.query(PLAN_MEMBERS_SQL, [plan.memberIds.map(Number)]);
+    const members = memberRows.map(rowToProposal);
+    const byId = new Map(members.map(member => [String(member.id), member]));
+    const image = plan.memberIds.map(id => byId.get(String(id))?.screenshotUrl).find(Boolean) || null;
+    return { city: planRows[0].city || null, title: plan.title || plan.slug, screenshotUrl: image, proposals: members, plans: [plan] };
+}
 
 export function escapeHtml(value) {
     return String(value ?? '')
@@ -122,19 +148,18 @@ export function setupBetsShareRoute(app, pool, options = {}) {
         res.type('html');
         if (!proposalAccount) return res.status(400).send(renderPage(generic));
         try {
-            const { rows } = await pool.query(PROPOSAL_BY_ACCOUNT_SQL, [proposalAccount]);
-            if (!rows.length) return res.status(404).send(renderPage(generic));
-            const proposal = rowToProposal(rows[0]);
+            const subject = await betSubject(pool, proposalAccount);
+            if (!subject) return res.status(404).send(renderPage(generic));
             const [markets, statuses] = await Promise.all([readMarkets([proposalAccount]), readProposalStatuses([proposalAccount])]);
-            const { contests } = buildContests({ city: proposal.city, proposals: [proposal], markets, statuses, now: now() });
+            const { contests } = buildContests({ city: subject.city, proposals: subject.proposals, plans: subject.plans, markets, statuses, now: now() });
             const entry = contests.flatMap(contest => contest.proposals).find(item => item.proposalAccount === proposalAccount) || null;
             const row = entry ? BetsModel.row(entry) : null;
             // The link's own city wins (it is the id the app was opened in); the row's is the fallback.
-            const linkCity = city || BetsLink.cityOf(proposal.city);
+            const linkCity = city || BetsLink.cityOf(subject.city);
             const page = {
-                title: `${proposal.title || 'Untitled proposal'} · ${TAGLINE}`,
+                title: `${subject.title || 'Untitled proposal'} · ${TAGLINE}`,
                 description: describeRow(row),
-                image: absoluteImage(proposal.screenshotUrl, publicBaseUrl, apiBaseUrl),
+                image: absoluteImage(subject.screenshotUrl, publicBaseUrl, apiBaseUrl),
                 canonical: BetsLink.build({ origin: publicBaseUrl, city: linkCity, proposalAccount }),
                 next: BetsLink.appHref({ city: linkCity, proposalAccount, lang })
             };

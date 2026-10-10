@@ -102,5 +102,6 @@ export async function publish(record, { backend, origin, city, parcelSourceId = 
     }
     const id = created.json && (created.json.id ?? created.json.proposal?.id);
     log(`created proposal ${record.proposalId} (row ${id}) with ${parcelIds.length} parcels`);
-    return { skipped: false, id, parcelIds };
+    // The server returns the edit token exactly once; hand it back so the caller can keep it.
+    return { skipped: false, id, parcelIds, editToken: (created.json && created.json.editToken) || null };
 }

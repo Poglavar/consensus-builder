@@ -116,3 +116,30 @@ describe('describeRow and escapeHtml', () => {
         expect(escapeHtml(`<a href="x" title='y'>&</a>`)).toBe('&lt;a href=&quot;x&quot; title=&#39;y&#39;&gt;&amp;&lt;/a&gt;');
     });
 });
+
+describe('GET /bets/:account for a named plan', () => {
+    it('previews the plan by its own title and a member thumbnail when no proposal holds the account', async () => {
+        const app = express();
+        const planRow = { slug: 'borovje-urbani-blokovi', title: 'Borovje – urban blocks', place: 'Borovje', author: 'UGT',
+            created_at: new Date('2026-10-10T10:00:00Z'), proposal_ids: ['5', '6'], city: 'zagreb',
+            onchain_data: { chainId: 'solana-devnet', proposalId: ACCOUNT } };
+        const members = [
+            row({ id: 5, proposal_id: 'street', onchain_data: null, screenshot_url: null, cadastre_parcel_ids: ['HR-1-1'] }),
+            row({ id: 6, proposal_id: 'block', onchain_data: null, screenshot_url: 'https://cdn.example/block.png', cadastre_parcel_ids: ['HR-1-1'] })
+        ];
+        const pool = { query: vi.fn(async (sql) => ({
+            rows: /FROM ens_plan/.test(sql) ? [planRow] : /id = ANY/.test(sql) ? members : []
+        })) };
+        setupBetsShareRoute(app, pool, {
+            env: {},
+            readMarkets: async () => new Map([[ACCOUNT, { address: 'MKT', market: { yesPool: 300000n, noPool: 100000n, resolved: false, outcome: 0 } }]]),
+            readProposalStatuses: async () => new Map([[ACCOUNT, 'Active']]),
+            now: () => new Date('2026-10-10T12:00:00Z')
+        });
+        const res = await request(app).get(`/bets/${ACCOUNT}?city=zg`);
+        expect(res.status).toBe(200);
+        expect(meta(res.text, 'og:title')).toBe('Borovje – urban blocks · Bet on cities');
+        expect(meta(res.text, 'og:image')).toBe('https://cdn.example/block.png');
+        expect(meta(res.text, 'og:description')).toMatch(/75%/);
+    });
+});

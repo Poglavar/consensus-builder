@@ -21,9 +21,15 @@ function rows() {
     }];
 }
 
+// A pool that answers the proposals query with `proposalRows` and the plans query with `planRows`.
+function poolFor(proposalRows = rows(), planRows = []) {
+    return { query: vi.fn(async (sql) => ({ rows: /FROM ens_plan/.test(sql) ? planRows : proposalRows })) };
+}
+const proposalQueries = pool => pool.query.mock.calls.filter(([sql]) => !/FROM ens_plan/.test(sql)).length;
+
 function appFor({ pool, readMarkets, readProposalStatuses, now } = {}) {
     const app = express();
-    setupMarketsRoute(app, pool || { query: vi.fn(async () => ({ rows: rows() })) }, {
+    setupMarketsRoute(app, pool || poolFor(), {
         env: {}, readMarkets: readMarkets || (async () => new Map([[ACCOUNT, { address: 'MKT', market: { yesPool: 250000n, noPool: 0n, resolved: false, outcome: 0 } }]])),
         readProposalStatuses: readProposalStatuses || (async () => new Map([[ACCOUNT, 'Active']])),
         now: now || (() => new Date('2026-10-09T07:00:00Z'))
@@ -59,20 +65,41 @@ describe('GET /markets', () => {
     });
 
     it('caches a city for a short while and keys the cache per city', async () => {
-        const pool = { query: vi.fn(async () => ({ rows: rows() })) };
+        const pool = poolFor();
         let clock = Date.parse('2026-10-09T07:00:00Z');
         const app = appFor({ pool, now: () => new Date(clock) });
         await request(app).get('/markets?city=zagreb');
         await request(app).get('/markets?city=zagreb');
-        expect(pool.query).toHaveBeenCalledTimes(1);
+        expect(proposalQueries(pool)).toBe(1);
         await request(app).get('/markets?city=sibenik');
-        expect(pool.query).toHaveBeenCalledTimes(2);
+        expect(proposalQueries(pool)).toBe(2);
         clock += 60_000;
         await request(app).get('/markets?city=zagreb');
-        expect(pool.query).toHaveBeenCalledTimes(3);
+        expect(proposalQueries(pool)).toBe(3);
         // Right after a confirmed transaction the sheet needs the chain's answer, not the cache's.
         await request(app).get('/markets?city=zagreb&fresh=1');
-        expect(pool.query).toHaveBeenCalledTimes(4);
+        expect(proposalQueries(pool)).toBe(4);
+    });
+
+    it('lists a minted named plan with its member proposals folded under it', async () => {
+        const PLAN_ACCOUNT = '5A9kzK2SzjP5nU2Dnz958wQcy96KkMnavoMNGxt7p1h3';
+        const plan = { slug: 'borovje-urbani-blokovi', title: 'Borovje – urbani blokovi', place: 'Borovje', author: 'UGT',
+            created_at: new Date('2026-10-10T10:00:00Z'), proposal_ids: ['790'],
+            onchain_data: { chainId: 'solana-devnet', proposalId: PLAN_ACCOUNT } };
+        const res = await request(appFor({
+            pool: poolFor(rows(), [plan]),
+            readMarkets: async () => new Map([[ACCOUNT, { address: 'MKT', market: null }], [PLAN_ACCOUNT, { address: 'PMKT', market: { yesPool: 5n, noPool: 3n, resolved: false, outcome: 0 } }]]),
+            readProposalStatuses: async () => new Map([[ACCOUNT, 'Active'], [PLAN_ACCOUNT, 'Active']])
+        })).get('/markets?city=zagreb');
+        const [contest] = res.body.contests;
+        expect(contest.siteName).toBe('Borovje');
+        expect(contest.proposals.map(entry => [entry.kind, entry.proposalId])).toEqual([
+            ['plan', 'borovje-urbani-blokovi'],
+            ['proposal', 'agent-densifier-01-2026-10-01-1']
+        ]);
+        expect(contest.proposals[0]).toMatchObject({ planSlug: 'borovje-urbani-blokovi', memberCount: 1, bettable: true,
+            proposalAccount: PLAN_ACCOUNT, market: { poolAtomic: '8' } });
+        expect(contest.proposals[0].members.map(member => member.proposalId)).toEqual(['local-rival']);
     });
 
     it('lets the proposal account, not the database word, decide whether a bet is open', async () => {

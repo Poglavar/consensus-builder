@@ -2478,6 +2478,7 @@
                     "nameInvalid": "Use at least 3 characters: a–z, 0–9, hyphens.",
                     "nameSaving": "Saving…",
                     "nameTaken": "That name is taken — pick another.",
+                    "nameTakenVersion": "That name is taken, and a named plan never changes. Save this one as {{name}}?",
                     "nameError": "Could not save the name.",
                     "nameSaved": "saved (resolves to this plan).",
                     "applyUnknownFailure": "Unknown error while applying.",
@@ -4960,7 +4961,6 @@
         },
         "dialog": {
             "open": "Open bet",
-            "onThisLand": "{{count}} proposals on this land",
             "poolLabel": "Pool",
             "paysLabel": "Pays",
             "yesPays": "Yes {{multiple}}×",
@@ -4972,12 +4972,16 @@
             "amount": "Amount",
             "max": "Max",
             "toWin": "To win about {{amount}} if {{side}} wins",
-            "toWinNote": "The final payout follows the pool at settlement."
+            "toWinNote": "The final payout follows the pool at settlement.",
+            "members": "What the plan builds: {{count}} proposals",
+            "openPlan": "Open the plan",
+            "onThisLandCount": "{{entries}} on this land"
         },
         "error": {
             "load": "Bets could not be loaded.",
             "open": "The proposal could not be opened.",
-            "transaction": "The transaction failed."
+            "transaction": "The transaction failed.",
+            "openPlan": "The plan could not be opened."
         },
         "contest": {
             "title": "Which proposal gets built?",
@@ -4985,7 +4989,10 @@
             "land": "Parcel {{parcel}}",
             "landMore": "Parcel {{parcel}} and {{count}} more",
             "site": "Drawn site",
-            "withoutPool": "Without a pool: {{count}}"
+            "withoutPool": "Without a pool: {{count}}",
+            "titlePlans": "Which plan gets built?",
+            "titleSinglePlan": "Does this plan get built?",
+            "planCount": "{{count}} plans"
         },
         "row": {
             "chance": "{{percent}} chance",
@@ -5009,7 +5016,8 @@
             "untitled": "Untitled proposal",
             "paysTitle": "1 USDC on this side pays {{multiple}} USDC if it wins.",
             "onlyYes": "Only yes bets so far",
-            "onlyNo": "Only no bets so far"
+            "onlyNo": "Only no bets so far",
+            "plan": "Plan of {{count}} proposals"
         },
         "how": {
             "title": "How bets work",

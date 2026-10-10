@@ -2500,6 +2500,7 @@
                     "nameInvalid": "Usa al menos 3 caracteres: a–z, 0–9, guiones.",
                     "nameSaving": "Guardando…",
                     "nameTaken": "Ese nombre ya está en uso: elige otro.",
+                    "nameTakenVersion": "Ese nombre ya está en uso y un plan con nombre nunca cambia. ¿Guardar este como {{name}}?",
                     "nameError": "No se pudo guardar el nombre.",
                     "nameSaved": "guardado (lleva a este plan).",
                     "applyUnknownFailure": "Error desconocido al aplicar.",
@@ -5011,7 +5012,6 @@
         },
         "dialog": {
             "open": "Abrir apuesta",
-            "onThisLand": "{{count}} propuestas en este terreno",
             "poolLabel": "Fondo",
             "paysLabel": "Paga",
             "yesPays": "Sí {{multiple}}×",
@@ -5023,12 +5023,16 @@
             "amount": "Importe",
             "max": "Máx.",
             "toWin": "Ganancia de unos {{amount}} si gana {{side}}",
-            "toWinNote": "El pago final depende del fondo al liquidar."
+            "toWinNote": "El pago final depende del fondo al liquidar.",
+            "members": "Qué construye el plan: {{count}} propuestas",
+            "openPlan": "Abrir el plan",
+            "onThisLandCount": "{{entries}} en este terreno"
         },
         "error": {
             "load": "No se pudieron cargar las apuestas.",
             "open": "No se pudo abrir la propuesta.",
-            "transaction": "La transacción falló."
+            "transaction": "La transacción falló.",
+            "openPlan": "No se pudo abrir el plan."
         },
         "contest": {
             "title": "¿Qué propuesta se construirá?",
@@ -5036,7 +5040,10 @@
             "land": "Parcela {{parcel}}",
             "landMore": "Parcela {{parcel}} y {{count}} más",
             "site": "Sitio dibujado",
-            "withoutPool": "Sin fondo: {{count}}"
+            "withoutPool": "Sin fondo: {{count}}",
+            "titlePlans": "¿Qué plan se construirá?",
+            "titleSinglePlan": "¿Se construirá este plan?",
+            "planCount": "{{count}} planes"
         },
         "row": {
             "chance": "{{percent}} de probabilidad",
@@ -5060,7 +5067,8 @@
             "untitled": "Propuesta sin título",
             "paysTitle": "1 USDC en este lado paga {{multiple}} USDC si gana.",
             "onlyYes": "Por ahora solo apuestas a sí",
-            "onlyNo": "Por ahora solo apuestas a no"
+            "onlyNo": "Por ahora solo apuestas a no",
+            "plan": "Plan de {{count}} propuestas"
         },
         "how": {
             "title": "Cómo funcionan las apuestas",

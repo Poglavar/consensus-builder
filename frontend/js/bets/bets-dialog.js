@@ -330,7 +330,10 @@
         p.body.append(eyebrow);
 
         if (contest && contest.proposalCount > 1) {
-            const rivals = button('btn btn-quiet bets-dialog__contest', t('bets.dialog.onThisLand', '{{count}} proposals on this land', { count: contest.proposalCount }), () => {
+            const counted = sheet() && typeof sheet().entriesText === 'function'
+                ? sheet().entriesText(contest).join(' · ')
+                : t('agentDialog.proposalCount', '{{count}} proposals', { count: contest.proposalCount });
+            const rivals = button('btn btn-quiet bets-dialog__contest', t('bets.dialog.onThisLandCount', '{{entries}} on this land', { entries: counted }), () => {
                 const id = contest.id;
                 close();
                 if (typeof root.openBetsSheet === 'function') root.openBetsSheet({ contestId: id });
@@ -386,6 +389,16 @@
             p.body.append(collect);
         }
 
+        // A plan says what it builds: its member proposals, folded so the bet stays the headline.
+        if (row.kind === 'plan' && row.members.length) {
+            const members = el('details', 'bets-dialog__members');
+            members.append(el('summary', null, t('bets.dialog.members', 'What the plan builds: {{count}} proposals', { count: row.members.length })));
+            const list = el('ul');
+            row.members.forEach(member => list.append(el('li', null, member.title || member.proposalId)));
+            members.append(list);
+            p.body.append(members);
+        }
+
         const words = lifecycleWords(row);
         if (words) {
             const rule = el('div', 'bets-dialog__rule');
@@ -413,7 +426,8 @@
             }
         }
         if (row.proposalId || row.id) {
-            p.footer.append(button('btn', t('gameDialogs.log.row.openProposal', 'Open proposal'), () => {
+            const openLabel = row.kind === 'plan' ? t('bets.dialog.openPlan', 'Open the plan') : t('gameDialogs.log.row.openProposal', 'Open proposal');
+            p.footer.append(button('btn', openLabel, () => {
                 const target = row;
                 close();
                 if (sheet() && typeof sheet().openProposal === 'function') sheet().openProposal(target);

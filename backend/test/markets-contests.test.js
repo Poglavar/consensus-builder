@@ -110,3 +110,39 @@ describe('buildContests', () => {
         expect(() => JSON.stringify(out)).not.toThrow();
     });
 });
+
+describe('named plans in contests', () => {
+    const plan = (overrides) => ({ slug: 'p', title: 'Plan', place: null, author: 'a', createdAt: '2026-10-10T00:00:00Z',
+        memberIds: [], proposalAccount: null, ...overrides });
+
+    it('folds members under every plan that lists them and keeps other proposals as rows', () => {
+        const street = proposal({ id: 1, proposalId: 'street', parcelIds: ['P1', 'P2'] });
+        const slab = proposal({ id: 2, proposalId: 'slab', parcelIds: ['P2'] });
+        const block = proposal({ id: 3, proposalId: 'block', parcelIds: ['P2'] });
+        const rival = proposal({ id: 4, proposalId: 'rival', parcelIds: ['P1'], proposalAccount: ACCOUNT_C });
+        const { contests } = buildContests({
+            city: 'zagreb',
+            proposals: [street, slab, block, rival],
+            plans: [
+                plan({ slug: 'official', place: 'Borovje', memberIds: ['1', '2'], proposalAccount: ACCOUNT_A }),
+                plan({ slug: 'blocks', place: 'Borovje', memberIds: ['1', '3'], proposalAccount: ACCOUNT_B })
+            ]
+        });
+        expect(contests).toHaveLength(1);
+        const [contest] = contests;
+        expect(contest.siteName).toBe('Borovje');
+        expect(contest.planCount).toBe(2);
+        expect(contest.foldedCount).toBe(3);
+        expect(contest.proposals.map(entry => entry.proposalId).sort()).toEqual(['blocks', 'official', 'rival']);
+        const official = contest.proposals.find(entry => entry.proposalId === 'official');
+        expect(official.members.map(member => member.proposalId)).toEqual(['street', 'slab']);
+        expect(official.canOpenMarket).toBe(true);
+    });
+
+    it('lets a plan name the contest over the pieces\' block names', () => {
+        expect(siteNameOf([
+            { siteName: 'UPU Borovje Z1-5' }, { siteName: 'UPU Borovje Z1-5' },
+            { kind: 'plan', siteName: 'Borovje' }
+        ])).toBe('Borovje');
+    });
+});

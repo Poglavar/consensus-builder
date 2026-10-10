@@ -270,7 +270,25 @@
         }
     }
 
+    // A named plan opens the way its link does: the address becomes /proposals/<slug> and the app's
+    // own route handler applies the plan's members (proposals/core.js handleProposalRouteFromUrl).
+    async function openPlan(row) {
+        try {
+            if (!row.planSlug || typeof root.handleProposalRouteFromUrl !== 'function') throw new Error(`plan ${row.planSlug} cannot be opened here`);
+            if (root.MapShell && typeof root.MapShell.closeSheets === 'function') root.MapShell.closeSheets();
+            const url = new URL(root.location.href);
+            url.pathname = `/proposals/${encodeURIComponent(row.planSlug)}`;
+            url.searchParams.delete('bets');
+            root.history.pushState({}, '', `${url.pathname}${url.search}`);
+            await root.handleProposalRouteFromUrl();
+        } catch (error) {
+            console.error(`[${new Date().toISOString()}] [bets] open plan failed`, error);
+            renderStatus(doc.getElementById(CONTENT_ID), t('bets.error.openPlan', 'The plan could not be opened.'), 'error');
+        }
+    }
+
     async function openProposal(row) {
+        if (row && row.kind === 'plan') return openPlan(row);
         try {
             let proposal = typeof root.getProposalByIdOrHash === 'function' ? root.getProposalByIdOrHash(row.proposalId) : null;
             if (!proposal && row.id && typeof root.importServerProposal === 'function') proposal = await root.importServerProposal(row.id);
@@ -352,6 +370,7 @@
         if (who) li.append(el('p', 'bets-row__who', who));
 
         const meta = el('div', 'bets-row__meta');
+        if (row.kind === 'plan') meta.append(el('span', 'bets-row__plan', t('bets.row.plan', 'Plan of {{count}} proposals', { count: row.memberCount })));
         if (row.pool !== null && row.pool !== undefined) meta.append(el('span', null, t('bets.row.pool', 'Pool {{amount}}', { amount: moneyText(row.pool) })));
         if (row.closesAt) meta.append(el('span', null, t('bets.row.closes', 'Closes {{date}}', { date: dateText(row.closesAt) })));
         if (row.agent) meta.append(el('span', null, t('panel.proposal.agent.badge', 'Agent proposal')));
@@ -397,6 +416,16 @@
             : t('bets.contest.land', 'Parcel {{parcel}}', { parcel });
     }
 
+    // How many entries a contest holds, plans and loose proposals counted apart ("2 plans · 1 proposal").
+    function entriesText(contest) {
+        const plans = contest.planCount || 0;
+        const proposals = contest.proposalCount - plans;
+        return [
+            plans ? t('bets.contest.planCount', '{{count}} plans', { count: plans }) : null,
+            proposals || !plans ? t('agentDialog.proposalCount', '{{count}} proposals', { count: proposals }) : null
+        ].filter(Boolean);
+    }
+
     // A contest under the current filter: the rows with a pool, and the rest folded under a count.
     // Null when the filter leaves nothing of it.
     function renderContest(contest) {
@@ -407,14 +436,16 @@
         const article = el('article', 'bets-contest');
         article.dataset.contestId = contest.id;
         const head = el('header', 'bets-contest__head');
+        // Plans are what a contest is about when it has them; the loose proposals are the also-rans.
+        const plans = contest.planCount > 0;
         head.append(el('h3', 'bets-contest__title', contest.proposalCount > 1
-            ? t('bets.contest.title', 'Which proposal gets built?')
-            : t('bets.contest.titleSingle', 'Does this proposal get built?')));
+            ? (plans ? t('bets.contest.titlePlans', 'Which plan gets built?') : t('bets.contest.title', 'Which proposal gets built?'))
+            : (plans ? t('bets.contest.titleSinglePlan', 'Does this plan get built?') : t('bets.contest.titleSingle', 'Does this proposal get built?'))));
         const land = el('p', 'bets-contest__land');
         land.title = contest.parcelIds.join(', ');
         land.textContent = [
             landText(contest),
-            t('agentDialog.proposalCount', '{{count}} proposals', { count: contest.proposalCount }),
+            ...entriesText(contest),
             t('bets.row.pool', 'Pool {{amount}}', { amount: moneyText(contest.pool) })
         ].join(' · ');
         head.append(land);
@@ -591,5 +622,5 @@
     if (doc.readyState === 'complete') openFromUrl();
     else root.addEventListener('load', openFromUrl, { once: true });
 
-    root.BetsSheet = { load, ensureLoaded, render, rowFor, positionsFor, whenPositions, landText, openProposal, linkFor, copyLink, SHEET_ID };
+    root.BetsSheet = { load, ensureLoaded, render, rowFor, positionsFor, whenPositions, landText, entriesText, openProposal, linkFor, copyLink, SHEET_ID };
 })(typeof window !== 'undefined' ? window : null);

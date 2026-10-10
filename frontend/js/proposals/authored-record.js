@@ -259,8 +259,30 @@
         return null;
     }
 
+    // A record whose declaration shrank (a road stretch split off its source, a re-bound site)
+    // keeps only the land claims its own anchors still name: an acceptance or flow entry on land
+    // the record no longer reaches is void, not carried along. Mutates and returns the record.
+    function restrictLandClaimsToAnchors(record) {
+        if (!record || typeof record !== 'object' || Array.isArray(record)) return record;
+        const anchors = new Set((Array.isArray(record.cadastreParcelIds)
+            ? record.cadastreParcelIds : []).map(String));
+        if (Array.isArray(record.acceptedParcelIds)) {
+            record.acceptedParcelIds = record.acceptedParcelIds.filter(id => anchors.has(String(id)));
+        }
+        if (Array.isArray(record.ownershipFlow)) {
+            record.ownershipFlow = record.ownershipFlow
+                .filter(entry => !entry?.parcelId || anchors.has(String(entry.parcelId)));
+        }
+        if (record.ownerAcceptances && typeof record.ownerAcceptances === 'object') {
+            record.ownerAcceptances = Object.fromEntries(Object.entries(record.ownerAcceptances)
+                .filter(([id]) => anchors.has(String(id))));
+        }
+        return record;
+    }
+
     return {
         RUNTIME_FEATURE_PROPERTIES,
+        restrictLandClaimsToAnchors,
         cleanFeature,
         cleanFeatureContainers,
         stripCadastreAliases,

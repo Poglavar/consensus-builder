@@ -695,6 +695,9 @@ function makeFreshRoadSnapshot(sourceProposal, definition, options = {}) {
         ? sourceProposal.createdAt
         : new Date().toISOString();
     clone.cadastreParcelIds = cadastreParcelIds.slice();
+    // The stretch reaches less land than its source: claims copied from the source on parcels
+    // outside the new anchors would fail the load boundary ("contains live parcel id").
+    window.ProposalAuthoredRecord.restrictLandClaimsToAnchors(clone);
     clone.roadProposal = {
         ...(clone.roadProposal || {}),
         definition: cloneRoadValue(cleanDefinition)
