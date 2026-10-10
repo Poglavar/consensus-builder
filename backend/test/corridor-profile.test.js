@@ -50,6 +50,22 @@ const {
     withLaneTreeEvery
 } = require('../../frontend/js/corridor-profile.js');
 
+// The identity frame: (lat, lng) read as planar metres (x = lng, y = lat), handed to the builders
+// explicitly — they take a frame (projections.md §2) and never consult a global projection.
+const IDENTITY_FRAME = Object.freeze({
+    latLngToMetric: (lat, lng) => [lng, lat],
+    metricToLatLng: (x, y) => [y, x],
+    toMetric: position => [position[0], position[1]],
+    toLngLat: xy => [xy[0], xy[1]]
+});
+// Code that builds its own frames needs real positions: (lat, lng) here are metres north and east
+// of a point in Zagreb, placed exactly through a local frame there (metric-frame.js).
+const ZAGREB_FRAME = require('../../frontend/js/metric-frame.js').frameAt([15.97, 45.8]);
+const placeInZagreb = point => { const [lat, lng] = ZAGREB_FRAME.metricToLatLng(point.lng, point.lat); return { lat, lng }; };
+const inZagreb = corridors => corridors.map(corridor => ({
+    ...corridor, centerline: corridor.centerline.map(segment => segment.map(placeInZagreb))
+}));
+
 const close = (a, b, tolerance = 1e-6) => Math.abs(a - b) < tolerance;
 
 describe('corridor profile presets', () => {
@@ -269,37 +285,29 @@ describe('corridor decorations and junction topology', () => {
     });
 
     it('builds repeated symbols and a crossing treatment from the same profile', () => {
-        global.wgs84ToHTRS96 = (lat, lng) => [lng, lat];
-        global.htrs96ToWGS84 = (x, y) => [y, x];
         const profile = { strips: CORRIDOR_PROFILE_PRESETS[40] };
         const main = [{ lat: 0, lng: -50 }, { lat: 0, lng: 0 }, { lat: 0, lng: 50 }];
         const branch = [{ lat: 0, lng: 0 }, { lat: 50, lng: 0 }];
-        const decorations = buildCorridorDecorations([main, branch], profile);
+        const decorations = buildCorridorDecorations([main, branch], profile, IDENTITY_FRAME);
         expect(decorations.some(item => item.kind === 'bike')).toBe(true);
         expect(decorations.some(item => item.kind === 'pedestrian')).toBe(true);
         expect(decorations.some(item => item.kind === 'tree')).toBe(true);
         expect(decorations.every(item => Math.hypot(item.lng, item.lat) >= 24)).toBe(true);
-        const junctions = buildCorridorJunctionTreatments([main, branch], profile);
+        const junctions = buildCorridorJunctionTreatments([main, branch], profile, IDENTITY_FRAME);
         expect(junctions).toHaveLength(1);
         expect(junctions[0].degree).toBe(3);
         expect(junctions[0].surfacePolygons).toHaveLength(3);
         expect(junctions[0].crosswalkPolygons.length).toBeGreaterThan(3);
-        delete global.wgs84ToHTRS96;
-        delete global.htrs96ToWGS84;
     });
 
     it('spaces tree-grove planting at six metres', () => {
-        global.wgs84ToHTRS96 = (lat, lng) => [lng, lat];
-        global.htrs96ToWGS84 = (x, y) => [y, x];
         const profile = { strips: [{ type: 'verge', width: 3, landscape: 'trees' }] };
         const decorations = buildCorridorDecorations(
             [{ lat: 0, lng: 0 }, { lat: 0, lng: 60 }],
-            profile
+            profile, IDENTITY_FRAME
         );
         expect(decorations).toHaveLength(10);
         expect(decorations.map(item => item.lng)).toEqual([3, 9, 15, 21, 27, 33, 39, 45, 51, 57]);
-        delete global.wgs84ToHTRS96;
-        delete global.htrs96ToWGS84;
     });
 });
 
@@ -821,19 +829,14 @@ describe('buildCrossCorridorJunctionTreatments', () => {
     const profile = { strips: CORRIDOR_PROFILE_PRESETS[40] };
 
     function withPlanarProjection(run) {
-        global.wgs84ToHTRS96 = (lat, lng) => [lng, lat];
-        global.htrs96ToWGS84 = (x, y) => [y, x];
-        try { return run(); } finally {
-            delete global.wgs84ToHTRS96;
-            delete global.htrs96ToWGS84;
-        }
+        return run();
     }
 
     it('forms a junction where a branch ends exactly on another road edge (T-joint)', () => {
         withPlanarProjection(() => {
             const main = { centerline: [[{ lat: 0, lng: -50 }, { lat: 0, lng: 50 }]], profile };
             const branch = { centerline: [[{ lat: 0, lng: 0 }, { lat: 50, lng: 0 }]], profile };
-            const junctions = buildCrossCorridorJunctionTreatments([main, branch]);
+            const junctions = buildCrossCorridorJunctionTreatments(inZagreb([main, branch]));
             expect(junctions).toHaveLength(1);
             expect(junctions[0].degree).toBe(3);
             expect(junctions[0].surfacePolygons).toHaveLength(3);
@@ -844,7 +847,7 @@ describe('buildCrossCorridorJunctionTreatments', () => {
         withPlanarProjection(() => {
             const main = { centerline: [[{ lat: 0, lng: -50 }, { lat: 0, lng: 50 }]], profile };
             const nearMiss = { centerline: [[{ lat: 5, lng: 0 }, { lat: 50, lng: 0 }]], profile };
-            expect(buildCrossCorridorJunctionTreatments([main, nearMiss])).toEqual([]);
+            expect(buildCrossCorridorJunctionTreatments(inZagreb([main, nearMiss]))).toEqual([]);
         });
     });
 
@@ -853,7 +856,7 @@ describe('buildCrossCorridorJunctionTreatments', () => {
             const main = { corridorId: 'main', centerline: [[{ lat: 0, lng: -50 }, { lat: 0, lng: 50 }]], profile };
             const branch = { corridorId: 'branch', centerline: [[{ lat: 0, lng: 0 }, { lat: 50, lng: 0 }]], profile };
             const aside = { corridorId: 'aside', centerline: [[{ lat: 300, lng: -50 }, { lat: 300, lng: 50 }]], profile };
-            const one = buildCrossCorridorJunctionTreatments([main, branch, aside]);
+            const one = buildCrossCorridorJunctionTreatments(inZagreb([main, branch, aside]));
             expect(one).toHaveLength(1);
             expect(one[0].corridorIds).toEqual(['branch', 'main']);
             // A subset pass (what a keyed renderer runs after one corridor changed) must agree with
@@ -864,7 +867,7 @@ describe('buildCrossCorridorJunctionTreatments', () => {
                 surface: treatment.surfacePolygons.map(polygon => JSON.stringify(polygon)).sort(),
                 crosswalks: treatment.crosswalkPolygons.map(polygon => JSON.stringify(polygon)).sort()
             });
-            const subset = buildCrossCorridorJunctionTreatments([branch, main]);
+            const subset = buildCrossCorridorJunctionTreatments(inZagreb([branch, main]));
             expect(subset.map(canonical)).toEqual(one.map(canonical));
         });
     });
@@ -878,7 +881,7 @@ describe('buildCrossCorridorJunctionTreatments', () => {
                 ],
                 profile
             };
-            expect(buildCrossCorridorJunctionTreatments([road])).toEqual([]);
+            expect(buildCrossCorridorJunctionTreatments(inZagreb([road]))).toEqual([]);
         });
     });
 });
@@ -939,22 +942,17 @@ describe('per-segment cross-sections', () => {
     });
 
     it('sizes junction arms by their own segment profile', () => {
-        global.wgs84ToHTRS96 = (lat, lng) => [lng, lat];
-        global.htrs96ToWGS84 = (x, y) => [y, x];
-        try {
+        {
             const junctions = buildCorridorJunctionTreatmentsForEntries([
                 { points: [{ lat: 0, lng: -50 }, { lat: 0, lng: 0 }, { lat: 0, lng: 50 }], profile: wide },
                 { points: [{ lat: 0, lng: 0 }, { lat: 50, lng: 0 }], profile: narrow }
-            ]);
+            ], IDENTITY_FRAME);
             expect(junctions).toHaveLength(1);
             expect(junctions[0].degree).toBe(3);
             expect(junctions[0].surfacePolygons).toHaveLength(3);
             // The narrow footpath arm crosses at 2 m: exactly one zebra stripe fits; the two
             // collector arms fit many. Per-arm sizing is what makes the counts differ.
             expect(junctions[0].crosswalkPolygons.length).toBeGreaterThan(3);
-        } finally {
-            delete global.wgs84ToHTRS96;
-            delete global.htrs96ToWGS84;
         }
     });
 });
@@ -1224,18 +1222,13 @@ describe('fixed-width parking edits', () => {
 describe('buildCorridorParkingBays', () => {
     const horizontalRoad = [{ lat: 0, lng: 0 }, { lat: 0, lng: 100 }];
     const withProjection = (fn) => {
-        global.wgs84ToHTRS96 = (lat, lng) => [lng, lat];
-        global.htrs96ToWGS84 = (x, y) => [y, x];
-        try { return fn(); } finally {
-            delete global.wgs84ToHTRS96;
-            delete global.htrs96ToWGS84;
-        }
+        return fn();
     };
 
     it('draws one carriageway-side edge line and a run of bay dividers for a parallel lane', () => {
         withProjection(() => {
             const profile = { strips: [{ type: 'driving', width: 3, direction: 'forward' }, { type: 'parking', width: 2.5 }] };
-            const bays = buildCorridorParkingBays([horizontalRoad], profile);
+            const bays = buildCorridorParkingBays([horizontalRoad], profile, IDENTITY_FRAME);
             expect(bays.filter(b => b.kind === 'edge')).toHaveLength(1);
             const dividers = bays.filter(b => b.kind === 'divider');
             expect(dividers.length).toBeGreaterThan(10);
@@ -1250,9 +1243,9 @@ describe('buildCorridorParkingBays', () => {
     it('spaces perpendicular bays closer than parallel ones over the same lane', () => {
         withProjection(() => {
             const parallel = buildCorridorParkingBays([horizontalRoad],
-                { strips: [{ type: 'driving', width: 3, direction: 'forward' }, { type: 'parking', width: 2.5 }] });
+                { strips: [{ type: 'driving', width: 3, direction: 'forward' }, { type: 'parking', width: 2.5 }] }, IDENTITY_FRAME);
             const perpendicular = buildCorridorParkingBays([horizontalRoad],
-                { strips: [{ type: 'driving', width: 3, direction: 'forward' }, { type: 'parking_perpendicular', width: 5 }] });
+                { strips: [{ type: 'driving', width: 3, direction: 'forward' }, { type: 'parking_perpendicular', width: 5 }] }, IDENTITY_FRAME);
             const count = kind => kind.filter(b => b.kind === 'divider').length;
             expect(count(perpendicular)).toBeGreaterThan(count(parallel));
         });
@@ -1261,7 +1254,7 @@ describe('buildCorridorParkingBays', () => {
     it('slants the dividers of an angled lane along the road', () => {
         withProjection(() => {
             const bays = buildCorridorParkingBays([horizontalRoad],
-                { strips: [{ type: 'driving', width: 3, direction: 'forward' }, { type: 'parking_angled', width: 4.5 }] });
+                { strips: [{ type: 'driving', width: 3, direction: 'forward' }, { type: 'parking_angled', width: 4.5 }] }, IDENTITY_FRAME);
             const divider = bays.find(b => b.kind === 'divider');
             const [a, b] = divider.line;
             expect(Math.abs(a.lng - b.lng)).toBeGreaterThan(1); // ends offset along the road — a slant
@@ -1271,7 +1264,7 @@ describe('buildCorridorParkingBays', () => {
     it('produces nothing for a corridor with no parking lane', () => {
         withProjection(() => {
             const bays = buildCorridorParkingBays([horizontalRoad],
-                { strips: [{ type: 'driving', width: 3, direction: 'forward' }, { type: 'sidewalk', width: 2 }] });
+                { strips: [{ type: 'driving', width: 3, direction: 'forward' }, { type: 'sidewalk', width: 2 }] }, IDENTITY_FRAME);
             expect(bays).toEqual([]);
         });
     });
@@ -1305,9 +1298,7 @@ describe('parking orientation through OSM tags', () => {
 // A parking lane can reserve every Nth bay for a tree; direction arrows paint which way a car lane runs.
 describe('parking-lot trees', () => {
     const withProjection = (fn) => {
-        global.wgs84ToHTRS96 = (lat, lng) => [lng, lat];
-        global.htrs96ToWGS84 = (x, y) => [y, x];
-        try { return fn(); } finally { delete global.wgs84ToHTRS96; delete global.htrs96ToWGS84; }
+        return fn();
     };
 
     it('preserves a positive whole treeEvery on a parking lane and drops it elsewhere', () => {
@@ -1330,7 +1321,7 @@ describe('parking-lot trees', () => {
         withProjection(() => {
             const profile = { strips: [{ type: 'driving', width: 3, direction: 'forward' }, { type: 'parking', width: 2.5, treeEvery: 5 }] };
             // Parallel bays are 6 m, so every 5th is a tree every 30 m; over 100 m that is 3 trees.
-            const trees = buildCorridorDecorations([[{ lat: 0, lng: 0 }, { lat: 0, lng: 100 }]], profile)
+            const trees = buildCorridorDecorations([[{ lat: 0, lng: 0 }, { lat: 0, lng: 100 }]], profile, IDENTITY_FRAME)
                 .filter(d => d.kind === 'tree');
             expect(trees).toHaveLength(3);
         });
@@ -1339,7 +1330,7 @@ describe('parking-lot trees', () => {
     it('plants nothing when a parking lane has no treeEvery', () => {
         withProjection(() => {
             const profile = { strips: [{ type: 'driving', width: 3, direction: 'forward' }, { type: 'parking', width: 2.5 }] };
-            expect(buildCorridorDecorations([[{ lat: 0, lng: 0 }, { lat: 0, lng: 100 }]], profile)
+            expect(buildCorridorDecorations([[{ lat: 0, lng: 0 }, { lat: 0, lng: 100 }]], profile, IDENTITY_FRAME)
                 .filter(d => d.kind === 'tree')).toHaveLength(0);
         });
     });
@@ -1348,9 +1339,7 @@ describe('parking-lot trees', () => {
 describe('lane direction and direction arrows', () => {
     const road = [{ lat: 0, lng: 0 }, { lat: 0, lng: 100 }];
     const withProjection = (fn) => {
-        global.wgs84ToHTRS96 = (lat, lng) => [lng, lat];
-        global.htrs96ToWGS84 = (x, y) => [y, x];
-        try { return fn(); } finally { delete global.wgs84ToHTRS96; delete global.htrs96ToWGS84; }
+        return fn();
     };
     // The head ring is the three-point one; its tip is vertex 0.
     const heads = arrows => arrows.filter(ring => ring.length === 3);
@@ -1363,18 +1352,18 @@ describe('lane direction and direction arrows', () => {
 
     it('points a forward lane forward and a backward lane back', () => {
         withProjection(() => {
-            const forward = heads(buildCorridorDirectionArrows([road], { strips: [{ type: 'driving', width: 3, direction: 'forward' }] }));
+            const forward = heads(buildCorridorDirectionArrows([road], { strips: [{ type: 'driving', width: 3, direction: 'forward' }] }, IDENTITY_FRAME));
             expect(forward.length).toBeGreaterThan(0);
             // lng grows eastwards here, so a forward arrow's tip is further east than its base.
             expect(forward.every(ring => ring[0].lng > ring[1].lng)).toBe(true);
-            const backward = heads(buildCorridorDirectionArrows([road], { strips: [{ type: 'driving', width: 3, direction: 'backward' }] }));
+            const backward = heads(buildCorridorDirectionArrows([road], { strips: [{ type: 'driving', width: 3, direction: 'backward' }] }, IDENTITY_FRAME));
             expect(backward.every(ring => ring[0].lng < ring[1].lng)).toBe(true);
         });
     });
 
     it('draws no arrows for lanes that are not motor-vehicle lanes', () => {
         withProjection(() => {
-            expect(buildCorridorDirectionArrows([road], { strips: [{ type: 'sidewalk', width: 2 }, { type: 'parking', width: 2.5 }] })).toEqual([]);
+            expect(buildCorridorDirectionArrows([road], { strips: [{ type: 'sidewalk', width: 2 }, { type: 'parking', width: 2.5 }] }, IDENTITY_FRAME)).toEqual([]);
         });
     });
 });
@@ -1442,19 +1431,14 @@ describe('two roads meeting end to end', () => {
     const profile = { strips: CORRIDOR_PROFILE_PRESETS[40] };
 
     function withPlanarProjection(run) {
-        global.wgs84ToHTRS96 = (lat, lng) => [lng, lat];
-        global.htrs96ToWGS84 = (x, y) => [y, x];
-        try { return run(); } finally {
-            delete global.wgs84ToHTRS96;
-            delete global.htrs96ToWGS84;
-        }
+        return run();
     }
 
     it('treats the bend where two different roads join', () => {
         withPlanarProjection(() => {
             const west = { corridorId: 'a', centerline: [[{ lat: 0, lng: -60 }, { lat: 0, lng: 0 }]], profile };
             const north = { corridorId: 'b', centerline: [[{ lat: 0, lng: 0 }, { lat: 60, lng: 30 }]], profile };
-            const junctions = buildCrossCorridorJunctionTreatments([west, north]);
+            const junctions = buildCrossCorridorJunctionTreatments(inZagreb([west, north]));
             expect(junctions).toHaveLength(1);
             expect(junctions[0].degree).toBe(2);
             // One asphalt patch per arm — together they cover the overlap and fill the notch.
@@ -1466,11 +1450,11 @@ describe('two roads meeting end to end', () => {
         withPlanarProjection(() => {
             const west = { corridorId: 'a', centerline: [[{ lat: 0, lng: -60 }, { lat: 0, lng: 0 }]], profile };
             const north = { corridorId: 'b', centerline: [[{ lat: 0, lng: 0 }, { lat: 60, lng: 30 }]], profile };
-            expect(buildCrossCorridorJunctionTreatments([west, north])[0].crosswalkPolygons).toEqual([]);
+            expect(buildCrossCorridorJunctionTreatments(inZagreb([west, north]))[0].crosswalkPolygons).toEqual([]);
             // A real three-arm junction still gets them.
             const main = { corridorId: 'a', centerline: [[{ lat: 0, lng: -50 }, { lat: 0, lng: 50 }]], profile };
             const branch = { corridorId: 'b', centerline: [[{ lat: 0, lng: 0 }, { lat: 50, lng: 0 }]], profile };
-            expect(buildCrossCorridorJunctionTreatments([main, branch])[0].crosswalkPolygons.length).toBeGreaterThan(3);
+            expect(buildCrossCorridorJunctionTreatments(inZagreb([main, branch]))[0].crosswalkPolygons.length).toBeGreaterThan(3);
         });
     });
 
@@ -1480,7 +1464,7 @@ describe('two roads meeting end to end', () => {
             // would only interrupt the lane markings running through.
             const west = { corridorId: 'a', centerline: [[{ lat: 0, lng: -60 }, { lat: 0, lng: 0 }]], profile };
             const east = { corridorId: 'b', centerline: [[{ lat: 0, lng: 0 }, { lat: 1, lng: 60 }]], profile };
-            expect(buildCrossCorridorJunctionTreatments([west, east])).toEqual([]);
+            expect(buildCrossCorridorJunctionTreatments(inZagreb([west, east]))).toEqual([]);
         });
     });
 
@@ -1489,9 +1473,9 @@ describe('two roads meeting end to end', () => {
             // One record, one polyline, one corner: mitred by offsetPolylinePlanar. A patch here
             // would paint over a joint that is already correct.
             const bend = [{ lat: 0, lng: -60 }, { lat: 0, lng: 0 }, { lat: 60, lng: 30 }];
-            expect(buildCorridorJunctionTreatments([bend], profile)).toEqual([]);
+            expect(buildCorridorJunctionTreatments([bend], profile, IDENTITY_FRAME)).toEqual([]);
             const road = { corridorId: 'a', centerline: [[...bend]], profile };
-            expect(buildCrossCorridorJunctionTreatments([road, road])).toEqual([]);
+            expect(buildCrossCorridorJunctionTreatments(inZagreb([road, road]))).toEqual([]);
         });
     });
 });

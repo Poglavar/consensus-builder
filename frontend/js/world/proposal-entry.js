@@ -31,13 +31,23 @@
                 if (global.WorldView.isOpen()) {
                     global.WorldHandoff.store({ dataUrl: global.WorldView.captureHandoffFrame(), cityId: city, proposalId: event.proposalId });
                 }
-                global.history.replaceState(null, '', reloadUrl.pathname + reloadUrl.search);
-                const navigating = await manager.switchCity(city, { requireConfirmation: false });
+                // to the proposal's address in its city; the entry being left stays for Back
+                const navigating = await manager.switchCity(city, { requireConfirmation: false, url: reloadUrl.href });
                 if (!navigating) throw new Error('City navigation could not open');
                 return;
             }
             let proposal = global.getProposalByIdOrHash(event.proposalId);
-            if (!proposal) proposal = await global.importServerProposal(event.proposalId);
+            if (!proposal) {
+                try {
+                    proposal = await global.importServerProposal(event.proposalId);
+                } catch (error) {
+                    // The record belongs to another city's store (the link's ?city= was stale, missing
+                    // or unknown): open it there. A link opened from outside asks first.
+                    if (error?.code !== 'proposal-in-other-city') throw error;
+                    await global.openProposalInItsCity(event.proposalId, error.cityId, { ask: fromUrl });
+                    return;
+                }
+            }
             // The local copy is preferred above: downloading must never reset its applied state.
             if (!fromUrl) global.history.pushState(null, '', target);
             const opened = global.openProposalFromList(global.getProposalKey(proposal) || event.proposalId, { proposal, closeSheets: true });

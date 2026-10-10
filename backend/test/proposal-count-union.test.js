@@ -145,6 +145,22 @@ describe('osvježavanje serverskog broja', () => {
         expect(serverProposalCache.count).toBe(42);
     });
 
+    it('records the count under the list\'s own key, so the next list render does not refetch', async () => {
+        // ensureServerProposals compares lastCity with the area key; the bare city here made every
+        // count refresh look like a move to another area, wiping and refetching the list
+        const context = { explore: false, city: 'sibenik', key: 'city:sibenik' };
+        const { serverProposalCache, fetchSpy } = harness();
+        const body = sliceBetween(serverSync, "// How long the sidebar's server count", '// The sort keys the SERVER can order by');
+        await new Function('normalizeCityCodeForApi', 'resolveCurrentCityCode', 'resolveBackendBaseUrl',
+            'serverProposalCache', 'resetServerProposalCache', 'window', 'fetch', 'console',
+            'updateShowProposalsButton', `${body} return refreshServerProposalCount;`)(
+            city => city, () => 'sibenik', () => 'http://backend', serverProposalCache, vi.fn(),
+            { __proposalCounts: counts, getProposalCountAreaContext: () => context }, fetchSpy,
+            { warn: vi.fn(), error: vi.fn() }, vi.fn())();
+        expect(serverProposalCache.count).toBe(42);
+        expect(serverProposalCache.lastCity).toBe('city:sibenik');
+    });
+
     it('requests the active Explore viewport bounds instead of a city total', async () => {
         const context = { explore: true, city: null, bbox: [15.9, 45.7, 16.1, 45.9], key: 'explore:15.9,45.7,16.1,45.9' };
         const { run, fetchSpy, serverProposalCache } = harness();

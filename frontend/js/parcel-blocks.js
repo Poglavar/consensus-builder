@@ -368,13 +368,14 @@ function parcelsShareBoundary(p1, p2) {
         return false;
     }
 
-    // Get HTRS96 coordinates on-the-fly
-    const coords1 = getHtrsCoordinates(feature1);
-    const coords2 = getHtrsCoordinates(feature2);
+    // Metres for both, in one frame on the pair (projections.md §2)
+    const pairFrame = window.__metricFrame.frameFor([feature1, feature2]);
+    const coords1 = metricExteriorRing(feature1, pairFrame);
+    const coords2 = metricExteriorRing(feature2, pairFrame);
 
     // Check if we got valid coordinates
     if (!coords1.length || !coords2.length) {
-        console.warn("Could not get valid HTRS coordinates for boundary check");
+        console.warn("Could not get valid metric coordinates for boundary check");
         return false;
     }
 
@@ -504,7 +505,7 @@ function buildNeighborMapFromEdges(parcels) {
     const blockTopology = (typeof window !== 'undefined' && window.__parcelBlockTopology)
         ? window.__parcelBlockTopology
         : null;
-    const forAdjacency = [];
+    const adjacencyFeatures = [];
     parcels.forEach(layer => {
         const requestedId = parcelIdFromLayer(layer);
         const presented = requestedId ? services.presenter.getLayer(requestedId) : null;
@@ -513,8 +514,7 @@ function buildNeighborMapFromEdges(parcels) {
         if (!id) return;
         if (!presented || parcelIdFromLayer(presented) !== id) return;
         idToLayer.set(id, presented);
-        const rings = htrsRingsOf(feature);
-        if (rings.length) forAdjacency.push({ id, rings });
+        adjacencyFeatures.push({ id, feature });
     });
 
     const neighborMap = new Map(); // id -> Array<layer>
@@ -531,14 +531,21 @@ function buildNeighborMapFromEdges(parcels) {
     // outlines appear to share an edge underneath it. Use the LIVE corridor parcels from the same
     // fabric — never proposal records or rendered strips — so block consumers see one current
     // ground truth and do not care how that ground was produced.
-    const corridorBarriers = services.fabric
+    const barrierFeatures = services.fabric
         .queryBounds(blockSearchBounds(), { includeCorridors: true })
         .filter(feature => isCorridorParcel(parcelIdFromLayer(feature)))
-        .map(feature => ({
-            id: parcelIdFromLayer(feature),
-            rings: htrsRingsOf(feature)
-        }))
-        .filter(entry => entry.id && entry.rings.length);
+        .map(feature => ({ id: parcelIdFromLayer(feature), feature }))
+        .filter(entry => entry.id);
+
+    // One frame for every parcel this topology compares: a shared boundary only meets itself when
+    // both sides are measured in the same metres (projections.md §2).
+    const compared = adjacencyFeatures.concat(barrierFeatures).map(entry => entry.feature);
+    const frame = compared.length ? window.__metricFrame.frameFor(compared) : null;
+    const withRings = entries => entries
+        .map(entry => ({ id: entry.id, rings: metricRingsOfFeature(entry.feature, frame) }))
+        .filter(entry => entry.rings.length);
+    const forAdjacency = withRings(adjacencyFeatures);
+    const corridorBarriers = withRings(barrierFeatures);
 
     blockTopology.neighborPairs(forAdjacency, corridorBarriers).forEach(pair => {
         const la = idToLayer.get(pair.a);
@@ -2426,8 +2433,11 @@ function displayVertices(parcel) {
         return;
     }
 
-    // Generate HTRS96 coordinates on-the-fly
-    const htrsCoordinates = getHtrsCoordinates(feature);
+    // The vertices in the city's DATASET CRS — what the cadastre itself stores — under its own name;
+    // nothing when the dataset is in degrees anyway.
+    const datasetCrs = (typeof CURRENT_CITY_CONFIG !== 'undefined' && CURRENT_CITY_CONFIG?.projection?.datasetCrs) || null;
+    const showDataset = !!datasetCrs && datasetCrs !== 'EPSG:4326' && typeof wgs84ToDataset === 'function';
+    const htrsCoordinates = showDataset ? coordinates.map(coord => wgs84ToDataset(coord[1], coord[0])) : [];
 
     // Create a marker for each vertex
     coordinates.forEach((coord, index) => {
@@ -2444,7 +2454,7 @@ function displayVertices(parcel) {
         // Format coordinate data for popup
         let popupContent;
 
-        // Always show both coordinate systems since we're generating HTRS on-the-fly
+        // Both coordinate systems when the dataset has projected ones
         const htrsCoord = htrsCoordinates[index];
         if (htrsCoord) {
             popupContent = `
@@ -2454,7 +2464,7 @@ function displayVertices(parcel) {
                     Lat: ${coord[1].toFixed(6)}°<br>
                     Lng: ${coord[0].toFixed(6)}°<br>
                     <hr style="margin: 4px 0;">
-                    <strong>HTRS96/TM:</strong><br>
+                    <strong>${datasetCrs}:</strong><br>
                     E: ${htrsCoord[0].toFixed(3)} m<br>
                     N: ${htrsCoord[1].toFixed(3)} m
                 </div>`;
@@ -2511,10 +2521,10 @@ function clearVertexMarkers() {
     }
 }
 
-// Helper function to get HTRS96 coordinates on-the-fly from GeoJSON coordinates
-function getHtrsCoordinates(feature) {
+// The exterior ring of a parcel in metres, in `frame` — the operation's frame (projections.md §2).
+function metricExteriorRing(feature, frame) {
     if (!feature || !feature.geometry || !feature.geometry.coordinates) {
-        console.warn('Invalid feature for HTRS conversion', feature);
+        console.warn('Invalid feature for metric conversion', feature);
         return [];
     }
 
@@ -2538,26 +2548,27 @@ function getHtrsCoordinates(feature) {
         ringCoords = feature.geometry.coordinates[0][0];
     } else {
         // Unsupported geometry type
-        console.warn('Unsupported geometry type for HTRS conversion:', feature.geometry.type);
+        console.warn('Unsupported geometry type for metric conversion:', feature.geometry.type);
         return [];
     }
 
     // Validate that ringCoords is an array of coordinate pairs
     if (!Array.isArray(ringCoords) || ringCoords.length === 0 || !Array.isArray(ringCoords[0]) || ringCoords[0].length !== 2) {
-        console.warn('Invalid ring coordinates for HTRS conversion', ringCoords);
+        console.warn('Invalid ring coordinates for metric conversion', ringCoords);
         return [];
     }
 
-    // Convert WGS84 [lng, lat] to HTRS96 [easting, northing]
-    return ringCoords.map(coord => wgs84ToHTRS96(coord[1], coord[0]));
+    // WGS84 [lng, lat] to frame metres [x, y]
+    return ringCoords.map(coord => frame.latLngToMetric(coord[1], coord[0]));
 }
 
-// EVERY ring of a parcel in HTRS96 metres — each polygon of a MultiPolygon, and each hole.
+// EVERY ring of a parcel in metres (in `frame`, the operation's) — each polygon of a MultiPolygon,
+// and each hole.
 //
-// getHtrsCoordinates above returns only the exterior ring of the first polygon, which is all the
+// metricExteriorRing above returns only the exterior ring of the first polygon, which is all the
 // old edge-key adjacency ever looked at. A parcel loses the neighbours it has along a dropped ring,
 // and a parcel wrapped around another loses them along the hole that IS their shared boundary.
-function htrsRingsOf(feature) {
+function metricRingsOfFeature(feature, frame) {
     const geometry = feature && feature.geometry;
     if (!geometry || !Array.isArray(geometry.coordinates)) return [];
     const polygons = geometry.type === 'Polygon'
@@ -2570,14 +2581,14 @@ function htrsRingsOf(feature) {
             const converted = [];
             ring.forEach(coord => {
                 if (!Array.isArray(coord) || coord.length < 2) return;
-                converted.push(wgs84ToHTRS96(coord[1], coord[0]));
+                converted.push(frame.latLngToMetric(coord[1], coord[0]));
             });
             if (converted.length >= 2) rings.push(converted);
         });
     });
     return rings;
 }
-window.htrsRingsOf = htrsRingsOf;
+window.metricRingsOfFeature = metricRingsOfFeature;
 
 // Add this at the top with other layer variables
 let blockPolygonsLayer = null;

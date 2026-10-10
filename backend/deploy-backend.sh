@@ -46,6 +46,15 @@ set -euo pipefail
 
 cd "${DEPLOY_DIR}"
 
+# Prepared publication artifacts are signed (proposals/prepare.js): without a signing key the API
+# answers every preparation, and every publication of a prepared record, 503. Refuse before anything
+# on the server changes. A secret, so it lives in .env, never in the ecosystem file.
+if ! grep -Eq '^PREPARE_SIGNING_KEY=[0-9a-fA-F]{64,}$' .env; then
+    echo "❌ PREPARE_SIGNING_KEY (64+ hex chars) is missing from ${DEPLOY_DIR}/.env. Add one, e.g." >&2
+    echo "   node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\"" >&2
+    exit 1
+fi
+
 echo "Syncing to origin/${BRANCH}..."
 git fetch --prune origin
 git reset --hard "origin/${BRANCH}"

@@ -80,14 +80,12 @@ function handleMeasureClick(e) {
         }).addTo(map);
         measureMarkers.push(endMarker);
 
-        // Calculate the distance
-        const htrsStartPoint = wgs84ToHTRS96(measureStartPoint.lat, measureStartPoint.lng);
-        const htrsEndPoint = wgs84ToHTRS96(measureEndPoint.lat, measureEndPoint.lng);
-
-        // Calculate distance in meters (using HTRS96/TM coordinates)
-        const dx = htrsEndPoint[0] - htrsStartPoint[0];
-        const dy = htrsEndPoint[1] - htrsStartPoint[1];
-        const distanceMeters = Math.sqrt(dx * dx + dy * dy);
+        // The distance on the ellipsoid: measuring needs no projection (projections.md §2), so it
+        // is the same whichever city is active
+        const distanceMeters = window.__metricFrame.geodesicDistance(
+            [measureStartPoint.lng, measureStartPoint.lat],
+            [measureEndPoint.lng, measureEndPoint.lat]
+        );
 
         // Format the distance: a measuring tool keeps its decimetre in every language
         // (frontend-measurement-tool.test.js runs this file without js/format.js)
@@ -237,13 +235,11 @@ function handleMeasureMouseMove(e) {
             interactive: false
         }).addTo(map);
 
-        // Calculate and display the current distance
-        const htrsStartPoint = wgs84ToHTRS96(measureStartPoint.lat, measureStartPoint.lng);
-        const htrsMousePoint = wgs84ToHTRS96(e.latlng.lat, e.latlng.lng);
-
-        const dx = htrsMousePoint[0] - htrsStartPoint[0];
-        const dy = htrsMousePoint[1] - htrsStartPoint[1];
-        const distanceMeters = Math.sqrt(dx * dx + dy * dy);
+        // Calculate and display the current distance, on the ellipsoid
+        const distanceMeters = window.__metricFrame.geodesicDistance(
+            [measureStartPoint.lng, measureStartPoint.lat],
+            [e.latlng.lng, e.latlng.lat]
+        );
 
         // Format the distance: a measuring tool keeps its decimetre in every language
         // (frontend-measurement-tool.test.js runs this file without js/format.js)

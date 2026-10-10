@@ -1,6 +1,5 @@
 // Keeps the Astana app entry aligned with its sampled Esil-only public parcel source.
 import { describe, expect, it } from 'vitest';
-import proj4 from 'proj4';
 import { readFileSync } from 'node:fs';
 import { createContext, runInContext } from 'node:vm';
 
@@ -25,8 +24,6 @@ describe('Astana city config', () => {
             },
             projection: {
                 datasetCrs: 'EPSG:4326',
-                metricCrs: 'EPSG:32642',
-                metricDefinition: '+proj=utm +zone=42 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [51.1282, 71.4304],
                 fallbackDataset: [71.4304, 51.1282]
             },
@@ -41,11 +38,7 @@ describe('Astana city config', () => {
                 liveRadiusKm: 2
             }
         });
-        const projected = proj4('EPSG:4326', city.projection.metricDefinition, [71.4304, 51.1282]);
-        expect(projected[0]).toBeGreaterThan(650000);
-        expect(projected[0]).toBeLessThan(690000);
-        expect(projected[1]).toBeGreaterThan(5650000);
-        expect(projected[1]).toBeLessThan(5680000);
+        expect(city.projection.metricDefinition).toBeUndefined();
         expect(city.parcels.attribution).toContain('https://map.gov4c.kz/egkn/');
         expect(city.parcels.attribution).toContain('Esil district only');
         expect(city.parcels.attribution).toContain('partial Astana coverage');

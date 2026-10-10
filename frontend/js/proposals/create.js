@@ -1749,10 +1749,15 @@ async function createProposal() {
                                 {
                                     trait_type: 'Offer',
                                     value: `${offer} ${offerCurrency}`
-                                }
+                                },
+                                // where it is: the city its site was placed in by the preparation
+                                ...(proposal.city ? [{ trait_type: 'City', value: proposal.city }] : [])
                             ],
                             properties: {
                                 proposalId: proposal.proposalId || hash || '',
+                                // the city the proposal belongs to (a chain record names none otherwise,
+                                // and a link to it would open in whatever city the reader last used)
+                                city: proposal.city || null,
                                 goal: goalKey,
                                 title: metadataTitle,
                                 cadastreParcelIds: parcelIdsForMinting,

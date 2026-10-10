@@ -1,13 +1,12 @@
-// Unit tests for frontend/js/corridor-geometry.js. The headline pin is determinism: the road
-// footprint used to pick its direction with Math.random() for coincident points, so the same
-// centerline saved a different polygon and geometryHash each run. Projection is injected (identity),
-// matching the pattern in corridor-profile.test.js.
+// Unit tests for frontend/js/corridor-geometry.js: centre-line graph topology, edits, shape
+// conversions, track curvature and snapping. A corridor's land is corridor-footprint.js's (and its
+// tests'); metres here are measured in a frame on the gesture's own points (metric-frame.js), so the
+// curvature cases use real positions near Zagreb rather than an identity "projection".
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const {
-    createRectangularRoadSegment,
     planarSegmentIntersection,
     insertCorridorCrossingNodes,
     splitCorridorSelfJunctions,
@@ -33,59 +32,9 @@ const {
     ringSelfIntersectsXY
 } = require('../../frontend/js/corridor-profile.js');
 
-// Identity-ish projection: treat (lat,lng) as (x=lng, y=lat) metres and back. Enough to exercise
-// the geometry deterministically without proj4.
-const deps = {
-    wgs84ToHTRS96: (lat, lng) => [lng, lat],
-    htrs96ToWGS84: (x, y) => [y, x],
-    latLng: (lat, lng) => ({ lat, lng })
-};
-
 function ring(seg) {
     return seg.map(p => [Number(p.lat.toFixed(9)), Number(p.lng.toFixed(9))]);
 }
-
-describe('createRectangularRoadSegment', () => {
-    it('is deterministic for coincident points (the Math.random bug)', () => {
-        const p = { lat: 45.8, lng: 15.9 };
-        const a = createRectangularRoadSegment(p, { ...p }, 4, deps);
-        const b = createRectangularRoadSegment(p, { ...p }, 4, deps);
-        expect(a).not.toBeNull();
-        expect(ring(a)).toEqual(ring(b)); // identical footprint every run
-    });
-
-    it('nudges coincident points due east, giving a 0.1 m × width rectangle', () => {
-        const p = { lat: 0, lng: 0 };
-        const seg = createRectangularRoadSegment(p, { ...p }, 4, deps);
-        // With east nudge (dx=0.1, dy=0): perpendicular is (0, +1) → corners spread ±2 in lat (y),
-        // and 0..0.1 in lng (x).
-        const lats = seg.map(c => c.lat);
-        const lngs = seg.map(c => c.lng);
-        expect(Math.min(...lats)).toBeCloseTo(-2, 6);
-        expect(Math.max(...lats)).toBeCloseTo(2, 6);
-        expect(Math.min(...lngs)).toBeCloseTo(0, 6);
-        expect(Math.max(...lngs)).toBeCloseTo(0.1, 6);
-    });
-
-    it('builds a width-wide rectangle along a normal east-west segment', () => {
-        const seg = createRectangularRoadSegment({ lat: 0, lng: 0 }, { lat: 0, lng: 10 }, 4, deps);
-        expect(seg).toHaveLength(5); // closed ring
-        expect(seg[0]).toEqual(seg[4]); // closed
-        const lats = seg.map(c => c.lat);
-        expect(Math.min(...lats)).toBeCloseTo(-2, 6);
-        expect(Math.max(...lats)).toBeCloseTo(2, 6);
-    });
-
-    it('returns null for invalid inputs', () => {
-        expect(createRectangularRoadSegment(null, { lat: 0, lng: 0 }, 4, deps)).toBeNull();
-        expect(createRectangularRoadSegment({ lat: 0, lng: 0 }, { lat: 0, lng: 1 }, 0, deps)).toBeNull();
-        expect(createRectangularRoadSegment({ lat: 0, lng: 0 }, { lat: NaN, lng: 1 }, 4, deps)).toBeNull();
-    });
-
-    it('returns null when projection functions are unavailable', () => {
-        expect(createRectangularRoadSegment({ lat: 0, lng: 0 }, { lat: 0, lng: 1 }, 4, {})).toBeNull();
-    });
-});
 
 const P = (lat, lng) => ({ lat, lng });
 
@@ -419,16 +368,19 @@ describe('segmentsIntersect (planar {x,y})', () => {
 });
 
 describe('polylineHasSelfIntersection', () => {
-    const proj = { wgs84ToHTRS96: (lat, lng) => [lng, lat] };
-    it('flags a bowtie centerline and clears a simple one', () => {
-        global.wgs84ToHTRS96 = proj.wgs84ToHTRS96;
+    it('flags a bowtie centerline and clears a simple one, with no projection involved', () => {
         // A self-crossing "bowtie": (0,0)->(2,2)->(0,2)->(2,0)
         const bowtie = [P(0, 0), P(2, 2), P(2, 0), P(0, 2)];
         expect(polylineHasSelfIntersection(bowtie)).toBe(true);
         // A simple open path
         const simple = [P(0, 0), P(0, 1), P(0, 2), P(0, 3)];
         expect(polylineHasSelfIntersection(simple)).toBe(false);
-        delete global.wgs84ToHTRS96;
+        // the same bowtie anywhere on the globe
+        expect(polylineHasSelfIntersection(bowtie.map(p => P(p.lat * 1e-4 + 64.1, p.lng * 1e-4 - 21.9)))).toBe(true);
+    });
+
+    it('refuses an unreadable point instead of answering "no crossing"', () => {
+        expect(() => polylineHasSelfIntersection([P(0, 0), P(1, 1), P(NaN, 0), P(0, 1)])).toThrow(/not finite/);
     });
 });
 
@@ -494,9 +446,11 @@ describe('isValidPolygonLatLngPairs', () => {
 });
 
 describe('curvature constraints', () => {
-    // Identity projection so metres == coordinate units; space points >0.1 apart.
-    const proj = { wgs84ToHTRS96: (lat, lng) => [lng, lat], htrs96ToWGS84: (x, y) => [y, x] };
-    const LL = (lat, lng) => ({ lat, lng });
+    // LL(north, east): the position that many metres north and east of a point in Zagreb, placed
+    // exactly through a local frame there (metric-frame.js, checked against the ellipsoid in
+    // metric-frame.test.js) — real positions, which the code under test measures in its own frame.
+    const zagreb = require('../../frontend/js/metric-frame.js').frameAt([15.97, 45.8]);
+    const LL = (north, east) => { const [lat, lng] = zagreb.metricToLatLng(east, north); return { lat, lng }; };
 
     it('getMinCurvatureRadius maps speed → radius with a 1000 m fallback', () => {
         expect(getMinCurvatureRadius(200)).toBe(3500);
@@ -505,39 +459,28 @@ describe('curvature constraints', () => {
     });
 
     it('calculateCurvatureRadius is Infinity for collinear/too-close, finite for a real bend', () => {
-        global.wgs84ToHTRS96 = proj.wgs84ToHTRS96;
         // Collinear (straight) → Infinity
         expect(calculateCurvatureRadius(LL(0, 0), LL(0, 10), LL(0, 20))).toBe(Infinity);
         // Too close → Infinity
         expect(calculateCurvatureRadius(LL(0, 0), LL(0, 0.01), LL(0, 0.02))).toBe(Infinity);
-        // A right-angle bend → finite positive radius
+        // A right-angle bend → the circle through the three points: radius 10·√2 m
         const r = calculateCurvatureRadius(LL(0, 0), LL(0, 20), LL(20, 20));
-        expect(Number.isFinite(r)).toBe(true);
-        expect(r).toBeGreaterThan(0);
-        delete global.wgs84ToHTRS96;
+        expect(r).toBeCloseTo(10 * Math.SQRT2, 2);
     });
 
     it('checkCurvatureConstraint accepts a straight run and a gentle curve', () => {
-        global.wgs84ToHTRS96 = proj.wgs84ToHTRS96;
-        global.htrs96ToWGS84 = proj.htrs96ToWGS84;
         // Fewer than 2 prior points → trivially valid
         expect(checkCurvatureConstraint([LL(0, 0)], LL(0, 10), 300).valid).toBe(true);
         // A straight continuation → not violating
         const straight = checkCurvatureConstraint([LL(0, 0), LL(0, 100)], LL(0, 200), 300);
         expect(straight.valid).toBe(true);
         expect(straight.violatesConstraint).toBe(false);
-        delete global.wgs84ToHTRS96;
-        delete global.htrs96ToWGS84;
     });
 
     it('checkCurvatureConstraint flags or adjusts a too-sharp turn', () => {
-        global.wgs84ToHTRS96 = proj.wgs84ToHTRS96;
-        global.htrs96ToWGS84 = proj.htrs96ToWGS84;
         // A sharp near-right-angle turn against a large min radius: either flagged or nudged.
         const res = checkCurvatureConstraint([LL(0, 0), LL(0, 20)], LL(20, 20), 3500);
         expect(res.violatesConstraint || res.wasAdjusted).toBe(true);
-        delete global.wgs84ToHTRS96;
-        delete global.htrs96ToWGS84;
     });
 });
 

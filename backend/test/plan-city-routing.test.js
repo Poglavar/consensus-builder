@@ -29,8 +29,10 @@ function loadEnsurePlanCity(sandbox) {
 
 function makeSandbox({ current = 'new_york', stored = false, promptResult = false, navigateThrows = false } = {}) {
     const calls = { navigated: [], prompted: [] };
+    const configured = ['new_york', 'zagreb', 'sibenik'];
     const window = {
         CityConfigManager: {
+            resolveCityId: id => (configured.includes(String(id).toLowerCase()) ? String(id).toLowerCase() : null),
             getCurrentCityId: () => current,
             hasStoredCityId: () => stored,
             navigateToCity: (id) => {
@@ -77,11 +79,27 @@ describe('a named plan settles its city before loading', () => {
         expect(calls.prompted).toEqual(['sibenik']);
     });
 
-    it('passes the prompt\'s answer back, so a declined switch does not stop the load', async () => {
+    // The real prompt (city-switch-prompt.js) answers true for both choices — reloading, or the
+    // route dropped — and false only when it had nothing to ask; whatever it says is passed back.
+    it('passes the prompt\'s answer back', async () => {
         const { sandbox } = makeSandbox({ current: 'zagreb', stored: true, promptResult: false });
         const ensurePlanCity = loadEnsurePlanCity(sandbox);
 
         await expect(ensurePlanCity('sibenik')).resolves.toBe(false);
+    });
+
+    // The plan's city is free text on the plan record: one the app does not configure used to send a
+    // first-time visitor to a ?city= the boot ignores, reloading the same URL forever.
+    it('opens a plan whose city the app does not know where it is, without navigating', async () => {
+        const { sandbox, calls } = makeSandbox({ current: 'new_york', stored: false });
+        const ensurePlanCity = loadEnsurePlanCity(sandbox);
+
+        await expect(ensurePlanCity('atlantis')).resolves.toBe(false);
+        expect(calls.navigated).toEqual([]);
+        expect(calls.prompted).toEqual([]);
+        // a short code is the city it names
+        await expect(ensurePlanCity('Sibenik')).resolves.toBe(true);
+        expect(calls.navigated).toEqual(['sibenik']);
     });
 
     it('stays out of the way when there is no city to act on', async () => {

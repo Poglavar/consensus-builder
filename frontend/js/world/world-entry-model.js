@@ -1,19 +1,21 @@
 // Decisions for entering the app through the world view (globe), kept pure so node tests cover them:
 // whether a boot opens the globe, the `?at=lat,lon,zoom` view parameter, where a globe pick lands
-// (same city in place, another city by reload, or the explore city) and the explore city's metric
-// projection. No DOM, no storage; UMD so it is window.WorldEntryModel in the browser and require()-able
+// (same city in place, another city by reload, or the explore city). Metres never depend on the city
+// (projections.md §2). No DOM, no storage; UMD so it is window.WorldEntryModel in the browser and require()-able
 // in node. js/ui/world-entry.js is the browser layer that wires these to the globe and the map.
 //
 // API
 //   parseAt(value) -> { lat, lon, zoom|null } | null      validates; zoom clamped to [MIN_ZOOM, MAX_ZOOM]
 //   formatAt({ lat, lon, zoom }) -> 'lat,lon,zoom'        5 decimals, integer zoom
+//   addressWithView(href, view) -> href | null             the address carrying the view as ?at=;
+//                                                          null when it already does
 //   isSharedRoute({ pathname, search }) -> boolean         a link that names what to show (no globe)
 //   bootDecision({ cityChosen, sharedRoute, search }) -> { open, closable, firstVisit, forced }
 //   canReturnToMap(zoom) -> boolean      true when the current map is a useful return destination
 //   resolveLanding({ cityId, point, currentCityId, cityView, focus, explore }) -> landing (see below)
 //   liveCityFor({ place, currentCityId, sameCadastre }) -> the city a live place opens
+//   arrivesAtLatest(landing) -> boolean   a landing goes on to the city's latest proposal
 //   exploreZoomFor(place) -> zoom for an explore landing
-//   utmProjectionFor(lat, lon) -> { crs, definition }      the metric CRS for a place anywhere
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -53,6 +55,18 @@
         if (!view || !finite(view.lat) || !finite(view.lon)) throw new Error('formatAt: lat/lon must be finite numbers');
         const head = `${view.lat.toFixed(5)},${view.lon.toFixed(5)}`;
         return finite(view.zoom) ? `${head},${Math.round(view.zoom)}` : head;
+    }
+
+    // The address bar follows the map (js/map-core.js, on every move): the current address with the
+    // view as ?at=, everything else kept — so a reload, a copied link or a second tab opens where the
+    // map is, not the city's default (or the explore spot another tab saved). null = already there.
+    function addressWithView(href, view) {
+        const url = new URL(href);
+        const at = formatAt(view);
+        if (url.searchParams.get('at') === at) return null;
+        url.searchParams.set('at', at);
+        // commas are valid in a query: keep the view readable in an address people copy
+        return url.toString().replace(/([?&]at=)([^&#]*)/, (match, key, value) => key + value.replace(/%2C/gi, ','));
     }
 
     // Every link form that already says what to show. Mirrors the app's own route handlers:
@@ -153,20 +167,17 @@
         return place.cityId || null;
     }
 
-    // WGS84 UTM zone of a point: the explore city's metric CRS (measurement, buffers), valid anywhere.
-    function utmProjectionFor(lat, lon) {
-        if (!finite(lat) || !finite(lon)) throw new Error('utmProjectionFor: lat/lon must be finite numbers');
-        const zone = Math.min(60, Math.max(1, Math.floor((lon + 180) / 6) + 1));
-        const south = lat < 0;
-        return {
-            crs: `EPSG:${south ? 327 : 326}${String(zone).padStart(2, '0')}`,
-            definition: `+proj=utm +zone=${zone}${south ? ' +south' : ''} +datum=WGS84 +units=m +no_defs +type=crs`
-        };
+    // Whether a landing goes on to its city's latest proposal (js/world/arrival.js) instead of its
+    // own view: only for a pick of a city as a whole. A particular spot (a searched address, a place
+    // in a countrywide cadastre — carryAt) is where the visitor asked to go, and explore has no
+    // proposals of its own to arrive at.
+    function arrivesAtLatest(landing) {
+        return !!landing && landing.cityId !== EXPLORE_CITY_ID && !landing.carryAt;
     }
 
     return {
         EXPLORE_CITY_ID, MIN_ZOOM, MAX_ZOOM, PARCEL_ZOOM, EXPLORE_ZOOM,
-        parseAt, formatAt, isSharedRoute, bootDecision, canReturnToMap, resolveLanding, liveCityFor, exploreZoomFor, utmProjectionFor,
+        parseAt, formatAt, addressWithView, isSharedRoute, bootDecision, canReturnToMap, resolveLanding, liveCityFor, exploreZoomFor, arrivesAtLatest,
         shouldReturnToGlobe
     };
 });

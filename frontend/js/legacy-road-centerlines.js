@@ -34,12 +34,13 @@
         const m = map();
         if (!m || typeof m.getBounds !== 'function') return '';
         const b = m.getBounds();
-        return (typeof getBboxFromBounds === 'function') ? getBboxFromBounds(b) : '';
+        // WGS84 with its CRS named; the server transforms it (projections.md §4)
+        return (typeof wgs84BboxParam === 'function') ? wgs84BboxParam(b) : '';
     }
 
-    async function fetchCenterlines(bboxHTRS) {
+    async function fetchCenterlines(bboxQuery) {
         const base = (typeof getBackendBase === 'function' && getBackendBase()) || 'http://localhost:3000';
-        const url = `${base}/osm-road${bboxHTRS ? `?bbox=${encodeURIComponent(bboxHTRS)}` : ''}`;
+        const url = `${base}/osm-road${bboxQuery ? `?${bboxQuery}` : ''}`;
         if (typeof fetchJsonWithRetry === 'function') return fetchJsonWithRetry(url);
         const res = await fetch(url);
         return res.ok ? res.json() : null;

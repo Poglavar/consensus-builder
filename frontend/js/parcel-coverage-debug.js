@@ -136,7 +136,7 @@
 
     function htrsToLatLng(easting, northing) {
         // Grid cells are keyed in the dataset CRS (gridSize is in dataset units), not metric metres.
-        const convert = window.datasetToWgs84 || window.htrs96ToWGS84;
+        const convert = window.datasetToWgs84;
         if (typeof convert !== 'function') {
             return null;
         }
@@ -147,7 +147,7 @@
             }
             return L.latLng(lat, lon);
         } catch (error) {
-            console.warn('Failed to convert HTRS96/TM to WGS84 for coverage visualisation', error);
+            console.warn('Failed to convert dataset coordinates to WGS84 for coverage visualisation', error);
             return null;
         }
     }
@@ -199,6 +199,20 @@
 
         if (aggregateBounds && aggregateBounds.isValid()) {
             result.coverageBounds = aggregateBounds;
+        }
+
+        // The grid size is in dataset units: metres for a metric CRS (3765), where its square is the
+        // cell's area, but degrees for EPSG:4326 grids, where squaring it reported "0.000025 m²". Those
+        // cells are measured on the ground, from a cell's own corners in a frame at the cell.
+        const datasetCrs = window.CityConfigManager?.getProjectionConfig?.()?.datasetCrs;
+        const firstCell = result.cellBounds[0];
+        if (datasetCrs === 'EPSG:4326' && firstCell && window.__metricFrame) {
+            const sw = firstCell.getSouthWest();
+            const ne = firstCell.getNorthEast();
+            const frame = window.__metricFrame.frameFor([[sw.lng, sw.lat], [ne.lng, ne.lat]]);
+            const [x0, y0] = frame.toMetric([sw.lng, sw.lat]);
+            const [x1, y1] = frame.toMetric([ne.lng, ne.lat]);
+            result.cellAreaSqm = Math.abs((x1 - x0) * (y1 - y0));
         }
 
         if (mainMapBounds && typeof window.getRequiredGridCells === 'function') {

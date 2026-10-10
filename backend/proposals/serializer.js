@@ -134,7 +134,10 @@ export function stripLocalProposalState(proposal) {
         'applied', 'appliedAt', 'status', 'localEditAt', 'editSeq', 'revertSnapshot',
         'childParcelIds', 'descendantParcelIds', 'parentFeatures',
         'parentProposals', 'childProposals', 'parentProposalIds', 'childProposalIds',
-        'formation', 'demolishedBuildings', 'demolitionScanned', 'parcelSourceId'
+        'formation', 'demolishedBuildings', 'demolitionScanned', 'parcelSourceId',
+        // the prepared artifact travels with a record to its publication, which stores it in
+        // consensus.proposal_prepared; it is never part of the record itself
+        'preparedArtifact'
     ].forEach(key => delete sanitized[key]);
     delete sanitized.childFeatures;
 

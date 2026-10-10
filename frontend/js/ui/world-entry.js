@@ -67,9 +67,8 @@
 
     function sameCadastre(a, b) {
         const m = manager();
-        const source = id => { const c = m.getCityConfig(id); return c && c.parcels ? c.parcels.source : null; };
-        const sa = source(a);
-        return !!sa && sa !== 'none' && sa === source(b);
+        const key = m.getCadastreKey(a);
+        return !!key && key === m.getCadastreKey(b);
     }
 
     function coverage() {
@@ -105,8 +104,9 @@
         log(`${input.explore ? 'explore' : 'open ' + input.cityId} at ${input.point.lat.toFixed(4)},${input.point.lon.toFixed(4)} -> `
             + `${decision.cityId} ${decision.inPlace ? 'in place' : 'by reload'} (${Model.formatAt(decision.view)}${decision.carryAt ? ', via ?at=' : ''})`);
         // A city pick arrives on that city's latest proposal, in 3D (js/world/arrival.js); the lookup
-        // runs during the flight. No proposal, or a failed lookup, lands on the city as before.
-        const latest = input.explore || !global.WorldArrival
+        // runs during the flight. No proposal, or a failed lookup, lands on the city as before. A pick
+        // of a particular spot lands on that spot (Model.arrivesAtLatest).
+        const latest = !Model.arrivesAtLatest(decision) || !global.WorldArrival
             ? Promise.resolve(null)
             : global.WorldArrival.fetchLatestProposalId(decision.cityId).catch(error => {
                 console.warn(`[${new Date().toISOString()}] [world-entry] latest proposal lookup failed`, error);

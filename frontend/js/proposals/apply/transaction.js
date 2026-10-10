@@ -292,7 +292,19 @@
                 puts: storageDraft._change.puts,
                 deletes: Array.from(storageDraft._change.deletes)
             };
-            if (durableChange.puts.size || durableChange.deletes.length) {
+            // A read-only tab (multi-tab-guard.js: this city is open in another tab) must not write the
+            // shared rows — the other tab would never see the change and its next save would clobber
+            // or be clobbered. The mutation still applies here, and is parked for recovery, as a
+            // read-only tab's ordinary saves are (proposals/data.js _persist).
+            const readOnly = !!dependencies.runtime?.__cbSecondaryTab;
+            if (readOnly && (durableChange.puts.size || durableChange.deletes.length)) {
+                console.error(`[${new Date().toISOString()}] [ParcelMutation] This tab is read-only (the city is open in another tab): `
+                    + `${durableChange.puts.size} write(s) of this change are parked for recovery, not saved.`);
+                afterCommitCallbacks.push(() => {
+                    dependencies.proposalStore?._persistRecovery?.();
+                    try { dependencies.runtime?.__cbReportSecondaryWriteBlocked?.(); } catch (_) { }
+                });
+            } else if (durableChange.puts.size || durableChange.deletes.length) {
                 if (!dependencies.storage || typeof dependencies.storage.atomicWrite !== 'function') {
                     const error = new Error('PersistentStorage.atomicWrite is required for parcel mutations.');
                     error.code = 'parcel-mutation-atomic-storage-unavailable';

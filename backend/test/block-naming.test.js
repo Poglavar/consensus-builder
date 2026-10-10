@@ -125,8 +125,8 @@ describe('a name an earlier run already used', () => {
 // has to reach exactly those, produce the SAME name a fresh batch would, and refuse — visibly —
 // when it cannot see the whole block.
 
-// A parcel as it arrives from the map: real lon/lat, plus the projection collectParcels goes
-// through. The projection is a stand-in; the names only have to be self-consistent.
+// A parcel as it arrives from the map: real lon/lat, measured by collectParcels in one metric frame on
+// the batch (the real metric-frame.js).
 const lonLatRect = (lon0, lat0, lon1, lat1) => ({
     type: 'Feature',
     properties: {},
@@ -134,7 +134,7 @@ const lonLatRect = (lon0, lat0, lon1, lat1) => ({
 });
 
 function stubMap(parcels) {
-    globalThis.wgs84ToHTRS96 = (lat, lng) => [lng * 100000, lat * 100000];
+    globalThis.__metricFrame = require('../../frontend/js/metric-frame.js');
     const features = parcels.map(([id, feature]) => {
         const clone = JSON.parse(JSON.stringify(feature));
         clone.properties.parcelId = id;
@@ -149,7 +149,7 @@ function stubMap(parcels) {
 }
 
 function clearMap() {
-    delete globalThis.wgs84ToHTRS96;
+    delete globalThis.__metricFrame;
     delete globalThis.LiveParcelFabric;
 }
 

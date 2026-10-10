@@ -164,7 +164,7 @@
         "floorHeightHint": "Proračun iz nacrtanih osnova i visine ÷ {{height}} m po etaži."
     },
     "multitab": {
-        "warning": "Aplikacija je već otvorena u drugoj kartici. Da se sačuvani predlozi ne izgube, promene u ovoj kartici neće biti sačuvane — zatvorite ostale kartice i ponovo učitajte ovu za uređivanje.",
+        "warning": "Ovaj grad je već otvoren u drugoj kartici. Da se sačuvani predlozi ne izgube, promene u ovoj kartici neće biti sačuvane — zatvorite ostale kartice ovog grada i ponovo učitajte ovu za uređivanje. Drugi gradovi mogu ostati otvoreni.",
         "notSaved": "Predlog NIJE sačuvan i biće izgubljen pri ponovnom učitavanju stranice."
     },
     "proposalDrafts": {
@@ -417,7 +417,8 @@
         },
         "recovery": {
             "offer": "Predlozi koje si napravio {{when}} nisu sačuvani jer je aplikacija tada bila otvorena u drugoj kartici ({{count}}).\n\nVratiti ih sada?"
-        }
+        },
+        "inOtherCity": "Ovaj predlog pripada gradu {{city}}, a ne gradu {{current}}: otvorite ga tamo."
     },
     "wallet": {
         "connect": "Poveži novčanik",
@@ -2785,6 +2786,7 @@
                 "bindingFailed": "Nije moguće proveriti u koje parcele zadire lokacija ovog predloga: {{reason}}",
                 "bindingUnresolved": "Lokacija zadire u {{list}} skoro tačno za iznos tolerancije, pa se ne može odlučiti da li tamo zauzima zemljište. Pomerite projekat za milimetar ka toj parceli ili od nje.",
                 "preparationChanged": "Predlog se promenio nakon što je pripremljen za objavljivanje ({{reason}}). Objavite ga ponovo.",
+                "siteInOtherCity": "Ova lokacija se nalazi u gradu {{city}}, čije parcele nisu one učitane ovde. Otvorite {{city}} i objavite je odande.",
                 "noMintGeometry": "Ovaj predlog nema geometriju lokacije ni parcela za kovanje.",
                 "noMintParcels": "Ovaj predlog ne navodi parcele i nema lokaciju, pa se ne može iskovati."
             },

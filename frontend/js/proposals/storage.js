@@ -63,6 +63,17 @@ function isInCity(parcelId, cityId) {
     return false;
 }
 
+// A minted proposal found on chain joins this city's store only when its parcels are this city's
+// (projections.md §10 M8): one contract serves every city and the chain record names no city, so the
+// syncs used to file every city's minted proposals into whichever city ran them. A record without
+// parcels cannot be placed, and stays with the city it was published in.
+function chainProposalBelongsHere(parcelIds) {
+    const manager = (typeof window !== 'undefined' && window.CityConfigManager) || null;
+    const city = manager && typeof manager.getCurrentCityId === 'function' ? manager.getCurrentCityId() : null;
+    const ids = (Array.isArray(parcelIds) ? parcelIds : []).map(id => String(id || '').trim()).filter(Boolean);
+    return !!city && ids.length > 0 && ids.every(id => isInCity(id, city));
+}
+
 function normalizeLensEntries(entries) {
     const sanitized = [];
     if (!Array.isArray(entries)) return sanitized;

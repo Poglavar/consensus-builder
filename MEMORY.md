@@ -557,3 +557,7 @@ Expanded SAM 3 head fine-tuning used 96 training tiles and fresh 16-tile validat
 - 2026-10-10: Batch parcel qualification/integration when discovery reaches roughly 50 candidate cities; city-specific research/review/identity failures must be recorded and skipped after bounded retries so other cities and rank cohorts keep progressing. Failed cities remain unresolved, never inferred to lack public parcels or counted as successful.
 
 - 2026-10-11: Keep three pitch directions available for comparison: the original `deck.html`, the prediction-market-led “Bet on cities!” at `deck2.html`, and the voluntary planning/community proposal narrative at `deck3.html`; Africa examples describe future community pilots, with the existing funding demonstration clearly identified as devnet.
+
+- 2026-10-11: Missing parcel formats or provider profiles require building adapters as discovery proceeds; they are implementation work, not evidence that a city lacks parcels.
+
+- 2026-10-11: Run provider reuse discovery independently alongside web search, using shared UN city identities, city claims and verified records so successful discoveries are not researched twice.

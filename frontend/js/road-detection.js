@@ -237,7 +237,8 @@ function isMarkedRoadFeature(feature) {
 // Fetch DKP_NACINI_UPORABE features in current bbox, paginated if needed
 async function fetchWFSUsageInBbox() {
     const bounds = map.getBounds();
-    const bbox = typeof getBboxFromBounds === 'function' ? getBboxFromBounds(bounds) : null;
+    // The OSS WFS takes EPSG:3765 (srsName below), named here, never the active city's CRS.
+    const bbox = typeof bboxInCrs === 'function' ? bboxInCrs(bounds, 'EPSG:3765') : null;
     if (!bbox) {
         throw new Error('Could not compute bbox');
     }
@@ -690,7 +691,7 @@ async function fetchGUPRoads(force = false) {
         : 'oss.uredjenazemlja.hr';
 
     const bounds = map && typeof map.getBounds === 'function' ? map.getBounds() : null;
-    const bboxHTRS = bounds && typeof getBboxFromBounds === 'function' ? getBboxFromBounds(bounds) : '';
+    const bboxHTRS = bounds && typeof bboxInCrs === 'function' ? bboxInCrs(bounds, 'EPSG:3765') : '';
     const geometryEnvelope = bounds
         ? JSON.stringify({
             xmin: bounds.getWest(),

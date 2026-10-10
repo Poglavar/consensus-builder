@@ -15,9 +15,9 @@
     const RECENT_MAX = 8;
     const PLACE_MIN_CHARS = 3;
     const PROPOSAL_MIN_CHARS = 2;
-    // A geocoded place this close to the current city's centre is "here"; one this close to another
-    // configured city is offered as "Open in <city>"; anything further is a world place.
-    const CITY_AREA_KM = 40;
+    // A geocoded place belongs to the nearest configured city this close to it: "here" when that is
+    // the current city (or shares its cadastre), else offered as "Open in <city>"; anything further
+    // is a world place.
     const NEARBY_CITY_KM = 60;
 
     // Parcel id prefixes the cadastre transports expect, per configured city. Croatian cities share
@@ -245,21 +245,24 @@
     }
 
     // Where a place is relative to the app's cities. cities: [{ id, label, center: [lat, lon],
-    // parcelSource }]. Returns { kind: 'here' | 'other-city' | 'world', city?, distanceKm? }.
-    // A point near another city that shares the current city's cadastre (Croatia's countrywide one)
-    // is still 'here': its parcels load without switching. `options.liveCityId` is the configured
-    // city the world coverage assigns to a point in a countrywide-live country (WorldCoverage
-    // tierAt(...).cityId): a point far from every city centre but inside such a country belongs to
-    // that city, not to the world.
+    // parcelSource }], parcelSource being the location data the city reads (CityConfigManager
+    // getPlaceDataKey: its cadastre's source id — not the provider kind every catalogue city shares —
+    // and its buildings' source). Returns
+    // { kind: 'here' | 'other-city' | 'world', city?, distanceKm? }.
+    // The nearest city within NEARBY_CITY_KM owns a place: 'here' when that is the current city or
+    // shares its cadastre (Croatia's countrywide one: its parcels load without switching), else
+    // 'other-city' — Oakland, 21 km from San Francisco, is not San Francisco's because it is near it
+    // (an in-place move there would draw on parcels San Francisco's source does not have).
+    // `options.liveCityId` is the configured city the world coverage assigns to a point in a
+    // countrywide-live country (WorldCoverage tierAt(...).cityId): a point far from every city
+    // centre but inside such a country belongs to that city, not to the world.
     function classifyPlaceLocation(point, cities, currentCityId, options = {}) {
-        const areaKm = options.areaKm || CITY_AREA_KM;
         const nearbyKm = options.nearbyKm || NEARBY_CITY_KM;
         const list = (Array.isArray(cities) ? cities : []).filter(c => Array.isArray(c.center));
         if (!point || !Number.isFinite(point.lat) || !Number.isFinite(point.lon) || !list.length) return { kind: 'world' };
         const withDistance = list.map(city => ({ city, km: haversineKm(point.lat, point.lon, city.center[0], city.center[1]) }))
             .sort((a, b) => a.km - b.km);
         const current = withDistance.find(item => item.city.id === currentCityId);
-        if (current && current.km <= areaKm) return { kind: 'here', city: current.city, distanceKm: current.km };
         const nearest = withDistance[0];
         if (nearest.km <= nearbyKm) {
             const sameCadastre = current && current.city.parcelSource && current.city.parcelSource === nearest.city.parcelSource;
@@ -349,7 +352,6 @@
         RECENT_MAX,
         PLACE_MIN_CHARS,
         PROPOSAL_MIN_CHARS,
-        CITY_AREA_KM,
         NEARBY_CITY_KM,
         normalize,
         matchRank,

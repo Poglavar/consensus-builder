@@ -24,8 +24,6 @@ describe('Nairobi city config', () => {
             },
             projection: {
                 datasetCrs: 'EPSG:4326',
-                metricCrs: 'EPSG:32737',
-                metricDefinition: '+proj=utm +zone=37 +south +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-1.26592113731299, 36.845161927435],
                 fallbackDataset: [36.845161927435, -1.26592113731299]
             },

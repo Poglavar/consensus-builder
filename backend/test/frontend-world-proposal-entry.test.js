@@ -43,15 +43,30 @@ describe('opening a globe event on the map', () => {
     it('switches city with a map-focus route and preserves language and local backend routing', async () => {
         const win = setup(null); const other = { ...event, cityId: 'new_york', href: '/?focusProposal=park-1&city=new_york' };
         await win.WorldProposalEntry.open(other);
-        expect(win.CityConfigManager.switchCity).toHaveBeenCalledWith('new_york', { requireConfirmation: false });
+        expect(win.CityConfigManager.switchCity).toHaveBeenCalledWith('new_york', { requireConfirmation: false, url: expect.any(String) });
         expect(win.WorldHandoff.store).toHaveBeenCalledWith({ dataUrl: 'data:image/jpeg;base64,globe', cityId: 'new_york', proposalId: 'park-1' });
-        const route = new URL(win.history.replaceState.mock.calls[0][2], win.location.origin);
+        // the switch goes to the proposal's address; the entry being left is not rewritten (Back)
+        expect(win.history.replaceState).not.toHaveBeenCalled();
+        const route = new URL(win.CityConfigManager.switchCity.mock.calls[0][1].url, win.location.origin);
         expect(route.searchParams.get('focusProposal')).toBe('park-1');
         expect(route.searchParams.get('lang')).toBe('hr');
         expect(route.searchParams.get('backend')).toBe('http://localhost:3037');
         expect(route.searchParams.has('world')).toBe(false);
         expect(route.searchParams.has('activity')).toBe(false);
         expect(win.importServerProposal).not.toHaveBeenCalled();
+    });
+    it('sends a proposal of another city home instead of storing it here (a stale or missing ?city=)', async () => {
+        // storage refuses another city's record (proposals/data.js); the link opens it in its city,
+        // asking first when the link came from outside
+        for (const fromUrl of [false, true]) {
+            const win = setup(null);
+            win.importServerProposal.mockRejectedValue(Object.assign(new Error('elsewhere'), { code: 'proposal-in-other-city', cityId: 'split' }));
+            win.openProposalInItsCity = vi.fn(async () => true);
+            await win.WorldProposalEntry.open(event, { fromUrl });
+            expect(win.openProposalInItsCity).toHaveBeenCalledWith('park-1', 'split', { ask: fromUrl });
+            expect(win.openProposalFromList).not.toHaveBeenCalled();
+            expect(win.WorldProposalEntry.isOpening()).toBe(false);
+        }
     });
     it('leaves the globe available after a failed download and releases the opening guard', async () => {
         const win = setup(null); win.importServerProposal.mockRejectedValue(new Error('offline'));

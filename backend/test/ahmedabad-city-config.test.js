@@ -24,8 +24,6 @@ describe('Ahmedabad city config', () => {
             },
             projection: {
                 datasetCrs: 'EPSG:4326',
-                metricCrs: 'EPSG:32643',
-                metricDefinition: '+proj=utm +zone=43 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [23.02004, 72.59975],
                 fallbackDataset: [72.59975, 23.02004]
             },

@@ -93,7 +93,7 @@ describe('configured US capital source parcel routing', () => {
         expect(city.label).toBe(label);
         expect(city.parcels).toMatchObject({ source: 'parcel-source', sourceId });
         expect(parcelId.startsWith(city.parcels.idPrefix)).toBe(true);
-        expect(city.projection.metricCrs).toBe(metricCrs);
+        expect(city.projection.metricCrs).toBeUndefined();
     });
 });
 

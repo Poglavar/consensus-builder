@@ -109,10 +109,11 @@
      *   city?: string, acceptedParcelIds?: string[], t?: Function }} options
      * @returns {Promise<{ proposal, binding, artifact, preparation, parcelAct: boolean,
      *   smallIntrusions: object[], landShiftM: number|null }>}
-     *   proposal: a shallow copy carrying the artifact's `binding`, `cadastreParcelIds` (coverage
+     *   proposal: a shallow copy carrying the artifact's `city`, `binding`, `cadastreParcelIds` (coverage
      *   'unknown': the authored declaration, unverified, as the server stores it), `toleranceM`,
-     *   `preparation`, and for a corridor the server-built land (roadProposal.definition.polygon and
-     *   constructionFrame). `site` is never added: the artifact holds the site the server derived.
+     *   `preparation` (signed: id, digest, preparedAt, signature) with the artifact itself
+     *   (`preparedArtifact`), and for a corridor the server-built land (roadProposal.definition.polygon
+     *   and constructionFrame). `site` is never added: the artifact holds the site the server derived.
      *   landShiftM: for a corridor, how far the built land lies from the browser's own preview.
      */
     async function prepareForPublish(proposal, options) {
@@ -137,12 +138,18 @@
             throw publishError('binding-invalid', 'Cannot publish: the server returned no prepared artifact.');
         }
         const server = artifact.binding;
-        const preparation = { id: prepared.preparationId, digest: prepared.digest };
+        // The server's signed reference; publication presents it with the artifact it signed.
+        const preparation = { id: prepared.preparationId, digest: prepared.digest, preparedAt: prepared.preparedAt, signature: prepared.signature };
         const out = {
             ...record,
+            // the city the server placed the site in, which may differ from the view's (a Split
+            // site drawn from Zagreb's view is Split's)
+            ...(artifact.city ? { city: artifact.city } : {}),
             binding: server,
             cadastreParcelIds: (Array.isArray(artifact.cadastreParcelIds) ? artifact.cadastreParcelIds : []).map(String),
-            preparation
+            preparation,
+            // kept with the record until it is published: the server stores nothing at preparation
+            preparedArtifact: artifact
         };
         let landShiftM = null;
         if (artifact.corridor) {
@@ -183,7 +190,8 @@
         const readable = payload ? refusalMessage(payload, t) : null;
         throw publishError(payload && payload.code ? payload.code : `${what}-failed`,
             readable || (payload && payload.error) || `The ${what} service answered ${response.status}.`,
-            { status: response.status, ...(Array.isArray(payload?.unresolved) ? { unresolved: payload.unresolved } : {}) });
+            { status: response.status, ...(Array.isArray(payload?.unresolved) ? { unresolved: payload.unresolved } : {}),
+                ...(payload?.siteCity ? { siteCity: payload.siteCity } : {}) });
     }
 
     const parcelSourceOf = city => global.CityConfigManager?.getCityConfig?.(city)?.parcels?.sourceId ?? null;
@@ -241,10 +249,19 @@
      * refusal. `t(key, fallback, params)` translates.
      */
     function refusalMessage(body, t) {
-        const known = ['undeclared-parcels', 'unbound-parcels', 'binding-unresolved'].concat(PREPARATION_CODES);
+        const known = ['undeclared-parcels', 'unbound-parcels', 'binding-unresolved', 'site-in-other-city'].concat(PREPARATION_CODES);
         if (!body || !known.includes(body.code)) return null;
         const translate = typeof t === 'function' ? t : ((key, fallback, params) => String(fallback)
             .replace(/\{\{\s*(\w+)\s*\}\}/g, (m, name) => (params && name in params ? params[name] : m)));
+        if (body.code === 'site-in-other-city') {
+            // The server places a publication in the city its site lies in (backend
+            // proposals/publication-city.js); another city's cadastre covers this one.
+            const config = body.siteCity ? global.CityConfigManager?.getCityConfig?.(body.siteCity) : null;
+            const city = config ? translate(`city.labels.${body.siteCity}`, config.label || body.siteCity) : (body.siteCity || '?');
+            return translate('modal.createProposal.errors.siteInOtherCity',
+                'This site lies in {{city}}, whose parcels are not the ones loaded here. Open {{city}} and publish it from there.',
+                { city });
+        }
         if (PREPARATION_CODES.includes(body.code)) {
             return translate('modal.createProposal.errors.preparationChanged',
                 'This proposal changed after it was prepared for publishing ({{reason}}). Publish it again.',

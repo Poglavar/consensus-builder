@@ -493,28 +493,12 @@ if (typeof window !== 'undefined') {
  * different vertex sequences, so the previous vertex-equality check missed
  * most real neighbours and almost every proposal collapsed to a single parcel.
  */
-/**
- * Returns the (quantise factor, min edge length) appropriate for the active
- * city's dataset coordinate system. Meters-based projections (Zagreb,
- * Ljubljana, Buenos Aires) quantise at 1 cm; longlat datasets (Belgrade,
- * Denver, NYC) quantise at ~10 cm of degrees instead — otherwise the meter
- * thresholds reject every edge and the adjacency map comes back empty.
- */
-function getAgentNeighborMapScale() {
-    const manager = (typeof window !== 'undefined') ? window.CityConfigManager : null;
-    const cfg = manager && typeof manager.getCurrentCityConfig === 'function'
-        ? manager.getCurrentCityConfig()
-        : null;
-    const def = cfg && cfg.projection ? (cfg.projection.definition || '') : '';
-    if (def.indexOf('+proj=longlat') !== -1) {
-        // 1e-6° ≈ 11 cm at the equator; quantise grid is 10 cm.
-        return { quantize: 1e6, minEdgeLen: 1e-6 };
-    }
-    return { quantize: 100, minEdgeLen: 0.1 };
-}
-
 function buildAgentNeighborMap(parcels) {
-    const { quantize, minEdgeLen } = getAgentNeighborMapScale();
+    // Every parcel in one metric frame (projections.md §2): shared edges meet in the same metres,
+    // quantised to 1 cm whatever CRS the city's dataset is in.
+    const quantize = 100;
+    const minEdgeLen = 0.1;
+    const frame = parcels.length ? window.__metricFrame.frameFor(parcels.map(parcel => parcel.feature)) : null;
     const edgeMap = new Map(); // edgeKey -> Set<parcelId>
 
     function keyForEdge(p, q) {
@@ -529,8 +513,8 @@ function buildAgentNeighborMap(parcels) {
     }
 
     for (const parcel of parcels) {
-        if (typeof getHtrsCoordinates !== 'function') break;
-        const ring = getHtrsCoordinates(parcel.feature);
+        if (typeof metricExteriorRing !== 'function') break;
+        const ring = metricExteriorRing(parcel.feature, frame);
         if (!Array.isArray(ring) || ring.length < 2) continue;
         const n = ring.length - 1; // skip duplicate closing vertex
         for (let i = 0; i < n; i++) {
@@ -633,7 +617,7 @@ function isRoadLikeParcel(feature) {
         || props.isTrack === true;
     if (explicitRoad) return true;
 
-    const coords = getHtrsCoordinates(feature);
+    const coords = metricExteriorRing(feature, window.__metricFrame.frameFor(feature));
     if (coords.length < 4) return false;
 
     let minX = coords[0][0], maxX = coords[0][0];

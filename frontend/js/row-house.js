@@ -345,8 +345,10 @@
         // Work in meters using centroid as origin
         const centroid = turf.centroid(feature);
         const [cLng, cLat] = centroid.geometry.coordinates;
-        const metersPerDegLng = 111320 * Math.cos(cLat * Math.PI / 180);
-        const metersPerDegLat = 110540;
+        // The affine local frame with the ellipsoid's true scales at the centroid (local-frame.js)
+        const localFrame = window.LocalFrame.makeLocalFrame(cLng, cLat);
+        const metersPerDegLng = localFrame.metersPerDegLng;
+        const metersPerDegLat = localFrame.metersPerDegLat;
 
         // Convert to local meters
         const toMeters = ([lng, lat]) => [
@@ -479,8 +481,10 @@
         // Convert to meters using centroid as origin for accurate distance calculations
         const centroid = turf.centroid(superparcel);
         const [cLng, cLat] = centroid.geometry.coordinates;
-        const metersPerDegLng = 111320 * Math.cos(cLat * Math.PI / 180);
-        const metersPerDegLat = 110540;
+        // The affine local frame with the ellipsoid's true scales at the centroid (local-frame.js)
+        const localFrame = window.LocalFrame.makeLocalFrame(cLng, cLat);
+        const metersPerDegLng = localFrame.metersPerDegLng;
+        const metersPerDegLat = localFrame.metersPerDegLat;
 
         // Cache for boundary checking
         cachedSuperparcel = superparcel;
@@ -659,8 +663,10 @@
         // Convert to meters using centroid as origin
         const centroid = turf.centroid(superparcel);
         const [cLng, cLat] = centroid.geometry.coordinates;
-        const metersPerDegLng = 111320 * Math.cos(cLat * Math.PI / 180);
-        const metersPerDegLat = 110540;
+        // The affine local frame with the ellipsoid's true scales at the centroid (local-frame.js)
+        const localFrame = window.LocalFrame.makeLocalFrame(cLng, cLat);
+        const metersPerDegLng = localFrame.metersPerDegLng;
+        const metersPerDegLat = localFrame.metersPerDegLat;
 
         const toMeters = ([lng, lat]) => [
             (lng - cLng) * metersPerDegLng,
@@ -930,16 +936,9 @@
         const containerPoint = rowHouseMap.mouseEventToContainerPoint(e);
         const latlng = rowHouseMap.containerPointToLatLng(containerPoint);
 
-        const projector = getRowHouseProjector();
-        if (!projector || !dragStartFeature?.geometry || !window.SingleBuildingGeometry?.translateGeometry) return;
-        const startPoint = projector.project(dragStartLatLng);
-        const currentPoint = projector.project(latlng);
-        const geometry = window.SingleBuildingGeometry.translateGeometry(
-            projector,
-            dragStartFeature.geometry,
-            currentPoint[0] - startPoint[0],
-            currentPoint[1] - startPoint[1]
-        );
+        if (!dragStartFeature?.geometry || !window.SingleBuildingGeometry?.moveGeometry) return;
+        // The footprint keeps its ground metres from the drag's start point, placed at the cursor.
+        const geometry = window.SingleBuildingGeometry.moveGeometry(dragStartFeature.geometry, dragStartLatLng, latlng);
         const candidate = cloneRowHouseFeature(dragStartFeature);
         if (!candidate || !geometry) return;
         candidate.geometry = geometry;
@@ -1026,7 +1025,6 @@
         let candidate = null;
         try {
             const geometry = window.SingleBuildingGeometry?.rotateGeometry?.(
-                getRowHouseProjector(),
                 generatedRowHouseFeature.geometry,
                 deltaDegrees
             );

@@ -96,6 +96,36 @@ describe('a Schelling plan becomes the ground source for the session', () => {
         expect(answer.absentIds).toEqual(['HR-330264-123']);
     });
 
+    it('lays each latitude band out from that band\'s own plan, wherever the source was chosen', () => {
+        // Explore spans the world: a plan chosen in Tokyo (36°N) used to lay 36°N blocks and ids over
+        // Helsinki; a stranger starting in Helsinki derives the 60°N plan, and so must this source.
+        const helsinki = { latLonBbox: '24.930,60.165,24.940,60.170' };
+        const fromTokyo = Fallback.schellingSource({ lat: 35.68 }).fetchCell(helsinki).features;
+        const fromHelsinki = Fallback.schellingSource({ lat: 60.17 }).fetchCell(helsinki).features;
+        expect(fromTokyo.length).toBeGreaterThan(0);
+        expect(fromTokyo.map(f => f.properties.parcelId)).toEqual(fromHelsinki.map(f => f.properties.parcelId));
+        expect(fromTokyo[0].properties.parcelId).toMatch(/@60N:/);
+        expect(fromTokyo.map(f => f.geometry)).toEqual(fromHelsinki.map(f => f.geometry));
+        // and rebuilds any band's parcels by id
+        const ids = fromTokyo.slice(0, 2).map(f => f.properties.parcelId);
+        expect(Fallback.schellingSource({ lat: 35.68 }).fetchByIds(ids).features.map(f => f.properties.parcelId)).toEqual(ids);
+    });
+
+    it('splits a cell across two bands at the half degree, each piece in one band only', () => {
+        const source = Fallback.schellingSource({ lat: 45.8 });
+        const features = source.fetchCell({ latLonBbox: '15.970,45.496,15.976,45.504' }).features;
+        const bands = new Set(features.map(f => /@(\d+)N:/.exec(f.properties.parcelId)[1]));
+        expect([...bands].sort()).toEqual(['45', '46']);
+        const ids = features.map(f => f.properties.parcelId);
+        expect(new Set(ids).size).toBe(ids.length);
+        for (const feature of features) {
+            const lats = feature.geometry.coordinates[0].map(p => p[1]);
+            const centre = (Math.min(...lats) + Math.max(...lats)) / 2;
+            const band = Number(/@(\d+)N:/.exec(feature.properties.parcelId)[1]);
+            expect(Math.round(centre)).toBe(band);
+        }
+    });
+
     it('is installed per city, remembered for the tab, and restored on reload', () => {
         expect(Fallback.activeSource('zagreb')).toBeNull();
         const source = Fallback.schellingSource({ lat: 45.8, streetWidthM: 10 });

@@ -736,7 +736,7 @@ function showUploadProposalModal(proposal) {
     shareActionsContainer.appendChild(shareButtonsRow);
     fragment.appendChild(shareActionsContainer);
 
-    const cityQueryParam = buildCityQueryParam();
+    const cityQueryParam = buildCityQueryParam(proposal && proposal.city);
     let uploadedId = null;
     let shareUrl = null;
     let mintedExplorerUrl = null;
@@ -1222,10 +1222,13 @@ function showUploadProposalModal(proposal) {
                                 { trait_type: 'Goal', value: goalLabel },
                                 { trait_type: 'Conditional', value: isConditional ? 'Yes' : 'No' },
                                 { trait_type: 'Parcel Count', value: parcelIds.length },
-                                { trait_type: 'Author', value: proposalAuthor }
+                                { trait_type: 'Author', value: proposalAuthor },
+                                ...(proposal.city ? [{ trait_type: 'City', value: proposal.city }] : [])
                             ],
                             properties: {
                                 proposalId: proposal.proposalId || '',
+                                // the city the proposal belongs to, as in create.js's mint
+                                city: proposal.city || null,
                                 goal: goalKey,
                                 title: proposalName,
                                 cadastreParcelIds: parcelIds,

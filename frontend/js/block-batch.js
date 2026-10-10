@@ -8,9 +8,10 @@
 (function attachBlockBatch(global) {
     'use strict';
 
-    function metricRingsOf(feature) {
-        const project = global.wgs84ToHTRS96;
-        if (typeof project !== 'function' || !feature || !feature.geometry) return [];
+    // A parcel's rings in metres, in the batch's one frame (projections.md §2).
+    function metricRingsOf(feature, frame) {
+        if (!feature || !feature.geometry) return [];
+        const project = (lat, lng) => frame.latLngToMetric(lat, lng);
         const geometry = feature.geometry;
         const polygons = geometry.type === 'Polygon'
             ? [geometry.coordinates]
@@ -346,13 +347,20 @@
         if (!fabric || typeof fabric.list !== 'function' || !turf) return [];
         const occupied = occupancy();
         const entries = [];
-        fabric.list().forEach(feature => {
-            if (!feature || !feature.geometry) return;
+        const features = fabric.list().filter(feature => feature && feature.geometry);
+        if (!features.length) return entries;
+        // One frame for the whole batch: blocks are found from shared boundaries, which only meet
+        // when both sides are measured in the same metres (projections.md §2).
+        const frame = global.__metricFrame.frameFor(features);
+        if (!frame.contains(features)) {
+            throw new Error('block batch: the loaded parcels span more than one metric frame (60 km from their centre); run it on a smaller area');
+        }
+        features.forEach(feature => {
             const id = (typeof fabric.featureId === 'function')
                 ? fabric.featureId(feature)
                 : (feature.properties && feature.properties.parcelId);
             if (id === undefined || id === null || !String(id)) return;
-            const rings = metricRingsOf(feature);
+            const rings = metricRingsOf(feature, frame);
             if (!rings.length) return;
             let areaM2 = 0;
             try { areaM2 = turf.area(feature); } catch (_) { areaM2 = 0; }

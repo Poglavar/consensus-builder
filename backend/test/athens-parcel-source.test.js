@@ -63,7 +63,6 @@ describe('Athens active-cadastre source', () => {
             id: cityId,
             label: 'Athens, Greece',
             map: { defaultCenter: [37.99008, 23.72948] },
-            projection: { metricCrs: 'EPSG:32634' },
             parcels: {
                 source: 'parcel-source', sourceId, idPrefix: descriptor.idPrefix,
                 requiresBackend: true, ownership: false, liveRadiusKm: 0.1

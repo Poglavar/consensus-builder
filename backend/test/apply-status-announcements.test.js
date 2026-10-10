@@ -124,23 +124,30 @@ describe('the existing-buildings fetch', () => {
     const mapCore = read('../../frontend/js/map-core.js');
     const dataSource = read('../../frontend/js/data-source.js');
 
-    // The gate, lifted and run against real city configs.
+    // The gate, lifted and run against real city configs. The view's 3765 bbox comes from
+    // map-core.js bboxInCrs, stubbed: `projects` false is a view that does not project into 3765.
+    let projects = true;
+    const bboxInCrs = vi.fn(() => {
+        if (!projects) throw new Error('bboxInCrs: the view does not project into EPSG:3765');
+        return '1,2,3,4';
+    });
     function loadGate() {
-        const start = dataSource.indexOf('    function buildBuildingRequestParams(bbox, source = \'gdi\') {');
+        const start = dataSource.indexOf('    function buildBuildingRequestParams(bounds, source = \'gdi\') {');
         expect(start, 'buildBuildingRequestParams not found').toBeGreaterThan(-1);
         const end = dataSource.indexOf('    function initDataSourceUI() {', start);
         const body = dataSource.slice(start, end);
         // eslint-disable-next-line no-new-func
-        const factory = new Function('CityConfigManager', 'getBackendBase', 'URLSearchParams',
+        const factory = new Function('CityConfigManager', 'getBackendBase', 'URLSearchParams', 'window',
             `${body} return buildBuildingRequestParams;`);
         return (config) => factory(
             { getCurrentCityConfig: () => config },
             () => 'http://backend',
-            URLSearchParams
+            URLSearchParams,
+            { bboxInCrs }
         );
     }
     const gateFor = loadGate();
-    const BBOX = '1,2,3,4';
+    const BBOX = { getSouthWest: () => ({ lat: 45.8, lng: 15.97 }), getNorthEast: () => ({ lat: 45.81, lng: 15.98 }) };
 
     it('asks for GDI in Zagreb, which declares no buildings source at all', () => {
         expect(gateFor({ id: 'zagreb' })(BBOX)).toMatchObject({ url: expect.stringContaining('source=gdi') });
@@ -151,6 +158,20 @@ describe('the existing-buildings fetch', () => {
         expect(gateFor({ id: 'sibenik', buildings: { source: 'overture' } })(BBOX)).toBeNull();
         expect(gateFor({ id: 'new_york', buildings: { source: 'nyc' } })(BBOX)).toBeNull();
         expect(gateFor({ id: 'ljubljana', buildings: { source: 'none' } })(BBOX)).toBeNull();
+    });
+
+    it('never projects the view into 3765 for a city whose buildings come from elsewhere', () => {
+        // Computing the Croatian bbox first threw for views that do not project into 3765 (near the
+        // equator in much of Asia and the Americas) and stopped Bogotá's own provider from loading.
+        projects = false;
+        bboxInCrs.mockClear();
+        try {
+            expect(gateFor({ id: 'bogota', buildings: { source: 'overture' } })(BBOX)).toBeNull();
+            expect(bboxInCrs).not.toHaveBeenCalled();
+            expect(() => gateFor({ id: 'zagreb' })(BBOX)).toThrow(/does not project/);
+        } finally {
+            projects = true;
+        }
     });
 
     it('still asks for DGU anywhere — it is the national registry, with its own toggle', () => {

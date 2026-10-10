@@ -1519,6 +1519,13 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
     if (existing && isProposalCurrentlyApplied(existing)) {
         return { applied: false, skipped: true, proposalId, reason: 'Already applied' };
     }
+    // A member of another city's plan is refused before its ground is fetched from this city's
+    // cadastre (storage would refuse the import anyway): it belongs to that city's store.
+    const cityManager = (typeof window !== 'undefined' && window.CityConfigManager) || null;
+    const foreignCity = cityManager?.foreignCityFor?.(sharedProposal.city ?? normalized.city);
+    if (foreignCity) {
+        return { applied: false, skipped: false, proposalId, reason: `Belongs to another city (${cityManager.getCityLabel(foreignCity)})` };
+    }
 
     const skipDependencyFetch = options && options.skipDependencyFetch === true;
     let parentIds = [];
@@ -1723,16 +1730,22 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
 
         // The ?city= param is only a hint the sharer's browser attached; it can be absent or lost.
         // The proposal itself knows which city it belongs to, so ask before applying it to whatever
-        // map happens to be on screen. The fetched payload is reused below (see prefetchedFirst) so
-        // the apply loop does not fetch this same proposal again.
-        const cityCheck = await sharedProposalCityBlocksLoad(firstProposalId, batchRecords.records.get(firstProposalId));
+        // map happens to be on screen. Every fetched member is looked at, not just the first: the
+        // first that belongs to another city's store (CityConfigManager.foreignCityFor) is the one
+        // asked about, and members of yet another city are refused below. The fetched payload is
+        // reused (see prefetchedFirst) so the apply loop does not fetch this same proposal again.
+        const recordCity = record => record && (record.city || (record.proposal_data && record.proposal_data.city));
+        const cityManager = (typeof window !== 'undefined' && window.CityConfigManager) || null;
+        const foreignId = uniqueIncomingIds.find(id => cityManager?.foreignCityFor?.(recordCity(batchRecords.records.get(id))));
+        const checkedId = foreignId || firstProposalId;
+        const cityCheck = await sharedProposalCityBlocksLoad(checkedId, batchRecords.records.get(checkedId));
         if (cityCheck.requestMade) recordFetchProfile.individualRequests += 1;
         if (cityCheck.blocked) {
             console.log('[handleSharedPlanRoute] Aborting: proposal belongs to another city.');
             hideProposalLoadOverlay();
             return { applied: [], skipped: [], failed: [], blocked: true };
         }
-        const prefetchedFirst = cityCheck.payload || null;
+        const prefetchedFirst = checkedId === firstProposalId ? (cityCheck.payload || null) : null;
 
         const applied = [];
         const skipped = [];
@@ -2533,9 +2546,7 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
             failed: [{ id: null, label: '', reason: error && error.message ? error.message : 'Unexpected error' }]
         };
     } finally {
-        if (typeof window !== 'undefined') {
-            window.skipParcelFetchUntilProposalLoaded = false;
-        }
+        releaseDeepLinkParcelFetch();
     }
 }
 

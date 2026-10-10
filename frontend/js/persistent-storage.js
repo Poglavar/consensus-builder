@@ -38,7 +38,16 @@
     function resolveDbName() {
         if (dbName) return dbName;
         dbName = LEGACY_DB_NAME; // no scope was ever set (a page without city-config)
+        announceDatabase();
         return dbName;
+    }
+
+    // Which database this page uses, once known: tabs on the SAME database must not both write it
+    // (multi-tab-guard.js keys its channel by this); tabs on different cities' databases do not meet.
+    function announceDatabase() {
+        try {
+            globalScope.dispatchEvent(new CustomEvent('persistentstoragedatabase', { detail: { name: dbName } }));
+        } catch (_) { /* no event support: the guard stays inactive, as on an unsupported browser */ }
     }
 
     function flushPendingWrites() {
@@ -438,6 +447,7 @@
                 return ready;
             }
             dbName = `${DB_NAME_PREFIX}::${scope}`;
+            announceDatabase();
             migrateLegacyDatabase().then(legacyCity => {
                 if (!explicit && legacyCity && legacyCity !== scope) {
                     try {
@@ -450,6 +460,11 @@
                 loadCache();
             });
             return ready;
+        },
+
+        // The database this page reads and writes, or null before a scope is bound.
+        databaseName() {
+            return dbName;
         },
 
         // Every city's database, for the "erase all local data" action. Cities are separate stores,

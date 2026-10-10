@@ -39,15 +39,15 @@
         return surveys;
     }
 
-    function geometryToPlanarRings(geometry) {
-        if (!geometry || typeof global.wgs84ToHTRS96 !== 'function') return [];
+    function geometryToPlanarRings(geometry, frame) {
+        if (!geometry) return [];
         const rings = geometry.type === 'Polygon'
             ? geometry.coordinates
             : (geometry.type === 'MultiPolygon' ? geometry.coordinates.flat() : []);
         return (rings || [])
             .filter(ring => Array.isArray(ring) && ring.length >= 3)
             .map(ring => ring
-                .map(pair => (Array.isArray(pair) ? global.wgs84ToHTRS96(pair[1], pair[0]) : null))
+                .map(pair => (Array.isArray(pair) ? frame.latLngToMetric(pair[1], pair[0]) : null))
                 .filter(xy => Array.isArray(xy) && Number.isFinite(xy[0]) && Number.isFinite(xy[1])))
             .filter(ring => ring.length >= 3);
     }
@@ -113,7 +113,7 @@
 
     // The cuts one side of one segment may take. Road land is the FLOOR of both limits: the pavement
     // always takes the road parcel, and the buildings limit then reaches further, parcel by parcel.
-    function sceneCuts(limit, segment, planar, config, maxOffset, side, parcels) {
+    function sceneCuts(limit, segment, planar, config, maxOffset, side, parcels, frame) {
         const turf = turfApi();
         if (!turf) return [];
         const roadLand = parcels.filter(parcel => parcel.isRoadLand).map(parcel => parcel.feature);
@@ -122,8 +122,8 @@
         const fronting = parcels
             .filter(parcel => !parcel.isRoadLand && parcel.mainBuilding)
             .map(parcel => ({
-                parcelRings: geometryToPlanarRings(parcel.feature.geometry),
-                rings: geometryToPlanarRings(parcel.mainBuilding.geometry)
+                parcelRings: geometryToPlanarRings(parcel.feature.geometry, frame),
+                rings: geometryToPlanarRings(parcel.mainBuilding.geometry, frame)
             }));
         return roadLand.concat(global.corridorEdgeFillParcelCuts(planar, fronting, side, {
             minOffset: config.minOffset,
@@ -136,7 +136,7 @@
             });
             if (!ring) return null;
             return global.corridorFeatureFromLatLngRing(ring.map(([x, y]) => {
-                const [lat, lng] = global.htrs96ToWGS84(x, y);
+                const [lat, lng] = frame.metricToLatLng(x, y);
                 return { lat, lng };
             }));
         }));
@@ -144,13 +144,13 @@
 
     // The filled footway of a corridor: `[{ type, paving, geojson }]`, one entry per fillable side
     // of each centerline segment. `options.segments` narrows it to a scope (the editor's), otherwise
-    // the whole corridor is filled. Returns [] when nothing can be derived — no projection, no turf,
-    // no parcels loaded.
+    // the whole corridor is filled. Returns [] when nothing can be derived — no turf, no parcels
+    // loaded. Measured in `options.frame` (the editor's frozen frame), else the corridor's own frame
+    // (projections.md §2).
     function regionsFor(definition, options = {}) {
         const out = [];
         const turf = turfApi();
         if (!definition || !turf) return out;
-        if (typeof global.wgs84ToHTRS96 !== 'function' || typeof global.htrs96ToWGS84 !== 'function') return out;
         if (typeof global.corridorEdgeFillSides !== 'function' || typeof global.corridorEdgeFillRegion !== 'function') return out;
         if (typeof global.corridorFeatureFromLatLngRing !== 'function' || typeof global.buildCorridorStripPolygon !== 'function') return out;
 
@@ -168,6 +168,7 @@
             .filter(entry => Array.isArray(entry.segment) && entry.segment.length >= 2 && entry.profile)
             .map((entry, index) => ({ ...entry, index }));
         if (!usable.length) return out;
+        const frame = options.frame || global.__corridorFootprint.frameForDefinition(definition);
 
         const parcels = sceneParcels(usable.map(entry => entry.segment), surveys);
         if (!parcels.length) return out;
@@ -175,9 +176,7 @@
         // Without an explicit list, a corridor's own segments are what its ends weld to.
         if (!Array.isArray(options.heldEndpoints) && usable.length > 1
             && typeof global.corridorHeldEndpoints === 'function') {
-            const planarOf = segment => segment
-                .map(point => global.wgs84ToHTRS96(point.lat, point.lng))
-                .filter(xy => Array.isArray(xy) && Number.isFinite(xy[0]) && Number.isFinite(xy[1]));
+            const planarOf = segment => segment.map(point => frame.latLngToMetric(point.lat, point.lng));
             const planars = usable.map(entry => planarOf(entry.segment));
             usable.forEach((entry, index) => {
                 const others = planars.filter((_, other) => other !== index && planars[other].length >= 2);
@@ -188,9 +187,7 @@
         usable.forEach(entry => {
             const sides = global.corridorEdgeFillSides(entry.profile);
             if (!sides.left && !sides.right) return;
-            const planar = entry.segment
-                .map(point => global.wgs84ToHTRS96(point.lat, point.lng))
-                .filter(xy => Array.isArray(xy) && Number.isFinite(xy[0]) && Number.isFinite(xy[1]));
+            const planar = entry.segment.map(point => frame.latLngToMetric(point.lat, point.lng));
             if (planar.length < 2) return;
             const taper = Math.max(10, global.corridorProfileWidth(entry.profile));
 
@@ -210,14 +207,14 @@
                 });
                 if (!ring) return;
                 const band = global.corridorFeatureFromLatLngRing(ring.map(([x, y]) => {
-                    const [lat, lng] = global.htrs96ToWGS84(x, y);
+                    const [lat, lng] = frame.metricToLatLng(x, y);
                     return { lat, lng };
                 }));
                 const nominalOuter = side === 'right' ? -config.minOffset : config.minOffset;
                 const nominal = global.corridorFeatureFromLatLngRing(
-                    global.buildCorridorStripPolygon(entry.segment, nominalOuter, config.innerOffset)
+                    global.buildCorridorStripPolygon(entry.segment, nominalOuter, config.innerOffset, frame)
                 );
-                const cuts = sceneCuts(limit, entry.segment, planar, config, maxOffset, side, parcels);
+                const cuts = sceneCuts(limit, entry.segment, planar, config, maxOffset, side, parcels, frame);
                 const region = global.corridorEdgeFillRegion(band, nominal, cuts);
                 if (!region || !region.geometry) return;
                 const lane = (entry.profile.strips || [])[config.index] || {};

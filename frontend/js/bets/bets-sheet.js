@@ -295,6 +295,10 @@
             if (!proposal) throw new Error(`proposal ${row.proposalId} is not available`);
             if (typeof root.openProposalFromList === 'function') root.openProposalFromList(proposal.proposalId || row.proposalId, { proposal, closeSheets: true });
         } catch (error) {
+            if (error?.code === 'proposal-in-other-city' && typeof root.openProposalInItsCity === 'function') {
+                await root.openProposalInItsCity(row.id || row.proposalId, error.cityId);
+                return;
+            }
             console.error(`[${new Date().toISOString()}] [bets] open proposal failed`, error);
             renderStatus(doc.getElementById(CONTENT_ID), t('bets.error.open', 'The proposal could not be opened.'), 'error');
         }

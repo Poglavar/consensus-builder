@@ -9,7 +9,8 @@
 // today's cadastre, beside the one fixed at publish (proposals/binding-drift.js). Also a read, on
 // the same budget; the record is never changed — a re-bind publishes a new derived record.
 
-import { computeBinding, normalizeSiteGeometry, parseTolerance, validateSiteGeometry, BINDING_CODES } from '../proposals/binding.js';
+import { computeBinding, normalizeSiteGeometry, parseTolerance, publicationCityOf, validateSiteGeometry, BINDING_CODES } from '../proposals/binding.js';
+import { normalizeCityCode } from './proposals.js';
 import { computeBindingDrift } from '../proposals/binding-drift.js';
 
 export const PROPOSAL_BINDING_PATHS = Object.freeze(['/proposals/binding', '/agent/binding']);
@@ -34,19 +35,19 @@ export function setupProposalBindingRoute(app, pool) {
             }
             const started = Date.now();
             try {
-                const { binding } = await computeBinding(pool, {
-                    site: normalizeSiteGeometry(body.site),
-                    toleranceM: tolerance.value,
-                    city: body.city || null,
-                    parcelSourceId: body.parcelSourceId ?? null
-                });
-                return res.json({ binding, queryMs: Date.now() - started });
+                const site = normalizeSiteGeometry(body.site);
+                const parcelSourceId = body.parcelSourceId ?? null;
+                // Measured as a publication would be: against the cadastre of the city the site lies
+                // in (proposals/publication-city.js), which is returned as `city`.
+                const city = publicationCityOf({ site, city: normalizeCityCode(body.city) || null, parcelSourceId });
+                const { binding } = await computeBinding(pool, { site, toleranceM: tolerance.value, city, parcelSourceId });
+                return res.json({ binding, city, queryMs: Date.now() - started });
             } catch (error) {
                 if (error && error.code && Number.isInteger(error.status)) {
                     if (error.retryAfterSeconds !== undefined) res.set('Retry-After', String(error.retryAfterSeconds));
                     return res.status(error.status).json({ error: error.message, code: error.code,
                         upstreamStatus: error.upstreamStatus, retryAfterSeconds: error.retryAfterSeconds,
-                        ...(error.count ? { count: error.count } : {}) });
+                        ...(error.count ? { count: error.count } : {}), ...(error.siteCity ? { siteCity: error.siteCity } : {}) });
                 }
                 const badInput = /GeoJSON|geometry|parse|invalid/i.test(String(error && error.message));
                 console.error(`[${new Date().toISOString()}] Error in POST ${routePath}:`, error);

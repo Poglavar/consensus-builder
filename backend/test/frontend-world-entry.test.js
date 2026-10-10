@@ -106,6 +106,20 @@ describe('zoom out return to globe', () => {
     });
 });
 
+describe('the address follows the map', () => {
+    it('writes the view as ?at=, keeping the rest of the address, and nothing when it is already there', () => {
+        const next = Model.addressWithView('http://localhost:5682/proposals/5?city=zagreb&lang=hr', { lat: 45.800451, lon: 15.978789, zoom: 17.4 });
+        const url = new URL(next);
+        expect(url.pathname).toBe('/proposals/5');
+        expect(url.searchParams.get('city')).toBe('zagreb');
+        expect(url.searchParams.get('lang')).toBe('hr');
+        expect(url.searchParams.get('at')).toBe('45.80045,15.97879,17');
+        // what the boot reads back is the view written
+        expect(Model.parseAt(url.searchParams.get('at'))).toMatchObject({ lat: 45.80045, lon: 15.97879, zoom: 17 });
+        expect(Model.addressWithView(next, { lat: 45.800451, lon: 15.978789, zoom: 17.2 })).toBeNull();
+    });
+});
+
 describe('where a globe pick lands', () => {
     const zagrebView = { center: [45.804503, 15.978786], zoom: 19 };
 
@@ -120,6 +134,19 @@ describe('where a globe pick lands', () => {
         const point = { lat: 43.51, lon: 16.44, place: coverage.tierAt(43.51, 16.44) };
         const landing = Model.resolveLanding({ cityId: point.place.cityId, point, currentCityId: 'zagreb', cityView: { center: [43.5081, 16.4402], zoom: 19 } });
         expect(landing).toMatchObject({ cityId: 'split', inPlace: false, carryAt: false, view: { lat: 43.5081, lon: 16.4402, zoom: 19 } });
+    });
+
+    it('goes on to the city\'s latest proposal only for a pick of the city as a whole', () => {
+        const zagrebClick = { lat: 45.83, lon: 16.05, place: coverage.tierAt(45.83, 16.05) };
+        expect(Model.arrivesAtLatest(Model.resolveLanding({ cityId: 'zagreb', point: zagrebClick, currentCityId: 'split', cityView: zagrebView }))).toBe(true);
+        // a spot in the countrywide cadastre, a searched address, explore: the spot itself
+        const osijek = { lat: 45.55, lon: 18.69, place: coverage.tierAt(45.55, 18.69) };
+        expect(Model.arrivesAtLatest(Model.resolveLanding({ cityId: 'zagreb', point: osijek, currentCityId: 'zagreb', cityView: zagrebView }))).toBe(false);
+        const address = { lat: 45.8132, lon: 15.9772, place: coverage.tierAt(45.8132, 15.9772) };
+        expect(Model.arrivesAtLatest(Model.resolveLanding({ cityId: 'zagreb', point: address, currentCityId: 'new_york', cityView: zagrebView,
+            focus: { lat: 45.8132, lon: 15.9772, zoom: 18 } }))).toBe(false);
+        expect(Model.arrivesAtLatest(Model.resolveLanding({ point: osijek, currentCityId: 'zagreb', explore: true }))).toBe(false);
+        expect(Model.arrivesAtLatest(null)).toBe(false);
     });
 
     it('inland Croatia opens the nearest Croatian city AT the clicked point, at parcel zoom', () => {
@@ -168,13 +195,6 @@ describe('where a globe pick lands', () => {
         expect(() => Model.resolveLanding({ point: { lat: 1, lon: 1, place: {} }, currentCityId: 'zagreb' })).toThrow();
     });
 
-    it('gives a metric UTM projection anywhere', () => {
-        expect(Model.utmProjectionFor(35.68, 139.76).crs).toBe('EPSG:32654');
-        expect(Model.utmProjectionFor(-34.6, -58.4)).toEqual({
-            crs: 'EPSG:32721', definition: '+proj=utm +zone=21 +south +datum=WGS84 +units=m +no_defs +type=crs'
-        });
-        expect(Model.utmProjectionFor(10, 180).crs).toBe('EPSG:32660');
-    });
 });
 
 // city-config.js is a classic script; evaluate it in THIS realm behind window/location/storage stubs.
@@ -222,7 +242,8 @@ describe('the explore city (city-config.js)', () => {
         const config = manager.getCurrentCityConfig();
         expect(config.map.defaultCenter).toEqual([35.68, 139.76]);
         expect(config.map.defaultZoom).toBe(12);
-        expect(config.projection.metricCrs).toBe('EPSG:32654');
+        // metres are never the explored place's UTM zone (projections.md §2): no metric CRS at all
+        expect(config.projection.metricCrs).toBeUndefined();
         expect(manager.hasParcelData()).toBe(false);
     });
 

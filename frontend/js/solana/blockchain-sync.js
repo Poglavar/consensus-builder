@@ -160,6 +160,10 @@
                 return true;
             }
 
+            // another city's minted proposal (or one with no parcels): not this store's
+            if (!localProposal && typeof g.chainProposalBelongsHere === 'function' && !g.chainProposalBelongsHere(cadastreIdsFromChainData(onchainData))) {
+                return false;
+            }
             const newProposal = createProposalFromChainData({ cluster, programAddress, proposalAddress, onchainData });
 
             if (localProposal) {

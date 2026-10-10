@@ -104,24 +104,32 @@ const map = L.map('map', {
 const INITIAL_VIEW = CITY_MAP_CONFIG?.initialView || null;
 const hasDefaultCenter = Array.isArray(CITY_MAP_CONFIG?.defaultCenter) && CITY_MAP_CONFIG.defaultCenter.length === 2;
 
-// `?at=lat,lon,zoom` (the world view, the search box's "Open in <city>"): open the city at that
-// view instead of its default. Read once and stripped from the URL, so a reload does not jump back.
-// A proposal link frames its own proposal, so it ignores `at`. Invalid values are ignored.
+// `?at=lat,lon,zoom` (the world view, the search box's "Open in <city>", and the address itself,
+// which follows every move — see below): open the city at that view instead of its default. A
+// proposal link frames its own proposal, so it ignores `at`. Invalid values are ignored.
 const AT_VIEW = (() => {
     let raw = null;
     try { raw = new URLSearchParams(window.location.search || '').get('at'); } catch (_) { return null; }
     if (raw === null) return null;
-    try {
-        const url = new URL(window.location.href);
-        url.searchParams.delete('at');
-        window.history.replaceState(window.history.state, '', url.toString());
-    } catch (error) {
-        console.warn(`[${new Date().toISOString()}] [map-core] could not strip ?at= from the URL`, error);
-    }
     const view = window.WorldEntryModel ? window.WorldEntryModel.parseAt(raw) : null;
     if (!view) console.warn(`[${new Date().toISOString()}] [map-core] ignoring invalid ?at=${raw}`);
     return view;
 })();
+
+// The address follows the map: every move writes the view as ?at= (replaceState: no history
+// entries), so a reload, a copied link or a second tab opens where the map is. It used to be read
+// once and stripped, and in-place moves (search, globe, panning) wrote nothing, so a reload or a
+// shared address showed the city's default or another tab's explore spot.
+map.on('moveend', () => {
+    if (!window.WorldEntryModel) return;
+    try {
+        const center = map.getCenter();
+        const next = window.WorldEntryModel.addressWithView(window.location.href, { lat: center.lat, lon: center.lng, zoom: map.getZoom() });
+        if (next) window.history.replaceState(window.history.state, '', next);
+    } catch (error) {
+        console.warn(`[${new Date().toISOString()}] [map-core] could not keep the view in the address`, error);
+    }
+});
 
 if (AT_VIEW && !IS_PROPOSAL_DEEP_LINK) {
     map.setView([AT_VIEW.lat, AT_VIEW.lon], Number.isFinite(AT_VIEW.zoom) ? AT_VIEW.zoom : resolveInitialZoom());
@@ -168,98 +176,12 @@ function isZoomWithinParcelRange() {
     return z >= parcelFetchZoomMin && z <= parcelFetchZoomMax;
 }
 
-// EPSG:3857 inverse from Web Mercator metres (not Leaflet CRS pixel coords — unproject() uses scale at z0).
-function tryWebMercatorMetersToLatLng(easting, northing) {
-    try {
-        const R = 6378137;
-        if (!Number.isFinite(easting) || !Number.isFinite(northing)) return null;
-        const lon = (easting / R) * (180 / Math.PI);
-        const lat = (2 * Math.atan(Math.exp(northing / R)) - Math.PI / 2) * (180 / Math.PI);
-        if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
-        if (Math.abs(lat) > 90 || Math.abs(lon) > 180) return null;
-        return [lat, lon];
-    } catch (_) {
-        return null;
-    }
-}
+// Metres are never the active city's: everything measured or built in metres works in an explicit
+// frame on its own geometry (metric-frame.js, projections.md §2). The old city-wide pair
+// (wgs84ToHTRS96 / htrs96ToWGS84) made a 19 m street in Zagreb 13.65 m wide whenever New York was
+// the active city, and is gone.
 
-// Convert the city's METRIC working coordinates (metres) to WGS84.
-//
-// Named for Croatia's HTRS96/TM because Zagreb came first, but the projection is per-city and, since
-// the metric split, no longer the city's *dataset* CRS: New York's parcels arrive in degrees while its
-// geometry works in UTM 18N metres. Everything that offsets, buffers, measures or unions in "metres"
-// goes through this pair. See city-config.js `metricCrs`.
-//
-// If the input already looks like WGS84 (lng/lat range), return it directly.
-function htrs96ToWGS84(easting, northing) {
-    if (!Number.isFinite(easting) || !Number.isFinite(northing)) {
-        console.error('Invalid city dataset coordinates:', easting, northing);
-        return DEFAULT_FALLBACK_LATLNG;
-    }
-    // Detect coordinates already in WGS84 — projected CRS values are far larger
-    if (Math.abs(easting) <= 180 && Math.abs(northing) <= 90) {
-        return [northing, easting];
-    }
-    const bounds = CURRENT_CITY_CONFIG?.projection?.datasetBounds;
-    if (bounds) {
-        const outOfBounds = easting < bounds.minX || easting > bounds.maxX || northing < bounds.minY || northing > bounds.maxY;
-        if (outOfBounds) {
-            const merc = tryWebMercatorMetersToLatLng(easting, northing);
-            if (merc) {
-                return merc;
-            }
-            if (typeof window !== 'undefined' && window.__DEBUG_COORD_TRANSFORM__) {
-                // Throttle to prevent console flooding when corrupted geometries hit this path
-                // (e.g. legacy turf.buffer-on-HTRS96 output before the road-drawing.js fix).
-                window._outOfBoundsWarnCount = window._outOfBoundsWarnCount || 0;
-                if (window._outOfBoundsWarnCount < 20) {
-                    console.warn(`Dataset coordinates outside configured bounds: ${easting} ${northing}`);
-                    window._outOfBoundsWarnCount++;
-                    if (window._outOfBoundsWarnCount === 20) {
-                        console.warn('Dataset coordinates outside bounds warning threshold reached. Silencing further warnings.');
-                    }
-                }
-            }
-            return DEFAULT_FALLBACK_LATLNG;
-        }
-    }
-    try {
-        const converter = MapCityConfigManager
-            ? (MapCityConfigManager.metricToLatLng || MapCityConfigManager.datasetToLatLng)
-            : null;
-        const [lat, lon] = converter ? converter(easting, northing) : [northing, easting];
-        if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
-            throw new Error('Conversion returned invalid numbers');
-        }
-        return [lat, lon];
-    } catch (error) {
-        console.error('Error in coordinate conversion:', error);
-        return DEFAULT_FALLBACK_LATLNG;
-    }
-}
-
-// Convert WGS84 coordinates to the city's METRIC working coordinates (metres). See htrs96ToWGS84.
-function wgs84ToHTRS96(lat, lon) {
-    if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
-        console.error('Invalid WGS84 coordinates:', lat, lon);
-        return DEFAULT_FALLBACK_DATASET;
-    }
-    try {
-        const converter = MapCityConfigManager
-            ? (MapCityConfigManager.latLngToMetric || MapCityConfigManager.latLngToDataset)
-            : null;
-        const [easting, northing] = converter ? converter(lat, lon) : [lon, lat];
-        if (!Number.isFinite(easting) || !Number.isFinite(northing)) {
-            throw new Error('Conversion returned invalid numbers');
-        }
-        return [easting, northing];
-    } catch (error) {
-        console.error('Error in coordinate conversion:', error);
-        return DEFAULT_FALLBACK_DATASET;
-    }
-}
-
-// The DATASET pair, distinct from the metric pair above since the split.
+// The DATASET pair: the city's parcel CRS, for dataset I/O only (grid cells, stored coordinates).
 //
 // Parcels arrive in the city's dataset CRS, and the grid cache buckets them by `gridSize` expressed in
 // *that* CRS's units (metres for Zagreb, degrees for New York). Feeding those consumers metric metres
@@ -290,13 +212,42 @@ function wgs84ToDataset(lat, lon) {
     }
 }
 
-// Convert map bounds to HTRS96/TM bbox string
-function getBboxFromBounds(bounds) {
+// A view's bounding box in a NAMED dataset CRS (projections.md §4), for services that only take their
+// own CRS (the Croatian WFS and GDI/DGU surveys take EPSG:3765): every edge densified before the
+// transform, so the envelope covers the whole view where the CRS bends meridians. Throws when the CRS
+// is not defined — never falls back to anything.
+function bboxInCrs(bounds, crs) {
+    if (typeof proj4 === 'undefined' || !proj4.defs(crs)) throw new Error(`bboxInCrs: ${crs} is not defined`);
     const sw = bounds.getSouthWest();
     const ne = bounds.getNorthEast();
-    const [minX, minY] = wgs84ToHTRS96(sw.lat, sw.lng);
-    const [maxX, maxY] = wgs84ToHTRS96(ne.lat, ne.lng);
+    const steps = 16;
+    let minX = Infinity; let minY = Infinity; let maxX = -Infinity; let maxY = -Infinity;
+    const take = (lng, lat) => {
+        const [x, y] = proj4('EPSG:4326', crs, [lng, lat]);
+        if (!Number.isFinite(x) || !Number.isFinite(y)) throw new Error(`bboxInCrs: the view does not project into ${crs}`);
+        minX = Math.min(minX, x); maxX = Math.max(maxX, x);
+        minY = Math.min(minY, y); maxY = Math.max(maxY, y);
+    };
+    for (let i = 0; i <= steps; i += 1) {
+        const t = i / steps;
+        const lng = sw.lng + (ne.lng - sw.lng) * t;
+        const lat = sw.lat + (ne.lat - sw.lat) * t;
+        take(lng, sw.lat); take(lng, ne.lat); take(sw.lng, lat); take(ne.lng, lat);
+    }
     return `${minX},${minY},${maxX},${maxY}`;
+}
+
+// A view as the WGS84 bbox our own API takes (`bbox=…&crs=EPSG:4326`, projections.md §4): longitudes
+// wrapped to [-180, 180] (Leaflet's continuous world runs past them); a view across the antimeridian
+// comes out west > east, and the server splits it.
+function wgs84BboxParam(bounds) {
+    const wrap = lng => ((((lng + 180) % 360) + 360) % 360) - 180;
+    const sw = bounds.getSouthWest();
+    const ne = bounds.getNorthEast();
+    const span = ne.lng - sw.lng;
+    const west = span >= 360 ? -180 : wrap(sw.lng);
+    const east = span >= 360 ? 180 : wrap(ne.lng);
+    return `bbox=${[west, sw.lat, east, ne.lat].join(',')}&crs=EPSG:4326`;
 }
 
 // Clear existing centerline and width lines
@@ -485,13 +436,18 @@ async function fetchBuildings(boundsOverride = null, options = {}) {
     // buildings..." first and then discover the city has no GDI dataset — so a reload replaying a
     // hundred corridors wrote two lines per corridor about a fetch that never happened.
     let bounds = null;
-    let bbox = null;
     try {
         bounds = boundsOverride || map.getBounds();
-        bbox = getBboxFromBounds(bounds);
     } catch (_) { return; }
     const builder = (typeof buildBuildingRequestParams === 'function') ? buildBuildingRequestParams : null;
-    const req = builder ? builder(bbox, 'gdi') : null;
+    let req = null;
+    try {
+        req = builder ? builder(bounds, 'gdi') : null;
+    } catch (error) {
+        // the Zagreb survey has nothing where the view does not even project into its CRS
+        console.warn(`[${new Date().toISOString()}] [buildings] the view lies outside the GDI survey's CRS; nothing to ask for`, error.message);
+        return;
+    }
     // GDI is the Zagreb survey. Everywhere else the existing stock comes from the city's own
     // provider (Overture for Šibenik/Split/Belgrade, Socrata for NYC), served by the same
     // POST /buildings/footprints the urban-rule editor reads. There is no WFS fallback — the WFS
@@ -607,7 +563,7 @@ async function fetchDguBuildings(boundsOverride = null) {
     try {
         const bounds = boundsOverride || map.getBounds();
         const builder = (typeof buildBuildingRequestParams === 'function') ? buildBuildingRequestParams : null;
-        const req = builder ? builder(getBboxFromBounds(bounds), 'dgu') : null;
+        const req = builder ? builder(bounds, 'dgu') : null;
         if (!req) return;
 
         const response = await fetch(req.url);
@@ -1163,11 +1119,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Make functions globally available
-window.htrs96ToWGS84 = htrs96ToWGS84;
-window.wgs84ToHTRS96 = wgs84ToHTRS96;
 window.datasetToWgs84 = datasetToWgs84;
 window.wgs84ToDataset = wgs84ToDataset;
-window.getBboxFromBounds = getBboxFromBounds;
+window.bboxInCrs = bboxInCrs;
+window.wgs84BboxParam = wgs84BboxParam;
 window.clearRoadVisualization = clearRoadVisualization;
 window.drawRoadVisualization = drawRoadVisualization;
 window.fetchBuildings = fetchBuildings;

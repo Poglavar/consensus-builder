@@ -187,10 +187,34 @@
         });
     }
 
+    // A plan belongs to a latitude band: planFor rounds the latitude to the whole degree, which fixes
+    // its arcsecond steps, so the same parameters make another plan — and other ids — a band away.
+    // One installed source serves every band the visitor reaches (explore spans the world), each from
+    // that band's own plan, so a parcel's id is the one a stranger starting there derives too; a plan
+    // chosen in Tokyo used to lay 36°N blocks and ids over Helsinki for the rest of the session. A
+    // piece belongs to the band its centre lies in; at the half degree between two bands their
+    // streets meet edge to edge.
+    const bandOf = lat => Math.round(lat);
+    function bandOfParcelId(id) {
+        const match = /^MP:[^:]*@(\d+)([NS]):/.exec(String(id || ''));
+        return match ? (match[2] === 'S' ? -Number(match[1]) : Number(match[1])) : null;
+    }
+    function centreLatOf(feature) {
+        let south = Infinity;
+        let north = -Infinity;
+        feature.geometry.coordinates[0].forEach(position => { south = Math.min(south, position[1]); north = Math.max(north, position[1]); });
+        return (south + north) / 2;
+    }
+
     function schellingSource(params) {
         const grid = global.SchellingGrid;
         if (!grid) throw new Error('SchellingGrid is unavailable.');
-        const plan = grid.planFor(params);
+        const plans = new Map();
+        const planAt = band => {
+            if (!plans.has(band)) plans.set(band, grid.planFor({ ...params, lat: band }));
+            return plans.get(band);
+        };
+        const plan = planAt(bandOf(Number(params && params.lat)));
         return {
             id: `schelling:${plan.code}`,
             kind: 'schelling',
@@ -200,7 +224,12 @@
             fetchCell(cell) {
                 const box = parseLatLonBbox(cell && cell.latLonBbox);
                 if (!box) throw new Error('Schelling source needs a lat/lng bbox.');
-                const features = grid.featuresInBbox(plan, [box.west, box.south, box.east, box.north]);
+                const features = [];
+                for (let band = bandOf(box.south); band <= bandOf(box.north); band += 1) {
+                    if (Math.abs(band) > 85) continue; // beyond the supported domain: no plan
+                    grid.featuresInBbox(planAt(band), [box.west, box.south, box.east, box.north])
+                        .forEach(feature => { if (bandOf(centreLatOf(feature)) === band) features.push(feature); });
+                }
                 markRoads(features);
                 return { features, returnsWGS84: true };
             },
@@ -208,7 +237,8 @@
                 const features = [];
                 const absentIds = [];
                 ids.forEach(id => {
-                    const feature = grid.featureForId(plan, id);
+                    const band = bandOfParcelId(id);
+                    const feature = band === null || Math.abs(band) > 85 ? null : grid.featureForId(planAt(band), id);
                     if (feature) features.push(feature); else absentIds.push(id);
                 });
                 markRoads(features);
@@ -515,6 +545,22 @@
         return { west: center.lng - 0.01, south: center.lat - 0.01, east: center.lng + 0.01, north: center.lat + 0.01 };
     }
 
+    // A new parcel source for the city reloads the page, as a city or register change does
+    // (parcel-source-settings.js): the parcel repository keys cells and requests in flight by city and
+    // cell, so switching in place kept the cells of the source before — the register's, an earlier
+    // plan's — and joined its late answers, mixing two parcel sets in one fabric. The choice is in
+    // sessionStorage (installSource) and the boot restores it before the first viewport fetch;
+    // ?at= keeps the view.
+    function reloadWithSource() {
+        const url = new URL(global.location.href);
+        const center = global.map && typeof global.map.getCenter === 'function' ? global.map.getCenter() : null;
+        const zoom = global.map && typeof global.map.getZoom === 'function' ? global.map.getZoom() : null;
+        if (center && global.WorldEntryModel) {
+            url.searchParams.set('at', global.WorldEntryModel.formatAt({ lat: center.lat, lon: center.lng, zoom: Math.round(zoom) }));
+        }
+        global.location.replace(url.href);
+    }
+
     async function refetchViewport() {
         if (typeof global.fetchParcelData !== 'function') return;
         try {
@@ -692,7 +738,8 @@
                     installSource(city, source);
                     resetDismissal(city);
                     status(t('groundFallback.status.urlInstalled', 'Loading parcels from your register link for this session.'));
-                    setTimeout(() => { close(); refetchViewport(); }, 600);
+                    close();
+                    reloadWithSource();
                 } catch (error) {
                     result.className = 'ground-fallback-result is-error';
                     result.textContent = String(error && error.message || error);
@@ -890,7 +937,7 @@
                     resetDismissal(city);
                     close();
                     status(t('groundFallback.status.schellingInstalled', 'Drawing the Schelling plan {code} in memory for this session.', { code: source.plan.code }));
-                    await refetchViewport();
+                    reloadWithSource();
                 } catch (error) {
                     apply.disabled = false;
                     result.className = 'ground-fallback-result is-error';

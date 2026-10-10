@@ -71,6 +71,23 @@ describe('corridor drawing drafts', () => {
         expect(getActiveCorridorDraft(storage)).toBeNull();
     });
 
+    it('never takes over another drawing\'s draft: only the draft a drawing names is continued', () => {
+        // The active draft is one per browser, shared by every city. An abandoned "Edit shape" of
+        // road Y in Zagreb stays active; a road copied in Split (no draft id) used to overwrite it,
+        // keep Y as its source and replace Y on publish.
+        const storage = memoryStorage();
+        const editY = saveActiveCorridorDraft({ kind: 'road', cityId: 'zagreb', sourceProposalId: 'Y', seed: { width: 10 } }, storage);
+        expect(getActiveCorridorDraft(storage)).toMatchObject({ draftId: editY.draftId, sourceProposalId: 'Y' });
+
+        const copyX = saveActiveCorridorDraft({ kind: 'road', cityId: 'split', copySource: { proposalId: 'X' }, seed: { width: 7 } }, storage);
+        expect(copyX.draftId).not.toBe(editY.draftId);
+        expect(copyX).toMatchObject({ cityId: 'split', sourceProposalId: 'X' });
+
+        // Y's draft is untouched, and is still continued when it is named
+        const again = saveActiveCorridorDraft({ draftId: editY.draftId, kind: 'road', cityId: 'zagreb', seed: { width: 12 } }, storage);
+        expect(again).toMatchObject({ draftId: editY.draftId, cityId: 'zagreb', sourceProposalId: 'Y', seed: { width: 12 } });
+    });
+
     it('ignores malformed or clean stored records', () => {
         const storage = memoryStorage();
         storage.setItem(ACTIVE_DRAFT_KEY, '{broken');

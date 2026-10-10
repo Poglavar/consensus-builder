@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { createContext, runInContext } from 'node:vm';
-import proj4 from 'proj4';
 
 const read = path => readFileSync(new URL(path, import.meta.url), 'utf8');
 const cityContext = { URLSearchParams, console };
@@ -13,14 +12,12 @@ const citySamples = [
     {
         id: 'kochi',
         center: [9.963406805925196, 76.36082896288808],
-        metricCenter: [649170.6726, 1101673.165],
         locationCode: '070211',
         village: 'Thiruvankulam'
     },
     {
         id: 'iravipuram',
         center: [8.847550832774829, 76.62751009273858],
-        metricCenter: [678983.4742, 978388.9526],
         locationCode: '020301',
         village: 'Iravipuram'
     },
@@ -39,13 +36,10 @@ describe('Kerala village city configs', () => {
             expect(city.map.defaultZoom).toBe(19);
             expect(city.projection).toMatchObject({
                 datasetCrs: 'EPSG:4326',
-                metricCrs: 'EPSG:32643',
-                metricDefinition: '+proj=utm +zone=43 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: sample.center,
                 fallbackDataset: [sample.center[1], sample.center[0]]
             });
-            const projectedCenter = proj4('EPSG:4326', city.projection.metricDefinition, [sample.center[1], sample.center[0]]);
-            projectedCenter.forEach((coordinate, index) => expect(coordinate).toBeCloseTo(sample.metricCenter[index], 3));
+            expect(city.projection.metricDefinition).toBeUndefined();
             expect(city.parcels).toMatchObject({
                 strategy: 'grid',
                 gridSize: 0.001,

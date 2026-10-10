@@ -95,6 +95,25 @@ describe('proposal rows: mutations', () => {
         expect(JSON.parse(storage.values.get('cadastre_proposals_manifest'))).toEqual({ manifestVersion: 1, nextProposalId: 9 });
     });
 
+    it('in a read-only tab, writes no shared row: the change stays in memory and is parked', async () => {
+        // multi-tab-guard.js marked this tab secondary: its city is open in another tab
+        const storage = fakeStorage();
+        const store = bootStore(storage);
+        store.proposals.set('p1', record('p1'));
+        const blocked = vi.fn();
+        const runtime = { __cbSecondaryTab: true, __cbReportSecondaryWriteBlocked: blocked };
+        await ParcelMutation.run({ kind: 'test' }, async context => {
+            context.proposals.getProposal('p1').title = 'edited here';
+            return true;
+        }, { proposalStore: store, agentStore: null, storage, fabric: null, runtime });
+        expect(storage.writes).toEqual([]);
+        expect(rowKeys(storage)).toEqual([]);
+        expect(store.getProposal('p1').title).toBe('edited here');
+        // parked under the recovery key (a store of this tab's own), and the user is told
+        expect(JSON.parse(storage.values.get('cadastre_proposals_recovery')).records.map(r => r.title)).toEqual(['edited here']);
+        expect(blocked).toHaveBeenCalledOnce();
+    });
+
     it('deletes a legacy envelope still visible during a boot migration', async () => {
         const storage = fakeStorage({ cadastre_proposals: '{"version":2,"nextProposalId":0,"records":[]}' });
         const store = bootStore(storage);
@@ -201,5 +220,49 @@ describe('proposal rows: whole-store save and clear', () => {
         expect(storage.writes[0].deletes.sort()).toEqual(['cadastre_proposals', 'cadastre_proposals_manifest', 'cadastre_proposals_recovery', 'proposal:a']);
         expect(Array.from(storage.values.keys())).toEqual(['parcel_HR-1_owner']);
         expect(store.getAllProposals()).toEqual([]);
+    });
+});
+
+describe('proposal rows: a record is stored only in its own city', () => {
+    // projections.md §10 M8: storage refuses another city's record (CityConfigManager.foreignCityFor);
+    // every link and list route catches the refusal and opens the record in its city instead.
+    function bootInCity(foreign, current = 'zagreb') {
+        const storage = fakeStorage();
+        const store = bootStore(storage);
+        install('getLifecycleStatus', proposal => proposal.lifecycleStatus || 'Active');
+        install('parkProposalForImport', () => {});
+        install('CityConfigManager', {
+            resolveCityId: city => (['zagreb', 'split', 'paris', 'new_york'].includes(city) ? city : null),
+            getCitiesByParcelSource: source => (source === 'oss-wfs' ? [{ id: 'zagreb' }, { id: 'split' }] : []),
+            foreignCityFor: city => (foreign.includes(city) ? city : null),
+            getCityLabel: id => ({ paris: 'Paris', zagreb: 'Zagreb' })[id] || id,
+            getCurrentCityId: () => current
+        });
+        return { storage, store };
+    }
+
+    it('refuses a record of a city with other parcel data, writing nothing', () => {
+        const { storage, store } = bootInCity(['paris']);
+        let refusal = null;
+        try { store.importProposal(record('p1', { city: 'paris' })); } catch (error) { refusal = error; }
+        expect(refusal).toMatchObject({ code: 'proposal-in-other-city', cityId: 'paris' });
+        expect(refusal.message).toMatch(/Paris/);
+        expect(store.getProposal('p1')).toBeFalsy();
+        expect(rowKeys(storage)).toEqual([]);
+    });
+
+    it('imports its own city\'s records, those of a city on the same cadastre and those naming no city', () => {
+        const { store } = bootInCity(['paris']);
+        expect(store.importProposal(record('z1', { city: 'zagreb' }))).toBeTruthy();
+        expect(store.importProposal(record('s1', { city: 'split' }))).toBeTruthy();
+        expect(store.importProposal(record('n1'))).toBeTruthy();
+    });
+
+    it('places a record naming no city by its parcels: a Croatian one is not New York\'s', () => {
+        const { storage, store } = bootInCity(['zagreb'], 'new_york');
+        let refusal = null;
+        try { store.importProposal(record('legacy', { city: 'city', cadastreParcelIds: ['HR-335649-100'] })); } catch (error) { refusal = error; }
+        expect(refusal).toMatchObject({ code: 'proposal-in-other-city', cityId: 'zagreb' });
+        expect(rowKeys(storage)).toEqual([]);
     });
 });

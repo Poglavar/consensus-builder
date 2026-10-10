@@ -914,6 +914,9 @@
                 renderError(t('sidebar.proposals.grainScore.emptyPlan', 'This named plan contains no proposals.'));
                 return;
             }
+            // In the plan's city first, as /proposals/<slug> does (proposals/core.js ensurePlanCity):
+            // parcel lookups go to the current city's cadastre.
+            if (typeof global.ensurePlanCity === 'function' && await global.ensurePlanCity(plan.city)) return;
             state.namedPlan = { ...plan, slug: normalized };
             global.__currentNamedPlan = state.namedPlan;
             renderLoading(state.namedPlan, t('sidebar.proposals.grainScore.applyingPlan', 'Rebuilding the plan on the map…'));
@@ -933,6 +936,9 @@
         } catch (error) {
             console.error('[grain-score] named score route failed', error);
             renderError(t('sidebar.proposals.grainScore.planLoadFailed', 'The named plan could not be loaded.'));
+        } finally {
+            // however the route ended, the map fetches its parcels again (proposals/core.js)
+            if (typeof global.releaseDeepLinkParcelFetch === 'function') global.releaseDeepLinkParcelFetch();
         }
     }
 

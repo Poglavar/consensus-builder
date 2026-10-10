@@ -1157,6 +1157,10 @@ async function openServerProposalFromLog(lookup) {
     try {
         proposal = await importServerProposal(lookup);
     } catch (error) {
+        if (error?.code === 'proposal-in-other-city') {
+            await openProposalInItsCity(lookup, error.cityId);
+            return;
+        }
         console.warn(`[${new Date().toISOString()}] [activity] could not download proposal ${lookup}`, error);
         showGameAlert('proposal_with_id_not_found', 'Proposal with ID {{id}} not found.', { id: lookup });
         return;

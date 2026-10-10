@@ -149,7 +149,9 @@ async function refreshServerProposalCount(cityCode) {
                 || window.getProposalCountAreaContext().key === areaKey);
         if (stillCurrent && Number.isFinite(payload?.count)) {
             serverProposalCache.count = Number(payload.count);
-            serverProposalCache.lastCity = city;
+            // the list's own key (fetchServerProposalSummaries): the bare city here made the next
+            // list render see another area, reset the list and fetch it again after every count
+            serverProposalCache.lastCity = area?.key || city;
             serverProposalCache.countRefreshedAt = Date.now();
         }
     } catch (error) {
@@ -325,22 +327,16 @@ function getServerProposalId(proposal) {
     return null;
 }
 
-function buildCityQueryParam() {
+// `?city=` for a share link: the proposal's own city when given (the server files a record under
+// the city its site lies in), else the current one. The short code where a city has one (?city=zg),
+// else its id — the boot reads both (city-config.js getCityIdFromQuery). Only eight cities have a
+// code, so a link to any other carried no city and opened in whatever city the recipient last used.
+function buildCityQueryParam(cityId) {
     const mgr = (typeof window !== 'undefined') ? window.CityConfigManager : null;
     if (!mgr) return '';
-
-    // Get current city config
-    const cfg = mgr.getCurrentCityConfig && typeof mgr.getCurrentCityConfig === 'function' ? mgr.getCurrentCityConfig() : null;
-    if (!cfg || !cfg.id) return '';
-
-    // Get city code from city config manager
-    const getCityCode = mgr.getCityCodeForCityId && typeof mgr.getCityCodeForCityId === 'function' ? mgr.getCityCodeForCityId : null;
-    if (!getCityCode) return '';
-
-    const code = getCityCode(cfg.id);
-    if (!code) return '';
-
-    return `?city=${encodeURIComponent(code)}`;
+    const id = (cityId && mgr.resolveCityId(cityId)) || mgr.getCurrentCityId();
+    if (!id) return '';
+    return `?city=${encodeURIComponent(mgr.getCityCodeForCityId(id) || id)}`;
 }
 
 function mapGoalToBackendType(goalKey) {
@@ -569,6 +565,9 @@ async function confirmPreparedPublish(prepared) {
 function adoptPreparedRecord(target, prepared) {
     if (!target || !prepared || !prepared.preparation) return;
     target.preparation = prepared.preparation;
+    // the signed artifact travels with the record (a minted record publishes it later)
+    if (prepared.preparedArtifact) target.preparedArtifact = prepared.preparedArtifact;
+    if (prepared.city) target.city = prepared.city;
     target.binding = prepared.binding;
     target.cadastreParcelIds = (prepared.cadastreParcelIds || []).slice();
     if (prepared.roadProposal && prepared.roadProposal.definition && prepared.roadProposal.definition.constructionFrame) {
@@ -616,6 +615,8 @@ async function uploadProposalToServer(proposal) {
             });
         } catch (bindError) {
             console.warn(`[${new Date().toISOString()}] [uploadProposalToServer] preparation failed`, bindError);
+            // A site in another city's cadastre is an answer, not a failed check: say where to go.
+            if (bindError && bindError.code === 'site-in-other-city') return { ok: false, code: bindError.code, siteCity: bindError.siteCity, message: bindError.message };
             return { ok: false, code: bindError.code, message: publishBindingText('modal.createProposal.errors.bindingFailed',
                 'Could not check which parcels this proposal\'s site reaches into: {{reason}}', { reason: bindError.message || String(bindError) }) };
         }

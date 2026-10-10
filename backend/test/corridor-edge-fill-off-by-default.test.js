@@ -20,8 +20,8 @@ function bootScene() {
     const spy = (name, result) => (...args) => { calls.push(name); return result; };
     globalThis.window = globalThis;
     globalThis.turf = { intersect: spy('turf.intersect', null), area: spy('turf.area', 0), union: spy('turf.union', null), booleanIntersects: spy('turf.booleanIntersects', false) };
-    globalThis.wgs84ToHTRS96 = spy('wgs84ToHTRS96', [0, 0]);
-    globalThis.htrs96ToWGS84 = spy('htrs96ToWGS84', [0, 0]);
+    const identityFrame = { latLngToMetric: (lat, lng) => [lng, lat], metricToLatLng: (x, y) => [y, x] };
+    globalThis.__corridorFootprint = { frameForDefinition: spy('frameForDefinition', identityFrame) };
     globalThis.corridorEdgeFillSides = spy('corridorEdgeFillSides', { left: null, right: null });
     globalThis.corridorEdgeFillRegion = spy('corridorEdgeFillRegion', null);
     globalThis.corridorFeatureFromLatLngRing = spy('corridorFeatureFromLatLngRing', null);

@@ -19,7 +19,6 @@ describe('Mboloko city config', () => {
                 defaultCenter: [-25.4662366387406, 27.8447650141456],
                 defaultZoom: 18
             },
-            projection: { metricCrs: 'EPSG:32735' },
             parcels: {
                 strategy: 'grid',
                 gridSize: 0.0025,

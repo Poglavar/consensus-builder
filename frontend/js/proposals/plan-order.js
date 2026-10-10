@@ -37,19 +37,16 @@
 
     // A road's footprint is derived by the same corridor builder used for cutting. Keeping a Turf
     // buffer here produced a second, round-capped acquisition model whose ancestry disagreed with
-    // the square-ended parcel cut.
+    // the square-ended parcel cut. A failed derivation propagates: a corridor whose land cannot be
+    // built must not be cut as if it took nothing (projections.md §3, errors propagate).
     function corridorFootprintFromCenterline(definition) {
         const t = T();
         const derive = global && typeof global.corridorSurfaceFootprintForDefinition === 'function'
             ? global.corridorSurfaceFootprintForDefinition
             : null;
         if (!t || !definition || !derive) return null;
-        try {
-            const geometry = derive(definition);
-            return geometry && /Polygon/.test(geometry.type || '') ? t.feature(geometry) : null;
-        } catch (_) {
-            return null;
-        }
+        const geometry = derive(definition);
+        return geometry && /Polygon/.test(geometry.type || '') ? t.feature(geometry) : null;
     }
 
     const footprintPartsApi = () => (global && global.__footprintParts)
@@ -72,9 +69,13 @@
         }
 
         if (!polys.length) return null;
+        // Every part or none: keeping "what we have" after a failed union is a partial footprint
+        // that looks whole.
         let acc = polys[0];
         for (let i = 1; i < polys.length; i++) {
-            try { acc = t.union(acc, polys[i]) || acc; } catch (_) { /* keep what we have */ }
+            const next = t.union(acc, polys[i]);
+            if (!next) throw new Error('plan-order: the footprint union of a proposal failed');
+            acc = next;
         }
         return acc;
     }

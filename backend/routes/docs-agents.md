@@ -336,6 +336,10 @@ source's own time (chain block or attestation time, the record's creation for `p
 | 400 `code: "footprint-outside-site"` | The proposal's geometry reaches outside its `site`. | no |
 | 400 `code: "invalid-site"` / `"invalid-tolerance"` / `"invalid-footprint"` | Malformed site, tolerance outside 0–1 m, or malformed geometry. | no |
 | 413 `code: "too-many-parcels"` | The site meets more than 5000 parcels (binding route and create). | no |
+| 422 `code: "preparation-required"` / `"preparation-unknown"` | A road or track drawn as a centre line must be prepared first (`POST /agent/prepare`) and published with the returned `preparation` and `preparedArtifact`. | no |
+| 422 `code: "preparation-invalid"` / `"preparation-mismatch"` / `"preparation-stale"` | The artifact is not the one this server signed, the record differs from what was prepared, or the land no longer re-derives: prepare again. | no |
+| 503 `code: "preparation-unavailable"` | The server has no signing key; nothing can be prepared. | no |
+| 422 `code: "site-in-other-city"` | Only another city's parcels cover the site (a Zagreb site sent as `city: "new_york"`); send it as `siteCity`. A site in a city on the same cadastre is filed there instead (a Split site sent as `zagreb` is Split's). | no |
 | 503 before payment | The cadastre could not be asked; nothing was stored or charged. | no |
 | 402 with `PAYMENT-REQUIRED` | Pay and retry. | no |
 | 402 with body `error: "author_mismatch"` | `author` is not the paying wallet. | no |

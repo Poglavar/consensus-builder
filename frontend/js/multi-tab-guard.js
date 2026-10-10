@@ -1,25 +1,27 @@
-// Multi-tab guard. All browser tabs share one IndexedDB store, but each tab loads its own in-memory
-// copy once at startup with no cross-tab sync, and proposals persist as a single blob — so two tabs
-// writing means last-writer-wins and can silently drop saved proposals. To warn about that, we detect
-// OTHER ACTIVE tabs via a BroadcastChannel ping/pong: a fresh tab pings, and only established, active
-// tabs answer. A truly-alone tab hears nothing, so it never warns. This deliberately avoids the Web
-// Locks API — locks are still held by pages that are navigating away or frozen in the back/forward
-// cache, which produced false "another tab is open" warnings on a single tab. Frozen/dead pages don't
-// answer a ping, so this approach has no such false positive. Unsupported browsers → no-op.
+// Multi-tab guard. Tabs of the same city share one IndexedDB database, but each tab loads its own
+// in-memory copy once at startup with no cross-tab sync — so two tabs writing means last-writer-wins
+// and can silently drop saved proposals. To warn about that, we detect OTHER ACTIVE tabs on the same
+// database via a BroadcastChannel ping/pong: a fresh tab pings, and only established, active tabs
+// answer. A truly-alone tab hears nothing, so it never warns. The channel is keyed by the database
+// (persistent-storage.js announces it once the city binds it): every city has its own, so a tab in
+// another city is not read-only. This deliberately avoids the Web Locks API — locks are still held
+// by pages that are navigating away or frozen in the back/forward cache, which produced false
+// "another tab is open" warnings on a single tab. Frozen/dead pages don't answer a ping, so this
+// approach has no such false positive. Unsupported browsers → no-op.
 (function () {
     const scope = typeof window !== 'undefined' ? window : self;
     if (typeof scope.BroadcastChannel !== 'function') return;
 
     const CHANNEL = 'consensus-builder-tabs';
     const DETECT_MS = 600; // probe window: how long to wait for another tab to answer our ping
-    const channel = new scope.BroadcastChannel(CHANNEL);
+    let channel = null; // opened for this page's database (start)
 
     let established = false; // true once we've decided we're a live tab (and will answer others' pings)
     let secondary = false;
 
     // English fallback shown until the translation JSON finishes loading (it loads async, after this
     // guard runs). The data-i18n-key lets the app's applyTranslations swap in the localized string.
-    const FALLBACK_TEXT = 'This app is already open in another tab. To avoid losing saved proposals, changes made here won’t be saved — close the other tabs and reload this one to edit.';
+    const FALLBACK_TEXT = 'This city is already open in another tab. To avoid losing saved proposals, changes made here won’t be saved — close the other tabs of this city and reload this one to edit. Other cities can stay open.';
 
     function attachBanner() {
         if (typeof document === 'undefined') return;
@@ -80,6 +82,7 @@
     }
 
     function probe() {
+        if (!channel) return;
         try { channel.postMessage({ type: 'ping' }); } catch (_) { }
         // No completion signal exists for "nobody is out there", so absence must be inferred from a
         // short quiet window: if no active tab answered by now, we're alone and become primary.
@@ -88,7 +91,7 @@
         }, DETECT_MS);
     }
 
-    channel.onmessage = (event) => {
+    function onMessage(event) {
         const msg = event && event.data;
         if (!msg || typeof msg !== 'object') return;
         if (msg.type === 'ping') {
@@ -102,13 +105,13 @@
             // The primary is closing/navigating away — re-elect by probing again.
             if (secondary) { clearSecondary(); established = false; probe(); }
         }
-    };
+    }
 
     // Announce departure so a secondary tab can promote itself instead of staying read-only forever,
     // and immediately stop answering pings — otherwise, during a same-tab navigation, this outgoing
     // page could still pong the incoming one and falsely mark it as a second tab.
     scope.addEventListener('pagehide', () => {
-        if (established && !secondary) {
+        if (established && !secondary && channel) {
             try { channel.postMessage({ type: 'leaving' }); } catch (_) { }
         }
         established = false;
@@ -175,6 +178,17 @@
         toastNotSaved();
     };
 
+    // One channel per database: the page's own, once storage knows it.
+    function start(databaseName) {
+        if (channel || !databaseName) return;
+        channel = new scope.BroadcastChannel(`${CHANNEL}:${databaseName}`);
+        channel.onmessage = onMessage;
+        probe();
+    }
+
     scope.__cbSecondaryTab = false;
-    probe();
+    const bound = scope.PersistentStorage && typeof scope.PersistentStorage.databaseName === 'function'
+        ? scope.PersistentStorage.databaseName() : null;
+    if (bound) start(bound);
+    else scope.addEventListener('persistentstoragedatabase', event => start(event && event.detail && event.detail.name), { once: true });
 })();

@@ -20,6 +20,8 @@ function bootWithOverride(cityConfig) {
         clear: () => stored.clear()
     };
     const window = {
+        // map-core.js's view → EPSG:3765 bbox, stubbed: the request carries what it returns
+        bboxInCrs: (bounds, crs) => (crs === 'EPSG:3765' ? '1,2,3,4' : null),
         current_environment: 'development',
         location: {
             protocol: 'http:',
@@ -51,7 +53,8 @@ describe('data source backend override', () => {
         // outside the cities that have GDI, so the placeholder stopped producing a request.
         const { window, stored } = bootWithOverride({ buildings: { source: 'gdi' } });
 
-        expect(window.buildBuildingRequestParams('1,2,3,4', 'gdi').url)
+        const view = { getSouthWest: () => ({ lat: 45.8, lng: 15.97 }), getNorthEast: () => ({ lat: 45.81, lng: 15.98 }) };
+        expect(window.buildBuildingRequestParams(view, 'gdi').url)
             .toBe('http://localhost:4179/buildings?bbox=1%2C2%2C3%2C4&source=gdi');
         expect(stored.get('cb_dev_backend_base')).toBe('http://localhost:4179');
     });

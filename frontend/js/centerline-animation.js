@@ -208,10 +208,9 @@ function setupAnimationSteps(coordinates) {
         return;
     }
 
-    // Convert to HTRS96/TM for calculations
-    const htrsPolygonCoords = polygonCoords.map(coord => {
-        return wgs84ToHTRS96(coord[1], coord[0]);
-    });
+    // Metres for the calculations: a frame on this parcel itself (projections.md §2)
+    const frame = window.__metricFrame.frameFor(polygonCoords);
+    const htrsPolygonCoords = polygonCoords.map(coord => frame.latLngToMetric(coord[1], coord[0]));
 
     // Calculate the centroid
     let centroidX = 0, centroidY = 0;
@@ -295,7 +294,7 @@ function setupAnimationSteps(coordinates) {
             const samplePointsGeoJSON = {
                 type: 'FeatureCollection',
                 features: samplePoints.map(point => {
-                    const [lat, lon] = htrs96ToWGS84(point[0], point[1]);
+                    const [lat, lon] = frame.metricToLatLng(point[0], point[1]);
                     return {
                         type: 'Feature',
                         properties: {},
@@ -353,7 +352,7 @@ function setupAnimationSteps(coordinates) {
             ];
 
             const wgs84AxisLine = axisLine.map(p => {
-                const [lat, lon] = htrs96ToWGS84(p[0], p[1]);
+                const [lat, lon] = frame.metricToLatLng(p[0], p[1]);
                 return [lon, lat];
             });
 
@@ -380,7 +379,7 @@ function setupAnimationSteps(coordinates) {
             const longSidePointsGeoJSON = {
                 type: 'FeatureCollection',
                 features: longSidePoints.map(point => {
-                    const [lat, lon] = htrs96ToWGS84(point[0], point[1]);
+                    const [lat, lon] = frame.metricToLatLng(point[0], point[1]);
                     return {
                         type: 'Feature',
                         properties: {},
@@ -401,7 +400,7 @@ function setupAnimationSteps(coordinates) {
             const shortSidePointsGeoJSON = {
                 type: 'FeatureCollection',
                 features: shortSidePoints.map(point => {
-                    const [lat, lon] = htrs96ToWGS84(point[0], point[1]);
+                    const [lat, lon] = frame.metricToLatLng(point[0], point[1]);
                     return {
                         type: 'Feature',
                         properties: {},
@@ -513,8 +512,8 @@ function setupAnimationSteps(coordinates) {
 
                 // Save the search line for visualization
                 const wgs84SearchLine = [
-                    htrs96ToWGS84(startPoint[0], startPoint[1]),
-                    htrs96ToWGS84(searchEndPoint[0], searchEndPoint[1])
+                    frame.metricToLatLng(startPoint[0], startPoint[1]),
+                    frame.metricToLatLng(searchEndPoint[0], searchEndPoint[1])
                 ].map(p => [p[1], p[0]]); // Convert to [lon, lat]
 
                 searchLines.push(wgs84SearchLine);
@@ -533,8 +532,8 @@ function setupAnimationSteps(coordinates) {
 
                     // Create width line
                     const wgs84Line = [
-                        htrs96ToWGS84(point[0], point[1]),
-                        htrs96ToWGS84(opposite[0], opposite[1])
+                        frame.metricToLatLng(point[0], point[1]),
+                        frame.metricToLatLng(opposite[0], opposite[1])
                     ].map(p => [p[1], p[0]]); // Convert to [lon, lat]
 
                     widthLines.push(wgs84Line);
@@ -560,7 +559,7 @@ function setupAnimationSteps(coordinates) {
             const oppositePointsGeoJSON = {
                 type: 'FeatureCollection',
                 features: oppositePoints.map(point => {
-                    const [lat, lon] = htrs96ToWGS84(point[0], point[1]);
+                    const [lat, lon] = frame.metricToLatLng(point[0], point[1]);
                     return {
                         type: 'Feature',
                         properties: {},
@@ -609,7 +608,7 @@ function setupAnimationSteps(coordinates) {
             const midpointsGeoJSON = {
                 type: 'FeatureCollection',
                 features: midpoints.map(point => {
-                    const [lat, lon] = htrs96ToWGS84(point[0], point[1]);
+                    const [lat, lon] = frame.metricToLatLng(point[0], point[1]);
                     return {
                         type: 'Feature',
                         properties: {},
@@ -665,7 +664,7 @@ function setupAnimationSteps(coordinates) {
 
             // Convert to WGS84
             const centerlineWGS84 = sortedCenterline.map(point => {
-                const [lat, lon] = htrs96ToWGS84(point[0], point[1]);
+                const [lat, lon] = frame.metricToLatLng(point[0], point[1]);
                 return [lon, lat];
             });
 

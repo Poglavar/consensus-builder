@@ -27,7 +27,7 @@ import {
     MAX_INTRUSION_TOLERANCE_M
 } from '../proposals/binding.js';
 import { footprintParts, hasFootprint } from '../proposals/footprint.js';
-import { verifyPreparation, isConstructedCorridor } from '../proposals/prepare.js';
+import { verifyPreparation, isConstructedCorridor, PREPARED_TABLE, PREPARED_INSERT_COLUMNS, preparedRowValues } from '../proposals/prepare.js';
 import { recomputeCorridorStats } from './road-corridor.js';
 import { validateReparcellizationShares } from './reparcellization.js';
 import { attachProposalFloorModels } from '../buildings/floor-models.js';
@@ -594,7 +594,8 @@ export function proposalCreatePrecheck(req, res, next) {
 // proposal's site at its toleranceM (proposals/binding.js checkProposalBinding) — bound parcels
 // missing from the declaration and declared parcels the site does not reach are both refused, with
 // `missing` and `extra` listed. The server-computed site and binding are what gets stored; a client
-// `binding` field is ignored. Returns { refusal } ({ status, body }) or { bound: { site, binding } }.
+// `binding` field is ignored. Returns { refusal } ({ status, body }) or { bound: { site, binding, city } },
+// `city` being where the site was placed (proposals/publication-city.js), which is what is stored.
 // A lookup failure refuses too (503): the paid route runs this BEFORE settlement and must never let
 // an unchecked body through to a payment.
 async function bindProposal(pool, req) {
@@ -605,10 +606,11 @@ async function bindProposal(pool, req) {
     // from its lanes MUST be prepared, because the server derives its land (projections.md §3).
     if (req.body?.preparation || isConstructedCorridor(record)) {
         try {
-            const prepared = await verifyPreparation(pool, req.body, { city: normalizeCityCode(validated.city) || null });
-            return { bound: { site: prepared.site, binding: prepared.binding, prepared } };
+            const prepared = verifyPreparation(req.body, { city: normalizeCityCode(validated.city) || null });
+            return { bound: { site: prepared.site, binding: prepared.binding, city: prepared.city, prepared } };
         } catch (error) {
-            if (error && error.code && Number.isInteger(error.status) && error.status < 500) {
+            if (error && error.code && Number.isInteger(error.status) && (error.status < 500 || error.code === 'preparation-unavailable')) {
+                if (error.status >= 500) console.error(`[${new Date().toISOString()}] [proposals] ${error.message}`);
                 return { refusal: { status: error.status, body: { error: error.message, code: error.code } } };
             }
             console.error('[proposals] preparation check failed:', error);
@@ -634,7 +636,7 @@ async function bindProposal(pool, req) {
         console.error('[proposals] parcel binding check failed:', error);
         return { refusal: { status: 503, body: { error: 'The proposal\'s parcels could not be checked; nothing was stored or charged. Try again.' } } };
     }
-    if (result.ok) return { bound: { site: result.site, binding: result.binding } };
+    if (result.ok) return { bound: { site: result.site, binding: result.binding, city: result.city } };
     const { ok: _ok, status, ...body } = result;
     return { refusal: { status, body } };
 }
@@ -709,7 +711,10 @@ export function createProposalCreateHandler(pool) {
             const paid = Boolean(req.x402Payment);
             const droppedClaims = dropUnprovableClaims(proposal, { paid });
 
-            const city = normalizeCityCode(validated.city) || null;
+            // The city the site was placed in, not necessarily the one the request named (a Split
+            // site published from Zagreb's view is Split's); stored in the record's own data too.
+            const city = (bound.city !== undefined ? bound.city : normalizeCityCode(validated.city)) || null;
+            if (city) proposal.city = city;
             // Random suffix: two id-less uploads in the same millisecond must not collide.
             const proposalId = precheck.value.proposalId ?? `local-${Date.now()}-${randomBytes(4).toString('hex')}`;
             const name = validated.name ?? null;
@@ -802,8 +807,9 @@ export function createProposalCreateHandler(pool) {
                 cadastreParcelIds,
                 site: bound.site,
                 binding: bound.binding,
-                // The prepared artifact this record is (projections.md §3).
-                ...(bound.prepared ? { preparation: { id: bound.prepared.preparationId, digest: bound.prepared.digest } } : {}),
+                // The prepared artifact this record is (projections.md §3); the artifact itself is
+                // stored beside the row, in the same statement.
+                ...(bound.prepared ? { preparation: { id: bound.prepared.preparationId, digest: bound.prepared.digest, preparedAt: bound.prepared.preparedAt } } : {}),
                 createdAt: createdAt.toISOString(),
                 ...(authoredAt ? { authoredAt } : {})
             });
@@ -829,7 +835,16 @@ export function createProposalCreateHandler(pool) {
             // where its own lock never conflicts. Any other writer's shared try-lock fails, the
             // statement inserts nothing, and it answers 409 — so a free upload (or a second paid
             // request) can never take an id a payer has already been charged for.
-            const sql = `
+            // A prepared record's artifact (proposals/prepare.js) is written by the same statement, under
+            // the same lock: both rows or neither. Preparing stores nothing; only what is published is kept.
+            const preparedInsert = bound.prepared ? `
+                WITH prepared AS (
+                    INSERT INTO ${PREPARED_TABLE} ${PREPARED_INSERT_COLUMNS}
+                    SELECT $42, $43, $44::jsonb, $45, $46::timestamptz
+                    WHERE pg_try_advisory_xact_lock_shared(${PROPOSAL_ID_LOCK_NAMESPACE}, hashtext($1::varchar))
+                    ON CONFLICT (id) DO NOTHING
+                )` : '';
+            const sql = `${preparedInsert}
                 INSERT INTO proposal (
                     proposal_id, city, name, title, description, author, type,
                     lifecycle_status,
@@ -890,7 +905,8 @@ export function createProposalCreateHandler(pool) {
                 agentRequestHash,
                 editToken.hash,
                 bound.site ? JSON.stringify(bound.site) : null,
-                JSON.stringify(bound.binding)
+                JSON.stringify(bound.binding),
+                ...(bound.prepared ? preparedRowValues(bound.prepared) : [])
             ];
 
             // The paid route passes the session that holds the proposal_id lock.

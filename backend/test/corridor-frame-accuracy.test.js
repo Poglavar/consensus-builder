@@ -1,65 +1,65 @@
-// The construction path that produced the bug, measured against the ellipsoid: a 19 m road
-// rectangle built through New York's UTM frame at Zagreb is 13.65 m wide (what the app did when no
-// city was stored), while one built through a local frame is 19.000 m wide — here, and in Svalbard,
-// Quito and Fiji. The first case documents the failure; the second is the contract.
+// The construction that produced the bug, measured against the ellipsoid: a 19 m road built through
+// New York's UTM frame at Zagreb is 13.65 m wide (what the app did when no city was stored), while
+// the same road built through a local frame is 19.000 m wide — here, and in Svalbard, Quito, Fiji
+// and Sydney. Both go through the shared construction (corridor-footprint.js footprintOfArms); only
+// the frame differs. The first case documents the failure; the second is the contract.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
-import { inverse, destination, PLACES } from './helpers/ellipsoid.js';
+import { inverse, initialBearing, destination, PLACES } from './helpers/ellipsoid.js';
 
 const require = createRequire(import.meta.url);
 const proj4 = require('proj4');
-const { createRectangularRoadSegment } = require('../../frontend/js/corridor-geometry.js');
+const turf = require('@turf/turf');
+const { footprintOfArms } = require('../../frontend/js/corridor-footprint.js');
 const { frameFor } = require('../../frontend/js/metric-frame.js');
 
 const WIDTH_M = 19;
-const latLng = (lat, lng) => ({ lat, lng });
+const latLng = ([lng, lat]) => ({ lat, lng });
 
-// The corridor builder takes its projection as deps in the legacy (lat, lng) → [x, y] shape.
-function depsFromProj(projection) {
+// A "frame" through an arbitrary projection, as the old code had one: the city's.
+function projectionFrame(projection) {
     const converter = proj4('EPSG:4326', projection);
-    return {
-        wgs84ToHTRS96: (lat, lng) => converter.forward([lng, lat]),
-        htrs96ToWGS84: (x, y) => { const [lon, lat] = converter.inverse([x, y]); return [lat, lon]; },
-        latLng
-    };
-}
-function depsFromFrame(frame) {
-    return { wgs84ToHTRS96: frame.latLngToMetric, htrs96ToWGS84: frame.metricToLatLng, latLng };
+    return { toMetric: p => converter.forward([p[0], p[1]]), toLngLat: xy => converter.inverse([xy[0], xy[1]]) };
 }
 
-// Width of the built rectangle: the shorter of the two sides meeting at the first corner.
-function measuredWidth(ring) {
-    const p = index => [ring[index].lng, ring[index].lat];
-    const a = inverse(p(0), p(1));
-    const b = inverse(p(0), p(3));
-    return Math.min(a, b);
+// Distance from the centre line's midpoint to the footprint boundary along `turn` degrees from the
+// line's bearing, on the ellipsoid, bisected to well under a millimetre.
+function boundaryDistance(polygon, from, to, turn) {
+    const bearing = initialBearing(from, to);
+    const mid = destination(from, bearing, inverse(from, to) / 2);
+    const inside = d => turf.booleanPointInPolygon(turf.point(destination(mid, bearing + turn, d)), polygon);
+    let lo = 0;
+    let hi = 200;
+    for (let k = 0; k < 40; k += 1) {
+        const m = (lo + hi) / 2;
+        if (inside(m)) lo = m; else hi = m;
+    }
+    return lo;
 }
 
-function segmentAt(place) {
+function build(place, frameOf) {
     const end = destination(place, 90, 100);
-    return [latLng(place[1], place[0]), latLng(end[1], end[0])];
+    const points = [latLng(place), latLng(end)];
+    const polygon = footprintOfArms([{ points, width: WIDTH_M }], frameOf(points));
+    return { polygon, from: place, to: end };
 }
 
-describe('a 19 m road rectangle', () => {
+describe('a 19 m road', () => {
     it('was 13.65 m wide at Zagreb when built through New York\'s frame (the bug)', () => {
-        const [p1, p2] = segmentAt(PLACES.zagreb);
-        const ring = createRectangularRoadSegment(p1, p2, WIDTH_M, depsFromProj('+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs'));
-        expect(ring).not.toBeNull();
-        const width = measuredWidth(ring);
+        const { polygon, from, to } = build(PLACES.zagreb, () => projectionFrame('+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs'));
+        const width = boundaryDistance(polygon, from, to, 90) + boundaryDistance(polygon, from, to, -90);
         expect(width).toBeGreaterThan(13.5);
         expect(width).toBeLessThan(13.8);
     });
 
     for (const name of ['zagreb', 'svalbard', 'quito', 'fiji', 'sydney']) {
         it(`is 19.000 m wide at ${name} when built through a local frame`, () => {
-            const [p1, p2] = segmentAt(PLACES[name]);
-            const frame = frameFor([p1, p2]);
-            const ring = createRectangularRoadSegment(p1, p2, WIDTH_M, depsFromFrame(frame));
-            expect(ring).not.toBeNull();
-            expect(Math.abs(measuredWidth(ring) - WIDTH_M)).toBeLessThan(0.001);
-            // and the long side is the 100 m the centre line was drawn at
-            const length = Math.max(inverse([ring[0].lng, ring[0].lat], [ring[1].lng, ring[1].lat]), inverse([ring[0].lng, ring[0].lat], [ring[3].lng, ring[3].lat]));
-            expect(Math.abs(length - 100)).toBeLessThan(0.001);
+            const { polygon, from, to } = build(PLACES[name], points => frameFor(points));
+            expect(Math.abs(boundaryDistance(polygon, from, to, 90) - WIDTH_M / 2)).toBeLessThan(0.001);
+            expect(Math.abs(boundaryDistance(polygon, from, to, -90) - WIDTH_M / 2)).toBeLessThan(0.001);
+            // and as long as the 100 m the centre line was drawn at (square ends, 50 m each way)
+            expect(Math.abs(boundaryDistance(polygon, from, to, 0) - 50)).toBeLessThan(0.001);
+            expect(Math.abs(boundaryDistance(polygon, from, to, 180) - 50)).toBeLessThan(0.001);
         });
     }
 });

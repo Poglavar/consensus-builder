@@ -1169,24 +1169,28 @@ function corridorClosedStripPolygonPlanar(pointsXY, left, right) {
     return Math.abs(planarRingSignedArea(a)) >= Math.abs(planarRingSignedArea(b)) ? [a, b] : [b, a];
 }
 
-function corridorProjectionAvailable() {
-    return typeof wgs84ToHTRS96 === 'function' && typeof htrs96ToWGS84 === 'function';
+// Every builder below works in an explicit metric frame (metric-frame.js; the corridor's own,
+// corridor-footprint.js frameForDefinition), never a city's projection (projections.md §2).
+function assertCorridorFrame(frame, caller) {
+    if (!frame || typeof frame.latLngToMetric !== 'function' || typeof frame.metricToLatLng !== 'function') {
+        throw new Error(`${caller}: a metric frame is required (projections.md §2)`);
+    }
 }
 
 // One strip of one centerline segment, as Leaflet LatLngs.
-function buildCorridorStripPolygon(points, left, right) {
-    if (!corridorProjectionAvailable()) return null;
+function buildCorridorStripPolygon(points, left, right, frame) {
+    assertCorridorFrame(frame, 'buildCorridorStripPolygon');
     if (!Array.isArray(points) || points.length < 2) return null;
 
     const planar = points
-        .map(point => (point && Number.isFinite(point.lat) && Number.isFinite(point.lng)) ? wgs84ToHTRS96(point.lat, point.lng) : null)
+        .map(point => (point && Number.isFinite(point.lat) && Number.isFinite(point.lng)) ? frame.latLngToMetric(point.lat, point.lng) : null)
         .filter(xy => Array.isArray(xy) && Number.isFinite(xy[0]) && Number.isFinite(xy[1]));
     if (planar.length < 2) return null;
 
     const ring = corridorStripRingPlanar(planar, left, right);
     if (!ring) return null;
     return ring.map(([x, y]) => {
-        const [lat, lng] = htrs96ToWGS84(x, y);
+        const [lat, lng] = frame.metricToLatLng(x, y);
         return { lat, lng };
     });
 }
@@ -1194,7 +1198,7 @@ function buildCorridorStripPolygon(points, left, right) {
 // Every strip of a whole corridor, ready to draw: `[{ type, left, right, polygons }]`, left edge first.
 // `segments` is either one centerline (LatLng[]) or several disjoint ones (LatLng[][]); a strip gets one
 // polygon per centerline segment, left unmerged because the segments are disjoint bands, not one shape.
-function buildCorridorStrips(segments, profile) {
+function buildCorridorStrips(segments, profile, frame) {
     const spans = corridorStripSpans(profile);
     if (!spans.length) return [];
 
@@ -1207,7 +1211,7 @@ function buildCorridorStrips(segments, profile) {
     return spans.map(span => ({
         ...span,
         polygons: centerlines
-            .map(centerline => buildCorridorStripPolygon(centerline, span.left, span.right))
+            .map(centerline => buildCorridorStripPolygon(centerline, span.left, span.right, frame))
             .filter(Boolean)
     })).filter(strip => strip.polygons.length);
 }
@@ -1250,15 +1254,15 @@ function samplePolylinePlanar(pointsXY, spacing, phase = null) {
 
 // Painted bike/pedestrian symbols and planted verge trees all come from the same strip centerlines.
 // The result is view-agnostic: Leaflet and Three.js only decide how each point becomes pixels/meshes.
-function buildCorridorDecorations(segments, profile) {
-    if (!corridorProjectionAvailable()) return [];
+function buildCorridorDecorations(segments, profile, frame) {
+    assertCorridorFrame(frame, 'buildCorridorDecorations');
     const spans = corridorStripSpans(profile);
     if (!spans.length) return [];
     const isLatLng = point => point && Number.isFinite(point.lat) && Number.isFinite(point.lng);
     const centerlines = (Array.isArray(segments) && segments.length && isLatLng(segments[0]))
         ? [segments]
         : (Array.isArray(segments) ? segments.filter(segment => Array.isArray(segment) && segment.length >= 2) : []);
-    const planarCenterlines = centerlines.map(segment => segment.map(point => wgs84ToHTRS96(point.lat, point.lng)));
+    const planarCenterlines = centerlines.map(segment => segment.map(point => frame.latLngToMetric(point.lat, point.lng)));
     const junctionPoints = findCorridorJunctionsPlanar(planarCenterlines).map(junction => junction.point);
     const junctionClearance = corridorProfileWidth(profile) / 2 + 4;
     const decorations = [];
@@ -1280,14 +1284,14 @@ function buildCorridorDecorations(segments, profile) {
 
         const offset = (strip.left + strip.right) / 2;
         centerlines.forEach((centerline, segmentIndex) => {
-            const offsetLine = buildCorridorOffsetLine(centerline, offset);
+            const offsetLine = buildCorridorOffsetLine(centerline, offset, frame);
             if (!offsetLine) return;
-            const planar = offsetLine.map(point => wgs84ToHTRS96(point.lat, point.lng));
+            const planar = offsetLine.map(point => frame.latLngToMetric(point.lat, point.lng));
             samplePolylinePlanar(planar, spacing).forEach(sample => {
                 if (junctionPoints.some(point => Math.hypot(sample.point[0] - point[0], sample.point[1] - point[1]) < junctionClearance)) {
                     return;
                 }
-                const [lat, lng] = htrs96ToWGS84(sample.point[0], sample.point[1]);
+                const [lat, lng] = frame.metricToLatLng(sample.point[0], sample.point[1]);
                 decorations.push({
                     kind,
                     lat,
@@ -1395,7 +1399,7 @@ function junctionNeedsTreatment(junction) {
 // One junction's visual treatment with every arm sized by ITS OWN cross-section: a collector
 // keeps its full asphalt reach and long zebras while a narrow side street gets a modest patch.
 // Good-enough crossroads without real corner geometry — the arm patches hide the strip overlap.
-function junctionTreatmentPerArm(junction, fallbackProfile, options) {
+function junctionTreatmentPerArm(junction, fallbackProfile, options, frame) {
     const arms = (junction && junction.arms) || [];
     if (!arms.length) return null;
     // A bend between two roads is a continuation, not a crossing: zebra bars across it would be a
@@ -1418,7 +1422,7 @@ function junctionTreatmentPerArm(junction, fallbackProfile, options) {
         const direction = arm.dir;
         const end = [junction.point[0] + direction[0] * armLength, junction.point[1] + direction[1] * armLength];
         const surface = corridorStripRingPlanar([junction.point, end], roadwayLeft, roadwayRight);
-        if (surface) surfacePolygons.push(planarRingToLatLng(surface));
+        if (surface) surfacePolygons.push(planarRingToLatLng(surface, frame));
         if (!hasSidewalk || !withCrossings) return;
 
         const normal = [-direction[1], direction[0]];
@@ -1432,11 +1436,11 @@ function junctionTreatmentPerArm(junction, fallbackProfile, options) {
                 junction.point[0] + direction[0] * along + normal[0] * lateral,
                 junction.point[1] + direction[1] * along + normal[1] * lateral
             ]);
-            crosswalkPolygons.push(planarRingToLatLng(corners));
+            crosswalkPolygons.push(planarRingToLatLng(corners, frame));
         }
     });
     if (!surfacePolygons.length) return null;
-    const [lat, lng] = htrs96ToWGS84(junction.point[0], junction.point[1]);
+    const [lat, lng] = frame.metricToLatLng(junction.point[0], junction.point[1]);
     // Which corridors meet here, so a keyed renderer can drop and rebuild only the treatments a
     // changed corridor takes part in.
     const corridorIds = junction.corridorIds ? Array.from(junction.corridorIds, String).sort() : [];
@@ -1445,26 +1449,26 @@ function junctionTreatmentPerArm(junction, fallbackProfile, options) {
 
 // Per-segment treatments for ONE road whose segments may differ in cross-section.
 // entries: [{points: [{lat,lng}...], profile}].
-function buildCorridorJunctionTreatmentsForEntries(entries) {
-    if (!corridorProjectionAvailable()) return [];
+function buildCorridorJunctionTreatmentsForEntries(entries, frame) {
+    assertCorridorFrame(frame, 'buildCorridorJunctionTreatmentsForEntries');
     const planarEntries = (entries || [])
         .filter(entry => Array.isArray(entry && entry.points) && entry.points.length >= 2 && entry.profile)
         .map(entry => ({
             profile: entry.profile,
             corridorId: entry.corridorId,
-            points: entry.points.map(point => wgs84ToHTRS96(point.lat, point.lng))
+            points: entry.points.map(point => frame.latLngToMetric(point.lat, point.lng))
         }));
     if (!planarEntries.length) return [];
     return corridorJunctionsWithArms(planarEntries)
         .filter(junctionNeedsTreatment)
         .map(junction => junctionTreatmentPerArm(junction, planarEntries[0].profile,
-            { crossings: junction.arms.length >= 3 }))
+            { crossings: junction.arms.length >= 3 }, frame))
         .filter(Boolean);
 }
 
-function planarRingToLatLng(ring) {
+function planarRingToLatLng(ring, frame) {
     return ring.map(([x, y]) => {
-        const [lat, lng] = htrs96ToWGS84(x, y);
+        const [lat, lng] = frame.metricToLatLng(x, y);
         return { lat, lng };
     });
 }
@@ -1472,12 +1476,12 @@ function planarRingToLatLng(ring) {
 // Local treatment for every junction. A plain asphalt arm patch hides lane/median lines through the
 // conflict area while leaving the outer sidewalk bands visible as corners; zebra bars then bridge the
 // roadway on every approach that belongs to a profile with sidewalks.
-function buildCorridorJunctionTreatments(segments, profile) {
+function buildCorridorJunctionTreatments(segments, profile, frame) {
     const isLatLng = point => point && Number.isFinite(point.lat) && Number.isFinite(point.lng);
     const centerlines = (Array.isArray(segments) && segments.length && isLatLng(segments[0]))
         ? [segments]
         : (Array.isArray(segments) ? segments.filter(segment => Array.isArray(segment) && segment.length >= 2) : []);
-    return buildCorridorJunctionTreatmentsForEntries(centerlines.map(points => ({ points, profile })));
+    return buildCorridorJunctionTreatmentsForEntries(centerlines.map(points => ({ points, profile })), frame);
 }
 
 // Intersections BETWEEN applied roads. Snapping while drawing copies exact coordinates, so a
@@ -1486,20 +1490,97 @@ function buildCorridorJunctionTreatments(segments, profile) {
 // a road's own T-joints get. Conditions: at least two DIFFERENT corridors at the node; a vertex
 // counts as lying on another road's edge within 0.75 m (an unsnapped near-miss stays two roads).
 function buildCrossCorridorJunctionTreatments(corridors) {
-    if (!corridorProjectionAvailable() || !Array.isArray(corridors) || corridors.length < 2) return [];
+    if (!Array.isArray(corridors) || corridors.length < 2) return [];
+    // Entries may arrive one per SEGMENT: corridorId keeps road identity so segments of one road
+    // never count as two roads meeting.
+    const input = corridors.map((entry, index) => ({
+        profile: entry.profile,
+        corridorId: (entry.corridorId !== undefined && entry.corridorId !== null) ? String(entry.corridorId) : String(index),
+        centerline: (entry.centerline || []).filter(segment => Array.isArray(segment) && segment.length >= 2)
+    })).filter(corridor => corridor.centerline.length && corridor.profile);
+    const frames = corridorMetricFrames();
+    const seen = new Set();
+    const treatments = [];
+    const keep = list => list.forEach(treatment => {
+        const key = `${(treatment.corridorIds || []).join('|')}@${Number(treatment.lat).toFixed(7)},${Number(treatment.lng).toFixed(7)}`;
+        if (seen.has(key)) return;
+        seen.add(key);
+        treatments.push(treatment);
+    });
+    // A junction between roads can only be where they touch, so the input splits into contact
+    // groups and each group is measured in the frame of its own centre lines — a city's (or a
+    // region's) applied corridors never share one. A group wider than one frame (a chain of
+    // touching corridors over 100 km) is measured corridor by corridor, each with the ones it
+    // touches; a junction found twice is the same place, and is kept once.
+    corridorContactGroups(input, CROSS_JUNCTION_PAD_DEG).forEach(group => {
+        const members = group.indices.map(index => input[index]);
+        if (new Set(members.map(member => member.corridorId)).size < 2) return;
+        const points = members.flatMap(member => member.centerline.flat());
+        const frame = frames.frameFor(points);
+        if (frame.contains(points)) {
+            keep(crossCorridorJunctionsIn(members, frame));
+            return;
+        }
+        group.indices.forEach(index => {
+            const near = group.indices.filter(other => other === index || corridorBoxesTouch(group.boxes.get(index), group.boxes.get(other)))
+                .map(other => input[other]);
+            if (new Set(near.map(member => member.corridorId)).size < 2) return;
+            const nearPoints = near.flatMap(member => member.centerline.flat());
+            keep(crossCorridorJunctionsIn(near, frames.frameFor(nearPoints))
+                .filter(treatment => (treatment.corridorIds || []).includes(input[index].corridorId)));
+        });
+    });
+    return treatments;
+}
+
+const CROSS_JUNCTION_PAD_DEG = 2e-5; // ~2 m, comfortably above the 0.75 m snap tolerance below
+
+function corridorMetricFrames() {
+    if (typeof window !== 'undefined' && window.__metricFrame) return window.__metricFrame;
+    if (typeof require === 'function') return require('./metric-frame.js');
+    throw new Error('corridor-profile: metric-frame.js is not loaded');
+}
+
+function corridorBoxesTouch(a, b) {
+    return a[0] <= b[2] && b[0] <= a[2] && a[1] <= b[3] && b[1] <= a[3];
+}
+
+// Corridors whose centre-line bounding boxes (lng/lat, padded by `padDeg`) touch, grouped by
+// union-find: [{ indices, boxes: Map(index → box) }].
+function corridorContactGroups(corridors, padDeg) {
+    const boxes = corridors.map(corridor => {
+        let minLng = Infinity; let minLat = Infinity; let maxLng = -Infinity; let maxLat = -Infinity;
+        corridor.centerline.forEach(segment => segment.forEach(point => {
+            minLng = Math.min(minLng, point.lng); maxLng = Math.max(maxLng, point.lng);
+            minLat = Math.min(minLat, point.lat); maxLat = Math.max(maxLat, point.lat);
+        }));
+        return [minLng - padDeg, minLat - padDeg, maxLng + padDeg, maxLat + padDeg];
+    });
+    const parent = corridors.map((_, index) => index);
+    const find = index => (parent[index] === index ? index : (parent[index] = find(parent[index])));
+    for (let i = 0; i < boxes.length; i += 1) {
+        for (let j = i + 1; j < boxes.length; j += 1) {
+            if (corridorBoxesTouch(boxes[i], boxes[j])) parent[find(i)] = find(j);
+        }
+    }
+    const groups = new Map();
+    corridors.forEach((_, index) => {
+        const root = find(index);
+        if (!groups.has(root)) groups.set(root, { indices: [], boxes: new Map() });
+        groups.get(root).indices.push(index);
+        groups.get(root).boxes.set(index, boxes[index]);
+    });
+    return [...groups.values()];
+}
+
+// The cross-corridor junctions of corridors that touch, measured in `frame`.
+function crossCorridorJunctionsIn(corridors, frame) {
     const TOLERANCE = 0.75; // metres
-    const planarCorridors = corridors
-        .map((entry, index) => ({
-            profile: entry.profile,
-            // Entries may arrive one per SEGMENT: corridorId keeps road identity so segments of
-            // one road never count as two roads meeting.
-            corridorId: (entry.corridorId !== undefined && entry.corridorId !== null) ? String(entry.corridorId) : String(index),
-            segments: (entry.centerline || [])
-                .filter(segment => Array.isArray(segment) && segment.length >= 2)
-                .map(segment => segment.map(point => wgs84ToHTRS96(point.lat, point.lng)))
-        }))
-        .filter(corridor => corridor.segments.length && corridor.profile);
-    if (new Set(planarCorridors.map(corridor => corridor.corridorId)).size < 2) return [];
+    const planarCorridors = corridors.map(corridor => ({
+        profile: corridor.profile,
+        corridorId: corridor.corridorId,
+        segments: corridor.centerline.map(segment => segment.map(point => frame.latLngToMetric(point.lat, point.lng)))
+    }));
 
     // A vertex of one corridor that lies on another corridor's edge becomes a node of that edge
     // too (render-only), so the junction finder sees the T-joint.
@@ -1556,7 +1637,7 @@ function buildCrossCorridorJunctionTreatments(corridors) {
         .filter(junction => junctionNeedsTreatment(junction) && junction.corridorIds.size >= 2)
         .map(junction => junctionTreatmentPerArm(junction,
             (junction.arms.find(arm => arm.profile) || {}).profile || planarCorridors[0].profile,
-            { crossings: junction.arms.length >= 3 }))
+            { crossings: junction.arms.length >= 3 }, frame))
         .filter(Boolean);
 }
 
@@ -1661,8 +1742,8 @@ function corridorLaneTopologyApi() {
 
 // The shared topology pass for every segment entry. It is deliberately planar and view-agnostic:
 // Leaflet and Three.js consume these exact same connected lines.
-function buildCorridorLaneMarkingsForEntries(entries) {
-    if (!corridorProjectionAvailable()) return [];
+function buildCorridorLaneMarkingsForEntries(entries, frame) {
+    assertCorridorFrame(frame, 'buildCorridorLaneMarkingsForEntries');
     const topology = corridorLaneTopologyApi();
     if (!topology || typeof topology.build !== 'function') {
         throw new Error('CorridorLaneTopology.build is required for lane markings');
@@ -1671,7 +1752,7 @@ function buildCorridorLaneMarkingsForEntries(entries) {
     (entries || []).forEach((entry, ownerEntryIndex) => {
         if (!entry || !entry.profile || !Array.isArray(entry.points) || entry.points.length < 2) return;
         const centerline = entry.points
-            .map(point => wgs84ToHTRS96(point.lat, point.lng))
+            .map(point => frame.latLngToMetric(point.lat, point.lng))
             .filter(point => Array.isArray(point) && point.every(Number.isFinite));
         if (centerline.length < 2) return;
         corridorLaneTrafficRuns(entry.profile).forEach((run, runIndex) => {
@@ -1702,7 +1783,7 @@ function buildCorridorLaneMarkingsForEntries(entries) {
         const groups = new Map();
         (result.paths || []).forEach(path => {
             const line = path.points.map(([x, y]) => {
-                const [lat, lng] = htrs96ToWGS84(x, y);
+                const [lat, lng] = frame.metricToLatLng(x, y);
                 return { lat, lng };
             });
             if (line.length < 2) return;
@@ -1721,22 +1802,23 @@ function buildCorridorLaneMarkingsForEntries(entries) {
 }
 
 // One offset polyline of the centerline as Leaflet LatLngs — a lane marking is a line, not a band.
-function buildCorridorOffsetLine(points, offset) {
-    if (!corridorProjectionAvailable() || !Array.isArray(points) || points.length < 2) return null;
+function buildCorridorOffsetLine(points, offset, frame) {
+    assertCorridorFrame(frame, 'buildCorridorOffsetLine');
+    if (!Array.isArray(points) || points.length < 2) return null;
     const planar = points
-        .map(point => (point && Number.isFinite(point.lat) && Number.isFinite(point.lng)) ? wgs84ToHTRS96(point.lat, point.lng) : null)
+        .map(point => (point && Number.isFinite(point.lat) && Number.isFinite(point.lng)) ? frame.latLngToMetric(point.lat, point.lng) : null)
         .filter(xy => Array.isArray(xy) && Number.isFinite(xy[0]) && Number.isFinite(xy[1]));
     if (planar.length < 2) return null;
     const line = offsetPolylinePlanar(planar, offset);
     if (!line) return null;
     return line.map(([x, y]) => {
-        const [lat, lng] = htrs96ToWGS84(x, y);
+        const [lat, lng] = frame.metricToLatLng(x, y);
         return { lat, lng };
     });
 }
 
 // Every lane-separator line of a whole corridor: `[{ kind, lines }]`, one line per centerline segment.
-function buildCorridorLaneMarkings(segments, profile) {
+function buildCorridorLaneMarkings(segments, profile, frame) {
     const isLatLng = (p) => p && Number.isFinite(p.lat) && Number.isFinite(p.lng);
     const centerlines = (Array.isArray(segments) && segments.length && isLatLng(segments[0]))
         ? [segments]
@@ -1744,6 +1826,7 @@ function buildCorridorLaneMarkings(segments, profile) {
     if (!centerlines.length) return [];
     const byEntry = buildCorridorLaneMarkingsForEntries(
         centerlines.map(points => ({ points, profile })),
+        frame
     );
     const merged = new Map();
     byEntry.flat().forEach(marking => {
@@ -1777,8 +1860,8 @@ const CORRIDOR_PARKING_BAYS = {
 // Every parking bay marking of a corridor, ready to draw: `[{ kind: 'edge' | 'divider', line: [latlng…] }]`.
 // `edge` is the solid line between the parking lane and the carriageway; each `divider` is one bay
 // boundary across the lane. View-agnostic (LatLngs), so 2D and 3D draw from the same geometry.
-function buildCorridorParkingBays(segments, profile) {
-    if (!corridorProjectionAvailable()) return [];
+function buildCorridorParkingBays(segments, profile, frame) {
+    assertCorridorFrame(frame, 'buildCorridorParkingBays');
     const parkingSpans = corridorStripSpans(profile).filter(span => corridorParkingOrientation(span.type));
     if (!parkingSpans.length) return [];
 
@@ -1788,11 +1871,11 @@ function buildCorridorParkingBays(segments, profile) {
         : (Array.isArray(segments) ? segments.filter(segment => Array.isArray(segment) && segment.length >= 2) : []);
     if (!centerlines.length) return [];
 
-    const planarCenterlines = centerlines.map(segment => segment.map(point => wgs84ToHTRS96(point.lat, point.lng)));
+    const planarCenterlines = centerlines.map(segment => segment.map(point => frame.latLngToMetric(point.lat, point.lng)));
     const junctionPoints = findCorridorJunctionsPlanar(planarCenterlines).map(junction => junction.point);
     const junctionClearance = corridorProfileWidth(profile) / 2 + 3;
     const nearJunction = point => junctionPoints.some(j => Math.hypot(point[0] - j[0], point[1] - j[1]) < junctionClearance);
-    const toLatLng = ([x, y]) => { const [lat, lng] = htrs96ToWGS84(x, y); return { lat, lng }; };
+    const toLatLng = ([x, y]) => { const [lat, lng] = frame.metricToLatLng(x, y); return { lat, lng }; };
 
     const bays = [];
     planarCenterlines.forEach(planar => {
@@ -1840,8 +1923,8 @@ const CORRIDOR_ARROW_SPACING = 30; // metres between direction arrows down a lan
 const CORRIDOR_ARROW = { length: 4, headLength: 1.6, headHalf: 0.7, stemHalf: 0.22 }; // metres
 const CORRIDOR_ARROW_LANE_TYPES = new Set(['driving', 'bus']);
 
-function buildCorridorDirectionArrows(segments, profile) {
-    if (!corridorProjectionAvailable()) return [];
+function buildCorridorDirectionArrows(segments, profile, frame) {
+    assertCorridorFrame(frame, 'buildCorridorDirectionArrows');
     const laneSpans = corridorStripSpans(profile).filter(span =>
         CORRIDOR_ARROW_LANE_TYPES.has(span.type) && (span.direction === 'forward' || span.direction === 'backward'));
     if (!laneSpans.length) return [];
@@ -1852,10 +1935,10 @@ function buildCorridorDirectionArrows(segments, profile) {
         : (Array.isArray(segments) ? segments.filter(segment => Array.isArray(segment) && segment.length >= 2) : []);
     if (!centerlines.length) return [];
 
-    const planarCenterlines = centerlines.map(segment => segment.map(point => wgs84ToHTRS96(point.lat, point.lng)));
+    const planarCenterlines = centerlines.map(segment => segment.map(point => frame.latLngToMetric(point.lat, point.lng)));
     const junctionPoints = findCorridorJunctionsPlanar(planarCenterlines).map(junction => junction.point);
     const junctionClearance = corridorProfileWidth(profile) / 2 + 5;
-    const toLatLng = ([x, y]) => { const [lat, lng] = htrs96ToWGS84(x, y); return { lat, lng }; };
+    const toLatLng = ([x, y]) => { const [lat, lng] = frame.metricToLatLng(x, y); return { lat, lng }; };
     const { length: L, headLength: HL, headHalf: HH, stemHalf: SH } = CORRIDOR_ARROW;
 
     const arrows = [];
@@ -1863,9 +1946,9 @@ function buildCorridorDirectionArrows(segments, profile) {
         const offset = (span.left + span.right) / 2;
         const sign = span.direction === 'backward' ? -1 : 1;
         centerlines.forEach(centerline => {
-            const offsetLine = buildCorridorOffsetLine(centerline, offset);
+            const offsetLine = buildCorridorOffsetLine(centerline, offset, frame);
             if (!offsetLine) return;
-            const planar = offsetLine.map(point => wgs84ToHTRS96(point.lat, point.lng));
+            const planar = offsetLine.map(point => frame.latLngToMetric(point.lat, point.lng));
             samplePolylinePlanar(planar, CORRIDOR_ARROW_SPACING).forEach(sample => {
                 if (junctionPoints.some(p => Math.hypot(sample.point[0] - p[0], sample.point[1] - p[1]) < junctionClearance)) return;
                 const dir = [Math.cos(sample.angle) * sign, Math.sin(sample.angle) * sign];

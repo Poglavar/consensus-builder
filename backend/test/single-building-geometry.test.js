@@ -1,79 +1,50 @@
-// Unit tests for frontend/js/single-building-geometry.js. The headline pin is the Mercator fix: a
-// building declared N×M ground metres must actually be N×M on the ground, at Zagreb's latitude —
-// not shrunk by cos(φ) as the old in-Mercator-space math did.
+// Unit tests for frontend/js/single-building-geometry.js: a building declared N×M ground metres is N×M
+// on the ground — measured on the ellipsoid, to the millimetre — at any latitude, and stays so when
+// it is moved (however far) or rotated. The editors used to work in Web-Mercator space, where a
+// "20 m" building came out ~14 m at Zagreb and a move north rescaled it.
 import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 import * as turf from '@turf/turf';
+import { inverse } from './helpers/ellipsoid.js';
 
 const require = createRequire(import.meta.url);
 const {
     GROUND_AREA_EPSILON_M2,
     buildRectangleRing,
     footprintWithinBoundary,
+    geometryCenter,
     isSimpleRing,
+    moveGeometry,
     moveGeometryCenter,
-    projectedGeometryCenter,
-    rotateGeometry,
-    translateGeometry
+    rotateGeometry
 } = require('../../frontend/js/single-building-geometry.js');
 
-// A spherical Web-Mercator projector, the same model L.CRS.EPSG3857 uses. project returns metres.
-const R = 6378137;
-const projector = {
-    project: ({ lat, lng }) => {
-        const x = R * (lng * Math.PI / 180);
-        const y = R * Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI / 180) / 2));
-        return [x, y];
-    },
-    unproject: ([x, y]) => {
-        const lng = (x / R) * 180 / Math.PI;
-        const lat = (2 * Math.atan(Math.exp(y / R)) - Math.PI / 2) * 180 / Math.PI;
-        return [lat, lng];
-    }
-};
-
 const ZAGREB = { lat: 45.81, lng: 15.98 };
-
-function areaOf(ring) {
-    return turf.area(turf.polygon([ring]));
-}
+const sides = ring => ring.slice(0, -1).map((point, i) => inverse(point, ring[i + 1]));
+const expectSides = (ring, lengths) => sides(ring).forEach((length, i) => expect(Math.abs(length - lengths[i])).toBeLessThan(0.001));
 
 describe('buildRectangleRing', () => {
-    it('produces the intended GROUND area at Zagreb latitude (the Mercator fix)', () => {
-        const ring = buildRectangleRing(projector, ZAGREB, { widthM: 20, lengthM: 20 });
-        // Must be ~400 m², not ~194 m² (which is 400·cos²(45.81°), the old shrunk size).
-        expect(areaOf(ring)).toBeGreaterThan(390);
-        expect(areaOf(ring)).toBeLessThan(410);
-    });
+    for (const [name, center] of [['Zagreb', ZAGREB], ['the equator', { lat: 0, lng: 0 }], ['Svalbard', { lat: 78.2, lng: 15.6 }], ['Sydney', { lat: -33.87, lng: 151.21 }]]) {
+        it(`builds a 40×20 m rectangle that is 40×20 m on the ground at ${name}`, () => {
+            const ring = buildRectangleRing(center, { widthM: 40, lengthM: 20 });
+            expectSides(ring, [40, 20, 40, 20]);
+        });
+    }
 
-    it('scales linearly: a 40×20 building is ~800 m²', () => {
-        const ring = buildRectangleRing(projector, ZAGREB, { widthM: 40, lengthM: 20 });
-        expect(areaOf(ring)).toBeGreaterThan(780);
-        expect(areaOf(ring)).toBeLessThan(820);
-    });
-
-    it('is correct at the equator too (where cos φ = 1)', () => {
-        const ring = buildRectangleRing(projector, { lat: 0, lng: 0 }, { widthM: 20, lengthM: 20 });
-        expect(areaOf(ring)).toBeGreaterThan(395);
-        expect(areaOf(ring)).toBeLessThan(405);
-    });
-
-    it('rotation preserves area', () => {
-        const flat = areaOf(buildRectangleRing(projector, ZAGREB, { widthM: 30, lengthM: 15 }));
-        const turned = areaOf(buildRectangleRing(projector, ZAGREB, { widthM: 30, lengthM: 15, rotationDeg: 37 }));
-        expect(turned).toBeCloseTo(flat, -1); // same to within ~10 m²
+    it('rotation keeps the sides', () => {
+        expectSides(buildRectangleRing(ZAGREB, { widthM: 30, lengthM: 15, rotationDeg: 37 }), [30, 15, 30, 15]);
     });
 
     it('returns a closed ring and null for bad input', () => {
-        const ring = buildRectangleRing(projector, ZAGREB, { widthM: 10, lengthM: 10 });
+        const ring = buildRectangleRing(ZAGREB, { widthM: 10, lengthM: 10 });
         expect(ring[0]).toEqual(ring[ring.length - 1]);
-        expect(buildRectangleRing(projector, ZAGREB, { widthM: NaN, lengthM: 10 })).toBeNull();
-        expect(buildRectangleRing(null, ZAGREB, { widthM: 10, lengthM: 10 })).toBeNull();
+        expect(buildRectangleRing(ZAGREB, { widthM: NaN, lengthM: 10 })).toBeNull();
+        expect(buildRectangleRing(null, { widthM: 10, lengthM: 10 })).toBeNull();
     });
 });
 
 describe('freeform polygon editing', () => {
-    const square = buildRectangleRing(projector, ZAGREB, { widthM: 20, lengthM: 20 });
+    const square = buildRectangleRing(ZAGREB, { widthM: 20, lengthM: 20 });
 
     it('rejects self-crossing and duplicate-vertex rings', () => {
         expect(isSimpleRing([[0, 0], [1, 1], [0, 1], [1, 0], [0, 0]])).toBe(false);
@@ -81,46 +52,39 @@ describe('freeform polygon editing', () => {
         expect(isSimpleRing([[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]])).toBe(true);
     });
 
-    it('translates and recentres the whole geometry without changing its area', () => {
-        const feature = turf.polygon([square]);
-        const originalArea = turf.area(feature);
-        const shifted = translateGeometry(projector, feature.geometry, 100, -50);
-        const recentred = moveGeometryCenter(projector, shifted, { lat: 45.812, lng: 15.985 });
-
-        expect(turf.area(turf.feature(shifted))).toBeCloseTo(originalArea, 0);
-        expect(turf.area(turf.feature(recentred))).toBeCloseTo(originalArea, 0);
-        const center = turf.centroid(turf.feature(recentred)).geometry.coordinates;
-        expect(center[0]).toBeCloseTo(15.985, 4);
-        expect(center[1]).toBeCloseTo(45.812, 4);
+    it('moves a footprint any distance keeping its ground size, and recentres it exactly', () => {
+        const geometry = { type: 'Polygon', coordinates: [square] };
+        // 300 km north: a Mercator move would have scaled it by ≈ 7%
+        const moved = moveGeometry(geometry, ZAGREB, { lat: ZAGREB.lat + 2.7, lng: ZAGREB.lng });
+        expectSides(moved.coordinates[0], [20, 20, 20, 20]);
+        const target = { lat: 45.812, lng: 15.985 };
+        const recentred = moveGeometryCenter(moved, target);
+        expectSides(recentred.coordinates[0], [20, 20, 20, 20]);
+        const center = geometryCenter(recentred);
+        expect(center.lat).toBeCloseTo(target.lat, 9);
+        expect(center.lng).toBeCloseTo(target.lng, 9);
     });
 
-    it('rotates the polygon in place while preserving area and its centre', () => {
-        const feature = turf.polygon([square]);
-        const beforeCenter = turf.centroid(feature).geometry.coordinates;
-        const rotated = rotateGeometry(projector, feature.geometry, 5);
-        const after = turf.feature(rotated);
-        const afterCenter = turf.centroid(after).geometry.coordinates;
-
-        expect(turf.area(after)).toBeCloseTo(turf.area(feature), 0);
-        expect(afterCenter[0]).toBeCloseTo(beforeCenter[0], 7);
-        expect(afterCenter[1]).toBeCloseTo(beforeCenter[1], 7);
-        expect(rotated.coordinates[0]).not.toEqual(feature.geometry.coordinates[0]);
+    it('rotates the polygon in place, keeping its sides and its centre', () => {
+        const geometry = { type: 'Polygon', coordinates: [square] };
+        const before = geometryCenter(geometry);
+        const rotated = rotateGeometry(geometry, 5);
+        expectSides(rotated.coordinates[0], [20, 20, 20, 20]);
+        const after = geometryCenter(rotated);
+        expect(after.lat).toBeCloseTo(before.lat, 9);
+        expect(after.lng).toBeCloseTo(before.lng, 9);
+        expect(rotated.coordinates[0]).not.toEqual(square);
     });
 
     it('treats a positive angle as counterclockwise on the map', () => {
-        const feature = turf.polygon([square]);
-        const center = projectedGeometryCenter(projector, feature.geometry);
-        const quarterTurn = rotateGeometry(projector, feature.geometry, 90);
-        const [beforeX, beforeY] = projector.project({ lat: square[0][1], lng: square[0][0] });
-        const [afterX, afterY] = projector.project({
-            lat: quarterTurn.coordinates[0][0][1],
-            lng: quarterTurn.coordinates[0][0][0]
-        });
-
-        expect(beforeX).toBeLessThan(center[0]);
-        expect(beforeY).toBeLessThan(center[1]);
-        expect(afterX).toBeGreaterThan(center[0]);
-        expect(afterY).toBeLessThan(center[1]);
+        const geometry = { type: 'Polygon', coordinates: [square] };
+        const center = geometryCenter(geometry);
+        const quarterTurn = rotateGeometry(geometry, 90);
+        // the first corner sits south-west of the centre; a quarter turn counter-clockwise takes it south-east
+        expect(square[0][0]).toBeLessThan(center.lng);
+        expect(square[0][1]).toBeLessThan(center.lat);
+        expect(quarterTurn.coordinates[0][0][0]).toBeGreaterThan(center.lng);
+        expect(quarterTurn.coordinates[0][0][1]).toBeLessThan(center.lat);
     });
 
     it('uses the authoritative 0.01 m² boundary tolerance', () => {

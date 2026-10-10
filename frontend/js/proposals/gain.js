@@ -13,11 +13,20 @@
     // same footprint — this double-counts existing volume in the gain calc. Two buildings are the
     // same when their vertex-mean centroids are within ~2 m and their vertical extents match within
     // 1 m. A ~5 m grid with a 3x3 neighbour scan keeps this O(vertices).
+    function localFrameApi() {
+        if (global && global.LocalFrame) return global.LocalFrame;
+        if (typeof require === 'function') return require('../local-frame.js');
+        throw new Error('gain: local-frame.js is not loaded');
+    }
+
     function dedupeCoincidentBuildings(buildings) {
         if (!Array.isArray(buildings) || buildings.length < 2) return buildings || [];
         const CELL_M = 5, MERGE_DIST_M = 2;
         const grid = new Map();
         const keep = [];
+        // One plane for the whole response: the affine local frame on the first building's centroid,
+        // with the ellipsoid's true scales (local-frame.js), so every centroid is measured alike.
+        let frame = null;
         for (const bld of buildings) {
             let sx = 0, sy = 0, n = 0;
             if (Array.isArray(bld.faces)) {
@@ -34,8 +43,8 @@
             }
             if (!n) { keep.push(bld); continue; }
             const lng = sx / n, lat = sy / n;
-            const x = lng * 111320 * Math.cos(lat * Math.PI / 180);
-            const y = lat * 110540;
+            if (!frame) frame = localFrameApi().makeLocalFrame(lng, lat);
+            const [x, y] = frame.toMeters(lng, lat);
             const ci = Math.floor(x / CELL_M), cj = Math.floor(y / CELL_M);
             const zmin = Number(bld.z_min), zmax = Number(bld.z_max);
             let dup = false;

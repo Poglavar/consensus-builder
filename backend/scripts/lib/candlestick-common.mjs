@@ -78,7 +78,8 @@ export async function request(backend, origin, method, route, body) {
 /**
  * Publish a converted record: skip when its proposalId already exists, otherwise prepare it
  * (POST /proposals/prepare: the server builds a corridor's land, binds the site against the city's
- * parcel source and stores the artifact) and POST exactly the record the preparation returns.
+ * parcel source and signs the artifact) and POST exactly the record the preparation returns — it
+ * carries the signed preparation and the artifact, which publication verifies and stores.
  */
 export async function publish(record, { backend, origin, city, parcelSourceId = DEFAULTS.parcelSourceId }) {
     const existing = await request(backend, origin, 'GET', `/proposals/${encodeURIComponent(record.proposalId)}`);

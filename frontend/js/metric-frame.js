@@ -173,6 +173,11 @@
             metricToLatLng: (x, y) => { const [lon, lat] = toLngLat([x, y]); return [lat, lon]; },
             // Every position of `input` lies inside this frame's domain (throws otherwise).
             assertWithin(input) { collectPositions(input).forEach(toMetric); return true; },
+            // Whether every position of `input` lies inside this frame's domain: the predicate for
+            // choosing what may enter these metres at all (a road in another city does not).
+            contains(input) {
+                try { collectPositions(input).forEach(toMetric); return true; } catch (_) { return false; }
+            },
             provenance: () => ({ kind: CONTRACT.KIND, anchor: [anchor[0], anchor[1]], proj, proj4: String(proj4.version || 'unknown') })
         };
         return Object.freeze(frame);

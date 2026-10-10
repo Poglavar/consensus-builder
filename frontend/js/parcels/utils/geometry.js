@@ -198,10 +198,10 @@
                                 } catch (_) { /* ignore and fall back */ }
                             }
                             if (!areaAdded) {
-                                try {
-                                    const htrsCoords = exterior.map(coord => global.wgs84ToHTRS96(coord[1], coord[0]));
-                                    computedArea += calculateArea([htrsCoords]);
-                                } catch (_) { /* ignore */ }
+                                // Without turf: the planar area in a frame on this ring (projections.md §2)
+                                const frame = global.__metricFrame.frameFor(exterior);
+                                const metricCoords = exterior.map(coord => frame.latLngToMetric(coord[1], coord[0]));
+                                computedArea += calculateArea([metricCoords]);
                             }
                         }
                     }

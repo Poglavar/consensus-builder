@@ -34,8 +34,11 @@
         const [neE, neN] = global.wgs84ToDataset(ne.lat, ne.lng);
         if (![centerE, centerN, swE, swN, neE, neN].every(Number.isFinite)) return cells;
 
-        const datasetBounds = global.CURRENT_CITY_CONFIG && global.CURRENT_CITY_CONFIG.projection
-            && global.CURRENT_CITY_CONFIG.projection.datasetBounds;
+        // CURRENT_CITY_CONFIG is map-core.js's top-level const, never on window: the check never ran.
+        // Only the Croatian cities declare datasetBounds (the country, in HTRS96/TM).
+        const currentConfig = global.CityConfigManager && typeof global.CityConfigManager.getCurrentCityConfig === 'function'
+            ? global.CityConfigManager.getCurrentCityConfig() : null;
+        const datasetBounds = currentConfig && currentConfig.projection && currentConfig.projection.datasetBounds;
         const minE = Math.min(swE, neE);
         const maxE = Math.max(swE, neE);
         const minN = Math.min(swN, neN);

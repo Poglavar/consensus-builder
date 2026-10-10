@@ -116,8 +116,12 @@
         if (!draft || !draft.kind || !draft.seed) return null;
         const store = resolveDraftStore(storage);
         if (!store) return null;
+        // Only the draft this drawing names is continued. The active draft is one per browser, shared
+        // by every city: falling back to it let a new drawing — a road copied in Split — take over an
+        // abandoned "Edit shape" of another road in Zagreb, keep that road as its source and replace
+        // it on publish (projections.md §10 M8).
         const explicitId = draft.draftId || draft.copySource?.draftId || null;
-        let existing = explicitId ? store.getDraft(explicitId) : store.getActiveDraft();
+        let existing = explicitId ? store.getDraft(explicitId) : null;
         if (existing && existing.goal !== 'road-track') existing = null;
         const sourceProposalId = draft.sourceProposalId || draft.copySource?.proposalId || existing?.sourceProposalId || null;
         const definition = corridorDefinitionFromSeed(draft.seed, draft.kind, existing?.editorPayload?.definition);

@@ -55,7 +55,10 @@
                     coordinates: claimed.flatMap(g => g.type === 'MultiPolygon' ? g.coordinates : [g.coordinates])
                 };
             }
-        } catch (_) { }
+        } catch (error) {
+            // A taking that cannot be built takes nothing here, and says so (projections.md §3).
+            console.error(`[${new Date().toISOString()}] [apply/road] the taking footprint of ${proposalData && (proposalData.proposalId || proposalData.id)} could not be built`, error);
+        }
         return null;
     },
 

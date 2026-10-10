@@ -97,6 +97,8 @@ function environment(proposals) {
         buildCorridorJunctionTreatmentsForEntries: () => [],
         buildCrossCorridorJunctionTreatments,
         calculateRoadPolygon: () => [[0, 0], [0, 1], [1, 1]],
+        // every builder is stubbed, so any frame object serves (corridor-footprint.js frameForDefinition)
+        __corridorFootprint: { frameForDefinition: () => ({ latLngToMetric: (lat, lng) => [lng, lat], metricToLatLng: (x, y) => [y, x] }) },
         requestAnimationFrame: callback => callback()
     };
     context.window = context;

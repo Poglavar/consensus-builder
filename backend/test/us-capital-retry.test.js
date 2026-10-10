@@ -4,7 +4,6 @@ import request from 'supertest';
 import { readFileSync } from 'node:fs';
 import { createContext, runInContext } from 'node:vm';
 import { createRequire } from 'node:module';
-import proj4 from 'proj4';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { parcelSourceForCity, parcelSourceForIds, clearParcelSourceRuntimeCache } from '../parcels/sources.js';
 import { setupParcelSourcesRoute } from '../routes/parcel-sources.js';
@@ -137,8 +136,7 @@ describe.each(samples)('$city recovered capital runtime',s=>{
         const previous=globalThis.CityConfigManager;globalThis.CityConfigManager=cities;
         try{expect(route.parcelIdToCityId(f.id)).toBe(s.city);}finally{globalThis.CityConfigManager=previous;}
         const city=cities.getCityConfig(s.city);expect(city.parcels.sourceId).toBe(s.sourceId);expect(city.buildings.source).toBe('osm');
-        const point=proj4('EPSG:4326',city.projection.metricDefinition,s.center);const restored=proj4(city.projection.metricDefinition,'EPSG:4326',point);
-        restored.forEach((coordinate,i)=>expect(coordinate).toBeCloseTo(s.center[i],8));
+        expect(city.projection.metricDefinition).toBeUndefined();
         for(const locale of ['en','es','hr','sr'])expect(JSON.parse(read('../../frontend/i18n/'+locale+'.json')).city.labels[s.city]).toBeTruthy();
     });
 });

@@ -24,8 +24,6 @@ describe('Surat city config', () => {
             },
             projection: {
                 datasetCrs: 'EPSG:4326',
-                metricCrs: 'EPSG:32643',
-                metricDefinition: '+proj=utm +zone=43 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [21.174179236185818, 72.78092615417103],
                 fallbackDataset: [72.78092615417103, 21.174179236185818]
             },

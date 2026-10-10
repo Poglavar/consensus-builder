@@ -52,6 +52,34 @@ export function parseBboxParam(raw) {
     return parts;
 }
 
+// A WGS84 bbox query (`bbox=minLon,minLat,maxLon,maxLat&crs=EPSG:4326`, projections.md §4): the API
+// takes lon/lat and names its CRS, and the server — not the client's active city — transforms it into
+// the dataset's. A box crossing the antimeridian (minLon > maxLon) splits into its two halves.
+// Returns [[minLon, minLat, maxLon, maxLat], …] or null when malformed.
+export const WGS84_BBOX_CRS = 'EPSG:4326';
+export function parseWgs84Bbox(raw, crs) {
+    if (String(crs || '') !== WGS84_BBOX_CRS) return null;
+    if (!raw) return null;
+    const parts = String(raw).split(',').map(v => Number(v.trim()));
+    if (parts.length !== 4 || parts.some(v => !Number.isFinite(v))) return null;
+    const [minLon, minLat, maxLon, maxLat] = parts;
+    if (minLat >= maxLat || minLat < -90 || maxLat > 90) return null;
+    if ([minLon, maxLon].some(lon => lon < -180 || lon > 180) || minLon === maxLon) return null;
+    return minLon < maxLon
+        ? [[minLon, minLat, maxLon, maxLat]]
+        : [[minLon, minLat, 180, maxLat], [-180, minLat, maxLon, maxLat]];
+}
+
+// SQL for `column && (each box)`, each WGS84 box densified (0.0004°) and transformed into `srid`, so
+// the envelope covers the box even where the dataset CRS bends meridians; parameters from $first on.
+export function wgs84BboxFilterSql(column, boxes, srid, first = 1) {
+    const tests = boxes.map((_, index) => {
+        const p = first + index * 4;
+        return `${column} && ST_Transform(ST_Segmentize(ST_MakeEnvelope($${p}, $${p + 1}, $${p + 2}, $${p + 3}, 4326), 0.0004), ${srid})`;
+    });
+    return { sql: `(${tests.join(' OR ')})`, params: boxes.flat() };
+}
+
 // Helper function to convert GeoJSON to Esri rings format
 export function geoJsonToEsriRings(geojson) {
     if (!geojson || !geojson.coordinates) return [];

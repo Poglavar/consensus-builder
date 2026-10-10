@@ -105,9 +105,6 @@
         if (!view) return EXPLORE_DEFAULT_VIEW;
         return { lat: view.lat, lon: view.lon, zoom: Number.isFinite(view.zoom) ? view.zoom : model.EXPLORE_ZOOM.city };
     })();
-    const exploreProjection = (typeof window !== 'undefined' && window.WorldEntryModel)
-        ? window.WorldEntryModel.utmProjectionFor(exploreView.lat, exploreView.lon)
-        : { crs: 'EPSG:3857', definition: '+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +no_defs +type=crs' };
 
     const CITY_CONFIGS = {
         zagreb: {
@@ -316,8 +313,6 @@
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
                 // Parcels arrive in degrees; geometry needs metres. UTM 34N covers Belgrade.
-                metricCrs: 'EPSG:32634',
-                metricDefinition: '+proj=utm +zone=34 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [44.810918, 20.438859],
                 fallbackDataset: [20.438859, 44.810918]
             },
@@ -443,8 +438,6 @@
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
                 // Parcels arrive in degrees; geometry needs metres. UTM 13N covers Colorado.
-                metricCrs: 'EPSG:32613',
-                metricDefinition: '+proj=utm +zone=13 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [39.7392, -104.9903],
                 fallbackDataset: [-104.9903, 39.7392]
             },
@@ -484,8 +477,6 @@
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
                 // Parcels arrive in degrees; geometry needs metres. UTM 18N covers New York City.
-                metricCrs: 'EPSG:32618',
-                metricDefinition: '+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [40.7128, -74.0060],
                 fallbackDataset: [-74.0060, 40.7128]
             },
@@ -524,8 +515,6 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32618',
-                metricDefinition: '+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [4.60975, -74.08175],
                 fallbackDataset: [-74.08175, 4.60975]
             },
@@ -552,9 +541,8 @@
             map: { initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
                 defaultCenter: [22.5405, 114.1005], defaultZoom: SHARED_DEFAULT_ZOOM,
                 parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.01 },
-            projection: { datasetCrs: 'EPSG:4326', metricCrs: 'EPSG:4547',
+            projection: { datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricDefinition: '+proj=tmerc +lat_0=0 +lon_0=114 +k=1 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs',
                 fallbackLatLng: [22.5405, 114.1005], fallbackDataset: [114.1005, 22.5405] },
             parcels: { strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
                 sourceId: 'cn-shenzhen-land-certain', idPrefix: 'CN-SZ-LANDCERTAIN-',
@@ -570,9 +558,8 @@
             map: { initialView: { type: 'center', zoom: 19 },
                 defaultCenter: [41.7088867, 44.8067283], defaultZoom: 19,
                 parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
-            projection: { datasetCrs: 'EPSG:4326', metricCrs: 'EPSG:32638',
+            projection: { datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricDefinition: '+proj=utm +zone=38 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [41.7088867, 44.8067283], fallbackDataset: [44.8067283, 41.7088867] },
             parcels: {
                 strategy: 'point', gridSize: 0.0025, source: 'parcel-source',
@@ -594,9 +581,8 @@
             map: { initialView: { type: 'center', zoom: 19 },
                 defaultCenter: [41.0139, 28.9497], defaultZoom: 19,
                 parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08 },
-            projection: { datasetCrs: 'EPSG:4326', metricCrs: 'EPSG:32635',
+            projection: { datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricDefinition: '+proj=utm +zone=35 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [41.0139, 28.9497], fallbackDataset: [28.9497, 41.0139] },
             parcels: { strategy: 'point', gridSize: 0.0025, source: 'parcel-source',
                 sourceId: 'tr-tkgm-parselsorgu-api', idPrefix: 'TR-TKGM-',
@@ -620,8 +606,6 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32617',
-                metricDefinition: '+proj=utm +zone=17 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [43.6535, -79.3825],
                 fallbackDataset: [-79.3825, 43.6535]
             },
@@ -653,8 +637,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32618',
-                metricDefinition: '+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [45.50375, -73.569], fallbackDataset: [-73.569, 45.50375]
             },
             parcels: {
@@ -681,8 +663,6 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32611',
-                metricDefinition: '+proj=utm +zone=11 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [34.0522, -118.2437],
                 fallbackDataset: [-118.2437, 34.0522]
             },
@@ -715,8 +695,6 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32617',
-                metricDefinition: '+proj=utm +zone=17 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [25.7749, -80.1936],
                 fallbackDataset: [-80.1936, 25.7749]
             },
@@ -749,8 +727,6 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32618',
-                metricDefinition: '+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [38.91025, -77.0425],
                 fallbackDataset: [-77.0425, 38.91025]
             },
@@ -783,8 +759,6 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32631',
-                metricDefinition: '+proj=utm +zone=31 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [48.8491, 2.3556],
                 fallbackDataset: [2.3556, 48.8491]
             },
@@ -817,8 +791,6 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32755',
-                metricDefinition: '+proj=utm +zone=55 +south +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-37.8136, 144.9631],
                 fallbackDataset: [144.9631, -37.8136]
             },
@@ -851,8 +823,6 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32734',
-                metricDefinition: '+proj=utm +zone=34 +south +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-33.9258, 18.4194],
                 fallbackDataset: [18.4194, -33.9258]
             },
@@ -886,8 +856,6 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32631',
-                metricDefinition: '+proj=utm +zone=31 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [52.3725, 4.9000],
                 fallbackDataset: [4.9000, 52.3725]
             },
@@ -920,8 +888,6 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32631',
-                metricDefinition: '+proj=utm +zone=31 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [51.2110, 4.4010],
                 fallbackDataset: [4.4010, 51.2110]
             },
@@ -953,8 +919,6 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32632',
-                metricDefinition: '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [51.4556, 7.0123],
                 fallbackDataset: [7.0123, 51.4556]
             },
@@ -986,8 +950,6 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32610',
-                metricDefinition: '+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [37.79125, -122.4065],
                 fallbackDataset: [-122.4065, 37.79125]
             },
@@ -1019,8 +981,6 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32633',
-                metricDefinition: '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [52.52, 13.405],
                 fallbackDataset: [13.405, 52.52]
             },
@@ -1053,8 +1013,6 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32650',
-                metricDefinition: '+proj=utm +zone=50 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [22.315, 114.1838],
                 fallbackDataset: [114.1838, 22.315]
             },
@@ -1086,8 +1044,6 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32631',
-                metricDefinition: '+proj=utm +zone=31 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [45.764, 4.8357],
                 fallbackDataset: [4.8357, 45.764]
             },
@@ -1120,8 +1076,6 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32631',
-                metricDefinition: '+proj=utm +zone=31 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [51.9225, 4.4792],
                 fallbackDataset: [4.4792, 51.9225]
             },
@@ -1153,8 +1107,6 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32632',
-                metricDefinition: '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [50.9375, 6.9603],
                 fallbackDataset: [6.9603, 50.9375]
             },
@@ -1186,8 +1138,6 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32632',
-                metricDefinition: '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [51.51494, 7.466],
                 fallbackDataset: [7.466, 51.51494]
             },
@@ -1219,8 +1169,6 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32631',
-                metricDefinition: '+proj=utm +zone=31 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [6.38646680667236, 2.3895186609943],
                 fallbackDataset: [2.3895186609943, 6.38646680667236]
             },
@@ -1253,8 +1201,6 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32629',
-                metricDefinition: '+proj=utm +zone=29 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [12.6765, -8.04225],
                 fallbackDataset: [-8.04225, 12.6765]
             },
@@ -1284,8 +1230,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32654',
-                metricDefinition: '+proj=utm +zone=54 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [35.696623934, 139.766899192], fallbackDataset: [139.766899192, 35.696623934]
             },
             parcels: {
@@ -1309,8 +1253,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32653',
-                metricDefinition: '+proj=utm +zone=53 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [35.163716454, 136.984010139], fallbackDataset: [136.984010139, 35.163716454]
             },
             parcels: {
@@ -1334,8 +1276,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32653',
-                metricDefinition: '+proj=utm +zone=53 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [34.677750586, 135.532507321], fallbackDataset: [135.532507321, 34.677750586]
             },
             parcels: {
@@ -1359,8 +1299,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32630',
-                metricDefinition: '+proj=utm +zone=30 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [52.4975, -1.978], fallbackDataset: [-1.978, 52.4975]
             },
             parcels: {
@@ -1384,8 +1322,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32723',
-                metricDefinition: '+proj=utm +zone=23 +south +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-23.55052, -46.6333], fallbackDataset: [-46.6333, -23.55052]
             },
             parcels: {
@@ -1411,8 +1347,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32756',
-                metricDefinition: '+proj=utm +zone=56 +south +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-33.8585, 151.0795], fallbackDataset: [151.0795, -33.8585]
             },
             parcels: {
@@ -1438,8 +1372,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32718',
-                metricDefinition: '+proj=utm +zone=18 +south +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-12.015, -76.968], fallbackDataset: [-76.968, -12.015]
             },
             parcels: {
@@ -1465,8 +1397,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32733',
-                metricDefinition: '+proj=utm +zone=33 +south +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-8.83675, 13.234], fallbackDataset: [13.234, -8.83675]
             },
             parcels: {
@@ -1492,8 +1422,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32735',
-                metricDefinition: '+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-15.40478133, 28.38004999], fallbackDataset: [28.38004999, -15.40478133]
             },
             parcels: {
@@ -1517,8 +1445,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32630',
-                metricDefinition: '+proj=utm +zone=30 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [51.515, -0.09], fallbackDataset: [-0.09, 51.515]
             },
             parcels: {
@@ -1542,8 +1468,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32630',
-                metricDefinition: '+proj=utm +zone=30 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [53.4808, -2.2426], fallbackDataset: [-2.2426, 53.4808]
             },
             parcels: {
@@ -1567,8 +1491,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:25830',
-                metricDefinition: '+proj=utm +zone=30 +ellps=GRS80 +towgs84=0,0,0 +units=m +no_defs +type=crs',
                 fallbackLatLng: [40.4168, -3.7038], fallbackDataset: [-3.7038, 40.4168]
             },
             parcels: {
@@ -1592,8 +1514,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:25831',
-                metricDefinition: '+proj=utm +zone=31 +ellps=GRS80 +towgs84=0,0,0 +units=m +no_defs +type=crs',
                 fallbackLatLng: [41.387, 2.168], fallbackDataset: [2.168, 41.387]
             },
             parcels: {
@@ -1617,8 +1537,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32646',
-                metricDefinition: '+proj=utm +zone=46 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [23.9673, 90.2252], fallbackDataset: [90.2252, 23.9673]
             },
             parcels: {
@@ -1642,8 +1560,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32616',
-                metricDefinition: '+proj=utm +zone=16 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [32.3668, -86.3], fallbackDataset: [-86.3, 32.3668]
             },
             parcels: {
@@ -1667,8 +1583,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32608',
-                metricDefinition: '+proj=utm +zone=8 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [58.3016, -134.4202], fallbackDataset: [-134.4202, 58.3016]
             },
             parcels: {
@@ -1692,8 +1606,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32612',
-                metricDefinition: '+proj=utm +zone=12 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [33.4484, -112.074], fallbackDataset: [-112.074, 33.4484]
             },
             parcels: {
@@ -1717,8 +1629,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32615',
-                metricDefinition: '+proj=utm +zone=15 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [34.7465, -92.2896], fallbackDataset: [-92.2896, 34.7465]
             },
             parcels: {
@@ -1742,8 +1652,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32610',
-                metricDefinition: '+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [38.5816, -121.4944], fallbackDataset: [-121.4944, 38.5816]
             },
             parcels: {
@@ -1767,8 +1675,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32618',
-                metricDefinition: '+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [41.7658, -72.6734], fallbackDataset: [-72.6734, 41.7658]
             },
             parcels: {
@@ -1792,8 +1698,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32618',
-                metricDefinition: '+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [39.1582, -75.5244], fallbackDataset: [-75.5244, 39.1582]
             },
             parcels: {
@@ -1817,8 +1721,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32616',
-                metricDefinition: '+proj=utm +zone=16 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [33.749, -84.388], fallbackDataset: [-84.388, 33.749]
             },
             parcels: {
@@ -1842,8 +1744,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32604',
-                metricDefinition: '+proj=utm +zone=4 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [21.3099, -157.8581], fallbackDataset: [-157.8581, 21.3099]
             },
             parcels: {
@@ -1867,8 +1767,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32611',
-                metricDefinition: '+proj=utm +zone=11 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [43.615, -116.2023], fallbackDataset: [-116.2023, 43.615]
             },
             parcels: {
@@ -1892,8 +1790,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32616',
-                metricDefinition: '+proj=utm +zone=16 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [39.7817, -89.6501], fallbackDataset: [-89.6501, 39.7817]
             },
             parcels: {
@@ -1917,8 +1813,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32615',
-                metricDefinition: '+proj=utm +zone=15 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [30.4515, -91.1871], fallbackDataset: [-91.1871, 30.4515]
             },
             parcels: {
@@ -1942,8 +1836,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32619',
-                metricDefinition: '+proj=utm +zone=19 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [44.3106, -69.7795], fallbackDataset: [-69.7795, 44.3106]
             },
             parcels: {
@@ -1967,8 +1859,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32618',
-                metricDefinition: '+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [38.9784, -76.4922], fallbackDataset: [-76.4922, 38.9784]
             },
             parcels: {
@@ -1992,8 +1882,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32619',
-                metricDefinition: '+proj=utm +zone=19 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [42.3601, -71.0589], fallbackDataset: [-71.0589, 42.3601]
             },
             parcels: {
@@ -2017,8 +1905,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32616',
-                metricDefinition: '+proj=utm +zone=16 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [39.7684, -86.1581], fallbackDataset: [-86.1581, 39.7684]
             },
             parcels: {
@@ -2042,8 +1928,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32615',
-                metricDefinition: '+proj=utm +zone=15 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [41.5868, -93.625], fallbackDataset: [-93.625, 41.5868]
             },
             parcels: {
@@ -2067,8 +1951,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32616',
-                metricDefinition: '+proj=utm +zone=16 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [42.7325, -84.5555], fallbackDataset: [-84.5555, 42.7325]
             },
             parcels: {
@@ -2092,8 +1974,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32615',
-                metricDefinition: '+proj=utm +zone=15 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [44.9537, -93.09], fallbackDataset: [-93.09, 44.9537]
             },
             parcels: {
@@ -2117,8 +1997,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32615',
-                metricDefinition: '+proj=utm +zone=15 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [38.5767, -92.1735], fallbackDataset: [-92.1735, 38.5767]
             },
             parcels: {
@@ -2142,8 +2020,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32612',
-                metricDefinition: '+proj=utm +zone=12 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [46.5891, -112.0391], fallbackDataset: [-112.0391, 46.5891]
             },
             parcels: {
@@ -2167,8 +2043,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32614',
-                metricDefinition: '+proj=utm +zone=14 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [40.8136, -96.7026], fallbackDataset: [-96.7026, 40.8136]
             },
             parcels: {
@@ -2192,8 +2066,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32619',
-                metricDefinition: '+proj=utm +zone=19 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [43.2081, -71.5376], fallbackDataset: [-71.5376, 43.2081]
             },
             parcels: {
@@ -2217,8 +2089,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32618',
-                metricDefinition: '+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [40.2171, -74.7429], fallbackDataset: [-74.7429, 40.2171]
             },
             parcels: {
@@ -2242,8 +2112,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32613',
-                metricDefinition: '+proj=utm +zone=13 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [35.687, -105.9378], fallbackDataset: [-105.9378, 35.687]
             },
             parcels: {
@@ -2267,8 +2135,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32618',
-                metricDefinition: '+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [42.6526, -73.7562], fallbackDataset: [-73.7562, 42.6526]
             },
             parcels: {
@@ -2292,8 +2158,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32617',
-                metricDefinition: '+proj=utm +zone=17 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [35.7796, -78.6382], fallbackDataset: [-78.6382, 35.7796]
             },
             parcels: {
@@ -2317,8 +2181,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32617',
-                metricDefinition: '+proj=utm +zone=17 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [35.8609596134079, -78.6416325645578],
                 fallbackDataset: [-78.6416325645578, 35.8609596134079]
             },
@@ -2343,8 +2205,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32643',
-                metricDefinition: '+proj=utm +zone=43 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [8.65276906631116, 76.9124484846266],
                 fallbackDataset: [76.9124484846266, 8.65276906631116]
             },
@@ -2369,8 +2229,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32643',
-                metricDefinition: '+proj=utm +zone=43 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [9.963406805925196, 76.36082896288808],
                 fallbackDataset: [76.36082896288808, 9.963406805925196]
             },
@@ -2395,8 +2253,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32643',
-                metricDefinition: '+proj=utm +zone=43 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [8.847550832774829, 76.62751009273858],
                 fallbackDataset: [76.62751009273858, 8.847550832774829]
             },
@@ -2421,8 +2277,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32643',
-                metricDefinition: '+proj=utm +zone=43 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [23.02004, 72.59975],
                 fallbackDataset: [72.59975, 23.02004]
             },
@@ -2447,8 +2301,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32643',
-                metricDefinition: '+proj=utm +zone=43 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [21.174179236185818, 72.78092615417103],
                 fallbackDataset: [72.78092615417103, 21.174179236185818]
             },
@@ -2473,8 +2325,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32614',
-                metricDefinition: '+proj=utm +zone=14 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [46.8083, -100.7837], fallbackDataset: [-100.7837, 46.8083]
             },
             parcels: {
@@ -2498,8 +2348,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32617',
-                metricDefinition: '+proj=utm +zone=17 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [39.9612, -82.9988], fallbackDataset: [-82.9988, 39.9612]
             },
             parcels: {
@@ -2523,8 +2371,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32610',
-                metricDefinition: '+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [44.9429, -123.0351], fallbackDataset: [-123.0351, 44.9429]
             },
             parcels: {
@@ -2548,8 +2394,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32616',
-                metricDefinition: '+proj=utm +zone=16 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [36.1627, -86.7816], fallbackDataset: [-86.7816, 36.1627]
             },
             parcels: {
@@ -2573,8 +2417,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32614',
-                metricDefinition: '+proj=utm +zone=14 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [30.2672, -97.7431], fallbackDataset: [-97.7431, 30.2672]
             },
             parcels: {
@@ -2598,8 +2440,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32612',
-                metricDefinition: '+proj=utm +zone=12 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [40.7608, -111.891], fallbackDataset: [-111.891, 40.7608]
             },
             parcels: {
@@ -2623,8 +2463,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32618',
-                metricDefinition: '+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [44.2601, -72.5754], fallbackDataset: [-72.5754, 44.2601]
             },
             parcels: {
@@ -2648,8 +2486,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32618',
-                metricDefinition: '+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [37.5407, -77.436], fallbackDataset: [-77.436, 37.5407]
             },
             parcels: {
@@ -2673,8 +2509,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32611',
-                metricDefinition: '+proj=utm +zone=11 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [39.1638, -119.7674], fallbackDataset: [-119.7674, 39.1638]
             },
             parcels: {
@@ -2698,8 +2532,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32617',
-                metricDefinition: '+proj=utm +zone=17 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [38.3498, -81.6326], fallbackDataset: [-81.6326, 38.3498]
             },
             parcels: {
@@ -2723,8 +2555,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32613',
-                metricDefinition: '+proj=utm +zone=13 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [41.14, -104.8202], fallbackDataset: [-104.8202, 41.14]
             },
             parcels: {
@@ -2748,8 +2578,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32617',
-                metricDefinition: '+proj=utm +zone=17 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [34.0007, -81.0348], fallbackDataset: [-81.0348, 34.0007]
             },
             parcels: {
@@ -2773,8 +2601,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32618',
-                metricDefinition: '+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [40.2732, -76.8867], fallbackDataset: [-76.8867, 40.2732]
             },
             parcels: {
@@ -2798,8 +2624,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32615',
-                metricDefinition: '+proj=utm +zone=15 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [32.2988, -90.1848], fallbackDataset: [-90.1848, 32.2988]
             },
             parcels: {
@@ -2823,8 +2647,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32616',
-                metricDefinition: '+proj=utm +zone=16 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [43.0731, -89.4012], fallbackDataset: [-89.4012, 43.0731]
             },
             parcels: {
@@ -2848,8 +2670,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32610',
-                metricDefinition: '+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [47.0379, -122.9007], fallbackDataset: [-122.9007, 47.0379]
             },
             parcels: {
@@ -2873,8 +2693,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32619',
-                metricDefinition: '+proj=utm +zone=19 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [41.824, -71.4128], fallbackDataset: [-71.4128, 41.824]
             },
             parcels: {
@@ -2898,8 +2716,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32616',
-                metricDefinition: '+proj=utm +zone=16 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [30.4383, -84.2807], fallbackDataset: [-84.2807, 30.4383]
             },
             parcels: {
@@ -2923,8 +2739,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32614',
-                metricDefinition: '+proj=utm +zone=14 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [39.0473, -95.6752], fallbackDataset: [-95.6752, 39.0473]
             },
             parcels: {
@@ -2948,8 +2762,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32639',
-                metricDefinition: '+proj=utm +zone=39 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [25.2854, 51.531], fallbackDataset: [51.531, 25.2854]
             },
             parcels: {
@@ -2973,8 +2785,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32642',
-                metricDefinition: '+proj=utm +zone=42 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [51.1282, 71.4304], fallbackDataset: [71.4304, 51.1282]
             },
             parcels: {
@@ -2998,8 +2808,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32640',
-                metricDefinition: '+proj=utm +zone=40 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [25.095, 55.157], fallbackDataset: [55.157, 25.095]
             },
             parcels: {
@@ -3023,8 +2831,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32636',
-                metricDefinition: '+proj=utm +zone=36 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [31.9836227976918, 35.9602148481902], fallbackDataset: [35.9602148481902, 31.9836227976918]
             },
             parcels: {
@@ -3048,8 +2854,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32640',
-                metricDefinition: '+proj=utm +zone=40 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [23.597065274496654, 58.55548313911143], fallbackDataset: [58.55548313911143, 23.597065274496654]
             },
             parcels: {
@@ -3073,8 +2877,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32616',
-                metricDefinition: '+proj=utm +zone=16 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [38.2009, -84.8733], fallbackDataset: [-84.8733, 38.2009]
             },
             parcels: {
@@ -3098,8 +2900,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32614',
-                metricDefinition: '+proj=utm +zone=14 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [35.4676, -97.5164], fallbackDataset: [-97.5164, 35.4676]
             },
             parcels: {
@@ -3123,8 +2923,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32614',
-                metricDefinition: '+proj=utm +zone=14 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [44.3683, -100.351], fallbackDataset: [-100.351, 44.3683]
             },
             parcels: {
@@ -3148,8 +2946,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32615',
-                metricDefinition: '+proj=utm +zone=15 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [29.7604, -95.3698], fallbackDataset: [-95.3698, 29.7604]
             },
             parcels: {
@@ -3173,8 +2969,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32722',
-                metricDefinition: '+proj=utm +zone=22 +south +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-25.429, -49.273], fallbackDataset: [-49.273, -25.429]
             },
             parcels: {
@@ -3198,8 +2992,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32725',
-                metricDefinition: '+proj=utm +zone=25 +south +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-8.04622135042311, -34.9207751899257], fallbackDataset: [-34.9207751899257, -8.04622135042311]
             },
             parcels: {
@@ -3223,8 +3015,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32736',
-                metricDefinition: '+proj=utm +zone=36 +south +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-29.8585, 31.0218], fallbackDataset: [31.0218, -29.8585]
             },
             parcels: {
@@ -3248,8 +3038,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32735',
-                metricDefinition: '+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-26.12045, 27.86009], fallbackDataset: [27.86009, -26.12045]
             },
             parcels: {
@@ -3273,8 +3061,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32735',
-                metricDefinition: '+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-26.4062859886009, 27.8459423386999], fallbackDataset: [27.8459423386999, -26.4062859886009]
             },
             parcels: {
@@ -3298,8 +3084,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32735',
-                metricDefinition: '+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-26.0359639124127, 27.9203632448749], fallbackDataset: [27.9203632448749, -26.0359639124127]
             },
             parcels: {
@@ -3323,8 +3107,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32630',
-                metricDefinition: '+proj=utm +zone=30 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [5.5508, -0.2162], fallbackDataset: [-0.2162, 5.5508]
             },
             parcels: {
@@ -3348,8 +3130,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32735',
-                metricDefinition: '+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-25.4662366387406, 27.8447650141456], fallbackDataset: [27.8447650141456, -25.4662366387406]
             },
             parcels: {
@@ -3373,8 +3153,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32737',
-                metricDefinition: '+proj=utm +zone=37 +south +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-1.26592113731299, 36.845161927435],
                 fallbackDataset: [36.845161927435, -1.26592113731299]
             },
@@ -3402,8 +3180,6 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32634',
-                metricDefinition: '+proj=utm +zone=34 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [37.99008, 23.72948],
                 fallbackDataset: [23.72948, 37.99008]
             },
@@ -3436,8 +3212,6 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32735',
-                metricDefinition: '+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-24.6581, 25.9122],
                 fallbackDataset: [25.9122, -24.6581]
             },
@@ -3466,8 +3240,6 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32735',
-                metricDefinition: '+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-29.118, 26.214],
                 fallbackDataset: [26.214, -29.118]
             },
@@ -3496,8 +3268,6 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32735',
-                metricDefinition: '+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-25.7479, 28.2293],
                 fallbackDataset: [28.2293, -25.7479]
             },
@@ -3523,8 +3293,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32633',
-                metricDefinition: '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [48.2092, 16.37], fallbackDataset: [16.37, 48.2092]
             },
             parcels: {
@@ -3548,8 +3316,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32634',
-                metricDefinition: '+proj=utm +zone=34 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [42.3908, 18.9215], fallbackDataset: [18.9215, 42.3908]
             },
             parcels: {
@@ -3573,8 +3339,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32633',
-                metricDefinition: '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [43.936, 12.446], fallbackDataset: [12.446, 43.936]
             },
             parcels: {
@@ -3598,8 +3362,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32631',
-                metricDefinition: '+proj=utm +zone=31 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [52.08, 4.311], fallbackDataset: [4.311, 52.08]
             },
             parcels: {
@@ -3623,8 +3385,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32760',
-                metricDefinition: '+proj=utm +zone=60 +south +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-41.2865, 174.7762], fallbackDataset: [174.7762, -41.2865]
             },
             parcels: {
@@ -3648,8 +3408,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32636',
-                metricDefinition: '+proj=utm +zone=36 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [33.896, 35.5], fallbackDataset: [35.5, 33.896]
             },
             parcels: {
@@ -3673,8 +3431,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32645',
-                metricDefinition: '+proj=utm +zone=45 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [27.515, 89.642], fallbackDataset: [89.642, 27.515]
             },
             parcels: {
@@ -3698,8 +3454,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32650',
-                metricDefinition: '+proj=utm +zone=50 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [4.894, 114.946], fallbackDataset: [114.946, 4.894]
             },
             parcels: {
@@ -3723,8 +3477,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32636',
-                metricDefinition: '+proj=utm +zone=36 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [31.782, 35.214], fallbackDataset: [35.214, 31.782]
             },
             parcels: {
@@ -3749,8 +3501,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32636',
-                metricDefinition: '+proj=utm +zone=36 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [31.794, 35.25], fallbackDataset: [35.25, 31.794]
             },
             parcels: {
@@ -3775,8 +3525,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32618',
-                metricDefinition: '+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [39.9809715945293, -75.1611281567456], fallbackDataset: [-75.1611281567456, 39.9809715945293]
             },
             parcels: {
@@ -3800,8 +3548,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32611',
-                metricDefinition: '+proj=utm +zone=11 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [36.1515806137119, -115.164472767125], fallbackDataset: [-115.164472767125, 36.1515806137119]
             },
             parcels: {
@@ -3825,8 +3571,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32649',
-                metricDefinition: '+proj=utm +zone=49 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [22.1940052, 113.5442146], fallbackDataset: [113.5442146, 22.1940052]
             },
             parcels: {
@@ -3850,8 +3594,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32611',
-                metricDefinition: '+proj=utm +zone=11 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [32.728932496022, -117.086972512462], fallbackDataset: [-117.086972512462, 32.728932496022]
             },
             parcels: {
@@ -3875,8 +3617,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:31983',
-                metricDefinition: '+proj=utm +zone=23 +south +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-22.8357484330541, -43.0260274875774], fallbackDataset: [-43.0260274875774, -22.8357484330541]
             },
             parcels: {
@@ -3900,8 +3640,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:25832',
-                metricDefinition: '+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs +type=crs',
                 fallbackLatLng: [53.5745088975748, 9.99288544960732], fallbackDataset: [9.99288544960732, 53.5745088975748]
             },
             parcels: {
@@ -3925,8 +3663,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:26914',
-                metricDefinition: '+proj=utm +zone=14 +datum=NAD83 +units=m +no_defs +type=crs',
                 fallbackLatLng: [29.464389001765, -98.5436537993289], fallbackDataset: [-98.5436537993289, 29.464389001765]
             },
             parcels: {
@@ -3950,8 +3686,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32614',
-                metricDefinition: '+proj=utm +zone=14 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [32.8728161029652, -96.7273020350225], fallbackDataset: [-96.7273020350225, 32.8728161029652]
             },
             parcels: {
@@ -3975,8 +3709,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32610',
-                metricDefinition: '+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [37.7460795032621, -122.171539055455], fallbackDataset: [-122.171539055455, 37.7460795032621]
             },
             parcels: {
@@ -4000,8 +3732,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32610',
-                metricDefinition: '+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [47.680804084804, -122.278326020363], fallbackDataset: [-122.278326020363, 47.680804084804]
             },
             parcels: {
@@ -4025,8 +3755,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32612',
-                metricDefinition: '+proj=utm +zone=12 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [33.3793, -111.8075], fallbackDataset: [-111.8075, 33.3793]
             },
             parcels: {
@@ -4050,8 +3778,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32617',
-                metricDefinition: '+proj=utm +zone=17 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [26.2136403895659, -80.2006810091933], fallbackDataset: [-80.2006810091933, 26.2136403895659]
             },
             parcels: {
@@ -4075,8 +3801,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:25830',
-                metricDefinition: '+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs',
                 fallbackLatLng: [39.4704332385683, -0.39271003219546], fallbackDataset: [-0.39271003219546, 39.4704332385683]
             },
             parcels: {
@@ -4100,8 +3824,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32735',
-                metricDefinition: '+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-25.4785970466047, 28.1150225708436], fallbackDataset: [28.1150225708436, -25.4785970466047]
             },
             parcels: {
@@ -4125,8 +3847,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32735',
-                metricDefinition: '+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-26.0160233303594, 28.2050144110193], fallbackDataset: [28.2050144110193, -26.0160233303594]
             },
             parcels: {
@@ -4150,8 +3870,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32724',
-                metricDefinition: '+proj=utm +zone=24 +south +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-20.3155, -40.3128], fallbackDataset: [-40.3128, -20.3155]
             },
             parcels: {
@@ -4175,8 +3893,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32613',
-                metricDefinition: '+proj=utm +zone=13 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [31.6633818209033, -106.421992448914], fallbackDataset: [-106.421992448914, 31.6633818209033]
             },
             parcels: {
@@ -4200,8 +3916,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32611',
-                metricDefinition: '+proj=utm +zone=11 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [51.0353306517676, -114.105700735457], fallbackDataset: [-114.105700735457, 51.0353306517676]
             },
             parcels: {
@@ -4225,8 +3939,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32720',
-                metricDefinition: '+proj=utm +zone=20 +south +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-32.9481688811101, -60.6765246060875], fallbackDataset: [-60.6765246060875, -32.9481688811101]
             },
             parcels: {
@@ -4250,8 +3962,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:26915',
-                metricDefinition: '+proj=utm +zone=15 +datum=NAD83 +units=m +no_defs +type=crs',
                 fallbackLatLng: [44.9726015122978, -93.2378207757913], fallbackDataset: [-93.2378207757913, 44.9726015122978]
             },
             parcels: {
@@ -4275,8 +3985,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32760',
-                metricDefinition: '+proj=utm +zone=60 +south +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-36.9024908859156, 174.777123817482], fallbackDataset: [174.777123817482, -36.9024908859156]
             },
             parcels: {
@@ -4300,8 +4008,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32650',
-                metricDefinition: '+proj=utm +zone=50 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [22.4266355780752, 113.996366842382], fallbackDataset: [113.996366842382, 22.4266355780752]
             },
             parcels: {
@@ -4325,8 +4031,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32632',
-                metricDefinition: '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [51.2180376209965, 6.78255471417581], fallbackDataset: [6.78255471417581, 51.2180376209965]
             },
             parcels: {
@@ -4350,8 +4054,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32631',
-                metricDefinition: '+proj=utm +zone=31 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [43.3060785068726, 5.40046021068172], fallbackDataset: [5.40046021068172, 43.3060785068726]
             },
             parcels: {
@@ -4375,8 +4077,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32631',
-                metricDefinition: '+proj=utm +zone=31 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [50.6588228758037, 3.10526733091648], fallbackDataset: [3.10526733091648, 50.6588228758037]
             },
             parcels: {
@@ -4400,8 +4100,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32632',
-                metricDefinition: '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [48.7945602765168, 9.20116965816696], fallbackDataset: [9.20116965816696, 48.7945602765168]
             },
             parcels: {
@@ -4425,8 +4123,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32632',
-                metricDefinition: '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [50.1196449235525, 8.67155930482746], fallbackDataset: [8.67155930482746, 50.1196449235525]
             },
             parcels: {
@@ -4450,8 +4146,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32617',
-                metricDefinition: '+proj=utm +zone=17 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [27.8713699437531, -82.7305763266337], fallbackDataset: [-82.7305763266337, 27.8713699437531]
             },
             parcels: {
@@ -4475,8 +4169,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32617',
-                metricDefinition: '+proj=utm +zone=17 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [42.418131146732, -83.1544751389422], fallbackDataset: [-83.1544751389422, 42.418131146732]
             },
             parcels: {
@@ -4500,8 +4192,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32735',
-                metricDefinition: '+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-26.525228941691, 27.8512191216245], fallbackDataset: [27.8512191216245, -26.525228941691]
             },
             parcels: {
@@ -4525,8 +4215,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32632',
-                metricDefinition: '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [50.7822226933759, 7.09388726064463], fallbackDataset: [7.09388726064463, 50.7822226933759]
             },
             parcels: {
@@ -4550,8 +4238,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32647',
-                metricDefinition: '+proj=utm +zone=47 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [5.37296693960077, 100.295715284095], fallbackDataset: [100.295715284095, 5.37296693960077]
             },
             parcels: {
@@ -4575,8 +4261,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32634',
-                metricDefinition: '+proj=utm +zone=34 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [40.6343408556323, 22.945560253649], fallbackDataset: [22.945560253649, 40.6343408556323]
             },
             parcels: {
@@ -4600,8 +4284,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32630',
-                metricDefinition: '+proj=utm +zone=30 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [43.2826941093508, -2.95997002575274], fallbackDataset: [-2.95997002575274, 43.2826941093508]
             },
             parcels: {
@@ -4625,8 +4307,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32616',
-                metricDefinition: '+proj=utm +zone=16 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [43.0472023941442, -87.9561409333908], fallbackDataset: [-87.9561409333908, 43.0472023941442]
             },
             parcels: {
@@ -4650,8 +4330,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32634',
-                metricDefinition: '+proj=utm +zone=34 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [50.0549669396486, 19.9647598843061], fallbackDataset: [19.9647598843061, 50.0549669396486]
             },
             parcels: {
@@ -4675,8 +4353,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32611',
-                metricDefinition: '+proj=utm +zone=11 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [36.7922501389848, -119.77157818531], fallbackDataset: [-119.77157818531, 36.7922501389848]
             },
             parcels: {
@@ -4700,8 +4376,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32614',
-                metricDefinition: '+proj=utm +zone=14 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [49.8912776896545, -97.1447622935792], fallbackDataset: [-97.1447622935792, 49.8912776896545]
             },
             parcels: {
@@ -4725,8 +4399,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32650',
-                metricDefinition: '+proj=utm +zone=50 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [22.3934460524814, 114.204022607849], fallbackDataset: [114.204022607849, 22.3934460524814]
             },
             parcels: {
@@ -4750,8 +4422,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32643',
-                metricDefinition: '+proj=utm +zone=43 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [30.8083288852812, 73.4521453260116], fallbackDataset: [73.4521453260116, 30.8083288852812]
             },
             parcels: {
@@ -4775,8 +4445,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32735',
-                metricDefinition: '+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-12.8099306286313, 28.222405935667], fallbackDataset: [28.222405935667, -12.8099306286313]
             },
             parcels: {
@@ -4800,8 +4468,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32632',
-                metricDefinition: '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [51.2196383633976, 7.10247286125364], fallbackDataset: [7.10247286125364, 51.2196383633976]
             },
             parcels: {
@@ -4825,8 +4491,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32633',
-                metricDefinition: '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [38.1207651044272, 13.3478178274778], fallbackDataset: [13.3478178274778, 38.1207651044272]
             },
             parcels: {
@@ -4850,8 +4514,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32631',
-                metricDefinition: '+proj=utm +zone=31 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [43.6041456701446, 1.42516148294357], fallbackDataset: [1.42516148294357, 43.6041456701446]
             },
             parcels: {
@@ -4875,8 +4537,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32630',
-                metricDefinition: '+proj=utm +zone=30 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [44.8360390353827, -0.592897717816896], fallbackDataset: [-0.592897717816896, 44.8360390353827]
             },
             parcels: {
@@ -4900,8 +4560,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32613',
-                metricDefinition: '+proj=utm +zone=13 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [31.7867212643232, -106.36486464215], fallbackDataset: [-106.36486464215, 31.7867212643232]
             },
             parcels: {
@@ -4925,8 +4583,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32617',
-                metricDefinition: '+proj=utm +zone=17 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [26.6223516519297, -80.1012894536897], fallbackDataset: [-80.1012894536897, 26.6223516519297]
             },
             parcels: {
@@ -4950,8 +4606,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32634',
-                metricDefinition: '+proj=utm +zone=34 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [51.7666527325011, 19.4560942606722], fallbackDataset: [19.4560942606722, 51.7666527325011]
             },
             parcels: {
@@ -4975,8 +4629,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:2180',
-                metricDefinition: '+proj=tmerc +lat_0=0 +lon_0=19 +k=0.9993 +x_0=500000 +y_0=-5300000 +ellps=GRS80 +units=m +no_defs',
                 fallbackLatLng: [52.4033374848812, 16.9139953760299], fallbackDataset: [16.9139953760299, 52.4033374848812]
             },
             parcels: {
@@ -5000,8 +4652,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32633',
-                metricDefinition: '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [51.0412590520933, 13.7515873602205], fallbackDataset: [13.7515873602205, 51.0412590520933]
             },
             parcels: {
@@ -5025,8 +4675,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32633',
-                metricDefinition: '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [51.3403873460544, 12.3749392867142], fallbackDataset: [12.3749392867142, 51.3403873460544]
             },
             parcels: {
@@ -5050,8 +4698,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32722',
-                metricDefinition: '+proj=utm +zone=22 +south +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-26.3054119242896, -48.8298392070888], fallbackDataset: [-48.8298392070888, -26.3054119242896]
             },
             parcels: {
@@ -5075,8 +4721,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32631',
-                metricDefinition: '+proj=utm +zone=31 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [52.0840427734495, 5.08101362175478], fallbackDataset: [5.08101362175478, 52.0840427734495]
             },
             parcels: {
@@ -5100,8 +4744,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32647',
-                metricDefinition: '+proj=utm +zone=47 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [5.37430818562544, 100.428386608375], fallbackDataset: [100.428386608375, 5.37430818562544]
             },
             parcels: {
@@ -5125,8 +4767,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32723',
-                metricDefinition: '+proj=utm +zone=23 +south +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [-21.7520452174457, -43.3632723968038], fallbackDataset: [-43.3632723968038, -21.7520452174457]
             },
             parcels: {
@@ -5150,8 +4790,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32630',
-                metricDefinition: '+proj=utm +zone=30 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [36.719979707331, -4.43788341316648], fallbackDataset: [-4.43788341316648, 36.719979707331]
             },
             parcels: {
@@ -5175,8 +4813,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32611',
-                metricDefinition: '+proj=utm +zone=11 +datum=WGS84 +units=m +no_defs +type=crs',
                 fallbackLatLng: [35.3492651317935, -119.024876869726], fallbackDataset: [-119.024876869726, 35.3492651317935]
             },
             parcels: {
@@ -5203,8 +4839,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:26917',
-                metricDefinition: '+proj=utm +zone=17 +datum=NAD83 +units=m +no_defs +type=crs',
                 fallbackLatLng: [28.5718526010057, -81.3224429681126], fallbackDataset: [-81.3224429681126, 28.5718526010057]
             },
             parcels: {
@@ -5228,8 +4862,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:2157',
-                metricDefinition: '+proj=tmerc +lat_0=53.5 +lon_0=-8 +k=0.99982 +x_0=600000 +y_0=750000 +ellps=GRS80 +units=m +no_defs',
                 fallbackLatLng: [53.330243126706, -6.27332800239088], fallbackDataset: [-6.27332800239088, 53.330243126706]
             },
             parcels: {
@@ -5253,8 +4885,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:3059',
-                metricDefinition: '+proj=tmerc +lat_0=0 +lon_0=24 +k=0.9996 +x_0=500000 +y_0=-6000000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs',
                 fallbackLatLng: [56.9551247864813, 24.1200225203638], fallbackDataset: [24.1200225203638, 56.9551247864813]
             },
             parcels: {
@@ -5278,8 +4908,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:3301',
-                metricDefinition: '+proj=lcc +lat_0=57.5175539305556 +lon_0=24 +lat_1=59.3333333333333 +lat_2=58 +x_0=500000 +y_0=6375000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs',
                 fallbackLatLng: [59.4231329005097, 24.7413568470487], fallbackDataset: [24.7413568470487, 59.4231329005097]
             },
             parcels: {
@@ -5303,8 +4931,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:32635',
-                metricDefinition: '+proj=utm +zone=35 +datum=WGS84 +units=m +no_defs',
                 fallbackLatLng: [54.695435447302, 25.2704077979851], fallbackDataset: [25.2704077979851, 54.695435447302]
             },
             parcels: {
@@ -5328,8 +4954,6 @@
             },
             projection: {
                 datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
-                metricCrs: 'EPSG:31983',
-                metricDefinition: '+proj=utm +zone=23 +south +ellps=GRS80 +units=m +no_defs',
                 fallbackLatLng: [-23.1976446911945, -46.8554383147568], fallbackDataset: [-46.8554383147568, -23.1976446911945]
             },
             parcels: {
@@ -5360,9 +4984,6 @@
             projection: {
                 datasetCrs: 'EPSG:4326',
                 definition: '+proj=longlat +datum=WGS84 +no_defs',
-                // Measurement and buffers need metres: the UTM zone of the explored point.
-                metricCrs: exploreProjection.crs,
-                metricDefinition: exploreProjection.definition,
                 fallbackLatLng: [exploreView.lat, exploreView.lon],
                 fallbackDataset: [exploreView.lon, exploreView.lat]
             },
@@ -5396,15 +5017,6 @@
         }
         Object.values(CITY_CONFIGS).forEach(config => {
             const dataset = config.projection;
-            if (dataset && dataset.metricCrs && dataset.metricDefinition) {
-                try {
-                    if (!proj4.defs(dataset.metricCrs)) {
-                        proj4.defs(dataset.metricCrs, dataset.metricDefinition);
-                    }
-                } catch (error) {
-                    console.warn('[CityConfig] Failed to register metric projection', dataset.metricCrs, error);
-                }
-            }
             if (dataset && dataset.datasetCrs && dataset.definition) {
                 try {
                     if (!proj4.defs(dataset.datasetCrs)) {
@@ -5516,7 +5128,15 @@
             PersistentStorage.setScope(currentCityId, { explicit: cityWasExplicitlyChosen || currentCityId === EXPLORE_CITY_ID });
         }
     } catch (_) { /* ignore */ }
-    applyCityLanguagePreference(getCurrentCityConfig());
+    // The city's default language applies only once the city's stored values are read: before that a
+    // language the visitor chose reads as unset, and setting the default then replaced it on every
+    // boot (English chosen in Belgrade came back Serbian).
+    {
+        const applyStoredLanguage = () => applyCityLanguagePreference(getCurrentCityConfig());
+        const ready = typeof PersistentStorage !== 'undefined' && PersistentStorage ? PersistentStorage.ready : null;
+        if (ready && typeof ready.then === 'function') ready.then(applyStoredLanguage, applyStoredLanguage);
+        else applyStoredLanguage();
+    }
 
     function maybeApplyGeoDefaultCity() {
         // Temporarily disable IP-based city detection; default stays NYC for all users.
@@ -5648,48 +5268,12 @@
     }
 
     // ---------------------------------------------------------------------
-    // The metric working projection.
-    //
-    // A city's *dataset* CRS is whatever its parcels arrive in — for Zagreb a metric one (EPSG:3765),
-    // for New York and Belgrade plain WGS84 degrees. Geometry code (road corridors, buffers, areas,
-    // lengths) needs METRES, and using the dataset CRS for that silently treats degrees as metres:
-    // a 10 m road in New York came out 1113 km wide.
-    //
-    // So every city also declares a metric CRS. Where the dataset CRS is already metric it is the same
-    // projection, and nothing changes.
+    // Metres are not a city's business. A city's *dataset* CRS is whatever its parcels arrive in (for
+    // Zagreb EPSG:3765, for New York and Belgrade plain WGS84 degrees) and is used for dataset I/O
+    // only. Everything measured or built in metres works in an explicit frame on its own geometry
+    // (metric-frame.js, projections.md §2): a city-wide metric CRS made a 19 m street in Zagreb
+    // 13.65 m wide whenever New York was the active city.
     // ---------------------------------------------------------------------
-    function getMetricCrs() {
-        const projection = getProjectionConfig();
-        if (!projection) return null;
-        const crs = projection.metricCrs || projection.datasetCrs;
-        if (!crs || typeof proj4 === 'undefined' || !proj4.defs(crs)) return null;
-        return crs;
-    }
-
-    function latLngToMetric(lat, lon) {
-        const crs = getMetricCrs();
-        if (!crs) return [lon, lat];
-        try {
-            const [x, y] = proj4('EPSG:4326', crs, [lon, lat]);
-            if (!Number.isFinite(x) || !Number.isFinite(y)) throw new Error('invalid conversion');
-            return [x, y];
-        } catch (_) {
-            return [lon, lat];
-        }
-    }
-
-    function metricToLatLng(x, y) {
-        const crs = getMetricCrs();
-        if (!crs) return [y, x];
-        try {
-            const [lon, lat] = proj4(crs, 'EPSG:4326', [x, y]);
-            if (!Number.isFinite(lat) || !Number.isFinite(lon)) throw new Error('invalid conversion');
-            return [lat, lon];
-        } catch (_) {
-            return [y, x];
-        }
-    }
-
     function latLngToDataset(lat, lon) {
         const projection = getProjectionConfig();
         if (!projection) {
@@ -5924,9 +5508,12 @@
     // Reload into another city. The path is kept by default, so a shared link (/proposals/<id>,
     // /parcel/<id>) re-runs there; `clearRoute` drops it, for a plain "go to this city" (the search
     // box) that should not carry the link being viewed into the next city.
+    // `url`: where to go instead of the current address (a route into the next city, such as a
+    // proposal to open there). The page being left keeps its own history entry, so Back returns to
+    // it; rewriting that entry first made Back land on the new route in the old city instead.
     function navigateToCity(nextId, options = {}) {
         try {
-            const url = new URL(window.location.href);
+            const url = new URL(options.url || window.location.href, window.location.href);
             url.searchParams.set('city', nextId);
             // `at` opens the next city at a given view (js/map-core.js applies and strips it);
             // `world` (force the globe) must not follow the visitor into the city they just picked.
@@ -5934,8 +5521,11 @@
             url.searchParams.delete('world');
             if (options.at && window.WorldEntryModel) url.searchParams.set('at', window.WorldEntryModel.formatAt(options.at));
             if (options.clearRoute) {
-                if (/^\/(proposals|plans|parcel|bets)\//.test(url.pathname)) url.pathname = '/';
-                ['proposalShare', 'shared', 'parcel', 'bets'].forEach(param => url.searchParams.delete(param));
+                // Every route the boot acts on: left in, a proposal focused before the switch reopened
+                // in the next city, and a monitor asked to switch back.
+                if (/^\/(proposals|plans|parcel|bets|monitors)\//.test(url.pathname)) url.pathname = '/';
+                ['proposalShare', 'shared', 'parcel', 'bets', 'focusProposal', 'arrive', 'activity', 'scene']
+                    .forEach(param => url.searchParams.delete(param));
             }
             window.location.href = url.toString();
             return true;
@@ -5952,13 +5542,25 @@
             confirmationMessage = null,
             confirmationOptions = null,
             clearRoute = false,
-            at = null
+            at = null,
+            url = null
         } = options;
 
         if (!nextId || !CITY_CONFIGS[nextId] || nextId === currentCityId) {
             return false;
         }
 
+        // A road drawn or reshaped right now reaches the draft store only when it is finished; a
+        // switch (the search box asks nothing) used to drop it. Kept as a draft of this city instead,
+        // to resume on return.
+        try {
+            if (window.roadDrawingMode === true && typeof window.saveCurrentCorridorDrawingDraft === 'function') {
+                const kept = window.saveCurrentCorridorDrawingDraft();
+                if (kept) console.info(`[${new Date().toISOString()}] [city-switch] kept the unfinished drawing as draft ${kept.draftId || kept.id} of ${currentCityId}`);
+            }
+        } catch (error) {
+            console.error(`[${new Date().toISOString()}] [city-switch] could not keep the unfinished drawing`, error);
+        }
         try { window.proposalDraftStore?.flush?.(); } catch (_) { }
 
         if (requireConfirmation) {
@@ -5978,7 +5580,7 @@
             }
         }
 
-        return navigateToCity(nextId, { clearRoute, at });
+        return navigateToCity(nextId, { clearRoute, at, url });
     }
 
     function renderMessageLines(container, message) {
@@ -6309,6 +5911,51 @@
         return best;
     }
 
+    // A city id as links, records and the server spell it ('zagreb', the short code 'zg', any case),
+    // or null when it names no configured city (an old placeholder such as 'city', a typo).
+    function resolveCityId(raw) {
+        const value = String(raw ?? '').trim().toLowerCase();
+        if (!value) return null;
+        const id = CITY_QUERY_MAP[value] || value;
+        return CITY_CONFIGS[id] ? id : null;
+    }
+
+    // The city a proposal must be opened in when it is not this one: its own city, when that reads
+    // other parcel data than the current city (projections.md §10 M8). null = it belongs here — the
+    // same city, a city on the same cadastre (a Split record in Zagreb: one countrywide cadastre), or
+    // a record whose city names no configured city (legacy rows; nothing to route to). Storage
+    // refuses to import a record anywhere else (proposals/data.js importProposal), and the link and
+    // list routes send it home.
+    function foreignCityFor(rawCity) {
+        const cityId = resolveCityId(rawCity);
+        if (!cityId || cityId === currentCityId) return null;
+        const key = getCadastreKey(cityId);
+        return key && key === getCadastreKey(currentCityId) ? null : cityId;
+    }
+
+    // Which cadastre a city's parcels come from, for "is that the same parcel data?" (the search
+    // box's in-place moves, the globe's countrywide picks): the source id when the city reads a
+    // catalogue or custom source, else its own provider ('oss-wfs': Croatia's countrywide cadastre).
+    // Every catalogue city's source is 'parcel-source', so comparing that would make San Francisco
+    // and Oakland one cadastre. null = no cadastre (explore).
+    function getCadastreKey(cityId) {
+        const parcels = getCityConfig(cityId)?.parcels;
+        if (!parcels || !parcels.source || parcels.source === 'none') return null;
+        return parcels.sourceId || parcels.source;
+    }
+
+    // Which location data a city reads — its cadastre and its building footprints — for "can the map
+    // move there without reloading?" (the search box's in-place moves). Croatia's cities share one
+    // cadastre but not buildings: Zagreb's are its own survey (GDI, Zagreb only), Split's and
+    // Šibenik's Overture; a move from Zagreb to Split in place loaded no buildings there, so a road
+    // had nothing to demolish. null = no cadastre.
+    function getPlaceDataKey(cityId) {
+        const cadastre = getCadastreKey(cityId);
+        if (!cadastre) return null;
+        const buildings = getCityConfig(cityId)?.buildings;
+        return `${cadastre}|${(buildings && (buildings.sourceId || buildings.source)) || 'gdi'}`;
+    }
+
     // The cities whose parcels come from a given backend source ('oss-wfs' is the Croatian DGU
     // cadastre, shared by Zagreb, Split and Šibenik). Adding a fourth Croatian city automatically
     // joins this set — nothing else needs updating for deep links to resolve to it.
@@ -6342,8 +5989,9 @@
                 if (typeof alertFn === 'function') {
                     alertFn(detectedMessage);
                 }
-                setStoredCityId(nearest.id);
-                window.location.reload();
+                // Through the address, as every switch: the boot obeys ?city=, so writing only the
+                // pointer (into the database of the city being left) and reloading reopened that city.
+                switchCity(nearest.id, { clearRoute: true });
             },
             (error) => {
                 console.warn('Geolocation error:', error);
@@ -6428,11 +6076,12 @@
         getCityCenter,
         detectNearestCity,
         getCitiesByParcelSource,
+        getCadastreKey,
+        getPlaceDataKey,
+        resolveCityId,
+        foreignCityFor,
         datasetToLatLng,
         latLngToDataset,
-        latLngToMetric,
-        metricToLatLng,
-        getMetricCrs,
         formatCurrency,
         getParcelStrategy,
         getParcelGridSize,

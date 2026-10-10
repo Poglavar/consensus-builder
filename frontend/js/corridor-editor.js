@@ -182,6 +182,7 @@ function corridorEditorCollectWidthHits(width) {
     const state = corridorEditorState;
     if (!state || state.mode !== 'proposal' || !state.definition) return result;
     if (typeof calculateRoadPolygon !== 'function') return result;
+    const frame = corridorEditorFrame();
     const segments = corridorEditorScopedSegments();
     const tunnelled = new Set();
     const tunnelEdgeKeys = new Set();
@@ -196,7 +197,7 @@ function corridorEditorCollectWidthHits(width) {
             // A tunnel edge is already underground: nothing under it can be newly "hit".
             if (typeof corridorTunnelEdgeKey === 'function'
                 && tunnelEdgeKeys.has(corridorTunnelEdgeKey(segment[i], segment[i + 1]))) continue;
-            const polygon = calculateRoadPolygon([segment[i], segment[i + 1]], width);
+            const polygon = calculateRoadPolygon([segment[i], segment[i + 1]], width, frame);
             if (!polygon) continue;
             if (typeof detectLoadedBuildingTunnelIntersections === 'function') {
                 detectLoadedBuildingTunnelIntersections(polygon).forEach(hit => {
@@ -384,10 +385,19 @@ function corridorEditorScheduleObstacleCheck() {
 // toggle — every parcel that is neither road-classified nor already crossed by this road.
 // ---------------------------------------------------------------------------
 
+// The metric frame of the open editor: a placed corridor's own frame, frozen when the editor opened;
+// while the corridor is still being drawn, the drawing session's frame (road-drawing.js).
+function corridorEditorFrame() {
+    const state = corridorEditorState;
+    if (!state) throw new Error('corridor-editor: no editor is open');
+    if (state.frame) return state.frame;
+    if (state.mode === 'drawing' && typeof roadSessionFrame === 'function') return roadSessionFrame();
+    throw new Error('corridor-editor: the editor has no metric frame');
+}
+
 function corridorEditorClearanceReady() {
     return typeof corridorClearanceSamples === 'function'
-        && typeof corridorClearanceStats === 'function'
-        && typeof wgs84ToHTRS96 === 'function';
+        && typeof corridorClearanceStats === 'function';
 }
 
 function corridorEditorPlanarLength(pointsXY) {
@@ -407,7 +417,7 @@ function corridorEditorGeometryToPlanarRings(geometry) {
     return (rings || [])
         .filter(ring => Array.isArray(ring) && ring.length >= 3)
         .map(ring => ring
-            .map(pair => (Array.isArray(pair) ? wgs84ToHTRS96(pair[1], pair[0]) : null))
+            .map(pair => (Array.isArray(pair) ? corridorEditorFrame().latLngToMetric(pair[1], pair[0]) : null))
             .filter(xy => Array.isArray(xy) && Number.isFinite(xy[0]) && Number.isFinite(xy[1])))
         .filter(ring => ring.length >= 3);
 }
@@ -501,9 +511,10 @@ function corridorEditorCurrentEdgeFeatures() {
     const features = [];
     if (!state || typeof calculateRoadPolygon !== 'function' || typeof corridorFeatureFromLatLngRing !== 'function') return features;
     const width = corridorProfileWidth(state.profile);
+    const frame = corridorEditorFrame();
     corridorEditorScopedSegments().forEach(segment => {
         for (let i = 0; i < segment.length - 1; i += 1) {
-            const ring = calculateRoadPolygon([segment[i], segment[i + 1]], width);
+            const ring = calculateRoadPolygon([segment[i], segment[i + 1]], width, frame);
             const feature = ring ? corridorFeatureFromLatLngRing(ring) : null;
             if (feature) features.push(feature);
         }
@@ -528,7 +539,7 @@ function corridorEditorEnsureClearance() {
     let chain = 0;
     const samplesBySegment = corridorEditorScopedSegments().map(segment => {
         const planar = segment
-            .map(point => wgs84ToHTRS96(point.lat, point.lng))
+            .map(point => corridorEditorFrame().latLngToMetric(point.lat, point.lng))
             .filter(xy => Array.isArray(xy) && Number.isFinite(xy[0]) && Number.isFinite(xy[1]));
         if (planar.length < 2) return [];
         const samples = corridorClearanceSamples(planar, obstacles, { maxDistance: CORRIDOR_CLEARANCE_MAX });
@@ -616,7 +627,7 @@ function corridorEditorWhatIfWithout(clearance, obstacleId) {
     const remaining = clearance.obstacles.filter(obstacle => obstacle.id !== obstacleId);
     const flat = [];
     corridorEditorScopedSegments().forEach(segment => {
-        const planar = segment.map(point => wgs84ToHTRS96(point.lat, point.lng));
+        const planar = segment.map(point => corridorEditorFrame().latLngToMetric(point.lat, point.lng));
         corridorClearanceSamples(planar, remaining, { maxDistance: CORRIDOR_CLEARANCE_MAX })
             .forEach(sample => flat.push(sample));
     });
@@ -809,7 +820,7 @@ function corridorEditorRenderClearanceOverlays() {
     corridorEditorClearClearanceOverlays();
     const state = corridorEditorState;
     if (!state || state.activeTab !== 'corridor' || typeof map === 'undefined' || !map || typeof L === 'undefined') return;
-    if (!corridorEditorClearanceReady() || typeof htrs96ToWGS84 !== 'function') return;
+    if (!corridorEditorClearanceReady()) return;
     const clearance = corridorEditorEnsureClearance();
     if (!clearance || !clearance.flat.length) return;
     const stats = corridorClearanceStats(clearance.flat, corridorProfileWidth(state.profile), { maxDistance: CORRIDOR_CLEARANCE_MAX });
@@ -817,7 +828,7 @@ function corridorEditorRenderClearanceOverlays() {
     if (typeof ensureCorridorStripsPane === 'function') ensureCorridorStripsPane();
     const pane = (typeof CORRIDOR_STRIPS_PANE !== 'undefined') ? CORRIDOR_STRIPS_PANE : undefined;
     const toLatLng = ([xCoord, yCoord]) => {
-        const [lat, lng] = htrs96ToWGS84(xCoord, yCoord);
+        const [lat, lng] = corridorEditorFrame().metricToLatLng(xCoord, yCoord);
         return { lat, lng };
     };
 
@@ -1020,7 +1031,7 @@ function corridorEditorEdgeFillCuts(side, segment, planar, config, maxOffset) {
         });
         if (!ring) return null;
         return corridorFeatureFromLatLngRing(ring.map(([xCoord, yCoord]) => {
-            const [lat, lng] = htrs96ToWGS84(xCoord, yCoord);
+            const [lat, lng] = corridorEditorFrame().metricToLatLng(xCoord, yCoord);
             return { lat, lng };
         }));
     }));
@@ -1061,7 +1072,7 @@ function corridorEditorEdgeFillRegions() {
     const segments = corridorEditorScopedSegments();
     const held = segments.map(segment => {
         const planar = segment
-            .map(point => wgs84ToHTRS96(point.lat, point.lng))
+            .map(point => corridorEditorFrame().latLngToMetric(point.lat, point.lng))
             .filter(xy => Array.isArray(xy) && Number.isFinite(xy[0]) && Number.isFinite(xy[1]));
         return planar.length >= 2 ? corridorEditorHeldEndpointsFor(planar) : { start: false, end: false };
     });
@@ -1072,7 +1083,8 @@ function corridorEditorEdgeFillRegions() {
         surveys: corridorEditorBuildingSurveys(),
         segments,
         heldEndpoints: held,
-        profile: state.profile
+        profile: state.profile,
+        frame: corridorEditorFrame()
     }) || [];
     out.forEach(region => regions.push(region));
     state.edgeFillCache = { key: cacheKey, regions };
@@ -1132,7 +1144,7 @@ async function corridorEditorApplyFitShift(shiftMeters) {
     const segments = corridorEditorScopedSegments();
     if (segments.length !== 1) return;
 
-    const planar = segments[0].map(point => wgs84ToHTRS96(point.lat, point.lng));
+    const planar = segments[0].map(point => corridorEditorFrame().latLngToMetric(point.lat, point.lng));
     const held = corridorHeldEndpoints(planar, corridorEditorOtherCenterlinesPlanar(), 1);
     const taper = Math.max(10, corridorProfileWidth(state.profile));
     let working = planar;
@@ -1147,7 +1159,7 @@ async function corridorEditorApplyFitShift(shiftMeters) {
     const shifted = offsets ? offsetPolylineVariable(working, offsets) : null;
     if (!shifted) return;
     const moved = shifted.map(([xCoord, yCoord]) => {
-        const [lat, lng] = htrs96ToWGS84(xCoord, yCoord);
+        const [lat, lng] = corridorEditorFrame().metricToLatLng(xCoord, yCoord);
         return { lat, lng };
     });
 
@@ -1183,9 +1195,8 @@ function corridorEditorOtherCenterlinesPlanar() {
     const state = corridorEditorState;
     const others = [];
     if (!state) return others;
-    const toPlanar = segment => segment
-        .map(point => wgs84ToHTRS96(point.lat, point.lng))
-        .filter(xy => Array.isArray(xy) && Number.isFinite(xy[0]) && Number.isFinite(xy[1]));
+    const frame = corridorEditorFrame();
+    const toPlanar = segment => segment.map(point => frame.latLngToMetric(point.lat, point.lng));
 
     if (state.scope === 'segment' && state.segmentId && typeof corridorCenterlineOf === 'function') {
         const ids = Array.isArray(state.definition.segmentIds) ? state.definition.segmentIds : [];
@@ -1202,9 +1213,15 @@ function corridorEditorOtherCenterlinesPlanar() {
             const key = (typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId;
             if (String(key) === String(state.proposalKey)) return;
             if (typeof isProposalApplied === 'function' && !isProposalApplied(proposal)) return;
-            corridorCenterlineOf(proposal.roadProposal.definition).forEach(segment => others.push(toPlanar(segment)));
+            // Only a centre line inside this corridor's frame can be welded to; one farther away
+            // (another region, another city) is no neighbour and has no place in these metres.
+            corridorCenterlineOf(proposal.roadProposal.definition).forEach(segment => {
+                if (frame.contains(segment)) others.push(toPlanar(segment));
+            });
         });
-    } catch (_) { }
+    } catch (error) {
+        console.error(`[${new Date().toISOString()}] [corridorEditor] could not collect the other centre lines to weld to`, error);
+    }
     return others.filter(poly => poly.length >= 2);
 }
 
@@ -1324,14 +1341,13 @@ function corridorEditorBindChart(body) {
 // them); the tick draws above the road in its own pane. Replaced by the next click, cleared with
 // the other Corridor-tab overlays.
 function corridorEditorShowChartProbe(sample) {
-    if (!sample || typeof map === 'undefined' || !map || typeof L === 'undefined'
-        || typeof htrs96ToWGS84 !== 'function') return;
+    if (!sample || typeof map === 'undefined' || !map || typeof L === 'undefined') return;
     if (corridorEditorChartProbeLayer) {
         try { map.removeLayer(corridorEditorChartProbeLayer); } catch (_) { }
         corridorEditorChartProbeLayer = null;
     }
     const toLatLng = ([xCoord, yCoord]) => {
-        const [lat, lng] = htrs96ToWGS84(xCoord, yCoord);
+        const [lat, lng] = corridorEditorFrame().metricToLatLng(xCoord, yCoord);
         return { lat, lng };
     };
     const nx = -Math.sin(sample.angle);
@@ -2220,6 +2236,9 @@ function openCorridorProfileEditor(proposalIdOrHash) {
         mode: 'proposal',
         source,
         definition,
+        // Every metre of this editing session is in the corridor's own frame, frozen while it is
+        // open (projections.md §2): never the active city's projection, never the viewport.
+        frame: window.__corridorFootprint.frameForDefinition(definition),
         scope,
         segmentId,
         canScopeSegment: !!segmentId && segmentIds.length > 1,

@@ -926,6 +926,11 @@ async function handleProposalListItemClick(event) {
                 markProposalCardDownloaded(proposalIdAttr, proposal);
             }
         } catch (error) {
+            // Another city's proposal (the explore list shows every city's): it opens in its city.
+            if (error?.code === 'proposal-in-other-city') {
+                await openProposalInItsCity(serverId, error.cityId);
+                return;
+            }
             console.error('Failed to download server proposal on click', serverId, error);
             const t = getProposalI18nHelper();
             updateStatus(t('modal.roadWidth.proposalList.downloadError', 'Failed to download proposal'));
@@ -977,6 +982,10 @@ async function handleProposalListDetailsClick(event) {
         try {
             proposal = await importServerProposal(proposalId);
         } catch (error) {
+            if (error?.code === 'proposal-in-other-city') {
+                await openProposalInItsCity(proposalId, error.cityId);
+                return;
+            }
             console.error('Failed to download server proposal for details', proposalId, error);
             updateStatus(getProposalI18nHelper()('modal.roadWidth.proposalList.downloadError', 'Failed to download proposal'));
             return;

@@ -30,9 +30,17 @@
     const NUDGE_M = 0.1; // a zero-length edge is nudged this far due east, deterministically
     const NODE_KEY_M = 1e-3;
 
+    // A dependency from the browser global or, in node, require(). The global is either the function
+    // itself (a classic script's top-level `function corridorSegmentEntries`) or a namespace holding
+    // it (`window.__corridorLevels.acquiringSpans`); `pick` names the function in the namespace and in
+    // the required module.
     function fromGlobalOrRequire(globalKey, modulePath, pick) {
         const found = global && global[globalKey];
-        if (found && (!pick || typeof found[pick] === 'function')) return pick ? found[pick] : found;
+        if (found) {
+            if (!pick) return found;
+            if (typeof found === 'function') return found;
+            if (typeof found[pick] === 'function') return found[pick];
+        }
         if (typeof require === 'function') {
             const loaded = require(modulePath);
             return pick ? loaded[pick] : loaded;
@@ -113,7 +121,9 @@
         throw new Error(`corridor-footprint: union failed${lastError ? `: ${lastError.message}` : ''}`);
     }
 
-    // Which ORIGINAL stretch a piece belongs to: split pieces are `${sourceId}~2`, `~3`, …
+    // Which ORIGINAL stretch a piece belongs to. splitCorridorSelfJunctions derives a split piece's id
+    // as `${sourceId}~2`, `~3`… so everything before the first `~` names the stretch the pieces came
+    // from — the thing that used to be one polyline.
     function baseStretchId(segmentId) {
         if (segmentId === null || segmentId === undefined) return null;
         const text = String(segmentId);
@@ -121,9 +131,25 @@
         return cut === -1 ? text : text.slice(0, cut);
     }
 
-    // Wedges at nodes where two pieces of one stretch meet (see road-drawing.js's rationale: a bend
-    // that a junction split turned into two arm ends still owes its wedge; wedging every pair at a
-    // node would pave a phantom arm at every T).
+    // The outer gap at a bend is filled by a bevel wedge, and the per-arm construction only adds one
+    // at a vertex INTERIOR to a polyline. The moment topology splits a road at a junction, a bend that
+    // was interior becomes the shared END of two arms — and the wedge would silently disappear, taking
+    // a sliver of the footprint with it. That is not cosmetic: the corridor's take is its footprint,
+    // so a lost sliver re-cuts the parcels underneath, and anything standing on ground that stops
+    // being whole is swept off the map. (It bit a row-house proposal several junctions away from an
+    // edited node.)
+    //
+    // A joint belongs to the NODE, not to whichever polyline happens to contain it, so it is rebuilt
+    // here from the arms that meet — but ONLY between two pieces of the same original stretch. That
+    // pair is precisely what used to be one polyline bending through an interior vertex, so restoring
+    // its wedge restores the exact pre-split footprint and nothing else.
+    //
+    // Wedging every pair of arms at a node instead is wrong, and visibly so: at a T it fills the outer
+    // corners between the branch and each half of the through road, which together pave a patch on
+    // the FAR side of the through road — a phantom fourth arm, showing up as an extra strip of footway
+    // sticking out of the junction. A junction's corners are the junction treatment's business; the
+    // footprint only owes the road its own continuity. The wider arm sets the wedge, so it always
+    // reaches the outer corner that needs covering.
     function sharedNodeWedges(arms) {
         const key = p => `${Math.round(p[0] / NODE_KEY_M)},${Math.round(p[1] / NODE_KEY_M)}`;
         const byNode = new Map();
@@ -190,14 +216,49 @@
         return positions;
     }
 
+    // The footprint of a set of arms — [{ points: [{lat, lng}, …], width, stretchId? }] — in `frame`,
+    // as GeoJSON (Polygon or MultiPolygon), or null when no arm has an edge. The recipe above without
+    // a definition: what the drawing tool and the editor build their in-progress pieces with, so a
+    // preview is constructed exactly like the land the server stores. `stretchId` is already the BASE
+    // stretch id (baseStretchId). Throws on a non-finite point, a width that is not positive, a point
+    // outside the frame, or a failed union.
+    function footprintOfArms(arms, frame) {
+        const turf = turfLib();
+        let accumulated = null;
+        const metricArms = [];
+        (Array.isArray(arms) ? arms : []).forEach(arm => {
+            const width = Number(arm && arm.width);
+            if (!finite(width) || width <= 0) throw new Error('corridor-footprint: an arm has no width');
+            const points = Array.isArray(arm.points) ? arm.points : [];
+            if (points.length < 2) return;
+            const metric = points.map(p => {
+                if (!p || !finite(p.lat) || !finite(p.lng)) throw new Error('corridor-footprint: a centre-line point is not finite');
+                return frame.toMetric([p.lng, p.lat]);
+            });
+            for (let i = 0; i < metric.length - 1; i += 1) {
+                accumulated = unionFeatures(turf, accumulated, rectangle(metric[i], metric[i + 1], width));
+                if (i >= 1) {
+                    const wedge = bendWedge(metric[i - 1], metric[i], metric[i + 1], width);
+                    if (wedge) accumulated = unionFeatures(turf, accumulated, wedge);
+                }
+            }
+            metricArms.push({ points: metric, width, stretchId: arm.stretchId === undefined ? null : arm.stretchId });
+        });
+        if (!accumulated) return null;
+        sharedNodeWedges(metricArms).forEach(wedge => { accumulated = unionFeatures(turf, accumulated, wedge); });
+
+        const geometry = accumulated.geometry;
+        const toLngLatRing = ring => densifyRing(ring, DENSIFY_M).map(xy => frame.toLngLat(xy));
+        if (geometry.type === 'Polygon') return { type: 'Polygon', coordinates: geometry.coordinates.map(toLngLatRing) };
+        return { type: 'MultiPolygon', coordinates: geometry.coordinates.map(rings => rings.map(toLngLatRing)) };
+    }
+
     // The footprint of `definition` in `frame`, as GeoJSON (Polygon, or MultiPolygon when tunnels
     // split it). Throws on any point outside the frame, any non-finite input, or a failed union.
     function footprintIn(definition, frame) {
-        const turf = turfLib();
         const entries = segmentEntries(definition);
         if (!entries.length) throw new Error('corridor-footprint: the definition has no centre line');
         const arms = [];
-        let accumulated = null;
         entries.forEach(entry => {
             // corridorSegmentEntries falls back to 10 m when neither a profile nor `width` says
             // anything; a footprint must not be built from a width nobody declared.
@@ -207,27 +268,22 @@
             if (!finite(width) || width <= 0) throw new Error(`corridor-footprint: segment ${entry.segmentId ?? ''} has no width`);
             acquiringSpans(entry.points).forEach(span => {
                 if (span.length < 2) return;
-                const metric = span.map(p => {
-                    if (!p || !finite(p.lat) || !finite(p.lng)) throw new Error('corridor-footprint: a centre-line point is not finite');
-                    return frame.toMetric([p.lng, p.lat]);
-                });
-                for (let i = 0; i < metric.length - 1; i += 1) {
-                    accumulated = unionFeatures(turf, accumulated, rectangle(metric[i], metric[i + 1], width));
-                    if (i >= 1) {
-                        const wedge = bendWedge(metric[i - 1], metric[i], metric[i + 1], width);
-                        if (wedge) accumulated = unionFeatures(turf, accumulated, wedge);
-                    }
-                }
-                arms.push({ points: metric, width, stretchId: baseStretchId(entry.segmentId) });
+                arms.push({ points: span, width, stretchId: baseStretchId(entry.segmentId) });
             });
         });
-        if (!accumulated) throw new Error('corridor-footprint: nothing acquires the surface (every edge is underground)');
-        sharedNodeWedges(arms).forEach(wedge => { accumulated = unionFeatures(turf, accumulated, wedge); });
+        const polygon = footprintOfArms(arms, frame);
+        if (!polygon) throw new Error('corridor-footprint: nothing acquires the surface (every edge is underground)');
+        return polygon;
+    }
 
-        const geometry = accumulated.geometry;
-        const toLngLatRing = ring => densifyRing(ring, DENSIFY_M).map(xy => frame.toLngLat(xy));
-        if (geometry.type === 'Polygon') return { type: 'Polygon', coordinates: geometry.coordinates.map(toLngLatRing) };
-        return { type: 'MultiPolygon', coordinates: geometry.coordinates.map(rings => rings.map(toLngLatRing)) };
+    // The frame a corridor is built, edited and drawn in: its persisted provenance (a prepared or
+    // published corridor), else the canonical frame of its own authored centre line — the frame the
+    // server would materialise it in. Never a city's projection, never the viewport.
+    function frameForDefinition(definition) {
+        const api = frames();
+        const provenance = definition && definition.constructionFrame;
+        if (provenance && provenance.kind === api.CONTRACT.KIND) return api.frameFromProvenance(provenance);
+        return api.frameFor(centerlinePositions(definition));
     }
 
     // The geodesic diameter bound of a footprint, conservatively: its metric bbox diagonal.
@@ -266,5 +322,5 @@
         return { polygon, constructionFrame: { ...frame.provenance(), algorithm: ALGORITHM, ...versions() } };
     }
 
-    return Object.freeze({ ALGORITHM, SNAP_M, DENSIFY_M, rectangle, bendWedge, sharedNodeWedges, densifyRing, centerlinePositions, footprintIn, materialize });
+    return Object.freeze({ ALGORITHM, SNAP_M, DENSIFY_M, rectangle, bendWedge, sharedNodeWedges, densifyRing, baseStretchId, centerlinePositions, footprintOfArms, footprintIn, frameForDefinition, materialize });
 });

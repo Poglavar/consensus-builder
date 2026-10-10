@@ -188,7 +188,7 @@ function renderCorridorBuildingTunnels(tunnels, group, pane) {
     });
 }
 
-function renderCorridorGradeSeparations(records, group, pane) {
+function renderCorridorGradeSeparations(records, group, pane, frame) {
     if (!Array.isArray(records) || !group) return;
     records.forEach(record => {
         if (!record?.from || !record?.crossing || !record?.to) return;
@@ -202,7 +202,7 @@ function renderCorridorGradeSeparations(records, group, pane) {
         // is in geographic coordinates, so it scales with the map for free and ends square.
         const width = Number(record.width);
         const deck = (typeof calculateRoadPolygon === 'function' && Number.isFinite(width) && width > 0)
-            ? calculateRoadPolygon([record.from, record.crossing, record.to], width)
+            ? calculateRoadPolygon([record.from, record.crossing, record.to], width, frame)
             : null;
         if (!deck) {
             console.warn('[corridor] grade separation has no usable width; skipping deck', record.mode, record.width);
@@ -280,6 +280,7 @@ const CORRIDOR_SLEEPER_WEIGHT = 1.1;
 // One track: a pair of rails `gauge` apart, and the sleepers under them, laid along the centerline
 // offset by `centerlineOffset` (the rail lane's own centre).
 function renderCorridorRailLane(htrsPoints, centerlineOffset, gauge, options, layerGroup) {
+    const frame = options.frame;
     const railOffset = corridorRailGauge(gauge) / 2000; // half the gauge, mm -> m
     const renderer = corridorRailRenderer();
     const pane = options.pane || undefined;
@@ -309,7 +310,7 @@ function renderCorridorRailLane(htrsPoints, centerlineOffset, gauge, options, la
             direction = length > 0.01 ? [dx / length, dy / length] : previous;
         }
         if (!direction) {
-            const [lat, lng] = htrs96ToWGS84(point[0], point[1]);
+            const [lat, lng] = frame.metricToLatLng(point[0], point[1]);
             leftRailPoints.push(L.latLng(lat, lng));
             rightRailPoints.push(L.latLng(lat, lng));
             continue;
@@ -320,11 +321,11 @@ function renderCorridorRailLane(htrsPoints, centerlineOffset, gauge, options, la
             point[0] + perpendicular[0] * centerlineOffset,
             point[1] + perpendicular[1] * centerlineOffset
         ];
-        const [leftLat, leftLng] = htrs96ToWGS84(
+        const [leftLat, leftLng] = frame.metricToLatLng(
             trackCenter[0] + perpendicular[0] * railOffset,
             trackCenter[1] + perpendicular[1] * railOffset
         );
-        const [rightLat, rightLng] = htrs96ToWGS84(
+        const [rightLat, rightLng] = frame.metricToLatLng(
             trackCenter[0] - perpendicular[0] * railOffset,
             trackCenter[1] - perpendicular[1] * railOffset
         );
@@ -359,10 +360,10 @@ function renderCorridorRailLane(htrsPoints, centerlineOffset, gauge, options, la
                 start[1] + dy * t + perpendicular[1] * centerlineOffset
             ];
             const half = CORRIDOR_SLEEPER_LENGTH / 2;
-            const [startLat, startLng] = htrs96ToWGS84(
+            const [startLat, startLng] = frame.metricToLatLng(
                 center[0] + perpendicular[0] * half, center[1] + perpendicular[1] * half
             );
-            const [endLat, endLng] = htrs96ToWGS84(
+            const [endLat, endLng] = frame.metricToLatLng(
                 center[0] - perpendicular[0] * half, center[1] - perpendicular[1] * half
             );
             sleepers.push([L.latLng(startLat, startLng), L.latLng(endLat, endLng)]);
@@ -379,18 +380,21 @@ function renderCorridorRailLane(htrsPoints, centerlineOffset, gauge, options, la
 // Every track of a corridor: one per RAIL LANE of its cross-section, at that lane's gauge, on that
 // lane's centre. A corridor with no rail lane has no rails — which is the whole rule.
 function renderCorridorRails(centerlines, profile, group, options = {}) {
-    if (typeof wgs84ToHTRS96 !== 'function' || typeof corridorStripSpans !== 'function') return;
+    if (typeof corridorStripSpans !== 'function') return;
+    const frame = options.frame;
+    assertCorridorFrame(frame, 'renderCorridorRails');
     const railLanes = corridorStripSpans(profile).filter(strip => strip.type === 'rail');
     if (!railLanes.length) return;
 
     const railOptions = {
         pane: options.pane,
         railColor: options.railColor || '#333333',
-        sleeperColor: options.sleeperColor || '#8B4513'
+        sleeperColor: options.sleeperColor || '#8B4513',
+        frame
     };
     (centerlines || []).forEach(centerline => {
         if (!Array.isArray(centerline) || centerline.length < 2) return;
-        const htrsPoints = centerline.map(point => wgs84ToHTRS96(point.lat, point.lng));
+        const htrsPoints = centerline.map(point => frame.latLngToMetric(point.lat, point.lng));
         railLanes.forEach(lane => {
             renderCorridorRailLane(htrsPoints, (lane.left + lane.right) / 2, lane.gauge, railOptions, group);
         });
@@ -488,15 +492,16 @@ function renderCorridorStrips(strips, options = {}) {
         renderCorridorRails(options.centerlines, options.profile, group, {
             pane: options.pane,
             railColor: options.railColor,
-            sleeperColor: options.sleeperColor
+            sleeperColor: options.sleeperColor,
+            frame: options.frame
         });
         // Parking bays come with the cross-section, like rails: a parking lane in the profile paints its
         // bays right here, so drawn roads, applied roads and imported OSM streets all get them at once.
         if (typeof buildCorridorParkingBays === 'function') {
-            renderCorridorParkingBays(buildCorridorParkingBays(options.centerlines, options.profile), group, options.pane);
+            renderCorridorParkingBays(buildCorridorParkingBays(options.centerlines, options.profile, options.frame), group, options.pane);
         }
         if (typeof buildCorridorDirectionArrows === 'function') {
-            renderCorridorDirectionArrows(buildCorridorDirectionArrows(options.centerlines, options.profile), group, options.pane);
+            renderCorridorDirectionArrows(buildCorridorDirectionArrows(options.centerlines, options.profile, options.frame), group, options.pane);
         }
     }
     renderCorridorLaneMarkings(options.markings, group, options.pane);
@@ -589,7 +594,7 @@ function renderSelectedCorridorSegmentHighlight() {
     const entries = (typeof corridorSegmentEntries === 'function') ? corridorSegmentEntries(definition) : [];
     const entry = entries.find(candidate => candidate.segmentId === String(clicked.segmentId));
     if (!entry || typeof calculateRoadPolygon !== 'function') return;
-    const polygon = calculateRoadPolygon(entry.points, entry.width);
+    const polygon = calculateRoadPolygon(entry.points, entry.width, window.__corridorFootprint.frameForDefinition(definition));
     if (!polygon) return;
     ensureCorridorStripsPane();
     selectedSegmentHighlightLayer = L.polygon(polygon, {
@@ -681,7 +686,7 @@ function clearAppliedCorridorHover(proposalKey) {
     if (typeof highlightFeaturesForHover === 'function') highlightFeaturesForHover([]);
 }
 
-function renderAppliedCorridorHitTargets(strips, proposal, group, definition, segmentEntries = null) {
+function renderAppliedCorridorHitTargets(strips, proposal, group, definition, segmentEntries = null, frame = null) {
     if (!Array.isArray(strips) || !proposal || !group) return;
     ensureCorridorHitPane();
     const proposalKey = String((typeof getProposalKey === 'function' ? getProposalKey(proposal) : null) || proposal.proposalId);
@@ -769,7 +774,7 @@ function renderAppliedCorridorHitTargets(strips, proposal, group, definition, se
     if (Array.isArray(segmentEntries) && typeof calculateRoadPolygon === 'function') {
         segmentEntries.forEach(entry => {
             if (!entry.segmentId || !Array.isArray(entry.points) || entry.points.length < 2) return;
-            const polygon = calculateRoadPolygon(entry.points, entry.width);
+            const polygon = calculateRoadPolygon(entry.points, entry.width, frame);
             if (!polygon) return;
             const hit = L.polygon(polygon, hitOptions)
                 .on('click', event => { rememberSegment(entry.segmentId); forwardAppliedCorridorClick(proposal, event); });
@@ -907,6 +912,8 @@ function buildCorridorRender(proposal) {
     try {
         const fallbackProfile = corridorProfileForRender(proposal, definition);
         const centerline = corridorCenterlineOf(definition);
+        // Everything this corridor draws is measured in its own frame (projections.md §2).
+        const frame = centerline.length ? window.__corridorFootprint.frameForDefinition(definition) : null;
         // Per-segment cross-sections: each segment renders with ITS profile; junction patches
         // (sized per arm) then cover the seams where different widths meet.
         const entries = (fallbackProfile && centerline.length)
@@ -920,23 +927,23 @@ function buildCorridorRender(proposal) {
         entry.bbox = corridorRenderBbox(definition, entries);
         if (entries.length) {
             const markingsByEntry = (typeof buildCorridorLaneMarkingsForEntries === 'function')
-                ? buildCorridorLaneMarkingsForEntries(entries)
-                : entries.map(candidate => buildCorridorLaneMarkings([candidate.points], candidate.profile));
+                ? buildCorridorLaneMarkingsForEntries(entries, frame)
+                : entries.map(candidate => buildCorridorLaneMarkings([candidate.points], candidate.profile, frame));
             const allStrips = [];
             const markings = [];
             const ownerClass = corridorOwnerClass(corridorId);
             entries.forEach((candidate, entryIndex) => {
-                const strips = buildCorridorStrips([candidate.points], candidate.profile);
+                const strips = buildCorridorStrips([candidate.points], candidate.profile, frame);
                 // Trees are physical objects and stay; bike/pedestrian lane explainers are clutter
                 // on the map — lane meaning lives in the cross-section editor.
-                const decorations = ((typeof buildCorridorDecorations === 'function') ? buildCorridorDecorations([candidate.points], candidate.profile) : [])
+                const decorations = ((typeof buildCorridorDecorations === 'function') ? buildCorridorDecorations([candidate.points], candidate.profile, frame) : [])
                     .filter(decoration => decoration.kind === 'tree');
                 const segmentGroup = renderCorridorStrips(strips, {
                     pane: CORRIDOR_STRIPS_PANE, markings: [], decorations, junctions: [], ownerClass,
                     // A placed corridor's rails and sleepers are both black, read against the
                     // ballast texture under them rather than against each other's colour.
                     centerlines: [candidate.points], profile: candidate.profile,
-                    railColor: '#000000', sleeperColor: '#000000'
+                    railColor: '#000000', sleeperColor: '#000000', frame
                 });
                 if (segmentGroup) {
                     segmentGroup.addTo(group);
@@ -950,13 +957,13 @@ function buildCorridorRender(proposal) {
                 // rather than the drawn minimum. Over the strips, under the junction patches' pane.
                 renderCorridorEdgeFill(definition, group, ownerClass);
                 const junctions = (typeof buildCorridorJunctionTreatmentsForEntries === 'function')
-                    ? buildCorridorJunctionTreatmentsForEntries(entries)
+                    ? buildCorridorJunctionTreatmentsForEntries(entries, frame)
                     : [];
                 if (junctions.length) renderCorridorJunctions(junctions, group, CORRIDOR_JUNCTIONS_PANE);
                 // Through lanes are most important in the conflict area: their pane sits above
                 // every junction patch, own or shared, so the crossroads never erase them.
                 renderCorridorLaneMarkings(markings, group, CORRIDOR_MARKINGS_PANE);
-                renderAppliedCorridorHitTargets(allStrips, proposal, group, definition, entries);
+                renderAppliedCorridorHitTargets(allStrips, proposal, group, definition, entries, frame);
                 const gradeSpans = (typeof gradeSeparationSpanRecords === 'function')
                     ? gradeSeparationSpanRecords(definition.gradeSeparations || [])
                     : [];
@@ -981,7 +988,7 @@ function buildCorridorRender(proposal) {
         const tunnels = Array.isArray(definition.tunnels) ? definition.tunnels : [];
         const gradeSeparations = Array.isArray(definition.gradeSeparations) ? definition.gradeSeparations : [];
         if (tunnels.length) renderCorridorBuildingTunnels(tunnels, group, CORRIDOR_STRIPS_PANE);
-        if (gradeSeparations.length) renderCorridorGradeSeparations(gradeSeparations, group, CORRIDOR_STRIPS_PANE);
+        if (gradeSeparations.length) renderCorridorGradeSeparations(gradeSeparations, group, CORRIDOR_STRIPS_PANE, frame);
         entry.drawn = entry.strips > 0 || tunnels.length > 0 || gradeSeparations.length > 0;
     } catch (error) {
         console.error('[corridor-render] strips failed for proposal', proposal?.proposalId, error);

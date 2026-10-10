@@ -1,22 +1,12 @@
 // Pure road/corridor geometry, lifted out of road-drawing.js so it can be unit-tested headless.
-// Everything here is plain math over {lat,lng} points and HTRS96 metres — the only couplings are
-// the projection functions (wgs84ToHTRS96 / htrs96ToWGS84) and Leaflet's L.latLng factory, both of
-// which are resolved from injected deps (node tests) or the browser globals. No map, no DOM.
-//
-// This module starts with createRectangularRoadSegment because it carried a live bug: the
-// degenerate near-zero-length branch picked its direction with Math.random(), so two clicks in the
-// same spot produced a different saved polygon — and a different geometryHash — on every run.
-// proposal-manager.js had a second, DIVERGED copy that returned null in that case instead. One
-// deterministic copy ends both problems.
+// Everything here is plain math over {lat,lng} points; where metres are needed it measures in a
+// frame on the points it is given (metric-frame.js — a bounded gesture, projections.md §2), never a
+// city's projection. The only other coupling is Leaflet's L.latLng factory, resolved from injected
+// deps (node tests) or the browser global. No map, no DOM. A corridor's land is built by
+// corridor-footprint.js, not here.
 
 (function (global) {
     'use strict';
-
-    function resolveDep(deps, name) {
-        if (deps && typeof deps[name] === 'function') return deps[name];
-        if (typeof global[name] === 'function') return global[name];
-        return null;
-    }
 
     function makeLatLng(deps, lat, lng) {
         if (deps && typeof deps.latLng === 'function') return deps.latLng(lat, lng);
@@ -24,84 +14,16 @@
         return { lat, lng };
     }
 
-    function isValidHtrsPoint(point) {
-        return Array.isArray(point) && point.length === 2 && isFinite(point[0]) && isFinite(point[1]);
-    }
-
-    // Build the WGS84 corner ring of a width-wide rectangle running from point1 to point2.
-    // Returns an array of latLng corners (closed ring) or null if the inputs can't form one.
-    // deps (optional): { wgs84ToHTRS96, htrs96ToWGS84, latLng } — defaults to the browser globals.
-    function createRectangularRoadSegment(point1, point2, width, deps = {}) {
-        const wgs84ToHTRS96 = resolveDep(deps, 'wgs84ToHTRS96');
-        const htrs96ToWGS84 = resolveDep(deps, 'htrs96ToWGS84');
-        if (!wgs84ToHTRS96 || !htrs96ToWGS84) {
-            console.warn('createRectangularRoadSegment: projection functions unavailable');
-            return null;
-        }
-
-        if (!point1 || !point2 || !isFinite(width) || width <= 0) {
-            console.warn('Invalid inputs to createRectangularRoadSegment');
-            return null;
-        }
-        if (!isFinite(point1.lat) || !isFinite(point1.lng) ||
-            !isFinite(point2.lat) || !isFinite(point2.lng)) {
-            console.warn('Invalid coordinates in createRectangularRoadSegment');
-            return null;
-        }
-
-        const htrsPoint1 = wgs84ToHTRS96(point1.lat, point1.lng);
-        let htrsPoint2 = wgs84ToHTRS96(point2.lat, point2.lng);
-        if (!isValidHtrsPoint(htrsPoint1) || !isValidHtrsPoint(htrsPoint2)) {
-            console.warn('Invalid HTRS points in createRectangularRoadSegment');
-            return null;
-        }
-
-        let dx = htrsPoint2[0] - htrsPoint1[0];
-        let dy = htrsPoint2[1] - htrsPoint1[1];
-        let length = Math.sqrt(dx * dx + dy * dy);
-
-        // Near-zero-length: nudge the far point a fixed 10 cm DUE EAST so the rectangle is still
-        // well-formed. Deterministic on purpose — this was Math.random() and made the footprint
-        // (and its geometryHash) irreproducible for coincident clicks.
-        if (length < 0.001) {
-            const minLength = 0.1; // 10 cm
-            htrsPoint2 = [htrsPoint1[0] + minLength, htrsPoint1[1]];
-            dx = minLength;
-            dy = 0;
-            length = minLength;
-        }
-
-        const perpX = -dy / length;
-        const perpY = dx / length;
-        const halfWidth = width / 2;
-
-        const corners = [
-            [htrsPoint1[0] + perpX * halfWidth, htrsPoint1[1] + perpY * halfWidth],
-            [htrsPoint2[0] + perpX * halfWidth, htrsPoint2[1] + perpY * halfWidth],
-            [htrsPoint2[0] - perpX * halfWidth, htrsPoint2[1] - perpY * halfWidth],
-            [htrsPoint1[0] - perpX * halfWidth, htrsPoint1[1] - perpY * halfWidth],
-            [htrsPoint1[0] + perpX * halfWidth, htrsPoint1[1] + perpY * halfWidth]
-        ];
-
-        const wgsCorners = [];
-        for (const corner of corners) {
-            const [lat, lng] = htrs96ToWGS84(corner[0], corner[1]);
-            if (isFinite(lat) && isFinite(lng)) {
-                wgsCorners.push(makeLatLng(deps, lat, lng));
-            }
-        }
-
-        if (wgsCorners.length < 4) {
-            console.warn('Not enough valid corners for rectangle');
-            return null;
-        }
-        return wgsCorners;
+    function metricFrames() {
+        if (global.__metricFrame) return global.__metricFrame;
+        if (typeof require === 'function') return require('./metric-frame.js');
+        throw new Error('corridor-geometry: metric-frame.js is not loaded');
     }
 
     // ---- Centerline graph geometry (moved out of road-drawing.js) ----------------------------
     // These operate on {lat,lng} centerline segments. External deps (corridorTunnelEdgeKey,
-    // calculateSegmentLengthMeters, wgs84ToHTRS96) are resolved from the global scope at call time
-    // and every reference is typeof-guarded or try/caught, so the pure geometry is testable alone.
+    // calculateSegmentLengthMeters) are resolved from the global scope at call time and every
+    // reference is typeof-guarded or try/caught, so the pure geometry is testable alone.
 
     function planarSegmentIntersection(a1, a2, b1, b2) {
         const d1x = a2.lng - a1.lng;
@@ -1034,32 +956,29 @@
         return false;
     }
 
-    // Does a road centerline cross itself? Works in planar metres (wgs84ToHTRS96) to dodge geodesic
-    // edge cases; a false negative would save a self-crossing road with an even-odd hole at the
-    // crossing, so parcels inside the loop are never acquired.
+    // Does a road centerline cross itself? Tested on the edges as straight lines in lng/lat — the way
+    // they are stored and drawn, and the way insertCorridorCrossingNodes intersects them — so no
+    // projection (and no domain) is involved: a crossing is invariant under positive axis scaling. A
+    // false negative would save a self-crossing road with an even-odd hole at the crossing, so
+    // parcels inside the loop are never acquired; an unreadable point is an error, not "no crossing".
     function polylineHasSelfIntersection(latLngPoints) {
         if (!Array.isArray(latLngPoints) || latLngPoints.length < 4) return false;
-
-        const pts = [];
-        for (const p of latLngPoints) {
-            try {
-                const xy = wgs84ToHTRS96(p.lat, p.lng);
-                if (Array.isArray(xy) && xy.length >= 2 && isFinite(xy[0]) && isFinite(xy[1])) {
-                    pts.push({ x: xy[0], y: xy[1] });
-                } else {
-                    return false;
-                }
-            } catch (_) {
-                return false;
+        const pts = latLngPoints.map(p => {
+            if (!p || !Number.isFinite(p.lat) || !Number.isFinite(p.lng)) {
+                throw new Error('polylineHasSelfIntersection: a centre-line point is not finite');
             }
-        }
+            return { x: p.lng, y: p.lat };
+        });
 
+        // A closed loop's first and last edges meet at its closing point: adjacent, not crossing.
+        const closed = pts[0].x === pts[pts.length - 1].x && pts[0].y === pts[pts.length - 1].y;
         for (let i = 0; i < pts.length - 1; i++) {
             const a = pts[i];
             const b = pts[i + 1];
             if (!a || !b) continue;
             for (let j = i + 2; j < pts.length - 1; j++) {
                 if (j === i + 1) continue;
+                if (closed && i === 0 && j === pts.length - 2) continue;
                 const c = pts[j];
                 const d = pts[j + 1];
                 if (!c || !d) continue;
@@ -1238,8 +1157,8 @@
     }
 
     // ---- Track curvature constraints (moved out of road-drawing.js) --------------------------
-    // A track vertex must not create a turn tighter than its speed allows. Pure projection math
-    // (wgs84ToHTRS96 / htrs96ToWGS84 from the runtime global); the audio feedback stays in the UI.
+    // A track vertex must not create a turn tighter than its speed allows. Measured in a frame on the
+    // gesture's own points (a bounded gesture, projections.md §2); the audio feedback stays in the UI.
 
     // Track speed (km/h) → minimum curvature radius (m), from railway engineering standards.
     const TRACK_SPEED_TO_MIN_RADIUS = {
@@ -1253,10 +1172,8 @@
     // Radius (m) of the circle through three lat/lng points. Infinity when the points are collinear
     // or too close (treated as straight).
     function calculateCurvatureRadius(p1, p2, p3) {
-        const toMeters = (latLng) => {
-            const [x, y] = wgs84ToHTRS96(latLng.lat, latLng.lng);
-            return [x, y];
-        };
+        const frame = metricFrames().frameFor([p1, p2, p3]);
+        const toMeters = (latLng) => frame.latLngToMetric(latLng.lat, latLng.lng);
         const a = toMeters(p1);
         const b = toMeters(p2);
         const c = toMeters(p3);
@@ -1289,9 +1206,10 @@
             return { valid: true, adjustedPoint: newPoint, violatesConstraint: false, wasAdjusted: false };
         }
 
-        const [prevX, prevY] = wgs84ToHTRS96(secondLastPoint.lat, secondLastPoint.lng);
-        const [lastX, lastY] = wgs84ToHTRS96(lastPoint.lat, lastPoint.lng);
-        const [newX, newY] = wgs84ToHTRS96(newPoint.lat, newPoint.lng);
+        const frame = metricFrames().frameFor([secondLastPoint, lastPoint, newPoint]);
+        const [prevX, prevY] = frame.latLngToMetric(secondLastPoint.lat, secondLastPoint.lng);
+        const [lastX, lastY] = frame.latLngToMetric(lastPoint.lat, lastPoint.lng);
+        const [newX, newY] = frame.latLngToMetric(newPoint.lat, newPoint.lng);
 
         const prevDx = lastX - prevX;
         const prevDy = lastY - prevY;
@@ -1340,7 +1258,7 @@
             const scale = requiredDist / dist;
             const adjustedX = lastX + dx * scale;
             const adjustedY = lastY + dy * scale;
-            const [adjustedLat, adjustedLng] = htrs96ToWGS84(adjustedX, adjustedY);
+            const [adjustedLat, adjustedLng] = frame.metricToLatLng(adjustedX, adjustedY);
             const adjustedPoint = makeLatLng(deps, adjustedLat, adjustedLng);
             const adjustedRadius = calculateCurvatureRadius(secondLastPoint, lastPoint, adjustedPoint);
             if (adjustedRadius >= minRadius * 0.98) {
@@ -1447,8 +1365,6 @@
     }
 
     const api = {
-        createRectangularRoadSegment,
-        isValidHtrsPoint,
         getMinCurvatureRadius,
         calculateCurvatureRadius,
         checkCurvatureConstraint,
@@ -1475,7 +1391,6 @@
 
     if (typeof window !== 'undefined') {
         window.CorridorGeometry = api;
-        window.createRectangularRoadSegment = createRectangularRoadSegment;
         window.planarSegmentIntersection = planarSegmentIntersection;
         window.insertCorridorCrossingNodes = insertCorridorCrossingNodes;
         window.splitCorridorSelfJunctions = splitCorridorSelfJunctions;

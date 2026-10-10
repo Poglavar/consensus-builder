@@ -5,7 +5,6 @@ import { X509Certificate } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { createContext, runInContext } from 'node:vm';
 import { createRequire } from 'node:module';
-import proj4 from 'proj4';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import * as parcelSources from '../parcels/sources.js';
 import { clearParcelSourceRuntimeCache, createParcelSource, parcelSourceCatalog, parcelSourceForIds } from '../parcels/sources.js';
@@ -158,9 +157,7 @@ describe.each(samples)('$city live parcel source contract', sample => {
         }
         const city = cities.getCityConfig(sample.city);
         expect(city.parcels.sourceId).toBe(descriptor.id);
-        const projected = proj4('EPSG:4326', city.projection.metricDefinition, f.center);
-        const restored = proj4(city.projection.metricDefinition, 'EPSG:4326', projected);
-        restored.forEach((coordinate, index) => expect(coordinate).toBeCloseTo(f.center[index], 8));
+        expect(city.projection.metricDefinition).toBeUndefined();
         for (const locale of ['en', 'es', 'hr', 'sr']) {
             expect(JSON.parse(read(`../../frontend/i18n/${locale}.json`)).city.labels[sample.city]).toBeTruthy();
         }

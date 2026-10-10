@@ -325,7 +325,7 @@
 
         let copiedFeature = null;
         for (const target of targets) {
-            const geometry = window.SingleBuildingGeometry.moveGeometryCenter(projector, source.feature.geometry, target);
+            const geometry = window.SingleBuildingGeometry.moveGeometryCenter(source.feature.geometry, target);
             const candidate = featureWithGeometry(source.feature, geometry);
             if (candidate && editableFootprintValid(candidate)) {
                 copiedFeature = candidate;
@@ -810,7 +810,10 @@
     function createSingleMeshesFromGeoJSON(geometry, material, depth, origin) {
         const meshes = [];
         if (!geometry || typeof THREE === 'undefined') return meshes;
+        // The preview scene is Leaflet's Web Mercator (visual only, projections.md §6); there is no
+        // second, city-dependent projection to fall back on.
         const projector = single3D.projector || getSingleProjector();
+        if (!projector) throw new Error('single-building: the 3D preview has no map projection');
         const polygons = [];
         if (geometry.type === 'Polygon') {
             polygons.push(geometry.coordinates);
@@ -822,7 +825,7 @@
             if (!Array.isArray(rings) || !Array.isArray(rings[0]) || rings[0].length < 3) return;
             const shape = new THREE.Shape();
             rings[0].forEach(([lng, lat], idx) => {
-                const [x, y] = projector ? projector.project(L.latLng(lat, lng)) : wgs84ToHTRS96(lat, lng);
+                const [x, y] = projector.project(L.latLng(lat, lng));
                 const px = x - origin[0];
                 const py = y - origin[1];
                 if (idx === 0) shape.moveTo(px, py); else shape.lineTo(px, py);
@@ -833,7 +836,7 @@
                 const ring = rings[h];
                 if (!Array.isArray(ring)) continue;
                 ring.forEach(([lng, lat], idx) => {
-                    const [x, y] = projector ? projector.project(L.latLng(lat, lng)) : wgs84ToHTRS96(lat, lng);
+                    const [x, y] = projector.project(L.latLng(lat, lng));
                     const px = x - origin[0];
                     const py = y - origin[1];
                     if (idx === 0) holePath.moveTo(px, py); else holePath.lineTo(px, py);
@@ -966,54 +969,12 @@
     }
 
     function buildRectangleFeature(centerLatLng, widthM, lengthM, heightM, rotationDeg = 0) {
-        // Build rectangle in meters using map CRS (WebMercator). Assumes WGS84 inputs.
-        const centerLL = L.latLng(centerLatLng.lat, centerLatLng.lng);
-        const projector = getSingleProjector();
-
-        const halfW = Math.max(0.5, widthM / 2);
-        const halfL = Math.max(0.5, lengthM / 2);
-
-        let ring;
-
-        if (projector) {
-            // The projected ring math lives in frontend/js/single-building-geometry.js (tested). It
-            // scales the ground-metre size by 1/cos(lat) before offsetting in Mercator space — the
-            // fix for buildings coming out cos(φ) too small (a "20 m" building was ~14 m at Zagreb).
-            ring = window.SingleBuildingGeometry.buildRectangleRing(
-                projector,
-                { lat: centerLL.lat, lng: centerLL.lng },
-                { widthM, lengthM, rotationDeg }
-            );
-        } else {
-            // Rhumb fallback
-            const centerPt = turf.point([centerLL.lng, centerLL.lat]);
-            const east = turf.rhumbDestination(centerPt, halfW / 1000, 90).geometry.coordinates[0];
-            const west = turf.rhumbDestination(centerPt, halfW / 1000, 270).geometry.coordinates[0];
-            const north = turf.rhumbDestination(centerPt, halfL / 1000, 0).geometry.coordinates[1];
-            const south = turf.rhumbDestination(centerPt, halfL / 1000, 180).geometry.coordinates[1];
-            const pts = [
-                [west, south],
-                [east, south],
-                [east, north],
-                [west, north]
-            ];
-            // Apply rotation using turf.transformRotate
-            const unrotatedFeature = {
-                type: 'Feature',
-                properties: {},
-                geometry: { type: 'Polygon', coordinates: [ensureClosed(pts)] }
-            };
-            if (rotationDeg !== 0) {
-                try {
-                    const rotated = turf.transformRotate(unrotatedFeature, rotationDeg, { pivot: [centerLL.lng, centerLL.lat] });
-                    ring = rotated.geometry.coordinates[0];
-                } catch (_) {
-                    ring = pts;
-                }
-            } else {
-                ring = pts;
-            }
-        }
+        // Built in ground metres in a frame on its centre (single-building-geometry.js, tested).
+        const ring = window.SingleBuildingGeometry.buildRectangleRing(
+            { lat: centerLatLng.lat, lng: centerLatLng.lng },
+            { widthM, lengthM, rotationDeg }
+        );
+        if (!ring) throw new Error('single-building: the rectangle could not be built');
 
         const closed = ensureClosed(ring);
 
@@ -1313,9 +1274,8 @@
 
     function rotatedFootprintCandidate(deltaDeg) {
         const active = getActiveBuilding();
-        const projector = getSingleProjector();
-        if (!active?.feature?.geometry || !projector) return null;
-        const geometry = window.SingleBuildingGeometry.rotateGeometry(projector, active.feature.geometry, deltaDeg);
+        if (!active?.feature?.geometry) return null;
+        const geometry = window.SingleBuildingGeometry.rotateGeometry(active.feature.geometry, deltaDeg);
         const candidate = featureWithGeometry(active.feature, geometry);
         return candidate && editableFootprintValid(candidate) ? candidate : null;
     }
@@ -1389,16 +1349,9 @@
         const newCenterPt = rectDragStartCenterPt.add(delta);
         const newCenter = singleMap.layerPointToLatLng(newCenterPt);
         const startCenter = singleMap.layerPointToLatLng(rectDragStartCenterPt);
-        const projector = getSingleProjector();
-        if (!projector || !rectDragStartFeature?.geometry) return;
-        const [startX, startY] = projector.project(startCenter);
-        const [nextX, nextY] = projector.project(newCenter);
-        const geometry = window.SingleBuildingGeometry.translateGeometry(
-            projector,
-            rectDragStartFeature.geometry,
-            nextX - startX,
-            nextY - startY
-        );
+        if (!rectDragStartFeature?.geometry) return;
+        // The footprint keeps its ground metres from the drag's start point, placed at its end point.
+        const geometry = window.SingleBuildingGeometry.moveGeometry(rectDragStartFeature.geometry, startCenter, newCenter);
         const candidate = featureWithGeometry(rectDragStartFeature, geometry);
         if (!candidate || !editableFootprintValid(candidate)) return;
 

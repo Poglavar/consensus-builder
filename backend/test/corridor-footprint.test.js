@@ -196,3 +196,75 @@ describe('reproduces what the browser built', () => {
         expect(symmetric).toBeLessThan(5);
     });
 });
+
+describe('the arm-level construction and the corridor frame', () => {
+    it('builds coincident clicks into the same well-formed 10 cm piece every time (the Math.random bug)', () => {
+        const p = latLng(PLACES.zagreb);
+        const frame = require('../../frontend/js/metric-frame.js').frameFor([p]);
+        const a = footprint.footprintOfArms([{ points: [p, { ...p }], width: 4 }], frame);
+        const b = footprint.footprintOfArms([{ points: [p, { ...p }], width: 4 }], frame);
+        expect(a).toEqual(b);
+        const metric = a.coordinates[0].map(position => frame.toMetric(position));
+        const xs = metric.map(([x]) => x);
+        const ys = metric.map(([, y]) => y);
+        // nudged due east: 0.1 m along x, ±2 m across
+        expect(Math.max(...xs) - Math.min(...xs)).toBeCloseTo(0.1, 6);
+        expect(Math.max(...ys) - Math.min(...ys)).toBeCloseTo(4, 6);
+    });
+
+    it('refuses an arm without a width or with an unreadable point, and is empty without an edge', () => {
+        const frame = require('../../frontend/js/metric-frame.js').frameFor([latLng(PLACES.zagreb)]);
+        const [a, b] = lineFrom(PLACES.zagreb, [[90, 30]]).map(position => latLng(position));
+        expect(() => footprint.footprintOfArms([{ points: [a, b], width: 0 }], frame)).toThrow(/no width/);
+        expect(() => footprint.footprintOfArms([{ points: [a, { lat: Number.NaN, lng: 1 }], width: 4 }], frame)).toThrow(/not finite/);
+        expect(footprint.footprintOfArms([{ points: [a], width: 4 }], frame)).toBeNull();
+    });
+
+    it('builds a definition in its persisted frame, else the frame of its own centre line', () => {
+        const [a, b] = lineFrom(PLACES.newYork, [[45, 200]]);
+        const definition = definitionOf([[latLng(a), latLng(b)]]);
+        const own = footprint.frameForDefinition(definition);
+        const materialized = footprint.materialize(definition);
+        expect(own.provenance().anchor).toEqual(materialized.constructionFrame.anchor);
+        const stored = { ...definition, constructionFrame: materialized.constructionFrame };
+        expect(footprint.frameForDefinition(stored).proj).toBe(materialized.constructionFrame.proj);
+        // a forged provenance is refused, not trusted
+        expect(() => footprint.frameForDefinition({ ...definition, constructionFrame: { ...materialized.constructionFrame, proj: '+proj=utm +zone=18' } })).toThrow();
+        // a legacy record is built in the frame of its own centre line
+        expect(footprint.frameForDefinition({ ...definition, constructionFrame: { kind: 'legacy-centreline' } }).anchor).toEqual(own.anchor);
+    });
+});
+
+describe('in the browser (dependencies only as window globals, no require)', () => {
+    // The browser path resolves corridorSegmentEntries (a classic script's top-level function, so the
+    // global IS the function) and __corridorLevels (a namespace) from window. A pick rule that only
+    // fitted namespaces once broke every definition-level build in the browser while node, where
+    // require() always answers, stayed green.
+    function browserModule() {
+        const fs = require('node:fs');
+        const source = fs.readFileSync(require.resolve('../../frontend/js/corridor-footprint.js'), 'utf8');
+        const profile = require('../../frontend/js/corridor-profile.js');
+        const window = {
+            turf,
+            __metricFrame: require('../../frontend/js/metric-frame.js'),
+            __corridorLevels: require('../../frontend/js/proposals/corridor-levels.js'),
+            corridorSegmentEntries: profile.corridorSegmentEntries,
+            corridorProfileWidth: profile.corridorProfileWidth
+        };
+        new Function('window', 'module', 'require', source)(window, undefined, undefined);
+        return window.__corridorFootprint;
+    }
+
+    it('materialises a definition exactly as node does', () => {
+        const browser = browserModule();
+        const [a, b, c] = lineFrom(PLACES.zagreb, [[70, 120], [20, 90]]);
+        const definition = definitionOf([[latLng(a), latLng(b), latLng(c)]]);
+        const inBrowser = browser.materialize(definition);
+        const inNode = footprint.materialize(definition);
+        expect(JSON.stringify(inBrowser.polygon)).toBe(JSON.stringify(inNode.polygon));
+        // provenance is the server's to stamp: the browser cannot read turf's package version
+        const { turf: _turfVersion, ...nodeFrame } = inNode.constructionFrame;
+        expect(inBrowser.constructionFrame).toEqual(nodeFrame);
+        expect(browser.frameForDefinition(definition).anchor).toEqual(footprint.frameForDefinition(definition).anchor);
+    });
+});

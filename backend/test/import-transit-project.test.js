@@ -1,7 +1,8 @@
 // Importing a planner track as a track proposal. The parts worth pinning are the ones where a
 // wrong answer is silent: a width that quietly differs from what was measured, a track dropped
 // because its shape was not recognised, and — the one that matters most — the stored footprint,
-// which consensus-builder trusts verbatim over anything it could re-derive.
+// which consensus-builder trusts verbatim over anything it could re-derive: it is the preparation's
+// land (proposals/prepare.js), never one the importer builds itself.
 
 import { describe, it, expect } from 'vitest';
 import {
@@ -14,7 +15,8 @@ import {
     tracksOf,
     vertexChainagesM,
     widthForTrack,
-    buildProposal
+    buildProposal,
+    preparedTransitRecord
 } from '../scripts/import-transit-project.mjs';
 
 const project = {
@@ -31,15 +33,8 @@ const centreline = [
     { lat: 43.75, lng: 15.9, level: 0 }
 ];
 
-const footprint = {
-    geometry: { type: 'MultiPolygon', coordinates: [[[[15.9, 43.72], [15.9, 43.73], [15.91, 43.73], [15.9, 43.72]]]] },
-    areaM2: 93500
-};
-
-const parcels = [
-    { id: 'HR-330264-3279/3', takenM2: 120, parcelM2: 800 },
-    { id: 'HR-330264-3279/4', takenM2: 800, parcelM2: 800 }
-];
+const land = { type: 'MultiPolygon', coordinates: [[[[15.9, 43.72], [15.9, 43.73], [15.91, 43.73], [15.9, 43.72]]]] };
+const constructionFrame = { kind: 'local-tmerc', anchor: [15.9, 43.735] };
 
 const build = (overrides = {}) => buildProposal({
     project,
@@ -47,12 +42,32 @@ const build = (overrides = {}) => buildProposal({
     trackIndex: 0,
     spans: [[centreline[0], centreline[1]], [centreline[2], centreline[3]]],
     centreline,
-    footprint,
-    parcels,
     widthM: 6,
     city: 'sibenik',
     ...overrides
 });
+
+// What POST /proposals/prepare's preparation answers for a draft (shape of proposals/prepare.js).
+const preparedFor = draft => ({
+    preparationId: 'prep_0123',
+    digest: 'd'.repeat(64),
+    preparedAt: '2026-10-11T08:00:00.000Z',
+    signature: 'e'.repeat(64),
+    artifact: {
+        city: 'sibenik',
+        binding: { siteM2: 93500, coverage: 'complete', parcels: [{ parcelId: 'HR-330264-3279/3', overlapM2: 120 }, { parcelId: 'HR-330264-3279/4', overlapM2: 800 }] },
+        cadastreParcelIds: ['HR-330264-3279/3', 'HR-330264-3279/4']
+    },
+    proposal: {
+        ...draft,
+        city: 'sibenik',
+        cadastreParcelIds: ['HR-330264-3279/3', 'HR-330264-3279/4'],
+        preparation: { id: 'prep_0123', digest: 'd'.repeat(64), preparedAt: '2026-10-11T08:00:00.000Z', signature: 'e'.repeat(64) },
+        preparedArtifact: { city: 'sibenik' },
+        roadProposal: { ...draft.roadProposal, definition: { ...draft.roadProposal.definition, polygon: land, constructionFrame } }
+    }
+});
+const stored = (overrides = {}) => { const draft = build(overrides); return preparedTransitRecord(draft, preparedFor(draft)); };
 
 describe('parseArgs', () => {
     it('is a dry run unless --apply is given', () => {
@@ -129,9 +144,22 @@ describe('trackCrossSectionProfile', () => {
 });
 
 describe('buildProposal', () => {
-    it('stores the measured footprint on the definition, where the app treats it as authoritative', () => {
+    it('authors no land of its own: the preparation builds it', () => {
         const definition = build().roadProposal.definition;
-        expect(definition.polygon).toBe(footprint.geometry);
+        expect(definition.polygon).toBeUndefined();
+        expect(definition.constructionFrame).toBeUndefined();
+        expect(build()).not.toHaveProperty('cadastreParcelIds');
+    });
+
+    it('stores the preparation\'s land and frame on the definition, where the app treats them as authoritative', () => {
+        const record = stored();
+        const definition = record.roadProposal.definition;
+        expect(definition.polygon).toBe(land);
+        expect(definition.constructionFrame).toBe(constructionFrame);
+        expect(record.geometry).toBe(land);
+        // stored as a publication stores it: the reference without its signature, the artifact in its own table
+        expect(record.preparation).toEqual({ id: 'prep_0123', digest: 'd'.repeat(64), preparedAt: '2026-10-11T08:00:00.000Z' });
+        expect(record.preparedArtifact).toBeUndefined();
         expect(definition.width).toBe(6);
         expect(definition.metadata).toMatchObject({
             type: 'track', isTrack: true, isRoad: false, levels: true, trackCount: 2
@@ -163,8 +191,8 @@ describe('buildProposal', () => {
         expect(proposal.city).toBe('sibenik');
     });
 
-    it('declares every cadastral parcel under the footprint exactly once', () => {
-        const proposal = build();
+    it('declares exactly the parcels the preparation bound', () => {
+        const proposal = stored();
         expect(proposal.cadastreParcelIds).toEqual(['HR-330264-3279/3', 'HR-330264-3279/4']);
         expect(proposal).not.toHaveProperty('parentParcelIds');
         expect(proposal).not.toHaveProperty('parcelIds');
@@ -182,8 +210,11 @@ describe('buildProposal', () => {
     });
 
     it('states the underground edges in the description, since they are what it does not take', () => {
-        expect(build().description).toMatch(/1 underground/);
+        expect(stored().description).toMatch(/1 underground/);
+        expect(stored().description).toMatch(/9\.35 ha of corridor over 2 parcels, width 6 m/);
         expect(build().levelSummary).toMatchObject({ edges: 3, underground: 1 });
+        // the provenance survives preparation
+        expect(stored().source).toMatchObject({ transitProjectId: 141, snapshot: true });
     });
 });
 

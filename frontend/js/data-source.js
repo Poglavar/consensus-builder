@@ -237,7 +237,11 @@
     // `oss.uredjenazemlja.hr` mode: it serves DKP_ZGRADE (cadastre) only, and it cannot serve the
     // GDI objects at all — they exist solely in our database. Routing the working set through a
     // source that can only ever return the OTHER survey is exactly the bug this all came from.
-    function buildBuildingRequestParams(bbox, source = 'gdi') {
+    // GDI and DGU are Croatian services: their bbox is the view in HTRS96/TM (EPSG:3765, map-core.js
+    // bboxInCrs), computed only once the request applies — a view on another continent may not
+    // project into 3765 at all (proj4 gives no finite answer near the equator in much of Asia and the
+    // Americas), and computing it first used to stop every city's own provider from loading there.
+    function buildBuildingRequestParams(bounds, source = 'gdi') {
         const cityConfig = CityConfigManager ? CityConfigManager.getCurrentCityConfig() : null;
         const configured = (cityConfig && cityConfig.buildings) ? cityConfig.buildings.source : null;
         if (configured === 'none') {
@@ -258,6 +262,7 @@
         // request. Using LOCAL_BASE here silently sent demolition-footprint scans to port 3000
         // while the same page loaded 3D meshes from its requested backend port.
         const base = getBackendBase();
+        const bbox = window.bboxInCrs(bounds, 'EPSG:3765');
         const search = new URLSearchParams({ bbox, source: source === 'dgu' ? 'dgu' : 'gdi' });
         return { url: `${base}/buildings?${search.toString()}`, isOSS: false };
     }

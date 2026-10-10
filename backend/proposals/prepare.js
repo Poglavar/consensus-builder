@@ -1,15 +1,20 @@
 // Prepared publication artifacts (projections.md §3). A proposal is prepared ONCE, before anything is
 // uploaded or minted: the server materialises what it derives (a corridor's land, from its lanes, in
-// its own operation frame), binds the site to the cadastre, hashes it, and stores the result as an
-// immutable artifact. Metadata upload, minting and POST /proposals then all reference that exact
-// artifact, and publication stores the artifact itself — a re-derivation at publish only VALIDATES
-// it. Without this, a 0.16 mm shift across a rounding boundary between what was minted and what was
-// stored changes the on-chain site hash.
+// its own operation frame), binds the site to the cadastre, hashes it, and SIGNS the result (an HMAC
+// over its digest and the time it was prepared, with the server's PREPARE_SIGNING_KEY). Metadata
+// upload, minting and POST /proposals then all carry that exact artifact, and publication verifies the
+// signature and stores the artifact beside the row — a re-derivation at publish only VALIDATES it.
+// Without this, a 0.16 mm shift across a rounding boundary between what was minted and what was stored
+// changes the on-chain site hash.
+//
+// Preparing stores nothing: an unbounded free call that wrote a row each time was a way to fill the
+// disk. Only a published proposal's artifact is kept (consensus.proposal_prepared). The signing key is
+// required — without it preparation and publication of prepared records answer 503, never unsigned.
 //
 // Content-addressed: the artifact's id is its digest, so preparing the same proposal against the
-// same cadastre twice returns the same artifact (a retry is free and cannot fork).
+// same cadastre twice gives the same artifact (a retry is free and cannot fork).
 
-import { createHash } from 'node:crypto';
+import { createHash, createHmac, timingSafeEqual } from 'node:crypto';
 import { createRequire } from 'node:module';
 import {
     checkProposalBinding,
@@ -35,8 +40,11 @@ export const PREPARE_CODES = Object.freeze({
     unknown: 'preparation-unknown',       // no artifact under that id
     mismatch: 'preparation-mismatch',     // the record differs from what was prepared
     stale: 'preparation-stale',           // re-derivation no longer reproduces the artifact
-    invalid: 'preparation-invalid'        // the stored artifact fails its own digest
+    invalid: 'preparation-invalid',       // the artifact fails its digest or the server's signature
+    unavailable: 'preparation-unavailable' // the server has no signing key: nothing can be prepared
 });
+// At least 32 bytes of key, as hex.
+const MIN_SIGNING_KEY_HEX = 64;
 // Fields of a corridor definition the server derives (or the browser caches); everything else in
 // the definition is authored, and any change to it needs a new preparation.
 const DERIVED_DEFINITION_FIELDS = Object.freeze(['polygon', 'constructionFrame', 'latLngPairs', 'demolishedBuildings', 'demolitionScanned']);
@@ -58,6 +66,27 @@ export const preparationIdFor = digest => `prep_${digest.slice(0, 32)}`;
 
 function preparationError(code, message, status = 422, extra = {}) {
     return Object.assign(new Error(message), { code, status, ...extra });
+}
+
+// The server's signing key: PREPARE_SIGNING_KEY, hex, at least 32 bytes. Missing or short is a
+// configuration error answered 503 — never an unsigned preparation.
+function signingKeyOf(key) {
+    const hex = String(key ?? process.env.PREPARE_SIGNING_KEY ?? '').trim();
+    if (hex.length < MIN_SIGNING_KEY_HEX || !/^[0-9a-f]+$/i.test(hex)) {
+        throw preparationError(PREPARE_CODES.unavailable, 'Preparation is unavailable: the server has no signing key (PREPARE_SIGNING_KEY).', 503);
+    }
+    return Buffer.from(hex, 'hex');
+}
+
+// What the server vouches for: this artifact (by digest), prepared at this instant.
+export function preparationSignature(digest, preparedAt, key) {
+    return createHmac('sha256', signingKeyOf(key)).update(`${PREPARE_PROTOCOL}\n${digest}\n${preparedAt}`).digest('hex');
+}
+
+function signatureMatches(expected, given) {
+    const a = Buffer.from(String(expected), 'hex');
+    const b = Buffer.from(String(given || ''), 'hex');
+    return a.length === b.length && a.length > 0 && timingSafeEqual(a, b);
 }
 
 // A corridor whose land is built from its lanes: a road or track with a centre line, not a
@@ -118,14 +147,18 @@ async function cadastreRevision(db, binding) {
  * Prepare a proposal for publication.
  * @param db pg pool/client
  * @param {object} record the draft record, shaped like a POST /proposals body
- * @param {{ city?: string|null, parcelSourceId?: string|null, toleranceM?: number, now?: () => Date }} options
- *   `city` already normalised by the caller (routes/proposals.js normalizeCityCode)
- * @returns {Promise<{ preparationId, digest, artifact, proposal }>} `proposal` is the record ready to
- *   publish: its derived corridor land, declaration, tolerance and preparation reference filled in.
+ * @param {{ city?: string|null, parcelSourceId?: string|null, toleranceM?: number, now?: () => Date,
+ *   signingKey?: string }} options `city` already normalised by the caller (routes/proposals.js
+ *   normalizeCityCode); `signingKey` defaults to PREPARE_SIGNING_KEY.
+ * @returns {Promise<{ preparationId, digest, preparedAt, signature, artifact, proposal }>} `proposal`
+ *   is the record ready to publish: its city (placed by its site), derived corridor land, declaration,
+ *   tolerance, preparation reference `{ id, digest, preparedAt, signature }` and the artifact itself
+ *   (`preparedArtifact`, which publication verifies and stores) filled in. Nothing is stored.
  * Throws an error with `code` and `status` (binding codes) on refusal.
  */
-export async function prepareProposal(db, record, { city = null, parcelSourceId = null, toleranceM, now = () => new Date() } = {}) {
+export async function prepareProposal(db, record, { city = null, parcelSourceId = null, toleranceM, now = () => new Date(), signingKey } = {}) {
     if (!record || typeof record !== 'object' || Array.isArray(record)) throw preparationError(BINDING_CODES.invalidSite, 'The proposal must be a JSON object.', 400);
+    signingKeyOf(signingKey); // before any work: a server that cannot sign prepares nothing
     const draft = stripLocalProposalState(record);
     const tolerance = parseTolerance(toleranceM ?? draft.toleranceM);
     if (!tolerance.ok) throw preparationError(BINDING_CODES.invalidTolerance, tolerance.error, 400);
@@ -161,14 +194,17 @@ export async function prepareProposal(db, record, { city = null, parcelSourceId 
         throw preparationError(code, error, status, details);
     }
     const storedSite = bound.site ? normalizeSiteGeometry(bound.site) : null;
-    // Content-addressed, so no clock inside: the binding's computedAt is the artifact row's
-    // created_at — when this exact binding was first computed — stamped back at publication.
+    // Content-addressed, so no clock inside: the binding's computedAt is the signed preparedAt,
+    // stamped back at publication.
     const { computedAt: _computedAt, ...binding } = bound.binding;
     // Through JSON once, so the digest is over exactly what jsonb stores and hands back.
     const artifact = JSON.parse(JSON.stringify({
         protocol: PREPARE_PROTOCOL,
         inputs,
-        city: city || null,
+        // The city the site belongs to (publication-city.js), and the one the author asked for
+        // when it differs: a publication may name either, and is stored under the first.
+        city: bound.city || null,
+        ...(city && bound.city !== city ? { requestedCity: city } : {}),
         parcelSourceId: parcelSourceId || null,
         toleranceM: tolerance.value,
         site: storedSite,
@@ -180,16 +216,30 @@ export async function prepareProposal(db, record, { city = null, parcelSourceId 
     }));
     const digest = artifactDigest(artifact);
     const preparationId = preparationIdFor(digest);
-    await db.query(`INSERT INTO ${PREPARED_TABLE} (id, digest, artifact, city) VALUES ($1, $2, $3::jsonb, $4) ON CONFLICT (id) DO NOTHING`,
-        [preparationId, digest, JSON.stringify(artifact), artifact.city]);
+    const preparedAt = now().toISOString();
+    const signature = preparationSignature(digest, preparedAt, signingKey);
+    const preparation = { id: preparationId, digest, preparedAt, signature };
     const proposal = {
         ...draft,
+        ...(artifact.city ? { city: artifact.city } : {}),
         toleranceM: tolerance.value,
         cadastreParcelIds: artifact.cadastreParcelIds,
-        preparation: { id: preparationId, digest },
+        preparation,
+        preparedArtifact: artifact,
         ...(parcelSourceId ? { parcelSourceId } : {})
     };
-    return { preparationId, digest, artifact, proposal };
+    return { preparationId, digest, preparedAt, signature, artifact, proposal };
+}
+
+// The artifact row a publication stores beside itself (routes/proposals.js inserts it in the same
+// statement as the record; the transit importer, which writes rows directly, inserts it itself).
+export const PREPARED_INSERT_COLUMNS = '(id, digest, artifact, city, prepared_at)';
+export function preparedRowValues(verified) {
+    return [verified.preparationId, verified.digest, JSON.stringify(verified.artifact), verified.artifact.city || null, verified.preparedAt];
+}
+export async function storePreparedArtifact(db, verified) {
+    await db.query(`INSERT INTO ${PREPARED_TABLE} ${PREPARED_INSERT_COLUMNS} VALUES ($1, $2, $3::jsonb, $4, $5) ON CONFLICT (id) DO NOTHING`,
+        preparedRowValues(verified));
 }
 
 // Mean boundary separation of two polygons in a metric frame (symmetric-difference area over mean
@@ -228,27 +278,36 @@ function agreement(a, b, frame) {
 
 /**
  * Verify a publication against its prepared artifact. Changes nothing.
- * @param db pg pool/client
- * @param {object} body the POST /proposals body (carries `preparation: { id, digest }`)
- * @param {{ city: string|null }} context `city` normalised as at preparation
- * @returns {Promise<{ preparationId, digest, site, binding, cadastreParcelIds, corridor }>} what
- *   publication stores
+ * @param {object} body the POST /proposals body: `preparation: { id, digest, preparedAt, signature }`
+ *   and the artifact itself, `preparedArtifact`, as POST /proposals/prepare returned them
+ * @param {{ city: string|null, signingKey?: string }} context `city` normalised as at preparation
+ * @returns {{ preparationId, digest, preparedAt, artifact, city, site, binding, cadastreParcelIds,
+ *   corridor }} what publication stores (`city`: where the site was placed)
  * Throws an error with `code` and `status` on refusal.
  */
-export async function verifyPreparation(db, body, { city = null } = {}) {
+export function verifyPreparation(body, { city = null, signingKey } = {}) {
     const reference = body?.preparation;
     if (!reference || typeof reference.id !== 'string' || typeof reference.digest !== 'string') {
-        throw preparationError(PREPARE_CODES.required, 'This proposal must be prepared first (POST /proposals/prepare) and published with its preparation { id, digest }.');
+        throw preparationError(PREPARE_CODES.required, 'This proposal must be prepared first (POST /proposals/prepare) and published with its preparation and preparedArtifact.');
     }
-    const { rows } = await db.query(`SELECT digest, artifact, created_at FROM ${PREPARED_TABLE} WHERE id = $1`, [reference.id]);
-    const row = rows[0];
-    if (!row) throw preparationError(PREPARE_CODES.unknown, `No prepared artifact ${reference.id}.`);
-    if (row.digest !== reference.digest) throw preparationError(PREPARE_CODES.mismatch, 'The preparation digest does not match the prepared artifact.');
-    const artifact = row.artifact;
-    if (artifactDigest(artifact) !== row.digest) throw preparationError(PREPARE_CODES.invalid, 'The prepared artifact no longer matches its own digest.', 500);
+    const artifact = body.preparedArtifact;
+    if (!artifact || typeof artifact !== 'object' || Array.isArray(artifact)) {
+        throw preparationError(PREPARE_CODES.unknown, 'Publish the prepared artifact (preparedArtifact) with its preparation, as POST /proposals/prepare returned it.');
+    }
+    // The server signed exactly this artifact at exactly this time; anything else is not its preparation.
+    const digest = artifactDigest(artifact);
+    const preparedAt = typeof reference.preparedAt === 'string' ? reference.preparedAt : '';
+    if (digest !== reference.digest || preparationIdFor(digest) !== reference.id
+        || !Number.isFinite(Date.parse(preparedAt))
+        || !signatureMatches(preparationSignature(digest, preparedAt, signingKey), reference.signature)) {
+        throw preparationError(PREPARE_CODES.invalid, 'The preparation was not signed by this server for this artifact; prepare it again.');
+    }
+    if (artifact.protocol !== PREPARE_PROTOCOL) throw preparationError(PREPARE_CODES.stale, `The preparation is of protocol ${artifact.protocol}; prepare it again.`);
 
     const mismatch = what => preparationError(PREPARE_CODES.mismatch, `The proposal's ${what} differs from what was prepared; prepare it again.`);
-    if ((artifact.city || null) !== (city || null)) throw mismatch('city');
+    // Either the city the site was placed in or the one the author asked for (an older client
+    // publishes the city it requested; publication stores the placed one).
+    if (![artifact.city || null, artifact.requestedCity || artifact.city || null].includes(city || null)) throw mismatch('city');
     if ((artifact.parcelSourceId || null) !== (body.parcelSourceId || null)) throw mismatch('parcel source');
     const tolerance = parseTolerance(body.toleranceM);
     if (!tolerance.ok || tolerance.value !== artifact.toleranceM) throw mismatch('tolerance');
@@ -279,9 +338,12 @@ export async function verifyPreparation(db, body, { city = null } = {}) {
     }
     return {
         preparationId: reference.id,
-        digest: row.digest,
+        digest,
+        preparedAt: new Date(preparedAt).toISOString(),
+        artifact,
+        city: artifact.city || null,
         site: artifact.site,
-        binding: { ...artifact.binding, computedAt: new Date(row.created_at).toISOString() },
+        binding: { ...artifact.binding, computedAt: new Date(preparedAt).toISOString() },
         cadastreParcelIds: artifact.cadastreParcelIds,
         corridor: artifact.corridor
     };

@@ -7,6 +7,8 @@
 //   WorldCoverage.load(url?) -> Promise<coverage>       fetches the JSON (default 'data/world-coverage.json')
 //   WorldCoverage.create(data) -> coverage              wraps already-parsed JSON
 //   coverage.tierAt(lat, lon) -> Place                  see below
+//   coverage.liveCitiesAt(lat, lon) -> [{ cityId, km, via: 'radius'|'country' }]  every configured city
+//                                                       whose parcels cover the point (see below)
 //   coverage.nameAt(lat, lon, zoom) -> { kind: 'city'|'country'|'territory'|'ocean'|'world', name, cc }  the chip name
 //   coverage.searchPlaces(query, { limit }) -> Place[]  diacritic-insensitive, best first
 //   coverage.liveSummary -> { cityCount, countryCount } unique configured live-city and country counts
@@ -244,6 +246,28 @@
             return { kind: 'ocean', tier: 'unknown', name: '', country: '', cc: null, note: '', lat, lon, placeKey: 'point:' + roundKey(lat) + ',' + roundKey(lon) };
         }
 
+        // Every configured city whose parcels cover a point: those whose own area holds it (within
+        // the city's liveRadiusKm, at most LIVE_RADIUS_KM; via 'radius'), then, inside a countrywide
+        // live country (Croatia), each of that country's cities (via 'country'). Nearest first within
+        // each group, ties by id. [] = no app cadastre covers the point. A publication's city is
+        // decided from this (backend/proposals/publication-city.js), never from the view it was
+        // drawn in; tierAt answers the different question of which ONE city a globe pick opens.
+        function liveCitiesAt(lat, lon) {
+            if (!Number.isFinite(lat) || !Number.isFinite(lon)) throw new Error('liveCitiesAt: lat/lon must be finite numbers');
+            const byDistance = (a, b) => a.km - b.km || (a.cityId < b.cityId ? -1 : a.cityId > b.cityId ? 1 : 0);
+            const radius = [];
+            for (const live of liveCities) {
+                const km = haversineKm(lat, lon, live.lat, live.lon);
+                if (km <= Math.min(LIVE_RADIUS_KM, live.radiusKm ?? Infinity)) radius.push({ cityId: live.id, km, via: 'radius' });
+            }
+            const country = countryAt(lat, lon);
+            const countrywide = country && country.tier === 'live'
+                ? liveCities.filter(live => live.cc === country.cc && !radius.some(hit => hit.cityId === live.id))
+                    .map(live => ({ cityId: live.id, km: haversineKm(lat, lon, live.lat, live.lon), via: 'country' }))
+                : [];
+            return radius.sort(byDistance).concat(countrywide.sort(byDistance));
+        }
+
         // The name of where the map is (the explore city chip): the nearest configured or registry
         // city within NAME_CITY_RADIUS_KM, else the country, else '' (open water). Tighter than the
         // coverage radii above, which say which data covers a point, not what the place is called:
@@ -305,7 +329,7 @@
             });
         }
 
-        return { data, tierAt, nameAt, searchPlaces, countries, territories, cities, liveCities, liveSummary };
+        return { data, tierAt, liveCitiesAt, nameAt, searchPlaces, countries, territories, cities, liveCities, liveSummary };
     }
 
     function load(url) {

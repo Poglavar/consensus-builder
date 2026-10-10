@@ -356,11 +356,9 @@ function analyzeRoadWidth(coordinates) {
 
     // console.log("Road Analysis: Input polygon coordinates:", polygonCoords.length, "points");
 
-    // Convert to HTRS96/TM for distance calculations
-    const htrsPolygonCoords = polygonCoords.map(coord => {
-        // Convert [lon, lat] to [easting, northing]
-        return wgs84ToHTRS96(coord[1], coord[0]);
-    });
+    // Metres for the distance calculations, in a frame on this polygon (projections.md §2)
+    const frame = window.__metricFrame.frameFor(polygonCoords);
+    const htrsPolygonCoords = polygonCoords.map(coord => frame.latLngToMetric(coord[1], coord[0]));
 
     // console.log("Road Analysis: Converted to HTRS coords");
 
@@ -374,7 +372,7 @@ function analyzeRoadWidth(coordinates) {
 
     // 3. Sample width measurements along each segment
     const segmentMeasurements = segments.map(segment => {
-        const measurements = measureSegmentWidths(segment, htrsPolygonCoords);
+        const measurements = measureSegmentWidths(segment, htrsPolygonCoords, frame);
         // console.log("Road Analysis: Segment width measurements:", measurements.widths?.length || 0, "measurements");
         return measurements;
     });
@@ -473,7 +471,7 @@ function identifySegments(skeleton, polygon) {
  * @param {Array} polygon - Road polygon coordinates
  * @returns {Object} Width measurements along the segment
  */
-function measureSegmentWidths(segment, polygon) {
+function measureSegmentWidths(segment, polygon, frame) {
     const points = segment.points;
     const widths = [];
     const positions = [];
@@ -567,7 +565,7 @@ function measureSegmentWidths(segment, polygon) {
 
                 // Save width line for visualization (converted to WGS84)
                 const wgs84Line = furthestPair.map(p => {
-                    const [lat, lon] = htrs96ToWGS84(p[0], p[1]);
+                    const [lat, lon] = frame.metricToLatLng(p[0], p[1]);
                     return [lon, lat];
                 });
                 widthLines.push(wgs84Line);
@@ -580,7 +578,7 @@ function measureSegmentWidths(segment, polygon) {
         positions,
         widthLines,
         segment: points.map(p => {
-            const [lat, lon] = htrs96ToWGS84(p[0], p[1]);
+            const [lat, lon] = frame.metricToLatLng(p[0], p[1]);
             return [lon, lat];
         })
     };

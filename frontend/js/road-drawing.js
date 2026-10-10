@@ -184,7 +184,7 @@ function refreshRoadGradeSeparationLayer() {
         // wide and never rescaled on zoom. A polygon is geographic, so it scales for free.
         const width = Number(record.width);
         const deck = (typeof calculateRoadPolygon === 'function' && Number.isFinite(width) && width > 0)
-            ? calculateRoadPolygon([record.from, record.crossing, record.to], width)
+            ? calculateRoadPolygon([record.from, record.crossing, record.to], width, roadSessionFrame([record.from, record.crossing, record.to]))
             : null;
         if (!deck) {
             console.warn('[road-drawing] grade separation has no usable width; skipping deck', record.mode, record.width);
@@ -221,8 +221,10 @@ async function ensureBuildingFootprintsForRoadEdge(from, to, width) {
     if (typeof corridorEdgeFetchSegments !== 'function') {
         throw new Error('Corridor edge fetch segmentation is unavailable.');
     }
+    // Fetch bounds only: a frame on the edge itself serves (projections.md §2).
+    const frame = metricFrameModule().frameFor([from, to]);
     for (const edge of corridorEdgeFetchSegments(from, to)) {
-        const polygon = calculateRoadPolygon(edge, width);
+        const polygon = calculateRoadPolygon(edge, width, frame);
         if (polygon) await window.ensureBuildingFootprintsForBounds(polygon);
     }
 }
@@ -302,6 +304,57 @@ let committedRoadMetrics = {
 // Cached committed road polygon - incrementally updated on each click instead of rebuilding
 // This avoids expensive full-road union calculations
 let cachedCommittedPolygon = null;
+// The metric frame of the drawing session (projections.md §2): anchored on the road's authored points
+// the first time anything is built or measured in metres, then frozen until the session resets, so
+// every piece built while drawing — the committed land, previews, crossing decks — shares one frame.
+let roadDrawingFrame = null;
+
+function corridorFootprintModule() {
+    const api = (typeof window !== 'undefined' && window.__corridorFootprint) || null;
+    if (!api) throw new Error('road-drawing: corridor-footprint.js is not loaded');
+    return api;
+}
+
+function metricFrameModule() {
+    const api = (typeof window !== 'undefined' && window.__metricFrame) || null;
+    if (!api) throw new Error('road-drawing: metric-frame.js is not loaded');
+    return api;
+}
+
+// The session frame, created on first use from the road's authored points plus `extraPoints` (the
+// click or cursor position the piece being built starts from). Throws outside the supported domain.
+function roadSessionFrame(extraPoints = []) {
+    if (roadDrawingFrame) return roadDrawingFrame;
+    const points = [];
+    getAllRoadSegments(true).forEach(segment => (Array.isArray(segment) ? segment : []).forEach(point => points.push(point)));
+    (Array.isArray(extraPoints) ? extraPoints : []).forEach(point => points.push(point));
+    if (!points.length) throw new Error('road-drawing: no authored point to anchor the drawing frame on');
+    roadDrawingFrame = metricFrameModule().frameFor(points);
+    return roadDrawingFrame;
+}
+
+// Leaflet nesting of a GeoJSON footprint, as every caller of the road builders expects it: LatLng[]
+// for one ring, LatLng[][] for a polygon with holes, LatLng[][][] for several parts (rings closed).
+function roadPolygonFromGeoJSON(geometry) {
+    if (!geometry) return null;
+    const toRing = coordinates => coordinates.map(([lng, lat]) => L.latLng(lat, lng));
+    if (geometry.type === 'Polygon') {
+        const rings = geometry.coordinates.map(toRing);
+        return rings.length === 1 ? rings[0] : rings;
+    }
+    if (geometry.type === 'MultiPolygon') return geometry.coordinates.map(rings => rings.map(toRing));
+    throw new Error(`road-drawing: unexpected footprint type ${geometry.type}`);
+}
+
+// Length of a polyline on the ellipsoid, in metres: measuring needs no projection (projections.md §2).
+function polylineLengthMeters(points) {
+    const geodesic = metricFrameModule().geodesicDistance;
+    let length = 0;
+    for (let i = 0; i < points.length - 1; i += 1) {
+        length += geodesic([points[i].lng, points[i].lat], [points[i + 1].lng, points[i + 1].lat]);
+    }
+    return length;
+}
 
 // Global function to check if a parcel is locked for corridor drawing — a road's or a track's, which
 // are the same drawing. This allows other modules (like parcels/styles.js) to preserve the highlight.
@@ -337,18 +390,7 @@ function getAllRoadSegments(includeActive = true) {
 
 function calculateSegmentLengthMeters(segment) {
     if (!Array.isArray(segment) || segment.length < 2) return 0;
-    let length = 0;
-    const coords = segment
-        .map(p => (p && isFinite(p.lat) && isFinite(p.lng) ? wgs84ToHTRS96(p.lat, p.lng) : null))
-        .filter(isValidPoint);
-    for (let i = 0; i < coords.length - 1; i++) {
-        const a = coords[i];
-        const b = coords[i + 1];
-        const dx = b[0] - a[0];
-        const dy = b[1] - a[1];
-        length += Math.sqrt(dx * dx + dy * dy);
-    }
-    return length;
+    return polylineLengthMeters(segment);
 }
 
 function calculatePolygonAreaMeters(polygon) {
@@ -361,121 +403,28 @@ function calculatePolygonAreaMeters(polygon) {
     return 0;
 }
 
-function buildRoadUnionPolygonFromSegments(segments, width) {
-    let combined = null;
-    (segments || []).forEach(segment => {
-        if (!Array.isArray(segment) || segment.length < 2) return;
-        const poly = calculateRoadPolygon(segment, width);
-        if (poly) {
-            combined = combineRoadPolygons(combined, poly);
-        }
-    });
-    return combined;
+function buildRoadUnionPolygonFromSegments(segments, width, frame) {
+    return buildRoadUnionPolygonWithWidths(segments, null, width, null, frame);
 }
 
-// Footprint when widths differ per segment: widths[i] pairs with segments[i].
-function buildRoadUnionPolygonWithWidths(segments, widths, fallbackWidth, segmentIds = null) {
-    let combined = null;
+// Footprint when widths differ per segment: widths[i] pairs with segments[i]. Segment ids travel too:
+// they are how the construction tells two pieces of one stretch (whose bend still owes a joint wedge)
+// from two different roads meeting at a junction. Built by the shared construction
+// (corridor-footprint.js footprintOfArms) in `frame`, so the land drawn here is the land the server
+// stores; throws when it cannot be built.
+function buildRoadUnionPolygonWithWidths(segments, widths, fallbackWidth, segmentIds, frame) {
+    if (!frame) throw new Error('buildRoadUnionPolygonWithWidths: a metric frame is required (projections.md §2)');
+    const footprint = corridorFootprintModule();
     const arms = [];
     (segments || []).forEach((segment, index) => {
         if (!Array.isArray(segment) || segment.length < 2) return;
         const width = (Array.isArray(widths) && Number(widths[index]) > 0) ? Number(widths[index]) : fallbackWidth;
-        const poly = calculateRoadPolygon(segment, width);
-        if (poly) combined = combineRoadPolygons(combined, poly);
         const id = (Array.isArray(segmentIds) && segmentIds[index] !== undefined && segmentIds[index] !== null)
             ? String(segmentIds[index])
             : null;
-        arms.push({ points: segment, width, stretchId: baseStretchId(id) });
+        arms.push({ points: segment, width, stretchId: footprint.baseStretchId(id) });
     });
-    return addSharedNodeJointWedges(combined, arms);
-}
-
-// Which ORIGINAL stretch an arm is a piece of. splitCorridorSelfJunctions derives a split piece's id
-// as `${sourceId}~2`, `~3`… so everything before the first `~` names the stretch the pieces came
-// from — the thing that used to be one polyline.
-function baseStretchId(segmentId) {
-    if (segmentId === null || segmentId === undefined) return null;
-    const text = String(segmentId);
-    const cut = text.indexOf('~');
-    return cut === -1 ? text : text.slice(0, cut);
-}
-
-// The outer gap at a bend is filled by a joint wedge, and calculateRoadPolygonRectangular only adds
-// one at a vertex INTERIOR to a polyline. The moment topology splits a road at a junction, a bend
-// that was interior becomes the shared END of two arms — and the wedge silently disappears, taking a
-// sliver of the footprint with it. That is not cosmetic: the corridor's take is its footprint, so a
-// lost sliver re-cuts the parcels underneath, and anything standing on ground that stops being whole
-// is swept off the map. (It bit a row-house proposal several junctions away from an edited node.)
-//
-// A joint belongs to the NODE, not to whichever polyline happens to contain it, so it is rebuilt
-// here from the arms that meet — but ONLY between two pieces of the same original stretch. That
-// pair is precisely what used to be one polyline bending through an interior vertex, so restoring
-// its wedge restores the exact pre-split footprint and nothing else.
-//
-// Wedging every pair of arms at a node instead is wrong, and visibly so: at a T it fills the outer
-// corners between the branch and each half of the through road, which together pave a patch on the
-// FAR side of the through road — a phantom fourth arm, showing up as an extra strip of footway
-// sticking out of the junction. A junction's corners are the junction treatment's business; the
-// footprint only owes the road its own continuity.
-function addSharedNodeJointWedges(combined, arms) {
-    if (!combined || !Array.isArray(arms) || arms.length < 2) return combined;
-    if (typeof createJointWedgePolygon !== 'function') return combined;
-
-    const EPS = 1e-7;
-    const nodeKey = point => `${Math.round(point.lat / EPS)},${Math.round(point.lng / EPS)}`;
-    // Each arm END, with the point one step along the arm — the direction the road leaves the node.
-    const endsByNode = new Map();
-    const noteEnd = (node, neighbour, arm) => {
-        if (!node || !neighbour) return;
-        const key = nodeKey(node);
-        if (!endsByNode.has(key)) endsByNode.set(key, { node, ends: [] });
-        endsByNode.get(key).ends.push({ neighbour, width: arm.width, stretchId: arm.stretchId });
-    };
-    arms.forEach(arm => {
-        const points = arm.points;
-        noteEnd(points[0], points[1], arm);
-        noteEnd(points[points.length - 1], points[points.length - 2], arm);
-    });
-
-    endsByNode.forEach(({ node, ends }) => {
-        if (ends.length < 2) return;
-        for (let a = 0; a < ends.length - 1; a += 1) {
-            for (let b = a + 1; b < ends.length; b += 1) {
-                // Two pieces of the same stretch, or nothing. An unidentified piece cannot be shown
-                // to continue anything, so it gets no wedge either.
-                if (!ends[a].stretchId || ends[a].stretchId !== ends[b].stretchId) continue;
-                try {
-                    // prev → joint → next, exactly as the interior-vertex call reads it. The wider
-                    // arm sets the wedge, so it always reaches the outer corner that needs covering.
-                    const wedge = createJointWedgePolygon(
-                        ends[a].neighbour, node, ends[b].neighbour,
-                        Math.max(Number(ends[a].width) || 0, Number(ends[b].width) || 0)
-                    );
-                    if (!wedge) continue;
-                    const merged = combineRoadPolygons(combined, wedge);
-                    if (merged) combined = merged;
-                } catch (_) { /* a wedge is a repair, never a reason to lose the footprint */ }
-            }
-        }
-    });
-    return combined;
-}
-
-// THE footprint builder for a placed corridor: honors per-segment cross-sections.
-function buildRoadUnionPolygonForDefinition(definition) {
-    if (typeof corridorSegmentEntries !== 'function') {
-        console.error('[road-drawing] corridorSegmentEntries unavailable — footprint uses the uniform width');
-        return buildRoadUnionPolygonFromSegments(corridorCenterlineOf(definition), Number(definition?.width) || 10);
-    }
-    const entries = corridorSegmentEntries(definition);
-    return buildRoadUnionPolygonWithWidths(
-        entries.map(entry => entry.points),
-        entries.map(entry => entry.width),
-        Number(definition?.width) || 10,
-        // Segment ids travel too: they are how the union builder tells two pieces of one stretch
-        // (whose bend still owes a joint wedge) from two different roads meeting at a junction.
-        entries.map(entry => entry.segmentId)
-    );
+    return roadPolygonFromGeoJSON(footprint.footprintOfArms(arms, frame));
 }
 
 function corridorProtectedSpanRecordsForDefinition(definition) {
@@ -502,42 +451,20 @@ function corridorProtectedEdgeKeySet(tunnels, gradeSeparations) {
 // imported corridors so far, and a corridor without them yields one span per segment — byte for
 // byte the previous footprint. Edge-keyed `tunnels` metadata is a different concept and still
 // acquires; only an explicit -1 level is exempt.
-function buildCorridorAcquisitionPolygon(definition) {
-    const levels = (typeof window !== 'undefined' && window.__corridorLevels)
-        || (typeof globalThis !== 'undefined' && globalThis.__corridorLevels)
-        || null;
-    if (!levels || typeof corridorSegmentEntries !== 'function') {
-        return buildRoadUnionPolygonForDefinition(definition);
-    }
-
-    const entries = corridorSegmentEntries(definition);
-    const pointLists = [];
-    const widths = [];
-    const stretchIds = [];
-    entries.forEach(entry => {
-        // Splitting happens here rather than on the definition on purpose: the union builder takes
-        // plain point lists, so a segment can be cut into several without disturbing segmentIds or
-        // the id-keyed profiles that carry its width.
-        levels.acquiringSpans(entry.points).forEach(span => {
-            pointLists.push(span);
-            widths.push(entry.width);
-            stretchIds.push(entry.segmentId);
-        });
-    });
-    if (!pointLists.length) return null;
-    return buildRoadUnionPolygonWithWidths(pointLists, widths, Number(definition?.width) || 10, stretchIds);
+//
+// Built by the shared construction in the corridor's own frame (corridor-footprint.js, projections.md
+// §3): exactly the land the server prepares and stores. Throws when it cannot be built.
+function corridorSurfaceFootprintForDefinition(definition) {
+    const footprint = corridorFootprintModule();
+    return footprint.footprintIn(definition, footprint.frameForDefinition(definition));
 }
 
-// Same footprint as GeoJSON — parent collection and drafts store this shape.
-function corridorSurfaceFootprintForDefinition(definition) {
-    const combined = buildCorridorAcquisitionPolygon(definition);
-    if (!combined) return null;
-    const geo = convertLatLngPairsToGeoJSON(convertRoadPolygonToLatLngPairs(combined));
-    return (geo && geo.type) ? geo : null;
+// The same land in Leaflet nesting.
+function buildCorridorAcquisitionPolygon(definition) {
+    return roadPolygonFromGeoJSON(corridorSurfaceFootprintForDefinition(definition));
 }
 
 if (typeof window !== 'undefined') {
-    window.buildRoadUnionPolygonForDefinition = buildRoadUnionPolygonForDefinition;
     window.buildCorridorAcquisitionPolygon = buildCorridorAcquisitionPolygon;
     window.corridorSurfaceFootprintForDefinition = corridorSurfaceFootprintForDefinition;
 }
@@ -748,11 +675,12 @@ function rekeyMovedTunnelRecords(beforeDefinition, afterSegments, records) {
 }
 
 function rebuildRoadDefinitionFootprint(definition) {
-    const unionPolygon = buildRoadUnionPolygonForDefinition(definition);
-    const latLngPairs = unionPolygon ? convertRoadPolygonToLatLngPairs(unionPolygon) : null;
-    const polygon = latLngPairs ? convertLatLngPairsToGeoJSON(latLngPairs) : null;
-    definition.polygon = polygon?.type ? polygon : null;
-    definition.latLngPairs = polygon?.type ? latLngPairs : null;
+    // An edited definition is no longer the one its provenance describes: its land is rebuilt in the
+    // edited centre line's own frame, and publishing prepares it anew.
+    delete definition.constructionFrame;
+    const polygon = corridorSurfaceFootprintForDefinition(definition);
+    definition.polygon = polygon;
+    definition.latLngPairs = convertRoadPolygonToLatLngPairs(roadPolygonFromGeoJSON(polygon));
     delete definition.demolishedBuildings;
     delete definition.demolitionScanned;
     return definition.polygon;
@@ -1230,15 +1158,16 @@ function redrawRoadStrips() {
         .filter(entry => Array.isArray(entry.points) && entry.points.length >= 2);
     if (!entries.length) return restoreCorridorFill();
 
-    // Same renderer as applied corridors — see js/corridor-render.js.
+    // Same renderer as applied corridors — see js/corridor-render.js — in the session's frame.
+    const frame = roadSessionFrame();
     const group = L.layerGroup();
     let drewAny = false;
     const markingsByEntry = (typeof buildCorridorLaneMarkingsForEntries === 'function')
-        ? buildCorridorLaneMarkingsForEntries(entries)
-        : entries.map(entry => buildCorridorLaneMarkings([entry.points], entry.profile));
+        ? buildCorridorLaneMarkingsForEntries(entries, frame)
+        : entries.map(entry => buildCorridorLaneMarkings([entry.points], entry.profile, frame));
     const markings = [];
     entries.forEach((entry, entryIndex) => {
-        const strips = buildCorridorStrips([entry.points], entry.profile);
+        const strips = buildCorridorStrips([entry.points], entry.profile, frame);
         if (!strips.length) {
             // A drawn segment with no strips renders as a bare dashed centerline — never
             // acceptable silently. Say WHY so field reports become diagnosable.
@@ -1247,14 +1176,14 @@ function redrawRoadStrips() {
         }
         // Trees only — bike/pedestrian lane explainers stay out of the map (cross-section
         // editor is the reference for lane meaning).
-        const decorations = ((typeof buildCorridorDecorations === 'function') ? buildCorridorDecorations([entry.points], entry.profile) : [])
+        const decorations = ((typeof buildCorridorDecorations === 'function') ? buildCorridorDecorations([entry.points], entry.profile, frame) : [])
             .filter(decoration => decoration.kind === 'tree');
         const segmentLayer = renderCorridorStrips(strips, {
             pane: CORRIDOR_STRIPS_PANE,
             markings: [], decorations, junctions: [],
             // Rails come with the cross-section: a rail lane in the profile being drawn lays its track
             // right there on the map, so a track is drawn as a track from the first click.
-            centerlines: [entry.points], profile: entry.profile
+            centerlines: [entry.points], profile: entry.profile, frame
         });
         if (segmentLayer) {
             segmentLayer.addTo(group);
@@ -1264,7 +1193,7 @@ function redrawRoadStrips() {
     });
     if (!drewAny) return restoreCorridorFill();
     const junctions = (typeof buildCorridorJunctionTreatmentsForEntries === 'function')
-        ? buildCorridorJunctionTreatmentsForEntries(entries)
+        ? buildCorridorJunctionTreatmentsForEntries(entries, frame)
         : [];
     if (junctions.length && typeof renderCorridorJunctions === 'function') {
         renderCorridorJunctions(junctions, group, CORRIDOR_JUNCTIONS_PANE);
@@ -1428,7 +1357,8 @@ function rebuildRoadGeometryFromSegments() {
         centerlinePoints,
         centerlinePoints.map((_, index) => roadDrawingWidthForSegmentIndex(index)),
         roadWidth,
-        roadSegmentIds
+        roadSegmentIds,
+        roadSessionFrame()
     );
     cachedCommittedPolygon = updatedPolygon;
     if (updatedPolygon) {
@@ -1506,6 +1436,7 @@ function seedRoadDrawing(seed) {
         ? JSON.parse(JSON.stringify(seed.segmentProfiles))
         : {};
     cachedCommittedPolygon = null;
+    roadDrawingFrame = null;
 
     const seededIds = Array.isArray(seed.segmentIds) ? seed.segmentIds : [];
     segments.forEach((points, index) => pushRoadSegment(points, seededIds[index]));
@@ -1568,18 +1499,6 @@ function insertRoadNodeOnEdge(segmentIndex, insertAfter, latlng) {
         refreshRoadBuildingTunnelLayer();
     }
     return true;
-}
-
-function computeRoadMetricsFromSegments(segments, width) {
-    const validSegments = (segments || []).filter(seg => Array.isArray(seg) && seg.length >= 2);
-    if (!validSegments.length) {
-        return { polygon: null, length: 0, area: 0 };
-    }
-
-    const length = validSegments.reduce((sum, seg) => sum + calculateSegmentLengthMeters(seg), 0);
-    const polygon = buildRoadUnionPolygonFromSegments(validSegments, width);
-    const area = polygon ? calculatePolygonAreaMeters(polygon) : 0;
-    return { polygon, length, area };
 }
 
 function isRoadWalletConnected() {
@@ -2909,7 +2828,7 @@ async function handleRoadClick(e) {
         // included); validating at plain roadWidth can accept a wider rendered edge unchecked.
         const activeSegmentIndex = roadSegments.indexOf(roadPoints);
         const activeSegmentWidth = activeSegmentIndex >= 0 ? roadDrawingWidthForSegmentIndex(activeSegmentIndex) : roadWidth;
-        const segmentPolygon = calculateRoadPolygon(segmentPoints, activeSegmentWidth);
+        const segmentPolygon = calculateRoadPolygon(segmentPoints, activeSegmentWidth, roadSessionFrame(segmentPoints));
         // Every decision below is about THIS edge, so it stays visible at its real width until one
         // of them commits it or refuses it.
         showPendingRoadSegment(segmentPolygon);
@@ -3011,7 +2930,7 @@ async function handleRoadClick(e) {
             record.segmentId = segmentId;
             interiorPoints.push(record.from, record.to);
             try {
-                const ring = calculateRoadPolygon([record.from, record.crossing, record.to], activeSegmentWidth);
+                const ring = calculateRoadPolygon([record.from, record.crossing, record.to], activeSegmentWidth, roadSessionFrame());
                 const feature = ring && typeof corridorFeatureFromLatLngRing === 'function'
                     ? corridorFeatureFromLatLngRing(ring)
                     : null;
@@ -3072,24 +2991,18 @@ async function handleRoadClick(e) {
                 roadPreviewLine = null;
             }
 
-            // Calculate the segment polygon for just the NEW segment (last two points)
-            // PERFORMANCE: Incrementally union the new segment polygon with cached polygon
-            // instead of rebuilding the entire road polygon from scratch
-            let newCommittedPolygon;
-            if (segmentPolygon) {
-                if (cachedCommittedPolygon) {
-                    // Union new segment with existing cached polygon
-                    newCommittedPolygon = combineRoadPolygons(cachedCommittedPolygon, segmentPolygon);
-                } else {
-                    // First segment - just use segment polygon
-                    newCommittedPolygon = segmentPolygon;
-                }
-                // Update cache
-                cachedCommittedPolygon = newCommittedPolygon;
-            } else {
-                // Segment polygon calculation failed - keep existing
-                newCommittedPolygon = cachedCommittedPolygon;
-            }
+            // The committed land is rebuilt from the whole centre line by the shared construction in
+            // the session frame: one construction path, so the land seen while drawing is the land
+            // that is stored (an incremental union of per-click pieces kept whichever operand
+            // survived a failed union).
+            const newCommittedPolygon = buildRoadUnionPolygonWithWidths(
+                centerlinePoints,
+                centerlinePoints.map((_, index) => roadDrawingWidthForSegmentIndex(index)),
+                roadWidth,
+                roadSegmentIds,
+                roadSessionFrame()
+            );
+            cachedCommittedPolygon = newCommittedPolygon;
 
             // Update the global roadPolygon variable
             roadPolygon = newCommittedPolygon;
@@ -3165,7 +3078,7 @@ function handleRoadMouseMove(e) {
 
     try {
         // Calculate polygon only for the preview segment
-        const previewSegmentPolygon = calculateRoadPolygon(previewSegmentPoints, roadWidth);
+        const previewSegmentPolygon = calculateRoadPolygon(previewSegmentPoints, roadWidth, roadSessionFrame(previewSegmentPoints));
 
         // Only continue if we have a valid polygon
         if (previewSegmentPolygon && previewSegmentPolygon.length >= 3) {
@@ -3338,66 +3251,12 @@ function exitRoadDrawingMode() {
     window.finishProposalDraftDesignSession?.();
 }
 
-// Legacy road polygon builder using per-segment rectangles and wedges
-function calculateRoadPolygonRectangular(points, width) {
-    if (!points || points.length < 2 || !isFinite(width)) {
-        console.warn('Invalid inputs to calculateRoadPolygon:', { pointsLength: points?.length, width });
-        return null;
-    }
-
-    // If we only have two points, just return a single rectangle
-    if (points.length === 2) {
-        return createRectangularRoadSegment(points[0], points[1], width);
-    }
-
-    // Create individual rectangular segments for each pair of points
-    let combinedPolygon = null;
-
-    for (let i = 0; i < points.length - 1; i++) {
-        const segment = createRectangularRoadSegment(points[i], points[i + 1], width);
-
-        if (!segment) {
-            console.warn(`Failed to create segment ${i}`);
-            continue;
-        }
-
-        // For the first segment, initialize the combined polygon
-        if (combinedPolygon === null) {
-            combinedPolygon = segment;
-        } else {
-            // Combine with existing polygon
-            combinedPolygon = combineRoadPolygons(combinedPolygon, segment);
-        }
-
-        // If combining failed, use just this segment
-        if (!combinedPolygon) {
-            console.error(`Failed to combine segment ${i}, reverting to single segment`);
-            combinedPolygon = segment;
-        }
-
-        // At each interior joint, add a wedge to fill the outer gap between segments
-        if (i >= 1 && i < points.length - 1) {
-            try {
-                const wedge = createJointWedgePolygon(points[i - 1], points[i], points[i + 1], width);
-                if (wedge) {
-                    const combinedWithWedge = combineRoadPolygons(combinedPolygon, wedge);
-                    if (combinedWithWedge) {
-                        combinedPolygon = combinedWithWedge;
-                    }
-                }
-            } catch (e) {
-                // Silent failure for wedge calculation to avoid interrupting drawing
-            }
-        }
-    }
-
-    return combinedPolygon;
-}
-
-// Calculate road polygon from centerline.
-// We always use the segment-by-segment corridor union builder with bevel joins.
-// This keeps behavior consistent (no mode switch after first self-crossing) and avoids filling enclosed loops.
-function calculateRoadPolygon(points, width) {
+// The land of one or more polylines at one width, built by the shared construction
+// (corridor-footprint.js footprintOfArms: rectangles, bevels at bends) in `frame` — the drawing
+// session's, or the frame of the corridor being edited or rendered. Leaflet nesting (LatLng[] for one
+// ring); null for an empty input. Throws when the land cannot be built.
+function calculateRoadPolygon(points, width, frame) {
+    if (!frame) throw new Error('calculateRoadPolygon: a metric frame is required (projections.md §2)');
     const isLatLng = (p) => p && typeof p.lat === 'number' && typeof p.lng === 'number';
 
     // Normalize to an array of centerline segments to support disjoint multi-segment roads
@@ -3418,16 +3277,8 @@ function calculateRoadPolygon(points, width) {
         console.warn('Invalid inputs to calculateRoadPolygon:', { pointsLength: Array.isArray(points) ? points.length : undefined, width });
         return null;
     }
-
-    let combined = null;
-    for (const segment of segments) {
-        if (!Array.isArray(segment) || segment.length < 2) continue;
-        const poly = calculateRoadPolygonRectangular(segment, width);
-        if (!poly) continue;
-        combined = combined ? (combineRoadPolygons(combined, poly) || combined) : poly;
-    }
-
-    return combined;
+    const arms = segments.map(segment => ({ points: segment, width: Number(width) }));
+    return roadPolygonFromGeoJSON(corridorFootprintModule().footprintOfArms(arms, frame));
 }
 
 
@@ -3504,64 +3355,6 @@ function polygonLatLngsToTurfFeature(latLngs) {
     return null;
 }
 
-function polygonHasSelfIntersection(latLngPolygon) {
-    if (!Array.isArray(latLngPolygon) || latLngPolygon.length < 4) return false;
-
-    // Detect self-intersections in the polygon *ring* using planar segment intersection.
-    // This is more reliable than depending on Turf validity for kink detection.
-    const pts = [];
-    const EPS = 1e-6;
-
-    for (const p of latLngPolygon) {
-        if (!p || !isFinite(p.lat) || !isFinite(p.lng)) continue;
-        try {
-            const xy = wgs84ToHTRS96(p.lat, p.lng);
-            if (!Array.isArray(xy) || xy.length < 2 || !isFinite(xy[0]) || !isFinite(xy[1])) continue;
-            const next = { x: xy[0], y: xy[1] };
-            if (pts.length > 0) {
-                const prev = pts[pts.length - 1];
-                if (Math.hypot(next.x - prev.x, next.y - prev.y) < EPS) {
-                    continue; // skip consecutive duplicates
-                }
-            }
-            pts.push(next);
-        } catch (_) {
-            // If projection fails, don't treat it as intersecting
-            return false;
-        }
-    }
-
-    if (pts.length < 4) return false;
-
-    // Ensure the ring is closed in planar space
-    const first = pts[0];
-    const last = pts[pts.length - 1];
-    if (Math.hypot(first.x - last.x, first.y - last.y) > EPS) {
-        pts.push({ x: first.x, y: first.y });
-    }
-
-    const segCount = pts.length - 1;
-    if (segCount < 3) return false;
-
-    for (let i = 0; i < segCount; i++) {
-        const a = pts[i];
-        const b = pts[i + 1];
-        for (let j = i + 1; j < segCount; j++) {
-            // Skip adjacent segments (they share endpoints)
-            if (j === i + 1) continue;
-            // Skip first/last segment adjacency in a closed ring
-            if (i === 0 && j === segCount - 1) continue;
-
-            const c = pts[j];
-            const d = pts[j + 1];
-            if (segmentsIntersect(a, b, c, d)) {
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
 
 // buildOffsetRoadPolygon was dead (no callers) and removed. The road footprint is built from
 // createRectangularRoadSegment + union (see corridor-geometry.js).
@@ -3574,93 +3367,6 @@ function isValidPoint(point) {
         isFinite(point[1]);
 }
 
-// Sanitize a road polygon (Leaflet latLngs) by cleaning duplicate/invalid coordinates.
-// IMPORTANT: This must NOT "fill" enclosed spaces. For self-crossing/loops we build a union-correct
-// corridor polygon elsewhere (segment-by-segment union), so sanitization should stay non-invasive.
-// Returns the sanitized polygon in the same latLng structure (ring / holes / multipolygon).
-function sanitizeRoadPolygon(polygon) {
-    if (!polygon) return polygon;
-
-    if (typeof turf === 'undefined' || !turf || typeof turf.cleanCoords !== 'function') {
-        return polygon;
-    }
-
-    try {
-        const isLatLng = (p) => p && typeof p.lat === 'number' && typeof p.lng === 'number';
-
-        const toClosedLngLatRing = (ring) => {
-            const coords = (Array.isArray(ring) ? ring : [])
-                .filter(isLatLng)
-                .map(p => [p.lng, p.lat]);
-            const closed = ensurePolygonIsClosed(coords);
-            return Array.isArray(closed) && closed.length >= 4 ? closed : null;
-        };
-
-        const toTurfFeature = (poly) => {
-            if (!Array.isArray(poly) || poly.length === 0) return null;
-
-            if (isLatLng(poly[0])) {
-                const ring = toClosedLngLatRing(poly);
-                return ring ? turf.polygon([ring]) : null;
-            }
-
-            if (Array.isArray(poly[0]) && poly[0].length && isLatLng(poly[0][0])) {
-                const rings = poly.map(toClosedLngLatRing).filter(Boolean);
-                return rings.length ? turf.polygon(rings) : null;
-            }
-
-            if (Array.isArray(poly[0]) && Array.isArray(poly[0][0]) && poly[0][0].length && isLatLng(poly[0][0][0])) {
-                const polys = poly
-                    .map(polygonRings => (Array.isArray(polygonRings) ? polygonRings : []).map(toClosedLngLatRing).filter(Boolean))
-                    .filter(rings => rings.length > 0);
-                return polys.length ? turf.multiPolygon(polys) : null;
-            }
-
-            return null;
-        };
-
-        const feature = toTurfFeature(polygon);
-        if (!feature || !feature.geometry) {
-            return polygon;
-        }
-
-        let cleaned = feature;
-        try {
-            cleaned = turf.cleanCoords(feature, { mutate: false }) || feature;
-        } catch (_) { /* ignore */ }
-        try {
-            // Standardize winding (outer CCW, inner CW) for consistent rendering if fillRule changes.
-            if (typeof turf.rewind === 'function') {
-                cleaned = turf.rewind(cleaned, { reverse: false }) || cleaned;
-            }
-        } catch (_) { /* ignore */ }
-
-        const geom = cleaned.geometry;
-        const toLatLngRing = (ring) => (Array.isArray(ring) ? ring : [])
-            .map(coord => Array.isArray(coord) && coord.length >= 2 ? L.latLng(coord[1], coord[0]) : null)
-            .filter(Boolean);
-
-        if (geom.type === 'Polygon') {
-            const rings = (geom.coordinates || []).map(toLatLngRing).filter(r => r.length >= 4);
-            if (!rings.length) return polygon;
-            return rings.length === 1 ? rings[0] : rings;
-        }
-
-        if (geom.type === 'MultiPolygon') {
-            const polys = (geom.coordinates || [])
-                .map(polyRings => (Array.isArray(polyRings) ? polyRings : [])
-                    .map(toLatLngRing)
-                    .filter(r => r.length >= 4))
-                .filter(rings => rings.length > 0);
-            return polys.length ? polys : polygon;
-        }
-
-        return polygon;
-    } catch (error) {
-        console.warn('Error sanitizing road polygon:', error);
-        return polygon;
-    }
-}
 
 // Helper function to ensure a polygon is closed (first and last points match)
 function ensurePolygonIsClosed(coords) {
@@ -4175,29 +3881,9 @@ function updateRoadLengthAndArea(points, polygon) {
     }
 
     try {
-        // Calculate road length in meters
-        let length = 0;
-        const htrsPoints = [];
-
-        for (const p of points) {
-            if (!p || !isFinite(p.lat) || !isFinite(p.lng)) continue;
-            try {
-                const htrsPoint = wgs84ToHTRS96(p.lat, p.lng);
-                if (isValidPoint(htrsPoint)) {
-                    htrsPoints.push(htrsPoint);
-                }
-            } catch (error) { }
-        }
-
-        if (htrsPoints.length >= 2) {
-            for (let i = 0; i < htrsPoints.length - 1; i++) {
-                const p1 = htrsPoints[i];
-                const p2 = htrsPoints[i + 1];
-                const dx = p2[0] - p1[0];
-                const dy = p2[1] - p1[1];
-                length += Math.sqrt(dx * dx + dy * dy);
-            }
-        }
+        // Road length in metres, on the ellipsoid (projections.md §2)
+        const valid = points.filter(p => p && isFinite(p.lat) && isFinite(p.lng));
+        const length = valid.length >= 2 ? polylineLengthMeters(valid) : 0;
 
         // Calculate road area
         let area = 0;
@@ -4242,39 +3928,10 @@ function updateRoadInfoWithPreview(points, polygon, affectedParcelsToUse = null)
     }
 
     try {
-        // Calculate road length in meters
-        let length = 0;
-        const htrsPoints = [];
-
-        // Convert and validate each point
-        for (const p of points) {
-            if (!p || !isFinite(p.lat) || !isFinite(p.lng)) {
-                console.warn('Invalid point in updateRoadInfoWithPreview:', p);
-                continue;
-            }
-            try {
-                const htrsPoint = wgs84ToHTRS96(p.lat, p.lng);
-                if (isValidPoint(htrsPoint)) {
-                    htrsPoints.push(htrsPoint);
-                }
-            } catch (error) {
-                console.error('Error converting point in updateRoadInfoWithPreview:', error);
-            }
-        }
-
-        // Calculate length only if we have enough valid points
-        if (htrsPoints.length >= 2) {
-            for (let i = 0; i < htrsPoints.length - 1; i++) {
-                const p1 = htrsPoints[i];
-                const p2 = htrsPoints[i + 1];
-                const dx = p2[0] - p1[0];
-                const dy = p2[1] - p1[1];
-                length += Math.sqrt(dx * dx + dy * dy);
-            }
-        } else {
-            console.warn('Not enough valid points to calculate length');
-            length = 0;
-        }
+        // Road length in metres, on the ellipsoid (projections.md §2)
+        const valid = points.filter(p => p && isFinite(p.lat) && isFinite(p.lng));
+        if (valid.length < points.length) console.warn('Invalid point(s) in updateRoadInfoWithPreview:', points.length - valid.length);
+        const length = valid.length >= 2 ? polylineLengthMeters(valid) : 0;
 
         // Calculate road area
         let area = 0;
@@ -4337,13 +3994,7 @@ function updatePreviewRoadInfo(previewSegmentPoints, previewSegmentPolygon) {
             const p1 = previewSegmentPoints[0];
             const p2 = previewSegmentPoints[1];
             if (p1 && p2 && isFinite(p1.lat) && isFinite(p1.lng) && isFinite(p2.lat) && isFinite(p2.lng)) {
-                const htrs1 = wgs84ToHTRS96(p1.lat, p1.lng);
-                const htrs2 = wgs84ToHTRS96(p2.lat, p2.lng);
-                if (isValidPoint(htrs1) && isValidPoint(htrs2)) {
-                    const dx = htrs2[0] - htrs1[0];
-                    const dy = htrs2[1] - htrs1[1];
-                    previewLength = Math.sqrt(dx * dx + dy * dy);
-                }
+                previewLength = polylineLengthMeters([p1, p2]);
             }
         }
 
@@ -4553,7 +4204,8 @@ function updateRoadPreview() {
         segments,
         segments.map((_, index) => roadDrawingWidthForSegmentIndex(index)),
         roadWidth,
-        roadSegmentIds
+        roadSegmentIds,
+        roadSessionFrame()
     );
     if (roadPolygonPoints) {
         roadPreviewPolygon = L.polygon(roadPolygonPoints, {
@@ -4722,7 +4374,10 @@ async function finishRoadDrawingOnce() {
             return width > 0 ? width : roadWidth;
         }),
         roadWidth,
-        segmentIds
+        segmentIds,
+        // The stored land is built in the final centre line's canonical frame — the frame the
+        // server materialises it in — not the session's, so preparing reproduces it exactly.
+        metricFrameModule().frameFor(segments.flat())
     );
     if (!finalRoadPolygon) {
         showRoadAlert('invalid_road_shape_please_try_drawing_the_road_again', 'Invalid road shape. Please try drawing the road again.');
@@ -4730,25 +4385,11 @@ async function finishRoadDrawingOnce() {
         return;
     }
 
-    // If the generated polygon self-intersects (bowtie/overlaps), rebuild using a union-correct corridor.
-    // This ensures the crossing area becomes part of the final polygon (union), not a hole (evenodd).
-    if (Array.isArray(finalRoadPolygon) && polygonHasSelfIntersection(finalRoadPolygon)) {
-        const unionCorridor = calculateRoadPolygonRectangular(segments.flat(), roadWidth);
-        if (isValidPolygonLatLngs(unionCorridor)) {
-            finalRoadPolygon = unionCorridor;
-        }
-    }
-
+    // The shared construction unions every piece (a crossing is part of the land, never an even-odd
+    // hole) and splits every edge into pieces of at most 50 m. Nothing may "clean" it afterwards:
+    // turf.cleanCoords drops those collinear vertices and lets long edges bow again in lon/lat
+    // (projections.md §3).
     markCorridorFinishPhase('corridor');
-
-    // Sanitize the road polygon to fix any remaining self-intersections / coordinate issues
-    const sanitizedPolygon = sanitizeRoadPolygon(finalRoadPolygon);
-    if (isValidPolygonLatLngs(sanitizedPolygon)) {
-        finalRoadPolygon = sanitizedPolygon;
-    } else {
-        // If sanitization fails or produces invalid result, warn user but continue with original
-        console.warn('Road polygon sanitization failed or produced invalid result, using original polygon');
-    }
 
     // Update the displayed polygon and recompute affected parcels based on the final geometry.
     // This avoids missing parcels that might fall entirely inside a (previously) hollow crossing region.
@@ -4963,8 +4604,9 @@ function resetRoadDrawing(hidePanel = true) {
     committedRoadMetrics.length = 0;
     committedRoadMetrics.area = 0;
 
-    // Reset cached committed road polygon
+    // Reset cached committed road polygon and the session's frame
     cachedCommittedPolygon = null;
+    roadDrawingFrame = null;
 
     // Clear any existing road layers
     if (roadCenterline) {
@@ -5526,258 +5168,8 @@ function showRoadProposalModal({ defaultAuthor = '', defaultName = 'New Road', d
 // coincident points in a RANDOM direction; proposal-manager's returned null). The shared copy nudges
 // a fixed 10 cm east, so a footprint is reproducible. Callers below use the global unchanged.
 
-// Create a join polygon at a joint to smooth the outer connection between two segment rectangles.
-// We intentionally use a *bevel* join (triangle between the joint and the two outer rectangle corners),
-// instead of a miter (extending outer edges until they cross). This avoids aggressive spikes and,
-// crucially for self-crossing roads, avoids producing a triangular "hole" between rectangles + join.
-function createJointWedgePolygon(prevPoint, jointPoint, nextPoint, width) {
-    // Validate inputs
-    if (!prevPoint || !jointPoint || !nextPoint || !isFinite(width) || width <= 0) {
-        return null;
-    }
 
-    if (!isFinite(prevPoint.lat) || !isFinite(prevPoint.lng) ||
-        !isFinite(jointPoint.lat) || !isFinite(jointPoint.lng) ||
-        !isFinite(nextPoint.lat) || !isFinite(nextPoint.lng)) {
-        return null;
-    }
 
-    // Convert to HTRS96/TM meters
-    const p0 = wgs84ToHTRS96(prevPoint.lat, prevPoint.lng);
-    const pj = wgs84ToHTRS96(jointPoint.lat, jointPoint.lng);
-    const p1 = wgs84ToHTRS96(nextPoint.lat, nextPoint.lng);
-
-    if (!isValidPoint(p0) || !isValidPoint(pj) || !isValidPoint(p1)) {
-        return null;
-    }
-
-    const v1 = [pj[0] - p0[0], pj[1] - p0[1]]; // incoming dir
-    const v2 = [p1[0] - pj[0], p1[1] - pj[1]]; // outgoing dir
-
-    const len1 = Math.hypot(v1[0], v1[1]);
-    const len2 = Math.hypot(v2[0], v2[1]);
-    if (len1 < 1e-6 || len2 < 1e-6) {
-        return null;
-    }
-
-    const u1 = [v1[0] / len1, v1[1] / len1];
-    const u2 = [v2[0] / len2, v2[1] / len2];
-
-    // Left normals for each segment
-    const n1L = [-u1[1], u1[0]];
-    const n2L = [-u2[1], u2[0]];
-    // Right normals are negatives
-    const n1R = [u1[1], -u1[0]];
-    const n2R = [u2[1], -u2[0]];
-
-    // Determine turn direction: positive => left turn
-    const cross = u1[0] * u2[1] - u1[1] * u2[0];
-    const outerIsRight = cross > 0; // inner on left when turning left
-
-    const halfWidth = width / 2;
-
-    // Pick outer normals
-    const n1 = outerIsRight ? n1R : n1L;
-    const n2 = outerIsRight ? n2R : n2L;
-
-    // Offset points at the joint on the outer side
-    const pA = [pj[0] + n1[0] * halfWidth, pj[1] + n1[1] * halfWidth];
-    const pB = [pj[0] + n2[0] * halfWidth, pj[1] + n2[1] * halfWidth];
-
-    // Bevel join patch:
-    // We want the only *new* visible boundary to be the bevel cut edge pA -> pB.
-    // Using the centerline joint point (pj) as a vertex can leave an interior "spike" edge because pj
-    // lies on the segment end-cap boundary. Instead, anchor the triangle at a point *inside* the overlap.
-    const bisector = [n1[0] + n2[0], n1[1] + n2[1]];
-    const bisLen = Math.hypot(bisector[0], bisector[1]);
-    if (bisLen < 1e-8) {
-        // Nearly straight/degenerate outer normals: no outer gap to fill.
-        return null;
-    }
-    const inward = [-bisector[0] / bisLen, -bisector[1] / bisLen];
-    const innerAnchor = [pj[0] + inward[0] * (halfWidth * 0.25), pj[1] + inward[1] * (halfWidth * 0.25)];
-
-    // Triangle with bevel edge [pA -> pB]. The other two edges should be interior after union.
-    const wedgeHTRS = [pA, pB, innerAnchor, pA];
-
-    // Convert back to WGS84 lat/lngs and return as Leaflet LatLng[]
-    const result = [];
-    for (const pt of wedgeHTRS) {
-        const [lat, lng] = htrs96ToWGS84(pt[0], pt[1]);
-        if (isFinite(lat) && isFinite(lng)) {
-            result.push(L.latLng(lat, lng));
-        }
-    }
-
-    return result.length >= 3 ? result : null;
-}
-
-// Combine two road polygons using Turf's union operation
-function combineRoadPolygons(polygon1, polygon2) {
-    // Validate inputs
-    if (!polygon1 && polygon2) return polygon2;
-    if (polygon1 && !polygon2) return polygon1;
-    if (!polygon1 && !polygon2) return null;
-
-    try {
-        if (typeof turf === 'undefined' || !turf || typeof turf.union !== 'function') {
-            return polygon2 || polygon1;
-        }
-
-        // Clean up polygons before attempting the union to avoid topology errors.
-        const polyA = typeof sanitizeRoadPolygon === 'function' ? (sanitizeRoadPolygon(polygon1) || polygon1) : polygon1;
-        const polyB = typeof sanitizeRoadPolygon === 'function' ? (sanitizeRoadPolygon(polygon2) || polygon2) : polygon2;
-
-        // Union in local planar meters (HTRS) for robustness.
-        // The corridor rectangles + bevel joins are constructed in meters and then converted to WGS84.
-        // Unioning in WGS84 degrees can introduce tiny gaps that leave bevel wedges as separate triangles.
-        const toHTRS = (p) => {
-            if (!p || typeof p.lat !== 'number' || typeof p.lng !== 'number') return null;
-            if (typeof wgs84ToHTRS96 !== 'function') return null;
-            try {
-                const xy = wgs84ToHTRS96(p.lat, p.lng);
-                return (Array.isArray(xy) && xy.length >= 2 && isFinite(xy[0]) && isFinite(xy[1])) ? xy : null;
-            } catch (_) {
-                return null;
-            }
-        };
-
-        const fromHTRS = (coord) => {
-            if (!Array.isArray(coord) || coord.length < 2) return null;
-            const x = Number(coord[0]);
-            const y = Number(coord[1]);
-            if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
-            if (typeof htrs96ToWGS84 !== 'function') return null;
-            try {
-                const out = htrs96ToWGS84(x, y);
-                if (!Array.isArray(out) || out.length < 2) return null;
-                const lat = Number(out[0]);
-                const lng = Number(out[1]);
-                if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
-                return L.latLng(lat, lng);
-            } catch (_) {
-                return null;
-            }
-        };
-
-        if (typeof wgs84ToHTRS96 !== 'function' || typeof htrs96ToWGS84 !== 'function') {
-            // Without projection helpers we cannot safely union; keep existing geometry.
-            return polygon2 || polygon1;
-        }
-
-        const isLatLng = (p) => p && typeof p.lat === 'number' && typeof p.lng === 'number';
-
-        const normalizeToTurfFeature = (poly) => {
-            if (!Array.isArray(poly) || poly.length === 0) return null;
-
-            // poly can be:
-            // - LatLng[] (single ring)
-            // - LatLng[][] (polygon with holes)
-            // - LatLng[][][] (multi polygon)
-
-            if (isLatLng(poly[0])) {
-                const ring = ensurePolygonIsClosed(poly.map(toHTRS).filter(Boolean));
-                if (!ring || ring.length < 4) return null;
-                return turf.polygon([ring]);
-            }
-
-            if (Array.isArray(poly[0]) && poly[0].length && isLatLng(poly[0][0])) {
-                const rings = poly
-                    .map(r => ensurePolygonIsClosed((Array.isArray(r) ? r : []).filter(isLatLng).map(toHTRS).filter(Boolean)))
-                    .filter(r => Array.isArray(r) && r.length >= 4);
-                if (!rings.length) return null;
-                return turf.polygon(rings);
-            }
-
-            if (Array.isArray(poly[0]) && Array.isArray(poly[0][0]) && poly[0][0].length && isLatLng(poly[0][0][0])) {
-                const polys = poly
-                    .map(polygonRings => (Array.isArray(polygonRings) ? polygonRings : [])
-                        .map(r => ensurePolygonIsClosed((Array.isArray(r) ? r : []).filter(isLatLng).map(toHTRS).filter(Boolean)))
-                        .filter(r => Array.isArray(r) && r.length >= 4))
-                    .filter(rings => Array.isArray(rings) && rings.length > 0);
-                if (!polys.length) return null;
-                return turf.multiPolygon(polys);
-            }
-
-            return null;
-        };
-
-        const feature1 = normalizeToTurfFeature(polyA);
-        const feature2 = normalizeToTurfFeature(polyB);
-        if (!feature1 && feature2) return polygon2;
-        if (feature1 && !feature2) return polygon1;
-        if (!feature1 || !feature2) return null;
-
-        let lastError = null;
-        const tryUnion = (a, b) => turf.union(a, b);
-
-        const combined = (() => {
-            const attempts = [
-                () => tryUnion(feature1, feature2),
-                () => {
-                    if (typeof turf.cleanCoords !== 'function') return null;
-                    const f1 = turf.cleanCoords(feature1, { mutate: false }) || feature1;
-                    const f2 = turf.cleanCoords(feature2, { mutate: false }) || feature2;
-                    return tryUnion(f1, f2);
-                },
-                () => {
-                    // We cannot use turf.buffer on HTRS96 coordinates as Turf projects them assuming WGS84,
-                    // which completely corrupts the geometry and yields out-of-bounds coordinates (like 3M, 9.8M).
-                    // Instead, we use turf.truncate to snap coordinates to a grid (e.g., 2 decimal places = cm precision),
-                    // which often heals JSTS topology side location conflicts.
-                    if (typeof turf.truncate !== 'function') return null;
-                    const f1 = turf.truncate(feature1, { precision: 2, coordinates: 2, mutate: false }) || feature1;
-                    const f2 = turf.truncate(feature2, { precision: 2, coordinates: 2, mutate: false }) || feature2;
-                    return tryUnion(f1, f2);
-                }
-            ];
-
-            for (const attempt of attempts) {
-                try {
-                    const result = attempt();
-                    if (result && result.geometry) {
-                        return result;
-                    }
-                } catch (err) {
-                    lastError = err;
-                }
-            }
-
-            if (lastError) throw lastError;
-            return null;
-        })();
-
-        if (!combined || !combined.geometry) return polygon2 || polygon1;
-
-        const geom = combined.geometry;
-        const toLatLngRing = (ring) => (Array.isArray(ring) ? ring : []).map(fromHTRS).filter(Boolean);
-
-        if (geom.type === 'Polygon') {
-            const rings = (geom.coordinates || []).map(toLatLngRing).filter(r => r.length >= 4);
-            if (!rings.length) return null;
-            return rings.length === 1 ? rings[0] : rings;
-        }
-
-        if (geom.type === 'MultiPolygon') {
-            const polys = (geom.coordinates || [])
-                .map(polyRings => (Array.isArray(polyRings) ? polyRings : [])
-                    .map(toLatLngRing)
-                    .filter(r => r.length >= 4))
-                .filter(rings => rings.length > 0);
-            return polys.length ? polys : null;
-        }
-
-        console.error('Unexpected geometry type from union:', geom.type);
-        return null;
-    } catch (error) {
-        console.error('Error combining road polygons:', error);
-        return null;
-    }
-}
-
-if (typeof window !== 'undefined') {
-    window.combineRoadPolygons = combineRoadPolygons;
-}
 
 // Check if a parcel number exists
 function parcelNumberExists(number) {
@@ -5807,27 +5199,6 @@ function geometryHash(coords) {
 // Function to update parcel numbers and split parcels
 // MOVED to proposal-manager.js
 
-// Helper function to calculate area from a Leaflet polygon
-function calculateAreaFromLatLngPolygon(latLngPolygon) {
-    // Convert to HTRS96/TM coordinates
-    const htrsCoords = latLngPolygon.map(point => wgs84ToHTRS96(point.lat, point.lng));
-
-    // Create closed polygon
-    const closedCoords = [...htrsCoords];
-    if (htrsCoords.length > 0 &&
-        (htrsCoords[0][0] !== htrsCoords[htrsCoords.length - 1][0] ||
-            htrsCoords[0][1] !== htrsCoords[htrsCoords.length - 1][1])) {
-        closedCoords.push(htrsCoords[0]);
-    }
-
-    // Calculate area
-    let area = 0;
-    for (let i = 0; i < closedCoords.length - 1; i++) {
-        area += closedCoords[i][0] * closedCoords[i + 1][1] - closedCoords[i + 1][0] * closedCoords[i][1];
-    }
-
-    return Math.abs(area / 2);
-}
 
 // Find parcels affected by the PREVIEW SEGMENT ONLY (not the entire road)
 // Uses cached locked stats + adds preview-only parcels for combined display

@@ -552,7 +552,10 @@ async function handleProposalDownloadClick(event) {
         console.error('Failed to download proposal', proposalId, error);
         button.disabled = false;
         button.textContent = originalLabel;
-        const message = t('modal.roadWidth.proposalList.downloadError', 'Failed to download proposal');
+        // another city's proposal is not stored here: say where it belongs
+        const message = error?.code === 'proposal-in-other-city'
+            ? error.message
+            : t('modal.roadWidth.proposalList.downloadError', 'Failed to download proposal');
         try {
             updateStatus(message);
         } catch (_) {
@@ -1029,18 +1032,38 @@ function formatSharedProposalTypeLabel(proposal) {
     }
 }
 
+// A proposal link suppresses the boot's viewport parcel fetch while it loads its own ground
+// (map-core.js IS_PROPOSAL_DEEP_LINK). Every way such a route ends gives it back — a plan that does
+// not resolve, a stay in the wrong city, an applied plan — and fetches the view once; a route that
+// ended without it left the map without parcels until a reload.
+function releaseDeepLinkParcelFetch() {
+    if (typeof window === 'undefined' || !window.skipParcelFetchUntilProposalLoaded) return;
+    window.skipParcelFetchUntilProposalLoaded = false;
+    try {
+        if (typeof map !== 'undefined' && map && typeof map.fire === 'function') map.fire('moveend');
+    } catch (error) {
+        console.warn('[proposal-route] could not fetch the view after the route', error);
+    }
+}
+
 // Puts the app in the plan's city before its route runs. Returns true when it navigated away,
 // meaning the caller must stop: the reload re-enters this route with the city already correct.
 //
 // Silent when the visitor is merely sitting on the default and has never chosen a city — following
 // the link is doing what they asked. When they HAVE chosen one, this defers to the existing prompt
-// rather than overriding a deliberate choice.
-async function ensurePlanCity(planCityId) {
+// rather than overriding a deliberate choice. A plan city the app does not configure (free text on
+// the plan record) is no city to go to: the plan opens here instead of reloading forever.
+async function ensurePlanCity(rawPlanCityId) {
     const manager = (typeof window !== 'undefined') ? window.CityConfigManager : null;
-    if (!manager || !planCityId) return false;
+    if (!manager || !rawPlanCityId) return false;
     try {
+        const planCityId = manager.resolveCityId(rawPlanCityId);
         const current = manager.getCurrentCityId();
-        if (String(planCityId) === String(current)) return false;
+        if (!planCityId) {
+            console.warn('[handleProposalRouteFromUrl] Plan city', rawPlanCityId, 'is not a configured city; opening it in', current);
+            return false;
+        }
+        if (planCityId === current) return false;
 
         const chosen = (typeof manager.hasStoredCityId === 'function') ? manager.hasStoredCityId() : true;
         if (!chosen && typeof manager.navigateToCity === 'function') {
@@ -1143,12 +1166,16 @@ async function handleProposalRouteFromUrl(attempt = 0) {
                         // all HTTP 400, and no prompt — the per-proposal city check reads
                         // payload.city, which is null on a proposal record. The PLAN record is
                         // where the city actually lives, and by here it is already in hand.
-                        if (await ensurePlanCity(plan.city)) return;   // switching navigates away
+                        if (await ensurePlanCity(plan.city)) {   // switching navigates away, or the visitor stayed
+                            releaseDeepLinkParcelFetch();
+                            return;
+                        }
                         await handleSharedPlanRoute(ids);
                         return;
                     }
                 }
                 console.warn('[handleProposalRouteFromUrl] named plan did not resolve:', slug, resp.status);
+                releaseDeepLinkParcelFetch();
             }
             console.debug('[handleProposalRouteFromUrl] Proposal path did not match expected pattern:', pathname);
             return;

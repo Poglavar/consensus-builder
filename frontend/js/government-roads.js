@@ -2221,16 +2221,13 @@
         return window.map.getBounds();
     }
 
+    // The government road services take their own CRS, EPSG:3765 — named here, never the active
+    // city's (projections.md §4).
     function getBboxFromBounds(bounds) {
-        if (!bounds || typeof window.getBboxFromBounds !== 'function') {
+        if (!bounds || typeof window.bboxInCrs !== 'function') {
             return '';
         }
-        try {
-            return window.getBboxFromBounds(bounds);
-        } catch (err) {
-            console.warn('Failed to obtain bbox from bounds.', err);
-            return '';
-        }
+        return window.bboxInCrs(bounds, 'EPSG:3765');
     }
 
     function buildBoundsPolygon(bounds) {

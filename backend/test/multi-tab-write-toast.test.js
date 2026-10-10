@@ -38,8 +38,9 @@ function fakeElement(id) {
     return el;
 }
 
-// Boot one guard instance and hand back the levers a test needs.
-function bootGuard() {
+// Boot one guard instance and hand back the levers a test needs. `database`: the page's storage
+// database once known (persistent-storage.js databaseName()); null = announced later by an event.
+function bootGuard({ database = 'consensus-builder-storage::zagreb' } = {}) {
     const byId = new Map();
     const body = fakeElement('body');
     const doc = {
@@ -64,14 +65,18 @@ function bootGuard() {
     };
 
     const toasts = [];
+    const channels = [];
+    const listeners = {};
     let onmessage = null;
     const scope = {
         document: doc,
-        addEventListener: () => { },
+        addEventListener: (type, fn) => { (listeners[type] = listeners[type] || []).push(fn); },
         setTimeout: fn => { fn(); return 0; },
         performance: { now: () => 0 },
         showEphemeralMessage: (text, ms) => toasts.push({ text, ms }),
-        BroadcastChannel: function () {
+        PersistentStorage: { databaseName: () => database },
+        BroadcastChannel: function (name) {
+            channels.push(name);
             this.postMessage = () => { };
             Object.defineProperty(this, 'onmessage', { set(fn) { onmessage = fn; }, get() { return onmessage; } });
         }
@@ -80,8 +85,30 @@ function bootGuard() {
 
     // eslint-disable-next-line no-new-func
     new Function('window', 'self', 'document', `${source}`)(scope, scope, doc);
-    return { scope, doc, byId, toasts, deliver: msg => onmessage({ data: msg }) };
+    return {
+        scope, doc, byId, toasts, channels,
+        deliver: msg => onmessage({ data: msg }),
+        announce: name => (listeners.persistentstoragedatabase || []).forEach(fn => fn({ detail: { name } }))
+    };
 }
+
+describe('which tabs are guarded against each other', () => {
+    // Each city has its own database (persistent-storage.js): only tabs on the same one can clobber
+    // each other, so a tab in another city must not be made read-only.
+    it('one channel per database: two cities never meet', () => {
+        const zagreb = bootGuard({ database: 'consensus-builder-storage::zagreb' });
+        const split = bootGuard({ database: 'consensus-builder-storage::split' });
+        expect(zagreb.channels).toEqual(['consensus-builder-tabs:consensus-builder-storage::zagreb']);
+        expect(split.channels).toEqual(['consensus-builder-tabs:consensus-builder-storage::split']);
+    });
+
+    it('waits for the database to be known before listening at all', () => {
+        const late = bootGuard({ database: null });
+        expect(late.channels).toEqual([]);
+        late.announce('consensus-builder-storage::explore');
+        expect(late.channels).toEqual(['consensus-builder-tabs:consensus-builder-storage::explore']);
+    });
+});
 
 describe('read-only tab write reporting', () => {
     let guard;

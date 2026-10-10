@@ -33,10 +33,18 @@
     /**
      * Get last synced token ID for a chain/contract
      */
+    // The position is per city: localStorage is shared by every city, while each sync adds only its
+    // own city's proposals — one shared position made a city skip its own tokens below the position
+    // another city had reached.
+    function syncPositionKey(chainId, contractAddress) {
+        const city = global.CityConfigManager?.getCurrentCityId?.() || 'none';
+        return `${city}|${chainId}-${contractAddress.toLowerCase()}`;
+    }
+
     function getLastSyncedTokenId(chainId, contractAddress) {
         try {
             const data = JSON.parse(localStorage.getItem(LAST_SYNC_KEY) || '{}');
-            const key = `${chainId}-${contractAddress.toLowerCase()}`;
+            const key = syncPositionKey(chainId, contractAddress);
             return data[key] || 0;
         } catch (error) {
             console.warn('Failed to read last sync position', error);
@@ -50,7 +58,7 @@
     function setLastSyncedTokenId(chainId, contractAddress, tokenId) {
         try {
             const data = JSON.parse(localStorage.getItem(LAST_SYNC_KEY) || '{}');
-            const key = `${chainId}-${contractAddress.toLowerCase()}`;
+            const key = syncPositionKey(chainId, contractAddress);
             data[key] = tokenId;
             localStorage.setItem(LAST_SYNC_KEY, JSON.stringify(data));
         } catch (error) {
@@ -397,6 +405,9 @@
                 }
 
                 console.log(`Updated proposal ${chainProposalId} from blockchain`);
+            } else if (typeof global.chainProposalBelongsHere === 'function' && !global.chainProposalBelongsHere(onchainData && onchainData[0])) {
+                // another city's minted proposal (or one with no parcels): not this store's
+                return false;
             } else {
                 // Create new proposal from blockchain data
                 const newProposal = createProposalFromChainData({

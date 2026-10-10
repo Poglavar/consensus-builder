@@ -164,7 +164,7 @@
         "floorHeightHint": "Calculado a partir de las huellas dibujadas y la altura ÷ {{height}} m por planta."
     },
     "multitab": {
-        "warning": "La aplicación ya está abierta en otra pestaña. Para no perder las propuestas guardadas, los cambios en esta pestaña no se guardarán — cierra las demás pestañas y recarga esta para editar.",
+        "warning": "Esta ciudad ya está abierta en otra pestaña. Para no perder las propuestas guardadas, los cambios en esta pestaña no se guardarán — cierra las demás pestañas de esta ciudad y recarga esta para editar. Otras ciudades pueden quedar abiertas.",
         "notSaved": "La propuesta NO se ha guardado y se perderá al recargar el navegador."
     },
     "proposalDrafts": {
@@ -416,7 +416,8 @@
         },
         "recovery": {
             "offer": "Las propuestas que hiciste {{when}} no se pudieron guardar porque la aplicación estaba abierta en otra pestaña ({{count}}).\n\n¿Restaurarlas ahora?"
-        }
+        },
+        "inOtherCity": "Esta propuesta pertenece a {{city}}, no a {{current}}: ábrala allí."
     },
     "wallet": {
         "connect": "Conectar billetera",
@@ -2827,6 +2828,7 @@
                 "bindingFailed": "No se pudo comprobar en qué parcelas entra el sitio de esta propuesta: {{reason}}",
                 "bindingUnresolved": "El sitio entra en {{list}} casi exactamente lo que marca la tolerancia, así que no se puede decidir si ocupa terreno allí. Mueva el diseño un milímetro hacia esa parcela o alejándolo de ella.",
                 "preparationChanged": "Esta propuesta cambió después de prepararse para publicarla ({{reason}}). Publícala de nuevo.",
+                "siteInOtherCity": "Este emplazamiento está en {{city}}, cuyas parcelas no son las cargadas aquí. Abra {{city}} y publíquelo desde allí.",
                 "noMintGeometry": "Esta propuesta no tiene geometría de sitio ni de parcelas para acuñar.",
                 "noMintParcels": "Esta propuesta no nombra parcelas ni tiene sitio, así que no puede acuñarse."
             },

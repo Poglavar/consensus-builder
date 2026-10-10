@@ -42,7 +42,7 @@ describe('an edge under decision', () => {
     it('is drawn at its real width before any placement dialog opens', () => {
         const decision = sourceSection(
             drawingSource,
-            'const segmentPolygon = calculateRoadPolygon(segmentPoints, activeSegmentWidth);',
+            'const segmentPolygon = calculateRoadPolygon(segmentPoints, activeSegmentWidth, roadSessionFrame(segmentPoints));',
             'await resolvePedestrianRoadCrossings('
         );
         expect(decision).toContain('showPendingRoadSegment(segmentPolygon);');

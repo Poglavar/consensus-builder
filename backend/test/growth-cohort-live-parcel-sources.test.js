@@ -32,7 +32,7 @@ describe('growth-cohort live parcel source contracts', () => {
         runInNewContext(read('frontend/js/city-config.js'), context);
         const city = context.CityConfigManager.getCityConfig(sample.city);
         expect(city.parcels).toMatchObject({ sourceId: sample.source, idPrefix: sample.prefix, ownership: false });
-        expect(city.projection.metricCrs).toBe(`EPSG:${sample.srid}`);
+        expect(city.projection.metricCrs).toBeUndefined();
         expect(city.currency.code).toBe(sample.currency);
         for (const locale of ['en', 'es', 'hr', 'sr']) {
             const translations = JSON.parse(read(`frontend/i18n/${locale}.json`));

@@ -1,10 +1,11 @@
 // POST /proposals/prepare (alias POST /agent/prepare): prepare a proposal for publication
 // (projections.md §3, proposals/prepare.js). The server materialises what it derives — a corridor's
-// land, from its lanes, in its own operation frame — binds the site, hashes it, and stores the result
-// as an immutable, content-addressed artifact. The answer is { preparationId, digest, artifact,
-// proposal }: the client shows the artifact, uploads metadata and mints with ITS site and binding,
-// and publishes `proposal` — the record with its derived land, declaration and `preparation`
-// reference filled in. A write (it stores the artifact), so the browser path sits behind the Origin
+// land, from its lanes, in its own operation frame — binds the site, hashes it, and signs the result:
+// a content-addressed artifact. The answer is { preparationId, digest, preparedAt, signature,
+// artifact, proposal }: the client shows the artifact, uploads metadata and mints with ITS site and
+// binding, and publishes `proposal` — the record with its derived land, declaration, `preparation`
+// reference and the artifact itself (`preparedArtifact`) filled in. Nothing is stored here: the
+// artifact is kept only when the proposal is published. The browser path sits behind the Origin
 // gate; both paths share the binding rate limit (index.js).
 
 import { prepareProposal } from '../proposals/prepare.js';
@@ -37,7 +38,9 @@ export function setupProposalPrepareRoute(app, pool) {
                 });
                 return res.status(201).json({ ...prepared, queryMs: Date.now() - started });
             } catch (error) {
-                if (error && error.code && Number.isInteger(error.status) && error.status < 500) {
+                // a server without a signing key prepares nothing, and says why (503)
+                if (error && error.code === 'preparation-unavailable') console.error(`[${new Date().toISOString()}] Error in POST ${routePath}: ${error.message}`);
+                if (error && error.code && Number.isInteger(error.status) && (error.status < 500 || error.code === 'preparation-unavailable')) {
                     if (error.retryAfterSeconds !== undefined) res.set('Retry-After', String(error.retryAfterSeconds));
                     const { message, code, status, stack, ...details } = error;
                     return res.status(status).json({ error: message, code, ...details });

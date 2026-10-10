@@ -1,12 +1,13 @@
-// Pure geometry for the freeform-building editor: its initial square, footprint validation,
-// translation, and rotation in a Web-Mercator projector's space. Interactive vertex editing lives
-// in polygon-geometry-editor.js so block manual mode and freeform buildings use one system.
+// Pure geometry for the freeform-building and row-house editors: the initial rectangle, footprint
+// validation, moving and rotating — all in true ground metres, in a metric frame on the footprint or
+// the point it moves from/to (metric-frame.js, projections.md §2 and §6). Interactive vertex editing
+// lives in polygon-geometry-editor.js so block manual mode and freeform buildings use one system.
 //
-// It exists to fix a real bug: buildRectangleFeature added the building's ground-metre half-width
-// and half-length directly as offsets in EPSG:3857 (Web-Mercator) coordinates. But Mercator inflates
-// distance by 1/cos(latitude), so at Zagreb (~45.8°) a "20 m" building came out ~14 m on the ground
-// (area off by cos²φ ≈ 0.49×). The offsets are now scaled by 1/cos(lat) so the projected rectangle is
-// the intended ground size. Pure — the projector is injected — so the area is unit-testable.
+// It began as the fix for buildings built in EPSG:3857 (Web-Mercator) coordinates: Mercator inflates
+// distance by 1/cos(latitude), so at Zagreb (~45.8°) a "20 m" building came out ~14 m on the ground.
+// That was corrected with a 1/cos(lat) factor at the centre; a move in Mercator still rescaled the
+// footprint by the change of that factor (≈ 0.025% per km north at 45°). Built in metres, neither
+// exists. Pure — no map, no projector — so sizes and moves are unit-tested.
 
 (function (global) {
     'use strict';
@@ -116,11 +117,41 @@
         return [];
     }
 
-    function projectedGeometryCenter(projector, geometry) {
-        if (!projector || !geometry) return null;
+    function metricFrames() {
+        if (global && global.__metricFrame) return global.__metricFrame;
+        if (typeof require === 'function') return require('./metric-frame.js');
+        throw new Error('single-building-geometry: metric-frame.js is not loaded');
+    }
+
+    const round6 = value => Math.round(value * 1e6) / 1e6;
+
+    // Metres east/north of `point` ({lat, lng}) itself, in a frame on it (offsets from the point, not
+    // from the frame's rounded anchor), and back.
+    function pointFrame(point) {
+        if (!point || !Number.isFinite(point.lat) || !Number.isFinite(point.lng)) {
+            throw new Error('single-building-geometry: a point must be finite {lat, lng}');
+        }
+        const frame = metricFrames().frameAt([round6(point.lng), round6(point.lat)]);
+        const origin = frame.toMetric([point.lng, point.lat]);
+        return {
+            toLocal: ([lng, lat]) => {
+                const [x, y] = frame.toMetric([lng, lat]);
+                return [x - origin[0], y - origin[1]];
+            },
+            toLngLat: ([x, y]) => frame.toLngLat([x + origin[0], y + origin[1]])
+        };
+    }
+
+    // The area-weighted centroid of a footprint's outer rings, as {lat, lng}, measured in metres in a
+    // frame on the footprint.
+    function geometryCenter(geometry) {
+        if (!geometry) return null;
+        const rings = outerRings(geometry).map(openRing).filter(ring => ring.length >= 3);
+        if (!rings.length) return null;
+        const frame = metricFrames().frameFor(rings);
         const centroids = [];
-        outerRings(geometry).forEach(ring => {
-            const projected = openRing(ring).map(([lng, lat]) => projector.project({ lat, lng }));
+        rings.forEach(ring => {
+            const projected = ring.map(position => frame.toMetric(position));
             if (projected.length < 3) return;
             const origin = projected[0];
             const local = projected.map(point => [point[0] - origin[0], point[1] - origin[1]]);
@@ -146,10 +177,12 @@
         });
         if (!centroids.length) return null;
         const totalWeight = centroids.reduce((sum, item) => sum + item.weight, 0);
-        return centroids.reduce((sum, item) => [
+        const center = centroids.reduce((sum, item) => [
             sum[0] + item.point[0] * item.weight,
             sum[1] + item.point[1] * item.weight
         ], [0, 0]).map(total => total / totalWeight);
+        const [lng, lat] = frame.toLngLat(center);
+        return { lat, lng };
     }
 
     function mapGeometryCoordinates(geometry, mapper) {
@@ -164,82 +197,55 @@
         return null;
     }
 
-    function translateGeometry(projector, geometry, deltaX, deltaY) {
-        if (!projector || !Number.isFinite(deltaX) || !Number.isFinite(deltaY)) return null;
-        return mapGeometryCoordinates(geometry, ([lng, lat]) => {
-            const [x, y] = projector.project({ lat, lng });
-            const [nextLat, nextLng] = projector.unproject([x + deltaX, y + deltaY]);
-            return [nextLng, nextLat];
-        });
+    // Move a footprint so that `from` lands on `to` ({lat, lng} each), keeping its ground shape and
+    // size exactly: every vertex keeps its metres east/north of `from` (in a frame there) and gets the
+    // same metres east/north of `to` (in a frame there), however far it moves.
+    function moveGeometry(geometry, from, to) {
+        if (!geometry || !from || !to) return null;
+        const source = pointFrame(from);
+        const target = pointFrame(to);
+        return mapGeometryCoordinates(geometry, coordinate => target.toLngLat(source.toLocal(coordinate)));
     }
 
-    function moveGeometryCenter(projector, geometry, target) {
-        if (!projector || !target || !Number.isFinite(target.lat) || !Number.isFinite(target.lng)) return null;
-        const center = projectedGeometryCenter(projector, geometry);
+    function moveGeometryCenter(geometry, target) {
+        if (!target || !Number.isFinite(target.lat) || !Number.isFinite(target.lng)) return null;
+        const center = geometryCenter(geometry);
         if (!center) return null;
-        const targetPoint = projector.project(target);
-        return translateGeometry(projector, geometry, targetPoint[0] - center[0], targetPoint[1] - center[1]);
+        return moveGeometry(geometry, center, target);
     }
 
-    function rotateGeometry(projector, geometry, rotationDeg) {
+    // Rotate a footprint about its centroid by `rotationDeg` (counter-clockwise), in ground metres.
+    function rotateGeometry(geometry, rotationDeg) {
         const degrees = Number(rotationDeg);
-        if (!projector || !Number.isFinite(degrees)) return null;
-        const center = projectedGeometryCenter(projector, geometry);
+        if (!Number.isFinite(degrees)) return null;
+        const center = geometryCenter(geometry);
         if (!center) return null;
+        const frame = pointFrame(center);
         const angle = degrees * Math.PI / 180;
         const cos = Math.cos(angle);
         const sin = Math.sin(angle);
-        return mapGeometryCoordinates(geometry, ([lng, lat]) => {
-            const [x, y] = projector.project({ lat, lng });
-            const dx = x - center[0];
-            const dy = y - center[1];
-            const [nextLat, nextLng] = projector.unproject([
-                center[0] + dx * cos - dy * sin,
-                center[1] + dx * sin + dy * cos
-            ]);
-            return [nextLng, nextLat];
+        return mapGeometryCoordinates(geometry, coordinate => {
+            const [x, y] = frame.toLocal(coordinate);
+            return frame.toLngLat([x * cos - y * sin, x * sin + y * cos]);
         });
     }
 
-    // projector: { project({lat,lng}) -> [x,y] Mercator metres, unproject([x,y]) -> [lat,lng] }.
-    // Returns a closed [lng,lat] ring of a rotated rectangle centred on `center`, sized in GROUND
-    // metres. The freeform editor uses equal width/length for its initial square.
-    function buildRectangleRing(projector, center, params = {}) {
-        if (!projector || !center) return null;
+    // A closed [lng,lat] ring of a rotated rectangle centred on `center` ({lat, lng}), sized in
+    // ground metres. The freeform editor uses equal width/length for its initial square.
+    function buildRectangleRing(center, params = {}) {
+        if (!center) return null;
         const widthM = Number(params.widthM);
         const lengthM = Number(params.lengthM);
         if (!Number.isFinite(widthM) || !Number.isFinite(lengthM)) return null;
         const rotationDeg = Number(params.rotationDeg) || 0;
-
         const halfW = Math.max(0.5, widthM / 2);
         const halfL = Math.max(0.5, lengthM / 2);
-
-        // Ground metres → Mercator units at this latitude. Web-Mercator scale is 1/cos(φ), so a
-        // ground distance d spans d/cos(φ) in projected space. Without this the building shrinks by
-        // cos(φ) on the ground.
-        const latRad = center.lat * Math.PI / 180;
-        const s = 1 / Math.cos(latRad);
-
-        const [cx, cy] = projector.project(center);
-        const left = -halfW * s, right = halfW * s, bottom = -halfL * s, top = halfL * s;
-        const pts = [
-            [left, bottom],
-            [right, bottom],
-            [right, top],
-            [left, top]
-        ];
-
-        const angleRad = (rotationDeg * Math.PI) / 180;
-        const cos = Math.cos(angleRad);
-        const sin = Math.sin(angleRad);
-
-        const ring = pts.map(([x, y]) => {
-            const rx = x * cos - y * sin;
-            const ry = x * sin + y * cos;
-            const [lat, lng] = projector.unproject([cx + rx, cy + ry]);
-            return [lng, lat];
-        });
-
+        const frame = pointFrame(center);
+        const angle = rotationDeg * Math.PI / 180;
+        const cos = Math.cos(angle);
+        const sin = Math.sin(angle);
+        const ring = [[-halfW, -halfL], [halfW, -halfL], [halfW, halfL], [-halfW, halfL]]
+            .map(([x, y]) => frame.toLngLat([x * cos - y * sin, x * sin + y * cos]));
         return ensureClosedRing(ring);
     }
 
@@ -267,8 +273,8 @@
         ensureClosedRing,
         footprintWithinBoundary,
         isSimpleRing,
-        projectedGeometryCenter,
-        translateGeometry,
+        geometryCenter,
+        moveGeometry,
         moveGeometryCenter,
         rotateGeometry
     };

@@ -12,6 +12,15 @@ const {
     buildCorridorLaneMarkingsForEntries,
 } = require('../../frontend/js/corridor-profile.js');
 
+// The identity frame: (lat, lng) read as planar metres (x = lng, y = lat), handed to the builders
+// explicitly — they take a frame (projections.md §2) and never consult a global projection.
+const IDENTITY_FRAME = Object.freeze({
+    latLngToMetric: (lat, lng) => [lng, lat],
+    metricToLatLng: (x, y) => [y, x],
+    toMetric: position => [position[0], position[1]],
+    toLngLat: xy => [xy[0], xy[1]]
+});
+
 function section(id, from, to, laneCount, corridorId = 'road') {
     const laneWidth = 3;
     const offsets = Array.from(
@@ -114,9 +123,7 @@ describe('corridor lane topology', () => {
 
 describe('corridor profile integration', () => {
     it('feeds per-segment profiles through the shared topology builder', () => {
-        global.wgs84ToHTRS96 = (lat, lng) => [lng, lat];
-        global.htrs96ToWGS84 = (x, y) => [y, x];
-        try {
+        {
             const profile = laneCount => ({
                 strips: Array.from({ length: laneCount }, () => ({
                     type: 'driving',
@@ -135,16 +142,13 @@ describe('corridor profile integration', () => {
                     points: [{ lat: 0, lng: 40 }, { lat: 0, lng: 100 }],
                     profile: profile(4),
                 },
-            ]);
+            ], IDENTITY_FRAME);
             const widerStarts = markings[1]
                 .flatMap(marking => marking.lines)
                 .map(line => line[0].lat)
                 .sort((a, b) => a - b);
 
             expect(widerStarts).toEqual([-3, 0, 3]);
-        } finally {
-            delete global.wgs84ToHTRS96;
-            delete global.htrs96ToWGS84;
         }
     });
 });

@@ -164,7 +164,7 @@
         "floorHeightHint": "Calculated from the drawn footprints and height ÷ {{height}} m per storey."
     },
     "multitab": {
-        "warning": "This app is already open in another tab. To avoid losing saved proposals, changes made here won't be saved — close the other tabs and reload this one to edit.",
+        "warning": "This city is already open in another tab. To avoid losing saved proposals, changes made here won't be saved — close the other tabs of this city and reload this one to edit. Other cities can stay open.",
         "notSaved": "Proposal was NOT saved and will be lost on browser reload."
     },
     "proposalDrafts": {
@@ -416,7 +416,8 @@
         },
         "recovery": {
             "offer": "Proposals you made {{when}} could not be saved, because the app was open in another tab at the time ({{count}}).\n\nRestore them now?"
-        }
+        },
+        "inOtherCity": "This proposal belongs to {{city}}, not {{current}}: open it there."
     },
     "wallet": {
         "connect": "Connect wallet",
@@ -2776,6 +2777,7 @@
                 "bindingFailed": "Could not check which parcels this proposal's site reaches into: {{reason}}",
                 "bindingUnresolved": "The site reaches into {{list}} by almost exactly the tolerance, so it cannot be decided whether it takes land there. Move the design a millimetre into or away from it.",
                 "preparationChanged": "This proposal changed after it was prepared for publishing ({{reason}}). Publish it again.",
+                "siteInOtherCity": "This site lies in {{city}}, whose parcels are not the ones loaded here. Open {{city}} and publish it from there.",
                 "noMintGeometry": "This proposal has no site or parcel geometry to mint.",
                 "noMintParcels": "This proposal names no parcels and has no site, so it cannot be minted."
             },

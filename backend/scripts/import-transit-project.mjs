@@ -14,8 +14,13 @@
 // the centreline stays whole, so a part-tunnelled line remains ONE proposal under the
 // one-contiguous-stretch ruling of 2026-08-07.
 //
-// The footprint is buffered in EPSG:3765 (metres) rather than by the browser, and stored on the
-// definition, which consensus-builder treats as authoritative.
+// The land is built the way every corridor's is (projections.md §3): POST /proposals/prepare's own
+// preparation (proposals/prepare.js), in-process — the shared construction in the corridor's own frame,
+// bound to the cadastre — so the stored definition carries the server-built land and its construction
+// frame, which consensus-builder treats as authoritative. Writing rows directly, it also stores the
+// artifact as publication would (consensus.proposal_prepared); a dry run rolls the transaction back.
+// Preparing needs the server's PREPARE_SIGNING_KEY (backend/.env). (It used to buffer the line in
+// EPSG:3765: right only in Croatia.)
 //
 // Dry-run by default:
 //   node backend/scripts/import-transit-project.mjs --project 141
@@ -25,6 +30,7 @@
 import dotenv from 'dotenv';
 import pg from 'pg';
 import { fileURLToPath } from 'node:url';
+import { prepareProposal, storePreparedArtifact } from '../proposals/prepare.js';
 
 dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });
 const corridorLevels = (await import('../../frontend/js/proposals/corridor-levels.js')).default
@@ -201,53 +207,14 @@ async function clipToMunicipalities(pool, vertices, koList) {
     return runs;
 }
 
-// Buffer the acquiring spans in metres and union them. Underground spans are simply absent, so the
-// footprint gets a gap where the line is in tunnel and no boolean subtraction is needed.
-async function buildFootprint(pool, spans, widthM) {
-    if (!spans.length) return null;
-    const lines = spans.map(span => span.map(point => [point.lng, point.lat]));
-    const { rows } = await pool.query(
-        `WITH spans AS (
-           SELECT ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(value::text), 4326), 3765) AS g
-           FROM jsonb_array_elements($1::jsonb) AS value
-         )
-         SELECT ST_AsGeoJSON(ST_Transform(ST_Union(ST_Buffer(g, $2 / 2.0, 'endcap=flat join=round')), 4326))::json AS geometry,
-                ST_Area(ST_Union(ST_Buffer(g, $2 / 2.0, 'endcap=flat join=round')))::double precision AS area_m2
-         FROM spans`,
-        [JSON.stringify(lines.map(coordinates => ({ type: 'LineString', coordinates }))), widthM]);
-    const row = rows[0];
-    if (!row || !row.geometry) return null;
-    return { geometry: row.geometry, areaM2: Number(row.area_m2) };
-}
-
-async function parcelsUnder(pool, footprintGeoJSON) {
-    const { rows } = await pool.query(
-        `WITH f AS (
-           SELECT ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON($1::text), 4326), 3765) AS g
-         )
-         SELECT p.cestica_id, p.maticni_broj_ko, p.broj_cestice,
-                ST_Area(ST_Intersection(p.geom, f.g))::double precision AS taken_m2,
-                ST_Area(p.geom)::double precision AS parcel_m2
-         FROM public.parcel p, f
-         WHERE p.current = true AND p.geom && f.g AND ST_Intersects(p.geom, f.g)
-         ORDER BY 4 DESC`, [JSON.stringify(footprintGeoJSON)]);
-    return rows.map(row => ({
-        id: `HR-${row.maticni_broj_ko}-${row.broj_cestice}`,
-        cesticaId: row.cestica_id,
-        ko: row.maticni_broj_ko,
-        broj: row.broj_cestice,
-        takenM2: Number(row.taken_m2),
-        parcelM2: Number(row.parcel_m2)
-    }));
-}
-
-export function buildProposal({ project, track, trackIndex, spans, centreline, footprint, parcels, widthM, city, ko }) {
+// The authored record: the centreline with its levels, the width and the cross-section. Its land and
+// declaration are the preparation's (preparedTransitRecord).
+export function buildProposal({ project, track, trackIndex, spans, centreline, widthM, city, ko }) {
     const now = new Date().toISOString();
     // The window is part of the identity. Without it, importing one municipality of a line silently
     // REPLACED the whole-line import at the same id — including one already applied on the map.
     const window = (Array.isArray(ko) && ko.length) ? `-ko${[...ko].sort((a, b) => a - b).join('_')}` : '';
     const proposalId = `transit-project-${project.id}-track-${trackIndex + 1}${window}`;
-    const parcelIds = parcels.map(parcel => parcel.id);
     const summary = corridorLevels.summarizeLevels(centreline);
 
     // points AND segments carry the same one connected run: the graph shape the corridor editor
@@ -256,7 +223,6 @@ export function buildProposal({ project, track, trackIndex, spans, centreline, f
         points: [centreline],
         segments: [centreline],
         width: widthM,
-        polygon: footprint.geometry,
         profile: trackCrossSectionProfile(track, widthM),
         metadata: {
             mode: 'import',
@@ -292,10 +258,7 @@ export function buildProposal({ project, track, trackIndex, spans, centreline, f
         city: city || null,
         name: `${project.author_name || 'Transit project'} — track ${trackIndex + 1}`,
         title: `${project.author_name || 'Transit project'} — track ${trackIndex + 1}`,
-        description: `Imported from transit project ${project.id}. `
-            + `${(footprint.areaM2 / 10000).toFixed(2)} ha of corridor over ${parcels.length} parcels, `
-            + `width ${widthM} m. Edges: ${summary.surface} surface, ${summary.ramp} ramp, `
-            + `${summary.elevated} elevated, ${summary.underground} underground (which take no surface).`,
+        description: `Imported from transit project ${project.id}.`,
         author: project.author_name || 'prijevoz',
         type: 'road',
         goal: 'road-track',
@@ -304,19 +267,35 @@ export function buildProposal({ project, track, trackIndex, spans, centreline, f
         lifecycleStatus: 'Active',
         createdAt: now,
         updatedAt: now,
-        cadastreParcelIds: parcelIds,
         acceptedParcelIds: [],
         roadProposal: {
             definition,
             mode: 'import',
             isCorridor: true
         },
-        geometry: footprint.geometry,
         bounds: null,
         source: provenance,
         levelSummary: summary,
         spanCount: spans.length
     };
+}
+
+// The record as stored: the authored one with the preparation's land, construction frame, declaration
+// (exactly the bound parcels) and reference — as a publication stores it, without the signature or the
+// artifact, which goes to its own table — and the description stated from them.
+export function preparedTransitRecord(draft, prepared) {
+    const record = { ...draft, ...prepared.proposal };
+    delete record.preparedArtifact;
+    record.preparation = { id: prepared.preparationId, digest: prepared.digest, preparedAt: prepared.preparedAt };
+    const definition = record.roadProposal.definition;
+    const binding = prepared.artifact.binding;
+    const summary = draft.levelSummary;
+    record.geometry = definition.polygon;
+    record.description = `Imported from transit project ${draft.source.transitProjectId}. `
+        + `${((binding.siteM2 || 0) / 10000).toFixed(2)} ha of corridor over ${record.cadastreParcelIds.length} parcels, `
+        + `width ${definition.width} m. Edges: ${summary.surface} surface, ${summary.ramp} ramp, `
+        + `${summary.elevated} elevated, ${summary.underground} underground (which take no surface).`;
+    return record;
 }
 
 async function upsertProposal(pool, proposal) {
@@ -375,29 +354,43 @@ async function main() {
 
             const spans = corridorLevels.acquiringSpans(centreline);
             const summary = corridorLevels.summarizeLevels(centreline);
-            const footprint = await buildFootprint(pool, spans, widthM);
-            if (!footprint) { console.log(`  track ${trackIndex + 1}: no acquiring span`); continue; }
-            const parcels = await parcelsUnder(pool, footprint.geometry);
+            if (!spans.length) { console.log(`  track ${trackIndex + 1}: no acquiring span`); continue; }
 
-            const proposal = buildProposal({
-                project, track, trackIndex, spans, centreline, footprint, parcels, widthM,
-                city: args.city, ko: args.ko
-            });
-            console.log(JSON.stringify({
-                proposalId: proposal.proposalId,
-                vertices: centreline.length,
-                widthM,
-                edges: summary,
-                acquiringSpans: spans.length,
-                corridorHa: Number((footprint.areaM2 / 10000).toFixed(2)),
-                parcels: parcels.length,
-                takenM2: Number(parcels.reduce((sum, parcel) => sum + parcel.takenM2, 0).toFixed(0)),
-                wholeParcelsTaken: parcels.filter(parcel => parcel.takenM2 >= parcel.parcelM2 - 0.5).length
-            }, null, 2));
-
-            if (args.apply) {
-                const stored = await upsertProposal(pool, proposal);
-                console.log(`  stored proposal row ${stored.id} (${stored.proposal_id})`);
+            const draft = buildProposal({ project, track, trackIndex, spans, centreline, widthM, city: args.city, ko: args.ko });
+            // One transaction per track: the preparation's artifact and the row commit together,
+            // and a dry run leaves neither behind.
+            const client = await pool.connect();
+            try {
+                await client.query('BEGIN');
+                const prepared = await prepareProposal(client, draft, { city: args.city || null });
+                const proposal = preparedTransitRecord(draft, prepared);
+                const binding = prepared.artifact.binding;
+                console.log(JSON.stringify({
+                    proposalId: proposal.proposalId,
+                    city: proposal.city,
+                    preparation: prepared.preparationId,
+                    vertices: centreline.length,
+                    widthM,
+                    edges: summary,
+                    acquiringSpans: spans.length,
+                    corridorHa: Number(((binding.siteM2 || 0) / 10000).toFixed(2)),
+                    parcels: proposal.cadastreParcelIds.length,
+                    takenM2: Number((binding.parcels || []).reduce((sum, hit) => sum + (hit.overlapM2 || 0), 0).toFixed(0)),
+                    coverage: binding.coverage
+                }, null, 2));
+                if (args.apply) {
+                    await storePreparedArtifact(client, prepared);
+                    const stored = await upsertProposal(client, proposal);
+                    await client.query('COMMIT');
+                    console.log(`  stored proposal row ${stored.id} (${stored.proposal_id})`);
+                } else {
+                    await client.query('ROLLBACK');
+                }
+            } catch (error) {
+                await client.query('ROLLBACK').catch(() => {});
+                throw error;
+            } finally {
+                client.release();
             }
         }
         if (!args.apply) console.log('Dry run only; nothing was written.');

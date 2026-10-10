@@ -160,7 +160,8 @@ describe('ensureArrayOfStrings', () => {
 
 describe('buildCityQueryParam', () => {
     // The function reads window.CityConfigManager; a stub is enough to pin the contract, which is
-    // "?city=<code>" or an empty string — never a bare "?city=".
+    // "?city=<code or id>" or an empty string — never a bare "?city=". cadastre-key.test.js checks
+    // the real configs: every city's link opens that city.
     const withCityManager = (manager, fn) => {
         const hadWindow = 'window' in globalThis;
         const previous = globalThis.window;
@@ -172,33 +173,31 @@ describe('buildCityQueryParam', () => {
             else delete globalThis.window;
         }
     };
+    const manager = (overrides = {}) => ({
+        resolveCityId: id => ({ zagreb: 'zagreb', zg: 'zagreb', paris: 'paris' })[String(id).toLowerCase()] || null,
+        getCurrentCityId: () => 'zagreb',
+        getCityCodeForCityId: id => (id === 'zagreb' ? 'zg' : null),
+        ...overrides
+    });
 
-    it('builds the query param from the current city code', () => {
-        const result = withCityManager({
-            getCurrentCityConfig: () => ({ id: 'zagreb' }),
-            getCityCodeForCityId: (id) => (id === 'zagreb' ? 'zg' : null)
-        }, () => buildCityQueryParam());
-        expect(result).toBe('?city=zg');
+    it('names the proposal\'s own city, by its code where it has one, else by its id', () => {
+        expect(withCityManager(manager(), () => buildCityQueryParam('zagreb'))).toBe('?city=zg');
+        // most cities have no short code: the link used to carry no city at all for them
+        expect(withCityManager(manager(), () => buildCityQueryParam('paris'))).toBe('?city=paris');
+    });
+
+    it('falls back to the current city when the proposal names none the app knows', () => {
+        expect(withCityManager(manager(), () => buildCityQueryParam())).toBe('?city=zg');
+        expect(withCityManager(manager(), () => buildCityQueryParam('atlantis'))).toBe('?city=zg');
     });
 
     it('url-encodes the code', () => {
-        const result = withCityManager({
-            getCurrentCityConfig: () => ({ id: 'new_york' }),
-            getCityCodeForCityId: () => 'n y'
-        }, () => buildCityQueryParam());
-        expect(result).toBe('?city=n%20y');
+        expect(withCityManager(manager({ getCityCodeForCityId: () => 'n y' }), () => buildCityQueryParam())).toBe('?city=n%20y');
     });
 
-    it('returns an empty string when the city cannot be resolved', () => {
-        expect(withCityManager({
-            getCurrentCityConfig: () => null,
-            getCityCodeForCityId: () => 'zg'
-        }, () => buildCityQueryParam())).toBe('');
-
-        expect(withCityManager({
-            getCurrentCityConfig: () => ({ id: 'atlantis' }),
-            getCityCodeForCityId: () => null
-        }, () => buildCityQueryParam())).toBe('');
+    it('returns an empty string when there is no city at all', () => {
+        expect(withCityManager(manager({ getCurrentCityId: () => null }), () => buildCityQueryParam())).toBe('');
+        expect(withCityManager(null, () => buildCityQueryParam('zagreb'))).toBe('');
     });
 });
 

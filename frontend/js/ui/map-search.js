@@ -69,7 +69,9 @@
             label: cityLabel(config.id, config.label || config.id),
             aliases: config.label && cityLabel(config.id, config.label) !== config.label ? [config.label] : [],
             center: typeof m.getCityCenter === 'function' ? m.getCityCenter(config) : null,
-            parcelSource: (config.parcels && config.parcels.source) || null
+            // the location data the city reads (cadastre and buildings): an in-place move stays
+            // only within the same
+            parcelSource: m.getPlaceDataKey(config.id)
         }));
     }
 
@@ -537,9 +539,10 @@
         const key = `proposal:${serverId}`;
         if (raw.cityId && raw.cityId !== currentCityId()) {
             close({ blur: true });
+            // the proposal's route, opened in its city; this page keeps its history entry
             const url = new win.URL(win.location.href);
-            win.history.pushState(null, '', `/proposals/${encodeURIComponent(serverId)}${url.search}${url.hash}`);
-            await win.promptCityMismatchForProposal(raw.cityId);
+            url.pathname = `/proposals/${encodeURIComponent(serverId)}`;
+            await win.promptCityMismatchForProposal(raw.cityId, { url: url.href });
             return;
         }
         const summary = win.normalizeServerProposalSummary(raw, raw.city);
@@ -556,6 +559,10 @@
             try {
                 proposal = await win.importServerProposal(summary.serverProposalId);
             } catch (error) {
+                if (error?.code === 'proposal-in-other-city') {
+                    await win.openProposalInItsCity(serverId, error.cityId);
+                    return;
+                }
                 console.error('[map-search] could not download proposal', serverId, error);
                 status(t('modal.roadWidth.proposalList.downloadError', 'Failed to download proposal'));
                 return;
