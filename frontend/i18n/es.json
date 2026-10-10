@@ -2418,6 +2418,7 @@
                 "mintSuccess": "¡Propuesta acuñada con éxito!",
                 "mintError": "Error al acuñar la propuesta",
                 "mintCapturingImage": "Capturando imagen de la propuesta…",
+                "mintPreparing": "Comprobando qué parcelas ocupa la propuesta…",
                 "mintUploadingIPFS": "Subiendo a IPFS…",
                 "mintWaitingSignature": "Esperando firma de la cartera…",
                 "mintingOnChain": "Acuñando en la cadena…",
@@ -2824,6 +2825,8 @@
                 "bindingExtra": "La propuesta nombra parcelas a las que su sitio no llega ({{count}}): {{list}}.",
                 "bindingFix": "Incluye esas parcelas en el sitio o cambia el diseño para que quede dentro.",
                 "bindingFailed": "No se pudo comprobar en qué parcelas entra el sitio de esta propuesta: {{reason}}",
+                "bindingUnresolved": "El sitio entra en {{list}} casi exactamente lo que marca la tolerancia, así que no se puede decidir si ocupa terreno allí. Mueva el diseño un milímetro hacia esa parcela o alejándolo de ella.",
+                "preparationChanged": "Esta propuesta cambió después de prepararse para publicarla ({{reason}}). Publícala de nuevo.",
                 "noMintGeometry": "Esta propuesta no tiene geometría de sitio ni de parcelas para acuñar.",
                 "noMintParcels": "Esta propuesta no nombra parcelas ni tiene sitio, así que no puede acuñarse."
             },
@@ -2899,6 +2902,13 @@
                 "include": "Incluirlas",
                 "change": "Cambiar el diseño",
                 "cancelled": "Publicación cancelada: cambia el diseño para que quede dentro de las parcelas que quieres."
+            },
+            "landShift": {
+                "question": "El servidor construyó el terreno de este corredor a partir de sus carriles, y se aparta hasta {{shift}} de lo que mostraba el mapa. ¿Publicar la versión del servidor?",
+                "far": "lejos",
+                "publish": "Publicar",
+                "cancel": "Cancelar",
+                "cancelled": "Publicación cancelada: el corredor no se publicó."
             }
         },
         "unapplyTour": {

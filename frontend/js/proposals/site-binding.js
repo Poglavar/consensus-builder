@@ -49,6 +49,13 @@
 
     const COVERAGE = Object.freeze({ complete: 'complete', partial: 'partial', none: 'none', unknown: 'unknown' });
 
+    // The decision band around a threshold radius r for THIS implementation: turf.buffer works on a
+    // sphere, whose metres differ from the WGS84 ellipsoid's by up to 0.3 % depending on direction
+    // and latitude. A parcel whose intrusion lies within the band is `unresolved` (projections.md §4),
+    // never silently bound or unbound; the server's PostGIS answer uses a far narrower band.
+    const SPHERE_BAND = Object.freeze({ RELATIVE: 3.5e-3, ABSOLUTE_M: 1e-6 });
+    const sphereBandM = radiusM => Math.max(SPHERE_BAND.ABSOLUTE_M, radiusM * SPHERE_BAND.RELATIVE);
+
     function T(options) {
         if (options && options.turf) return options.turf;
         if (typeof turf !== 'undefined' && turf) return turf; // eslint-disable-line no-undef
@@ -101,12 +108,19 @@
         return api.hasFootprint(api.footprintParts(record));
     }
 
+    // A corridor drawn but not yet built: its land comes from preparation, so it is still a
+    // material proposal on ground of its own, not a record about nothing.
+    function isUnpreparedCorridor(record) {
+        const api = footprintPartsApi();
+        return !!api && !!record && !!api.footprintParts(record).corridorUnprepared;
+    }
+
     // Whether this record can only exist with a non-empty parcel declaration: a parcel act, or a
     // record that has neither its own geometry nor an authored site (it would be about nothing).
     function requiresParcels(record) {
         if (!record || typeof record !== 'object') return true;
         if (isParcelAct(record)) return true;
-        return !asPolygonGeometry(record.site) && !hasOwnFootprint(record);
+        return !asPolygonGeometry(record.site) && !hasOwnFootprint(record) && !isUnpreparedCorridor(record);
     }
 
     function toMultiPolygon(geometry) {
@@ -253,6 +267,9 @@
 
         const bound = [];
         const touched = [];
+        const unresolved = [];
+        const radius = floorM / 2;
+        const band = sphereBandM(radius);
         let open = siteFeature;
         for (const parcel of parcels || []) {
             const geometry = parcel && asPolygonGeometry(parcel.geometry);
@@ -271,7 +288,9 @@
                 overlapM2: round(overlapM2, 3),
                 intrusionM: round(intrusionWidth(intersection, { turf: t }), 4)
             };
-            if (survivesInwardBuffer(t, intersection, floorM / 2)) bound.push(entry); else touched.push(entry);
+            if (survivesInwardBuffer(t, intersection, radius + band)) bound.push(entry);
+            else if (survivesInwardBuffer(t, intersection, Math.max(radius - band, 0))) unresolved.push(entry);
+            else touched.push(entry);
         }
 
         let unsurveyedM2 = 0;
@@ -282,9 +301,11 @@
         const byId = (a, b) => (a.parcelId < b.parcelId ? -1 : a.parcelId > b.parcelId ? 1 : 0);
         bound.sort(byId);
         touched.sort(byId);
+        unresolved.sort(byId);
         return {
             parcels: bound,
             touched,
+            ...(unresolved.length ? { unresolved } : {}),
             toleranceM,
             coverage: unsurveyedM2 > 0 ? COVERAGE.partial : COVERAGE.complete,
             unsurveyedM2: round(unsurveyedM2, 2),
@@ -310,6 +331,7 @@
     return {
         DEFAULT_INTRUSION_TOLERANCE_M,
         INTRUSION_NOISE_M,
+        SPHERE_BAND,
         MAX_INTRUSION_TOLERANCE_M,
         PARCEL_ACT_GOALS,
         COVERAGE,

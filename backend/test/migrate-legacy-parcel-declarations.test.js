@@ -133,7 +133,7 @@ describe('migrate-legacy-parcel-declarations classifier', () => {
         const row = borovjeBuilding({
             type: 'road',
             building_proposal: null,
-            road_proposal: { definition: { width: 8, points: [{ lat: 45.8, lng: 16.0 }, { lat: 45.8003, lng: 16.0005 }] }, parentParcelIds: ['HR-335550-1791/25'] },
+            road_proposal: { definition: { width: 8, points: [{ lat: 45.8, lng: 16.0 }, { lat: 45.8003, lng: 16.0005 }], constructionFrame: { kind: 'legacy-centreline' } }, parentParcelIds: ['HR-335550-1791/25'] },
             proposal_data: { title: 'Road', parentParcelIds: ['HR-335550-1791/25'] },
             owner_acceptances: null
         });

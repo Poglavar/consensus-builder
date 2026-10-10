@@ -27,6 +27,7 @@ import {
     MAX_INTRUSION_TOLERANCE_M
 } from '../proposals/binding.js';
 import { footprintParts, hasFootprint } from '../proposals/footprint.js';
+import { verifyPreparation, isConstructedCorridor } from '../proposals/prepare.js';
 import { recomputeCorridorStats } from './road-corridor.js';
 import { validateReparcellizationShares } from './reparcellization.js';
 import { attachProposalFloorModels } from '../buildings/floor-models.js';
@@ -400,6 +401,10 @@ export const proposalCreateBodyValidator = createJsonBodyValidator({
         site: { required: false, validate: validators.optional(validators.plainObject({ label: 'site' })) },
         // Linear intrusion tolerance (metres) the binding is computed at; default 0.
         toleranceM: { required: false, validate: validators.optional(validators.finiteNumber({ label: 'toleranceM', min: 0, max: MAX_INTRUSION_TOLERANCE_M })) },
+        // The prepared artifact this publication is (POST /proposals/prepare): { id, digest }. Required
+        // for a corridor built from its lanes; when present, the artifact's site, binding and land are
+        // what gets stored.
+        preparation: { required: false, validate: validators.optional(validators.plainObject({ label: 'preparation' })) },
         // Per crossed base parcel: ceded area + ownership destination, stamped at publish (§9/§12).
         ownershipFlow: { required: false, validate: validators.optional(ownershipFlowValidator, { nullValue: [] }) },
         // Which cadastre frame the stamps were measured against ({ capturedAt }) — D5/§11.
@@ -537,7 +542,9 @@ export function precheckProposalCreate(req) {
         if (requiresParcels(site ? { ...record, site } : record)) {
             return fail('cadastreParcelIds must contain the proposal\'s cadastral land.', BINDING_CODES.parcelsRequired);
         }
-        if (!site && !hasFootprint(footprintParts(record))) {
+        // A corridor drawn from its lanes has ground of its own even before it is built: whether it
+        // was prepared is the next check's question (bindProposal).
+        if (!site && !hasFootprint(footprintParts(record)) && !isConstructedCorridor(record)) {
             return fail('A proposal without parcels needs a site or geometry of its own.', BINDING_CODES.siteRequired);
         }
     }
@@ -594,6 +601,20 @@ async function bindProposal(pool, req) {
     const precheck = precheckProposalCreate(req);
     if (!precheck.ok) return { refusal: { status: precheck.status, body: precheckRefusalBody(precheck) } };
     const { validated, record, cadastreParcelIds, site, toleranceM } = precheck.value;
+    // A prepared publication is checked against its stored artifact, and stores it; a corridor built
+    // from its lanes MUST be prepared, because the server derives its land (projections.md §3).
+    if (req.body?.preparation || isConstructedCorridor(record)) {
+        try {
+            const prepared = await verifyPreparation(pool, req.body, { city: normalizeCityCode(validated.city) || null });
+            return { bound: { site: prepared.site, binding: prepared.binding, prepared } };
+        } catch (error) {
+            if (error && error.code && Number.isInteger(error.status) && error.status < 500) {
+                return { refusal: { status: error.status, body: { error: error.message, code: error.code } } };
+            }
+            console.error('[proposals] preparation check failed:', error);
+            return { refusal: { status: 503, body: { error: 'The proposal\'s preparation could not be checked; nothing was stored or charged. Try again.' } } };
+        }
+    }
     let result;
     try {
         result = await checkProposalBinding(pool, record, cadastreParcelIds, {
@@ -781,12 +802,17 @@ export function createProposalCreateHandler(pool) {
                 cadastreParcelIds,
                 site: bound.site,
                 binding: bound.binding,
+                // The prepared artifact this record is (projections.md §3).
+                ...(bound.prepared ? { preparation: { id: bound.prepared.preparationId, digest: bound.prepared.digest } } : {}),
                 createdAt: createdAt.toISOString(),
                 ...(authoredAt ? { authoredAt } : {})
             });
             if (!authoredAt) delete proposalData.authoredAt;
             delete proposalData.toleranceM;
             if (!proposalData.site) delete proposalData.site;
+            // A prepared corridor's land is the artifact's polygon; the browser's own cached ring of
+            // its preview (latLngPairs) would be a second, stale copy of it.
+            if (bound.prepared?.corridor) delete proposalData.roadProposal?.definition?.latLngPairs;
             if (droppedClaims.length) {
                 console.warn(`[POST proposals ${proposalId}] dropped unprovable client claims: ${droppedClaims.join(', ')}`);
             }

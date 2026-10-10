@@ -1022,6 +1022,28 @@ function showUploadProposalModal(proposal) {
                 }
             }
 
+            // Minted as the artifact the server prepares from it (POST /proposals/prepare,
+            // projections.md §3), like the Create Proposal mint: the parcels minted are exactly the
+            // parcels the record then publishes, and a later upload reuses this preparation.
+            setMintStatus(tShare('mintPreparing', 'Checking which parcels the proposal takes...'));
+            const prepared = await window.__publishBinding.prepareForPublish(proposal, {
+                fetchPrepare: window.__publishBinding.createFetchPrepare(fetch.bind(window), resolveBackendBaseUrl(), publishBindingText),
+                city: proposal.city || null,
+                acceptedParcelIds: proposal.acceptedParcelIds || []
+            });
+            const confirmedPublish = await confirmPreparedPublish(prepared);
+            if (!confirmedPublish.ok) {
+                setMintStatus(confirmedPublish.message, { isError: true });
+                return;
+            }
+            adoptPreparedRecord(proposal, prepared.proposal);
+            if (typeof proposalStorage !== 'undefined') {
+                const key = proposal.proposalId || (typeof getProposalKey === 'function' ? getProposalKey(proposal) : null);
+                const stored = key ? proposalStorage.getProposal(key) : null;
+                if (stored && stored !== proposal) adoptPreparedRecord(stored, prepared.proposal);
+                if (typeof proposalStorage.save === 'function') proposalStorage.save();
+            }
+
             // Trigger the same mint flow as "Create Proposal" button
             // We need to get the parcel IDs from the proposal
             const parcelIds = proposal.cadastreParcelIds || [];

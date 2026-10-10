@@ -253,7 +253,8 @@ describe('road footprints', () => {
         try {
             const fp = planOrder.footprintOf({ roadProposal: { definition: {
                 width: 10,
-                points: [{ lat: 45.8005, lng: 15.96 }, { lat: 45.8005, lng: 15.961 }]
+                points: [{ lat: 45.8005, lng: 15.96 }, { lat: 45.8005, lng: 15.961 }],
+                constructionFrame: { kind: 'legacy-centreline' }
             } } });
             expect(turf.area(fp)).toBeCloseTo(turf.area(square), 0);
         } finally {

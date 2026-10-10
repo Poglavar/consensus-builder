@@ -2396,6 +2396,7 @@
                 "mintSuccess": "Proposal minted successfully!",
                 "mintError": "Failed to mint proposal",
                 "mintCapturingImage": "Capturing proposal image…",
+                "mintPreparing": "Checking which parcels the proposal takes…",
                 "mintUploadingIPFS": "Uploading to IPFS…",
                 "mintWaitingSignature": "Waiting for wallet signature…",
                 "mintingOnChain": "Minting on chain…",
@@ -2773,6 +2774,8 @@
                 "bindingExtra": "The proposal names parcels its site does not reach ({{count}}): {{list}}.",
                 "bindingFix": "Include those parcels in the site, or change the design so it stays inside it.",
                 "bindingFailed": "Could not check which parcels this proposal's site reaches into: {{reason}}",
+                "bindingUnresolved": "The site reaches into {{list}} by almost exactly the tolerance, so it cannot be decided whether it takes land there. Move the design a millimetre into or away from it.",
+                "preparationChanged": "This proposal changed after it was prepared for publishing ({{reason}}). Publish it again.",
                 "noMintGeometry": "This proposal has no site or parcel geometry to mint.",
                 "noMintParcels": "This proposal names no parcels and has no site, so it cannot be minted."
             },
@@ -2848,6 +2851,13 @@
                 "include": "Include them",
                 "change": "Change the design",
                 "cancelled": "Publishing cancelled: change the design so it stays inside the parcels you mean."
+            },
+            "landShift": {
+                "question": "The server built this corridor's land from its lanes, and it lies up to {{shift}} from what the map showed. Publish the server's version?",
+                "far": "far",
+                "publish": "Publish it",
+                "cancel": "Cancel",
+                "cancelled": "Publishing cancelled: the corridor was not published."
             }
         },
         "unapplyTour": {

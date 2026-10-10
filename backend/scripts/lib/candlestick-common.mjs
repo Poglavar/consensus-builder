@@ -76,8 +76,9 @@ export async function request(backend, origin, method, route, body) {
 }
 
 /**
- * Publish a converted record: skip when its proposalId already exists, otherwise bind the site
- * against the city's parcel source and POST the record with that binding declared.
+ * Publish a converted record: skip when its proposalId already exists, otherwise prepare it
+ * (POST /proposals/prepare: the server builds a corridor's land, binds the site against the city's
+ * parcel source and stores the artifact) and POST exactly the record the preparation returns.
  */
 export async function publish(record, { backend, origin, city, parcelSourceId = DEFAULTS.parcelSourceId }) {
     const existing = await request(backend, origin, 'GET', `/proposals/${encodeURIComponent(record.proposalId)}`);
@@ -85,17 +86,18 @@ export async function publish(record, { backend, origin, city, parcelSourceId = 
         log(`proposal ${record.proposalId} already exists on ${backend} (row ${existing.json && existing.json.id}); leaving it alone`);
         return { skipped: true, id: existing.json && existing.json.id };
     }
-    log(`binding the site against ${parcelSourceId}…`);
-    const bound = await request(backend, origin, 'POST', '/proposals/binding', {
-        site: record.site, toleranceM: record.toleranceM, city, parcelSourceId
+    log(`preparing against ${parcelSourceId}…`);
+    const prepared = await request(backend, origin, 'POST', '/proposals/prepare', {
+        proposal: record, city, parcelSourceId, toleranceM: record.toleranceM
     });
-    if (bound.status !== 200 || !bound.json || !bound.json.binding) {
-        throw new Error(`binding failed (${bound.status}): ${bound.text.slice(0, 300)}`);
+    if (prepared.status !== 201 || !prepared.json || !prepared.json.proposal || !prepared.json.artifact) {
+        throw new Error(`preparation failed (${prepared.status}): ${prepared.text.slice(0, 300)}`);
     }
-    const binding = bound.json.binding;
-    const parcelIds = (binding.parcels || []).map(parcel => parcel.parcelId);
-    log(`site binds to ${parcelIds.length} parcels (coverage ${binding.coverage}, unsurveyed ${Math.round(binding.unsurveyedM2 || 0)} m², ${bound.json.queryMs} ms)`);
-    const body = { ...record, cadastreParcelIds: parcelIds, parcelSourceId };
+    const { artifact, preparationId } = prepared.json;
+    const binding = artifact.binding;
+    const parcelIds = artifact.cadastreParcelIds || [];
+    log(`prepared ${preparationId}: binds ${parcelIds.length} parcels (coverage ${binding.coverage}, unsurveyed ${Math.round(binding.unsurveyedM2 || 0)} m², ${prepared.json.queryMs} ms)${artifact.corridor ? ', corridor land built by the server' : ''}`);
+    const body = { ...prepared.json.proposal, parcelSourceId };
     const created = await request(backend, origin, 'POST', '/proposals', body);
     if (created.status < 200 || created.status >= 300) {
         throw new Error(`create failed (${created.status}): ${created.text.slice(0, 500)}`);
@@ -103,5 +105,5 @@ export async function publish(record, { backend, origin, city, parcelSourceId = 
     const id = created.json && (created.json.id ?? created.json.proposal?.id);
     log(`created proposal ${record.proposalId} (row ${id}) with ${parcelIds.length} parcels`);
     // The server returns the edit token exactly once; hand it back so the caller can keep it.
-    return { skipped: false, id, parcelIds, editToken: (created.json && created.json.editToken) || null };
+    return { skipped: false, id, parcelIds, preparationId, editToken: (created.json && created.json.editToken) || null };
 }

@@ -41,6 +41,7 @@ import { setupAdsRoute } from './routes/ads.js';
 import { setupRoadParcelsRoute } from './routes/road-parcels.js';
 import { setupProposalsRoute } from './routes/proposals.js';
 import { setupProposalBindingRoute, PROPOSAL_BINDING_PATHS, BINDING_DRIFT_PATH } from './routes/proposal-binding.js';
+import { setupProposalPrepareRoute, PROPOSAL_PREPARE_PATHS } from './routes/proposal-prepare.js';
 import { setupAgentProposalsRoute } from './routes/agent-proposals.js';
 import { setupAgentPledgesRoute } from './routes/agent-pledges.js';
 import { setupAgentActivityRoute } from './routes/agent-activity.js';
@@ -420,7 +421,8 @@ export function createApp({
             if (req.method === 'POST' && (req.path === '/parcels/under' || PARCEL_SOURCE_UNDER_PATH.test(req.path))) {
                 return parcelsUnderRateLimiter(req, res, next);
             }
-            if (req.method === 'POST' && PROPOSAL_BINDING_PATHS.includes(req.path)) {
+            // A publish asks for one preparation, as it asks for one binding: the same budget.
+            if (req.method === 'POST' && (PROPOSAL_BINDING_PATHS.includes(req.path) || PROPOSAL_PREPARE_PATHS.includes(req.path))) {
                 return proposalBindingRateLimiter(req, res, next);
             }
             // /agent/* pays per request, so the payment is the limiter (design decision, not an oversight).
@@ -479,6 +481,7 @@ export function createApp({
     setupAdsRoute(app, activePool);
     setupRoadParcelsRoute(app, activePool);
     setupProposalBindingRoute(app, activePool); // before /proposals/:id routes
+    setupProposalPrepareRoute(app, activePool); // before /proposals/:id routes
     setupProposalsRoute(app, activePool);
     setupAgentProposalsRoute(app, activePool, { env }); // paid x402 front door to the same create handler
     setupAgentPledgesRoute(app, { env }); // read-only view; pledge writes go directly to Solana

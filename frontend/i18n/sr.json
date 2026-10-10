@@ -2373,6 +2373,7 @@
                 "mintButton": "Okuj",
                 "connectWalletButton": "Poveži novčanik",
                 "mintCapturingImage": "Snimanje slike predloga…",
+                "mintPreparing": "Provera koje parcele predlog zauzima…",
                 "mintUploadingIPFS": "Otpremanje na IPFS…",
                 "mintWaitingSignature": "Čekanje potpisa novčanika…",
                 "mintingOnChain": "Kovanje na lancu…",
@@ -2782,6 +2783,8 @@
                 "bindingExtra": "Predlog navodi parcele u koje lokacija ne zadire ({{count}}): {{list}}.",
                 "bindingFix": "Uključite te parcele u lokaciju ili promenite projekat da ostane unutar nje.",
                 "bindingFailed": "Nije moguće proveriti u koje parcele zadire lokacija ovog predloga: {{reason}}",
+                "bindingUnresolved": "Lokacija zadire u {{list}} skoro tačno za iznos tolerancije, pa se ne može odlučiti da li tamo zauzima zemljište. Pomerite projekat za milimetar ka toj parceli ili od nje.",
+                "preparationChanged": "Predlog se promenio nakon što je pripremljen za objavljivanje ({{reason}}). Objavite ga ponovo.",
                 "noMintGeometry": "Ovaj predlog nema geometriju lokacije ni parcela za kovanje.",
                 "noMintParcels": "Ovaj predlog ne navodi parcele i nema lokaciju, pa se ne može iskovati."
             },
@@ -2857,6 +2860,13 @@
                 "include": "Uključi ih",
                 "change": "Promeni projekat",
                 "cancelled": "Objava otkazana: promenite projekat da ostane unutar parcela koje mislite."
+            },
+            "landShift": {
+                "question": "Server je izgradio zemljište ovog koridora iz njegovih traka i ono odstupa do {{shift}} od onoga što je prikazivala mapa. Objaviti verziju servera?",
+                "far": "daleko",
+                "publish": "Objavi",
+                "cancel": "Otkaži",
+                "cancelled": "Objavljivanje otkazano: koridor nije objavljen."
             }
         },
         "mintedProposals": {

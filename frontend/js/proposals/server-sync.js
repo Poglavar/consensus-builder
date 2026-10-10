@@ -525,6 +525,59 @@ function publishBindingText(key, fallback, params) {
     return String(fallback).replace(/\{\{\s*(\w+)\s*\}\}/g, (match, name) => (params && name in params ? params[name] : match));
 }
 
+// A corridor whose server-built land lies further than this from what the map showed is shown to
+// the author before it is published (projections.md §3, re-anchoring).
+const PREPARED_LAND_SHIFT_CONFIRM_M = 0.05;
+
+// Before a prepared proposal is minted or published: parcels it reaches into by under half a metre
+// (usually a design leaking across a boundary) and a corridor whose server-built land lies
+// noticeably off the map's preview are said out loud, and the author decides.
+// Resolves { ok: true } or a cancelled upload result.
+async function confirmPreparedPublish(prepared) {
+    const ask = async (question, okText, cancelText) => (typeof window.showStyledConfirm === 'function'
+        ? window.showStyledConfirm(question, { okText, cancelText })
+        : window.confirm(question));
+    if (prepared.smallIntrusions && prepared.smallIntrusions.length) {
+        const list = window.__publishBinding.describeHits(prepared.smallIntrusions.map(hit => ({ id: hit.parcelId, intrusionM: hit.intrusionM })));
+        const include = await ask(publishBindingText('modal.createProposal.smallIntrusions.question',
+            'The site reaches only slightly into these parcels: {{list}}. Publishing includes them, so their owners must agree too. Include them, or cancel and change the design.',
+            { count: prepared.smallIntrusions.length, list }),
+        publishBindingText('modal.createProposal.smallIntrusions.include', 'Include them'),
+        publishBindingText('modal.createProposal.smallIntrusions.change', 'Change the design'));
+        if (!include) {
+            return { ok: false, cancelled: true, message: publishBindingText('modal.createProposal.smallIntrusions.cancelled', 'Publishing cancelled: change the design so it stays inside the parcels you mean.') };
+        }
+    }
+    const shift = prepared.landShiftM;
+    if (typeof shift === 'number' && shift > PREPARED_LAND_SHIFT_CONFIRM_M) {
+        const width = Number.isFinite(shift) && window.__siteDraft && typeof window.__siteDraft.formatWidth === 'function'
+            ? window.__siteDraft.formatWidth(shift) : '';
+        console.warn(`[${new Date().toISOString()}] [publish] server-built corridor land lies ${Number.isFinite(shift) ? shift.toFixed(3) : 'far'} m from the preview`);
+        const publish = await ask(publishBindingText('modal.createProposal.landShift.question',
+            'The server built this corridor\'s land from its lanes, and it lies up to {{shift}} from what the map showed. Publish the server\'s version?',
+            { shift: width || publishBindingText('modal.createProposal.landShift.far', 'far') }),
+        publishBindingText('modal.createProposal.landShift.publish', 'Publish it'),
+        publishBindingText('modal.createProposal.landShift.cancel', 'Cancel'));
+        if (!publish) {
+            return { ok: false, cancelled: true, message: publishBindingText('modal.createProposal.landShift.cancelled', 'Publishing cancelled: the corridor was not published.') };
+        }
+    }
+    return { ok: true };
+}
+
+// Carry what was prepared onto the local record, so the record kept here is the record published.
+function adoptPreparedRecord(target, prepared) {
+    if (!target || !prepared || !prepared.preparation) return;
+    target.preparation = prepared.preparation;
+    target.binding = prepared.binding;
+    target.cadastreParcelIds = (prepared.cadastreParcelIds || []).slice();
+    if (prepared.roadProposal && prepared.roadProposal.definition && prepared.roadProposal.definition.constructionFrame) {
+        target.roadProposal = prepared.roadProposal;
+    }
+    if ('acceptedParcelIds' in prepared) target.acceptedParcelIds = prepared.acceptedParcelIds;
+    if ('ownerAcceptances' in prepared) target.ownerAcceptances = prepared.ownerAcceptances;
+}
+
 async function uploadProposalToServer(proposal) {
     // Publishing leaves the device and the record carries its author (GuestPolicy 'publish'). Every
     // upload path (share dialog, walk gate, re-bind, mint persistence) funnels through here.
@@ -544,34 +597,30 @@ async function uploadProposalToServer(proposal) {
         console.warn('[uploadProposalToServer] publishing with partially loaded ground; the server re-checks parcels');
     }
 
-    // A material proposal publishes the server binding of its site as its declaration
-    // (proposals/publish-binding.js). Parcels it reaches into by under half a metre are said out
-    // loud first — usually a design leaking across a boundary — and the author decides.
+    // A proposal is published as the artifact the server prepares from it (POST /proposals/prepare,
+    // proposals/publish-binding.js, projections.md §3): its declaration is the binding of its site,
+    // a corridor's land is built by the server. A record minted from a preparation publishes that
+    // preparation unchanged — what was minted is what is stored; anything else is prepared now (an
+    // unchanged record prepares to the same artifact).
     let bound = null;
-    try {
-        bound = await window.__publishBinding.bindForPublish(proposal, {
-            fetchBinding: window.__publishBinding.createFetchBinding(fetch.bind(window), resolveBackendBaseUrl()),
-            city: proposal.city || null
-        });
-    } catch (bindError) {
-        console.warn(`[${new Date().toISOString()}] [uploadProposalToServer] binding failed`, bindError);
-        return { ok: false, message: publishBindingText('modal.createProposal.errors.bindingFailed',
-            'Could not check which parcels this proposal\'s site reaches into: {{reason}}', { reason: bindError.message || String(bindError) }) };
-    }
-    if (bound.smallIntrusions.length) {
-        const list = window.__publishBinding.describeHits(bound.smallIntrusions.map(hit => ({ id: hit.parcelId, intrusionM: hit.intrusionM })));
-        const question = publishBindingText('modal.createProposal.smallIntrusions.question',
-            'The site reaches only slightly into these parcels: {{list}}. Publishing includes them, so their owners must agree too. Include them, or cancel and change the design.',
-            { count: bound.smallIntrusions.length, list });
-        const include = typeof window.showStyledConfirm === 'function'
-            ? await window.showStyledConfirm(question, {
-                okText: publishBindingText('modal.createProposal.smallIntrusions.include', 'Include them'),
-                cancelText: publishBindingText('modal.createProposal.smallIntrusions.change', 'Change the design')
-            })
-            : window.confirm(question);
-        if (!include) {
-            return { ok: false, cancelled: true, message: publishBindingText('modal.createProposal.smallIntrusions.cancelled', 'Publishing cancelled: change the design so it stays inside the parcels you mean.') };
+    const mintedPreparation = proposal.preparation && proposal.preparation.id
+        && typeof isProposalMinted === 'function' && isProposalMinted(proposal);
+    if (mintedPreparation) {
+        bound = { proposal: { ...proposal }, smallIntrusions: [], landShiftM: null };
+    } else {
+        try {
+            bound = await window.__publishBinding.prepareForPublish(proposal, {
+                fetchPrepare: window.__publishBinding.createFetchPrepare(fetch.bind(window), resolveBackendBaseUrl(), publishBindingText),
+                city: proposal.city || null,
+                acceptedParcelIds: proposal.acceptedParcelIds || []
+            });
+        } catch (bindError) {
+            console.warn(`[${new Date().toISOString()}] [uploadProposalToServer] preparation failed`, bindError);
+            return { ok: false, code: bindError.code, message: publishBindingText('modal.createProposal.errors.bindingFailed',
+                'Could not check which parcels this proposal\'s site reaches into: {{reason}}', { reason: bindError.message || String(bindError) }) };
         }
+        const confirmed = await confirmPreparedPublish(bound);
+        if (!confirmed.ok) return confirmed;
     }
 
     let uploadProposal;
@@ -659,6 +708,9 @@ async function uploadProposalToServer(proposal) {
         const serverProposalId = result && result.id ? String(result.id) : String(result.proposalId);
         // Returned once; without it this browser cannot rename or re-bucket its own upload later.
         if (result && result.editToken) rememberProposalEditToken(serverProposalId, result.editToken);
+        // The local record becomes what was published: the artifact's declaration, binding,
+        // preparation and (a corridor) server-built land.
+        adoptPreparedRecord(proposal, bound.proposal);
         syncProposalWithServerId(proposal, serverProposalId);
         return { ok: true, id: result.id, proposalId: serverProposalId };
     } catch (error) {

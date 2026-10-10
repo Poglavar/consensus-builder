@@ -170,7 +170,9 @@ describe('which records act on parcels', () => {
     it('lets material proposals stand on a site or their own geometry', () => {
         expect(requiresParcels(park)).toBe(false);
         expect(requiresParcels({ goal: 'buildings', site: rect(0, 0, 10, 10) })).toBe(false);
+        // Drawn but not yet built (its land comes from preparation), and a flagged legacy record.
         expect(requiresParcels({ goal: 'road-track', roadProposal: { definition: { width: 8, points: [{ lat: 45.8, lng: 15.97 }, { lat: 45.801, lng: 15.97 }] } } })).toBe(false);
+        expect(requiresParcels({ goal: 'road-track', roadProposal: { definition: { width: 8, points: [{ lat: 45.8, lng: 15.97 }, { lat: 45.801, lng: 15.97 }], constructionFrame: { kind: 'legacy-centreline' } } } })).toBe(false);
         expect(isParcelAct({ goal: 'road-track', roadProposal: { definition: { polygon: rect(0, 0, 1, 1), points: [{ lat: 45.8, lng: 15.97 }, { lat: 45.801, lng: 15.97 }] } } })).toBe(false);
     });
 

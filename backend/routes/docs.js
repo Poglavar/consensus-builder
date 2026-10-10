@@ -243,6 +243,11 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     parcelHistory: `${base}/parcels/{parcelUid}/history`,
                     parcelsUnder: `${base}/parcels/under`,
                     proposalBinding: `${base}/agent/binding`,
+                    // POST { proposal, city?, parcelSourceId?, toleranceM? } → { preparationId, digest, artifact, proposal }:
+                    // the server builds a corridor's land from its lanes, binds the site and stores the
+                    // artifact; submit (and mint) the returned `proposal`. Required for a road or track
+                    // drawn as a centre line (422 preparation-required otherwise).
+                    proposalPrepare: `${base}/agent/prepare`,
                     urbanRules: `${base}/urban-rules?coordinates={lng},{lat}`,
                     buildingFootprints: `${base}/buildings/footprints`,
                     hackathonProof: `${base}/hackathon/proof.json`,
@@ -423,8 +428,8 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                         args: ['parcel_ids: vec<string>', 'is_conditional: bool', 'image_uri: string', 'sol_amount: u64', 'lens: vec<pubkey>', 'verdict_may_execute: bool', 'site_hash: [u8; 32]', 'open_ground: bool'],
                         accounts: ['proposal', 'proposal_counter', 'owner', 'system_program'],
                         signer: 'owner: your own wallet; it pays rent for the 4096-byte proposal account',
-                        parcelIds: 'the same strings as the record\'s cadastreParcelIds (the site\'s binding); may be empty only with a site_hash, and then open_ground must be true',
-                        siteHash: 'sha256 of the canonical site encoding (frontend/js/proposals/site-hash.js); 32 zero bytes when the proposal has no site',
+                        parcelIds: 'the same strings as the record\'s cadastreParcelIds (the site\'s binding — the prepared artifact\'s, from /agent/prepare); may be empty only with a site_hash, and then open_ground must be true',
+                        siteHash: 'sha256 of the canonical site encoding (frontend/js/proposals/site-hash.js) of the prepared artifact\'s site (artifact.siteHash from /agent/prepare); 32 zero bytes when the proposal has no site',
                         openGround: 'true when part of the site lies on no bound parcel (binding coverage not complete, or no parcels); needs a site_hash. Such a proposal also needs a lens member\'s executed verdict to execute',
                         lens: 'must be non-empty; the attesters whose ownership and verdict attestations this proposal accepts',
                         verdictMayExecute: 'true lets a lens member\'s executed verdict count: without parcels it executes the proposal, with parcels and open ground it clears the open ground (owners still consent), with parcels and no open ground it executes without per-parcel consent (permit-style evidence). Set it exactly when open_ground is true unless you mean permit-style evidence',

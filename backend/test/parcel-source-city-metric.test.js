@@ -1,7 +1,7 @@
 // A shared provider keeps one adapter identity while authoritative binding uses each city's metric projection.
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createParcelSource, parcelSourceCatalog, parcelSourceForCity } from '../parcels/sources.js';
-import { computeBinding } from '../proposals/binding.js';
+import { computeBinding, bindingFrame, FOOTPRINT_SITE_SQL } from '../proposals/binding.js';
 import { encodeSnapshotNativeId } from '../parcels/geojson-snapshot-source.js';
 const descriptor = { id: 'test-metric-shared', adapter: 'geojson-snapshot', endpoint: 'https://example.org/shared.geojson',
     idPrefix: 'TEST-METRIC-', idFields: ['city', 'sheet', 'id'], outFields: ['city', 'sheet', 'id'],
@@ -15,7 +15,7 @@ afterEach(() => {
     vi.unstubAllGlobals();
 });
 describe('shared source metric projection by city', () => {
-    it('resolves per-city projection without changing adapter cache identity, and computes authoritative binding', async () => {
+    it('resolves per-city projection without changing adapter cache identity, and computes authoritative binding in the footprint\'s own frame', async () => {
         parcelSourceCatalog.sources.push(descriptor);
         const fetchImpl = vi.fn(async () => new Response(JSON.stringify({ type: 'FeatureCollection', features: [
             { type: 'Feature', properties: { city: '13101', sheet: 'map', id: 'H1' }, geometry }
@@ -38,11 +38,13 @@ describe('shared source metric projection by city', () => {
         expect(fetchImpl).toHaveBeenCalledOnce();
         const unionDb = { query: vi.fn(async () => ({ rows: [{ geometry: JSON.stringify(geometry) }] })) };
         const parts = { polygons: [{ type: 'MultiPolygon', coordinates: [geometry.coordinates] }], centerline: null };
+        // The source's per-city metric SRID describes its data; a footprint is widened in its own frame.
         await computeBinding(unionDb, { city: 'metric_tokyo', parts });
-        expect(unionDb.query.mock.calls[0][0]).toContain('32654');
-        expect(unionDb.query.mock.calls[0][0]).not.toContain('3765');
+        expect(unionDb.query.mock.calls[0][0]).toBe(FOOTPRINT_SITE_SQL);
+        expect(unionDb.query.mock.calls[0][0]).not.toMatch(/32654|32653|3765/);
+        expect(unionDb.query.mock.calls[0][1].at(-1)).toBe(bindingFrame({ parts }).proj);
         await computeBinding(unionDb, { city: 'metric_osaka', parts });
-        expect(unionDb.query.mock.calls[1][0]).toContain('32653');
+        expect(unionDb.query.mock.calls[1][1].at(-1)).toBe(bindingFrame({ parts }).proj);
         expect(fetchImpl).toHaveBeenCalledOnce();
     });
     it('rejects missing, extra, noninteger and nonpositive metric mappings', () => {

@@ -89,6 +89,36 @@ live('binding SQL and the pure rule agree on real parcels', () => {
         expect(atHalf.server.parcels.length).toBeLessThan(atZero.server.parcels.length);
     }, 60000);
 
+    it('at the tolerance where a neighbour flips from bound to touched, it is unresolved, never silently decided', async () => {
+        const own = `HR-${KO}-${NUMBER}`;
+        const site = await siteAround(0.3);
+        const ids = list => (list || []).map(p => p.parcelId);
+        const neighbour = (await computeBinding(pool, { site, toleranceM: 0 })).binding.parcels
+            .find(p => p.parcelId !== own && p.intrusionM > 0.25)?.parcelId;
+        expect(neighbour).toBeTruthy();
+        const classify = async toleranceM => {
+            const binding = (await computeBinding(pool, { site, toleranceM })).binding;
+            if (ids(binding.parcels).includes(neighbour)) return 'bound';
+            if (ids(binding.unresolved).includes(neighbour)) return 'unresolved';
+            if (ids(binding.touched).includes(neighbour)) return 'touched';
+            return 'absent';
+        };
+        // Bisect the tolerance: bound below the flip, touched above it, unresolved in the band.
+        let lo = 0, hi = 1, found = null;
+        for (let n = 0; n < 30 && !found; n += 1) {
+            const mid = (lo + hi) / 2;
+            const state = await classify(mid);
+            if (state === 'unresolved') found = mid;
+            else if (state === 'bound') lo = mid;
+            else if (state === 'touched') hi = mid;
+            else throw new Error(`${neighbour} vanished at tolerance ${mid}`);
+        }
+        expect(found, 'an unresolved band exists at the flip').not.toBeNull();
+        // a millimetre either side is far outside the band, and decides
+        expect(await classify(found - 0.001)).toBe('bound');
+        expect(await classify(found + 0.001)).toBe('touched');
+    }, 240000);
+
     it('a 5 cm inset binds only the parcel', async () => {
         const pair = await both(await siteAround(-0.05), 0);
         expectParity(pair);

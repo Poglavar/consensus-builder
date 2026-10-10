@@ -173,3 +173,20 @@ params); city-specific overlays and dataset grid units.
 5. Bbox / dataset-CRS API, antimeridian splitting.
 6. Routing, parcel-source and storage correctness (frames never follow the viewport).
 7. Finish the audit. 8. Browser matrix. 3D rendering scale: separate task.
+
+## 10. Implementation status
+
+Milestones, each green before the next. Updated as they land.
+
+| # | Milestone | Status |
+|---|---|---|
+| M1 | Frame module (`frontend/js/metric-frame.js`), shared corridor construction (`frontend/js/corridor-footprint.js`), ellipsoidal-oracle contract tests, proj4 2.22.0 in browser and backend | done 2026-10-11 |
+| M2 | Construction output densified so straight-in-frame edges stay within budget when read as straight lon/lat edges | done 2026-10-11: ≤ 50 m pieces; an undivided 2 km edge at 60°N bowed 13.5 cm |
+| M3 | Server binding in the operation frame; candidate search in the dataset CRS; 50 m planar segmentisation before transform; `unresolved` outcome near thresholds | done 2026-10-11: PostGIS in the frame with 64-segment arcs (band 1.5e-4·r); the turf rule for providers and the preview keeps its own 0.35 % band; 60 real sites decide identically, large intrusion widths now correct (the 8-segment arcs overstated them by up to 0.48 %) |
+| M4 | Prepared artifact: `proposal_prepared` table, `POST /proposals/prepare`, digest, publish verification on every publication route; legacy polygon-less rows flagged | done 2026-10-11: content-addressed artifact (`backend/proposals/prepare.js`, `consensus.proposal_prepared`, never updated), `POST /proposals/prepare` + `/agent/prepare`; a corridor with a centre line is refused unprepared (422 `preparation-required`) on the free and paid routes, any record carrying `preparation` is verified (inputs digest, declaration, tolerance, city, source, land, frame; re-derived to 1 mm at the pinned versions) and stores the artifact. `scripts/flag-legacy-centreline-roads.mjs`: 158 local rows flagged (1 skipped: violates the parcels-or-site constraint); **production has 6 (ids 2, 3, 4, 5, 10, 11) — run it there before this release deploys** |
+| M5 | Browser create flow, scripts and agents publish through prepare | |
+| M6 | Global metric pair deleted; frames threaded through every metre site; errors propagate | |
+| M7 | Bbox API in WGS84 with explicit CRS; antimeridian split | |
+| M8 | Routing, parcel-source and storage correctness | |
+| M9 | Read-only production audit (perpendicular transects) | first pass 2026-10-11 (`backend/scripts/audit-road-widths.mjs`): no wrong-frame signature in 241 local or 173 production road records; every ordinary record measures its own city's projection scale; outliers are OSM parking areas, the Borovje band records and official-plan footprints |
+| M10 | Browser matrix | |

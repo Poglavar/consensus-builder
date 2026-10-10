@@ -59,9 +59,11 @@
      * @returns {{ polygons: object[], centerline: null|{ definition: object, segments: number[][][],
      *   halfWidthM: number }, sources: string[], approximate: boolean, vertexCount: number,
      *   invalid: string|null }}
-     * `centerline` is set only for a road stored without its corridor polygon (older records): the
-     * browser rebuilds the exact corridor from the definition, the server buffers the centreline
-     * by width/2, which is why such a footprint is `approximate`.
+     * `centerline` is set only for a road stored without its corridor polygon and flagged
+     * `constructionFrame.kind: 'legacy-centreline'` by the legacy migration: the server buffers the
+     * centreline by width/2, which is why such a footprint is `approximate`. An unflagged centre
+     * line without its polygon is `invalid` with `corridorUnprepared: true`: a material proposal
+     * whose land the server has not built yet.
      */
     function footprintParts(proposal) {
         const out = { polygons: [], centerline: null, sources: [], approximate: false, vertexCount: 0, invalid: null };
@@ -90,11 +92,18 @@
         } else if (definition && typeof definition === 'object') {
             const segments = centerlineSegments(definition);
             const width = Number(definition.width);
-            if (segments.length && Number.isFinite(width) && width > 0) {
+            // Only a record the legacy migration flagged is read from its centre line: a corridor
+            // built today carries its land, materialised by POST /proposals/prepare, so a centre
+            // line without land is an unprepared draft — never a footprint (projections.md §3).
+            const legacy = !!definition.constructionFrame && definition.constructionFrame.kind === 'legacy-centreline';
+            if (segments.length && !legacy) {
+                out.invalid = 'roadProposal.definition has a centre line but no corridor land; prepare the proposal (POST /proposals/prepare)';
+                out.corridorUnprepared = true;
+            } else if (segments.length && Number.isFinite(width) && width > 0) {
                 out.centerline = { definition, segments, halfWidthM: width / 2 };
                 out.vertexCount += segments.reduce((sum, segment) => sum + segment.length, 0);
                 out.approximate = true;
-                out.sources.push('roadProposal.definition centreline (width/2 buffer)');
+                out.sources.push('roadProposal.definition centreline (width/2 buffer, legacy record)');
             }
         }
         if (proposal.structureProposal) add('structureProposal.geometry', proposal.structureProposal.geometry);

@@ -1,9 +1,18 @@
 // Server side of a proposal's site → parcel binding (PARCEL-OPTIONAL.md): which cadastral parcels a
 // site reaches into, how far (intrusion width), and how much of the site is open ground. PostGIS
 // over the full cadastre mirrors the pure rule in frontend/js/proposals/site-binding.js exactly:
-// bound ⇔ site ∩ parcel survives ST_Buffer(-max(toleranceM, noise)/2) in EPSG:3765; intrusion is
-// found by the same inward-buffer bisection (not ST_MaximumInscribedCircle, whose fixed tolerance of
-// 1/1000 of the extent mis-measures a long thin sliver, and which needs GEOS >= 3.9).
+// bound ⇔ site ∩ parcel survives ST_Buffer(-max(toleranceM, noise)/2); intrusion is found by the
+// same inward-buffer bisection (not ST_MaximumInscribedCircle, whose fixed tolerance of 1/1000 of
+// the extent mis-measures a long thin sliver, and which needs GEOS >= 3.9).
+//
+// Every metric operation runs in the site's own operation frame (projections.md §2 and §4): a local
+// transverse Mercator at the site's canonical anchor, passed to PostGIS as its canonical projection
+// string. The dataset CRS (EPSG:3765 for the HR cadastre) is used only for the indexed candidate
+// search. Source edges are split before transforming — the site's into ≤ SEGMENT_DEG pieces (its
+// edges are straight in lon/lat), the cadastre's into ≤ 50 m pieces (straight in 3765) — so no
+// transformed edge strays by more than a micrometre. Buffers use 64 segments per quarter circle
+// (0.0075 % of the radius). A parcel whose intrusion lies within BINDING_UNCERTAINTY of the
+// threshold is reported as `unresolved`, never silently bound or unbound, and a publish refuses it.
 //
 // The Croatian cadastre (`parcel`, countrywide, ids HR-<ko>-<number>) uses PostGIS. Executable live
 // sources resolve their own authoritative parcels and use the shared binding rule. A site
@@ -22,6 +31,21 @@ import { computeSourceBinding, computeSourceParcelActBinding } from '../parcels/
 
 const requireCjs = createRequire(import.meta.url);
 const siteBindingApi = requireCjs('../../frontend/js/proposals/site-binding.js');
+const metricFrame = requireCjs('../../frontend/js/metric-frame.js');
+
+// The HR cadastre's storage CRS: candidate search and the dataset side of transforms only.
+export const HR_PARCEL_SRID = 3765;
+// The site's own edges are straight in lon/lat; split them into pieces of at most this many degrees
+// (≈ 44 m of latitude) before they are transformed into the operation frame.
+export const SEGMENT_DEG = 0.0004;
+// Cadastre edges are straight in their dataset CRS; split into pieces of at most this many metres.
+export const DATASET_SEGMENT_M = 50;
+// Candidate search slack in the dataset CRS: generous, since candidates only need to be a superset.
+export const CANDIDATE_SLACK_M = 0.05;
+// The decision band around a binding threshold r (= floor / 2): projection scale ≤ 5e-5, polygonised
+// buffer arcs ≤ 7.5e-5, plus a micrometre of arithmetic. Within it the answer is `unresolved`.
+export const BINDING_UNCERTAINTY = Object.freeze({ RELATIVE: 1.5e-4, ABSOLUTE_M: 1e-6 });
+export const bindingUncertaintyM = radiusM => Math.max(BINDING_UNCERTAINTY.ABSOLUTE_M, radiusM * BINDING_UNCERTAINTY.RELATIVE);
 
 export const {
     DEFAULT_INTRUSION_TOLERANCE_M,
@@ -52,7 +76,8 @@ export const BINDING_CODES = Object.freeze({
     undeclaredParcels: 'undeclared-parcels', // bound by the site, missing from cadastreParcelIds
     unboundParcels: 'unbound-parcels', // in cadastreParcelIds, not bound by the site
     parcelsRequired: 'parcels-required',
-    siteRequired: 'site-required'
+    siteRequired: 'site-required',
+    unresolved: 'binding-unresolved' // an intrusion within the measurement band of the threshold
 });
 
 export const SERVER_CADASTRE_SOURCE = 'server:hr-cadastre';
@@ -116,45 +141,82 @@ export function siteQueryParams({ site, parts }) {
     return footprintQueryParams(parts);
 }
 
-// $1/$2 as PARCEL_OVERLAP_SQL (footprint.js): the site in EPSG:3765, valid, unioned.
-const SITE_CTE = `
+// The operation frame of a binding: anchored on the site (or, for a footprint-only legacy record, on
+// its parts). Refuses a site outside the frame's domain (|lat| > 85°, more than 60 km from its anchor)
+// as an invalid site, before any SQL runs.
+export function bindingFrame({ site = null, parts = null } = {}) {
+    const input = site ? normalizeSiteGeometry(site) : [...(parts?.polygons || []), ...(parts?.centerline?.segments || [])];
+    try {
+        const frame = metricFrame.frameFor(input);
+        frame.assertWithin(input);
+        return frame;
+    } catch (error) {
+        throw bindingError(BINDING_CODES.invalidSite, `The site cannot be measured: ${String(error.message).replace(/^metric-frame: /, '')}.`);
+    }
+}
+
+// The site in the operation frame (SRID 0, metres), valid and unioned, and — for statements that
+// search the HR cadastre — the same site in its CRS for the indexed candidate search. $1 polygons,
+// $2 centrelines (legacy footprints: buffered in the frame), `proj` the frame's projection string.
+function siteCte(proj, { dataset = false } = {}) {
+    return `
     parts AS (
-        SELECT ST_CollectionExtract(ST_MakeValid(ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(value), 4326), 3765)), 3) AS geom
+        SELECT ST_CollectionExtract(ST_MakeValid(ST_Transform(
+                   ST_Segmentize(ST_SetSRID(ST_GeomFromGeoJSON(value), 4326), ${SEGMENT_DEG}), ${proj}::text)), 3) AS geom
         FROM jsonb_array_elements_text($1::jsonb)
         UNION ALL
-        SELECT ST_Buffer(ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(value->>'line'), 4326), 3765),
-                         (value->>'halfWidthM')::float8, 'endcap=flat join=round') AS geom
+        SELECT ST_Buffer(ST_Transform(ST_Segmentize(ST_SetSRID(ST_GeomFromGeoJSON(value->>'line'), 4326), ${SEGMENT_DEG}), ${proj}::text),
+                         (value->>'halfWidthM')::float8, 'endcap=flat join=round quad_segs=64') AS geom
         FROM jsonb_array_elements($2::jsonb)
     ), site AS (
         SELECT ST_CollectionExtract(ST_MakeValid(ST_UnaryUnion(ST_Collect(geom))), 3) AS g
         FROM parts WHERE NOT ST_IsEmpty(geom)
-    )`;
+    )${dataset ? `, site_ds AS (
+        -- valid again after the transform: a vertex moved by the reprojection can make a ring touch itself
+        SELECT ST_CollectionExtract(ST_MakeValid(ST_Transform(g, ${proj}::text, ${HR_PARCEL_SRID})), 3) AS g
+        FROM site WHERE g IS NOT NULL AND NOT ST_IsEmpty(g)
+    )` : ''}`;
+}
 
+// A cadastre geometry in the operation frame: split into ≤ 50 m pieces in its own CRS first.
+const inFrame = (geometrySql, proj) => `ST_Transform(ST_Segmentize(${geometrySql}, ${DATASET_SEGMENT_M}), ${proj}::text)`;
+// The ellipsoidal area of a frame geometry.
+const frameArea = (geometrySql, proj) => `ST_Area(ST_Transform(${geometrySql}, ${proj}::text, 4326)::geography)`;
+// Candidate HR parcels for the site: indexed bbox search in 3765 with slack.
+const CANDIDATE_JOIN = `parcel p ON p.current = true AND p.geom && ST_Expand(s.g, ${CANDIDATE_SLACK_M}) AND ST_DWithin(p.geom, s.g, ${CANDIDATE_SLACK_M})`;
+
+// $1 polygons, $2 centrelines, $3 the frame's projection string.
 export const BINDING_COUNT_SQL = `
-    WITH ${SITE_CTE}
+    WITH ${siteCte('$3', { dataset: true })}
     SELECT count(*)::int AS parcels
-    FROM site s JOIN parcel p ON p.current = true AND p.geom && s.g AND ST_Intersects(p.geom, s.g)
+    FROM site_ds s JOIN ${CANDIDATE_JOIN}
 `;
 
-// One statement, $3 = max(toleranceM, INTRUSION_NOISE_M):
-//   candidates   current parcels whose geometry meets the site (GiST: && then ST_Intersects);
+// One statement. $1 polygons, $2 centrelines, $3 = max(toleranceM, INTRUSION_NOISE_M), $4 the frame's
+// projection string, $5 the decision band (bindingUncertaintyM($3 / 2)). All geometry below `site`
+// is in the operation frame (SRID 0, metres):
+//   candidates   current parcels near the site (indexed search in 3765), split into ≤ 50 m pieces and
+//                transformed into the frame;
 //   hits         site ∩ parcel per id (a duplicated current id keeps its largest piece);
 //   search       the bisection on the inward-buffer radius, bracket [0, sqrt(area/π)], stopping at
 //                max(0.5 mm, 0.05 % of r) — byte-for-byte the loop in site-binding.js;
-//   bound        the rule itself: the intersection survives ST_Buffer(-$3/2);
+//   bound        the rule itself, with its band: the intersection survives ST_Buffer(-($3/2 + $5))
+//                → bound; it does not survive ST_Buffer(-($3/2 - $5)) → not bound; in between →
+//                unresolved;
 //   open ground  site minus every candidate parcel, split by the union of the cadastral
 //                municipalities the site meets: inside = unsurveyed, outside = unknown. A component
 //                counts only if it survives the same inward buffer (micro-gaps are not ground).
-// Absolute areas are measured on the ellipsoid (geography), lengths in EPSG:3765 metres.
+// Areas are measured on the ellipsoid (geography), lengths in frame metres.
 export const BINDING_SQL = `
-    WITH RECURSIVE ${SITE_CTE},
+    WITH RECURSIVE ${siteCte('$4', { dataset: true })},
     region AS (
-        SELECT ST_UnaryUnion(ST_Collect(ST_MakeValid(k.geom))) AS g
-        FROM cadastral_municipality k, site s
+        SELECT ${inFrame('ST_UnaryUnion(ST_Collect(ST_MakeValid(k.geom)))', '$4')} AS g
+        FROM cadastral_municipality k, site_ds s
         WHERE k.geom && s.g AND ST_Intersects(k.geom, s.g)
     ), candidates AS (
-        SELECT 'HR-' || p.maticni_broj_ko || '-' || p.broj_cestice AS id, ST_MakeValid(p.geom) AS pg
-        FROM site s JOIN parcel p ON p.current = true AND p.geom && s.g AND ST_Intersects(p.geom, s.g)
+        SELECT 'HR-' || p.maticni_broj_ko || '-' || p.broj_cestice AS id,
+               ST_CollectionExtract(ST_MakeValid(${inFrame('ST_MakeValid(p.geom)', '$4')}), 3) AS pg
+        FROM site_ds s JOIN ${CANDIDATE_JOIN}
     ), hits AS (
         SELECT DISTINCT ON (id) id, i FROM (
             SELECT c.id, ST_CollectionExtract(ST_Intersection(c.pg, s.g), 3) AS i FROM candidates c, site s
@@ -169,19 +231,20 @@ export const BINDING_SQL = `
                s.n + 1
         FROM search s
         CROSS JOIN LATERAL (SELECT (s.lo + s.hi) / 2 AS mid) m
-        CROSS JOIN LATERAL (SELECT NOT ST_IsEmpty(ST_Buffer(s.i, -m.mid)) AS ok) b
+        CROSS JOIN LATERAL (SELECT NOT ST_IsEmpty(ST_Buffer(s.i, -m.mid, 'quad_segs=64')) AS ok) b
         WHERE s.hi - s.lo > greatest(0.0005, s.lo * 0.0005) AND s.n < 60
     ), widths AS (
         SELECT DISTINCT ON (id) id, lo + hi AS intrusion_m FROM search ORDER BY id, n DESC
     ), measured AS (
         SELECT h.id,
-               ST_Area(ST_Transform(h.i, 4326)::geography) AS overlap_m2,
+               ${frameArea('h.i', '$4')} AS overlap_m2,
                w.intrusion_m,
-               NOT ST_IsEmpty(ST_Buffer(h.i, -$3::float8 / 2)) AS bound
+               NOT ST_IsEmpty(ST_Buffer(h.i, -($3::float8 / 2 + $5::float8), 'quad_segs=64')) AS bound,
+               NOT ST_IsEmpty(ST_Buffer(h.i, -greatest($3::float8 / 2 - $5::float8, 0), 'quad_segs=64')) AS bound_lo
         FROM hits h JOIN widths w USING (id)
     ), open_ground AS (
         SELECT ST_Difference(s.g, COALESCE((SELECT ST_UnaryUnion(ST_Collect(pg)) FROM candidates),
-                                           ST_GeomFromText('POLYGON EMPTY', 3765))) AS g
+                                           ST_GeomFromText('POLYGON EMPTY', 0))) AS g
         FROM site s
     ), split AS (
         SELECT ST_CollectionExtract(ST_Intersection(o.g, r.g), 3) AS inside,
@@ -190,29 +253,39 @@ export const BINDING_SQL = `
     )
     SELECT
         (SELECT COALESCE(jsonb_agg(jsonb_build_object(
-                    'parcelId', id, 'overlapM2', overlap_m2, 'intrusionM', intrusion_m, 'bound', bound
+                    'parcelId', id, 'overlapM2', overlap_m2, 'intrusionM', intrusion_m, 'bound', bound,
+                    'unresolved', bound_lo AND NOT bound
                 ) ORDER BY id), '[]'::jsonb) FROM measured) AS parcels,
-        (SELECT ST_Area(ST_Transform(g, 4326)::geography) FROM site) AS site_m2,
+        (SELECT ${frameArea('g', '$4')} FROM site) AS site_m2,
         (SELECT g IS NOT NULL FROM region) AS in_region,
-        (SELECT COALESCE(sum(ST_Area(ST_Transform(d.geom, 4326)::geography)), 0)
+        (SELECT COALESCE(sum(${frameArea('d.geom', '$4')}), 0)
            FROM split, ST_Dump(split.inside) d
-          WHERE NOT ST_IsEmpty(ST_Buffer(d.geom, -$3::float8 / 2))) AS unsurveyed_m2,
-        (SELECT COALESCE(sum(ST_Area(ST_Transform(d.geom, 4326)::geography)), 0)
+          WHERE NOT ST_IsEmpty(ST_Buffer(d.geom, -$3::float8 / 2, 'quad_segs=64'))) AS unsurveyed_m2,
+        (SELECT COALESCE(sum(${frameArea('d.geom', '$4')}), 0)
            FROM split, ST_Dump(split.outside) d
-          WHERE NOT ST_IsEmpty(ST_Buffer(d.geom, -$3::float8 / 2))) AS unknown_m2,
-        (SELECT ST_AsGeoJSON(ST_Multi(ST_Transform(g, 4326)), 9) FROM site WHERE g IS NOT NULL AND NOT ST_IsEmpty(g)) AS site_geojson
+          WHERE NOT ST_IsEmpty(ST_Buffer(d.geom, -$3::float8 / 2, 'quad_segs=64'))) AS unknown_m2,
+        (SELECT ST_AsGeoJSON(ST_Multi(ST_Transform(g, $4::text, 4326)), 9) FROM site WHERE g IS NOT NULL AND NOT ST_IsEmpty(g)) AS site_geojson
 `;
 
 // The authored footprint must lie inside an authored site: footprint − site may only leave
-// components no wider than the noise floor. $3 = site GeoJSON, $4 = floor.
+// components no wider than the noise floor. $1/$2 the footprint, $3 = site GeoJSON, $4 = floor,
+// $5 the frame's projection string.
 export const FOOTPRINT_OUTSIDE_SITE_SQL = `
-    WITH ${SITE_CTE},
+    WITH ${siteCte('$5')},
     authored AS (
-        SELECT ST_CollectionExtract(ST_MakeValid(ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON($3), 4326), 3765)), 3) AS g
+        SELECT ST_CollectionExtract(ST_MakeValid(ST_Transform(
+                   ST_Segmentize(ST_SetSRID(ST_GeomFromGeoJSON($3), 4326), ${SEGMENT_DEG}), $5::text)), 3) AS g
     )
-    SELECT COALESCE(sum(ST_Area(ST_Transform(d.geom, 4326)::geography)), 0) AS outside_m2
+    SELECT COALESCE(sum(${frameArea('d.geom', '$5')}), 0) AS outside_m2
     FROM site s, authored a, ST_Dump(ST_CollectionExtract(ST_Difference(s.g, a.g), 3)) d
-    WHERE NOT ST_IsEmpty(ST_Buffer(d.geom, -$4::float8 / 2))
+    WHERE NOT ST_IsEmpty(ST_Buffer(d.geom, -$4::float8 / 2, 'quad_segs=64'))
+`;
+
+// A legacy footprint (polygons + buffered centrelines) as WGS84, for a parcel-source binding.
+// $1/$2 the footprint, $3 the frame's projection string.
+export const FOOTPRINT_SITE_SQL = `
+    WITH ${siteCte('$3')}
+    SELECT ST_AsGeoJSON(ST_Multi(ST_Transform(g, $3::text, 4326)), 9) AS geometry FROM site WHERE g IS NOT NULL AND NOT ST_IsEmpty(g)
 `;
 
 // Declared HR parcels that exist as current parcels, with their union as the act's site.
@@ -287,23 +360,20 @@ function unboundBinding({ coverage, toleranceM, siteM2, reason, parcels = [], co
  */
 export async function computeBinding(db, { site = null, parts = null, toleranceM = DEFAULT_INTRUSION_TOLERANCE_M, city = null, parcelSourceId = null, now = () => new Date() } = {}) {
     const params = siteQueryParams({ site, parts });
+    const frame = bindingFrame({ site, parts });
     const provider = parcelSourceForCity(city, parcelSourceId);
     if (provider) {
-        const metricSrid = provider.descriptor.metricSrid;
-        if (!Number.isInteger(metricSrid)) throw new Error('Parcel source metric SRID is missing.');
-        const footprint = site || JSON.parse((await db.query(
-            `WITH ${SITE_CTE.replaceAll('3765', String(metricSrid))} SELECT ST_AsGeoJSON(ST_Transform(g, 4326)) AS geometry FROM site`, params
-        )).rows[0]?.geometry || 'null');
+        const footprint = site || JSON.parse((await db.query(FOOTPRINT_SITE_SQL, [...params, frame.proj])).rows[0]?.geometry || 'null');
         if (!footprint) throw bindingError(BINDING_CODES.invalidSite, 'The site has no area after validation.');
         return computeSourceBinding(provider.adapter, { site: footprint, toleranceM, sourceId: provider.descriptor.id, now });
     }
     const floorM = Math.max(toleranceM, INTRUSION_NOISE_M);
-    const counted = Number((await db.query(BINDING_COUNT_SQL, params)).rows[0]?.parcels || 0);
+    const counted = Number((await db.query(BINDING_COUNT_SQL, [...params, frame.proj])).rows[0]?.parcels || 0);
     if (counted > MAX_BINDING_PARCELS) {
         throw bindingError(BINDING_CODES.tooManyParcels,
             `The site meets ${counted} parcels, over the ${MAX_BINDING_PARCELS} limit.`, 413, { count: counted });
     }
-    const row = (await db.query(BINDING_SQL, [...params, floorM])).rows[0] || {};
+    const row = (await db.query(BINDING_SQL, [...params, floorM, frame.proj, bindingUncertaintyM(floorM / 2)])).rows[0] || {};
     const computedAt = now().toISOString();
     const siteGeometry = row.site_geojson ? JSON.parse(row.site_geojson) : null;
     if (!siteGeometry) {
@@ -337,7 +407,9 @@ export async function computeBinding(db, { site = null, parts = null, toleranceM
         site: siteGeometry,
         binding: {
             parcels: measured.filter(hit => hit.bound).map(entry),
-            touched: measured.filter(hit => !hit.bound).map(entry),
+            touched: measured.filter(hit => !hit.bound && !hit.unresolved).map(entry),
+            // Within the measurement band of the threshold: neither bound nor touched. A publish refuses.
+            ...(measured.some(hit => hit.unresolved) ? { unresolved: measured.filter(hit => hit.unresolved).map(entry) } : {}),
             toleranceM,
             coverage: unsurveyedM2 > 0 || unknownM2 > 0 ? COVERAGE.partial : COVERAGE.complete,
             unsurveyedM2,
@@ -410,7 +482,9 @@ const describeMissing = hit => ({ id: hit.parcelId, overlapM2: round(hit.overlap
  *   - coverage 'unknown' (cadastre not held here): the declaration is accepted unverified.
  * @returns {Promise<{ ok: true, site, binding } | { ok: false, status, code, error, missing?, extra?, parcels? }>}
  */
-export async function checkProposalBinding(db, proposal, declaredIds, { site = null, toleranceM = DEFAULT_INTRUSION_TOLERANCE_M, city = null, parcelSourceId = null, now } = {}) {
+// `derive: true` (POST /proposals/prepare): a material proposal's declaration is not compared but
+// DERIVED from the binding and returned as `cadastreParcelIds`; parcel acts still name their parcels.
+export async function checkProposalBinding(db, proposal, declaredIds, { site = null, toleranceM = DEFAULT_INTRUSION_TOLERANCE_M, city = null, parcelSourceId = null, now, derive = false } = {}) {
     const declared = (declaredIds || []).map(String);
     const parts = footprintParts(proposal);
     if (parts.invalid) {
@@ -432,10 +506,9 @@ export async function checkProposalBinding(db, proposal, declaredIds, { site = n
         if (hasFootprint(parts)) {
             const floorM = Math.max(toleranceM, INTRUSION_NOISE_M);
             const [polygons, lines] = footprintQueryParams(parts);
-            const provider = parcelSourceForCity(city, parcelSourceId);
-            const outsideSql = provider ? FOOTPRINT_OUTSIDE_SITE_SQL.replaceAll('3765', String(provider.descriptor.metricSrid)) : FOOTPRINT_OUTSIDE_SITE_SQL;
-            const outside = Number((await db.query(outsideSql,
-                [polygons, lines, JSON.stringify(normalizeSiteGeometry(site)), floorM])).rows[0]?.outside_m2 || 0);
+            const frame = bindingFrame({ site });
+            const outside = Number((await db.query(FOOTPRINT_OUTSIDE_SITE_SQL,
+                [polygons, lines, JSON.stringify(normalizeSiteGeometry(site)), floorM, frame.proj])).rows[0]?.outside_m2 || 0);
             if (outside > 0) {
                 return {
                     ok: false,
@@ -462,14 +535,24 @@ export async function checkProposalBinding(db, proposal, declaredIds, { site = n
                 extra: act.extra.map(id => ({ id }))
             };
         }
-        return { ok: true, site: act.site, binding: act.binding };
+        return { ok: true, site: act.site, binding: act.binding, ...(derive ? { cadastreParcelIds: declared.slice().sort() } : {}) };
     }
 
     const { binding } = result;
+    if (Array.isArray(binding.unresolved) && binding.unresolved.length) {
+        const ids = binding.unresolved.map(hit => hit.parcelId);
+        return {
+            ok: false,
+            status: 409,
+            code: BINDING_CODES.unresolved,
+            error: `The site reaches into ${ids.join(', ')} by within measurement error of the ${binding.toleranceM} m tolerance, so whether it binds cannot be decided. Move the design a millimetre into or away from ${ids.length === 1 ? 'that parcel' : 'those parcels'}.`,
+            unresolved: binding.unresolved.map(hit => ({ id: hit.parcelId, intrusionM: hit.intrusionM }))
+        };
+    }
     if (binding.coverage === COVERAGE.unknown) {
         binding.parcels = declared.map(id => ({ parcelId: id, overlapM2: null, intrusionM: null }));
         binding.subject = 'declared-unverified';
-        return { ok: true, site: result.site, binding };
+        return { ok: true, site: result.site, binding, ...(derive ? { cadastreParcelIds: declared } : {}) };
     }
     if (needsParcels && !binding.parcels.length) {
         return {
@@ -478,6 +561,9 @@ export async function checkProposalBinding(db, proposal, declaredIds, { site = n
             code: BINDING_CODES.parcelsRequired,
             error: 'This proposal acts on parcels, but its site lies on no cadastral parcel.'
         };
+    }
+    if (derive && !needsParcels) {
+        return { ok: true, site: result.site, binding, cadastreParcelIds: binding.parcels.map(hit => String(hit.parcelId)).sort() };
     }
     const { missing, extra } = compareDeclaration(declared, binding);
     if (missing.length || extra.length) {
@@ -502,5 +588,5 @@ export async function checkProposalBinding(db, proposal, declaredIds, { site = n
             parcels: missingHits.map(hit => ({ id: hit.id, overlapM2: hit.overlapM2 }))
         };
     }
-    return { ok: true, site: result.site, binding };
+    return { ok: true, site: result.site, binding, ...(derive ? { cadastreParcelIds: declared.slice().sort() } : {}) };
 }

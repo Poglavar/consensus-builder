@@ -7,6 +7,21 @@
    (backend/test/design-tokens.test.js ratchets the literal count per file downwards). */
 
 :root {
+    /* Independent pitch palettes: market conviction and community-led planning. */
+    --cb-pitch-night: #090d12;
+    --cb-pitch-lime: #d5ff45;
+    --cb-pitch-silver: #b8c1c9;
+    --cb-pitch-ice: #f1f3ee;
+    --cb-pitch-blue: #465df6;
+    --cb-pitch-paper: #f5f0e6;
+    --cb-pitch-forest: #173e35;
+    --cb-pitch-terracotta: #ae492f;
+    --cb-pitch-peach: #efbc9c;
+    --cb-pitch-sage: #d5dfc9;
+    --cb-pitch-white: #ffffff;
+    --cb-font-pitch-bold: "Arial Black", "Helvetica Neue", Arial, sans-serif;
+    --cb-font-pitch-editorial: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+
     /* ---- Colour roles ---- */
     --cb-bg: #f3f4f6;               /* page ground behind cards and sheet bodies */
     --cb-surface: #ffffff;          /* cards, sheets, dialogs, buttons */

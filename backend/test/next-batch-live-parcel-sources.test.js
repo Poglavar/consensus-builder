@@ -5,7 +5,7 @@ import express from 'express';
 import request from 'supertest';
 import { createParcelSource, parcelSourceCatalog } from '../parcels/sources.js';
 import { setupParcelSourcesRoute } from '../routes/parcel-sources.js';
-import { computeBinding } from '../proposals/binding.js';
+import { computeBinding, bindingFrame, FOOTPRINT_SITE_SQL } from '../proposals/binding.js';
 
 const SQUARE = (west, south, east, north) => ({
     type: 'Polygon',
@@ -149,7 +149,7 @@ describe.each(cases)('$city live parcel source', sample => {
         }
     });
 
-    it('uses the source metric CRS while binding a footprint without imported parcel tables', async () => {
+    it('derives the footprint in its own operation frame while binding without imported parcel tables', async () => {
         const feature = descriptor.adapter === 'ogc-api'
             ? ogcFeature(descriptor, sample.nativeId, sample.geometry)
             : sfRow(descriptor, sample.nativeId, sample.geometry);
@@ -163,10 +163,10 @@ describe.each(cases)('$city live parcel source', sample => {
         const { binding } = await computeBinding(db, { city: sample.city, parts });
 
         expect(db.query).toHaveBeenCalledTimes(1);
-        expect(db.query.mock.calls[0][0]).toContain(
-            `ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(value), 4326), ${sample.metricSrid})`
-        );
-        expect(db.query.mock.calls[0][0]).not.toContain('4326), 3765)');
+        const [sql, params] = db.query.mock.calls[0];
+        expect(sql).toBe(FOOTPRINT_SITE_SQL);
+        expect(sql).not.toContain(String(sample.metricSrid));
+        expect(params.at(-1)).toBe(bindingFrame({ parts }).proj);
         expect(binding).toMatchObject({ coverage: 'complete', source: `server:${descriptor.id}` });
         expect(binding.parcels.map(parcel => parcel.parcelId)).toEqual([`${descriptor.idPrefix}${sample.nativeId}`]);
     });

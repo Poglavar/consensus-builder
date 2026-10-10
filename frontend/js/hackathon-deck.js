@@ -1,3 +1,4 @@
+// Shared slide navigation for all pitch variants, with live metrics only on the original deck.
 (function () {
     'use strict';
 
@@ -92,5 +93,5 @@
 
     const initial = slides.findIndex(slide => `#${slide.id}` === location.hash);
     setActive(initial >= 0 ? initial : 0);
-    hydrateProofMetrics().catch(() => {});
+    if (document.getElementById('proof-attestation-count')) hydrateProofMetrics().catch(() => {});
 }());

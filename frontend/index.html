@@ -166,7 +166,7 @@
     <!-- Proj4js for coordinate transformations.
          The old second-CDN fallback is gone: it only guarded against cdnjs being down, which a local
          file cannot be. If this 404s the deploy is broken, and it should fail loudly. -->
-    <script src="vendor/proj4-2.21.0/proj4.js"></script>
+    <script src="vendor/proj4-2.22.0/proj4.js"></script>
 
     <!-- Turf.js for geometric calculations -->
     <script src="vendor/turf-6.5.0/turf.min.js"></script>
@@ -1611,6 +1611,7 @@
             'js/environment.js',
             'js/wipe-local-data.js',
             'js/world/world-entry-model.js',
+            'js/metric-frame.js',
             'js/parcel-source-settings.js',
             'js/city-config.js?v=20261008-africa-capitals',
             'js/parcel-source-notice.js',
@@ -1975,6 +1976,7 @@
             'js/legacy-road-centerlines.js',
             'js/corridor-lane-topology.js',
             'js/corridor-profile.js',
+            'js/corridor-footprint.js',
             'js/corridor-terrain-formation.js',
             'js/corridor-clearance.js',
             'js/corridor-edge-fill.js',

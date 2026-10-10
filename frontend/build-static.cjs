@@ -27,6 +27,7 @@ const SAFE_GROUPS = [
             "js/environment.js",
             "js/wipe-local-data.js",
             "js/world/world-entry-model.js",
+            "js/metric-frame.js",
             "js/parcel-source-settings.js"
         ]
     },

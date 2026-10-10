@@ -1501,20 +1501,26 @@ async function createProposal() {
                     firstPolygonSample: parcelPolygons[0]
                 });
 
-                // A site-first proposal's image and metadata come from its site (there may be no
-                // parcel at all under it); its on-chain parcel list is the SERVER binding, the
-                // same declaration a publish sends (proposals/publish-binding.js).
-                if (proposal.site) {
-                    pushParcelPolygons(proposal.site.coordinates);
-                    updateStatus(t('modal.createProposal.site.binding', 'Checking which parcels the site reaches into...'));
-                    const bound = await window.__publishBinding.bindForPublish(proposal, {
-                        fetchBinding: window.__publishBinding.createFetchBinding(fetch.bind(window), resolveBackendBaseUrl()),
-                        city: proposal.city || null
-                    });
-                    proposal.cadastreParcelIds = bound.proposal.cadastreParcelIds;
-                    proposal.binding = bound.binding;
-                    console.info(`[${new Date().toISOString()}] [createProposal] site binding for mint: ${proposal.cadastreParcelIds.length} parcel(s), coverage ${bound.binding.coverage}`);
+                // The record is minted as the artifact the server prepares from it (POST
+                // /proposals/prepare, projections.md §3): the same declaration, site (and site hash)
+                // and — for a corridor — land that publication then stores unchanged. Slight
+                // intrusions and a corridor built off its preview are asked about BEFORE anything
+                // is signed. The image and metadata come from that site (there may be no parcel at
+                // all under it).
+                updateStatus(t('modal.createProposal.site.binding', 'Checking which parcels the site reaches into...'));
+                const prepared = await window.__publishBinding.prepareForPublish(proposal, {
+                    fetchPrepare: window.__publishBinding.createFetchPrepare(fetch.bind(window), resolveBackendBaseUrl(), publishBindingText),
+                    city: proposal.city || null,
+                    acceptedParcelIds: proposal.acceptedParcelIds || []
+                });
+                const confirmedPublish = await confirmPreparedPublish(prepared);
+                if (!confirmedPublish.ok) {
+                    throw Object.assign(new Error(confirmedPublish.message), { publishCancelled: true });
                 }
+                adoptPreparedRecord(proposal, prepared.proposal);
+                const mintSite = prepared.artifact.site || null;
+                if (mintSite) pushParcelPolygons(mintSite.coordinates);
+                console.info(`[${new Date().toISOString()}] [createProposal] prepared for mint: ${proposal.cadastreParcelIds.length} parcel(s), coverage ${prepared.binding.coverage}, preparation ${prepared.preparation.id}`);
 
                 // Nothing to draw or mint is an error to report, never a silent skip: the user
                 // asked for an on-chain proposal and would otherwise get a local one unawares.
@@ -1526,7 +1532,7 @@ async function createProposal() {
                         ? proposal.cadastreParcelIds.slice()
                         : [];
 
-                    if (parcelIdsForMinting.length === 0 && !proposal.site) {
+                    if (parcelIdsForMinting.length === 0 && !mintSite) {
                         throw new Error(t('modal.createProposal.errors.noMintParcels', 'This proposal names no parcels and has no site, so it cannot be minted.'));
                     } else {
                         // Verify required services are available
@@ -1815,7 +1821,7 @@ async function createProposal() {
                             // ground. On such a proposal the verdict clears the open ground and never
                             // stands in for the owners; permit-style skipping of consent stays off.
                             const siteArgs = await window.__siteHash.chainSiteArgs({
-                                site: proposal.site || null,
+                                site: mintSite,
                                 binding: proposal.binding || null,
                                 parcelIds: parcelIdsForMinting
                             });
@@ -1902,6 +1908,15 @@ async function createProposal() {
                 }
             } catch (error) {
                 hideWaitingPopupSafe();
+                // The author declined what was prepared (slight intrusions, a shifted corridor):
+                // nothing was signed, and nothing is published.
+                if (error && error.publishCancelled) {
+                    updateStatus(error.message);
+                    setProposalModalInteractivity(true);
+                    setProposalCreateButtonState(false);
+                    markDraftPublishFailed(error);
+                    return;
+                }
                 console.error('On-chain mint failed:', error);
 
                 const isUserCancelled = (err) => {
@@ -2158,7 +2173,10 @@ function buildUploadReadyProposal(proposal) {
     // Parcel acts keep the old strict client check of their named parcels.
     const siteApi = window.__siteBinding;
     const material = !!(siteApi && typeof siteApi.requiresParcels === 'function' && !siteApi.requiresParcels(uploadProposal));
-    if (material && window.__publishBinding && window.__publishBinding.isServerBinding(uploadProposal.binding)) {
+    const serverBound = !!(window.__publishBinding && window.__publishBinding.isServerBinding(uploadProposal.binding));
+    // A prepared record (POST /proposals/prepare) publishes its artifact's declaration exactly — the
+    // server verified it, and any client re-derivation would contradict what was prepared (and minted).
+    if (serverBound && (material || uploadProposal.preparation)) {
         uploadProposal.cadastreParcelIds = (uploadProposal.cadastreParcelIds || []).map(String);
     } else if (material) {
         uploadProposal.cadastreParcelIds = window.__cadastreAncestry.publishDeclaration(uploadProposal);

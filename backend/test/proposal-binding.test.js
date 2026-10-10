@@ -61,10 +61,23 @@ describe('footprintParts (shared by browser, API and migration)', () => {
         expect(plan.approximate).toBe(false);
     });
 
-    it('marks a road stored without its corridor polygon as an approximate centreline footprint', () => {
+    it('refuses a centre line without its land unless the record is a flagged legacy record', () => {
         const parts = footprintParts({ roadProposal: { definition: {
             width: 12,
             points: [{ lat: 45.8, lng: 15.97 }, { lat: 45.801, lng: 15.971 }]
+        } } });
+        expect(parts.invalid).toMatch(/no corridor land; prepare the proposal/);
+        expect(parts.corridorUnprepared).toBe(true);
+        expect(parts.centerline).toBeNull();
+        // A client cannot opt a NEW record into the approximate path: preparation strips the flag
+        // (proposals/prepare.js authoredDefinition) and publication requires preparation.
+    });
+
+    it('marks a flagged legacy road stored without its corridor polygon as an approximate centreline footprint', () => {
+        const parts = footprintParts({ roadProposal: { definition: {
+            width: 12,
+            points: [{ lat: 45.8, lng: 15.97 }, { lat: 45.801, lng: 15.971 }],
+            constructionFrame: { kind: 'legacy-centreline' }
         } } });
         expect(parts.approximate).toBe(true);
         expect(parts.polygons).toEqual([]);
@@ -256,6 +269,19 @@ describe('checkProposalBinding (declared == binding)', () => {
         expect(ok).toMatchObject({ ok: true, binding: { coverage: 'complete', subject: 'declared-parcels', parcels: [{ parcelId: 'HR-335649-100' }] } });
         const unknown = await checkProposalBinding(cadastre({ found: ['HR-335649-100'] }), { goal: 'offer' }, ['HR-335649-100', 'HR-335649-404']);
         expect(unknown).toMatchObject({ ok: false, code: 'unbound-parcels', extra: [{ id: 'HR-335649-404' }] });
+    });
+
+    // POST /proposals/prepare: a material proposal's declaration is DERIVED from its binding, a
+    // parcel act keeps (and is verified on) the parcels it names — in every branch.
+    it('derives the declaration in derive mode, and keeps a parcel act\'s named parcels', async () => {
+        const material = await checkProposalBinding(cadastre({ parcels: SPILL }), parkBody({ cadastreParcelIds: [] }), [], { derive: true });
+        expect(material).toMatchObject({ ok: true });
+        expect(material.cadastreParcelIds).toEqual(material.binding.parcels.map(hit => hit.parcelId).sort());
+        expect(material.cadastreParcelIds.length).toBeGreaterThan(0);
+        const act = await checkProposalBinding(cadastre(), { goal: 'ownership-transfer' }, ['HR-335649-100'], { derive: true });
+        expect(act).toMatchObject({ ok: true, cadastreParcelIds: ['HR-335649-100'] });
+        const plain = await checkProposalBinding(cadastre(), { goal: 'ownership-transfer' }, ['HR-335649-100']);
+        expect(plain.cadastreParcelIds).toBeUndefined();
     });
 
     it('refuses invalid geometry without querying', async () => {

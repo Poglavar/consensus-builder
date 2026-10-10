@@ -149,7 +149,7 @@ describe('every outgoing path stamps the current author', () => {
         const stamp = upload.indexOf('stampCurrentAuthor(proposal)');
         expect(gate).toBeGreaterThan(-1);
         expect(stamp).toBeGreaterThan(gate);
-        expect(stamp).toBeLessThan(upload.indexOf('bindForPublish'));
+        expect(stamp).toBeLessThan(upload.indexOf('prepareForPublish'));
         expect(read('proposals/sharing-routes.js')).toMatch(/deepClone\(stampCurrentAuthor\(proposal\)\)/);
         expect(read('proposals/dialog-upload.js')).toMatch(/const proposalAuthor = stampCurrentAuthor\(proposal\)\.author/);
         const create = read('proposals/create.js');

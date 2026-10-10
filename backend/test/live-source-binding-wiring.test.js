@@ -2,7 +2,7 @@
 import express from 'express';
 import request from 'supertest';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { computeBinding, parcelActBinding } from '../proposals/binding.js';
+import { computeBinding, parcelActBinding, bindingFrame, FOOTPRINT_SITE_SQL } from '../proposals/binding.js';
 import { setupProposalBindingRoute } from '../routes/proposal-binding.js';
 import { clearParcelSourceRuntimeCache } from '../parcels/sources.js';
 
@@ -82,7 +82,7 @@ describe('live source proposal binding wiring', () => {
         expect(query).toContain('PARCELID IN (41002,49999)');
     });
 
-    it('uses the configured metric SRID to derive a footprint site before source binding', async () => {
+    it('derives a footprint site in the footprint\'s own operation frame before source binding', async () => {
         const fetch = fetchGeojson();
         vi.stubGlobal('fetch', fetch);
         const calls = [];
@@ -96,10 +96,12 @@ describe('live source proposal binding wiring', () => {
 
         const { site, binding } = await computeBinding(db, { parts, toleranceM: 0.1, city: 'toronto' });
 
+        // projections.md §2: never the source's (or Croatia's) CRS, always the local frame of the footprint
         expect(calls).toHaveLength(1);
-        expect(calls[0].sql).toContain('32617');
-        expect(calls[0].sql).not.toContain('3765');
-        expect(calls[0].params).toEqual([JSON.stringify([SITE_MULTI]), '[]']);
+        expect(calls[0].sql).toBe(FOOTPRINT_SITE_SQL);
+        expect(calls[0].sql).not.toMatch(/32617|3765/);
+        expect(calls[0].params).toEqual([JSON.stringify([SITE_MULTI]), '[]', bindingFrame({ parts }).proj]);
+        expect(calls[0].params[2]).toMatch(/^\+proj=tmerc .*\+k=1 .*\+datum=WGS84/);
         expect(fetch).toHaveBeenCalledTimes(1);
         expect(site.type).toBe('MultiPolygon');
         expect(binding).toMatchObject({ source: `server:${SOURCE_ID}`, toleranceM: 0.1, coverage: 'complete' });
