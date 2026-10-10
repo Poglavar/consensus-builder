@@ -4,7 +4,7 @@ Working notes for the `realistic-3d` branch. Goal: evaluate replacing/augmenting
 current Three.js 3D mode with a photorealistic real-world globe, so proposed buildings
 and reparcellations sit inside actual city context instead of on a blank background.
 
-Worktree: `/Users/simun/Code/consensus-builder-realistic-3d` · Branch: `realistic-3d`
+Worktree: `~/Code/consensus-builder-realistic-3d` · Branch: `realistic-3d`
 POC page: `frontend/cesium-poc.html` (standalone, not wired into the app yet).
 
 ---
