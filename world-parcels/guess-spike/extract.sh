@@ -5,7 +5,7 @@ set -euo pipefail
 root="$(cd "$(dirname "$0")" && pwd)"
 tile_x="${1:-2971}"
 tile_y="${2:-33018}"
-env_file="${CADASTRE_ENV_FILE:-/Users/simun/Code/cadastre-data/.env}"
+env_file="${CADASTRE_ENV_FILE:-$HOME/Code/cadastre-data/.env}"
 output="${3:-$root/output/tile_${tile_x}_${tile_y}}"
 mkdir -p "$output"
 set -a
