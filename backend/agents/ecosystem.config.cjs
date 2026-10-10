@@ -123,13 +123,12 @@ module.exports = {
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
-      LAND_ORACLE_RUN_STATS: '/root/code/consensus-builder/backend/logs/land-oracle-stats.json',
-      // The consent sync (oracle/proposal-consent.js) lists AcceptanceRecords with
-      // getProgramAccounts, which the backend's Alchemy devnet free tier refuses ("not available
-      // on the Free tier"); every run since 2026-10-02 ended runStatus=failed. Public devnet
-      // answers that call for the proposal program (checked 2026-10-04), and PM2 env wins over the
-      // .env value because dotenv never overrides an existing variable. Scoped to this one job.
-      SOLANA_RPC_URL: 'https://api.devnet.solana.com'
+      LAND_ORACLE_RUN_STATS: '/root/code/consensus-builder/backend/logs/land-oracle-stats.json'
+      // No RPC URL here. This job lists AcceptanceRecords with getProgramAccounts, which the Alchemy
+      // free tier (SOLANA_RPC_URL) refuses, so it runs wholly on SOLANA_PROGRAM_ACCOUNTS_RPC_URL from
+      // backend/.env (Helius devnet), as does the prospective resolver; every other job stays on
+      // Alchemy. From 2026-10-04 to 2026-10-10 it was pinned to public devnet here instead, which
+      // throttled its transaction sync and failed the run.
     },
     // Own log files, not the shared agents.log: the oracle prints its full JSON result (20+ KB),
     // which buried the persona runner's success sentinel past the monitor's tail window.

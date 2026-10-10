@@ -19,8 +19,18 @@ import {
     classifyExternalMarketChronology
 } from '../../../backend/oracle/external-market-chronology.js';
 import { assertCourtAttestation, decodeCourtAttestation } from '../../../backend/oracle/sas-court-attestation.js';
-import { selectProspectiveCourtEvidence } from '../../../backend/oracle/prospective-evidence.js';
+import {
+    collectProspectiveCandidates,
+    selectProspectiveCourtEvidence
+} from '../../../backend/oracle/prospective-evidence.js';
 import { sendAndConfirmPolling } from '../../../backend/agents/solana-send.js';
+import { JOB_RPC_RETRY_DELAYS, withRpcRetry } from '../../../backend/solana/tx-store.js';
+
+// The backend's .env carries the RPC endpoints. PM2 starts this script from the repo root, where no
+// .env is loaded, so without this it silently fell back to public devnet. A variable already in the
+// environment wins, as with dotenv.
+const BACKEND_ENV = new URL('../../../backend/.env', import.meta.url);
+if (fs.existsSync(BACKEND_ENV)) process.loadEnvFile(BACKEND_ENV);
 
 // Resolve chain-only packages from blockchain/solana's own package boundary. Production operator
 // hosts must run `npm ci` there before invoking this root-level script.
@@ -37,7 +47,9 @@ const {
 const marketClient = localRequire('../../../frontend/js/solana/market-client.js');
 marketClient.configure({ web3: { Connection, Keypair, PublicKey, SystemProgram, Transaction, TransactionInstruction } });
 
-const RPC_URL = process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com';
+// Evidence discovery lists attestations with getProgramAccounts, which the Alchemy free tier behind
+// SOLANA_RPC_URL refuses, so this whole job runs on the endpoint that answers it (Helius devnet).
+const RPC_URL = process.env.SOLANA_PROGRAM_ACCOUNTS_RPC_URL;
 const USDC_MINT = new PublicKey(process.env.EXTERNAL_MARKET_STAKE_MINT || '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU');
 const STATE_FILE = path.resolve(process.env.PROSPECTIVE_MARKET_STATE || '.prospective-external-market.private.json');
 const RUN_STATS_FILE = process.env.PROSPECTIVE_RUN_STATS
@@ -128,9 +140,11 @@ async function send(connection, transaction, signers) {
     return sendAndConfirmPolling(connection, transaction, signers, { commitment: 'confirmed' });
 }
 
+const rpc = call => withRpcRetry(call, JOB_RPC_RETRY_DELAYS);
+
 async function transactionStamp(connection, signature) {
     for (let attempt = 0; attempt < 12; attempt += 1) {
-        const tx = await connection.getTransaction(signature, { commitment: 'confirmed', maxSupportedTransactionVersion: 0 });
+        const tx = await rpc(() => connection.getTransaction(signature, { commitment: 'confirmed', maxSupportedTransactionVersion: 0 }));
         if (tx?.blockTime && Number.isSafeInteger(tx.slot)) return { blockTime: tx.blockTime, slot: tx.slot };
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
@@ -145,7 +159,7 @@ async function firstAddressTime(connection, address) {
     let before;
     let oldest = null;
     for (let page = 0; page < 10; page += 1) {
-        const rows = await connection.getSignaturesForAddress(address, { before, limit: 1000 }, 'confirmed');
+        const rows = await rpc(() => connection.getSignaturesForAddress(address, { before, limit: 1000 }, 'confirmed'));
         if (!rows.length) break;
         oldest = rows.at(-1);
         if (rows.length < 1000) break;
@@ -155,48 +169,48 @@ async function firstAddressTime(connection, address) {
     return { signature: oldest.signature, blockTime: oldest.blockTime, slot: oldest.slot };
 }
 
-async function verifiedCandidate(connection, address, schema) {
-    const evidence = decodeCourtAttestation(
-        await connection.getAccountInfo(address, 'confirmed'),
-        { address: address.toBase58() }
-    );
+function verifiedEvidence(info, address, schema) {
+    const evidence = decodeCourtAttestation(info, { address });
     assertCourtAttestation(evidence, {
         credential: COURT_CREDENTIAL,
         schema,
         attester: COURT_ATTESTER,
         requireSourceTime: true
     });
-    const firstSeen = await firstAddressTime(connection, address);
-    return {
-        address: address.toBase58(), evidence,
-        firstSeenAt: firstSeen.blockTime, firstSeenSignature: firstSeen.signature
-    };
+    return evidence;
 }
 
 async function discoverEvidence(connection, state, schema) {
     const supplied = process.env.PROSPECTIVE_ATTESTATION?.trim();
-    let candidates = [];
+    const recipe = {
+        parcelUid: state.privateRecipe.parcelUid,
+        yesOperation: state.privateRecipe.yesOperation,
+        noOperation: state.privateRecipe.noOperation
+    };
+    let accounts;
     if (supplied) {
-        candidates = [await verifiedCandidate(connection, new PublicKey(supplied), schema)];
+        // An operator-supplied attestation must exist and verify; a failure here is an error, not "waiting".
+        const info = await rpc(() => connection.getAccountInfo(new PublicKey(supplied), 'confirmed'));
+        verifiedEvidence(info, supplied, schema);
+        accounts = [{ address: supplied, account: info }];
     } else {
-        const accounts = await connection.getProgramAccounts(new PublicKey(state.recipe.verification.sasProgram), {
+        // The listing already carries each account's owner and data, so no per-account read follows.
+        accounts = (await rpc(() => connection.getProgramAccounts(new PublicKey(state.recipe.verification.sasProgram), {
             commitment: 'confirmed',
             filters: [
                 { memcmp: { offset: 33, bytes: COURT_CREDENTIAL } },
                 { memcmp: { offset: 65, bytes: schema.toBase58() } }
             ]
-        });
-        candidates = (await Promise.all(accounts.map(async account => {
-            try { return await verifiedCandidate(connection, account.pubkey, schema); } catch { return null; }
-        }))).filter(Boolean);
+        }))).map(({ pubkey, account }) => ({ address: pubkey.toBase58(), account }));
     }
-    return selectProspectiveCourtEvidence({
-        candidates,
-        parcelUid: state.privateRecipe.parcelUid,
-        yesOperation: state.privateRecipe.yesOperation,
-        noOperation: state.privateRecipe.noOperation,
-        closesAt: state.recipe.verification.closesAt
+    const candidates = await collectProspectiveCandidates({
+        ...recipe,
+        accounts,
+        decode: (info, address) => verifiedEvidence(info, address, schema),
+        firstSeen: address => firstAddressTime(connection, new PublicKey(address))
     });
+    console.error(`[${new Date().toISOString()}] evidence scan: ${accounts.length} attestation(s) under the schema, ${candidates.length} for this market's parcel and operations`);
+    return selectProspectiveCourtEvidence({ ...recipe, candidates, closesAt: state.recipe.verification.closesAt });
 }
 
 function publicState(state) {
@@ -371,7 +385,8 @@ async function main() {
     const settle = process.argv.includes('--settle');
     if (open === settle) throw new Error('choose exactly one phase: --open or --settle');
     const live = process.argv.includes('--live');
-    const connection = new Connection(RPC_URL, 'confirmed');
+    const connection = new Connection(required(RPC_URL, 'SOLANA_PROGRAM_ACCOUNTS_RPC_URL'), 'confirmed');
+    console.error(`[${new Date().toISOString()}] RPC ${new URL(RPC_URL).host}`);
     if (open) return openMarket(connection, live);
     return settleMarket(connection, live);
 }

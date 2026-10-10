@@ -26,6 +26,10 @@ export function isRateLimited(error) {
     return /too many requests|429/i.test(String(error?.message ?? error));
 }
 
+// Scheduled jobs can afford to wait out a throttle window (just under two minutes in total) rather
+// than fail the night's run; an API request keeps the short default so a page load never hangs.
+export const JOB_RPC_RETRY_DELAYS = [2000, 5000, 15000, 30000, 60000];
+
 // Back off and retry a rate limit a few times; anything else is thrown straight through.
 export async function withRpcRetry(call, delays = [1500, 3000, 6000]) {
     for (let attempt = 0; ; attempt += 1) {

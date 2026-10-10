@@ -4,7 +4,7 @@
 
 import { describe, expect, it } from 'vitest';
 import { runTransactionSync } from '../solana/transaction-sync-job.js';
-import { DEFAULT_SIGNATURE_SCAN_LIMIT, FETCH_CHUNK_SPACING_MS } from '../solana/tx-store.js';
+import { DEFAULT_SIGNATURE_SCAN_LIMIT, FETCH_CHUNK_SPACING_MS, JOB_RPC_RETRY_DELAYS } from '../solana/tx-store.js';
 
 const TREASURY = 'AMbsiP9F8YY2y8n9uFdqtw7yNZZHvTWFEWSQGHKtmkoQ';
 
@@ -40,6 +40,14 @@ describe('runTransactionSync', () => {
         expect(s.seen.dryRun).toBe(false);
         expect(s.seen.cluster).toBe('devnet');
         expect(Array.isArray(s.seen.watched)).toBe(true);
+    });
+
+    it('waits out a throttle with the long job backoff, not the API route\'s short one', async () => {
+        // 2026-10-10: the nightly oracle gave up after ~10 s of retries and failed the whole run.
+        const s = stubs();
+        await runTransactionSync(s.options);
+        expect(s.seen.retryDelays).toBe(JOB_RPC_RETRY_DELAYS);
+        expect(JOB_RPC_RETRY_DELAYS.reduce((a, b) => a + b, 0)).toBeGreaterThanOrEqual(60000);
     });
 
     it('passes overrides through', async () => {

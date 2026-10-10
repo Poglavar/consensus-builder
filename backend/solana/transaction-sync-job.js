@@ -10,7 +10,8 @@ import {
     syncTransactions,
     countTransactions,
     DEFAULT_SIGNATURE_SCAN_LIMIT,
-    FETCH_CHUNK_SPACING_MS
+    FETCH_CHUNK_SPACING_MS,
+    JOB_RPC_RETRY_DELAYS
 } from './tx-store.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -41,7 +42,7 @@ export async function runTransactionSync({
     spacing = FETCH_CHUNK_SPACING_MS,
     dryRun = false,
     cluster = TRANSACTION_SYNC_CLUSTER,
-    retryDelays,
+    retryDelays = JOB_RPC_RETRY_DELAYS,
     log = timestampedLog,
     sync = syncTransactions,
     count = countTransactions

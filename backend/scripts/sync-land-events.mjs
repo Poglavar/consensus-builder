@@ -42,7 +42,14 @@ const pool = new pg.Pool({
     password: process.env.PGPASSWORD,
     database: process.env.PGDATABASE
 });
-const connection = new Connection(process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
+// The consent sync lists AcceptanceRecords with getProgramAccounts, which the Alchemy free tier behind
+// SOLANA_RPC_URL refuses, so this whole job runs on SOLANA_PROGRAM_ACCOUNTS_RPC_URL (Helius devnet):
+// one endpoint per job. No public fallback: a missing value fails here instead of quietly moving the
+// night's run onto public devnet, which throttled it (2026-10-10).
+const RPC_URL = process.env.SOLANA_PROGRAM_ACCOUNTS_RPC_URL;
+if (!RPC_URL) throw new Error('SOLANA_PROGRAM_ACCOUNTS_RPC_URL is required (backend .env)');
+const connection = new Connection(RPC_URL, 'confirmed');
+console.log(`[${new Date().toISOString()}] RPC ${new URL(RPC_URL).host}`);
 const startedAt = new Date().toISOString();
 let job = { result: null, error: null, exitCode: 1, transactionSync: null };
 
