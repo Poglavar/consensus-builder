@@ -1,5 +1,6 @@
 # Memory
 
+- 2026-10-09: Run the population-ranked parcel research task in an isolated Valhalla checkout with durable per-city checkpoints so it continues when the laptop is closed; future publication remains an explicit release action.
 - 2026-10-09: Public parcel research must continue beyond human-facing UI: inspect viewer configuration, network requests and first-party WFS/OGC/ArcGIS/download endpoints, distinguishing a UI login or fetch failure from unavailable parcel geometry; source discovery and runtime qualification remain separate.
 
 - 2026-10-08: Keep the globe horizontally centered independently of the activity feed; desktop activity overlays the right screen edge, while mobile activity stays below the planet.
@@ -552,3 +553,5 @@ Expanded SAM 3 head fine-tuning used 96 training tiles and fresh 16-tile validat
 - 2026-10-08: BEV parcel geometry is reconstructed from every required maximum-resolution vector tile in a shared integer grid; the reference API supplies only bounds, so it must never be used as the parcel shape, and incomplete tile coverage fails explicitly.
 
 - 2026-10-09: Betting is one yes/no pool per proposal (the deployed proposal_market) grouped into contests of proposals that share parcels, the Polymarket event shape; no pairwise or multi-outcome program. "Bet on cities" is the product copy (bet, pool, chance, pays, settle), hyperstition stays campaign-only. Losers settle through the lifecycle lens expired verdict; expires_at auto-settlement is an accepted option.
+
+- 2026-10-10: Batch parcel qualification/integration when discovery reaches roughly 50 candidate cities; city-specific research/review/identity failures must be recorded and skipped after bounded retries so other cities and rank cohorts keep progressing. Failed cities remain unresolved, never inferred to lack public parcels or counted as successful.
