@@ -72,7 +72,7 @@ back with `llm-cost --repo consensus-builder --by script`.
 
 `estimateBatchCostUsd()` is an **upper bound**, not a prediction: input tokens are estimated at 4
 characters each and every request is billed as if the model wrote its full `max_tokens`. One
-persona with 8 candidates estimates at ~$0.05 on `claude-opus-5`; the real item cost is far lower.
+persona with 8 candidates estimates at ~$0.05 on the shared layer's default Opus model; the real item cost is far lower.
 
 A batch that has not finished inside `awaitMs` is not an error — `runPickBatch` returns
 `{ batchId, done: false, results: [] }` so the caller can checkpoint the id and resume with
@@ -83,7 +83,7 @@ A batch that has not finished inside `awaitMs` is not an error — `runPickBatch
 | variable | used by | meaning |
 |---|---|---|
 | `ANTHROPIC_API_KEY` | `llm-picker.js` (via the SDK client the caller constructs) | the Batches API key |
-| `AGENT_LLM_MODEL` | the orchestrator, passed into `buildPickRequests`/`runPickBatch` | overrides `DEFAULT_MODEL` (`claude-opus-5`); must be priced in `agents/lib/llm-cost/rates.json` or the cost call throws |
+| `AGENT_LLM_MODEL` | the orchestrator, passed into `buildPickRequests`/`runPickBatch` | overrides `DEFAULT_MODEL` (the shared layer's Anthropic default from `agents/lib/llm-cost/defaults.json`); must be priced in `agents/lib/llm-cost/rates.json` or the cost call throws |
 | `PGHOST` / `PGPORT` / `PGUSER` / `PGPASSWORD` / `PGDATABASE` | `parcel-source.js` (via the pool the caller passes) | the shared `geodata` database |
 | `X402_*`, `CDP_API_KEY_ID`, `CDP_API_KEY_SECRET` | `routes/agent-proposals.js` | the hosted-CDP pay-to-post gate; see the design doc §WS1 |
 
@@ -113,5 +113,5 @@ when the day's `agent_cost` total plus the estimate would exceed `AGENT_LLM_DAIL
 Mint happens BEFORE the paid post because a stored record has no on-chain write path after creation.
 Confirmation polls `getSignatureStatuses` (`solana-send.js`): Alchemy's devnet RPC has no
 `signatureSubscribe`, and web3's default confirm then reports a landed transaction as expired.
-Env: `ANTHROPIC_API_KEY`, `AGENT_LLM_MODEL` (claude-opus-5), `AGENT_LLM_DAILY_CAP_USD`, `AGENT_API_BASE`,
+Env: `ANTHROPIC_API_KEY`, `AGENT_LLM_MODEL` (optional override of the layer default), `AGENT_LLM_DAILY_CAP_USD`, `AGENT_API_BASE`,
 `SOLANA_RPC_URL`, `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` (optional; one summary per run).
