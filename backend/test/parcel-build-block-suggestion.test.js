@@ -168,7 +168,7 @@ describe('whole-block fresh-proposal suggestion', () => {
         const context = {
             console,
             window: null,
-            document: {},
+            document: { addEventListener() { } },   // list-ui.js listens for the sheet events at load
             selectedParcelId: 'parcel-1',
             currentParcel: { layer },
             LiveParcelFabric: { get: vi.fn(() => layer.feature) },
@@ -192,7 +192,7 @@ describe('whole-block fresh-proposal suggestion', () => {
         const context = {
             console,
             window: null,
-            document: {},
+            document: { addEventListener() { } },   // list-ui.js listens for the sheet events at load
             maybeSuggestWholeBlockForFreshProposal,
             closeProposalDialog
         };
@@ -220,7 +220,7 @@ describe('whole-block fresh-proposal suggestion', () => {
         const context = {
             console,
             window: null,
-            document: {},
+            document: { addEventListener() { } },   // list-ui.js listens for the sheet events at load
             selectedParcelId: 'parcel-1',
             currentParcel: { layer },
             LiveParcelFabric: { get: vi.fn(() => layer.feature) },
@@ -254,7 +254,7 @@ describe('whole-block fresh-proposal suggestion', () => {
         const context = {
             console,
             window: null,
-            document: {},
+            document: { addEventListener() { } },   // list-ui.js listens for the sheet events at load
             multiParcelSelection: {
                 selectedParcels: new Set(['west', 'east']),
                 getSelectedParcels: vi.fn(() => [{ feature: {} }, { feature: {} }])
@@ -280,7 +280,7 @@ describe('whole-block fresh-proposal suggestion', () => {
         const context = {
             console,
             window: null,
-            document: {},
+            document: { addEventListener() { } },   // list-ui.js listens for the sheet events at load
             getCurrentParcelSelectionContext: vi.fn(() => ({ ids: ['parcel-1'], layers: [{}] })),
             shouldStopFreshProposalForWholeBlock,
             openUrbanRuleForParcels,

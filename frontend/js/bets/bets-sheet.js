@@ -1,7 +1,8 @@
 // The Bets sheet: the city's contests (proposals on the same land) with each proposal's yes/no
 // pool, from GET /markets. A thin DOM layer over js/bets/bets-model.js: it fetches when the sheet
-// opens, renders rows, and hands a bet to the existing market dialog (proposals/details-panel.js)
-// and a pool opening or settlement to the market bridge (solana/market-bridge.js).
+// opens, renders the filter and the rows, and hands a bet to the bet's own dialog
+// (js/bets/bets-dialog.js) and a pool opening, settlement or collection to the market bridge
+// (js/solana/market-bridge.js). The dialog reads its row from here (rowFor, positionsFor).
 (function (root) {
     'use strict';
     if (!root || !root.document) return;
@@ -9,12 +10,14 @@
     const doc = root.document;
     const SHEET_ID = 'bets-sheet';
     const CONTENT_ID = 'bets-sheet-content';
+    const FILTER_ID = 'bets-sheet-filter';
     const SEEN_KEY = 'cb.bets.seen';           // per-viewer: the "New" word goes once the sheet was opened
     const FRESH_MS = 20_000;                    // matches the backend's per-city cache
     // positions: the connected wallet's bets per proposal account (solana/market-bridge.js
-    // readPositions); changed: the proposal account a confirmed transaction just touched, or the one
-    // a shared bet link points at, marked on its row after the next render.
-    const state = { city: null, loadedAt: 0, payload: null, loading: null, positions: {}, changed: null };
+    // readPositions); changed: the proposal account a confirmed transaction just touched, marked on
+    // its row after the next render; scrollTo: the contest a dialog sent the person back to;
+    // filter: all | open | settled | mine (js/bets/bets-model.js filterRows).
+    const state = { city: null, loadedAt: 0, payload: null, loading: null, positions: {}, changed: null, scrollTo: null, filter: 'all' };
 
     function interpolate(text, params) {
         return String(text || '').replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => (params && key in params ? params[key] : match));
@@ -54,11 +57,12 @@
             : `${value}%`;
     }
 
-    function dateText(value) {
+    function dateText(value, withTime) {
         const f = format();
-        if (f && typeof f.formatDate === 'function') return f.formatDate(value);
+        const fn = withTime ? 'formatDateTime' : 'formatDate';
+        if (f && typeof f[fn] === 'function') return f[fn](value);
         const date = new Date(value);
-        return Number.isNaN(date.getTime()) ? '' : date.toLocaleDateString();
+        return Number.isNaN(date.getTime()) ? '' : (withTime ? date.toLocaleString() : date.toLocaleDateString());
     }
 
     // The parcel number people know, not the whole uid (js/bets/bets-model.js parcelLabel).
@@ -86,31 +90,56 @@
         try { doc.dispatchEvent(new root.CustomEvent('proposal-market:changed', { detail: { proposalAccount } })); } catch (_) { }
     }
 
+    const sideWord = side => (side === 'yes' ? t('bets.row.yes', 'Yes') : t('bets.row.no', 'No')).toLowerCase();
+
     // "Your bets: yes 0.05 USDC" for a row, from the wallet's decoded positions; empty without any.
     function mineText(row) {
         const positions = state.positions[row.proposalAccount];
         if (!positions || !root.BetsModel) return '';
-        const sideWord = side => (side === 'yes' ? t('bets.row.yes', 'Yes') : t('bets.row.no', 'No')).toLowerCase();
         const lines = ['yes', 'no']
             .filter(side => positions[side] && root.BetsModel.formatAtomic(positions[side].amount) !== '0')
-            .map(side => t('panel.proposal.market.betLine', '{{side}} {{amount}}', { side: sideWord(side), amount: moneyText(root.BetsModel.formatAtomic(positions[side].amount)) }));
+            .map(side => t('panel.proposal.market.betLine', '{{side}} {{amount}}', { side: sideWord(side), amount: moneyText(root.BetsModel.formatAtomic(positions[side].amount)) })
+                + (positions[side].claimed ? ` (${t('panel.proposal.market.paidOut', 'paid out')})` : ''));
         return lines.length ? t('panel.proposal.market.yourBets', 'Your bets: {{lines}}', { lines: lines.join('; ') }) : '';
     }
 
     function renderMine(li, row) {
         const text = mineText(row);
         let mine = li.querySelector('.bets-row__mine');
-        if (!text) { if (mine) mine.remove(); return; }
-        if (!mine) {
-            mine = el('p', 'bets-row__mine');
-            const actions = li.querySelector('.bets-row__actions');
-            if (actions) actions.before(mine); else li.append(mine);
+        if (!text) { if (mine) mine.remove(); }
+        else {
+            if (!mine) {
+                mine = el('p', 'bets-row__mine');
+                const actions = li.querySelector('.bets-row__actions');
+                if (actions) actions.before(mine); else li.append(mine);
+            }
+            mine.textContent = text;
         }
-        mine.textContent = text;
+        renderCollect(li, row);
+    }
+
+    // A settled pool the wallet can still collect from gets its Collect button on the row, so a
+    // winner does not have to find the proposal's details to be paid.
+    function renderCollect(li, row) {
+        const existing = li.querySelector('.bets-row__collect');
+        if (existing) existing.remove();
+        if (!root.BetsModel || !row.proposalAccount) return;
+        const full = rowFor(row.proposalAccount);
+        const sides = full ? root.BetsModel.claimSides(full.row, state.positions[row.proposalAccount]) : [];
+        if (!sides.length) return;
+        const collect = el('div', 'bets-row__collect');
+        sides.forEach(side => {
+            const button = el('button', 'btn btn-success', t('panel.proposal.market.collect', 'Collect {{side}} winnings', { side: sideWord(side) }));
+            button.type = 'button';
+            button.addEventListener('click', () => marketTransaction(li, full.row, 'claim', button, side === 'yes' ? 1 : 0));
+            collect.append(button);
+        });
+        li.append(collect);
     }
 
     // The wallet's positions for every row with a pool, one RPC round trip, then written into the
-    // rows already on screen (no re-render, so a press in progress is not lost).
+    // rows already on screen (no re-render, so a press in progress is not lost); the "Mine" filter
+    // is the one view that needs the rows drawn again.
     async function loadPositions(payload) {
         const bridge = root.SolanaMarketBridge;
         if (!bridge || typeof bridge.readPositions !== 'function') return;
@@ -130,6 +159,7 @@
         if (state.payload !== payload) return;
         const container = doc.getElementById(CONTENT_ID);
         if (!container) return;
+        if (state.filter === 'mine') { render(container, payload); return; }
         container.querySelectorAll('.bets-row[data-proposal-account]').forEach(li => renderMine(li, { proposalAccount: li.dataset.proposalAccount }));
     }
 
@@ -159,10 +189,16 @@
         }
     }
 
-    // The row a confirmed transaction just changed, or the one a shared link names: brought into
-    // view and marked, so the chance, payout and pool are seen next to the person's own bet.
+    // The row a confirmed transaction just changed, brought into view and marked, so the chance,
+    // payout and pool are seen next to the person's own bet; or the contest a dialog pointed back to.
     function markChanged(container) {
-        if (!state.changed || !container) return;
+        if (!container) return;
+        if (state.scrollTo) {
+            const contest = container.querySelector(`.bets-contest[data-contest-id="${state.scrollTo}"]`);
+            state.scrollTo = null;
+            if (contest && typeof contest.scrollIntoView === 'function') { try { contest.scrollIntoView({ block: 'start' }); } catch (_) { } }
+        }
+        if (!state.changed) return;
         const li = container.querySelector(`.bets-row[data-proposal-account="${state.changed}"]`);
         state.changed = null;
         if (!li) return;
@@ -170,16 +206,42 @@
         if (typeof li.scrollIntoView === 'function') { try { li.scrollIntoView({ block: 'nearest' }); } catch (_) { } }
     }
 
+    // ---- the dialog's view of the payload ------------------------------------------------------
+
+    function contests(payload = state.payload) {
+        if (!payload || !root.BetsModel) return [];
+        return (payload.contests || []).map(contest => root.BetsModel.contest(contest, { decimals: payload.stakeDecimals }));
+    }
+
+    // The contest and row of one proposal account in the loaded city, as the model shapes them.
+    function rowFor(proposalAccount) {
+        if (!proposalAccount) return null;
+        for (const contest of contests()) {
+            const row = contest.rows.find(item => item.proposalAccount === proposalAccount);
+            if (row) return { contest, row };
+        }
+        return null;
+    }
+
+    const positionsFor = proposalAccount => (proposalAccount && state.positions[proposalAccount]) || null;
+    // Settles once the positions read that a load started has finished (or at once when none is running).
+    const whenPositions = () => Promise.resolve(state.positionsLoading || null);
+
     // ---- actions ----------------------------------------------------------------------------
 
     function placeBet(row, side) {
         if (!walletConnected()) { askForWallet(); return; }
-        if (typeof root.openProposalMarketStakeDialog === 'function') root.openProposalMarketStakeDialog(row.proposalAccount, side);
+        if (typeof root.openBetDialog === 'function') root.openBetDialog({ proposalAccount: row.proposalAccount, side });
     }
 
-    // Opening a pool or settling one is a single wallet transaction through the shared bridge; the
-    // row shows the lifecycle words and the result, and the human action lands in the activity feed.
-    async function marketTransaction(li, row, action, button) {
+    function openBet(row) {
+        if (typeof root.openBetDialog === 'function') root.openBetDialog({ proposalAccount: row.proposalAccount });
+    }
+
+    // Opening, settling or collecting from a pool is a single wallet transaction through the shared
+    // bridge; the row shows the lifecycle words and the result, and the human action lands in the
+    // activity feed.
+    async function marketTransaction(li, row, action, button, side = null) {
         if (!walletConnected()) { askForWallet(); return; }
         const bridge = root.SolanaMarketBridge;
         const view = root.ProposalMarketView;
@@ -188,12 +250,16 @@
         try {
             const result = await bridge[action]({
                 proposal: row.proposalAccount,
+                ...(side === null ? {} : { side }),
                 onStatus: item => setNote(li, view && typeof view.statusText === 'function' ? view.statusText(item) : '')
             });
-            setNote(li, action === 'createMarket' ? t('bets.row.opened', 'Pool opened') : t('bets.row.settled', 'Pool settled'));
+            const done = action === 'createMarket' ? t('bets.row.opened', 'Pool opened')
+                : action === 'claim' ? t('panel.proposal.market.collectedMessage', 'Collected {{side}} winnings.', { side: sideWord(side === 1 ? 'yes' : 'no') })
+                    : t('bets.row.settled', 'Pool settled');
+            setNote(li, done);
             if (typeof root.recordHumanProposalSupport === 'function') {
                 const wallet = root.solanaWalletManager.getState().accounts[0];
-                await root.recordHumanProposalSupport({ wallet, action, proposalId: row.proposalAccount, result, message: `${wallet.slice(0, 4)}…${wallet.slice(-4)}: ${action}` });
+                await root.recordHumanProposalSupport({ wallet, action, proposalId: row.proposalAccount, result, message: `${wallet.slice(0, 4)}…${wallet.slice(-4)}: ${done}` });
             }
             announceChange(row.proposalAccount);
         } catch (error) {
@@ -207,7 +273,7 @@
     async function openProposal(row) {
         try {
             let proposal = typeof root.getProposalByIdOrHash === 'function' ? root.getProposalByIdOrHash(row.proposalId) : null;
-            if (!proposal && typeof root.importServerProposal === 'function') proposal = await root.importServerProposal(row.id);
+            if (!proposal && row.id && typeof root.importServerProposal === 'function') proposal = await root.importServerProposal(row.id);
             if (!proposal) throw new Error(`proposal ${row.proposalId} is not available`);
             if (typeof root.openProposalFromList === 'function') root.openProposalFromList(proposal.proposalId || row.proposalId, { proposal, closeSheets: true });
         } catch (error) {
@@ -249,9 +315,12 @@
         return button;
     }
 
+    // A one-sided pool is not a chance worth printing: "100%" on one 0.25 USDC bet misleads.
     function chanceLabel(row) {
         if (row.state === 'resolved-yes') return t('bets.row.resolvedYes', 'Settled yes');
         if (row.state === 'resolved-no') return t('bets.row.resolvedNo', 'Settled no');
+        if (row.oneSided === 'yes') return t('bets.row.onlyYes', 'Only yes bets so far');
+        if (row.oneSided === 'no') return t('bets.row.onlyNo', 'Only no bets so far');
         if (row.chanceYes === null || row.chanceYes === undefined) return t('bets.row.noBets', 'No bets yet');
         return t('bets.row.chance', '{{percent}} chance', { percent: percentText(row.chanceYes) });
     }
@@ -261,20 +330,26 @@
         li.dataset.proposalId = row.proposalId;
         if (row.proposalAccount) li.dataset.proposalAccount = row.proposalAccount;
 
+        // The title is the way into the bet's own dialog; an unminted proposal has no bet, so its
+        // title opens the proposal itself.
         const head = el('div', 'bets-row__head');
         const title = el('button', 'btn btn-quiet bets-row__title', row.title || t('bets.row.untitled', 'Untitled proposal'));
         title.type = 'button';
-        title.addEventListener('click', () => openProposal(row));
+        title.addEventListener('click', () => (row.proposalAccount ? openBet(row) : openProposal(row)));
         head.append(title, el('span', 'bets-row__chance', chanceLabel(row)));
         li.append(head);
 
-        if (row.state === 'open' && row.chanceYes !== null && row.chanceYes !== undefined) {
+        if (row.state === 'open' && row.chanceYes !== null && row.chanceYes !== undefined && !row.oneSided) {
             const bar = el('div', 'bets-row__bar');
             const fill = el('span');
             fill.style.width = `${Math.max(0, Math.min(100, row.chanceYes))}%`;
             bar.append(fill);
             li.append(bar);
         }
+
+        // Who proposed it and when: the line that tells twins of one title apart.
+        const who = [root.BetsModel.authorLabel(row.author), row.createdAt ? dateText(row.createdAt, true) : null].filter(Boolean).join(' · ');
+        if (who) li.append(el('p', 'bets-row__who', who));
 
         const meta = el('div', 'bets-row__meta');
         if (row.pool !== null && row.pool !== undefined) meta.append(el('span', null, t('bets.row.pool', 'Pool {{amount}}', { amount: moneyText(row.pool) })));
@@ -322,7 +397,13 @@
             : t('bets.contest.land', 'Parcel {{parcel}}', { parcel });
     }
 
+    // A contest under the current filter: the rows with a pool, and the rest folded under a count.
+    // Null when the filter leaves nothing of it.
     function renderContest(contest) {
+        const model = root.BetsModel;
+        const rows = model.filterRows(contest.rows, state.filter, state.positions);
+        const { shown, hidden } = model.splitRows(rows);
+        if (!shown.length && !hidden.length) return null;
         const article = el('article', 'bets-contest');
         article.dataset.contestId = contest.id;
         const head = el('header', 'bets-contest__head');
@@ -338,21 +419,70 @@
         ].join(' · ');
         head.append(land);
         article.append(head);
-        const list = el('ul', 'bets-rows');
-        contest.rows.forEach(row => list.append(renderRow(row)));
-        article.append(list);
+        if (shown.length) {
+            const list = el('ul', 'bets-rows');
+            shown.forEach(row => list.append(renderRow(row)));
+            article.append(list);
+        }
+        if (hidden.length) {
+            const more = el('details', 'bets-more');
+            more.append(el('summary', null, t('bets.contest.withoutPool', 'Without a pool: {{count}}', { count: hidden.length })));
+            const list = el('ul', 'bets-rows');
+            hidden.forEach(row => list.append(renderRow(row)));
+            more.append(list);
+            article.append(more);
+        }
         return article;
+    }
+
+    const FILTER_LABELS = {
+        all: ['bets.filter.all', 'All'],
+        open: ['bets.filter.open', 'Open'],
+        settled: ['panel.proposal.market.historySettled', 'Settled'],
+        mine: ['bets.filter.mine', 'Mine']
+    };
+
+    // The filter row sits above the contests, drawn once; its pressed button follows the state.
+    function renderFilter(container) {
+        let bar = doc.getElementById(FILTER_ID);
+        if (!bar) {
+            bar = el('div', 'bets-filter');
+            bar.id = FILTER_ID;
+            bar.setAttribute('role', 'group');
+            bar.setAttribute('aria-label', t('modal.buildingLayers.show', 'Show'));
+            (root.BetsModel ? root.BetsModel.FILTERS : Object.keys(FILTER_LABELS)).forEach(filter => {
+                const [key, fallback] = FILTER_LABELS[filter];
+                const button = el('button', 'btn btn-quiet bets-filter__btn', t(key, fallback));
+                button.type = 'button';
+                button.dataset.filter = filter;
+                button.addEventListener('click', () => {
+                    state.filter = filter;
+                    if (state.payload) render(container, state.payload);
+                });
+                bar.append(button);
+            });
+            container.before(bar);
+        }
+        bar.querySelectorAll('.bets-filter__btn').forEach(button => button.setAttribute('aria-pressed', button.dataset.filter === state.filter ? 'true' : 'false'));
     }
 
     function render(container, payload) {
         if (!container || !root.BetsModel) return;
-        const contests = (payload.contests || []).map(contest => root.BetsModel.contest(contest, { decimals: payload.stakeDecimals }));
+        const ordered = root.BetsModel.orderContests(contests(payload));
+        renderFilter(container);
         container.replaceChildren();
-        if (!contests.length) {
+        if (!ordered.length) {
             renderStatus(container, t('bets.empty', 'No pools in this city yet. Mint a proposal to open the first one.'));
             return;
         }
-        contests.forEach(contest => container.append(renderContest(contest)));
+        const articles = ordered.map(renderContest).filter(Boolean);
+        if (!articles.length) {
+            renderStatus(container, state.filter === 'mine' && !walletConnected()
+                ? t('panel.proposal.market.connectPosition', 'Connect a Solana wallet to see your bets.')
+                : t('bets.filter.empty', 'No bets match this filter.'));
+            return;
+        }
+        articles.forEach(article => container.append(article));
         markChanged(container);
     }
 
@@ -376,7 +506,7 @@
                 state.city = city;
                 state.loadedAt = Date.now();
                 render(container, payload);
-                loadPositions(payload);
+                state.positionsLoading = loadPositions(payload).finally(() => { state.positionsLoading = null; });
                 return payload;
             } catch (error) {
                 console.error(`[${new Date().toISOString()}] [bets] load failed`, error);
@@ -387,6 +517,13 @@
             }
         })();
         return state.loading;
+    }
+
+    // The payload for the current city, from cache when it is fresh; what the bet dialog reads from.
+    function ensureLoaded() {
+        const city = cityCode();
+        if (state.payload && state.city === city && Date.now() - state.loadedAt < FRESH_MS) return Promise.resolve(state.payload);
+        return load();
     }
 
     function init() {
@@ -427,22 +564,26 @@
     else init();
 
     // Open the sheet; with a proposal account, on that row (marked and brought into view once the
-    // contests render, the same way a row a transaction just changed is).
+    // contests render, the same way a row a transaction just changed is); with a contest id, at
+    // that contest (the dialog's way back to the rivals).
     root.openBetsSheet = function openBetsSheet(options = {}) {
         const proposalAccount = options && options.proposalAccount ? String(options.proposalAccount) : null;
         if (proposalAccount) state.changed = proposalAccount;
+        if (options && options.contestId) state.scrollTo = String(options.contestId);
         if (root.MapShell && typeof root.MapShell.openSheet === 'function') root.MapShell.openSheet(SHEET_ID);
+        if (state.payload && (proposalAccount || state.scrollTo)) markChanged(doc.getElementById(CONTENT_ID));
     };
 
-    // A shared bet link (/bets/<account>?city=… or ?bets=<account>): open the sheet on that row once
-    // the app has booted. The link is left in the address bar, like ?focusProposal=, so a reload
-    // lands on the same row.
+    // A shared bet link (/bets/<account>?city=… or ?bets=<account>): the bet's own dialog opens
+    // once the app has booted. The link is left in the address bar, like ?focusProposal=, so a
+    // reload lands on the same bet.
     async function openFromUrl() {
         const link = root.BetsLink && typeof root.BetsLink.parse === 'function' ? root.BetsLink.parse(root.location) : null;
         if (!link) return;
         try {
             if (typeof root.whenAppBooted === 'function') await root.whenAppBooted();
-            root.openBetsSheet({ proposalAccount: link.proposalAccount });
+            if (typeof root.openBetDialog === 'function') root.openBetDialog({ proposalAccount: link.proposalAccount });
+            else root.openBetsSheet({ proposalAccount: link.proposalAccount });
         } catch (error) {
             console.warn(`[${new Date().toISOString()}] [bets] the bet link could not open`, error);
         }
@@ -450,5 +591,5 @@
     if (doc.readyState === 'complete') openFromUrl();
     else root.addEventListener('load', openFromUrl, { once: true });
 
-    root.BetsSheet = { load, render, linkFor, copyLink, SHEET_ID };
+    root.BetsSheet = { load, ensureLoaded, render, rowFor, positionsFor, whenPositions, landText, openProposal, linkFor, copyLink, SHEET_ID };
 })(typeof window !== 'undefined' ? window : null);

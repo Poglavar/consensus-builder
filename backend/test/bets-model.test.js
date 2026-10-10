@@ -75,3 +75,82 @@ describe('BetsModel.contest', () => {
         expect(BetsModel.parcelLabel(null)).toBe('');
     });
 });
+
+describe('BetsModel.toWin', () => {
+    it('is the stake plus its share of the other side, floored, with the stake in the pool', () => {
+        // 1 USDC NO into 0.25 YES / 0 NO: takes the whole 1.25.
+        expect(BetsModel.toWin('no', '250000', '0', 1_000_000n)).toBe(1_250_000n);
+        // 0.5 USDC YES into 1 YES / 2 NO: 0.5 × 3.5 / 1.5 = 1.1666… → 1.166666.
+        expect(BetsModel.toWin('yes', '1000000', '2000000', '500000')).toBe(1_166_666n);
+        expect(BetsModel.toWin('yes', '1000000', '2000000', 0n)).toBe(0n);
+    });
+});
+
+describe('BetsModel.oneSided', () => {
+    it('names the only side with bets, and nothing for an empty or two-sided pool', () => {
+        expect(BetsModel.oneSided('250000', '0')).toBe('yes');
+        expect(BetsModel.oneSided('0', '50000')).toBe('no');
+        expect(BetsModel.oneSided('0', '0')).toBeNull();
+        expect(BetsModel.oneSided('1', '1')).toBeNull();
+        expect(BetsModel.row({ proposalAccount: 'A', bettable: true, market: { yesPool: '250000', noPool: '0', poolAtomic: '250000' } }).oneSided).toBe('yes');
+    });
+});
+
+describe('BetsModel.claimSides', () => {
+    const settled = outcome => BetsModel.row({ proposalAccount: 'A', market: { yesPool: '250000', noPool: '50000', poolAtomic: '300000', resolved: true, outcome } });
+    it('is the unclaimed winning side only', () => {
+        const positions = { yes: { amount: 100000n, claimed: false }, no: { amount: 20000n, claimed: false } };
+        expect(BetsModel.claimSides(settled('yes'), positions)).toEqual(['yes']);
+        expect(BetsModel.claimSides(settled('no'), positions)).toEqual(['no']);
+        expect(BetsModel.claimSides(settled('no'), { no: { amount: 20000n, claimed: true } })).toEqual([]);
+    });
+    it('is every unclaimed bet when nobody backed the winner (the program refunds)', () => {
+        const row = BetsModel.row({ proposalAccount: 'A', market: { yesPool: '250000', noPool: '0', poolAtomic: '250000', resolved: true, outcome: 'no' } });
+        expect(BetsModel.claimSides(row, { yes: { amount: 250000n, claimed: false } })).toEqual(['yes']);
+    });
+    it('is nothing while the pool is open', () => {
+        const open = BetsModel.row({ proposalAccount: 'A', bettable: true, market: { yesPool: '250000', noPool: '0', poolAtomic: '250000' } });
+        expect(BetsModel.claimSides(open, { yes: { amount: 250000n, claimed: false } })).toEqual([]);
+    });
+});
+
+describe('BetsModel.splitRows and filterRows', () => {
+    const rows = [
+        { proposalAccount: 'A', state: 'open' }, { proposalAccount: null, state: 'not-minted' }, { proposalAccount: 'B', state: 'resolved-no' },
+        { proposalAccount: 'C', state: 'closed' }, { proposalAccount: 'D', state: 'needs-market' }, { proposalAccount: 'E', state: 'settling' }
+    ];
+    it('folds unminted and never-pooled rows away', () => {
+        const { shown, hidden } = BetsModel.splitRows(rows);
+        expect(shown.map(r => r.state)).toEqual(['open', 'resolved-no', 'needs-market', 'settling']);
+        expect(hidden.map(r => r.state)).toEqual(['not-minted', 'closed']);
+    });
+    it('filters by open, settled and the wallet\'s own bets', () => {
+        expect(BetsModel.filterRows(rows, 'open').map(r => r.proposalAccount)).toEqual(['A', 'D', 'E']);
+        expect(BetsModel.filterRows(rows, 'settled').map(r => r.proposalAccount)).toEqual(['B']);
+        const positions = { B: { yes: null, no: { amount: 50000n, claimed: false } }, A: { yes: { amount: 0n }, no: null } };
+        expect(BetsModel.filterRows(rows, 'mine', positions).map(r => r.proposalAccount)).toEqual(['B']);
+        expect(BetsModel.filterRows(rows, 'all')).toHaveLength(6);
+    });
+});
+
+describe('BetsModel.orderContests', () => {
+    it('puts money first, then open pools, then the newest, keeping ties in order', () => {
+        const contests = [
+            { id: 'a', poolAtomic: 0n, openCount: 1, latestCreatedAt: '2026-10-01T00:00:00Z' },
+            { id: 'b', poolAtomic: 500000n, openCount: 0, latestCreatedAt: '2026-09-01T00:00:00Z' },
+            { id: 'c', poolAtomic: 0n, openCount: 1, latestCreatedAt: '2026-10-05T00:00:00Z' },
+            { id: 'd', poolAtomic: 0n, openCount: 0, latestCreatedAt: '2026-10-09T00:00:00Z' },
+            { id: 'e', poolAtomic: 500000n, openCount: 2, latestCreatedAt: null }
+        ];
+        expect(BetsModel.orderContests(contests).map(c => c.id)).toEqual(['e', 'b', 'c', 'a', 'd']);
+        expect(contests.map(c => c.id)).toEqual(['a', 'b', 'c', 'd', 'e']);
+    });
+});
+
+describe('BetsModel.authorLabel', () => {
+    it('shortens a wallet address and leaves a name alone', () => {
+        expect(BetsModel.authorLabel('G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg')).toBe('G4R6…HvEg');
+        expect(BetsModel.authorLabel('densifier-01')).toBe('densifier-01');
+        expect(BetsModel.authorLabel(null)).toBe('');
+    });
+});

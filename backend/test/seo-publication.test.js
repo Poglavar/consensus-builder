@@ -50,22 +50,30 @@ describe('public SEO entry points', () => {
             const target = path === '/' ? 'index.html' : path.slice(1);
             expect(existsSync(new URL(`../../frontend/${target}`, import.meta.url)), `${path} exists`).toBe(true);
         });
-        // The existing frontend deploy synchronizes all files under frontend into the static docroot.
+        // The frontend deploy publishes the built static tree (every page under frontend, bundled)
+        // into the docroot, so a page the sitemap lists is a page the deploy ships.
         expect(readFileSync(new URL('../../frontend/deploy-frontend.sh', import.meta.url), 'utf8'))
-            .toContain('"$REMOTE_REPO/frontend/" "$DOCROOT/"');
+            .toContain('"$STAGING_DIR/" "$DOCROOT/"');
     });
 
     it('keeps the public intro translations aligned across all supported languages', () => {
         ['en', 'hr', 'sr', 'es'].forEach(language => {
             const dictionary = JSON.parse(read(`i18n/${language}.json`));
-            expect(dictionary.modal.siteIntro.lead).toBeTruthy();
+            // The intro is a tour now (before/after, then one page per feature): every page has its
+            // copy in every language, and none of it names a data vendor.
+            expect(dictionary.modal.siteIntro.open).toBeTruthy();
+            expect(dictionary.modal.siteIntro.cta).toBeTruthy();
+            const pages = Object.entries(dictionary.modal.siteIntro.tour).filter(([, copy]) => copy && typeof copy === 'object');
+            expect(pages.length).toBeGreaterThan(0);
+            pages.forEach(([page, copy]) => {
+                expect(copy.title, `${language} ${page} title`).toBeTruthy();
+                expect(copy.body, `${language} ${page} body`).toBeTruthy();
+                expect(copy.body).not.toMatch(/ArcGIS|Esri/i);
+            });
             expect(dictionary.sidebar.info.aboutParagraph).toContain('/urban-planning.html');
             expect(dictionary.sidebar.header.title).toBe('Consensus Builder');
             expect(dictionary.sidebar.info.aboutParagraph).toMatch(/^<strong>Consensus Builder<\/strong>/);
-            expect(dictionary.modal.siteIntro.eyebrow).toMatch(/^Consensus Builder/);
-            expect(dictionary.modal.siteIntro.lead).toMatch(/^Consensus Builder/);
             expect(dictionary.modal.welcome.kicker).toMatch(/^Consensus Builder/);
-            expect(dictionary.modal.siteIntro.lead).not.toMatch(/ArcGIS|Esri/i);
             expect(dictionary.sidebar.info.aboutParagraph).not.toMatch(/ArcGIS|Esri/i);
         });
     });

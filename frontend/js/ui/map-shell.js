@@ -16,13 +16,18 @@
     const VIEWPORT_MARGIN = 10;
 
     // Where a popover goes relative to the button that opened it: below a button in the top half,
-    // above one in the bottom half; right-aligned to a button in the right half, left-aligned
-    // otherwise. Returns CSS offsets in px (null = auto) and the height left for it.
+    // above one in the bottom half; centred on a button that straddles the viewport's midline
+    // (the middle button of the bottom dock) when its width is known, otherwise right-aligned to
+    // a button in the right half and left-aligned to one in the left half. Returns CSS offsets in
+    // px (null = auto) and the height left for it.
     function placePopover(anchor, viewport, options = {}) {
         const gap = typeof options.gap === 'number' ? options.gap : POPOVER_GAP;
         const margin = typeof options.margin === 'number' ? options.margin : VIEWPORT_MARGIN;
         const opensDown = (anchor.top + anchor.height / 2) < viewport.height / 2;
-        const alignRight = (anchor.left + anchor.width / 2) > viewport.width / 2;
+        const midline = viewport.width / 2;
+        const straddles = anchor.left < midline && (anchor.left + anchor.width) > midline;
+        const width = typeof options.width === 'number' && options.width > 0 ? options.width : null;
+        const alignRight = (anchor.left + anchor.width / 2) > midline;
         const place = { top: null, bottom: null, left: null, right: null, maxHeight: 0 };
         if (opensDown) {
             place.top = anchor.bottom + gap;
@@ -31,7 +36,10 @@
             place.bottom = viewport.height - anchor.top + gap;
             place.maxHeight = anchor.top - gap - margin;
         }
-        if (alignRight) place.right = Math.max(margin, viewport.width - anchor.right);
+        if (straddles && width) {
+            const centred = anchor.left + anchor.width / 2 - width / 2;
+            place.left = Math.round(Math.max(margin, Math.min(centred, viewport.width - width - margin)));
+        } else if (alignRight) place.right = Math.max(margin, viewport.width - anchor.right);
         else place.left = Math.max(margin, anchor.left);
         place.maxHeight = Math.max(120, Math.round(place.maxHeight));
         return place;
@@ -84,7 +92,8 @@
         }
         const anchorEl = trigger.closest('[data-sheet-anchor]') || trigger;
         const rect = anchorEl.getBoundingClientRect();
-        const place = placePopover(rect, { width: win.innerWidth, height: win.innerHeight });
+        // The sheet is already shown (display: flex) when this runs, so its width is its CSS width.
+        const place = placePopover(rect, { width: win.innerWidth, height: win.innerHeight }, { width: sheet.offsetWidth || 0 });
         const px = value => (value === null ? 'auto' : `${Math.round(value)}px`);
         sheet.style.setProperty('--sheet-top', px(place.top));
         sheet.style.setProperty('--sheet-bottom', px(place.bottom));

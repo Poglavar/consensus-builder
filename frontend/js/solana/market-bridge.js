@@ -207,5 +207,19 @@
         })], options);
     }
 
-    root.SolanaMarketBridge = { DEVNET_USDC_MINT, readSummary, readPositions, createMarket, stake, resolve, claim };
+    // The connected wallet's stake-token balance in atomic units (the stake form's "Max"); null
+    // without a wallet, 0n when the wallet has no token account yet.
+    async function readStakeBalance(options = {}) {
+        const client = await dependencies();
+        const wallet = root.solanaWalletManager?.getProvider?.()?.publicKey || null;
+        if (!wallet) return null;
+        const { cluster } = walletContextOrGuest();
+        const connection = root.SolanaChainDataLoader.getConnection(cluster);
+        const mint = options.stakeMint || new root.solanaWeb3.PublicKey(DEVNET_USDC_MINT);
+        const tokenAccount = client.getAssociatedTokenAddress(wallet, mint);
+        const balance = await connection.getTokenAccountBalance(tokenAccount, 'confirmed').catch(() => null);
+        return balance?.value?.amount ? BigInt(balance.value.amount) : 0n;
+    }
+
+    root.SolanaMarketBridge = { DEVNET_USDC_MINT, readSummary, readPositions, readStakeBalance, createMarket, stake, resolve, claim };
 })(typeof window !== 'undefined' ? window : null);

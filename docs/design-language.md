@@ -75,9 +75,17 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
   an outside click). After a wallet transaction the dialog becomes the receipt: what went in, what
   changed, read back from the chain, and a Done button. It never closes itself.
 - Everything worth passing on has a link to exactly itself, and the link opens on that thing: a bet
-  is `/bets/<proposal account>?city=…` (`js/bets/bets-link.js`), which opens the Bets sheet on that
-  row and unfurls with the proposal's title, chance and pool. "Copy link" sits on the row and on the
-  receipt; the copy feedback is the shared "Copied".
+  is `/bets/<proposal account>?city=…` (`js/bets/bets-link.js`), which opens the bet's own dialog
+  and unfurls with the proposal's title, chance and pool. "Copy link" sits on the row, in the dialog
+  and on the receipt; the copy feedback is the shared "Copied".
+- A bet is a thing of its own, the way a market is on Polymarket or Kalshi: the Bets list is for
+  finding one, the bet dialog (`js/bets/bets-dialog.js`) is where it is read, placed and collected.
+  The dialog carries the chance, pool, payouts, deadline, rule, the wallet's bets, the links and the
+  way back to its rivals; the stake form shows the live "to win" with the stake counted in the pool.
+  A pool with bets on one side only reads "Only yes bets so far", never "100% chance".
+- The list hides what nothing can be done with (proposals without a pool fold under a count), orders
+  contests by money, and filters All · Open · Settled · Mine. On desktop it is wider than the
+  control sheets and centred on its dock button.
 
 ## Phone layout
 

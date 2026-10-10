@@ -251,3 +251,275 @@
         left: calc(50% + var(--cb-space-1));
     }
 }
+
+/* ---- The list as a catalogue ----
+   A row's title opens the bet's own dialog; the chance sits beside it. On desktop the Bets sheet is
+   wider than the control sheets, since each row carries a title, a chance, a meta line and two
+   buttons; the shell centres it on its dock button (js/ui/map-shell.js placePopover). */
+@media (min-width: 768px) {
+    #bets-sheet {
+        width: 480px;
+    }
+}
+
+/* The filter row above the contests: All · Open · Settled · Mine. */
+.bets-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--cb-space-1);
+}
+
+.map-sheet .bets-filter .bets-filter__btn {
+    width: auto;
+    margin: 0;
+    padding: var(--cb-space-1) var(--cb-space-3);
+    min-height: 0;
+    border: 1px solid transparent;
+    border-radius: var(--cb-radius-pill);
+    background: transparent;
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-medium);
+    color: var(--cb-text-muted);
+}
+
+.map-sheet .bets-filter .bets-filter__btn:hover {
+    background: var(--cb-surface-2);
+    color: var(--cb-text-strong);
+}
+
+.map-sheet .bets-filter .bets-filter__btn[aria-pressed="true"] {
+    border-color: var(--cb-line);
+    background: var(--cb-surface-3);
+    color: var(--cb-text-strong);
+}
+
+/* The row's second line: who proposed it and when, which tells twins of one title apart. */
+.bets-row__who {
+    margin: var(--cb-space-1) 0 0;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+/* Rows nothing can be done with fold away under a count. */
+.bets-more {
+    margin-top: var(--cb-space-2);
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+.bets-more > summary {
+    cursor: pointer;
+    padding: var(--cb-space-1) 0;
+}
+
+.bets-more > .bets-rows {
+    margin-top: var(--cb-space-1);
+}
+
+/* The row of a settled pool the wallet can still collect from. */
+.bets-row__collect {
+    display: flex;
+    gap: var(--cb-space-2);
+    margin-top: var(--cb-space-2);
+}
+
+/* ---- The bet's own dialog (js/bets/bets-dialog.js) ----
+   A cb-dialog (primitives.css): header, a scrolling body and a footer that keeps the actions in
+   reach; on phones the primitive makes it a bottom sheet with the footer above the thumb. */
+.bets-dialog {
+    --cb-dialog-width: 520px;
+}
+
+.bets-dialog__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-3);
+}
+
+.bets-dialog__eyebrow {
+    margin: 0;
+    font-size: var(--cb-text-sm);
+    letter-spacing: var(--cb-tracking-caps);
+    text-transform: uppercase;
+    color: var(--cb-text-muted);
+}
+
+.cb-dialog .bets-dialog__contest {
+    align-self: flex-start;
+    margin: 0;
+    padding: 0;
+    text-decoration: underline;
+}
+
+.bets-dialog__thumb {
+    display: block;
+    width: 100%;
+    max-height: 180px;
+    object-fit: cover;
+    border-radius: var(--cb-radius-md);
+    border: 1px solid var(--cb-line);
+}
+
+.bets-dialog__chance-word {
+    display: block;
+    font-size: var(--cb-text-2xl);
+    font-weight: var(--cb-weight-bold);
+    color: var(--cb-text-strong);
+}
+
+.bets-dialog__chance.is-resolved-yes .bets-dialog__chance-word {
+    color: var(--cb-success);
+}
+
+.bets-dialog__chance.is-resolved-no .bets-dialog__chance-word {
+    color: var(--cb-danger);
+}
+
+.bets-dialog__chance .bets-row__bar {
+    margin-top: var(--cb-space-2);
+}
+
+.bets-dialog__facts {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: var(--cb-space-1) var(--cb-space-3);
+    margin: 0;
+    font-size: var(--cb-text-sm);
+}
+
+.bets-dialog__facts dt {
+    color: var(--cb-text-muted);
+}
+
+.bets-dialog__facts dd {
+    margin: 0;
+    color: var(--cb-text);
+}
+
+.bets-dialog__mine {
+    margin: 0;
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-medium);
+    color: var(--cb-success-soft-ink);
+}
+
+.bets-dialog__collect {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--cb-space-2);
+}
+
+.bets-dialog__rule {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-1);
+    padding: var(--cb-space-3);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface-2);
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+.bets-dialog__rule strong {
+    color: var(--cb-text-strong);
+}
+
+.bets-dialog__note {
+    margin: 0;
+    min-height: 0;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+.bets-dialog__note:empty {
+    display: none;
+}
+
+.bets-dialog__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--cb-space-3);
+    margin: 0;
+    font-size: var(--cb-text-sm);
+}
+
+.bets-dialog__sides {
+    flex: 1 0 100%;
+    display: flex;
+    gap: var(--cb-space-2);
+}
+
+.bets-dialog__sides .bets-dialog__bet {
+    flex: 1 1 0;
+    min-width: 0;
+    flex-direction: column;
+    gap: 0;
+    margin: 0;
+    line-height: var(--cb-leading);
+}
+
+/* The stake form. */
+.bets-dialog__lead {
+    margin: 0;
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text-strong);
+}
+
+.bets-dialog__copy {
+    margin: 0;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+.bets-dialog__amount {
+    display: flex;
+    align-items: center;
+    gap: var(--cb-space-2);
+}
+
+.bets-dialog__amount-label {
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+.bets-dialog__amount input {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: var(--cb-text-lg);
+}
+
+.bets-dialog__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--cb-space-2);
+}
+
+.cb-dialog .bets-dialog__chip {
+    margin: 0;
+    padding: var(--cb-space-1) var(--cb-space-3);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-pill);
+    font-size: var(--cb-text-sm);
+}
+
+.bets-dialog__towin {
+    margin: 0;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+.bets-dialog__towin strong {
+    display: block;
+    font-size: var(--cb-text-base);
+    color: var(--cb-text-strong);
+}
+
+.bets-dialog__towin:empty {
+    display: none;
+}
+
+@media (max-width: 767.98px) {
+    .bets-dialog {
+        max-height: 100dvh;
+    }
+}

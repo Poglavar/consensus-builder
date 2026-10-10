@@ -1281,6 +1281,7 @@
                 "placedLine": "{{amount}} on {{side}} is in the pool.",
                 "poolNow": "The pool after your bet",
                 "poolReading": "Reading the pool…",
+                "explorerTx": "View on the block explorer",
                 "done": "Done"
             },
             "acceptTransfer": {
@@ -3904,7 +3905,7 @@
                 "run": "Run",
                 "batch": "Batch"
             },
-            "filtersAria": "Filter activity",
+            "filtersAria": "Filter the activity log",
             "searchAria": "Search activity",
             "searchPlaceholder": "Actor, proposal or transaction",
             "sourceAria": "Activity source",
@@ -4067,7 +4068,7 @@
             "xrayTooltip": "Show modelled floors, walls, doors and windows.",
             "xraySection": "X-ray floor plans",
             "floorCutawayTooltip": "Choose which floors remain visible in X-ray view",
-            "xrayCount": "Floors: {{floors}} · Buildings: {{buildings}}",
+            "xrayCount": "Floors: {{floors}} · buildings: {{buildings}}",
             "xrayEmpty": "No floor plans available for the visible buildings.",
             "xrayEstimated": "Heights and opening types are inferred.",
             "xrayAlignment": "Plan alignment is approximate.",
@@ -4594,7 +4595,7 @@
             "site": "Site",
             "road": "Road",
             "bets": "Betting",
-            "measurement": "Measurement"
+            "measurement": "Measuring"
         }
     },
     "groundMenu": {
@@ -4945,6 +4946,28 @@
         "empty": "No pools in this city yet. Mint a proposal to open the first one.",
         "retry": "Try again",
         "copyLink": "Copy link",
+        "filter": {
+            "all": "All",
+            "open": "Open",
+            "mine": "Mine",
+            "empty": "No bets match this filter."
+        },
+        "dialog": {
+            "open": "Open bet",
+            "onThisLand": "{{count}} proposals on this land",
+            "poolLabel": "Pool",
+            "paysLabel": "Pays",
+            "yesPays": "Yes {{multiple}}×",
+            "noPays": "No {{multiple}}×",
+            "settlesLabel": "Settles",
+            "settlesBy": "By {{date}} at the latest",
+            "noDeadline": "No deadline set; when the proposal is executed or dropped",
+            "authorLabel": "Proposed by",
+            "amount": "Amount",
+            "max": "Max",
+            "toWin": "To win about {{amount}} if {{side}} wins",
+            "toWinNote": "The final payout follows the pool at settlement."
+        },
         "error": {
             "load": "Bets could not be loaded.",
             "open": "The proposal could not be opened.",
@@ -4955,7 +4978,8 @@
             "titleSingle": "Does this proposal get built?",
             "land": "Parcel {{parcel}}",
             "landMore": "Parcel {{parcel}} and {{count}} more",
-            "site": "Drawn site"
+            "site": "Drawn site",
+            "withoutPool": "Without a pool: {{count}}"
         },
         "row": {
             "chance": "{{percent}} chance",
@@ -4977,7 +5001,9 @@
             "resolvedNo": "Settled no",
             "closes": "Closes {{date}}",
             "untitled": "Untitled proposal",
-            "paysTitle": "1 USDC on this side pays {{multiple}} USDC if it wins."
+            "paysTitle": "1 USDC on this side pays {{multiple}} USDC if it wins.",
+            "onlyYes": "Only yes bets so far",
+            "onlyNo": "Only no bets so far"
         },
         "how": {
             "title": "How bets work",

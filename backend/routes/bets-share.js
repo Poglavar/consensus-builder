@@ -44,10 +44,13 @@ export function describeRow(row) {
     if (!row) return `${TAGLINE}: bet yes or no on whether this proposal gets built.`;
     const pool = row.pool === null || row.pool === undefined ? null : `Pool ${row.pool} USDC`;
     switch (row.state) {
-        case 'open':
-            return row.chanceYes === null
-                ? `No bets yet · ${pool} · Bet yes or no on whether it gets built.`
-                : `${row.chanceYes}% chance it gets built · ${pool} · Yes pays ${row.paysYes.toFixed(2)}×, no pays ${row.paysNo.toFixed(2)}×.`;
+        case 'open': {
+            const pays = `Yes pays ${row.paysYes.toFixed(2)}×, no pays ${row.paysNo.toFixed(2)}×.`;
+            if (row.chanceYes === null) return `No bets yet · ${pool} · Bet yes or no on whether it gets built.`;
+            // One side alone is not a chance worth printing: "100%" on a single 0.25 USDC bet misleads.
+            if (row.oneSided) return `Only ${row.oneSided} bets so far · ${pool} · ${pays}`;
+            return `${row.chanceYes}% chance it gets built · ${pool} · ${pays}`;
+        }
         case 'resolved-yes': return `Settled yes: it gets built · ${pool}.`;
         case 'resolved-no': return `Settled no: it was dropped · ${pool}.`;
         case 'needs-market': return 'No pool yet · Open the pool and bet yes or no on whether it gets built.';

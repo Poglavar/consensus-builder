@@ -1303,6 +1303,7 @@
                 "placedLine": "{{amount}} na {{side}} je u fondu.",
                 "poolNow": "Fond nakon tvoje oklade",
                 "poolReading": "Čitanje fonda…",
+                "explorerTx": "Pogledaj u block exploreru",
                 "done": "Gotovo"
             },
             "acceptTransfer": {
@@ -4984,6 +4985,28 @@
         "empty": "U ovom gradu još nema fondova. Iskuj prijedlog da otvoriš prvi.",
         "retry": "Pokušaj ponovno",
         "copyLink": "Kopiraj link",
+        "filter": {
+            "all": "Sve",
+            "open": "Otvorene",
+            "mine": "Moje",
+            "empty": "Nijedna oklada ne odgovara ovom filtru."
+        },
+        "dialog": {
+            "open": "Otvori okladu",
+            "onThisLand": "{{count}} prijedloga na ovom zemljištu",
+            "poolLabel": "Fond",
+            "paysLabel": "Isplaćuje",
+            "yesPays": "Da {{multiple}}×",
+            "noPays": "Ne {{multiple}}×",
+            "settlesLabel": "Namirenje",
+            "settlesBy": "Najkasnije {{date}}",
+            "noDeadline": "Rok nije postavljen; kad se prijedlog izvrši ili odbaci",
+            "authorLabel": "Predlaže",
+            "amount": "Iznos",
+            "max": "Maks.",
+            "toWin": "Dobitak oko {{amount}} ako pobijedi {{side}}",
+            "toWinNote": "Konačna isplata ovisi o fondu pri namirenju."
+        },
         "error": {
             "load": "Oklade se nisu mogle učitati.",
             "open": "Prijedlog se nije mogao otvoriti.",
@@ -4994,7 +5017,8 @@
             "titleSingle": "Hoće li ovaj prijedlog biti izgrađen?",
             "land": "Čestica {{parcel}}",
             "landMore": "Čestica {{parcel}} i još {{count}}",
-            "site": "Nacrtano zemljište"
+            "site": "Nacrtano zemljište",
+            "withoutPool": "Bez fonda: {{count}}"
         },
         "row": {
             "chance": "{{percent}} izgleda",
@@ -5016,7 +5040,9 @@
             "resolvedNo": "Namireno: ne",
             "closes": "Zatvara se {{date}}",
             "untitled": "Prijedlog bez naslova",
-            "paysTitle": "1 USDC na ovoj strani isplaćuje {{multiple}} USDC ako pobijedi."
+            "paysTitle": "1 USDC na ovoj strani isplaćuje {{multiple}} USDC ako pobijedi.",
+            "onlyYes": "Zasad samo oklade na da",
+            "onlyNo": "Zasad samo oklade na ne"
         },
         "how": {
             "title": "Kako oklade rade",

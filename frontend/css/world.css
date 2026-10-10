@@ -6,8 +6,8 @@
     --world-full: var(--cb-world-coverage-full);
     --world-source: #ffc24b;
     --world-partial: var(--world-source);
-    --world-none: #d8918c;
-    --world-unknown: #a4acb8;
+    --world-none: var(--cb-world-coverage-none);
+    --world-unknown: var(--cb-world-coverage-unknown);
     --world-ink: #eef4ff;
     --world-ink-dim: #a9bad8;
     --world-glass: rgba(10, 20, 44, 0.78);
@@ -54,7 +54,7 @@
 
 .world-view__top,
 .world-popup {
-    z-index: 4;
+    z-index: var(--cb-z-world-top);
 }
 
 body.world-view-open {
@@ -199,7 +199,7 @@ body.world-view-open {
     -webkit-backdrop-filter: blur(14px);
     max-height: min(360px, 55vh);
     overflow-y: auto;
-    z-index: 3;
+    z-index: var(--cb-z-world-overview);
 }
 
 .world-search__result {
@@ -943,7 +943,7 @@ body.explore-city #mode-walk-toggle.map-mode-walk-btn {
 /* Recent activity floats beside the planet, with no card background. */
 .world-activity {
     position: absolute;
-    z-index: 3;
+    z-index: var(--cb-z-world-overview);
     top: 34%;
     right: calc(24px + var(--app-safe-area-right, 0px));
     width: 280px;
@@ -951,7 +951,7 @@ body.explore-city #mode-walk-toggle.map-mode-walk-btn {
     touch-action: pan-y;
     isolation: isolate;
 }
-.world-activity::before { content: ""; position: absolute; z-index: -1; inset: -18px -24px; pointer-events: none; background: linear-gradient(90deg, transparent, rgba(3, 7, 18, .42) 24%, rgba(3, 7, 18, .5)); mask-image: linear-gradient(transparent, black 12%, black 88%, transparent); }
+.world-activity::before { content: ""; position: absolute; z-index: var(--cb-z-world-scrim); inset: -18px -24px; pointer-events: none; background: linear-gradient(90deg, transparent, rgba(3, 7, 18, .42) 24%, rgba(3, 7, 18, .5)); mask-image: linear-gradient(transparent, black 12%, black 88%, transparent); }
 .world-activity__header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
 .world-activity__header h2 { flex: 1; margin: 0; font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--world-ink-dim); }
 .world-activity__viewport { height: 240px; overflow: auto; scrollbar-width: thin; }

@@ -1907,6 +1907,10 @@ function renderProposalMarketCard(card, proposalAccount, lifecycle, summary) {
             ? CbFormat.formatPercent(value, { ofHundred: true, maxFractionDigits: 1 }) : `${value}%`) }));
     const connectButton = `<button type="button" class="btn btn-outline-primary" onclick="handleWalletButtonClick()">${safeAgentText(t('panel.proposal.support.connect', 'Connect Solana wallet'))}</button>`;
     const muted = text => `<span class="proposal-market-muted">${safeAgentText(text)}</span>`;
+    // The bet's own dialog (js/bets/bets-dialog.js): the whole bet on one surface, with its link.
+    const openBet = model.exists
+        ? `<button type="button" class="btn btn-quiet proposal-market-open" onclick="openBetDialog({ proposalAccount: ${inlineJsArg(proposalAccount)}, title: ${inlineJsArg(currentProposalDetailsContext?.title || '')}, proposalId: ${inlineJsArg(currentProposalDetailsContext?.proposalId || '')} })">${safeAgentText(t('bets.dialog.open', 'Open bet'))}</button>`
+        : '';
     if (rule) rule.textContent = t('panel.proposal.market.rule', lifecycleModel.rule);
     if (next) next.textContent = nextText;
     if (marketAccountLink && summary?.marketAddress) {
@@ -1941,12 +1945,13 @@ function renderProposalMarketCard(card, proposalAccount, lifecycle, summary) {
         : t('panel.proposal.market.connectPosition', 'Connect a Solana wallet to see your bets.');
     if (!controls) return;
     if (!summary?.wallet) {
-        controls.innerHTML = (lifecycleModel.canStake || lifecycleModel.canResolve || model.canClaim) ? connectButton : muted(nextText);
+        controls.innerHTML = ((lifecycleModel.canStake || lifecycleModel.canResolve || model.canClaim) ? connectButton : muted(nextText)) + openBet;
         return;
     }
     if (model.resolved) {
         controls.innerHTML = model.claimSides.map(side => `<button type="button" class="btn btn-success" onclick="settleProposalMarket(${inlineJsArg(proposalAccount)}, 'claim', ${side === 'yes' ? 1 : 0})">${safeAgentText(t('panel.proposal.market.collect', 'Collect {{side}} winnings', { side: marketSideLabel(side === 'yes' ? 1 : 0) }))}</button>`).join('')
             || muted(t('panel.proposal.market.nothingToCollect', 'Nothing to collect.'));
+        controls.innerHTML += openBet;
         return;
     }
     if (lifecycleModel.canResolve) {
@@ -1958,165 +1963,20 @@ function renderProposalMarketCard(card, proposalAccount, lifecycle, summary) {
     } else {
         controls.innerHTML = muted(nextText);
     }
+    controls.innerHTML += openBet;
 }
 
+// The stake dialog is the bet's own dialog (js/bets/bets-dialog.js) opened straight into its stake
+// form; the card's own proposal may not be in the city's /markets list yet, so its title goes along.
 function openProposalMarketStakeDialog(proposalAccount, side) {
-    const existing = document.getElementById('proposalMarketOverlay');
-    if (existing) existing.remove();
-    const overlay = document.createElement('div');
-    const t = getProposalI18nHelper();
-    const label = marketSideLabel(side);
-    const title = t('panel.proposal.market.dialogTitle', 'Bet {{side}}', { side: label });
-    const opener = document.activeElement;
-    overlay.id = 'proposalMarketOverlay';
-    overlay.className = 'proposal-boost-overlay';
-    // Closing puts focus back where the dialog came from (a Bets row, the market card); the sheet or
-    // panel behind stayed open the whole time, so the person lands on the pool, not on the bare map.
-    const close = () => {
-        if (typeof overlay.__unregisterEscape === 'function') overlay.__unregisterEscape();
-        overlay.remove();
-        const target = opener && opener.isConnected ? opener : document.querySelector('.map-sheet:not([hidden])');
-        if (target && typeof target.focus === 'function') { try { target.focus({ preventScroll: true }); } catch (_) { } }
-    };
-    overlay.__close = close;
-    overlay.addEventListener('click', event => { if (event.target === overlay) close(); });
-    overlay.innerHTML = `
-        <div class="proposal-boost-modal" role="dialog" aria-modal="true" aria-labelledby="proposal-market-title">
-            <div class="proposal-boost-header"><h3 id="proposal-market-title">${safeAgentText(title)}</h3><button type="button" class="proposal-boost-close" aria-label="${safeAgentText(t('common.close', 'Close'))}">×</button></div>
-            <div class="proposal-boost-body">
-                <p class="proposal-boost-copy">${safeAgentText(t('panel.proposal.market.dialogCopy', 'Bet devnet USDC on whether this proposal gets built (yes) or is dropped (no). Bets stay in the pool until it settles.'))}</p>
-                <div class="proposal-offer-row proposal-boost-row" style="display:flex; gap:8px; align-items:center;"><input type="text" data-market-amount placeholder="1.00" inputmode="decimal" autocomplete="off"><span class="proposal-market-currency">USDC</span></div>
-                <div class="proposal-boost-actions"><button type="button" class="btn proposal-boost-send" data-market-submit>${safeAgentText(title)}</button></div>
-                <div class="proposal-market-status" data-market-dialog-status aria-live="polite"></div>
-            </div>
-        </div>`;
-    const submit = () => submitProposalMarketStake(proposalAccount, marketSideValue(side), overlay);
-    overlay.querySelector('.proposal-boost-close')?.addEventListener('click', close);
-    overlay.querySelector('[data-market-submit]')?.addEventListener('click', submit);
-    overlay.querySelector('[data-market-amount]')?.addEventListener('keydown', event => {
-        if (event.key !== 'Enter') return;
-        event.preventDefault();
-        submit();
+    if (typeof window.openBetDialog !== 'function') return;
+    const proposal = currentProposalDetailsContext || null;
+    window.openBetDialog({
+        proposalAccount, side: marketSideValue(side),
+        title: proposal && proposal.title ? proposal.title : '',
+        proposalId: proposal && proposal.proposalId ? proposal.proposalId : null,
+        lifecycleStatus: proposal ? getLifecycleStatus(proposal) : ''
     });
-    document.body.appendChild(overlay);
-    overlay.__unregisterEscape = window.ModalEscape?.register(overlay, close);
-    overlay.querySelector('[data-market-amount]')?.focus();
-}
-
-// After a confirmed bet the dialog becomes the receipt: what went in, the pool as it now stands (read
-// back from the chain, not assumed), the wallet's bets on this proposal, and a Done button. It stays
-// until the person closes it; the Bets sheet or market card behind it has already refreshed.
-function renderProposalMarketPlaced(overlay, proposalAccount, side, amount) {
-    if (!overlay || !overlay.isConnected) return;
-    const t = getProposalI18nHelper();
-    const view = window.ProposalMarketView;
-    const node = (tag, className, text) => {
-        const element = document.createElement(tag);
-        if (className) element.className = className;
-        if (text !== undefined) element.textContent = text;
-        return element;
-    };
-    const money = value => (typeof CbFormat !== 'undefined' && CbFormat.formatMoney
-        ? CbFormat.formatMoney(Number(view.formatAtomic(value)), 'USDC') : `${view.formatAtomic(value)} USDC`);
-    const percent = value => (typeof CbFormat !== 'undefined' && CbFormat.formatPercent
-        ? CbFormat.formatPercent(value, { ofHundred: true, maxFractionDigits: 1 }) : `${value}%`);
-    const heading = overlay.querySelector('#proposal-market-title');
-    if (heading) heading.textContent = t('panel.proposal.market.placedTitle', 'Bet placed');
-    const copy = overlay.querySelector('.proposal-boost-copy');
-    if (copy) copy.textContent = t('panel.proposal.market.placedLine', '{{amount}} on {{side}} is in the pool.', { amount: money(amount), side: marketSideLabel(side) });
-    overlay.querySelector('.proposal-boost-row')?.remove();
-    const pool = node('div', 'proposal-market-placed', t('panel.proposal.market.poolReading', 'Reading the pool…'));
-    pool.setAttribute('aria-live', 'polite');
-    const actions = overlay.querySelector('.proposal-boost-actions');
-    if (actions) {
-        actions.before(pool);
-        actions.replaceChildren();
-        // The receipt is the moment people pass a bet on: its link (js/bets/bets-link.js) sits beside Done.
-        const sheet = window.BetsSheet;
-        if (sheet && typeof sheet.linkFor === 'function' && sheet.linkFor(proposalAccount)) {
-            const share = node('button', 'btn', t('bets.copyLink', 'Copy link'));
-            share.type = 'button';
-            share.setAttribute('data-market-link', '');
-            share.addEventListener('click', () => sheet.copyLink(proposalAccount));
-            actions.append(share);
-        }
-        const done = node('button', 'btn btn-primary', t('panel.proposal.market.done', 'Done'));
-        done.type = 'button';
-        done.setAttribute('data-market-done', '');
-        done.addEventListener('click', () => (typeof overlay.__close === 'function' ? overlay.__close() : overlay.remove()));
-        actions.append(done);
-        done.focus();
-    } else {
-        overlay.querySelector('.proposal-boost-body')?.append(pool);
-    }
-    Promise.resolve(window.SolanaMarketBridge.readSummary(proposalAccount)).then(summary => {
-        if (!pool.isConnected) return;
-        const model = view.model(summary?.market, { yes: summary?.yes, no: summary?.no });
-        if (!model.exists) { pool.remove(); return; }
-        const pays = s => (window.BetsModel && typeof window.BetsModel.payoutMultiple === 'function'
-            ? window.BetsModel.payoutMultiple(s, model.yesPool, model.noPool) : null);
-        const chance = value => (value === null ? t('bets.row.noBets', 'No bets yet') : t('bets.row.chance', '{{percent}} chance', { percent: percent(value) }));
-        pool.replaceChildren(node('p', 'proposal-market-placed__title', t('panel.proposal.market.poolNow', 'The pool after your bet')));
-        const list = node('dl', 'proposal-market-placed__pool');
-        [['yes', t('panel.proposal.market.yesSide', 'Yes · gets built'), model.yesPool, model.yesOdds], ['no', t('panel.proposal.market.noSide', 'No · dropped'), model.noPool, model.noOdds]]
-            .forEach(([key, sideLabel, sidePool, odds]) => {
-                list.append(node('dt', null, sideLabel));
-                const value = node('dd');
-                value.append(node('strong', null, chance(odds)));
-                const multiple = pays(key);
-                value.append(node('span', null, [money(sidePool), multiple === null ? null : t('bets.row.pays', 'Pays {{multiple}}×', { multiple: multiple.toFixed(2) })].filter(Boolean).join(' · ')));
-                list.append(value);
-            });
-        pool.append(list);
-        const lines = [];
-        if (model.yesPosition) lines.push(t('panel.proposal.market.betLine', '{{side}} {{amount}}', { side: marketSideLabel(1), amount: money(model.yesPosition.amount) }));
-        if (model.noPosition) lines.push(t('panel.proposal.market.betLine', '{{side}} {{amount}}', { side: marketSideLabel(0), amount: money(model.noPosition.amount) }));
-        if (lines.length) pool.append(node('p', 'proposal-market-placed__mine', t('panel.proposal.market.yourBets', 'Your bets: {{lines}}', { lines: lines.join('; ') })));
-    }).catch(error => {
-        console.warn(`[${new Date().toISOString()}] [market] pool unreadable after the bet on ${proposalAccount}:`, error);
-        pool.remove();
-    });
-}
-
-async function submitProposalMarketStake(proposalAccount, side, overlay) {
-    const view = window.ProposalMarketView;
-    const rawAmount = overlay?.querySelector('[data-market-amount]')?.value || '';
-    const button = overlay?.querySelector('[data-market-submit]');
-    const status = (text, url = '') => {
-        const node = overlay?.querySelector('[data-market-dialog-status]');
-        if (!node) return;
-        node.textContent = text;
-        if (url) {
-            const link = document.createElement('a'); link.href = url; link.target = '_blank'; link.rel = 'noopener'; link.textContent = ' View on Solana Explorer ↗'; node.appendChild(link);
-        }
-    };
-    let amount;
-    try { amount = view.parseUsdc(rawAmount); } catch (error) { status(error.message); return; }
-    const wallet = window.solanaWalletManager?.getState?.()?.accounts?.[0] || 'wallet';
-    const key = `stake:${proposalAccount}:${wallet}:${side}`;
-    if (proposalMarketInFlight.has(key)) return;
-    proposalMarketInFlight.add(key);
-    if (button) button.disabled = true;
-    try {
-        const result = await window.SolanaMarketBridge.stake({ proposal: proposalAccount, side, amount, onStatus: item => status(view.statusText(item), item.explorerUrl) });
-        status(view.confirmedText(), result.explorerUrl);
-        // The receipt first, then everything behind it: the Bets sheet re-reads its pools, the market
-        // card re-reads this one, the status line keeps the confirmation, the activity feed gets the bet.
-        renderProposalMarketPlaced(overlay, proposalAccount, side, amount);
-        notifyProposalMarketChanged(proposalAccount);
-        hydrateProposalMarketCard(proposalAccount, currentProposalDetailsContext ? getLifecycleStatus(currentProposalDetailsContext) : '');
-        if (typeof updateStatus === 'function') {
-            const t = getProposalI18nHelper();
-            const placedAmount = typeof CbFormat !== 'undefined' && CbFormat.formatMoney ? CbFormat.formatMoney(Number(view.formatAtomic(amount)), 'USDC') : `${view.formatAtomic(amount)} USDC`;
-            updateStatus(t('panel.proposal.market.placedLine', '{{amount}} on {{side}} is in the pool.', { amount: placedAmount, side: marketSideLabel(side) }));
-        }
-        await recordHumanProposalSupport({ wallet, action: 'stake', proposalId: proposalAccount, amount: rawAmount, result, message: `${proposalSupportActor(wallet).name} bet ${rawAmount} USDC on ${marketSideLabel(side)}.` });
-    } catch (error) {
-        status(view.errorText(error), error?.explorerUrl);
-    } finally {
-        proposalMarketInFlight.delete(key);
-        if (button) button.disabled = false;
-    }
 }
 
 async function settleProposalMarket(proposalAccount, action, side = null) {

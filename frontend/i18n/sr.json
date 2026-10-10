@@ -1303,6 +1303,7 @@
                 "placedLine": "{{amount}} na {{side}} je u fondu.",
                 "poolNow": "Fond nakon tvoje opklade",
                 "poolReading": "Čitanje fonda…",
+                "explorerTx": "Pogledaj u block exploreru",
                 "done": "Gotovo"
             },
             "acceptTransfer": {
@@ -4984,6 +4985,28 @@
         "empty": "U ovom gradu još nema fondova. Iskuj predlog da otvoriš prvi.",
         "retry": "Pokušaj ponovo",
         "copyLink": "Kopiraj link",
+        "filter": {
+            "all": "Sve",
+            "open": "Otvorene",
+            "mine": "Moje",
+            "empty": "Nijedna opklada ne odgovara ovom filteru."
+        },
+        "dialog": {
+            "open": "Otvori opkladu",
+            "onThisLand": "{{count}} predloga na ovom zemljištu",
+            "poolLabel": "Fond",
+            "paysLabel": "Isplaćuje",
+            "yesPays": "Da {{multiple}}×",
+            "noPays": "Ne {{multiple}}×",
+            "settlesLabel": "Namirenje",
+            "settlesBy": "Najkasnije {{date}}",
+            "noDeadline": "Rok nije postavljen; kad se predlog izvrši ili odbaci",
+            "authorLabel": "Predlaže",
+            "amount": "Iznos",
+            "max": "Maks.",
+            "toWin": "Dobitak oko {{amount}} ako pobedi {{side}}",
+            "toWinNote": "Konačna isplata zavisi od fonda pri namirenju."
+        },
         "error": {
             "load": "Opklade nisu mogle da se učitaju.",
             "open": "Predlog nije mogao da se otvori.",
@@ -4994,7 +5017,8 @@
             "titleSingle": "Da li će ovaj predlog biti izgrađen?",
             "land": "Parcela {{parcel}}",
             "landMore": "Parcela {{parcel}} i još {{count}}",
-            "site": "Nacrtano zemljište"
+            "site": "Nacrtano zemljište",
+            "withoutPool": "Bez fonda: {{count}}"
         },
         "row": {
             "chance": "{{percent}} izgleda",
@@ -5016,7 +5040,9 @@
             "resolvedNo": "Namireno: ne",
             "closes": "Zatvara se {{date}}",
             "untitled": "Predlog bez naslova",
-            "paysTitle": "1 USDC na ovoj strani isplaćuje {{multiple}} USDC ako pobedi."
+            "paysTitle": "1 USDC na ovoj strani isplaćuje {{multiple}} USDC ako pobedi.",
+            "onlyYes": "Zasad samo opklade na da",
+            "onlyNo": "Zasad samo opklade na ne"
         },
         "how": {
             "title": "Kako opklade rade",

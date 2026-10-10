@@ -1319,6 +1319,7 @@
                 "placedLine": "{{amount}} a {{side}} está en el fondo.",
                 "poolNow": "El fondo tras tu apuesta",
                 "poolReading": "Leyendo el fondo…",
+                "explorerTx": "Ver en el explorador de bloques",
                 "done": "Listo"
             },
             "acceptTransfer": {
@@ -4996,6 +4997,28 @@
         "empty": "Todavía no hay fondos en esta ciudad. Acuña una propuesta para abrir el primero.",
         "retry": "Intentar de nuevo",
         "copyLink": "Copiar enlace",
+        "filter": {
+            "all": "Todas",
+            "open": "Abiertas",
+            "mine": "Mías",
+            "empty": "Ninguna apuesta coincide con este filtro."
+        },
+        "dialog": {
+            "open": "Abrir apuesta",
+            "onThisLand": "{{count}} propuestas en este terreno",
+            "poolLabel": "Fondo",
+            "paysLabel": "Paga",
+            "yesPays": "Sí {{multiple}}×",
+            "noPays": "No {{multiple}}×",
+            "settlesLabel": "Liquidación",
+            "settlesBy": "Como muy tarde el {{date}}",
+            "noDeadline": "Sin fecha límite; cuando la propuesta se ejecute o se descarte",
+            "authorLabel": "Propuesta por",
+            "amount": "Importe",
+            "max": "Máx.",
+            "toWin": "Ganancia de unos {{amount}} si gana {{side}}",
+            "toWinNote": "El pago final depende del fondo al liquidar."
+        },
         "error": {
             "load": "No se pudieron cargar las apuestas.",
             "open": "No se pudo abrir la propuesta.",
@@ -5006,7 +5029,8 @@
             "titleSingle": "¿Se construirá esta propuesta?",
             "land": "Parcela {{parcel}}",
             "landMore": "Parcela {{parcel}} y {{count}} más",
-            "site": "Sitio dibujado"
+            "site": "Sitio dibujado",
+            "withoutPool": "Sin fondo: {{count}}"
         },
         "row": {
             "chance": "{{percent}} de probabilidad",
@@ -5028,7 +5052,9 @@
             "resolvedNo": "Liquidado: no",
             "closes": "Cierra el {{date}}",
             "untitled": "Propuesta sin título",
-            "paysTitle": "1 USDC en este lado paga {{multiple}} USDC si gana."
+            "paysTitle": "1 USDC en este lado paga {{multiple}} USDC si gana.",
+            "onlyYes": "Por ahora solo apuestas a sí",
+            "onlyNo": "Por ahora solo apuestas a no"
         },
         "how": {
             "title": "Cómo funcionan las apuestas",

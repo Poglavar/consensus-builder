@@ -93,6 +93,7 @@ const SAFE_GROUPS = [
             "js/ui/map-shell.js",
             "js/bets/bets-link.js",
             "js/bets/bets-model.js",
+            "js/bets/bets-dialog.js",
             "js/bets/bets-sheet.js",
             "js/mobile-dock-sheet.js",
             "js/ui/simulation-indicator.js",

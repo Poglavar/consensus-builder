@@ -69,6 +69,9 @@ describe('GET /bets/:proposalAccount', () => {
         expect(meta(settled.text, 'og:description')).toBe('Settled no: it was dropped · Pool 0.3 USDC.');
         const empty = await request(appFor({ market: { yesPool: 0n, noPool: 0n, resolved: false, outcome: 0 } }).app).get(`/bets/${ACCOUNT}`);
         expect(meta(empty.text, 'og:description')).toBe('No bets yet · Pool 0 USDC · Bet yes or no on whether it gets built.');
+        // A pool with one side only never reads "100% chance".
+        const oneSided = await request(appFor({ market: { yesPool: 250000n, noPool: 0n, resolved: false, outcome: 0 } }).app).get(`/bets/${ACCOUNT}`);
+        expect(meta(oneSided.text, 'og:description')).toBe('Only yes bets so far · Pool 0.25 USDC · Yes pays 1.00×, no pays 1.25×.');
     });
 
     it('answers 404 with the generic card for an account nobody minted, still pointing at the city', async () => {

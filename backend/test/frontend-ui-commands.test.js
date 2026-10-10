@@ -393,6 +393,20 @@ describe('the floating shell', () => {
         expect(bottomLeft).toMatchObject({ top: null, bottom: 72, left: 10, right: null, maxHeight: 718 });
     });
 
+    // The middle button of the bottom dock sits on the viewport's midline; its sheet used to hang
+    // off the button's left edge, 70 px off centre. With the sheet's width known it is centred on
+    // the button, and clamped to the viewport margin when it would not fit.
+    it('centres a popover on a button that straddles the midline, when it knows the width', () => {
+        const viewport = { width: 1440, height: 900 };
+        const dock = { top: 844, bottom: 896, left: 620, right: 820, width: 200, height: 52 };
+        expect(MapShell.placePopover(dock, viewport, { width: 340 })).toMatchObject({ left: 550, right: null, bottom: 64 });
+        expect(MapShell.placePopover(dock, viewport, { width: 480 })).toMatchObject({ left: 480, right: null });
+        const narrow = { top: 844, bottom: 896, left: 200, right: 300, width: 100, height: 52 };
+        expect(MapShell.placePopover(narrow, { width: 500, height: 900 }, { width: 480 })).toMatchObject({ left: 10 });
+        // Without a width the old left-alignment stands.
+        expect(MapShell.placePopover(dock, viewport)).toMatchObject({ left: 620, right: null });
+    });
+
     it('never gives a popover less than a usable height', () => {
         const cramped = MapShell.placePopover({ top: 20, bottom: 60, left: 10, right: 50, width: 40, height: 40 }, { width: 400, height: 100 });
         expect(cramped.maxHeight).toBe(120);
