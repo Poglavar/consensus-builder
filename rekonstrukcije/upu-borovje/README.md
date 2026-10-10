@@ -114,6 +114,66 @@ every plot and road is connected, no plot is smaller than 150 m², the three
 readjustment pools are connected, and road plus plot union has no gap, overlap
 or area outside the UPU extent.
 
+## Cadastral boundary (version 2)
+
+The first reconstruction took the plan's outer boundary from the traced sheet, and the trace sits 2.4–3.3 m
+outside the drawn boundary line all the way round. Every neighbouring parcel lost a jagged strip to the plan
+(48 cadastral parcels were cut, most of them private gardens south of the collector), and the collector's
+centre line ran along the southern edge of its band, so its 19 m cross-section took the gardens as well.
+The drawn boundary follows parcel lines, so `snap-to-cadastre.mjs` rebuilds the extent from whole parcels:
+
+- a parcel is in when the plan holds its body, out when the plan only holds a strip of it;
+- only parcels the plan genuinely divides (the city parcel 1791/69, the old road 4302/4, 1908/1, …) keep a
+  cut, along the traced line moved 3 m back onto the drawn one and straightened;
+- plots, street land and parks lose the strips; the existing housing row M1-12 keeps its own parcel line;
+- the collector is re-centred in its band (plan sheet 2a draws it with its axis down the middle), and the
+  crossings that end on it move with it;
+- where the band is narrower than the 19 m profile (it pinches to 14.7 m where the boundary steps in around
+  the tip of 1914/1), the collector narrows: that 51 m stretch is its own segment, 13.5 m without the verges;
+- the compute refuses to write if a street's lanes run onto a parcel its land does not reach. A street takes
+  exactly its land polygon (the parcels published with it are derived from that polygon); its lanes are drawn
+  from the centre line and profile, so lanes beyond its land are drawn over ground it does not take. Where
+  the collector meets the city streets at its ends its lanes run on onto them; that is reported as a join
+  (1823/8, Letovanićka ulica) and left as it is.
+
+```
+PGHOST=127.0.0.1 node snap-to-cadastre.mjs --compute                  # local PostGIS → data/cadastral-snap.json
+node snap-to-cadastre.mjs --backend <api> --origin <app> --apply      # publish the corrected members as <id>-v2
+node build-urban-blocks.mjs --revision v2 --backend <api> --origin <app> --apply
+node name-plans.mjs --backend <api> --origin <app> --apply            # names upu-borovje-v2, borovje-urbani-blokovi-v2
+```
+
+Named plans never change (`plans.md`), so nothing existing is edited: the seven corrected members (three
+parcel layouts, both street records, parks Z1-1 and Z1-5) and the four urban blocks on changed plots are new
+`-v2` records, and the corrected plans are `upu-borovje-v2` and `borovje-urbani-blokovi-v2`, which supersede
+the originals. The geometry is computed once and committed; the cadastre it was computed on is identical on
+production for every parcel the plan touches (checked 2026-10-10). Result: the extent goes from 73,635 to
+69,983 m², the street declares 15 parcels instead of 49, and its cross-section leaves the extent by 40 m² instead
+of 1,160 m², all of it over land the street takes, apart from the 23 m² where its lanes meet Letovanićka ulica (1823/8).
+
+## Streets take exactly their lanes (version 3)
+
+A street is one thing: its land is the ground its lanes cut, as when it is drawn in the app. The
+reconstruction had instead prepared each street's land from the plan's road band and drawn the lanes inside
+it, narrower in places and wider in others. `fit-streets.mjs` makes both street records take exactly the
+footprint the app cuts for their lanes (`corridorSurfaceFootprintForDefinition`, captured from the running
+app in Zagreb, since the builder measures in the city's projection). The band the lanes do not use goes to
+the plot beside it, so the plots meet the street; where its only neighbour is the plan's edge (between the
+collector and the gardens south of it) it is not taken and stays with its city parcel.
+
+```
+node fit-streets.mjs --capture --app <app url> --backend <api>       # → data/street-footprints.json
+PGHOST=127.0.0.1 node fit-streets.mjs --compute --backend <api>      # → data/streets-fit.json
+node fit-streets.mjs --backend <api> --origin <app> --apply          # publish the changed members as <id>-v3
+node build-urban-blocks.mjs --revision v3 --backend <api> --origin <app> --apply
+node name-plans.mjs --backend <api> --origin <app> --apply           # names upu-borovje-v3, borovje-urbani-blokovi-v3
+```
+
+Result: street land 16,501 → 13,376 m²; eleven plots change (most by a sliver where lanes crossed them; M1-3,
+M1-5, M1-6, M1-9 and R2 grow by 110–860 m² to meet the street); 1,525 m² stays with its cadastral parcel. The
+collector now also cuts the 23 m² of Letovanićka ulica (1823/8) its lanes run onto. Changed members are new
+`-v3` records (both streets, two parcel layouts, R2, Z1-2, Z1-3, and the urban blocks on changed plots).
+
 ## Named proposal links
 
 The frontend accepts numeric row IDs, or one registered named-plan slug. Individual proposal slugs

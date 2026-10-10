@@ -3,7 +3,10 @@
 // blokovi" alternative. Both share the official parcel layouts, streets and parks; they differ in
 // their eleven buildings. Members are resolved by stable proposal_id, so the same script names the
 // same plans (with the same plan hash) on any backend that holds the records. Named plans never
-// change: a name that exists is reported and left alone.
+// change: a name that exists is reported and left alone. The -v2 plans supersede the first two: their
+// outer boundary follows the cadastre and the collector runs down the middle of its band
+// (snap-to-cadastre.mjs); members that correction changed are its `-v2` records. The -v3 plans supersede
+// those: every street takes exactly the ground its lanes cut (fit-streets.mjs).
 //
 //   node name-plans.mjs --backend <api> --origin <app origin>           # dry run: resolve and print
 //   node name-plans.mjs --backend <api> --origin <app origin> --apply
@@ -38,6 +41,24 @@ export const PLANS = [
         members: [...shared.head, ...KAZETE.map(k => `borovje-urbani-blokovi-${k}`), ...shared.tail]
     }
 ];
+// Version 2: the same plans on the cadastral boundary. A member the correction changed is its -v2 record.
+const REVISED = new Set(['p-upu-borovje-parcelacija', 'p-upu-borovje-parcelacija-2', 'p-upu-borovje-parcelacija-3',
+    'upu-borovje-ulice', 'upu-borovje-ulice-split-1', 'upu-borovje-z1-1', 'upu-borovje-z1-5',
+    'borovje-urbani-blokovi-m1-1', 'borovje-urbani-blokovi-m1-2', 'borovje-urbani-blokovi-m1-10', 'borovje-urbani-blokovi-m1-11']);
+const V2_NOTE = ' Verzija 2: vanjska granica slijedi katastarske čestice (prva rekonstrukcija zahvaćala je rubove susjednih '
+    + 'čestica, ponajviše vrtova južno od sabirne ulice), a sabirna ulica položena je u sredinu svog pojasa, kao na kartografskom prikazu 2a.';
+// Version 3: every street takes exactly the ground its lanes cut (fit-streets.mjs). Each member is its newest
+// record up to -v3 (the v3 correction, else the v2 one, else the original), resolved when the plan is named.
+const V3_NOTE = ' Verzija 3: svaka ulica zauzima točno zemljište koje zauzimaju njezine trake; čestice uz ulicu protežu se '
+    + 'do nje, a pojas između sabirne ulice i susjednih vrtova ostaje gradskoj čestici.';
+for (const plan of PLANS.slice(0, 2)) {
+    PLANS.push({ ...plan, slug: `${plan.slug}-v2`, supersedes: plan.slug, description: plan.description + V2_NOTE,
+        members: plan.members.map(id => (REVISED.has(id) ? `${id}-v2` : id)) });
+}
+for (const plan of PLANS.slice(0, 2)) {
+    PLANS.push({ ...plan, slug: `${plan.slug}-v3`, supersedes: `${plan.slug}-v2`, description: plan.description + V3_NOTE,
+        newestUpTo: 3 });
+}
 
 const { values } = parseArgs({ options: {
     backend: { type: 'string' }, origin: { type: 'string' }, apply: { type: 'boolean' }, help: { type: 'boolean' }
@@ -54,17 +75,27 @@ for (const plan of PLANS) {
         continue;
     }
     const ids = [];
+    const chosen = [];
     for (const proposalId of plan.members) {
-        const found = await request(values.backend, values.origin, 'GET', `/proposals/${encodeURIComponent(proposalId)}`);
-        const id = found.json && (found.json.id ?? found.json.proposal?.id);
-        if (found.status !== 200 || !id) throw new Error(`${values.backend} has no ${proposalId} (${found.status})`);
-        ids.push(String(id));
+        const candidates = plan.newestUpTo
+            ? Array.from({ length: plan.newestUpTo - 1 }, (_, i) => `${proposalId}-v${plan.newestUpTo - i}`).concat(proposalId)
+            : [proposalId];
+        let found = null;
+        for (const candidate of candidates) {
+            const response = await request(values.backend, values.origin, 'GET', `/proposals/${encodeURIComponent(candidate)}`);
+            const id = response.json && (response.json.id ?? response.json.proposal?.id);
+            if (response.status === 200 && id) { found = { candidate, id }; break; }
+        }
+        if (!found) throw new Error(`${values.backend} has no ${candidates.join(' / ')}`);
+        ids.push(String(found.id));
+        chosen.push(found.candidate);
     }
+    if (plan.newestUpTo) log(`${plan.slug} members: ${chosen.join(', ')}`);
     log(`${plan.slug}: ${ids.length} members → ${ids.join(',')}`);
     if (!values.apply) continue;
     const created = await request(values.backend, values.origin, 'POST', '/plans', {
         slug: plan.slug, proposalIds: ids, title: plan.title, description: plan.description, author: plan.author,
-        place: 'Borovje', city: 'zagreb'
+        place: 'Borovje', city: 'zagreb', ...(plan.supersedes ? { supersedes: plan.supersedes } : {})
     });
     if (created.status !== 201) throw new Error(`naming ${plan.slug} failed (${created.status}): ${created.text.slice(0, 300)}`);
     log(`named ${plan.slug} · hash ${created.json.planHash} · mintable ${created.json.mintable}`);

@@ -9,8 +9,13 @@
 // sit on the plots that backend actually has. Records are published through the normal API (site
 // binding, then POST /proposals). Edit tokens, returned once, are kept outside the repo.
 //
+// --revision vN builds on the newest parcel layouts up to `-vN` (v2: snap-to-cadastre.mjs, v3: fit-streets.mjs):
+// a block that comes out exactly as its newest existing version is that record and is reused; the others are
+// published as `<id>-vN`.
+//
 //   node build-urban-blocks.mjs                                  # dry run against http://localhost:3000
 //   node build-urban-blocks.mjs --backend <api> --origin <app> --apply
+//   node build-urban-blocks.mjs --revision v3 --backend <api> --origin <app> --apply
 import os from 'node:os';
 import path from 'node:path';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
@@ -35,12 +40,26 @@ const { values } = parseArgs({ options: {
     origin: { type: 'string' },
     apply: { type: 'boolean' },
     out: { type: 'string' },
+    revision: { type: 'string' },
     help: { type: 'boolean' }
 } });
+const suffix = values.revision ? `-${values.revision}` : '';
+const revision = values.revision ? Number(/^v(\d+)$/.exec(values.revision)?.[1]) : 1;
+if (!Number.isInteger(revision) || revision < 1) throw new Error(`--revision must look like v2, v3, … (got ${values.revision})`);
+// The newest existing version of a record, up to this revision: <id>-vN, …, <id>-v2, <id>.
+async function newest(baseId) {
+    for (let version = revision; version >= 1; version--) {
+        const id = version === 1 ? baseId : `${baseId}-v${version}`;
+        const found = await request(values.backend, values.origin || values.backend, 'GET', `/proposals/${id}`);
+        if (found.status === 200) return { id, json: found.json };
+    }
+    return null;
+}
 if (values.help) {
-    console.log(`Usage: node build-urban-blocks.mjs [--backend <api>] [--origin <app origin>] [--apply] [--out <file.geojson>]
+    console.log(`Usage: node build-urban-blocks.mjs [--backend <api>] [--origin <app origin>] [--revision vN] [--apply] [--out <file.geojson>]
 Dry run by default: builds the 11 block records from the backend's Borovje plots and prints a summary.
---apply publishes them (records that already exist are left alone). --origin is required with --apply.`);
+--apply publishes them (records that already exist are left alone). --origin is required with --apply.
+--revision vN reads the newest layouts up to -vN and publishes only the blocks that changed, as <id>-vN.`);
     process.exit(0);
 }
 if (values.apply && !values.origin) throw new Error('--apply needs --origin (the app origin the API accepts writes from)');
@@ -48,9 +67,12 @@ if (values.apply && !values.origin) throw new Error('--apply needs --origin (the
 async function loadLayouts() {
     const plots = [];
     const green = [];
-    for (const id of LAYOUT_IDS) {
-        const { status, json } = await request(values.backend, values.origin || values.backend, 'GET', `/proposals/${id}`);
-        if (status !== 200) throw new Error(`${values.backend} has no ${id} (${status}); publish the official plan first`);
+    for (const original of LAYOUT_IDS) {
+        // the newest revision of each layout up to this one
+        const found = await newest(original);
+        if (!found) throw new Error(`${values.backend} has no ${original}; publish the official plan first`);
+        const { id, json } = found;
+        log(`layout ${id}`);
         for (const polygon of json.reparcellization?.polygons || []) {
             const key = polygon.ownerKey || '';
             if (/^m1-\d+$/.test(key)) plots.push({ key, geometry: polygon.geometry });
@@ -72,14 +94,15 @@ async function boundParcels(site) {
     return json.binding.parcels.map(parcel => parcel.parcelId);
 }
 
-function recordFor(plot, building, cadastreParcelIds) {
+function recordFor(plot, building, cadastreParcelIds, proposalId = `${PLAN_ID}-${plot.key}`, revisionOf = null) {
     const label = plot.key.toUpperCase();
     const floors = building.properties.floors;
     const height = building.properties.height;
     const area = Math.round(turf.area(building));
     const title = `Borovje – urbani blokovi: blok ${label}`;
     return canonicalSeedRecord({
-        proposalId: `${PLAN_ID}-${plot.key}`,
+        proposalId,
+        ...(revisionOf ? { revisionOf } : {}),
         city: 'zagreb',
         type: 'building',
         goal: 'buildings',
@@ -115,9 +138,19 @@ for (const plot of plots) {
     const building = buildingFeature(plot.key, block.geometry, floorsFor(plot.key), { kind: block.kind });
     if (!turf.booleanWithin(building, turf.feature(plot.geometry))) throw new Error(`${plot.key}: block leaves its plot`);
     buildings.push(building);
+    let proposalId = `${PLAN_ID}-${plot.key}`;
+    let revisionOf = null;
+    if (suffix) {
+        // the same block on the same plot is the same record; a changed one is a new version of the newest
+        const current = await newest(proposalId);
+        const same = current && JSON.stringify(current.json.geometry?.buildings?.[0]?.geometry) === JSON.stringify(building.geometry);
+        if (same) { log(`${plot.key.padEnd(5)} unchanged · reuses ${current.id} (row ${current.json.id})`); continue; }
+        revisionOf = current?.id || null;
+        proposalId = `${proposalId}${suffix}`;
+    }
     const parcels = await boundParcels({ type: 'MultiPolygon', coordinates: [building.geometry.coordinates] });
-    records.push(recordFor(plot, building, parcels));
-    log(`${plot.key.padEnd(5)} ${block.kind.padEnd(11)} ${Math.round(turf.area(building))} m² × ${floorsFor(plot.key)} · ${parcels.length} parcel(s)`);
+    records.push(recordFor(plot, building, parcels, proposalId, revisionOf));
+    log(`${plot.key.padEnd(5)} ${block.kind.padEnd(11)} ${Math.round(turf.area(building))} m² × ${floorsFor(plot.key)} · ${parcels.length} parcel(s) → ${proposalId}`);
 }
 const total = summarize(buildings);
 log(`total: ${total.buildings} buildings, footprint ${total.footprintM2} m², floor area ${total.floorAreaM2} m²`);
