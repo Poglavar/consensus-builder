@@ -1,1 +1,1 @@
-Unless overriden here, follow instructions from /Users/simun/Code/AGENTS.md
+Unless overriden here, follow instructions from ../AGENTS.md (the workspace-wide file one level up)

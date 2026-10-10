@@ -2,7 +2,7 @@
 //
 // The rule, stated once: an owner's contribution from a parcel is the area of that parcel inside
 // the take, multiplied by their recorded share of it — and the same owner appearing in several
-// parcels is ONE contributor, aggregated. Simun's specification, 2026-08-10: "one owner could enter
+// parcels is ONE contributor, aggregated. The user's specification, 2026-08-10: "one owner could enter
 // the LR with three full parcels and half of a fourth. The total area per owner matters, not the
 // number of parcels. Parcels with multiple owners get divided by what the actual recorded share is
 // (it carries over into this). Aggregate per owner, because they can pop up in different parcels."

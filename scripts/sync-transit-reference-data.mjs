@@ -12,7 +12,6 @@ const repositoryRoot = path.resolve(scriptDir, '..');
 const candidates = [
     process.env.ZAGREB_ISOCHRONE_ROOT,
     path.resolve(repositoryRoot, '../zagreb-isochrone-main'),
-    '/Users/simun/Code/zagreb-isochrone-main'
 ].filter(Boolean);
 const assets = Object.freeze([
     'zagreb_rail_tracks.geojson',

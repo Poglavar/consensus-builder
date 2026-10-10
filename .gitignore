@@ -17,3 +17,4 @@ blockchain/solana/.prospective-external-market.private.json
 
 # runtime logs of the backend jobs (PM2 and the agent runner write here)
 backend/logs/
+backend/coverage/
