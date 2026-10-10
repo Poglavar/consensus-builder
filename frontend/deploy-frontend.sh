@@ -6,7 +6,7 @@
 set -e  # Exit on any error
 
 # Configuration
-SSHDO='ssh root@67.205.138.129 -i ~/.ssh/id_ed25519'
+SSHDO='ssh root@46.224.128.67 -i ~/.ssh/id_ed25519'
 REMOTE_PATH='/var/www/urbangametheory.xyz'
 LOCAL_FRONTEND_PATH='.'
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -149,7 +149,7 @@ rsync -avz --delete \
     --exclude='Dockerfile' \
     --exclude='.deploy-build-counter' \
     -e "ssh -i ~/.ssh/id_ed25519" \
-    ./* root@67.205.138.129:$REMOTE_PATH/
+    ./* root@46.224.128.67:$REMOTE_PATH/
 
 # Set proper permissions
 echo -e "${YELLOW}🔐 Setting proper permissions...${NC}"
@@ -204,4 +204,4 @@ echo -e "  • Remote path: $REMOTE_PATH"
 echo -e "  • Backup created: ${REMOTE_PATH}_$BACKUP_NAME"
 echo -e "  • Files synced: $(find . -type f -not -path './.git/*' -not -path './node_modules/*' | wc -l) files"
 echo -e "  • Build token: $BUILD_ID (counter $BUILD_COUNTER)"
-echo -e "  • Server: 67.205.138.129"
+echo -e "  • Server: 46.224.128.67"
