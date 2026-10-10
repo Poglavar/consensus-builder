@@ -52,6 +52,8 @@ function updateVoteExpiryFieldVisibility() {
     const facets = (typeof window !== 'undefined' && window.proposalFacets) || {};
     const isVote = facets.ownership === 'no-change' && facets.parcels === 'as-is';
     wrap.style.display = isVote ? '' : 'none';
+    const oracleWrap = document.getElementById('proposalOracleWrap');
+    if (oracleWrap) oracleWrap.style.display = isVote ? '' : 'none';
     const input = document.getElementById('proposalVoteExpiryDays');
     if (input && !input.value) {
         input.value = '365';
@@ -394,7 +396,9 @@ async function createProposal() {
         showProposalAlertMessage('please_enter_a_description', 'Please enter a description.');
         return;
     }
-    if (offer <= 0) {
+    const voteFacetsForValidation = (typeof window !== 'undefined' && window.proposalFacets) || {};
+    const isVoteIntent = voteFacetsForValidation.ownership === 'no-change' && voteFacetsForValidation.parcels === 'as-is';
+    if (offer <= 0 && !isVoteIntent) {
         showProposalAlertMessage('please_enter_a_valid_offer_amount', 'Please enter a valid offer amount.');
         return;
     }
@@ -585,6 +589,32 @@ async function createProposal() {
             voteExpiryDays = (Number.isFinite(rawDays) && rawDays > 0) ? Math.min(rawDays, VOTE_MAX_DAYS) : VOTE_MAX_DAYS;
             expiresAt = new Date(Date.now() + voteExpiryDays * 86400000).toISOString();
         }
+        const ownerOracleProvider = document.getElementById('proposalOwnerOracleProvider')?.value || 'legacy';
+        const voteOracleProvider = document.getElementById('proposalVoteOracleProvider')?.value || 'legacy';
+        let selectedOracles = null;
+        if (isVoteCreate && (ownerOracleProvider !== 'legacy' || voteOracleProvider !== 'legacy')) {
+            if (ownerOracleProvider === 'legacy' || voteOracleProvider === 'legacy') {
+                throw new Error('Select both an ownership oracle and a voting oracle.');
+            }
+            const expectedOwners = Number(document.getElementById('proposalExpectedOwners')?.value);
+            if (!Number.isSafeInteger(expectedOwners) || expectedOwners <= 0) {
+                throw new Error('Enter the verified owner count approved by the ownership oracle.');
+            }
+            selectedOracles = {
+                ownerProvider: ownerOracleProvider,
+                voteProvider: voteOracleProvider,
+                ownerOracle: document.getElementById('proposalOwnerOracleAddress')?.value?.trim() || null,
+                voteOracle: document.getElementById('proposalVoteOracleAddress')?.value?.trim() || null,
+                expectedOwners,
+                payoutRecipient: document.getElementById('proposalPayoutRecipient')?.value?.trim() || null
+            };
+            if (offer > 0 && offerCurrency !== 'ETH') {
+                throw new Error('Funded oracle votes currently require ETH. Choose ETH or set the offer to zero.');
+            }
+            if (!blockchainSupported || !isEvmWalletConnected || cantonActive || isSolanaWalletConnected || !shouldMintOnchain) {
+                throw new Error('Oracle voting requires an EVM wallet and an on-chain proposal. Mint the prerequisite parcel NFTs first.');
+            }
+        }
 
         // Check for decay option
         const decayCheckbox = document.getElementById('proposalDecayCheckbox');
@@ -667,8 +697,9 @@ async function createProposal() {
             epochYear: (typeof window !== 'undefined' && window.__proposalEpoch)
                 ? window.__proposalEpoch.readCreateDialogEpoch()
                 : null,
-            isVote: isVoteCreate, // non-binding vote proposal (no ownership/parcel change, no funds)
+            isVote: isVoteCreate,
             voteExpiryDays: isVoteCreate ? voteExpiryDays : undefined, // voting period in days (≤365)
+            oracles: selectedOracles,
             // The city this proposal's parcels belong to. Stamped at creation, not at upload, so a
             // proposal made in Zagreb and uploaded later from New York is still labelled Zagreb —
             // and so a shared link can be recognised as cross-city even without a ?city= param.
@@ -1473,7 +1504,7 @@ async function createProposal() {
                             .map(entry => entry.address.trim());
                         // Skip lens requirement for ownership-transfer-from-me proposals and Solana (wallet used as fallback lens)
                         const isFromMeProposal = selectedTool === 'ownership-transfer-from-me';
-                        if (!lensAddressesForMint.length && !isFromMeProposal && !isSolanaWalletConnected && !cantonActive) {
+                        if (!lensAddressesForMint.length && !isFromMeProposal && !(proposal.isVote && proposal.oracles) && !isSolanaWalletConnected && !cantonActive) {
                             throw new Error('Cannot mint proposal: lens list is empty. Set your lens before minting.');
                         }
 
@@ -1554,6 +1585,10 @@ async function createProposal() {
                         setProposalModalDimmed(true);
                         updateStatus('Minting proposal on blockchain...');
 
+                        if (proposal.oracles && (cantonActive || isSolanaWalletConnected)) {
+                            throw new Error('Oracle voting is available on EVM only. Connect an EVM wallet to publish this proposal.');
+                        }
+
                         if (cantonActive && window.CantonProposalChainBridge) {
                             // Canton (custodial): create via the backend; the current
                             // Canton identity is the buyer, owner/lens auto-allocated.
@@ -1584,9 +1619,10 @@ async function createProposal() {
                                 tokenAmount: 0n,
                                 imageURI: metadataUri,
                                 lens: lensAddressesForMint,
-                                // Vote proposals mint fund-less via mintVote with a voting deadline (EVM only).
                                 isVote: proposal.isVote === true,
-                                expiryDays: proposal.isVote === true ? proposal.voteExpiryDays : undefined
+                                expiryDays: proposal.isVote === true ? proposal.voteExpiryDays : undefined,
+                                expiryTimestamp: proposal.isVote === true ? Math.floor(Date.parse(proposal.expiresAt) / 1000) : undefined,
+                                oracles: proposal.oracles
                             });
                         }
                         console.debug('[createProposal] Blockchain minting took:', (performance.now() - mintTxStartTime).toFixed(2), 'ms');
@@ -1676,6 +1712,8 @@ async function createProposal() {
                     markDraftPublishFailed(error);
                     return;
                 }
+
+                if (proposal.oracles) throw error;
 
                 const failureReason = error?.message
                     || error?.error?.message

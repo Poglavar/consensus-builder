@@ -4,6 +4,82 @@
 // frontend/js/proposals/owner-acceptance.js (loaded first) so they are unit-tested. The globals
 // they define are used here and in proposals/core.js and data.js.
 
+async function castSelectedOracleVote(proposalId, choice) {
+    const proposal = typeof proposalStorage !== 'undefined' ? proposalStorage.getProposal?.(proposalId) : null;
+    const nft = typeof getProposalNftInfo === 'function' ? getProposalNftInfo(proposal) : null;
+    if (!proposal?.oracles || !nft || !window.ProposalChainBridge?.castOracleVote) return;
+    try {
+        const result = await window.ProposalChainBridge.castOracleVote({
+            proposalId: nft.tokenId, chainId: nft.chain, contractAddress: nft.contract, choice
+        });
+        Object.assign(proposal.oracles, result.tally || {});
+        const summary = document.querySelector('[data-oracle-vote-summary]');
+        if (summary && result.tally) {
+            summary.textContent = `${result.tally.yesVotes}/${result.tally.expectedOwners}`;
+        }
+        if (typeof updateStatus === 'function') updateStatus('Vote recorded on chain.');
+    } catch (error) {
+        showProposalAlertMessage('on_chain_vote_failed', parseOnChainErrorMessage(error));
+    }
+}
+
+async function finalizeSelectedOracleVote(proposalId) {
+    const proposal = typeof proposalStorage !== 'undefined' ? proposalStorage.getProposal?.(proposalId) : null;
+    const nft = typeof getProposalNftInfo === 'function' ? getProposalNftInfo(proposal) : null;
+    if (!proposal?.oracles || !nft) return;
+    try {
+        const result = await window.ProposalChainBridge.finalizeOracleVote({
+            proposalId: nft.tokenId, chainId: nft.chain, contractAddress: nft.contract
+        });
+        proposal.oracles.finalized = true;
+        const panel = document.querySelector('.oracle-vote-panel');
+        panel?.querySelectorAll('button[data-oracle-vote-choice]').forEach(button => { button.disabled = true; });
+        const finalizeButton = panel?.querySelector('[data-oracle-finalize]');
+        if (finalizeButton) finalizeButton.disabled = true;
+        const claimButton = panel?.querySelector('[data-oracle-claim]');
+        if (claimButton) claimButton.disabled = false;
+        if (typeof updateStatus === 'function') updateStatus(result.unanimous ? 'Unanimous vote executed on chain.' : 'Vote concluded without unanimous approval.');
+    } catch (error) {
+        showProposalAlertMessage('oracle_vote_finalization_failed', parseOnChainErrorMessage(error));
+    }
+}
+
+async function withdrawSelectedOracleFunds(proposalId) {
+    const proposal = typeof proposalStorage !== 'undefined' ? proposalStorage.getProposal?.(proposalId) : null;
+    const nft = typeof getProposalNftInfo === 'function' ? getProposalNftInfo(proposal) : null;
+    if (!proposal?.oracles || !nft) return;
+    try {
+        await window.ProposalChainBridge.withdrawOracleFunds({
+            proposalId: nft.tokenId, chainId: nft.chain, contractAddress: nft.contract
+        });
+        if (typeof updateStatus === 'function') updateStatus('Funds claimed on chain.');
+    } catch (error) {
+        showProposalAlertMessage('oracle_funds_claim_failed', parseOnChainErrorMessage(error));
+    }
+}
+
+function buildOracleVotePanelHtml(proposal, parcelId) {
+    const firstParcel = proposal.cadastreParcelIds?.[0];
+    if (firstParcel && String(firstParcel) !== String(parcelId)) return '';
+    const t = getProposalI18nHelper();
+    const safeId = typeof escapeHtml === 'function' ? escapeHtml(String(proposal.proposalId || '')) : '';
+    const votes = Number(proposal.oracles.yesVotes) || 0;
+    const expected = Number(proposal.oracles.expectedOwners) || 0;
+    const closed = typeof isVoteClosed === 'function' ? isVoteClosed(proposal) : isProposalExpired(proposal);
+    const tFinal = t('panel.proposal.voting.finalize', 'Finalize vote');
+    const tClaim = t('panel.proposal.voting.claimFunds', 'Claim funds');
+    return `<div class="owner-acceptance-list oracle-vote-panel" data-proposal-id="${safeId}">
+        <div>${t('panel.proposal.voting.oracleTally', 'Verified owner votes')}: <strong data-oracle-vote-summary>${votes}/${expected}</strong></div>
+        <div class="owner-actions">
+            <button data-oracle-vote-choice class="btn btn-sm btn-primary" ${closed ? 'disabled' : ''} onclick="castSelectedOracleVote(this.closest('[data-proposal-id]').dataset.proposalId, 1)">${t('panel.proposal.voting.voteYes', 'Vote yes')}</button>
+            <button data-oracle-vote-choice class="btn btn-sm btn-secondary" ${closed ? 'disabled' : ''} onclick="castSelectedOracleVote(this.closest('[data-proposal-id]').dataset.proposalId, 2)">${t('panel.proposal.voting.voteNo', 'Vote no')}</button>
+            <button data-oracle-vote-choice class="btn btn-sm btn-secondary" ${closed ? 'disabled' : ''} onclick="castSelectedOracleVote(this.closest('[data-proposal-id]').dataset.proposalId, 0)">${t('panel.proposal.voting.abstain', 'Abstain')}</button>
+            ${closed ? `<button data-oracle-finalize class="btn btn-sm btn-primary" ${proposal.oracles.finalized ? 'disabled' : ''} onclick="finalizeSelectedOracleVote(this.closest('[data-proposal-id]').dataset.proposalId)">${tFinal}</button>` : ''}
+            ${closed ? `<button data-oracle-claim class="btn btn-sm btn-secondary" ${proposal.oracles.finalized ? '' : 'disabled'} onclick="withdrawSelectedOracleFunds(this.closest('[data-proposal-id]').dataset.proposalId)">${tClaim}</button>` : ''}
+        </div>
+    </div>`;
+}
+
 function getProposalOwnerAcceptanceState(proposal, parcelId, options = {}) {
     if (!proposal) {
         return { entries: [] };
@@ -63,6 +139,7 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
     if (window.CantonMode && typeof window.CantonMode.isActive === 'function' && window.CantonMode.isActive()) {
         return '';
     }
+    if (proposal?.oracles && proposal.isVote === true) return buildOracleVotePanelHtml(proposal, parcelId);
     const proposalId = proposal && proposal.proposalId ? proposal.proposalId : '';
     const acceptanceState = getProposalOwnerAcceptanceState(proposal, parcelId, options);
     const entries = acceptanceState.entries || [];
@@ -199,6 +276,11 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
 
 function buildParcelAcceptanceStatusHtml(proposal) {
     const tProposalUI = getProposalI18nHelper();
+    if (proposal?.oracles && proposal.isVote === true) {
+        const yesVotes = Number(proposal.oracles.yesVotes) || 0;
+        const expectedOwners = Number(proposal.oracles.expectedOwners) || 0;
+        return `<div class="proposal-acceptance-status"><div class="acceptance-label">${tProposalUI('panel.proposal.voting.oracleTally', 'Verified owner votes')}: ${yesVotes}/${expectedOwners}</div></div>`;
+    }
     const parcelIds = Array.isArray(proposal?.cadastreParcelIds) ? proposal.cadastreParcelIds : [];
     const total = parcelIds.length;
     if (!total) {
@@ -1396,7 +1478,8 @@ async function handleUserRejectProposal(proposalId, parcelId, ownerKey = null) {
                 proposalId: rejectNftInfo.tokenId,
                 parcelId: normalizedParcelIdForChain,
                 chainId: rejectNftInfo.chain,
-                contractAddress: rejectNftInfo.contract
+                contractAddress: rejectNftInfo.contract,
+                usesOracles: isVote && !!proposal.oracles
             });
         } catch (onchainErr) {
             console.warn(isVote ? 'On-chain vote rescind failed:' : 'On-chain withdrawal failed:', onchainErr);
@@ -1407,6 +1490,10 @@ async function handleUserRejectProposal(proposalId, parcelId, ownerKey = null) {
     }
 
     // On-chain succeeded (or not on-chain) — now record locally
+    if (isVote && proposal.oracles && isOnChain) {
+        if (typeof updateStatus === 'function') updateStatus('Vote rescinded on chain.');
+        return;
+    }
     const result = rejectProposal(proposalId, parcelId, targetEntry.key);
     if (!result) {
         return;

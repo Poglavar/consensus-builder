@@ -263,10 +263,9 @@ function initializeDecayCountdown() {
     decayCountdownInterval = setInterval(updateDecay, 1000);
 }
 
-// A proposal is a non-binding VOTE when it changes neither ownership nor parcel boundaries:
-// facets.ownership === 'no-change' AND facets.parcels === 'as-is'. Such a proposal alters
-// nobody's property, so owners cast yes-votes instead of binding acceptances — nothing transfers
-// or executes. Note: 'no-change' ownership alone is NOT sufficient (a reparcellization keeps
+// A proposal is a VOTE when it changes neither ownership nor parcel boundaries:
+// facets.ownership === 'no-change' AND facets.parcels === 'as-is'. Oracle-backed votes
+// can execute and settle escrow after unanimous approval at close. Note: 'no-change' ownership alone is NOT sufficient (a reparcellization keeps
 // ownership 'no-change' while reshaping parcels — that is a binding change, not a vote).
 // Chain-loaded proposals carry an explicit boolean `isVote` (from getVoteInfo) which wins.
 function isVoteProposal(proposal) {
@@ -276,10 +275,22 @@ function isVoteProposal(proposal) {
     return facets.ownership === 'no-change' && facets.parcels === 'as-is';
 }
 
+function isVoteClosed(proposal) {
+    if (!proposal) return false;
+    if (proposal.oracles?.finalized) return true;
+    const expiry = proposal.expiresAt
+        ? Date.parse(proposal.expiresAt)
+        : (proposal.expiryTimestamp ? Number(proposal.expiryTimestamp) * 1000 : NaN);
+    return Number.isFinite(expiry) && expiry <= Date.now();
+}
+
 // Status label for a vote proposal: "Open for voting" until the expiry deadline, then "Vote concluded".
 function getProposalVoteStatusLabel(proposal) {
     const t = getProposalI18nHelper();
-    if (isProposalExpired(proposal)) {
+    if (proposal?.oracles && lifecyclePhaseOf(proposal).toLowerCase() === 'executed') {
+        return t('panel.proposal.lifecycle.executed', 'Executed');
+    }
+    if (isVoteClosed(proposal)) {
         return t('panel.proposal.voting.concluded', 'Vote concluded');
     }
     return t('panel.proposal.voting.open', 'Open for voting');
@@ -287,10 +298,10 @@ function getProposalVoteStatusLabel(proposal) {
 
 function getProposalLifecycleKey(proposal) {
     if (!proposal) return 'active';
-    // Vote proposals have their own lifecycle: "Open for voting" until the deadline, then
-    // "Vote concluded". They never execute, so this is checked before the executed/active keys.
+    // Oracle votes may execute at close; ordinary sentiment votes only conclude.
     if (isVoteProposal(proposal)) {
-        return isProposalExpired(proposal) ? 'vote-concluded' : 'vote-open';
+        if (proposal.oracles && lifecyclePhaseOf(proposal).toLowerCase() === 'executed') return 'executed';
+        return isVoteClosed(proposal) ? 'vote-concluded' : 'vote-open';
     }
     // Check for ownership-transfer-from-me proposals which are accepted but not funded
     if (proposal.funded === false && proposal.ownershipTransferProposal?.direction === 'from-me') {
@@ -371,6 +382,8 @@ function parseProposalOfferValue(value) {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         isVoteProposal,
+        isVoteClosed,
+        getProposalLifecycleKey,
         isProposalExpired,
         checkAndUpdateProposalExpiry,
         parseExpiryTime

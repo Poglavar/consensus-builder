@@ -7,6 +7,41 @@ function clearProposalPreviewLayers() {
     if (groups.buildingPreview) groups.buildingPreview.clearLayers();
 }
 
+async function refreshCertiliaOracleAvailability() {
+    const options = document.querySelectorAll('#proposalOwnerOracleProvider option[value="certilia"], #proposalVoteOracleProvider option[value="certilia"]');
+    if (!options.length) return;
+    try {
+        const walletProvider = window.walletManager?.getProvider?.();
+        if (!walletProvider || !window.ethers?.BrowserProvider) return;
+        const network = await new window.ethers.BrowserProvider(walletProvider).getNetwork();
+        const response = await fetch('/contracts/addresses.json');
+        if (!response.ok) return;
+        const entry = (await response.json())?.[String(network.chainId)];
+        const ready = entry?.CertiliaReady === true && !!entry.CertiliaOwnerOracle && !!entry.CertiliaVoteOracle;
+        options.forEach(option => { option.disabled = !ready; });
+    } catch (_) { /* Provider remains unavailable until configured. */ }
+}
+
+function updateProposalOracleFieldVisibility() {
+    const ownerProvider = document.getElementById('proposalOwnerOracleProvider')?.value;
+    const voteProvider = document.getElementById('proposalVoteOracleProvider')?.value;
+    const active = ownerProvider !== 'legacy' || voteProvider !== 'legacy';
+    for (const [fieldId, visible] of [
+        ['proposalOwnerOracleAddress', ownerProvider === 'custom'],
+        ['proposalVoteOracleAddress', voteProvider === 'custom'],
+        ['proposalExpectedOwners', active],
+        ['proposalPayoutRecipient', active]
+    ]) {
+        const input = document.getElementById(fieldId);
+        if (!input) continue;
+        input.style.display = visible ? '' : 'none';
+        const label = document.querySelector(`label[for="${fieldId}"]`);
+        if (label) label.style.display = visible ? '' : 'none';
+    }
+    const hint = document.getElementById('proposalOracleFundingHint');
+    if (hint) hint.style.display = active ? '' : 'none';
+}
+
 function renderProposalBuildingPreview(proposal) {
     const groups = ensureProposalOverlayGroups();
     if (!groups.buildingPreview) return;
@@ -578,6 +613,14 @@ function showProposalDialog(overrides = null) {
     const expiryPlaceholder = t('modal.createProposal.options.expiryPlaceholder', '00h:05m:00s');
     const voteExpiryLabel = t('modal.createProposal.options.voteExpiry', 'Voting period');
     const voteExpiryDaysSuffix = t('modal.createProposal.options.voteExpiryDaysSuffix', 'days (max 365)');
+    const ownerOracleLabel = t('modal.createProposal.options.ownerOracle', 'Ownership oracle');
+    const voteOracleLabel = t('modal.createProposal.options.voteOracle', 'Voting oracle');
+    const legacyOracleLabel = t('modal.createProposal.options.legacyOracle', 'Existing wallet attestations');
+    const certiliaOracleLabel = t('modal.createProposal.options.certiliaOracle', 'Certilia eOsobna');
+    const customOracleLabel = t('modal.createProposal.options.customOracle', 'Custom oracle contract');
+    const expectedOwnersLabel = t('modal.createProposal.options.expectedOwners', 'Verified owner count');
+    const payoutRecipientLabel = t('modal.createProposal.options.payoutRecipient', 'Payout wallet (required if funded)');
+    const oracleFundingHint = t('modal.createProposal.options.oracleFundingHint', 'For a funded oracle vote, choose ETH. Funds settle after voting closes.');
     const decayLabel = t('modal.createProposal.options.decay', 'Offer Decay');
     const decayHelperText = t('modal.createProposal.options.decayHelper', 'Offer amount will decrease with time to entice acceptance.');
     const decayPercentSuffix = t('modal.createProposal.options.decayPercentSuffix', '% over');
@@ -859,6 +902,31 @@ function showProposalDialog(overrides = null) {
                             <input type="number" id="proposalVoteExpiryDays" min="1" max="365" value="365" style="width:64px; text-align:center;">
                             <span style="color:#666;">${voteExpiryDaysSuffix}</span>
                         </div>
+                    </div>
+                    <div id="proposalOracleWrap" style="display:none; margin-top:8px;">
+                        <div class="proposal-option-row" style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                            <label for="proposalOwnerOracleProvider">${ownerOracleLabel}</label>
+                            <select id="proposalOwnerOracleProvider" onchange="updateProposalOracleFieldVisibility()">
+                                <option value="legacy">${legacyOracleLabel}</option>
+                                <option value="certilia" disabled>${certiliaOracleLabel}</option>
+                                <option value="custom">${customOracleLabel}</option>
+                            </select>
+                            <label for="proposalVoteOracleProvider">${voteOracleLabel}</label>
+                            <select id="proposalVoteOracleProvider" onchange="updateProposalOracleFieldVisibility()">
+                                <option value="legacy">${legacyOracleLabel}</option>
+                                <option value="certilia" disabled>${certiliaOracleLabel}</option>
+                                <option value="custom">${customOracleLabel}</option>
+                            </select>
+                            <label for="proposalOwnerOracleAddress">${ownerOracleLabel} · ${customOracleLabel}</label>
+                            <input id="proposalOwnerOracleAddress" type="text" autocomplete="off" placeholder="0x…">
+                            <label for="proposalVoteOracleAddress">${voteOracleLabel} · ${customOracleLabel}</label>
+                            <input id="proposalVoteOracleAddress" type="text" autocomplete="off" placeholder="0x…">
+                            <label for="proposalExpectedOwners">${expectedOwnersLabel}</label>
+                            <input id="proposalExpectedOwners" type="number" min="1" step="1" placeholder="1">
+                            <label for="proposalPayoutRecipient">${payoutRecipientLabel}</label>
+                            <input id="proposalPayoutRecipient" type="text" autocomplete="off" placeholder="0x…">
+                        </div>
+                        <div id="proposalOracleFundingHint" style="font-size:0.85em; color:#666; margin-top:5px;">${oracleFundingHint}</div>
                     </div>
                     <div class="proposal-option-row" id="proposalOptionDecay" style="display:flex; align-items:center; gap:8px; margin-top:6px;">
                         <div style="flex:1; display:flex; align-items:center; gap:6px;">
@@ -1447,6 +1515,8 @@ function showProposalDialog(overrides = null) {
     }
 
     updateCreateProposalSubmitState();
+    refreshCertiliaOracleAvailability();
+    updateProposalOracleFieldVisibility();
 
     // Show similar proposals for the selected parcel set
     const similarSection = document.getElementById('proposalSimilarSection');

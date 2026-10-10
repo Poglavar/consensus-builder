@@ -6,7 +6,7 @@ import { describe, it, expect } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { isVoteProposal } = require('../../frontend/js/proposals/lifecycle.js');
+const { isVoteProposal, isVoteClosed, getProposalLifecycleKey } = require('../../frontend/js/proposals/lifecycle.js');
 
 describe('isVoteProposal', () => {
     it('is a vote when it changes neither ownership nor parcels (e.g. an urban rule / public-realm change)', () => {
@@ -41,5 +41,12 @@ describe('isVoteProposal', () => {
         expect(isVoteProposal({})).toBe(false);
         expect(isVoteProposal(null)).toBe(false);
         expect(isVoteProposal(undefined)).toBe(false);
+    });
+
+    it('reads an oracle vote deadline from chain data and shows an executed unanimous vote as executed', () => {
+        const closed = { isVote: true, oracles: { finalized: false }, expiryTimestamp: String(Math.floor(Date.now() / 1000) - 1) };
+        expect(isVoteClosed(closed)).toBe(true);
+        expect(getProposalLifecycleKey(closed)).toBe('vote-concluded');
+        expect(getProposalLifecycleKey({ ...closed, lifecycleStatus: 'Executed', oracles: { finalized: true } })).toBe('executed');
     });
 });

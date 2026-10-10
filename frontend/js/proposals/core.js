@@ -1332,7 +1332,8 @@ async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
                 proposalId: nftInfo.tokenId,
                 parcelId: normalizedParcelId,
                 chainId: nftInfo.chain,
-                contractAddress: nftInfo.contract
+                contractAddress: nftInfo.contract,
+                usesOracles: isVote && !!proposal.oracles
             });
         } catch (onchainErr) {
             console.warn(isVote ? 'On-chain vote failed:' : 'On-chain acceptance failed:', onchainErr);
@@ -1343,6 +1344,10 @@ async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
     }
 
     // On-chain succeeded (or not on-chain) — now record locally
+    if (isVote && proposal.oracles && isOnChain) {
+        if (typeof updateStatus === 'function') updateStatus('Vote recorded on chain.');
+        return;
+    }
     const result = acceptProposal(proposalId, parcelId, effectiveOwnerKey, {
         acceptedByAgentId: userAgent.id,
         acceptedByName: userAgent.name

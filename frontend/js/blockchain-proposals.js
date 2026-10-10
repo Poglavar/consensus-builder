@@ -11,6 +11,10 @@
         'function withdrawAcceptance(uint256 proposalId, string parcelId, bytes32 ownerListUid, bytes32 claimUid, bytes32 endorsementUid)',
         // Non-binding vote proposals (no funds, never executes)
         'function mintVote(address to, string[] parcelIds, string imageURI, uint256 expiryTimestamp, address[] lens) returns (uint256)',
+        'function mintOracleVote(address to, string[] parcelIds, string imageURI, uint256 expiryTimestamp, address ownerOracle, address voteOracle, uint256 expectedOwners, address payoutRecipient, uint256 tokenAmount) payable returns (uint256)',
+        'function getOracleVoteInfo(uint256 proposalId) view returns (bool usesOracles, address ownerOracle, address voteOracle, uint256 expectedOwners, uint256 registeredOwners, uint256 yesVotes, uint256 noVotes, address payoutRecipient, bool finalized)',
+        'function finalizeOracleVote(uint256 proposalId)',
+        'function withdrawOracleFunds(uint256 proposalId)',
         'function castVote(uint256 proposalId, string parcelId, bytes32 claimUid, bytes32 endorsementUid)',
         'function rescindVote(uint256 proposalId, string parcelId)',
         'function getVoteInfo(uint256 proposalId) view returns (bool isVote, uint256 voteCount, uint256 expiryTimestamp, bool concluded)',
@@ -202,6 +206,20 @@
             }
         }
         return null;
+    }
+
+    async function resolveOracleAddress(chainId, providerId, role, customAddress) {
+        if (providerId === 'custom') return customAddress;
+        if (providerId !== 'certilia') throw new Error('Unsupported oracle provider.');
+        await resolveAddressFromJson(chainId);
+        const key = role === 'owner' ? 'CertiliaOwnerOracle' : 'CertiliaVoteOracle';
+        for (const variant of keyVariants(chainId)) {
+            const entry = addressesJsonCache?.[variant];
+            if (entry?.CertiliaReady !== true) continue;
+            const address = entry?.[key];
+            if (address) return address;
+        }
+        throw new Error(`Certilia ${role} oracle is not configured on this network.`);
     }
 
     async function resolveConfiguredAddress(chainId) {
@@ -419,15 +437,34 @@
         const contract = new Contract(contractAddress, PROPOSAL_ABI, signer);
         const recipient = await signer.getAddress();
         const lensAddresses = normalizeLensAddresses(options.lens);
-        if (!lensAddresses.length) {
+        if (!lensAddresses.length && !options.oracles) {
             throw new Error('Lens list is required for minting proposals on-chain.');
         }
-        // A vote proposal (facets.ownership === 'no-change') mints fund-less via mintVote:
-        // no ETH/token, an expiry deadline instead, and it never executes. Both paths share
-        // the receipt/proposalId handling below.
+        // Oracle-backed votes can hold escrow and execute after unanimous approval at close.
+        // Existing EAS votes remain available for proposals that did not select oracles.
         const isVote = Boolean(options.isVote);
+        const oracles = options.oracles && typeof options.oracles === 'object' ? options.oracles : null;
         let tx;
-        if (isVote) {
+        if (isVote && oracles) {
+            const ownerOracle = getAddress(await resolveOracleAddress(chainId, oracles.ownerProvider, 'owner', oracles.ownerOracle));
+            const voteOracle = getAddress(await resolveOracleAddress(chainId, oracles.voteProvider, 'vote', oracles.voteOracle));
+            const expectedOwners = BigInt(oracles.expectedOwners);
+            if (expectedOwners <= 0n) throw new Error('The ownership oracle must approve a nonempty electorate.');
+            if ((ethAmountWei > 0n || tokenAmount > 0n) && !oracles.payoutRecipient) {
+                throw new Error('Choose a payout wallet before funding an oracle vote.');
+            }
+            const payoutRecipient = getAddress(oracles.payoutRecipient || recipient);
+            const args = [recipient, uniqueParcelIds, imageURI, resolveVoteExpiry(options),
+                ownerOracle, voteOracle, expectedOwners, payoutRecipient, tokenAmount];
+            try {
+                await contract.mintOracleVote.staticCall(...args, { value: ethAmountWei });
+            } catch (error) {
+                const reason = error?.reason || error?.shortMessage || error?.message;
+                throw new Error(`Oracle proposal mint is unavailable: ${reason || 'deploy the updated ProposalNFT and obtain electorate approval first.'}`);
+            }
+            tx = await contract.mintOracleVote(...args, { value: ethAmountWei });
+            if (typeof options.onSubmitted === 'function') options.onSubmitted(tx);
+        } else if (isVote) {
             const expiryTimestampArg = resolveVoteExpiry(options);
             const voteArgs = [recipient, uniqueParcelIds, imageURI, expiryTimestampArg, lensAddresses];
             try {
@@ -1026,6 +1063,54 @@
         };
     }
 
+    async function castOracleVoteOnChain(options = {}) {
+        const { signer, contract, contractAddress, targetChainId } =
+            await resolveProposalContractForWrite(options, 'Connect a wallet to vote on-chain.');
+        if (options.proposalId === undefined || options.proposalId === null) {
+            throw new Error('Proposal id is required to vote on-chain.');
+        }
+        const proposalId = parseProposalIdArg(options.proposalId);
+        const info = await contract.getOracleVoteInfo(proposalId);
+        if (!info.usesOracles) throw new Error('This proposal does not use voting oracles.');
+        const reporter = new globalScope.ethers.Contract(info.voteOracle, [
+            'function walletOwnerId(uint256 proposalId, address wallet) view returns (bytes32)',
+            'function castMyVote(uint256 proposalId, bytes32 ownerId, uint8 choice)'
+        ], signer);
+        const ownerId = await reporter.walletOwnerId(proposalId, await signer.getAddress());
+        if (!ownerId || ownerId === ZERO_BYTES32) {
+            throw new Error('Verify your identity with the selected voting provider before voting.');
+        }
+        const choice = Number(options.choice);
+        if (![0, 1, 2].includes(choice)) throw new Error('Invalid vote choice.');
+        const tx = await reporter.castMyVote(proposalId, ownerId, choice);
+        const receipt = await tx.wait();
+        const finalHash = receipt?.hash || tx.hash;
+        const latest = await contract.getOracleVoteInfo(proposalId);
+        return { transactionHash: finalHash, chainId: targetChainId, contractAddress,
+            voteOracle: info.voteOracle, choice,
+            tally: { yesVotes: Number(latest.yesVotes), noVotes: Number(latest.noVotes),
+                registeredOwners: Number(latest.registeredOwners), expectedOwners: Number(latest.expectedOwners) },
+            explorerUrl: buildExplorerTxUrl(targetChainId, finalHash) };
+    }
+
+    async function finalizeOracleVoteOnChain(options = {}) {
+        const { contract, contractAddress, targetChainId } =
+            await resolveProposalContractForWrite(options, 'Connect a wallet to finalize this vote.');
+        const tx = await contract.finalizeOracleVote(parseProposalIdArg(options.proposalId));
+        const receipt = await tx.wait();
+        const info = await contract.getOracleVoteInfo(parseProposalIdArg(options.proposalId));
+        return { transactionHash: receipt?.hash || tx.hash, chainId: targetChainId, contractAddress,
+            unanimous: info.registeredOwners === info.expectedOwners && info.yesVotes === info.expectedOwners };
+    }
+
+    async function withdrawOracleFundsOnChain(options = {}) {
+        const { contract, contractAddress, targetChainId } =
+            await resolveProposalContractForWrite(options, 'Connect the payout wallet to claim funds.');
+        const tx = await contract.withdrawOracleFunds(parseProposalIdArg(options.proposalId));
+        const receipt = await tx.wait();
+        return { transactionHash: receipt?.hash || tx.hash, chainId: targetChainId, contractAddress };
+    }
+
     async function rescindVoteOnChain(options = {}) {
         const { contract, contractAddress, targetChainId } =
             await resolveProposalContractForWrite(options, 'Connect a wallet to rescind your vote on-chain.');
@@ -1124,6 +1209,7 @@
     }
 
     async function castVoteWithRouting(options = {}) {
+        if (options.usesOracles === true) return castOracleVoteOnChain({ ...options, choice: 1 });
         if (isCantonActive()) {
             throw new Error('On-chain voting is not wired on Canton yet.');
         }
@@ -1134,6 +1220,7 @@
     }
 
     async function rescindVoteWithRouting(options = {}) {
+        if (options.usesOracles === true) return castOracleVoteOnChain({ ...options, choice: 0 });
         if (isCantonActive()) {
             throw new Error('Rescinding a vote is not wired on Canton yet.');
         }
@@ -1181,6 +1268,9 @@
         withdrawAcceptance: withdrawAcceptanceWithRouting,
         castVote: castVoteWithRouting,
         rescindVote: rescindVoteWithRouting,
+        castOracleVote: castOracleVoteOnChain,
+        finalizeOracleVote: finalizeOracleVoteOnChain,
+        withdrawOracleFunds: withdrawOracleFundsOnChain,
         distributeFunds: distributeFundsWithRouting,
         cancelAndRefund: cancelAndRefundWithRouting
     };

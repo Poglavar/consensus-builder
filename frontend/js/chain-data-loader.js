@@ -30,6 +30,7 @@
         'function getProposalsBatch(uint256[] memory proposalIds) public view returns (string[][] memory parcelIdsArray, bool[] memory isConditionalArray, string[] memory imageURIArray, bool[] memory acceptancePossibleArray, uint8[] memory statusArray, uint256[] memory ethBalanceArray, uint256[] memory tokenBalanceArray, uint256[] memory acceptanceCountArray, uint256[] memory expiryTimestampArray, uint256[] memory expiringPercentageArray)',
         'function hasAccepted(uint256 proposalId, string memory parcelId) public view returns (bool)',
         'function getLens(uint256 proposalId) public view returns (address[] memory)',
+        'function getOracleVoteInfo(uint256 proposalId) view returns (bool usesOracles, address ownerOracle, address voteOracle, uint256 expectedOwners, uint256 registeredOwners, uint256 yesVotes, uint256 noVotes, address payoutRecipient, bool finalized)',
         'function ownerOf(uint256 tokenId) public view returns (address)'
     ];
 
@@ -38,6 +39,30 @@
         return codec && typeof codec.decodeProposalStatus === 'function'
             ? codec.decodeProposalStatus(statusCode)
             : 'Unknown';
+    }
+
+    async function withOracleVoteState(contract, proposal) {
+        if (!proposal || !proposal.expiryTimestamp || BigInt(proposal.expiryTimestamp) === 0n) return proposal;
+        try {
+            const info = await contract.getOracleVoteInfo(proposal.proposalId);
+            if (!info.usesOracles) return proposal;
+            return {
+                ...proposal,
+                isVote: true,
+                oracles: {
+                    ownerOracle: info.ownerOracle,
+                    voteOracle: info.voteOracle,
+                    expectedOwners: Number(info.expectedOwners),
+                    registeredOwners: Number(info.registeredOwners),
+                    yesVotes: Number(info.yesVotes),
+                    noVotes: Number(info.noVotes),
+                    payoutRecipient: info.payoutRecipient,
+                    finalized: info.finalized
+                }
+            };
+        } catch (_) {
+            return proposal; // Older deployed contracts do not have the oracle getter.
+        }
     }
 
     /**
@@ -439,7 +464,7 @@
                 proposals = proposals.filter(p => p !== null);
             }
 
-            return proposals.filter(p => !p.error);
+            return Promise.all(proposals.filter(p => !p.error).map(p => withOracleVoteState(contract, p)));
         } catch (error) {
             console.error('Error fetching proposals from chain:', error);
             throw error;
@@ -543,7 +568,7 @@
             });
         }
 
-        return results;
+        return Promise.all(results.map(p => withOracleVoteState(contract, p)));
     }
 
     /**
