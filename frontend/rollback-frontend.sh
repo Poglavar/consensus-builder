@@ -6,7 +6,7 @@
 set -e  # Exit on any error
 
 # Configuration
-SSHDO='ssh root@67.205.138.129 -i ~/.ssh/id_ed25519'
+SSHDO='ssh root@46.224.128.67 -i ~/.ssh/id_ed25519'
 REMOTE_PATH='/var/www/urbangametheory.xyz'
 BACKUP_BASE='/var/www'
 
@@ -206,4 +206,4 @@ echo -e "\n${YELLOW}📊 Rollback Summary:${NC}"
 echo -e "  • Rolled back to: $SELECTED_NAME"
 echo -e "  • Pre-rollback backup: ${REMOTE_PATH}_$CURRENT_BACKUP_NAME"
 echo -e "  • Remote path: $REMOTE_PATH"
-echo -e "  • Server: 67.205.138.129"
+echo -e "  • Server: 46.224.128.67"
