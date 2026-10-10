@@ -16,3 +16,4 @@ test-results/
 
 # runtime logs of the backend jobs (PM2 and the agent runner write here)
 backend/logs/
+backend/coverage/
