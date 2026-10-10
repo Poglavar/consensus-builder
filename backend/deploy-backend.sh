@@ -106,22 +106,6 @@ done
 )
 echo "DDL applied."
 
-# Data step of the projections release (projections.md §3, "Legacy"): road records stored without
-# their corridor land are flagged `legacy-centreline` BEFORE the reload, because the new code reads an
-# unflagged centre line without land as an unprepared corridor (invalid footprint). It needs the new
-# footprint reader, so it runs from this checkout, after npm ci. Idempotent: after the first run it
-# reads the road rows and changes nothing. Exit 2 = some rows violate proposal_cadastre_parcel_ids_or_site
-# and cannot be updated at all — reported in the log, not fatal.
-echo "Flagging legacy centre-line road records..."
-set +e
-node scripts/flag-legacy-centreline-roads.mjs --apply
-flag_rc=$?
-set -e
-if [[ ${flag_rc} -ne 0 && ${flag_rc} -ne 2 ]]; then
-    echo "❌ Flagging legacy road records failed (exit ${flag_rc}) — aborting before the reload." >&2
-    exit 1
-fi
-
 echo "Reloading PM2 process without dropping connections..."
 mkdir -p logs
 export RELEASE_SHA="$(git rev-parse HEAD)"
