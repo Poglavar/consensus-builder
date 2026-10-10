@@ -35,7 +35,7 @@ set only after adjudicating a new failure against main (see method). Tolerated, 
 - `parcel-info-panel.spec.ts:244` — government-ownership. Same.
 
 Runner uses `BASE_URL=http://localhost:8090` (not `127.0.0.1`, which breaks the `data-source` spec).
-Compare against unmodified main by serving `/Users/simun/Code/consensus-builder/frontend` on :8091.
+Compare against unmodified main by serving `~/Code/consensus-builder/frontend` on :8091.
 
 ### THE INVARIANT — assert after every extraction step
 1. `node --check frontend/js/proposals/*.js frontend/js/proposals.js` — all parse.
