@@ -369,7 +369,7 @@
 
 - 2026-10-08: The user authorized international institutional outreach and associated Manhattan contacts, excluding NYU Marron because they contacted it separately; use the existing one-minute pace and official forms where needed.
 - 2026-10-08: The user requested worldwide urbanism/planning faculties and institutes for gradual future outreach, excluding architecture-only schools and previously contacted parents; group the queue by country for regional batches and retain programme/contact source evidence.
-- 2026-10-08: The worldwide research catalogue is in `outreach/global-urbanism` with a workbook and CSV in `outputs/global-urbanism-20261008`; after fifth-wave preparation it has 987 parents, 509 published-email contacts, 476 needing contact research and 2 ineligible records. Recheck each assigned batch before sending.
+- 2026-10-08: The worldwide research catalogue is in `outreach/global-urbanism` with a workbook and CSV in `outreach/global-urbanism/workbook-20261008`; after fifth-wave preparation it has 987 parents, 509 published-email contacts, 476 needing contact research and 2 ineligible records. Recheck each assigned batch before sending.
 - 2026-10-08: The user explicitly approved URBACT’s Mailinblack CAPTCHA at action time; verification succeeded and the existing introduction was released, with proof saved in the institutional outreach log.
 - 2026-10-08: The user chose developed countries first for institutional outreach to find early adopters, while retaining developing-country institutions for later batches; start with English-speaking developed-country batches, then the rest of the first wave, using `outreach/global-urbanism/outreach-priority.json`.
 
@@ -395,3 +395,7 @@
 - 2026-10-08: The user requested another 100 institutions. Research and independent source review produced 80 more prepared drafts and 20 remaining holds, bringing the tracker to 265 prepared, 320 research holds and 85 queued. Later research rounds append verified members to frozen batches while preserving every prior payload record and preparation archive; no additional sending or scheduling was authorized.
 
 - 2026-10-09: Completed source research and independent review for all 320 remaining previously found urbanism institutions: 255 newly prepared drafts, 62 documented holds and 3 exclusions; the HTML tracker is authoritative, and the existing 85 scheduled messages were preserved. Never-contacted held-draft corrections retain the complete prior draft and immutable preparation archive.
+
+- 2026-10-09: The user authorized slow scheduling of all ready outreach, around 100 total messages per day to finish within a week; count existing queued messages toward that daily budget. All 520 ready messages were scheduled and individually verified in Zoho for 9–15 October, with eight-minute spacing and the final send at 18:08 Asia/Tbilisi on 15 October; 62 unresolved holds remain excluded. `outreach/global-urbanism/weekly-2026-10-09` retains all provider receipts and validation; queued status does not establish delivery.
+
+- 2026-10-10: Outreach personal data never enters git: the repo is public, so `outreach/` (recipient lists, contact research, .eml drafts, outbox screenshots, the campaign workbook) is gitignored and local only. The unpushed outreach commits were rewritten before their first push so no contact data reached GitHub.
