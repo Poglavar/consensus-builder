@@ -99,7 +99,7 @@ describe('proposal replacement supersession', () => {
     });
 });
 
-// What "the ground is taken" means. Decided 2026-08-24 (Simun): GEOMETRY, not parcel identity.
+// What "the ground is taken" means. Decided 2026-08-24 (the user): GEOMETRY, not parcel identity.
 //
 // A cadastral parcel is not the unit a proposal competes for. Roads and land readjustments cut one
 // cadastral parcel into many plots, and a plan puts a different building on each — so two buildings

@@ -32,7 +32,7 @@ Requires local PostgreSQL `geodata` credentials in `cadastre-data/.env`, the CDO
 bash world-parcels/guess-spike/extract.sh 2971 33018
 python3 world-parcels/guess-spike/guess.py \
   world-parcels/guess-spike/output/tile_2971_33018/input.json \
-  /Users/simun/Code/zagreb-parkiralista/data/tiles/cdof2022/tile_2971_33018.tif \
+  ~/Code/zagreb-parkiralista/data/tiles/cdof2022/tile_2971_33018.tif \
   world-parcels/guess-spike/output/tile_2971_33018
 python3 world-parcels/guess-spike/evaluate.py \
   world-parcels/guess-spike/output/tile_2971_33018/input.json \
