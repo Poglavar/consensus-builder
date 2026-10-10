@@ -553,3 +553,5 @@ Expanded SAM 3 head fine-tuning used 96 training tiles and fresh 16-tile validat
 - 2026-10-08: BEV parcel geometry is reconstructed from every required maximum-resolution vector tile in a shared integer grid; the reference API supplies only bounds, so it must never be used as the parcel shape, and incomplete tile coverage fails explicitly.
 
 - 2026-10-09: Betting is one yes/no pool per proposal (the deployed proposal_market) grouped into contests of proposals that share parcels, the Polymarket event shape; no pairwise or multi-outcome program. "Bet on cities" is the product copy (bet, pool, chance, pays, settle), hyperstition stays campaign-only. Losers settle through the lifecycle lens expired verdict; expires_at auto-settlement is an accepted option.
+
+- 2026-10-10: Batch parcel qualification/integration at roughly 50 candidate cities; record and skip city-specific failures after bounded retries, preserving unresolved evidence and continuing later cities/cohorts. Villavicencio exposed a producer/validator linkage mismatch (cityFile versus canonical cityRecord), not an absent review file.

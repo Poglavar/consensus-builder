@@ -457,6 +457,8 @@ class Runner:
                 if task.get("status") == "running":
                     task["status"] = "pending"
             self.state["status"] = "resuming"
+            self.state["lastError"] = None
+            self.state["systemicFailure"] = None
             self.log("resumed from durable state; prior logs and artifacts are preserved", queueSha256=digest)
         else:
             self.state = new_state(self.args.job_name, str(queue_path), digest)
@@ -695,7 +697,7 @@ Perform separate first-party discovery queries in English and the country's loca
 
 Record every attempted route/request and distinguish a city/local registry custodian from general national agency prose. Use `registryFound=true` only when a local registry/cadastre/map/procedure is actually evidenced; otherwise use `null` (never `false`). Do not present packet completion as source integration/admission. Keep `runtimeReadiness` held unless the serial reviewer qualifies a real adapter independently.
 
-The paired service review must link back to the city file and document query and request outcomes, scope limits, safe field allowlist, and uncertainty. Mark the packet complete only after accurately recording all executed attempts. Never invent a successful query, registry, or geometry. End with a short machine-readable completion summary in your final response.{retry_block}"""
+The paired service review MUST contain `"cityRecord": "{city_file}"` at the top level. Write and reread both named JSON files before returning. This report must document query and request outcomes, scope limits, safe field allowlist, and uncertainty. Mark the packet complete only after accurately recording all executed attempts. Never invent a successful query, registry, or geometry. End with a short machine-readable completion summary in your final response.{retry_block}"""
 
     def _build_review_prompt(self, city_items: list[dict[str, Any]], root_task_ids: list[str], identity_items: list[dict[str, Any]] | None = None) -> str:
         identities = identity_items or []
@@ -716,7 +718,7 @@ Root review tasks:
 New city batch:
 {city_text or '- (none)'}
 
-Identity holds that block rank advancement:
+Identity holds (unresolved cities stay excluded while other cities continue):
 {identity_text or '- (none)'}
 
 For each city, revalidate the immutable queue identity (city code/rank/country/point/population persons), bilingual executed searches, and no more than three full polygons with safe ID attributes. Packet completeness alone never means integrated or admitted. Enable a city only after independent live adapter qualification proves fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed details-panel verification. If any gate is missing or not independently evidenced, leave it held and do not edit runtime/catalog/report state to imply admission. A point-zero, timeout, login/anti-bot wall, or unavailable viewer is not citywide absence.
@@ -772,32 +774,86 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
         tasks = self.state.setdefault("rootReviewTasks", {})
         for task_id, description in ROOT_REVIEW_TASKS:
             tasks.setdefault(task_id, {"status": "pending", "description": description, "attempts": 0})
-        # Any already complete paired packet is reviewed before being called integrated.
+        # City review owns packet review. Reuse its proof instead of adding a second task.
+        reused = []
         for city in cities:
             code = str(city["cityCode"])
             packet = self._packet(city, cohort_dir)
-            if packet.get("valid"):
-                task_id = f"packet:{code}"
-                tasks.setdefault(task_id, {"status": "pending", "description": f"Review pre-existing completed city packet {code}; packet completion alone is not integration.", "attempts": 0})
+            proof = self._reviewed_city_receipt(city, packet)
+            task = tasks.get(f"packet:{code}")
+            if proof is not None and task and task.get("status") in {"pending", "running"}:
+                task.update(status="done", reviewedAt=proof["checkedAt"],
+                            receiptPath=str(self._receipt_path(f"city:{code}")),
+                            satisfiedBy=f"city:{code}")
+                reused.append(code)
+        if reused:
+            self.log("reused saved city reviews; duplicate packet tasks retired", cityCodes=reused,
+                     reusedCount=len(reused))
+            self.save_state()
+
+    def _reviewed_city_receipt(self, city: dict[str, Any], packet: dict[str, Any]) -> dict[str, Any] | None:
+        """Trust a completed review only with valid, still-current paired evidence."""
+        entry = self._city_entry(city)
+        if not packet.get("valid") or entry.get("status") not in {"reviewed", "reviewed-held"}:
+            return None
+        receipt = self._review_receipt(f"city:{city['cityCode']}")
+        if receipt is None or ((entry["status"] == "reviewed-held") != (receipt["decision"] == "held")):
+            return None
+        evidence = [(self.root / raw).resolve() for raw in receipt["evidenceFiles"]]
+        paired = [packet.get("cityPath"), packet.get("reviewPath")]
+        if any(path is None or path.resolve() not in evidence for path in paired):
+            return None
+        checked = datetime.fromisoformat(receipt["checkedAt"].replace("Z", "+00:00"))
+        if checked.tzinfo is None:
+            checked = checked.replace(tzinfo=timezone.utc)
+        # Receipts use whole seconds; allow only that timestamp's fractional second.
+        if any(path.stat().st_mtime >= checked.timestamp() + 1 for path in evidence):
+            return None
+        return receipt
+
+    def _skip_item(self, task_id: str, entry: dict[str, Any], phase: str, reason: str) -> None:
+        """Retain failure evidence without claiming successful research or review."""
+        if entry.get("status") == "failed-skipped":
+            return
+        entry.update(status="failed-skipped", failedPhase=phase, skippedAt=utc_now(), lastError=reason)
+        failure = {"taskId": task_id, "phase": phase, "reason": reason,
+                   "attempts": entry.get("attempts", 0), "at": entry["skippedAt"],
+                   "queuePath": self.state.get("queuePath"), "wupIdentity": entry.get("wupIdentity")}
+        self.state.setdefault("failedItems", {})[task_id] = failure
+        append_jsonl(self.state_dir / "failed-items.jsonl", failure)
+        self.log("item failed after bounded attempts; retained for follow-up and skipped", **failure)
+        self.save_state()
+
+    def _skip_unreviewed(self, cities: list[dict[str, Any]], root_ids: list[str], reason: str) -> None:
+        for city in cities:
+            entry = self._city_entry(city)
+            if entry.get("status") not in {"reviewed", "reviewed-held", "failed-skipped"}:
+                self._skip_item(f"city:{city['cityCode']}", entry, "review", reason)
+        for task_id in root_ids:
+            entry = self.state["rootReviewTasks"][task_id]
+            if entry.get("status") != "done":
+                self._skip_item(task_id, entry, "review", reason)
 
     def _next_root_tasks(self, limit: int = 3) -> list[str]:
         return [task_id for task_id, task in self.state.get("rootReviewTasks", {}).items()
-                if task.get("status") != "done"][:limit]
+                if task.get("status") not in {"done", "failed-skipped"}][:limit]
 
     def _select_batch(self, cities: list[dict[str, Any]], cohort_dir: Path) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
         research: list[dict[str, Any]] = []
         review_only: list[dict[str, Any]] = []
         for city in cities:
             entry = self._city_entry(city)
-            if entry.get("status") in {"reviewed", "reviewed-held"}:
+            if entry.get("status") == "failed-skipped":
                 continue
             packet = self._packet(city, cohort_dir)
+            if self._reviewed_city_receipt(city, packet) is not None:
+                continue
             if packet.get("valid"):
                 if len(review_only) < 3:
                     review_only.append({**city, "cityPath": str(packet["cityPath"]), "cohortDir": str(cohort_dir)})
             elif entry.get("attempts", 0) >= self.args.max_retries:
-                entry["status"] = "blocked"
-                entry["lastError"] = "; ".join(packet.get("errors", []))
+                self._skip_item(f"city:{city['cityCode']}", entry, "research",
+                                "; ".join(packet.get("errors", [])))
             else:
                 research.append(city)
             if len(research) >= self.args.workers:
@@ -868,8 +924,11 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                         entry["status"] = "pending"
                         next_pending.append(city)
                     else:
-                        entry["status"] = "blocked"
-                        entry["blockedAt"] = utc_now()
+                        if result.get("systemic"):
+                            entry["status"] = "blocked"
+                            entry["blockedAt"] = utc_now()
+                        else:
+                            self._skip_item(f"city:{city_code}", entry, "research", error)
                     self.log("city attempt did not produce a valid packet", cityCode=city_code,
                              attempt=entry["attempts"], maxRetries=self.args.max_retries, error=error,
                              systemic=result.get("systemic", False))
@@ -955,14 +1014,16 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                 entry = self._city_entry(city)
                 packet = self._packet(city, Path(city.get("cohortDir", self._queue_path().parent)))
                 if packet.get("valid"):
+                    previously_held = entry.get("status") == "reviewed-held"
                     entry["status"] = "reviewed-held" if task_id in held_ids else "reviewed"
                     entry["reviewedAt"] = utc_now()
                     entry["reviewPath"] = str(packet.get("reviewPath"))
                     entry["receiptPath"] = str(self._receipt_path(task_id))
-                    if entry["status"] == "reviewed-held": self.state["heldCount"] = int(self.state.get("heldCount", 0)) + 1
+                    if entry["status"] == "reviewed-held" and not previously_held:
+                        self.state["heldCount"] = int(self.state.get("heldCount", 0)) + 1
                 else:
-                    entry["status"] = "blocked-reviewed"
-                    entry["lastError"] = "reviewed but paired packet failed structural validation: " + "; ".join(packet.get("errors", []))
+                    self._skip_item(f"city:{code}", entry, "review",
+                                    "reviewed but paired packet failed structural validation: " + "; ".join(packet.get("errors", [])))
             for task_id in reviewed & set(identity_ids):
                 self.state.setdefault("identityReviews", {})[task_id] = {"status": "done", "reviewedAt": utc_now(), "receiptPath": str(self._receipt_path(task_id))}
             self.save_state()
@@ -1087,6 +1148,8 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
             return True
         if not isinstance(held, list):
             raise ValueError(f"identity-review cities field is malformed: {review_path}")
+        held = [item for item in held if self.state.get("identityReviews", {}).get(
+            f"identity:{item['cityCode']}", {}).get("status") != "failed-skipped"]
         for start in range(0, len(held), 3):
             batch = held[start:start + 3]
             identities = [{"cityCode": str(item["cityCode"]), "name": item.get("name"), "rank": item.get("rank")}
@@ -1094,10 +1157,10 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
             task_ids = [f"identity:{item['cityCode']}" for item in identities]
             call = self._review_call([], [], identities)
             result = self.run_calls([call])[0]
-            success, answer, _ = self._complete_review([], [], identities, result)
-            if not success or answer is None:
-                self.state["status"] = "blocked"
-                self.state["lastError"] = f"identity holds were not reviewed: {task_ids}"
+            success, answer, systemic = self._complete_review([], [], identities, result)
+            if systemic or self.stop_requested:
+                self.state["status"] = "blocked" if systemic else "stopping"
+                self.state["lastError"] = f"identity review interrupted or persistent Codex service failure: {task_ids}"
                 self.save_state()
                 return False
             updated = json_read(review_path)
@@ -1109,13 +1172,15 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                 overlay = json_read(overlay_path)
                 decisions.update({str(item.get("wupCityCode")): item.get("decision")
                                   for item in overlay.get("decisions", []) if isinstance(item, dict)})
-            if any(code in unresolved or decisions.get(code) not in {"confirmed_attempt", "different_settlement"}
-                   for code in (item["cityCode"] for item in identities)):
-                self.state["status"] = "blocked"
-                self.state["lastError"] = "reviewer did not persist a reasoned identity decision for every held city"
-                self.save_state()
-                return False
-            self.log("identity holds resolved before rank work", cityCodes=[item["cityCode"] for item in identities])
+            accepted = set((answer or {}).get("reviewedIds", []))
+            for item in identities:
+                code = item["cityCode"]
+                task_id = f"identity:{code}"
+                if task_id not in accepted or code in unresolved or decisions.get(code) not in {"confirmed_attempt", "different_settlement"}:
+                    entry = self.state.setdefault("identityReviews", {}).setdefault(task_id, {})
+                    self._skip_item(task_id, entry, "identity",
+                                    "identity review unresolved after bounded attempts; city remains excluded from the eligible queue")
+            self.log("identity review checkpoint; unresolved identities remain excluded", cityCodes=[item["cityCode"] for item in identities])
         self.state["queuePath"] = str(queue_path.resolve())
         self.state["queueSha256"] = sha256_file(queue_path)
         self.save_state()
@@ -1177,10 +1242,13 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                 success, _answer, review_systemic = self._complete_review(preexisting_review_items, root_tasks, first_result=review_result)
                 systemic = systemic or review_systemic
             if not success:
-                self.state["status"] = "blocked"
-                self.state["lastError"] = "serial reviewer did not complete pre-existing/root task IDs with receipts after bounded retries"
-                self.save_state()
-                return False, None
+                if systemic or self.stop_requested:
+                    self.state["status"] = "blocked" if systemic else "stopping"
+                    self.state["lastError"] = "serial review interrupted or persistent Codex service failure"
+                    self.save_state()
+                    return False, None
+                self._skip_unreviewed(preexisting_review_items, root_tasks,
+                                      "serial reviewer did not persist a valid review receipt after bounded retries")
             new_review_items = []
             for city in research:
                 packet = self._packet(city, cohort_dir)
@@ -1192,10 +1260,13 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                 success, _answer, review_systemic = self._complete_review(new_review_items, [], first_result=result)
                 systemic = systemic or review_systemic
                 if not success:
-                    self.state["status"] = "blocked"
-                    self.state["lastError"] = "serial reviewer did not complete newly written city packets with receipts after bounded retries"
-                    self.save_state()
-                    return False, None
+                    if systemic or self.stop_requested:
+                        self.state["status"] = "blocked" if systemic else "stopping"
+                        self.state["lastError"] = "serial review interrupted or persistent Codex service failure"
+                        self.save_state()
+                        return False, None
+                    self._skip_unreviewed(new_review_items, [],
+                                          "serial reviewer did not persist a valid review receipt after bounded retries")
             self.save_state()
             if systemic:
                 self.state["status"] = "blocked"
@@ -1208,18 +1279,15 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                 return True, end_rank
             self.log("batch checkpoint", batch=batch_number, reviewedCount=sum(
                 1 for code in self.state["cities"] if self.state["cities"][code].get("status") in {"reviewed", "reviewed-held"}),
-                blockedCount=sum(1 for code in self.state["cities"] if self.state["cities"][code].get("status") == "blocked-reviewed"))
+                failedSkippedCount=sum(1 for code in self.state["cities"] if self.state["cities"][code].get("status") == "failed-skipped"))
             if self.stop_requested:
                 return False, None
 
-        blocked = [code for code, city_state in self.state.get("cities", {}).items()
-                   if city_state.get("status") in {"blocked", "blocked-reviewed"}]
-        if blocked:
-            self.state["status"] = "blocked"
-            self.state["lastError"] = f"blocked city packets require manual repair/review: {', '.join(blocked)}"
-            self.save_state()
-            self.log("queue stopped with blocked items; no rank advancement", blockedCityCodes=blocked)
-            return False, None
+        skipped = [str(city["cityCode"]) for city in cities
+                   if self._city_entry(city).get("status") == "failed-skipped"]
+        if skipped:
+            self.log("rank range finished with recorded city failures; advancing remaining queue",
+                     failedCityCodes=skipped, rankEnd=end_rank)
         if self._next_root_tasks(1):
             self.state["status"] = "blocked"
             self.state["lastError"] = "root review tasks remain after queue completion; refusing rank advancement"
@@ -1262,7 +1330,7 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                 if range_end is None:
                     range_end = self.state.get("currentRankEnd") or 0
                 if range_end >= int(self.state.get("totalRankCount", 12138)):
-                    self.state["status"] = "complete"
+                    self.state["status"] = "complete-with-failures" if self.state.get("failedItems") else "complete"
                     self.state["completedAt"] = utc_now()
                     self.save_state()
                     self.log("all ranked WUP city research ranges exhausted", totalRankCount=range_end)
@@ -1403,6 +1471,7 @@ def main(argv: list[str] | None = None) -> int:
                           "heartbeat": state.get("heartbeat"), "heartbeatAgeSeconds": heartbeat_age,
                           "queuePath": state.get("queuePath"), "currentRankStart": state.get("currentRankStart"),
                           "currentRankEnd": state.get("currentRankEnd"), "activeProcesses": active,
+                          "failedSkippedCount": len(state.get("failedItems", {})),
                           "lastError": state.get("lastError")}, indent=2))
         return 0
     if not args.run:
