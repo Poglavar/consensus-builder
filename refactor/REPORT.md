@@ -64,5 +64,5 @@ side-effects in `bootstrap.js` (loaded last); every other module is pure declara
 cd consensus-builder-proposals-refactor
 ./refactor/run-e2e.sh                 # full suite vs allowed_red
 node refactor/verify-globals.mjs      # global surface vs baseline
-# main comparison: serve /Users/simun/Code/consensus-builder/frontend on :8091, run with BASE_URL
+# main comparison: serve ~/Code/consensus-builder/frontend on :8091, run with BASE_URL
 ```
