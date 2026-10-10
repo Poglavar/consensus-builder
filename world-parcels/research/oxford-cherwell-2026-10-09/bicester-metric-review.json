@@ -1,0 +1,3152 @@
+{
+  "checkedAt": "2026-10-09T15:14:59.721409+00:00",
+  "area": "bicester",
+  "metricCrs": "EPSG:32630",
+  "method": "Independent GEOS/Shapely validity, duplicate and full candidate-pair intersection checks on unmodified full WGS84 source polygons projected for metric measurement only.",
+  "inputSha256": "5a2bfe82536e0f0cd0b787b2d543f18343bbaaa076c88824407a54de520f2123",
+  "featureCount": 1487,
+  "invalid": [],
+  "invalidCount": 0,
+  "duplicatePairs": [
+    [
+      "GB-HMLR-CHERWELL-29475352",
+      "GB-HMLR-CHERWELL-29475353"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29476132",
+      "GB-HMLR-CHERWELL-29476133"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29479330",
+      "GB-HMLR-CHERWELL-29479331"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29479830",
+      "GB-HMLR-CHERWELL-29479831"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29480289",
+      "GB-HMLR-CHERWELL-29480290"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29480489",
+      "GB-HMLR-CHERWELL-29480491"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29480752",
+      "GB-HMLR-CHERWELL-29480753"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29480832",
+      "GB-HMLR-CHERWELL-29480833"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29481229",
+      "GB-HMLR-CHERWELL-29481230"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29481233",
+      "GB-HMLR-CHERWELL-29481234"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29481639",
+      "GB-HMLR-CHERWELL-29481640"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29481720",
+      "GB-HMLR-CHERWELL-29481721"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29482019",
+      "GB-HMLR-CHERWELL-29482020"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29482268",
+      "GB-HMLR-CHERWELL-29482269"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29482394",
+      "GB-HMLR-CHERWELL-29482395"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29482864",
+      "GB-HMLR-CHERWELL-29482865"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29513976",
+      "GB-HMLR-CHERWELL-29513981"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29513976",
+      "GB-HMLR-CHERWELL-29513978"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29513976",
+      "GB-HMLR-CHERWELL-29513979"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29513976",
+      "GB-HMLR-CHERWELL-29513980"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29513976",
+      "GB-HMLR-CHERWELL-29513977"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29513977",
+      "GB-HMLR-CHERWELL-29513981"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29513977",
+      "GB-HMLR-CHERWELL-29513978"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29513977",
+      "GB-HMLR-CHERWELL-29513979"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29513977",
+      "GB-HMLR-CHERWELL-29513980"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29513978",
+      "GB-HMLR-CHERWELL-29513981"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29513978",
+      "GB-HMLR-CHERWELL-29513979"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29513978",
+      "GB-HMLR-CHERWELL-29513980"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29513979",
+      "GB-HMLR-CHERWELL-29513981"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29513979",
+      "GB-HMLR-CHERWELL-29513980"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29513980",
+      "GB-HMLR-CHERWELL-29513981"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29515094",
+      "GB-HMLR-CHERWELL-29515095"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29515094",
+      "GB-HMLR-CHERWELL-29515101"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29515095",
+      "GB-HMLR-CHERWELL-29515101"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29515096",
+      "GB-HMLR-CHERWELL-29515097"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29515096",
+      "GB-HMLR-CHERWELL-29515098"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29515096",
+      "GB-HMLR-CHERWELL-29515099"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29515096",
+      "GB-HMLR-CHERWELL-29515100"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29515096",
+      "GB-HMLR-CHERWELL-29515102"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29515097",
+      "GB-HMLR-CHERWELL-29515098"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29515097",
+      "GB-HMLR-CHERWELL-29515099"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29515097",
+      "GB-HMLR-CHERWELL-29515100"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29515097",
+      "GB-HMLR-CHERWELL-29515102"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29515098",
+      "GB-HMLR-CHERWELL-29515099"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29515098",
+      "GB-HMLR-CHERWELL-29515100"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29515098",
+      "GB-HMLR-CHERWELL-29515102"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29515099",
+      "GB-HMLR-CHERWELL-29515100"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29515099",
+      "GB-HMLR-CHERWELL-29515102"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29515100",
+      "GB-HMLR-CHERWELL-29515102"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29515296",
+      "GB-HMLR-CHERWELL-29515297"
+    ],
+    [
+      "GB-HMLR-CHERWELL-29527673",
+      "GB-HMLR-CHERWELL-29527683"
+    ]
+  ],
+  "duplicatePairCount": 51,
+  "overlapThresholdM2": 0.01,
+  "overlapPairCount": 418,
+  "totalOverlapM2": 12565.07508330537,
+  "overlaps": [
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29527673",
+        "GB-HMLR-CHERWELL-29527683"
+      ],
+      "areaM2": 1013.6977119765226
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29499388",
+        "GB-HMLR-CHERWELL-29499542"
+      ],
+      "areaM2": 335.00830955736944
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29548135",
+        "GB-HMLR-CHERWELL-29548138"
+      ],
+      "areaM2": 240.5701448344189
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515094",
+        "GB-HMLR-CHERWELL-29515095"
+      ],
+      "areaM2": 213.7447832313704
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515094",
+        "GB-HMLR-CHERWELL-29515101"
+      ],
+      "areaM2": 213.7447832313704
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515095",
+        "GB-HMLR-CHERWELL-29515101"
+      ],
+      "areaM2": 213.7447832313704
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515094",
+        "GB-HMLR-CHERWELL-29515096"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515094",
+        "GB-HMLR-CHERWELL-29515097"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515094",
+        "GB-HMLR-CHERWELL-29515098"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515094",
+        "GB-HMLR-CHERWELL-29515099"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515094",
+        "GB-HMLR-CHERWELL-29515100"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515094",
+        "GB-HMLR-CHERWELL-29515102"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515095",
+        "GB-HMLR-CHERWELL-29515096"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515095",
+        "GB-HMLR-CHERWELL-29515097"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515095",
+        "GB-HMLR-CHERWELL-29515098"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515095",
+        "GB-HMLR-CHERWELL-29515099"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515095",
+        "GB-HMLR-CHERWELL-29515100"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515095",
+        "GB-HMLR-CHERWELL-29515102"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515096",
+        "GB-HMLR-CHERWELL-29515097"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515096",
+        "GB-HMLR-CHERWELL-29515098"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515096",
+        "GB-HMLR-CHERWELL-29515099"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515096",
+        "GB-HMLR-CHERWELL-29515100"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515096",
+        "GB-HMLR-CHERWELL-29515101"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515096",
+        "GB-HMLR-CHERWELL-29515102"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515097",
+        "GB-HMLR-CHERWELL-29515098"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515097",
+        "GB-HMLR-CHERWELL-29515099"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515097",
+        "GB-HMLR-CHERWELL-29515100"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515097",
+        "GB-HMLR-CHERWELL-29515101"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515097",
+        "GB-HMLR-CHERWELL-29515102"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515098",
+        "GB-HMLR-CHERWELL-29515099"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515098",
+        "GB-HMLR-CHERWELL-29515100"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515098",
+        "GB-HMLR-CHERWELL-29515101"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515098",
+        "GB-HMLR-CHERWELL-29515102"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515099",
+        "GB-HMLR-CHERWELL-29515100"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515099",
+        "GB-HMLR-CHERWELL-29515101"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515099",
+        "GB-HMLR-CHERWELL-29515102"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515100",
+        "GB-HMLR-CHERWELL-29515101"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515100",
+        "GB-HMLR-CHERWELL-29515102"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515101",
+        "GB-HMLR-CHERWELL-29515102"
+      ],
+      "areaM2": 213.68809580717203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515296",
+        "GB-HMLR-CHERWELL-29515297"
+      ],
+      "areaM2": 137.336270803592
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29513976",
+        "GB-HMLR-CHERWELL-29513981"
+      ],
+      "areaM2": 113.12201986275969
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29513976",
+        "GB-HMLR-CHERWELL-29513978"
+      ],
+      "areaM2": 113.12201986275969
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29513976",
+        "GB-HMLR-CHERWELL-29513979"
+      ],
+      "areaM2": 113.12201986275969
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29513976",
+        "GB-HMLR-CHERWELL-29513980"
+      ],
+      "areaM2": 113.12201986275969
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29513976",
+        "GB-HMLR-CHERWELL-29513977"
+      ],
+      "areaM2": 113.12201986275969
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29513977",
+        "GB-HMLR-CHERWELL-29513981"
+      ],
+      "areaM2": 113.12201986275969
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29513977",
+        "GB-HMLR-CHERWELL-29513978"
+      ],
+      "areaM2": 113.12201986275969
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29513977",
+        "GB-HMLR-CHERWELL-29513979"
+      ],
+      "areaM2": 113.12201986275969
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29513977",
+        "GB-HMLR-CHERWELL-29513980"
+      ],
+      "areaM2": 113.12201986275969
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29513978",
+        "GB-HMLR-CHERWELL-29513981"
+      ],
+      "areaM2": 113.12201986275969
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29513978",
+        "GB-HMLR-CHERWELL-29513979"
+      ],
+      "areaM2": 113.12201986275969
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29513978",
+        "GB-HMLR-CHERWELL-29513980"
+      ],
+      "areaM2": 113.12201986275969
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29513979",
+        "GB-HMLR-CHERWELL-29513981"
+      ],
+      "areaM2": 113.12201986275969
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29513979",
+        "GB-HMLR-CHERWELL-29513980"
+      ],
+      "areaM2": 113.12201986275969
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29513980",
+        "GB-HMLR-CHERWELL-29513981"
+      ],
+      "areaM2": 113.12201986275969
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29540193",
+        "GB-HMLR-CHERWELL-64368227"
+      ],
+      "areaM2": 104.84991701695779
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29476132",
+        "GB-HMLR-CHERWELL-29476133"
+      ],
+      "areaM2": 77.67663746129287
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29475352",
+        "GB-HMLR-CHERWELL-29475353"
+      ],
+      "areaM2": 75.9797681012622
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-51082880",
+        "GB-HMLR-CHERWELL-52368839"
+      ],
+      "areaM2": 74.51589758349382
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-63642903",
+        "GB-HMLR-CHERWELL-64642711"
+      ],
+      "areaM2": 56.72193559367349
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29482864",
+        "GB-HMLR-CHERWELL-29482865"
+      ],
+      "areaM2": 54.833068320316265
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29482268",
+        "GB-HMLR-CHERWELL-29482269"
+      ],
+      "areaM2": 54.04321689477915
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29480489",
+        "GB-HMLR-CHERWELL-29480491"
+      ],
+      "areaM2": 52.557137078696016
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29479330",
+        "GB-HMLR-CHERWELL-29479331"
+      ],
+      "areaM2": 51.322771857962984
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29479830",
+        "GB-HMLR-CHERWELL-29479831"
+      ],
+      "areaM2": 48.97942809388436
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29480832",
+        "GB-HMLR-CHERWELL-29480833"
+      ],
+      "areaM2": 48.6524967923262
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29481229",
+        "GB-HMLR-CHERWELL-29481230"
+      ],
+      "areaM2": 47.51110768861142
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29482019",
+        "GB-HMLR-CHERWELL-29482020"
+      ],
+      "areaM2": 46.313354727117435
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29481639",
+        "GB-HMLR-CHERWELL-29481640"
+      ],
+      "areaM2": 45.62037833560805
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29480752",
+        "GB-HMLR-CHERWELL-29480753"
+      ],
+      "areaM2": 45.2916436658325
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29481233",
+        "GB-HMLR-CHERWELL-29481234"
+      ],
+      "areaM2": 43.52754662105876
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29482394",
+        "GB-HMLR-CHERWELL-29482395"
+      ],
+      "areaM2": 42.08268139574374
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29480289",
+        "GB-HMLR-CHERWELL-29480290"
+      ],
+      "areaM2": 41.62891353565446
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29481720",
+        "GB-HMLR-CHERWELL-29481721"
+      ],
+      "areaM2": 39.81150411506405
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29555520",
+        "GB-HMLR-CHERWELL-29567131"
+      ],
+      "areaM2": 30.84206914225984
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29543142",
+        "GB-HMLR-CHERWELL-51082641"
+      ],
+      "areaM2": 30.19697812402623
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29543142",
+        "GB-HMLR-CHERWELL-29543144"
+      ],
+      "areaM2": 27.957470295525468
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-56316536",
+        "GB-HMLR-CHERWELL-60184236"
+      ],
+      "areaM2": 18.98507368702087
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29537940",
+        "GB-HMLR-CHERWELL-29539900"
+      ],
+      "areaM2": 18.473352732324987
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29543142",
+        "GB-HMLR-CHERWELL-62947313"
+      ],
+      "areaM2": 17.665874878324193
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29543142",
+        "GB-HMLR-CHERWELL-51082880"
+      ],
+      "areaM2": 17.650659849681116
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-51082880",
+        "GB-HMLR-CHERWELL-62947313"
+      ],
+      "areaM2": 17.570631525455305
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-53073316",
+        "GB-HMLR-CHERWELL-56158490"
+      ],
+      "areaM2": 15.94486994502579
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29503115",
+        "GB-HMLR-CHERWELL-29503401"
+      ],
+      "areaM2": 13.888701465150112
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-63490129",
+        "GB-HMLR-CHERWELL-64642826"
+      ],
+      "areaM2": 13.64786057218242
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29526576",
+        "GB-HMLR-CHERWELL-29528942"
+      ],
+      "areaM2": 12.472278471056379
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29550658",
+        "GB-HMLR-CHERWELL-29553429"
+      ],
+      "areaM2": 12.028189536784696
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-57474085",
+        "GB-HMLR-CHERWELL-60184236"
+      ],
+      "areaM2": 10.762443138051015
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-54091443",
+        "GB-HMLR-CHERWELL-54091683"
+      ],
+      "areaM2": 9.820206677256202
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29545625",
+        "GB-HMLR-CHERWELL-29547735"
+      ],
+      "areaM2": 9.586813830305097
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29491905",
+        "GB-HMLR-CHERWELL-29492147"
+      ],
+      "areaM2": 7.484656846024253
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29567759",
+        "GB-HMLR-CHERWELL-29568360"
+      ],
+      "areaM2": 6.722084219972439
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-57486581",
+        "GB-HMLR-CHERWELL-58792104"
+      ],
+      "areaM2": 6.516512759990227
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29490312",
+        "GB-HMLR-CHERWELL-29493159"
+      ],
+      "areaM2": 6.278339605644863
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29514114",
+        "GB-HMLR-CHERWELL-29514602"
+      ],
+      "areaM2": 5.769063676899132
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29542898",
+        "GB-HMLR-CHERWELL-29575115"
+      ],
+      "areaM2": 5.731589590908631
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515406",
+        "GB-HMLR-CHERWELL-64762596"
+      ],
+      "areaM2": 5.563777340963767
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29511094",
+        "GB-HMLR-CHERWELL-57430514"
+      ],
+      "areaM2": 5.357688015094556
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29482929",
+        "GB-HMLR-CHERWELL-29483038"
+      ],
+      "areaM2": 3.3598647315077956
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29512457",
+        "GB-HMLR-CHERWELL-29512628"
+      ],
+      "areaM2": 3.3175397398101176
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29479796",
+        "GB-HMLR-CHERWELL-29480200"
+      ],
+      "areaM2": 2.9558811723222362
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29511846",
+        "GB-HMLR-CHERWELL-29512034"
+      ],
+      "areaM2": 1.949840205279632
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29512412",
+        "GB-HMLR-CHERWELL-29512946"
+      ],
+      "areaM2": 1.8504273179403006
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29523720",
+        "GB-HMLR-CHERWELL-64762596"
+      ],
+      "areaM2": 1.7495565221003464
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29523720",
+        "GB-HMLR-CHERWELL-29525995"
+      ],
+      "areaM2": 1.6478015785140274
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-57854179",
+        "GB-HMLR-CHERWELL-58752366"
+      ],
+      "areaM2": 1.5979620548793037
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29525353",
+        "GB-HMLR-CHERWELL-29525631"
+      ],
+      "areaM2": 1.3305134131313034
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29521835",
+        "GB-HMLR-CHERWELL-64762596"
+      ],
+      "areaM2": 1.2436351357591304
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29500047",
+        "GB-HMLR-CHERWELL-29500413"
+      ],
+      "areaM2": 1.1591178574898642
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29519165",
+        "GB-HMLR-CHERWELL-29519237"
+      ],
+      "areaM2": 1.062349527445042
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29552918",
+        "GB-HMLR-CHERWELL-29554759"
+      ],
+      "areaM2": 1.0349238431996703
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29550345",
+        "GB-HMLR-CHERWELL-29553429"
+      ],
+      "areaM2": 1.0192611351318013
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29496724",
+        "GB-HMLR-CHERWELL-29496981"
+      ],
+      "areaM2": 0.9905744886059302
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29502324",
+        "GB-HMLR-CHERWELL-29502891"
+      ],
+      "areaM2": 0.9707783621005437
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29523466",
+        "GB-HMLR-CHERWELL-29525443"
+      ],
+      "areaM2": 0.9570301990201688
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29562313",
+        "GB-HMLR-CHERWELL-29563497"
+      ],
+      "areaM2": 0.8785196980796321
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29548353",
+        "GB-HMLR-CHERWELL-29548600"
+      ],
+      "areaM2": 0.8536137535311475
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29481471",
+        "GB-HMLR-CHERWELL-29482590"
+      ],
+      "areaM2": 0.8220821614041527
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29482788",
+        "GB-HMLR-CHERWELL-29482929"
+      ],
+      "areaM2": 0.8109600357668494
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29554347",
+        "GB-HMLR-CHERWELL-29555520"
+      ],
+      "areaM2": 0.7252114502080136
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29479560",
+        "GB-HMLR-CHERWELL-29482712"
+      ],
+      "areaM2": 0.6642090251359638
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29517480",
+        "GB-HMLR-CHERWELL-29520945"
+      ],
+      "areaM2": 0.6342264252718905
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29518331",
+        "GB-HMLR-CHERWELL-29518450"
+      ],
+      "areaM2": 0.6252139452188281
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29510712",
+        "GB-HMLR-CHERWELL-60102136"
+      ],
+      "areaM2": 0.6096426228874812
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29518331",
+        "GB-HMLR-CHERWELL-29521465"
+      ],
+      "areaM2": 0.5655400490384783
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29538497",
+        "GB-HMLR-CHERWELL-29539748"
+      ],
+      "areaM2": 0.5628600537202282
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29503948",
+        "GB-HMLR-CHERWELL-29504640"
+      ],
+      "areaM2": 0.5465304681846234
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-48352863",
+        "GB-HMLR-CHERWELL-53678597"
+      ],
+      "areaM2": 0.5188895649152241
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29479796",
+        "GB-HMLR-CHERWELL-29482712"
+      ],
+      "areaM2": 0.5039745751177345
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29483135",
+        "GB-HMLR-CHERWELL-29483288"
+      ],
+      "areaM2": 0.48506342006998227
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-54832876",
+        "GB-HMLR-CHERWELL-54832918"
+      ],
+      "areaM2": 0.4832661583586879
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29560361",
+        "GB-HMLR-CHERWELL-53307480"
+      ],
+      "areaM2": 0.46751845839503053
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29541032",
+        "GB-HMLR-CHERWELL-29541509"
+      ],
+      "areaM2": 0.44491705578313245
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29513889",
+        "GB-HMLR-CHERWELL-29513981"
+      ],
+      "areaM2": 0.44321763223539706
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29513889",
+        "GB-HMLR-CHERWELL-29513978"
+      ],
+      "areaM2": 0.44321763223539706
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29513889",
+        "GB-HMLR-CHERWELL-29513979"
+      ],
+      "areaM2": 0.44321763223539706
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29513889",
+        "GB-HMLR-CHERWELL-29513980"
+      ],
+      "areaM2": 0.44321763223539706
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29513889",
+        "GB-HMLR-CHERWELL-29513977"
+      ],
+      "areaM2": 0.44321763223539706
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29513889",
+        "GB-HMLR-CHERWELL-29513976"
+      ],
+      "areaM2": 0.44321763223539706
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29502054",
+        "GB-HMLR-CHERWELL-29520945"
+      ],
+      "areaM2": 0.41268005647626005
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29541793",
+        "GB-HMLR-CHERWELL-29542177"
+      ],
+      "areaM2": 0.4064720224771179
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29523436",
+        "GB-HMLR-CHERWELL-29524842"
+      ],
+      "areaM2": 0.4054722339998542
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29516370",
+        "GB-HMLR-CHERWELL-58272118"
+      ],
+      "areaM2": 0.3932755754765882
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29524617",
+        "GB-HMLR-CHERWELL-29524842"
+      ],
+      "areaM2": 0.39058242180761565
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29556772",
+        "GB-HMLR-CHERWELL-29575115"
+      ],
+      "areaM2": 0.38158575337042905
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29477746",
+        "GB-HMLR-CHERWELL-29480012"
+      ],
+      "areaM2": 0.3655677139534231
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29516933",
+        "GB-HMLR-CHERWELL-29517203"
+      ],
+      "areaM2": 0.36530736444519635
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29547467",
+        "GB-HMLR-CHERWELL-29575115"
+      ],
+      "areaM2": 0.36398152229967345
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515110",
+        "GB-HMLR-CHERWELL-29525995"
+      ],
+      "areaM2": 0.3619509656967479
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29521674",
+        "GB-HMLR-CHERWELL-29523981"
+      ],
+      "areaM2": 0.3474355072355253
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29564071",
+        "GB-HMLR-CHERWELL-29564207"
+      ],
+      "areaM2": 0.3396903806504099
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29475414",
+        "GB-HMLR-CHERWELL-29476719"
+      ],
+      "areaM2": 0.335966691618797
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29482806",
+        "GB-HMLR-CHERWELL-29483288"
+      ],
+      "areaM2": 0.3283462692860219
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29483084",
+        "GB-HMLR-CHERWELL-29483386"
+      ],
+      "areaM2": 0.3248802662532103
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29479560",
+        "GB-HMLR-CHERWELL-29483288"
+      ],
+      "areaM2": 0.3217581076535724
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515716",
+        "GB-HMLR-CHERWELL-29516129"
+      ],
+      "areaM2": 0.3209045892442048
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29501397",
+        "GB-HMLR-CHERWELL-29502054"
+      ],
+      "areaM2": 0.31679317610727303
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29498314",
+        "GB-HMLR-CHERWELL-29498806"
+      ],
+      "areaM2": 0.31116003103929396
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29555520",
+        "GB-HMLR-CHERWELL-29566749"
+      ],
+      "areaM2": 0.30921772022896193
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29480012",
+        "GB-HMLR-CHERWELL-29480207"
+      ],
+      "areaM2": 0.3005004302939831
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29544196",
+        "GB-HMLR-CHERWELL-56893303"
+      ],
+      "areaM2": 0.294039872244721
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29482788",
+        "GB-HMLR-CHERWELL-29492810"
+      ],
+      "areaM2": 0.2841003289043273
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29513505",
+        "GB-HMLR-CHERWELL-56175022"
+      ],
+      "areaM2": 0.28197168809023354
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515110",
+        "GB-HMLR-CHERWELL-29515333"
+      ],
+      "areaM2": 0.28127450011916544
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-56739311",
+        "GB-HMLR-CHERWELL-60232560"
+      ],
+      "areaM2": 0.2721078582625749
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29475191",
+        "GB-HMLR-CHERWELL-29475616"
+      ],
+      "areaM2": 0.27070524035958954
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29499542",
+        "GB-HMLR-CHERWELL-29512946"
+      ],
+      "areaM2": 0.26953545096931686
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-57854179",
+        "GB-HMLR-CHERWELL-58752327"
+      ],
+      "areaM2": 0.2684744482128938
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29505648",
+        "GB-HMLR-CHERWELL-29511104"
+      ],
+      "areaM2": 0.26693439887854153
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29523476",
+        "GB-HMLR-CHERWELL-29523666"
+      ],
+      "areaM2": 0.2665334032554689
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29482712",
+        "GB-HMLR-CHERWELL-29482788"
+      ],
+      "areaM2": 0.26429370145922193
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29575115",
+        "GB-HMLR-CHERWELL-29576648"
+      ],
+      "areaM2": 0.2636525515100762
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29517012",
+        "GB-HMLR-CHERWELL-29517254"
+      ],
+      "areaM2": 0.25839576432091693
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29482712",
+        "GB-HMLR-CHERWELL-29492810"
+      ],
+      "areaM2": 0.25470739427673783
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29514761",
+        "GB-HMLR-CHERWELL-29515125"
+      ],
+      "areaM2": 0.2513429530989229
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29503798",
+        "GB-HMLR-CHERWELL-29504182"
+      ],
+      "areaM2": 0.2490083145145352
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29503158",
+        "GB-HMLR-CHERWELL-51899217"
+      ],
+      "areaM2": 0.23630099199913868
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29505095",
+        "GB-HMLR-CHERWELL-29525995"
+      ],
+      "areaM2": 0.23074694009350252
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29523938",
+        "GB-HMLR-CHERWELL-29526334"
+      ],
+      "areaM2": 0.22749435493447856
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-54761201",
+        "GB-HMLR-CHERWELL-54832919"
+      ],
+      "areaM2": 0.22633421756110203
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29512601",
+        "GB-HMLR-CHERWELL-29514947"
+      ],
+      "areaM2": 0.224694271348223
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29525995",
+        "GB-HMLR-CHERWELL-29526341"
+      ],
+      "areaM2": 0.21021354568901574
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29556833",
+        "GB-HMLR-CHERWELL-29575115"
+      ],
+      "areaM2": 0.20392711112562883
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-54832918",
+        "GB-HMLR-CHERWELL-54840564"
+      ],
+      "areaM2": 0.2028581371965763
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29552276",
+        "GB-HMLR-CHERWELL-29554347"
+      ],
+      "areaM2": 0.19860371234808408
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29525194",
+        "GB-HMLR-CHERWELL-54091683"
+      ],
+      "areaM2": 0.19807045905729856
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29478122",
+        "GB-HMLR-CHERWELL-29478310"
+      ],
+      "areaM2": 0.19653082421926982
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29513264",
+        "GB-HMLR-CHERWELL-29513622"
+      ],
+      "areaM2": 0.18852546981120477
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29541509",
+        "GB-HMLR-CHERWELL-29541622"
+      ],
+      "areaM2": 0.1864486133582648
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29525631",
+        "GB-HMLR-CHERWELL-29526371"
+      ],
+      "areaM2": 0.1784014522966384
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29528904",
+        "GB-HMLR-CHERWELL-29538497"
+      ],
+      "areaM2": 0.17372365244959537
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29504964",
+        "GB-HMLR-CHERWELL-29525995"
+      ],
+      "areaM2": 0.17326254872220248
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29526342",
+        "GB-HMLR-CHERWELL-29526644"
+      ],
+      "areaM2": 0.17136366573479123
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29481051",
+        "GB-HMLR-CHERWELL-29481471"
+      ],
+      "areaM2": 0.17045529885082816
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29520546",
+        "GB-HMLR-CHERWELL-29520678"
+      ],
+      "areaM2": 0.16891142576803964
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29545625",
+        "GB-HMLR-CHERWELL-29549159"
+      ],
+      "areaM2": 0.16231140186547907
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29523981",
+        "GB-HMLR-CHERWELL-29526329"
+      ],
+      "areaM2": 0.15580528880150166
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29517289",
+        "GB-HMLR-CHERWELL-60013194"
+      ],
+      "areaM2": 0.1552767586586524
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-53073316",
+        "GB-HMLR-CHERWELL-57854179"
+      ],
+      "areaM2": 0.15428925155055415
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29511714",
+        "GB-HMLR-CHERWELL-29516719"
+      ],
+      "areaM2": 0.15343798612541057
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515333",
+        "GB-HMLR-CHERWELL-29515546"
+      ],
+      "areaM2": 0.1502572278428831
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-60512859",
+        "GB-HMLR-CHERWELL-60512958"
+      ],
+      "areaM2": 0.14477063140121726
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515833",
+        "GB-HMLR-CHERWELL-60013194"
+      ],
+      "areaM2": 0.14453054807045707
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29505284",
+        "GB-HMLR-CHERWELL-29510966"
+      ],
+      "areaM2": 0.14437838858090313
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29549761",
+        "GB-HMLR-CHERWELL-29550482"
+      ],
+      "areaM2": 0.14343949120739438
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29501277",
+        "GB-HMLR-CHERWELL-29501553"
+      ],
+      "areaM2": 0.14111087840177672
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29514711",
+        "GB-HMLR-CHERWELL-29515225"
+      ],
+      "areaM2": 0.1409351761308315
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29527778",
+        "GB-HMLR-CHERWELL-29528227"
+      ],
+      "areaM2": 0.137124101923775
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29523863",
+        "GB-HMLR-CHERWELL-29524083"
+      ],
+      "areaM2": 0.13616486398977903
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29523158",
+        "GB-HMLR-CHERWELL-54832918"
+      ],
+      "areaM2": 0.13482953929718344
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29505666",
+        "GB-HMLR-CHERWELL-29525995"
+      ],
+      "areaM2": 0.1338043682255441
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29497786",
+        "GB-HMLR-CHERWELL-29512946"
+      ],
+      "areaM2": 0.12991670885539527
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29479560",
+        "GB-HMLR-CHERWELL-29483038"
+      ],
+      "areaM2": 0.1273453690645548
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29514393",
+        "GB-HMLR-CHERWELL-29514947"
+      ],
+      "areaM2": 0.12722081090633505
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29526807",
+        "GB-HMLR-CHERWELL-60183422"
+      ],
+      "areaM2": 0.12385158386871353
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29501277",
+        "GB-HMLR-CHERWELL-60512958"
+      ],
+      "areaM2": 0.12074624511448367
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29564071",
+        "GB-HMLR-CHERWELL-29576648"
+      ],
+      "areaM2": 0.11973582092622537
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29502655",
+        "GB-HMLR-CHERWELL-60512859"
+      ],
+      "areaM2": 0.11737883688414368
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29524617",
+        "GB-HMLR-CHERWELL-29525272"
+      ],
+      "areaM2": 0.11571329621312676
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29525272",
+        "GB-HMLR-CHERWELL-29526334"
+      ],
+      "areaM2": 0.1156889724044309
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29517540",
+        "GB-HMLR-CHERWELL-54832918"
+      ],
+      "areaM2": 0.11381948672796671
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29512822",
+        "GB-HMLR-CHERWELL-29513018"
+      ],
+      "areaM2": 0.11262865865433702
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29519215",
+        "GB-HMLR-CHERWELL-29520532"
+      ],
+      "areaM2": 0.112606897034182
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29522916",
+        "GB-HMLR-CHERWELL-55153202"
+      ],
+      "areaM2": 0.111125048954684
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29524385",
+        "GB-HMLR-CHERWELL-52695285"
+      ],
+      "areaM2": 0.1106464227918607
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29556571",
+        "GB-HMLR-CHERWELL-29558684"
+      ],
+      "areaM2": 0.11000037147069344
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29490603",
+        "GB-HMLR-CHERWELL-29494612"
+      ],
+      "areaM2": 0.1088694125682518
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29518331",
+        "GB-HMLR-CHERWELL-29525995"
+      ],
+      "areaM2": 0.1059326085202543
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29564071",
+        "GB-HMLR-CHERWELL-29589781"
+      ],
+      "areaM2": 0.10485819233180936
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29522905",
+        "GB-HMLR-CHERWELL-60183422"
+      ],
+      "areaM2": 0.10339924550532728
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-51319816",
+        "GB-HMLR-CHERWELL-53219276"
+      ],
+      "areaM2": 0.10245740608675846
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29513351",
+        "GB-HMLR-CHERWELL-56175021"
+      ],
+      "areaM2": 0.10127577145473576
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29523393",
+        "GB-HMLR-CHERWELL-60183422"
+      ],
+      "areaM2": 0.10088620397194126
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29481471",
+        "GB-HMLR-CHERWELL-29482712"
+      ],
+      "areaM2": 0.10047810126985762
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515585",
+        "GB-HMLR-CHERWELL-29515924"
+      ],
+      "areaM2": 0.09958665109489218
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29474387",
+        "GB-HMLR-CHERWELL-29474871"
+      ],
+      "areaM2": 0.09917364345033806
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29516270",
+        "GB-HMLR-CHERWELL-29516710"
+      ],
+      "areaM2": 0.09857008093656328
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29523364",
+        "GB-HMLR-CHERWELL-29523863"
+      ],
+      "areaM2": 0.09729788540930276
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29483288",
+        "GB-HMLR-CHERWELL-29493265"
+      ],
+      "areaM2": 0.0966831892057341
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29528942",
+        "GB-HMLR-CHERWELL-29538139"
+      ],
+      "areaM2": 0.09627096600051101
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29480012",
+        "GB-HMLR-CHERWELL-55395636"
+      ],
+      "areaM2": 0.0960243501154674
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29480982",
+        "GB-HMLR-CHERWELL-63490129"
+      ],
+      "areaM2": 0.09541226718615256
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-51082641",
+        "GB-HMLR-CHERWELL-62947313"
+      ],
+      "areaM2": 0.09524335274491946
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29521701",
+        "GB-HMLR-CHERWELL-54761201"
+      ],
+      "areaM2": 0.09302800682366605
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29528935",
+        "GB-HMLR-CHERWELL-29538411"
+      ],
+      "areaM2": 0.09201713652439736
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29480200",
+        "GB-HMLR-CHERWELL-56869855"
+      ],
+      "areaM2": 0.09007171441316647
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29465636",
+        "GB-HMLR-CHERWELL-29467810"
+      ],
+      "areaM2": 0.08796523388602091
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29510712",
+        "GB-HMLR-CHERWELL-29511642"
+      ],
+      "areaM2": 0.08686696037946533
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29549866",
+        "GB-HMLR-CHERWELL-29550839"
+      ],
+      "areaM2": 0.08686154027552462
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29496581",
+        "GB-HMLR-CHERWELL-29512412"
+      ],
+      "areaM2": 0.0855447728364137
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29523103",
+        "GB-HMLR-CHERWELL-29524842"
+      ],
+      "areaM2": 0.08382792858553945
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-57497481",
+        "GB-HMLR-CHERWELL-60013194"
+      ],
+      "areaM2": 0.0819008411577416
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29525995",
+        "GB-HMLR-CHERWELL-29526371"
+      ],
+      "areaM2": 0.08080901861013366
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29541927",
+        "GB-HMLR-CHERWELL-29543242"
+      ],
+      "areaM2": 0.07805318208783396
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29523476",
+        "GB-HMLR-CHERWELL-29523938"
+      ],
+      "areaM2": 0.07761465433789438
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29523436",
+        "GB-HMLR-CHERWELL-29525272"
+      ],
+      "areaM2": 0.0771871919510237
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29494704",
+        "GB-HMLR-CHERWELL-29494712"
+      ],
+      "areaM2": 0.07694771229355955
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29493464",
+        "GB-HMLR-CHERWELL-29494704"
+      ],
+      "areaM2": 0.07630251522883769
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29524083",
+        "GB-HMLR-CHERWELL-29524287"
+      ],
+      "areaM2": 0.07457499819717595
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29491708",
+        "GB-HMLR-CHERWELL-29494612"
+      ],
+      "areaM2": 0.07417877931773927
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29510686",
+        "GB-HMLR-CHERWELL-29520945"
+      ],
+      "areaM2": 0.07350783827174576
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29544646",
+        "GB-HMLR-CHERWELL-57188396"
+      ],
+      "areaM2": 0.07189519448590886
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29522811",
+        "GB-HMLR-CHERWELL-29556772"
+      ],
+      "areaM2": 0.07187480235339362
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29490481",
+        "GB-HMLR-CHERWELL-29491768"
+      ],
+      "areaM2": 0.07103819748082481
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29483386",
+        "GB-HMLR-CHERWELL-29483387"
+      ],
+      "areaM2": 0.06988773330256165
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29482806",
+        "GB-HMLR-CHERWELL-29483387"
+      ],
+      "areaM2": 0.06915482121142542
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515770",
+        "GB-HMLR-CHERWELL-64762596"
+      ],
+      "areaM2": 0.0689238366212216
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29482806",
+        "GB-HMLR-CHERWELL-29483285"
+      ],
+      "areaM2": 0.0686949739568551
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29482806",
+        "GB-HMLR-CHERWELL-29483386"
+      ],
+      "areaM2": 0.06851024086220521
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29516370",
+        "GB-HMLR-CHERWELL-63913653"
+      ],
+      "areaM2": 0.06813796570419252
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29522041",
+        "GB-HMLR-CHERWELL-29523103"
+      ],
+      "areaM2": 0.06777726051348587
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29503749",
+        "GB-HMLR-CHERWELL-29505284"
+      ],
+      "areaM2": 0.06770527055961395
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29538411",
+        "GB-HMLR-CHERWELL-29539748"
+      ],
+      "areaM2": 0.06729966605952745
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29562868",
+        "GB-HMLR-CHERWELL-29571001"
+      ],
+      "areaM2": 0.06563119343550049
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29548353",
+        "GB-HMLR-CHERWELL-29550066"
+      ],
+      "areaM2": 0.06452245945538754
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29548600",
+        "GB-HMLR-CHERWELL-29550066"
+      ],
+      "areaM2": 0.06452245945538754
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29501553",
+        "GB-HMLR-CHERWELL-60512958"
+      ],
+      "areaM2": 0.06437229271762225
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29543242",
+        "GB-HMLR-CHERWELL-29545220"
+      ],
+      "areaM2": 0.06344292206799038
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29523666",
+        "GB-HMLR-CHERWELL-29523938"
+      ],
+      "areaM2": 0.062426646147683326
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29511642",
+        "GB-HMLR-CHERWELL-29513791"
+      ],
+      "areaM2": 0.061820899921547046
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29501184",
+        "GB-HMLR-CHERWELL-29525995"
+      ],
+      "areaM2": 0.05768062830333951
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515094",
+        "GB-HMLR-CHERWELL-29525995"
+      ],
+      "areaM2": 0.056687424198345035
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515095",
+        "GB-HMLR-CHERWELL-29525995"
+      ],
+      "areaM2": 0.056687424198345035
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29515101",
+        "GB-HMLR-CHERWELL-29525995"
+      ],
+      "areaM2": 0.056687424198345035
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29488946",
+        "GB-HMLR-CHERWELL-29489999"
+      ],
+      "areaM2": 0.05615425326746566
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29501899",
+        "GB-HMLR-CHERWELL-64715256"
+      ],
+      "areaM2": 0.05535906091763776
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-58752327",
+        "GB-HMLR-CHERWELL-60184236"
+      ],
+      "areaM2": 0.05498519012861618
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29525158",
+        "GB-HMLR-CHERWELL-60183422"
+      ],
+      "areaM2": 0.05411336300839432
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29541793",
+        "GB-HMLR-CHERWELL-29556772"
+      ],
+      "areaM2": 0.053343953110639664
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29524283",
+        "GB-HMLR-CHERWELL-29525995"
+      ],
+      "areaM2": 0.05330507441988497
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-54243617",
+        "GB-HMLR-CHERWELL-54329531"
+      ],
+      "areaM2": 0.05155119220663562
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29514002",
+        "GB-HMLR-CHERWELL-29514947"
+      ],
+      "areaM2": 0.05082245875929985
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29520932",
+        "GB-HMLR-CHERWELL-29525995"
+      ],
+      "areaM2": 0.05070505432228056
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-60257100",
+        "GB-HMLR-CHERWELL-60257601"
+      ],
+      "areaM2": 0.050473191712976276
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29513018",
+        "GB-HMLR-CHERWELL-29513264"
+      ],
+      "areaM2": 0.05002272155749132
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29481066",
+        "GB-HMLR-CHERWELL-29482806"
+      ],
+      "areaM2": 0.049996820920405825
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29547467",
+        "GB-HMLR-CHERWELL-29548600"
+      ],
+      "areaM2": 0.04946637084107053
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29480994",
+        "GB-HMLR-CHERWELL-29488789"
+      ],
+      "areaM2": 0.048709116215785844
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29483038",
+        "GB-HMLR-CHERWELL-29483135"
+      ],
+      "areaM2": 0.04738973092784168
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-54895321",
+        "GB-HMLR-CHERWELL-64751950"
+      ],
+      "areaM2": 0.04734418956347408
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29547467",
+        "GB-HMLR-CHERWELL-29548353"
+      ],
+      "areaM2": 0.04668586361357226
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29489651",
+        "GB-HMLR-CHERWELL-57991169"
+      ],
+      "areaM2": 0.04656681967558849
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29522875",
+        "GB-HMLR-CHERWELL-60183422"
+      ],
+      "areaM2": 0.04466434680788994
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29490197",
+        "GB-HMLR-CHERWELL-57991169"
+      ],
+      "areaM2": 0.04356546036234765
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-56158490",
+        "GB-HMLR-CHERWELL-60184340"
+      ],
+      "areaM2": 0.04334656704507382
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29480733",
+        "GB-HMLR-CHERWELL-29482727"
+      ],
+      "areaM2": 0.04233574523035616
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29514947",
+        "GB-HMLR-CHERWELL-29515757"
+      ],
+      "areaM2": 0.04174424994979751
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-56384835",
+        "GB-HMLR-CHERWELL-60184236"
+      ],
+      "areaM2": 0.041458874496443344
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29523393",
+        "GB-HMLR-CHERWELL-29524754"
+      ],
+      "areaM2": 0.04027464493267581
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-58031742",
+        "GB-HMLR-CHERWELL-58031755"
+      ],
+      "areaM2": 0.04009213615889488
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29479560",
+        "GB-HMLR-CHERWELL-29482788"
+      ],
+      "areaM2": 0.04007010319478292
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29497786",
+        "GB-HMLR-CHERWELL-29499542"
+      ],
+      "areaM2": 0.03867984199312596
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-54761201",
+        "GB-HMLR-CHERWELL-59012860"
+      ],
+      "areaM2": 0.03845160539842851
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29497527",
+        "GB-HMLR-CHERWELL-29498871"
+      ],
+      "areaM2": 0.03746451836647727
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29523199",
+        "GB-HMLR-CHERWELL-29523364"
+      ],
+      "areaM2": 0.03731542770848197
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-54243617",
+        "GB-HMLR-CHERWELL-58752327"
+      ],
+      "areaM2": 0.03718740336636322
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29545220",
+        "GB-HMLR-CHERWELL-29547467"
+      ],
+      "areaM2": 0.03644452681748609
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29545220",
+        "GB-HMLR-CHERWELL-29575115"
+      ],
+      "areaM2": 0.03619331148444967
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-56034672",
+        "GB-HMLR-CHERWELL-62826400"
+      ],
+      "areaM2": 0.035731743246726545
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29479522",
+        "GB-HMLR-CHERWELL-29479560"
+      ],
+      "areaM2": 0.03569567130977447
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29522694",
+        "GB-HMLR-CHERWELL-29522820"
+      ],
+      "areaM2": 0.035366724665971384
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29479796",
+        "GB-HMLR-CHERWELL-56869855"
+      ],
+      "areaM2": 0.034886368140154125
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29505798",
+        "GB-HMLR-CHERWELL-56175021"
+      ],
+      "areaM2": 0.03405631373505391
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29495515",
+        "GB-HMLR-CHERWELL-29497527"
+      ],
+      "areaM2": 0.033408970668095464
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29552276",
+        "GB-HMLR-CHERWELL-29555520"
+      ],
+      "areaM2": 0.03311145199790097
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29518711",
+        "GB-HMLR-CHERWELL-29519161"
+      ],
+      "areaM2": 0.032916380900515185
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29523832",
+        "GB-HMLR-CHERWELL-29523938"
+      ],
+      "areaM2": 0.03289662027333396
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29512457",
+        "GB-HMLR-CHERWELL-29516719"
+      ],
+      "areaM2": 0.03253163110219681
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29500389",
+        "GB-HMLR-CHERWELL-57026999"
+      ],
+      "areaM2": 0.032391229122032586
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29482929",
+        "GB-HMLR-CHERWELL-57692901"
+      ],
+      "areaM2": 0.032354699618154396
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29517907",
+        "GB-HMLR-CHERWELL-29518225"
+      ],
+      "areaM2": 0.03202815030274331
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-58705179",
+        "GB-HMLR-CHERWELL-58919053"
+      ],
+      "areaM2": 0.031866621763553954
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29491798",
+        "GB-HMLR-CHERWELL-29494612"
+      ],
+      "areaM2": 0.031451739164896
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29516129",
+        "GB-HMLR-CHERWELL-64762596"
+      ],
+      "areaM2": 0.030987070275861228
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29475872",
+        "GB-HMLR-CHERWELL-29476758"
+      ],
+      "areaM2": 0.030832780494055356
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29481471",
+        "GB-HMLR-CHERWELL-29481954"
+      ],
+      "areaM2": 0.030281061526690745
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29523103",
+        "GB-HMLR-CHERWELL-29523175"
+      ],
+      "areaM2": 0.02923242726721531
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29539748",
+        "GB-HMLR-CHERWELL-29544083"
+      ],
+      "areaM2": 0.029128848514474726
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-57854179",
+        "GB-HMLR-CHERWELL-57854198"
+      ],
+      "areaM2": 0.027351841832224652
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29503938",
+        "GB-HMLR-CHERWELL-60512958"
+      ],
+      "areaM2": 0.027116921836972452
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29490481",
+        "GB-HMLR-CHERWELL-62935900"
+      ],
+      "areaM2": 0.02655383417534271
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29498433",
+        "GB-HMLR-CHERWELL-51899217"
+      ],
+      "areaM2": 0.02612661870075015
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29505284",
+        "GB-HMLR-CHERWELL-57430514"
+      ],
+      "areaM2": 0.02512560503123995
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29552646",
+        "GB-HMLR-CHERWELL-52327260"
+      ],
+      "areaM2": 0.024806302826499094
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29524524",
+        "GB-HMLR-CHERWELL-29525859"
+      ],
+      "areaM2": 0.02449892573829606
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29513163",
+        "GB-HMLR-CHERWELL-59438271"
+      ],
+      "areaM2": 0.024055376670409467
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29500062",
+        "GB-HMLR-CHERWELL-29512946"
+      ],
+      "areaM2": 0.023907218556731055
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29562313",
+        "GB-HMLR-CHERWELL-29575115"
+      ],
+      "areaM2": 0.023473250690812096
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29527435",
+        "GB-HMLR-CHERWELL-29527778"
+      ],
+      "areaM2": 0.023450365387322706
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-58752327",
+        "GB-HMLR-CHERWELL-60184341"
+      ],
+      "areaM2": 0.022782687926854533
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29540386",
+        "GB-HMLR-CHERWELL-29542934"
+      ],
+      "areaM2": 0.022347488073784838
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29480012",
+        "GB-HMLR-CHERWELL-29482485"
+      ],
+      "areaM2": 0.022344112372696803
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29524467",
+        "GB-HMLR-CHERWELL-56929601"
+      ],
+      "areaM2": 0.022220138241946907
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29483285",
+        "GB-HMLR-CHERWELL-29493265"
+      ],
+      "areaM2": 0.02214006535400479
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29551262",
+        "GB-HMLR-CHERWELL-29551548"
+      ],
+      "areaM2": 0.021887763102297675
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29538139",
+        "GB-HMLR-CHERWELL-29538617"
+      ],
+      "areaM2": 0.02175771801781801
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29523103",
+        "GB-HMLR-CHERWELL-29523476"
+      ],
+      "areaM2": 0.02172612884884151
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29543242",
+        "GB-HMLR-CHERWELL-29575115"
+      ],
+      "areaM2": 0.021190948475455773
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29522041",
+        "GB-HMLR-CHERWELL-29522788"
+      ],
+      "areaM2": 0.020984337509530715
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29514761",
+        "GB-HMLR-CHERWELL-29514947"
+      ],
+      "areaM2": 0.020867675380388362
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29528576",
+        "GB-HMLR-CHERWELL-60183422"
+      ],
+      "areaM2": 0.020402563407746044
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-57486581",
+        "GB-HMLR-CHERWELL-60544529"
+      ],
+      "areaM2": 0.0201443677620033
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29521950",
+        "GB-HMLR-CHERWELL-29522105"
+      ],
+      "areaM2": 0.02000501941718391
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29490059",
+        "GB-HMLR-CHERWELL-61095056"
+      ],
+      "areaM2": 0.01974432027092865
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29550744",
+        "GB-HMLR-CHERWELL-44033025"
+      ],
+      "areaM2": 0.019516146360126774
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29555936",
+        "GB-HMLR-CHERWELL-29556254"
+      ],
+      "areaM2": 0.01942421051198038
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29522177",
+        "GB-HMLR-CHERWELL-54832918"
+      ],
+      "areaM2": 0.019187634631091983
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-55847574",
+        "GB-HMLR-CHERWELL-58752327"
+      ],
+      "areaM2": 0.01884963908041299
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29511094",
+        "GB-HMLR-CHERWELL-29512457"
+      ],
+      "areaM2": 0.01844372498770181
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29521649",
+        "GB-HMLR-CHERWELL-29525995"
+      ],
+      "areaM2": 0.018351272188575272
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29498288",
+        "GB-HMLR-CHERWELL-29498806"
+      ],
+      "areaM2": 0.0180595897424208
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29514847",
+        "GB-HMLR-CHERWELL-29525995"
+      ],
+      "areaM2": 0.017921560579944318
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29526883",
+        "GB-HMLR-CHERWELL-29527506"
+      ],
+      "areaM2": 0.016973223353628608
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29458830",
+        "GB-HMLR-CHERWELL-29460140"
+      ],
+      "areaM2": 0.0166417111706393
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-53219276",
+        "GB-HMLR-CHERWELL-57854179"
+      ],
+      "areaM2": 0.016536974335568395
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29520844",
+        "GB-HMLR-CHERWELL-29521419"
+      ],
+      "areaM2": 0.016481269047649114
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29514947",
+        "GB-HMLR-CHERWELL-29515377"
+      ],
+      "areaM2": 0.016306053333770845
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29481023",
+        "GB-HMLR-CHERWELL-29483427"
+      ],
+      "areaM2": 0.016127368472870017
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29522668",
+        "GB-HMLR-CHERWELL-29523863"
+      ],
+      "areaM2": 0.015972645951405295
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29474673",
+        "GB-HMLR-CHERWELL-29475929"
+      ],
+      "areaM2": 0.015813909213768795
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29475270",
+        "GB-HMLR-CHERWELL-29491503"
+      ],
+      "areaM2": 0.014953763025002953
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29551829",
+        "GB-HMLR-CHERWELL-29552306"
+      ],
+      "areaM2": 0.014682812901083564
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29513216",
+        "GB-HMLR-CHERWELL-29513630"
+      ],
+      "areaM2": 0.01414300265737918
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29464054",
+        "GB-HMLR-CHERWELL-64466499"
+      ],
+      "areaM2": 0.014092270222479275
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29524467",
+        "GB-HMLR-CHERWELL-56929662"
+      ],
+      "areaM2": 0.01393483594272734
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-53219276",
+        "GB-HMLR-CHERWELL-57854198"
+      ],
+      "areaM2": 0.013736006648372712
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29526073",
+        "GB-HMLR-CHERWELL-56929499"
+      ],
+      "areaM2": 0.013525985426779515
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29475270",
+        "GB-HMLR-CHERWELL-29477746"
+      ],
+      "areaM2": 0.013503399100539326
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29511584",
+        "GB-HMLR-CHERWELL-29513505"
+      ],
+      "areaM2": 0.013253427952438557
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29497527",
+        "GB-HMLR-CHERWELL-51899217"
+      ],
+      "areaM2": 0.013183322926651635
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-54761201",
+        "GB-HMLR-CHERWELL-54832876"
+      ],
+      "areaM2": 0.012800510003638091
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29479707",
+        "GB-HMLR-CHERWELL-29480200"
+      ],
+      "areaM2": 0.01271603790101738
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29540386",
+        "GB-HMLR-CHERWELL-29540501"
+      ],
+      "areaM2": 0.012654729183019447
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29458830",
+        "GB-HMLR-CHERWELL-29467810"
+      ],
+      "areaM2": 0.01251189448239387
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29511846",
+        "GB-HMLR-CHERWELL-29513791"
+      ],
+      "areaM2": 0.012323822379087423
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29474711",
+        "GB-HMLR-CHERWELL-29475191"
+      ],
+      "areaM2": 0.012318916608116515
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29489771",
+        "GB-HMLR-CHERWELL-29490533"
+      ],
+      "areaM2": 0.012255935003717106
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-51319812",
+        "GB-HMLR-CHERWELL-53219276"
+      ],
+      "areaM2": 0.011854646420997695
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29492209",
+        "GB-HMLR-CHERWELL-58189216"
+      ],
+      "areaM2": 0.01175623519862773
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29512946",
+        "GB-HMLR-CHERWELL-52369887"
+      ],
+      "areaM2": 0.011663123016936068
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29523175",
+        "GB-HMLR-CHERWELL-29523476"
+      ],
+      "areaM2": 0.011572141183513365
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29526371",
+        "GB-HMLR-CHERWELL-29526766"
+      ],
+      "areaM2": 0.011570795568721544
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29478952",
+        "GB-HMLR-CHERWELL-29479542"
+      ],
+      "areaM2": 0.011524926567707313
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29545506",
+        "GB-HMLR-CHERWELL-29545766"
+      ],
+      "areaM2": 0.011501014220653166
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29525584",
+        "GB-HMLR-CHERWELL-52695285"
+      ],
+      "areaM2": 0.011367543423232037
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-59007394",
+        "GB-HMLR-CHERWELL-59012859"
+      ],
+      "areaM2": 0.011339553850289848
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29518450",
+        "GB-HMLR-CHERWELL-29521465"
+      ],
+      "areaM2": 0.011044313899374013
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29518659",
+        "GB-HMLR-CHERWELL-29519161"
+      ],
+      "areaM2": 0.010795829395069179
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29501277",
+        "GB-HMLR-CHERWELL-40994626"
+      ],
+      "areaM2": 0.01078911407927608
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29490197",
+        "GB-HMLR-CHERWELL-29490569"
+      ],
+      "areaM2": 0.010677650145217349
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-47543048",
+        "GB-HMLR-CHERWELL-60184171"
+      ],
+      "areaM2": 0.01066287191345795
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29479560",
+        "GB-HMLR-CHERWELL-29482929"
+      ],
+      "areaM2": 0.010630562101429056
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-56175021",
+        "GB-HMLR-CHERWELL-63932430"
+      ],
+      "areaM2": 0.010615556262289577
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29521381",
+        "GB-HMLR-CHERWELL-29522171"
+      ],
+      "areaM2": 0.010287641546099513
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29559434",
+        "GB-HMLR-CHERWELL-64425696"
+      ],
+      "areaM2": 0.010279767892083775
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29510966",
+        "GB-HMLR-CHERWELL-57430514"
+      ],
+      "areaM2": 0.010227999101100118
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29525995",
+        "GB-HMLR-CHERWELL-29527435"
+      ],
+      "areaM2": 0.010211964003794106
+    },
+    {
+      "ids": [
+        "GB-HMLR-CHERWELL-29527190",
+        "GB-HMLR-CHERWELL-29527506"
+      ],
+      "areaM2": 0.010197031147421725
+    }
+  ],
+  "operationErrorCount": 0,
+  "operationErrors": [],
+  "geometryRepaired": false,
+  "runtimeMode": "reference_only"
+}

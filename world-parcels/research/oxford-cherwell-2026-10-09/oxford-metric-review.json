@@ -1,0 +1,511 @@
+{
+  "checkedAt": "2026-10-09T15:14:59.498121+00:00",
+  "area": "oxford",
+  "metricCrs": "EPSG:32630",
+  "method": "Independent GEOS/Shapely validity, duplicate and full candidate-pair intersection checks on unmodified full WGS84 source polygons projected for metric measurement only.",
+  "inputSha256": "b648b4cf838877cb28d6e0be7f577e313c5acf3c14a8aeeba988676809a4ccf5",
+  "featureCount": 441,
+  "invalid": [],
+  "invalidCount": 0,
+  "duplicatePairs": [],
+  "duplicatePairCount": 0,
+  "overlapThresholdM2": 0.01,
+  "overlapPairCount": 70,
+  "totalOverlapM2": 4792.8990155844895,
+  "overlaps": [
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-25783956",
+        "GB-HMLR-OXFORD-47215007"
+      ],
+      "areaM2": 2655.6663746362046
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26001849",
+        "GB-HMLR-OXFORD-26001852"
+      ],
+      "areaM2": 903.4171371416695
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26001849",
+        "GB-HMLR-OXFORD-26001853"
+      ],
+      "areaM2": 311.70382964278843
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26001852",
+        "GB-HMLR-OXFORD-26001853"
+      ],
+      "areaM2": 311.70382964278843
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-47214758",
+        "GB-HMLR-OXFORD-47215007"
+      ],
+      "areaM2": 156.43603546443828
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26261170",
+        "GB-HMLR-OXFORD-49664285"
+      ],
+      "areaM2": 153.53182536502314
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26042927",
+        "GB-HMLR-OXFORD-62732518"
+      ],
+      "areaM2": 59.56202430987432
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-25939005",
+        "GB-HMLR-OXFORD-54304486"
+      ],
+      "areaM2": 59.223965593732764
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26262083",
+        "GB-HMLR-OXFORD-49664285"
+      ],
+      "areaM2": 40.314964987482625
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26198716",
+        "GB-HMLR-OXFORD-26260581"
+      ],
+      "areaM2": 26.523633784743023
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26199000",
+        "GB-HMLR-OXFORD-62732517"
+      ],
+      "areaM2": 20.04841164029474
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26080743",
+        "GB-HMLR-OXFORD-26080798"
+      ],
+      "areaM2": 15.321305952442899
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26178402",
+        "GB-HMLR-OXFORD-54522455"
+      ],
+      "areaM2": 11.030149697754
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26178634",
+        "GB-HMLR-OXFORD-54522455"
+      ],
+      "areaM2": 10.973416114806815
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26178168",
+        "GB-HMLR-OXFORD-54522455"
+      ],
+      "areaM2": 10.733963847658352
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26178801",
+        "GB-HMLR-OXFORD-54522455"
+      ],
+      "areaM2": 9.957247779564469
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26177689",
+        "GB-HMLR-OXFORD-54522455"
+      ],
+      "areaM2": 9.253607003787545
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26177954",
+        "GB-HMLR-OXFORD-54522455"
+      ],
+      "areaM2": 9.18999333239272
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26022988",
+        "GB-HMLR-OXFORD-26033425"
+      ],
+      "areaM2": 5.727801364582988
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-25783956",
+        "GB-HMLR-OXFORD-56726729"
+      ],
+      "areaM2": 3.5078264102859533
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26301066",
+        "GB-HMLR-OXFORD-59586549"
+      ],
+      "areaM2": 1.3444458449126406
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-25754367",
+        "GB-HMLR-OXFORD-63385729"
+      ],
+      "areaM2": 0.9699856249869792
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-25794558",
+        "GB-HMLR-OXFORD-47619278"
+      ],
+      "areaM2": 0.7443880264379814
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-25794393",
+        "GB-HMLR-OXFORD-57238366"
+      ],
+      "areaM2": 0.6367904049253728
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26179666",
+        "GB-HMLR-OXFORD-47411294"
+      ],
+      "areaM2": 0.6081173737500589
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-45089482",
+        "GB-HMLR-OXFORD-47214758"
+      ],
+      "areaM2": 0.5332492906840876
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26021989",
+        "GB-HMLR-OXFORD-26023161"
+      ],
+      "areaM2": 0.3572676309746603
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26199000",
+        "GB-HMLR-OXFORD-47411294"
+      ],
+      "areaM2": 0.34951304561471375
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-25764105",
+        "GB-HMLR-OXFORD-62979628"
+      ],
+      "areaM2": 0.31150476598734245
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26260969",
+        "GB-HMLR-OXFORD-54522353"
+      ],
+      "areaM2": 0.3100894714167697
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-25795283",
+        "GB-HMLR-OXFORD-25909736"
+      ],
+      "areaM2": 0.24747677503357834
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26078954",
+        "GB-HMLR-OXFORD-26079557"
+      ],
+      "areaM2": 0.19261486622750723
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-25909736",
+        "GB-HMLR-OXFORD-26043179"
+      ],
+      "areaM2": 0.1923924163107709
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-56095096",
+        "GB-HMLR-OXFORD-58555624"
+      ],
+      "areaM2": 0.174559319662359
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-25795841",
+        "GB-HMLR-OXFORD-25795919"
+      ],
+      "areaM2": 0.15806030860614897
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-62125083",
+        "GB-HMLR-OXFORD-62125098"
+      ],
+      "areaM2": 0.15597635930092693
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-25710174",
+        "GB-HMLR-OXFORD-25715569"
+      ],
+      "areaM2": 0.1409526594616414
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-25795919",
+        "GB-HMLR-OXFORD-25929113"
+      ],
+      "areaM2": 0.12846495027842647
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26023028",
+        "GB-HMLR-OXFORD-64588194"
+      ],
+      "areaM2": 0.1175272526902319
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26198716",
+        "GB-HMLR-OXFORD-57224811"
+      ],
+      "areaM2": 0.10788115733191236
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-47214716",
+        "GB-HMLR-OXFORD-47215007"
+      ],
+      "areaM2": 0.10352391587695031
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-47167175",
+        "GB-HMLR-OXFORD-47619278"
+      ],
+      "areaM2": 0.1028957605551236
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26002610",
+        "GB-HMLR-OXFORD-58991509"
+      ],
+      "areaM2": 0.09556774154131345
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-25775051",
+        "GB-HMLR-OXFORD-25929129"
+      ],
+      "areaM2": 0.07870170569072106
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-45089482",
+        "GB-HMLR-OXFORD-47215007"
+      ],
+      "areaM2": 0.0767556193515691
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-56095096",
+        "GB-HMLR-OXFORD-64464284"
+      ],
+      "areaM2": 0.06926606167374993
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-25795547",
+        "GB-HMLR-OXFORD-56095958"
+      ],
+      "areaM2": 0.06538221882803359
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-56696521",
+        "GB-HMLR-OXFORD-58866109"
+      ],
+      "areaM2": 0.056536352028614706
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26199546",
+        "GB-HMLR-OXFORD-47411294"
+      ],
+      "areaM2": 0.054193898781193114
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-25929468",
+        "GB-HMLR-OXFORD-63692050"
+      ],
+      "areaM2": 0.04464439831054633
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-25992134",
+        "GB-HMLR-OXFORD-25993102"
+      ],
+      "areaM2": 0.043760125783954384
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26261302",
+        "GB-HMLR-OXFORD-54750000"
+      ],
+      "areaM2": 0.04316002847329481
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-25909939",
+        "GB-HMLR-OXFORD-57451017"
+      ],
+      "areaM2": 0.04082547344186977
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-25715569",
+        "GB-HMLR-OXFORD-45048590"
+      ],
+      "areaM2": 0.03844980992333178
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-25909639",
+        "GB-HMLR-OXFORD-57238366"
+      ],
+      "areaM2": 0.03840552370627865
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-53018957",
+        "GB-HMLR-OXFORD-57451280"
+      ],
+      "areaM2": 0.03586979035076726
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-25794393",
+        "GB-HMLR-OXFORD-25795700"
+      ],
+      "areaM2": 0.03329356357670898
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-47214686",
+        "GB-HMLR-OXFORD-47214716"
+      ],
+      "areaM2": 0.027935088403264197
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-25909736",
+        "GB-HMLR-OXFORD-47215007"
+      ],
+      "areaM2": 0.02758359160646906
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26198961",
+        "GB-HMLR-OXFORD-47309660"
+      ],
+      "areaM2": 0.027433500201508174
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-45048590",
+        "GB-HMLR-OXFORD-47215034"
+      ],
+      "areaM2": 0.02680966742012838
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26078954",
+        "GB-HMLR-OXFORD-47264103"
+      ],
+      "areaM2": 0.02679349417101747
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26261302",
+        "GB-HMLR-OXFORD-54522293"
+      ],
+      "areaM2": 0.023902026490614
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26022446",
+        "GB-HMLR-OXFORD-47290470"
+      ],
+      "areaM2": 0.021151422997137872
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26042777",
+        "GB-HMLR-OXFORD-43609250"
+      ],
+      "areaM2": 0.020236068760829617
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26234649",
+        "GB-HMLR-OXFORD-54522293"
+      ],
+      "areaM2": 0.017220843743818937
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26022446",
+        "GB-HMLR-OXFORD-26022667"
+      ],
+      "areaM2": 0.016139095515279145
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-47215007",
+        "GB-HMLR-OXFORD-57238366"
+      ],
+      "areaM2": 0.013206805684469775
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-25677085",
+        "GB-HMLR-OXFORD-25715569"
+      ],
+      "areaM2": 0.010422593583379935
+    },
+    {
+      "ids": [
+        "GB-HMLR-OXFORD-26080743",
+        "GB-HMLR-OXFORD-43609250"
+      ],
+      "areaM2": 0.010348141107971137
+    }
+  ],
+  "operationErrorCount": 0,
+  "operationErrors": [],
+  "geometryRepaired": false,
+  "runtimeMode": "reference_only"
+}

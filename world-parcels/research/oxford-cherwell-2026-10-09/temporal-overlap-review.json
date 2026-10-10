@@ -1,0 +1,346 @@
+{
+  "checkedAt": "2026-10-09",
+  "question": "Could the measured overlaps simply be historical and current versions, remeasurements, sales or subdivisions?",
+  "officialMetadata": {
+    "oxford": {
+      "sourceCRS": "urn:ogc:def:crs:EPSG::27700",
+      "totalFeatureRecords": 43333,
+      "uniqueNativeIDs": 43333,
+      "duplicateNativeIDCount": 0,
+      "extraRepeatedRecords": 0,
+      "fieldNames": [
+        "BEGINLIFESPANVERSION",
+        "GEOMETRY",
+        "INSPIREID",
+        "LABEL",
+        "NATIONALCADASTRALREFERENCE",
+        "VALIDFROM"
+      ],
+      "safeTemporalLifecycleFieldNames": [
+        "BEGINLIFESPANVERSION",
+        "VALIDFROM"
+      ],
+      "targets": [
+        {
+          "id": "25783956",
+          "VALIDFROM": "2009-10-08T23:00:00Z",
+          "BEGINLIFESPANVERSION": "2016-08-18T12:51:13.535Z",
+          "featureFieldNames": [
+            "BEGINLIFESPANVERSION",
+            "GEOMETRY",
+            "INSPIREID",
+            "LABEL",
+            "NATIONALCADASTRALREFERENCE",
+            "VALIDFROM"
+          ]
+        },
+        {
+          "id": "26001849",
+          "VALIDFROM": "2009-07-14T11:36:28.930Z",
+          "BEGINLIFESPANVERSION": "2009-07-14T11:36:28.930Z",
+          "featureFieldNames": [
+            "BEGINLIFESPANVERSION",
+            "GEOMETRY",
+            "INSPIREID",
+            "LABEL",
+            "NATIONALCADASTRALREFERENCE",
+            "VALIDFROM"
+          ]
+        },
+        {
+          "id": "26001852",
+          "VALIDFROM": "2009-07-14T11:34:38.881Z",
+          "BEGINLIFESPANVERSION": "2009-07-14T11:34:38.881Z",
+          "featureFieldNames": [
+            "BEGINLIFESPANVERSION",
+            "GEOMETRY",
+            "INSPIREID",
+            "LABEL",
+            "NATIONALCADASTRALREFERENCE",
+            "VALIDFROM"
+          ]
+        },
+        {
+          "id": "26001853",
+          "VALIDFROM": "2009-07-14T11:48:40.109Z",
+          "BEGINLIFESPANVERSION": "2009-07-14T11:48:40.109Z",
+          "featureFieldNames": [
+            "BEGINLIFESPANVERSION",
+            "GEOMETRY",
+            "INSPIREID",
+            "LABEL",
+            "NATIONALCADASTRALREFERENCE",
+            "VALIDFROM"
+          ]
+        },
+        {
+          "id": "47215007",
+          "VALIDFROM": "2010-08-26T23:00:00Z",
+          "BEGINLIFESPANVERSION": "2020-11-16T11:43:44.599Z",
+          "featureFieldNames": [
+            "BEGINLIFESPANVERSION",
+            "GEOMETRY",
+            "INSPIREID",
+            "LABEL",
+            "NATIONALCADASTRALREFERENCE",
+            "VALIDFROM"
+          ]
+        }
+      ],
+      "recordsWithRelevantValues": {
+        "VALIDFROM": 43333,
+        "BEGINLIFESPANVERSION": 43333
+      }
+    },
+    "cherwell": {
+      "sourceCRS": "urn:ogc:def:crs:EPSG::27700",
+      "totalFeatureRecords": 82742,
+      "uniqueNativeIDs": 82742,
+      "duplicateNativeIDCount": 0,
+      "extraRepeatedRecords": 0,
+      "fieldNames": [
+        "BEGINLIFESPANVERSION",
+        "GEOMETRY",
+        "INSPIREID",
+        "LABEL",
+        "NATIONALCADASTRALREFERENCE",
+        "VALIDFROM"
+      ],
+      "safeTemporalLifecycleFieldNames": [
+        "BEGINLIFESPANVERSION",
+        "VALIDFROM"
+      ],
+      "targets": [
+        {
+          "id": "29499388",
+          "VALIDFROM": "2003-09-08T23:00:00Z",
+          "BEGINLIFESPANVERSION": "2003-09-08T23:00:00Z",
+          "featureFieldNames": [
+            "BEGINLIFESPANVERSION",
+            "GEOMETRY",
+            "INSPIREID",
+            "LABEL",
+            "NATIONALCADASTRALREFERENCE",
+            "VALIDFROM"
+          ]
+        },
+        {
+          "id": "29499542",
+          "VALIDFROM": "2003-09-08T23:00:00Z",
+          "BEGINLIFESPANVERSION": "2003-09-08T23:00:00Z",
+          "featureFieldNames": [
+            "BEGINLIFESPANVERSION",
+            "GEOMETRY",
+            "INSPIREID",
+            "LABEL",
+            "NATIONALCADASTRALREFERENCE",
+            "VALIDFROM"
+          ]
+        },
+        {
+          "id": "29527673",
+          "VALIDFROM": "2004-02-12T00:00:00Z",
+          "BEGINLIFESPANVERSION": "2004-02-12T00:00:00Z",
+          "featureFieldNames": [
+            "BEGINLIFESPANVERSION",
+            "GEOMETRY",
+            "INSPIREID",
+            "LABEL",
+            "NATIONALCADASTRALREFERENCE",
+            "VALIDFROM"
+          ]
+        },
+        {
+          "id": "29527683",
+          "VALIDFROM": "2004-02-12T00:00:00Z",
+          "BEGINLIFESPANVERSION": "2004-02-12T00:00:00Z",
+          "featureFieldNames": [
+            "BEGINLIFESPANVERSION",
+            "GEOMETRY",
+            "INSPIREID",
+            "LABEL",
+            "NATIONALCADASTRALREFERENCE",
+            "VALIDFROM"
+          ]
+        },
+        {
+          "id": "59813042",
+          "VALIDFROM": "2018-10-10T09:39:54.524Z",
+          "BEGINLIFESPANVERSION": "2023-01-21T07:46:11.278Z",
+          "featureFieldNames": [
+            "BEGINLIFESPANVERSION",
+            "GEOMETRY",
+            "INSPIREID",
+            "LABEL",
+            "NATIONALCADASTRALREFERENCE",
+            "VALIDFROM"
+          ]
+        },
+        {
+          "id": "59813043",
+          "VALIDFROM": "2018-10-10T09:39:54.611Z",
+          "BEGINLIFESPANVERSION": "2023-06-29T08:58:13.659Z",
+          "featureFieldNames": [
+            "BEGINLIFESPANVERSION",
+            "GEOMETRY",
+            "INSPIREID",
+            "LABEL",
+            "NATIONALCADASTRALREFERENCE",
+            "VALIDFROM"
+          ]
+        },
+        {
+          "id": "60913854",
+          "VALIDFROM": "2020-03-20T00:00:00Z",
+          "BEGINLIFESPANVERSION": "2020-03-20T12:35:03.457Z",
+          "featureFieldNames": [
+            "BEGINLIFESPANVERSION",
+            "GEOMETRY",
+            "INSPIREID",
+            "LABEL",
+            "NATIONALCADASTRALREFERENCE",
+            "VALIDFROM"
+          ]
+        },
+        {
+          "id": "63037448",
+          "VALIDFROM": "2024-01-16T13:18:05.883Z",
+          "BEGINLIFESPANVERSION": "2026-09-26T05:14:13.486Z",
+          "featureFieldNames": [
+            "BEGINLIFESPANVERSION",
+            "GEOMETRY",
+            "INSPIREID",
+            "LABEL",
+            "NATIONALCADASTRALREFERENCE",
+            "VALIDFROM"
+          ]
+        }
+      ],
+      "recordsWithRelevantValues": {
+        "VALIDFROM": 82742,
+        "BEGINLIFESPANVERSION": 82742
+      }
+    },
+    "identifierCheck": {
+      "oxford": {
+        "totalFeatureRecords": 43333,
+        "nationalCadastralReferenceClassCounts": {
+          "missing": 0,
+          "blank": 0,
+          "equalToINSPIREID": 43333,
+          "distinct": 0
+        },
+        "targets": [
+          {
+            "INSPIREID": "25783956",
+            "NATIONALCADASTRALREFERENCE": "25783956",
+            "ncrClassification": "same-as-INSPIREID",
+            "VALIDFROM": "2009-10-08T23:00:00Z",
+            "BEGINLIFESPANVERSION": "2016-08-18T12:51:13.535Z"
+          },
+          {
+            "INSPIREID": "26001849",
+            "NATIONALCADASTRALREFERENCE": "26001849",
+            "ncrClassification": "same-as-INSPIREID",
+            "VALIDFROM": "2009-07-14T11:36:28.930Z",
+            "BEGINLIFESPANVERSION": "2009-07-14T11:36:28.930Z"
+          },
+          {
+            "INSPIREID": "26001852",
+            "NATIONALCADASTRALREFERENCE": "26001852",
+            "ncrClassification": "same-as-INSPIREID",
+            "VALIDFROM": "2009-07-14T11:34:38.881Z",
+            "BEGINLIFESPANVERSION": "2009-07-14T11:34:38.881Z"
+          },
+          {
+            "INSPIREID": "26001853",
+            "NATIONALCADASTRALREFERENCE": "26001853",
+            "ncrClassification": "same-as-INSPIREID",
+            "VALIDFROM": "2009-07-14T11:48:40.109Z",
+            "BEGINLIFESPANVERSION": "2009-07-14T11:48:40.109Z"
+          },
+          {
+            "INSPIREID": "47215007",
+            "NATIONALCADASTRALREFERENCE": "47215007",
+            "ncrClassification": "same-as-INSPIREID",
+            "VALIDFROM": "2010-08-26T23:00:00Z",
+            "BEGINLIFESPANVERSION": "2020-11-16T11:43:44.599Z"
+          }
+        ]
+      },
+      "cherwell": {
+        "totalFeatureRecords": 82742,
+        "nationalCadastralReferenceClassCounts": {
+          "missing": 0,
+          "blank": 0,
+          "equalToINSPIREID": 82742,
+          "distinct": 0
+        },
+        "targets": [
+          {
+            "INSPIREID": "29499388",
+            "NATIONALCADASTRALREFERENCE": "29499388",
+            "ncrClassification": "same-as-INSPIREID",
+            "VALIDFROM": "2003-09-08T23:00:00Z",
+            "BEGINLIFESPANVERSION": "2003-09-08T23:00:00Z"
+          },
+          {
+            "INSPIREID": "29499542",
+            "NATIONALCADASTRALREFERENCE": "29499542",
+            "ncrClassification": "same-as-INSPIREID",
+            "VALIDFROM": "2003-09-08T23:00:00Z",
+            "BEGINLIFESPANVERSION": "2003-09-08T23:00:00Z"
+          },
+          {
+            "INSPIREID": "29527673",
+            "NATIONALCADASTRALREFERENCE": "29527673",
+            "ncrClassification": "same-as-INSPIREID",
+            "VALIDFROM": "2004-02-12T00:00:00Z",
+            "BEGINLIFESPANVERSION": "2004-02-12T00:00:00Z"
+          },
+          {
+            "INSPIREID": "29527683",
+            "NATIONALCADASTRALREFERENCE": "29527683",
+            "ncrClassification": "same-as-INSPIREID",
+            "VALIDFROM": "2004-02-12T00:00:00Z",
+            "BEGINLIFESPANVERSION": "2004-02-12T00:00:00Z"
+          },
+          {
+            "INSPIREID": "59813042",
+            "NATIONALCADASTRALREFERENCE": "59813042",
+            "ncrClassification": "same-as-INSPIREID",
+            "VALIDFROM": "2018-10-10T09:39:54.524Z",
+            "BEGINLIFESPANVERSION": "2023-01-21T07:46:11.278Z"
+          },
+          {
+            "INSPIREID": "59813043",
+            "NATIONALCADASTRALREFERENCE": "59813043",
+            "ncrClassification": "same-as-INSPIREID",
+            "VALIDFROM": "2018-10-10T09:39:54.611Z",
+            "BEGINLIFESPANVERSION": "2023-06-29T08:58:13.659Z"
+          },
+          {
+            "INSPIREID": "60913854",
+            "NATIONALCADASTRALREFERENCE": "60913854",
+            "ncrClassification": "same-as-INSPIREID",
+            "VALIDFROM": "2020-03-20T00:00:00Z",
+            "BEGINLIFESPANVERSION": "2020-03-20T12:35:03.457Z"
+          },
+          {
+            "INSPIREID": "63037448",
+            "NATIONALCADASTRALREFERENCE": "63037448",
+            "ncrClassification": "same-as-INSPIREID",
+            "VALIDFROM": "2024-01-16T13:18:05.883Z",
+            "BEGINLIFESPANVERSION": "2026-09-26T05:14:13.486Z"
+          }
+        ]
+      }
+    }
+  },
+  "singleSnapshotCheck": "All example IDs coexist in one freshly downloaded full authority snapshot each, with one record per native ID. No merge of historical months or change-only files.",
+  "publisherLifecycleSpecification": "https://www.gov.uk/government/statistical-data-sets/technical-specification-transaction-unique-identifier-and-inspire-id-look-up-table-dataset",
+  "publisherCurrentDataMaintenance": "https://use-land-property-data.service.gov.uk/datasets/nps/tech-spec/1?back=true",
+  "conclusion": "No evidence for a safe newest-record-wins rule. Identical Bicester geometries have identical start/version timestamps. The large Graven Hill polygon has later start and version timestamps than several contained plots. Publisher says only latest polygon versions are published; distinct IDs can nevertheless arise when polygons change, split or merge. A stale or simplified current parent index extent following a subdivision remains possible, but not proven by these timestamps.",
+  "limitation": "No valid-to/end, superseded/deleted status, parent/successor linkage or numeric version field in the exposed feature schema. Specific legal/source-maintenance cause remains unestablished. No record removed by geometry nesting or date order.",
+  "titleLinkageCheck": "NATIONALCADASTRALREFERENCE equals INSPIREID on every feature in both complete archives; it is not a separate title reference that can group old/new parcel identities."
+}

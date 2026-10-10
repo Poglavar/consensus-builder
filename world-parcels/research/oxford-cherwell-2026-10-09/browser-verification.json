@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-09",
+  "mode": "headed local Chrome inspection, not browser test suite",
+  "checks": {
+    "oxford": {
+      "phase": "ready",
+      "viewportFeatureCount": 191,
+      "actualPointerPopupNativeId": "64588194",
+      "popupShowsFreeholdScopeAndReferenceOnly": true
+    },
+    "bicester": {
+      "phase": "ready",
+      "viewportFeatureCount": 293
+    },
+    "gravenHill": {
+      "phase": "ready",
+      "mobileViewport": [
+        390,
+        844
+      ],
+      "viewportFeatureCount": 67,
+      "horizontalOverflow": false,
+      "scopeLabelVisibleAboveActionBar": true
+    }
+  },
+  "sourceGeometryUnmodified": true,
+  "editableGroundSource": "none",
+  "falseNoRegisterPromptSuppressed": true,
+  "proposalBindingReferenceSourceRejected": true,
+  "validation": {
+    "focusedIntegrationTestsPassed": 120,
+    "finalLayerAndStaticBuildTestsPassed": 10,
+    "productionStaticBuildPassed": true,
+    "broaderLocaleCheck": "Fails on pre-existing missing labels for Orlando, Dublin, Riga, Tallinn, Vilnius and Jundiai in all four base locales; new city and reference strings present."
+  },
+  "status": "historical verification of withdrawn reference-only implementation; not a current app capability"
+}

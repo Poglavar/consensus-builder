@@ -1,0 +1,401 @@
+{
+  "checkedAt": "2026-10-09",
+  "decision": "excluded_from_app",
+  "reason": "Material cross-ID overlaps and containment in official native-coordinate source geometries; no view-only integration, repair, clipping, arbitrary record selection or source polygon editing.",
+  "sourceArchiveChecks": {
+    "oxford": {
+      "fullArchiveFeatures": 43333,
+      "selectedIdsMatched": 441,
+      "originalCrs": "urn:ogc:def:crs:EPSG::27700"
+    },
+    "cherwell": {
+      "fullArchiveFeatures": 82742,
+      "selectedIdsMatched": 1776,
+      "originalCrs": "urn:ogc:def:crs:EPSG::27700"
+    }
+  },
+  "measurementScope": "Same bounded 13-cell local qualification areas as the original research; full unmodified polygon extents, not whole-authority topology audit.",
+  "measurements": [
+    {
+      "area": "oxford",
+      "sourceCRS": "EPSG:27700",
+      "features": 441,
+      "overlapPairs": 208,
+      "affectedFeatures": 236,
+      "thresholdCounts": {
+        "0.01": 70,
+        "0.5": 26,
+        "1": 21,
+        "10": 15,
+        "100": 6,
+        "1000": 1
+      },
+      "containmentPairs": 6,
+      "largestPairs": [
+        {
+          "ids": [
+            "GB-HMLR-OXFORD-47215007",
+            "GB-HMLR-OXFORD-25783956"
+          ],
+          "areaM2": 2655.0523355110004,
+          "overlapShareSmaller": 0.9957112742485821,
+          "percentSmallerAffected": 99.5711274248582,
+          "containment": false
+        },
+        {
+          "ids": [
+            "GB-HMLR-OXFORD-26001849",
+            "GB-HMLR-OXFORD-26001852"
+          ],
+          "areaM2": 903.2078680950862,
+          "overlapShareSmaller": 0.9999999862660204,
+          "percentSmallerAffected": 99.99999862660204,
+          "containment": false
+        },
+        {
+          "ids": [
+            "GB-HMLR-OXFORD-26001853",
+            "GB-HMLR-OXFORD-26001849"
+          ],
+          "areaM2": 311.6316175000804,
+          "overlapShareSmaller": 0.9998688398864954,
+          "percentSmallerAffected": 99.98688398864954,
+          "containment": false
+        },
+        {
+          "ids": [
+            "GB-HMLR-OXFORD-26001853",
+            "GB-HMLR-OXFORD-26001852"
+          ],
+          "areaM2": 311.6316175000804,
+          "overlapShareSmaller": 0.9998688398864954,
+          "percentSmallerAffected": 99.98688398864954,
+          "containment": false
+        },
+        {
+          "ids": [
+            "GB-HMLR-OXFORD-47214758",
+            "GB-HMLR-OXFORD-47215007"
+          ],
+          "areaM2": 156.39986031162636,
+          "overlapShareSmaller": 0.9967038789212976,
+          "percentSmallerAffected": 99.67038789212977,
+          "containment": false
+        },
+        {
+          "ids": [
+            "GB-HMLR-OXFORD-26261170",
+            "GB-HMLR-OXFORD-49664285"
+          ],
+          "areaM2": 153.49617749976886,
+          "overlapShareSmaller": 0.14340475606297978,
+          "percentSmallerAffected": 14.340475606297979,
+          "containment": false
+        },
+        {
+          "ids": [
+            "GB-HMLR-OXFORD-26042927",
+            "GB-HMLR-OXFORD-62732518"
+          ],
+          "areaM2": 59.54821599977707,
+          "overlapShareSmaller": 0.9999577838915269,
+          "percentSmallerAffected": 99.99577838915269,
+          "containment": false
+        },
+        {
+          "ids": [
+            "GB-HMLR-OXFORD-25939005",
+            "GB-HMLR-OXFORD-54304486"
+          ],
+          "areaM2": 59.210250000181595,
+          "overlapShareSmaller": 0.999993751120427,
+          "percentSmallerAffected": 99.9993751120427,
+          "containment": false
+        },
+        {
+          "ids": [
+            "GB-HMLR-OXFORD-49664285",
+            "GB-HMLR-OXFORD-26262083"
+          ],
+          "areaM2": 40.305600000020036,
+          "overlapShareSmaller": 0.30488616201939234,
+          "percentSmallerAffected": 30.488616201939234,
+          "containment": false
+        },
+        {
+          "ids": [
+            "GB-HMLR-OXFORD-26198716",
+            "GB-HMLR-OXFORD-26260581"
+          ],
+          "areaM2": 26.51747532385952,
+          "overlapShareSmaller": 0.2925893933705733,
+          "percentSmallerAffected": 29.25893933705733,
+          "containment": false
+        }
+      ],
+      "countDefinition": "overlapPairs/affectedFeatures count any positive floating-point intersection; thresholdCounts separate substantive intersections and tiny numerical slivers. Largest pairs measured in native metric coordinates.",
+      "nativeGeometrySha256": "c17c68a366f908b007a86593ce37d0ac66976dfedbdd2b01e03bf403cdfcadf6",
+      "nativeInvalidFeatureCount": 0,
+      "sourceToRuntimeCoordinateRoundTrip": "Original EPSG:27700 coordinates transformed with the existing adapter definition match every coordinate in the earlier qualified full source geometry exactly (zero delta)."
+    },
+    {
+      "area": "bicester",
+      "sourceCRS": "EPSG:27700",
+      "features": 1487,
+      "overlapPairs": 904,
+      "affectedFeatures": 854,
+      "thresholdCounts": {
+        "0.01": 418,
+        "0.5": 129,
+        "1": 112,
+        "10": 88,
+        "100": 56,
+        "1000": 1
+      },
+      "containmentPairs": 75,
+      "largestPairs": [
+        {
+          "ids": [
+            "GB-HMLR-CHERWELL-29527673",
+            "GB-HMLR-CHERWELL-29527683"
+          ],
+          "areaM2": 1013.4394700001878,
+          "overlapShareSmaller": 1.0000000000000002,
+          "percentSmallerAffected": 100.00000000000003,
+          "containment": true
+        },
+        {
+          "ids": [
+            "GB-HMLR-CHERWELL-29499388",
+            "GB-HMLR-CHERWELL-29499542"
+          ],
+          "areaM2": 334.92315588822265,
+          "overlapShareSmaller": 0.999984638168498,
+          "percentSmallerAffected": 99.9984638168498,
+          "containment": false
+        },
+        {
+          "ids": [
+            "GB-HMLR-CHERWELL-29548135",
+            "GB-HMLR-CHERWELL-29548138"
+          ],
+          "areaM2": 240.5087720001307,
+          "overlapShareSmaller": 0.9999971352479946,
+          "percentSmallerAffected": 99.99971352479946,
+          "containment": false
+        },
+        {
+          "ids": [
+            "GB-HMLR-CHERWELL-29515094",
+            "GB-HMLR-CHERWELL-29515101"
+          ],
+          "areaM2": 213.69039900023392,
+          "overlapShareSmaller": 1.0000000000000002,
+          "percentSmallerAffected": 100.00000000000003,
+          "containment": true
+        },
+        {
+          "ids": [
+            "GB-HMLR-CHERWELL-29515094",
+            "GB-HMLR-CHERWELL-29515095"
+          ],
+          "areaM2": 213.69039900023392,
+          "overlapShareSmaller": 1.0000000000000002,
+          "percentSmallerAffected": 100.00000000000003,
+          "containment": true
+        },
+        {
+          "ids": [
+            "GB-HMLR-CHERWELL-29515095",
+            "GB-HMLR-CHERWELL-29515101"
+          ],
+          "areaM2": 213.69039900023392,
+          "overlapShareSmaller": 1.0000000000000002,
+          "percentSmallerAffected": 100.00000000000003,
+          "containment": true
+        },
+        {
+          "ids": [
+            "GB-HMLR-CHERWELL-29515094",
+            "GB-HMLR-CHERWELL-29515100"
+          ],
+          "areaM2": 213.63372600022734,
+          "overlapShareSmaller": 0.9999999999999998,
+          "percentSmallerAffected": 99.99999999999997,
+          "containment": true
+        },
+        {
+          "ids": [
+            "GB-HMLR-CHERWELL-29515094",
+            "GB-HMLR-CHERWELL-29515096"
+          ],
+          "areaM2": 213.63372600022734,
+          "overlapShareSmaller": 0.9999999999999998,
+          "percentSmallerAffected": 99.99999999999997,
+          "containment": true
+        },
+        {
+          "ids": [
+            "GB-HMLR-CHERWELL-29515094",
+            "GB-HMLR-CHERWELL-29515097"
+          ],
+          "areaM2": 213.63372600022734,
+          "overlapShareSmaller": 0.9999999999999998,
+          "percentSmallerAffected": 99.99999999999997,
+          "containment": true
+        },
+        {
+          "ids": [
+            "GB-HMLR-CHERWELL-29515094",
+            "GB-HMLR-CHERWELL-29515099"
+          ],
+          "areaM2": 213.63372600022734,
+          "overlapShareSmaller": 0.9999999999999998,
+          "percentSmallerAffected": 99.99999999999997,
+          "containment": true
+        }
+      ],
+      "countDefinition": "overlapPairs/affectedFeatures count any positive floating-point intersection; thresholdCounts separate substantive intersections and tiny numerical slivers. Largest pairs measured in native metric coordinates.",
+      "nativeGeometrySha256": "1f593de4d7f11e0432e4360674203a84d802944f1d45f8fad92a395c92deeed1",
+      "nativeInvalidFeatureCount": 0,
+      "sourceToRuntimeCoordinateRoundTrip": "Original EPSG:27700 coordinates transformed with the existing adapter definition match every coordinate in the earlier qualified full source geometry exactly (zero delta)."
+    },
+    {
+      "area": "graven-hill",
+      "sourceCRS": "EPSG:27700",
+      "features": 289,
+      "overlapPairs": 213,
+      "affectedFeatures": 181,
+      "thresholdCounts": {
+        "0.01": 98,
+        "0.5": 69,
+        "1": 67,
+        "10": 60,
+        "100": 57,
+        "1000": 1
+      },
+      "containmentPairs": 56,
+      "largestPairs": [
+        {
+          "ids": [
+            "GB-HMLR-CHERWELL-59813043",
+            "GB-HMLR-CHERWELL-63037448"
+          ],
+          "areaM2": 1506.1959825002798,
+          "overlapShareSmaller": 1.0000000000000007,
+          "percentSmallerAffected": 100.00000000000007,
+          "containment": true
+        },
+        {
+          "ids": [
+            "GB-HMLR-CHERWELL-60913854",
+            "GB-HMLR-CHERWELL-63037448"
+          ],
+          "areaM2": 977.8627549999353,
+          "overlapShareSmaller": 1.0000000000000004,
+          "percentSmallerAffected": 100.00000000000004,
+          "containment": true
+        },
+        {
+          "ids": [
+            "GB-HMLR-CHERWELL-59813042",
+            "GB-HMLR-CHERWELL-63037448"
+          ],
+          "areaM2": 870.20876399992,
+          "overlapShareSmaller": 1.0,
+          "percentSmallerAffected": 100.0,
+          "containment": true
+        },
+        {
+          "ids": [
+            "GB-HMLR-CHERWELL-61472052",
+            "GB-HMLR-CHERWELL-63037448"
+          ],
+          "areaM2": 657.5623790000286,
+          "overlapShareSmaller": 0.9999999999999997,
+          "percentSmallerAffected": 99.99999999999997,
+          "containment": true
+        },
+        {
+          "ids": [
+            "GB-HMLR-CHERWELL-60142697",
+            "GB-HMLR-CHERWELL-63037448"
+          ],
+          "areaM2": 601.8931399995444,
+          "overlapShareSmaller": 1.0000000000000002,
+          "percentSmallerAffected": 100.00000000000003,
+          "containment": true
+        },
+        {
+          "ids": [
+            "GB-HMLR-CHERWELL-60076524",
+            "GB-HMLR-CHERWELL-63037448"
+          ],
+          "areaM2": 505.6851505002064,
+          "overlapShareSmaller": 1.0,
+          "percentSmallerAffected": 100.0,
+          "containment": true
+        },
+        {
+          "ids": [
+            "GB-HMLR-CHERWELL-59735455",
+            "GB-HMLR-CHERWELL-63037448"
+          ],
+          "areaM2": 456.438077999864,
+          "overlapShareSmaller": 1.0000000000000002,
+          "percentSmallerAffected": 100.00000000000003,
+          "containment": true
+        },
+        {
+          "ids": [
+            "GB-HMLR-CHERWELL-61536604",
+            "GB-HMLR-CHERWELL-63037448"
+          ],
+          "areaM2": 432.514437999751,
+          "overlapShareSmaller": 1.0000000000000002,
+          "percentSmallerAffected": 100.00000000000003,
+          "containment": true
+        },
+        {
+          "ids": [
+            "GB-HMLR-CHERWELL-61850887",
+            "GB-HMLR-CHERWELL-63037448"
+          ],
+          "areaM2": 382.9703755005815,
+          "overlapShareSmaller": 1.0,
+          "percentSmallerAffected": 100.0,
+          "containment": true
+        },
+        {
+          "ids": [
+            "GB-HMLR-CHERWELL-62846265",
+            "GB-HMLR-CHERWELL-63037448"
+          ],
+          "areaM2": 361.77555449999886,
+          "overlapShareSmaller": 1.0,
+          "percentSmallerAffected": 100.0,
+          "containment": true
+        }
+      ],
+      "countDefinition": "overlapPairs/affectedFeatures count any positive floating-point intersection; thresholdCounts separate substantive intersections and tiny numerical slivers. Largest pairs measured in native metric coordinates.",
+      "nativeGeometrySha256": "bba1e77e3b36e06bcadd6ce19ccc3a0c299eb5aac0e94d852b2963ceef93eea1",
+      "nativeInvalidFeatureCount": 0,
+      "sourceToRuntimeCoordinateRoundTrip": "Original EPSG:27700 coordinates transformed with the existing adapter definition match every coordinate in the earlier qualified full source geometry exactly (zero delta)."
+    }
+  ],
+  "publisherExplanation": {
+    "url": "https://use-land-property-data.service.gov.uk/datasets/nps/tech-spec/1?back=true",
+    "summary": "HMLR index polygons can have technical mapping overlaps or actual title overlaps. Different floor levels, strata, tenures or title classes can overlap legitimately. INSPIRE is a simplified freehold subset; it lacks the classification needed to explain any particular pair."
+  },
+  "specificLegalCause": "Unknown: no title plans or private ownership records requested. A geometry overlap is not proof of conflicting ownership.",
+  "sourceSemantics": "Correct official registered-freehold property index, not a guaranteed non-overlapping ground-parcel fabric.",
+  "alternativeSourceConclusion": "No qualifying replacement identified in this check. Rejecting these downloads does not establish that the city has no public parcel data.",
+  "olderUKIntegrations": "Prior recorded acceptance for City of London, Manchester and partial Birmingham checked complete reads and same-ID consistency, not intersections between different parcel geometries. Their cross-ID topology remains unverified; no changes to those integrations in this scoped investigation.",
+  "appVerification": {
+    "referenceImplementationWithdrawn": true,
+    "oxfordOrCherwellNewCityConfiguration": false,
+    "headlessTestsPassed": 93,
+    "staticBuildPassed": true,
+    "deployment": "None; the third-state implementation was never deployed."
+  }
+}
