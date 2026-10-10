@@ -6,7 +6,7 @@
 //   node refactor/carve.js <src.js> <out-module.js> <names.txt> "<header comment>"
 //   --dry  : print what would move, write nothing
 const fs = require('fs');
-const acorn = require('/private/tmp/claude-501/-Users-simun-Code/74e9e415-57ac-420a-ba07-7b8542dc8ba0/scratchpad/node_modules/acorn');
+const acorn = require('acorn');
 
 const [src, outPath, namesPath, header] = process.argv.slice(2);
 const dry = process.argv.includes('--dry');

@@ -13,3 +13,6 @@ test-results/
 
 # wrangler local cache (account id, build artifacts) — tooling state, not source
 .wrangler/
+
+# generated test coverage report
+backend/coverage/
