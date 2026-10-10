@@ -37,7 +37,3 @@ frontend/carto-config.js
 /rekonstrukcije/avenue-v/**/*.jpeg
 /rekonstrukcije/avenue-v/**/*.webp
 /rekonstrukcije/avenue-v/**/*.html
-
-# Outreach campaigns: recipient lists, contact research, .eml drafts and outbox screenshots hold
-# third parties' personal contact details. The repo is public, so the whole folder stays local.
-/outreach/
