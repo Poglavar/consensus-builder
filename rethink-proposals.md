@@ -531,7 +531,7 @@ It also redraws the taxonomy along a better line — **forming** (building, park
 reparcellization, boundary adjustment) versus **non-forming** (votes, designations, decide-later),
 rather than overlay-versus-fabric.
 
-**Open question only Simun can answer:** whether a park or square legally requires its own parcel in
+**Open question only the user can answer:** whether a park or square legally requires its own parcel in
 Croatia the way a building does. If not, parks are non-forming and the line moves.
 
 ---
@@ -631,7 +631,7 @@ The §3.8 remainder problem now applies uniformly — and bites hardest for road
 owner four disconnected fragments). Answering "does a formation owe the block reshaped remainders?"
 once answers it for every typology.
 
-**Ownership is ASSUMED WORKING for now** (Simun, 2026-07-23): design the declared-flow field, do not
+**Ownership is ASSUMED WORKING for now** (the user, 2026-07-23): design the declared-flow field, do not
 build redistribution/valuation machinery yet.
 
 Jurisdictions plug in at exactly three seams: who must accept a formation (unanimity vs qualified
@@ -697,7 +697,7 @@ stays political. The model is boring in the best way.
 
 ## 11. Three frames: official, effective, hypothetical
 
-Execution is **legal**, not registral (Simun, 2026-07-23): proposals live on-chain, and when all
+Execution is **legal**, not registral (the user, 2026-07-23): proposals live on-chain, and when all
 required acceptances arrive the proposal **auto-executes** — funds disburse, obligations bind. The
 official cadastre is a separate registry CB cannot write; it catches up on its own schedule. That
 gives a three-layer stack:
