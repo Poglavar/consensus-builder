@@ -132,15 +132,16 @@ describe('chain metadata gateway reads', () => {
     });
 
     it('uses redirect:error and rejects oversized metadata before or during streaming', async () => {
+        const retryOptions = { wait: async () => {}, log: () => {} };
         const fetchImpl = vi.fn(async (_url, options) => {
             expect(options.redirect).toBe('error');
             return { ok: true, headers: { get: () => '1' }, body: (async function* () { yield Buffer.from('{"ok":true}'); })() };
         });
-        await expect(readChainMetadata(`ipfs://${CID}`, { fetchImpl })).resolves.toEqual({ ok: true });
+        await expect(readChainMetadata(`ipfs://${CID}`, { fetchImpl, retryOptions })).resolves.toEqual({ ok: true });
         const redirect = vi.fn(async () => { throw new Error('redirect rejected'); });
-        await expect(readChainMetadata(`ipfs://${CID}`, { fetchImpl: redirect })).rejects.toMatchObject({ status: 503 });
+        await expect(readChainMetadata(`ipfs://${CID}`, { fetchImpl: redirect, retryOptions })).rejects.toMatchObject({ status: 503 });
         const oversized = vi.fn(async () => ({ ok: true, headers: { get: () => String(2 * 1024 * 1024) }, body: { cancel: vi.fn() } }));
-        await expect(readChainMetadata(`ipfs://${CID}`, { fetchImpl: oversized })).rejects.toMatchObject({ status: 422 });
+        await expect(readChainMetadata(`ipfs://${CID}`, { fetchImpl: oversized, retryOptions })).rejects.toMatchObject({ status: 422 });
     });
 });
 

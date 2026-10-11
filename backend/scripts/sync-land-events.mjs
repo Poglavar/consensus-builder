@@ -8,7 +8,7 @@ import dotenv from 'dotenv';
 dotenv.config({ quiet: true });
 
 import pg from 'pg';
-import { Connection } from '@solana/web3.js';
+import { createRpcConnection } from '../solana/rpc.js';
 import { runLandEventJob } from '../oracle/land-event-job.js';
 import { buildLandOracleRunStats, landOracleStatsPath, writeRunStatsAtomic } from '../operations/run-stats.js';
 
@@ -48,7 +48,7 @@ const pool = new pg.Pool({
 // night's run onto public devnet, which throttled it (2026-10-10).
 const RPC_URL = process.env.SOLANA_PROGRAM_ACCOUNTS_RPC_URL;
 if (!RPC_URL) throw new Error('SOLANA_PROGRAM_ACCOUNTS_RPC_URL is required (backend .env)');
-const connection = new Connection(RPC_URL, 'confirmed');
+const connection = createRpcConnection(RPC_URL, 'confirmed');
 console.log(`[${new Date().toISOString()}] RPC ${new URL(RPC_URL).host}`);
 const startedAt = new Date().toISOString();
 let job = { result: null, error: null, exitCode: 1, transactionSync: null };

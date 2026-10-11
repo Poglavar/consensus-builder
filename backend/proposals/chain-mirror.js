@@ -6,6 +6,7 @@ import { readFileSync } from 'node:fs';
 import { readChainProposal, chainProofError } from './chain-reader.js';
 import { validateSiteGeometry } from './binding.js';
 import { MAX_METADATA_BYTES } from '../utils/nft-asset-upload.js';
+import { createRetryingFetch } from '../utils/retrying-fetch.js';
 
 const require = createRequire(import.meta.url);
 const chainRecord = require('../../frontend/js/proposals/chain-record.js');
@@ -48,11 +49,13 @@ export function metadataReadUrl(uri, env = process.env) {
     throw chainProofError('A public chain mirror requires immutable IPFS or Walrus metadata.');
 }
 
-export async function readChainMetadata(uri, { fetchImpl = fetch, env = process.env } = {}) {
+export async function readChainMetadata(uri, { fetchImpl = fetch, env = process.env, retryOptions = {} } = {}) {
     const url = metadataReadUrl(uri, env);
+    const retryFetch = createRetryingFetch({ ...retryOptions, fetchImpl,
+        timeoutMs: retryOptions.timeoutMs ?? 12_000, requestLabel: () => 'chain-metadata' });
     let response;
     try {
-        response = await fetchImpl(url, { signal: AbortSignal.timeout(12_000), redirect: 'error',
+        response = await retryFetch(url, { method: 'GET', redirect: 'error',
             headers: { Accept: 'application/json' } });
     } catch {
         throw chainProofError('The committed metadata is temporarily unavailable.', { unavailable: true });

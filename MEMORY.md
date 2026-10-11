@@ -565,3 +565,5 @@ Expanded SAM 3 head fine-tuning used 96 training tiles and fresh 16-tile validat
 - 2026-10-11: The user wants browser tests to remain headed while preserving focus on the laptop. The macOS Playwright adapter requests background creation for test windows; app-created popups can still activate Chrome. Occasional popup activation is accepted when announced before running those tests. Do not switch browser verification to headless to avoid interruptions.
 
 - 2026-10-11: Scheduled proposers now pin/read back complete proposal-chain/1 metadata and cadastral snapshots before minting, then use the verified chain mirror. x402 remains for separate paid server writes. Every runner records failures before external reads, and operations/monitoring track each persona. Solana RPC genesis verification uses the full hash, not the shortened CAIP-2 reference.
+
+- 2026-10-11: The user wants bounded retries for server bots and one devnet SOL funding address. Retry transient reads and rebroadcast identical signed transactions without blindly re-signing; the existing main proposer wallet supplies small, verified devnet fee top-ups to configured actor and lens wallets.

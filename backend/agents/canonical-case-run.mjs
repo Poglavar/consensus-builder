@@ -12,7 +12,7 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import pg from 'pg';
-import { Connection, Keypair, PublicKey } from '@solana/web3.js';
+import { Keypair, PublicKey } from '@solana/web3.js';
 import {
     assertAttestedLiveAllowed, attestedCasePlan, attestedCaseSteps, canonicalCaseConfig, canonicalProposalBody,
     canonicalTerminalActions, ownerKey,
@@ -25,6 +25,7 @@ import { ensureDonationEscrowAndDonate } from './donor.js';
 import { ensurePledgeBookAndSet } from './pledger.js';
 import { ensureMarketAndStake, usdcToAtomic } from './bettor.js';
 import { getRun, startRun, updateRun } from './ledger.js';
+import { createRpcConnection } from '../solana/rpc.js';
 import { sendAndConfirmPolling } from './solana-send.js';
 import { createAction } from './run-policy.js';
 import {
@@ -204,7 +205,7 @@ async function main() {
         host: process.env.PGHOST, port: process.env.PGPORT, user: process.env.PGUSER,
         password: process.env.PGPASSWORD, database: process.env.PGDATABASE
     });
-    const connection = new Connection(process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
+    const connection = createRpcConnection(process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
     const proposerSigner = loadKeypair(proposer);
     const supporterSigner = loadKeypair(supporter);
     try {

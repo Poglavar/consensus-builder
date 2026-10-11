@@ -18,6 +18,11 @@ describe('algorithmic agent schedule', () => {
             expect(proposer.env.IPFS_READ_GATEWAY).toBe(apiEnv.IPFS_READ_GATEWAY);
         }
     });
+    it('enables bounded devnet fee funding for all configured actor and lens jobs', () => {
+        const actors = apps.filter(item => /^agents\/(run|support-run|society-run|lens-member-run)\.mjs$/.test(item.script));
+        expect(actors).toHaveLength(10);
+        for (const actor of actors) expect(actor.env.AGENT_SOL_FUNDING_ENABLED).toBe('1');
+    });
     it('checkpoints support and society runs before RPC reads and persists pre-action failures', () => {
         const supporter = fs.readFileSync(new URL('../agents/support-run.mjs', import.meta.url), 'utf8');
         const society = fs.readFileSync(new URL('../agents/society-run.mjs', import.meta.url), 'utf8');

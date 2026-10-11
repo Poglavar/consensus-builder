@@ -23,6 +23,7 @@ import {
     collectProspectiveCandidates,
     selectProspectiveCourtEvidence
 } from '../../../backend/oracle/prospective-evidence.js';
+import { createRpcConnection } from '../../../backend/solana/rpc.js';
 import { sendAndConfirmPolling } from '../../../backend/agents/solana-send.js';
 import { JOB_RPC_RETRY_DELAYS, withRpcRetry } from '../../../backend/solana/tx-store.js';
 
@@ -385,7 +386,7 @@ async function main() {
     const settle = process.argv.includes('--settle');
     if (open === settle) throw new Error('choose exactly one phase: --open or --settle');
     const live = process.argv.includes('--live');
-    const connection = new Connection(required(RPC_URL, 'SOLANA_PROGRAM_ACCOUNTS_RPC_URL'), 'confirmed');
+    const connection = createRpcConnection(required(RPC_URL, 'SOLANA_PROGRAM_ACCOUNTS_RPC_URL'), 'confirmed');
     console.error(`[${new Date().toISOString()}] RPC ${new URL(RPC_URL).host}`);
     if (open) return openMarket(connection, live);
     return settleMarket(connection, live);

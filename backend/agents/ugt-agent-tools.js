@@ -4,11 +4,12 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { Connection, Keypair } from '@solana/web3.js';
+import { Keypair } from '@solana/web3.js';
 import { ensureDonationEscrowAndDonate } from './donor.js';
 import { ensureMarketAndStake, usdcToAtomic } from './bettor.js';
 import { buyOracleFact, createOracleFactClient, fetchOracleFactChallenge } from './oracle-fact-client.js';
 import { ensurePledgeBookAndSet } from './pledger.js';
+import { createRpcConnection } from '../solana/rpc.js';
 import { sendAndConfirmPolling } from './solana-send.js';
 import { createPaidClient, fetchChallenge, paymentIdForProposal, postAgentProposal } from './x402-client.js';
 import { mintProposal } from './minter.js';
@@ -94,7 +95,7 @@ function assertChallengeUnderCap(challenge, maximum, label) {
 export function createUrbanGameTheoryTools({
     env = process.env,
     fetchImpl = globalThis.fetch,
-    createConnection = (rpcUrl) => new Connection(rpcUrl, 'confirmed'),
+    createConnection = (rpcUrl) => createRpcConnection(rpcUrl, 'confirmed'),
     dependencies = {}
 } = {}) {
     if (typeof fetchImpl !== 'function') throw new Error('a fetch implementation is required');

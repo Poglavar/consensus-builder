@@ -37,7 +37,7 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import pg from 'pg';
-import { Connection, Keypair } from '@solana/web3.js';
+import { Keypair } from '@solana/web3.js';
 import * as turf from '@turf/turf';
 import { fetchCandidateParcels } from './parcel-source.js';
 import { chooseArea, contestParcels, parcelsFromSource, pickedParcelIds, runKeyFor, seedFor, slotLabel, windowIn } from './area-plan.js';
@@ -51,6 +51,8 @@ import { resolveLens, describeLensChoice } from './lens-directory-client.js';
 import { ensureMarketAndStake, usdcToAtomic } from './bettor.js';
 import { getRun, startRun, updateRun, recordCosts, dailySpendUsd, assertUnderCap, dailyCapUsd, listRuns } from './ledger.js';
 import { sendTelegram } from './telegram.js';
+import { createRpcConnection } from '../solana/rpc.js';
+import { ensureBotSolFunding } from './funding.js';
 import { sendAndConfirmPolling } from './solana-send.js';
 import {
     assertExecutionPlan, decisionCompletion, executionPolicy, summarizeExecutionPlan,
@@ -392,7 +394,7 @@ async function main() {
             if (args.dryRun) {
                 await logLensPlan({ entries, args, apiBase, picksFor: entry => decisions.get(entry.persona.name)?.picks?.length });
                 await retireStage({
-                    pool, connection: new Connection(rpcUrl, 'confirmed'), entries, day, dryRun: true, controller,
+                    pool, connection: createRpcConnection(rpcUrl, 'confirmed'), entries, day, dryRun: true, controller,
                     plannedActions: summarizeExecutionPlan(entries.map(entry => ({
                         persona: entry.persona, run: { summary: { picks: decisions.get(entry.persona.name)?.picks ?? [] } }
                     }))).actionCount,
@@ -437,7 +439,7 @@ async function main() {
                 // The model is not called in a dry run, so assume each persona uses its full daily quota.
                 await logLensPlan({ entries, args, apiBase, picksFor: entry => entry.candidates.length });
                 await retireStage({
-                    pool, connection: new Connection(rpcUrl, 'confirmed'), entries, day, dryRun: true, controller,
+                    pool, connection: createRpcConnection(rpcUrl, 'confirmed'), entries, day, dryRun: true, controller,
                     plannedActions: summarizeExecutionPlan(entries.map(entry => ({
                         persona: entry.persona,
                         run: { summary: { picks: Array.from({ length: entry.persona.dailyProposals ?? 1 }, (_, index) => ({ proposalId: `planned-${index + 1}` })) } }
@@ -513,7 +515,12 @@ async function main() {
         const policy = executionPolicy(process.env);
         const executionPlan = assertExecutionPlan(summarizeExecutionPlan(entries, policy), policy);
         log(`execution policy: ${executionPlan.actionCount}/${policy.maxActions} signed actions · ≤ ${executionPlan.maxUsdc.toFixed(2)}/${policy.maxUsdc.toFixed(2)} USDC`);
-        const connection = new Connection(rpcUrl, 'confirmed');
+        const connection = createRpcConnection(rpcUrl, 'confirmed');
+
+        if (args.live) for (const entry of entries) {
+            const funding = await ensureBotSolFunding({ connection, persona: entry.persona });
+            if (funding.status === 'funded') entry.run = await updateRun(pool, entry.runId, { summaryPatch: { funding } });
+        }
 
         // ---- retire phase: close stale own proposals before minting anything new -------------
         await retireStage({

@@ -10,7 +10,7 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import pg from 'pg';
-import { Connection, Keypair, PublicKey } from '@solana/web3.js';
+import { Keypair, PublicKey } from '@solana/web3.js';
 import {
     classifySupportExecution, eligibleSupportProposals, proposalAccount, selectSupportAction
 } from './supporter-picker.js';
@@ -19,6 +19,9 @@ import { ensureDonationEscrowAndDonate } from './donor.js';
 import { ensureMarketAndStake, usdcToAtomic } from './bettor.js';
 import { getRun, startRun, updateRun } from './ledger.js';
 import { markAgentRunFailed, safeFailureDiagnostic } from './run-failure.js';
+import { createRpcConnection } from '../solana/rpc.js';
+import { ensureBotSolFunding } from './funding.js';
+import { createRetryingFetch } from '../utils/retrying-fetch.js';
 import { sendAndConfirmPolling } from './solana-send.js';
 import { sendTelegram } from './telegram.js';
 import { runKeyFor, slotLabel } from './area-plan.js';
@@ -84,7 +87,7 @@ function loadKeypair(persona) {
 }
 
 async function fetchJson(url) {
-    const response = await fetch(url, { headers: { accept: 'application/json' } });
+    const response = await createRetryingFetch({ requestLabel: () => 'proposal-read' })(url, { headers: { accept: 'application/json' } });
     if (!response.ok) throw new Error(`${url} returned HTTP ${response.status}`);
     return response.json();
 }
@@ -160,7 +163,7 @@ async function main() {
         password: process.env.PGPASSWORD, database: process.env.PGDATABASE
     }) : null;
     // Reads (existing support) happen in dry-run too; only --live signs anything.
-    const connection = new Connection(rpcUrl, 'confirmed');
+    const connection = createRpcConnection(rpcUrl, 'confirmed');
     const report = [];
     try {
         for (const persona of personas) {
@@ -182,6 +185,10 @@ async function main() {
                 }
                 const keypair = args.live ? loadKeypair(persona) : null;
                 const wallet = keypair?.publicKey.toBase58() || persona.wallet || null;
+                if (args.live) {
+                    const funding = await ensureBotSolFunding({ connection, persona });
+                    if (funding.status === 'funded') await updateRun(pool, runId, { summaryPatch: { funding } });
+                }
                 const proposals = await discoverProposals(apiBase, persona);
                 const excludeProposalIds = await alreadySupportedProposalIds({ connection, wallet, persona, proposals });
                 const choice = selectSupportAction({ day: runKey, persona, proposals, wallet, excludeProposalIds });

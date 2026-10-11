@@ -8,7 +8,9 @@
 // The proposer now renders its immutable thumbnail before minting. Use the same
 // public basemap configuration as the API that rendered its old server-side post.
 const apiEnv = require('../ecosystem.config.cjs').apps.find(app => app.name === 'consensus-builder-api').env;
+const fundingEnv = { AGENT_SOL_FUNDING_ENABLED: '1' };
 const lensEnv = {
+  ...fundingEnv,
   NODE_ENV: 'production',
   X402_NETWORK: 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1',
   X402_FACILITATOR_URL: 'https://api.cdp.coinbase.com/platform/v2/x402',
@@ -37,6 +39,7 @@ function proposerJob(name, persona, cron) {
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
+      ...fundingEnv,
       MAPTILER_API_KEY: apiEnv.MAPTILER_API_KEY,
       IPFS_READ_GATEWAY: apiEnv.IPFS_READ_GATEWAY,
       AGENT_DAILY_ACTION_CAP: '13',
@@ -63,6 +66,7 @@ function societyJob(name, persona, cron, caps) {
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
+      ...fundingEnv,
       AGENT_API_BASE: 'https://api.urbangametheory.xyz',
       AGENT_SOCIETY_ACTION_CAP: caps.actions,
       AGENT_SOCIETY_USDC_CAP: caps.usdc
@@ -87,6 +91,7 @@ module.exports = {
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
+      ...fundingEnv,
       MAPTILER_API_KEY: apiEnv.MAPTILER_API_KEY,
       IPFS_READ_GATEWAY: apiEnv.IPFS_READ_GATEWAY,
       // 3 for the day's proposal (mint, market, stake) + 3 retirements × (cancel, resolve, claim).
@@ -116,6 +121,7 @@ module.exports = {
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
+      ...fundingEnv,
       AGENT_API_BASE: 'https://api.urbangametheory.xyz',
       AGENT_SUPPORT_USDC_CAP: '0.25'
     },
@@ -140,6 +146,7 @@ module.exports = {
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
+      ...fundingEnv,
       AGENT_API_BASE: 'https://api.urbangametheory.xyz',
       // One NO stake (0.01 USDC) plus a possible market creation, after collecting any winnings.
       AGENT_SOCIETY_ACTION_CAP: '3',
@@ -165,6 +172,7 @@ module.exports = {
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
+      ...fundingEnv,
       AGENT_API_BASE: 'https://api.urbangametheory.xyz',
       // One pledge or one revoke per invocation (a pledge is a soft 0.05 USDC commitment), after
       // collecting any winnings.
@@ -213,10 +221,9 @@ module.exports = {
     env: {
       NODE_ENV: 'production',
       LAND_ORACLE_RUN_STATS: '/root/code/consensus-builder/backend/logs/land-oracle-stats.json'
-      // No RPC URL here. This job lists AcceptanceRecords with getProgramAccounts, which the Alchemy
-      // free tier (SOLANA_RPC_URL) refuses, so it runs wholly on SOLANA_PROGRAM_ACCOUNTS_RPC_URL from
-      // backend/.env (Helius devnet), as does the prospective resolver; every other job stays on
-      // Alchemy. From 2026-10-04 to 2026-10-10 it was pinned to public devnet here instead, which
+      // No RPC URL here. This job lists AcceptanceRecords with getProgramAccounts and uses the
+      // separately configured SOLANA_PROGRAM_ACCOUNTS_RPC_URL, as does the prospective resolver.
+      // Other jobs use SOLANA_RPC_URL. From 2026-10-04 to 2026-10-10 this job used public devnet,
       // throttled its transaction sync and failed the run.
     },
     // Own log files, not the shared agents.log: the oracle prints its full JSON result (20+ KB),

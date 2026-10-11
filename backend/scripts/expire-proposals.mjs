@@ -11,6 +11,7 @@
 // verdicts), SOLANA_RPC_URL and PG* in backend/.env. The submitter keypair pays the verdict record's
 // rent and the resolve fee; it needs devnet SOL only.
 
+import { createRpcConnection } from '../solana/rpc.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
@@ -18,7 +19,7 @@ import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import dotenv from 'dotenv';
 import pg from 'pg';
-import { Connection, Keypair } from '@solana/web3.js';
+import { Keypair } from '@solana/web3.js';
 import { lifecycleLensConfig } from '../agents/run-policy.js';
 import { fetchLensStatus } from '../agents/lens-ownership-client.js';
 import { decodeProposalState, expireWithVerdict, resolveProposalMarket } from '../agents/lifecycle-actions.js';
@@ -111,7 +112,7 @@ async function main() {
     log(`lifecycle lens member ${lifecycle.key} at ${lifecycle.serviceUrl}`);
 
     const pool = new pg.Pool();
-    const connection = new Connection(process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
+    const connection = createRpcConnection(process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
     try {
         const params = [];
         const cityClause = values.city ? `AND city = $${params.push(values.city)}` : '';

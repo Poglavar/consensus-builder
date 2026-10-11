@@ -1,11 +1,11 @@
 // The society runner's pure pieces: multi-turn and slotted run ids and seeds, invocation caps across
 // turns, persona loading, city discovery, YES/NO stake and claim execution wiring, the optional LLM
 // choice parser, and the lifecycle-01 lens member wiring.
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { MAX_SOCIETY_TURNS, societyBudget, societyPolicy, societySlot, societyTurnSpent, societyTurns } from '../agents/run-policy.js';
 import { buildChoiceRequest, parseChoice } from '../agents/society-llm.js';
 import { createAgentLlm } from '../agents/llm-picker.js';
-import { activityMessage, discoveryCities, execute, loadSocietyPersona } from '../agents/society-run.mjs';
+import { activityMessage, discoveryCities, execute, loadSocietyPersona, readAccounts } from '../agents/society-run.mjs';
 import { lensMemberCommand, loadLensMemberPersona } from '../agents/lens-member-run.mjs';
 
 describe('society turns', () => {
@@ -90,6 +90,47 @@ describe('society cities', () => {
         expect(discoveryCities({ policy: { cities: ['zagreb', '*'] } })).toEqual([null]);
         expect(discoveryCities({ policy: { cities: ['zagreb', 'sibenik', 'zagreb'] } })).toEqual(['zagreb', 'sibenik']);
         expect(discoveryCities({ policy: {} })).toEqual(['zagreb']);
+    });
+});
+
+describe('society account reads', () => {
+    it('reads at most five accounts per RPC and preserves order and nulls', async () => {
+        const addresses = Array.from({ length: 12 }, (_, i) => `address-${i}`);
+        const calls = [];
+        const connection = {
+            getMultipleAccountsInfo: async (batch, commitment) => {
+                calls.push({ batch, commitment });
+                return batch.map(address => address === 'address-1' || address === 'address-8' ? null : `info:${address}`);
+            }
+        };
+
+        await expect(readAccounts(connection, addresses)).resolves.toEqual([
+            'info:address-0', null, 'info:address-2', 'info:address-3', 'info:address-4',
+            'info:address-5', 'info:address-6', 'info:address-7', null, 'info:address-9',
+            'info:address-10', 'info:address-11'
+        ]);
+        expect(calls.map(({ batch }) => batch.length)).toEqual([5, 5, 2]);
+        expect(calls.flatMap(({ batch }) => batch)).toEqual(addresses);
+        expect(calls.every(({ commitment }) => commitment === 'confirmed')).toBe(true);
+    });
+
+    it('rejects a truncated RPC batch instead of shifting later account results', async () => {
+        const calls = [];
+        const connection = {
+            getMultipleAccountsInfo: async batch => {
+                calls.push(batch);
+                return batch.slice(0, batch.length - 1).map(address => `info:${address}`);
+            }
+        };
+
+        await expect(readAccounts(connection, ['a', 'b', 'c'])).rejects.toThrow(/returned 2 for 3 address/);
+        expect(calls).toEqual([['a', 'b', 'c']]);
+    });
+
+    it('does not call RPC for an empty address list', async () => {
+        const connection = { getMultipleAccountsInfo: vi.fn() };
+        await expect(readAccounts(connection, [])).resolves.toEqual([]);
+        expect(connection.getMultipleAccountsInfo).not.toHaveBeenCalled();
     });
 });
 

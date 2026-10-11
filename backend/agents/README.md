@@ -29,6 +29,24 @@ date; `auto` is `h` + the UTC hour. The PM2 schedules in `ecosystem.config.cjs` 
 bettor every two or three hours with `--slot auto`; `consensus-builder-tx-sync` refreshes the
 transaction store every 20 minutes so the public activity feed shows each bet soon after it lands.
 
+Server RPC reads retry transient transport, rate-limit and provider failures up to four total
+attempts, with 1/2/4-second backoff. The shared transaction sender checks the locally derived
+signature even if the submission response is lost, and rebroadcasts the identical signed bytes
+up to three times while the blockhash remains valid. It never refreshes the blockhash after an
+ambiguous submission. Confirmed chain errors and deterministic preflight failures remain failures;
+the durable run checkpoint records them. This follows Solana's distinction between
+[submission and confirmation](https://solana.com/docs/rpc/http/sendtransaction).
+Society account reads use batches of five, matching the configured provider's limit, and reject
+truncated responses instead of assigning balances or markets to the wrong proposal.
+
+The server actor/lens configuration enables `AGENT_SOL_FUNDING_ENABLED=1`. The existing main bot
+wallet, `G4R6RCCcQHN9fLoExvTBBfhbw8BgvTEqhJezG3A1HvEg`, accepts devnet SOL for fee funding.
+Before a live actor run or lens attestation, a configured bot below 0.05 SOL receives only the
+shortfall to 0.2 SOL. The helper checks the full devnet genesis, configured recipient and source
+signer, and a 0.5 SOL source reserve plus fee allowance; it reads balances back after confirmation.
+Actor runs checkpoint the transfer receipt. This moves devnet SOL for fees; existing USDC/action
+limits for proposal support and betting still apply.
+
 `run.mjs` (the orchestrator) owns the sequencing, the checkpoints, the proposal ids, the daily
 spend cap, signed-action/USDC caps and the Telegram summary. The modules here hold no state and
 never decide to spend. `run-policy.js` refuses a live plan before it touches a wallet when it would

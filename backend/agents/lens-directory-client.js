@@ -3,6 +3,7 @@
 // its own key as the authority that decides its proposal. Pure except fetchLensMembers().
 
 import { PublicKey } from '@solana/web3.js';
+import { createRetryingFetch } from '../utils/retrying-fetch.js';
 
 export const DEFAULT_LENS_KINDS = Object.freeze(['owner-consent']);
 
@@ -40,20 +41,22 @@ export function parseLensList(value) {
  * @returns {Promise<Array<{ key: string, kind: string|null, name: string|null, description: string|null,
  *   coverage: { ownership: number, parcels: number, executed: number } }>>}
  */
-export async function fetchLensMembers({ apiBase, fetchImpl = globalThis.fetch } = {}) {
+export async function fetchLensMembers({ apiBase, fetchImpl = globalThis.fetch, retryOptions = {} } = {}) {
     if (typeof fetchImpl !== 'function') throw new Error('a fetch implementation is required');
     const url = `${cleanBase(apiBase)}/agent/lenses/members`;
+    const retryFetch = createRetryingFetch({ ...retryOptions, fetchImpl, timeoutMs: retryOptions.timeoutMs ?? 12_000,
+        requestLabel: () => 'lens-directory' });
     let response;
     try {
-        response = await fetchImpl(url, { headers: { accept: 'application/json' } });
-    } catch (error) {
-        throw new Error(`lens directory ${url} unreachable: ${error.cause?.code || error.cause?.message || error.message}`);
+        response = await retryFetch(url, { method: 'GET', headers: { accept: 'application/json' } });
+    } catch {
+        throw new Error('lens directory unreachable');
     }
     const text = await response.text();
-    if (!response.ok) throw new Error(`${url} returned HTTP ${response.status}: ${text.slice(0, 300)}`);
+    if (!response.ok) throw new Error(`lens directory returned HTTP ${response.status}`);
     let body;
-    try { body = JSON.parse(text); } catch { throw new Error(`${url} did not return JSON`); }
-    if (!body || !Array.isArray(body.members)) throw new Error(`${url} returned no members array`);
+    try { body = JSON.parse(text); } catch { throw new Error('lens directory did not return JSON'); }
+    if (!body || !Array.isArray(body.members)) throw new Error('lens directory returned no members array');
     return body.members;
 }
 

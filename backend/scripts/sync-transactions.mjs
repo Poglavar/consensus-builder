@@ -19,7 +19,7 @@
 
 import pkg from 'pg';
 import 'dotenv/config';
-import { Connection } from '@solana/web3.js';
+import { createRpcConnection } from '../solana/rpc.js';
 import { DEFAULT_SIGNATURE_SCAN_LIMIT, FETCH_CHUNK_SPACING_MS } from '../solana/tx-store.js';
 import { runTransactionSync, readPersonasFile, timestampedLog as log } from '../solana/transaction-sync-job.js';
 
@@ -88,7 +88,7 @@ async function main() {
         password: process.env.PGPASSWORD,
         database: process.env.PGDATABASE
     });
-    const connection = new Connection(process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
+    const connection = createRpcConnection(process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
 
     try {
         const result = await runTransactionSync({

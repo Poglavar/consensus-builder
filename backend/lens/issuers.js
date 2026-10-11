@@ -7,8 +7,10 @@
 
 import * as kit from '@solana/kit';
 import * as sas from 'sas-lib';
-import { Connection, PublicKey, Transaction, TransactionInstruction } from '@solana/web3.js';
+import { PublicKey, Transaction, TransactionInstruction } from '@solana/web3.js';
 import { buildSasAttestationAccount, sha256Hex } from '../oracle/lens-schemas.js';
+import { createRpcConnection } from '../solana/rpc.js';
+import { ensureBotSolFunding } from '../agents/funding.js';
 import { sendAndConfirmPolling } from '../agents/solana-send.js';
 import { lensLog } from './errors.js';
 
@@ -49,7 +51,7 @@ function toWeb3Instruction(instruction) {
 
 export async function loadSasIssuer({ keypair, rpcUrl, commitment = 'confirmed' }) {
     const signer = await kit.createKeyPairSignerFromBytes(keypair.secretKey);
-    const connection = new Connection(rpcUrl, commitment);
+    const connection = createRpcConnection(rpcUrl, commitment);
     const authority = keypair.publicKey.toBase58();
 
     return {
@@ -58,6 +60,7 @@ export async function loadSasIssuer({ keypair, rpcUrl, commitment = 'confirmed' 
         async createAttestation({ credential, schema, payload, expiry, nonce, address }) {
             const [derived] = await sas.deriveAttestationPda({ credential: kit.address(credential), schema: kit.address(schema), nonce: kit.address(nonce) });
             if (derived !== address) throw new Error(`attestation PDA mismatch: sas-lib ${derived} vs ${address}`);
+            await ensureBotSolFunding({ connection, persona: { wallet: authority } });
             const instruction = sas.getCreateAttestationInstruction({
                 payer: signer,
                 authority: signer,

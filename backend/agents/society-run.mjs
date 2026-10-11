@@ -15,7 +15,7 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import pg from 'pg';
-import { Connection, Keypair, PublicKey } from '@solana/web3.js';
+import { Keypair, PublicKey } from '@solana/web3.js';
 import { proposalAccount, proposalKey, isOthersActiveMinted, isSolanaMinted, fitsBudget } from './policies/common.js';
 import { societyHistory } from './policies/history.js';
 import { decideTurn } from './policies/collect.js';
@@ -27,6 +27,9 @@ import { assertUnderCap, dailyCapUsd, dailySpendUsd, getRun, listPersonaRuns, re
 import { markAgentRunFailed, safeFailureDiagnostic } from './run-failure.js';
 import { createAgentLlm, estimateBatchCostUsd, runPickBatch } from './llm-picker.js';
 import { buildChoiceRequest, optionId, parseChoice } from './society-llm.js';
+import { createRpcConnection } from '../solana/rpc.js';
+import { ensureBotSolFunding } from './funding.js';
+import { createRetryingFetch } from '../utils/retrying-fetch.js';
 import { sendAndConfirmPolling } from './solana-send.js';
 import { sendTelegram } from './telegram.js';
 import { isEntrypoint } from './entrypoint.js';
@@ -49,7 +52,7 @@ const MAX_RECORDS = 40;
 const SUMMARY_PAGE = 1000;
 const MAX_DISCOVERED = 3000;
 const MAX_MINTED = 500;
-const ACCOUNTS_PER_RPC = 100;
+const ACCOUNTS_PER_RPC = 5;
 const PLEDGE_STATUS = ['active', 'fulfilled', 'revoked', 'voided'];
 // proposal_nft status byte → word (oracle/proposal-lifecycle.js); collect.js maps terminal ones to an outcome.
 const PROPOSAL_STATUS = ['active', 'executed', 'cancelled', 'expired'];
@@ -127,7 +130,7 @@ function loadKeypair(persona) {
 }
 
 async function fetchJson(url) {
-    const response = await fetch(url, { headers: { accept: 'application/json' } });
+    const response = await createRetryingFetch({ requestLabel: () => 'proposal-read' })(url, { headers: { accept: 'application/json' } });
     if (!response.ok) throw new Error(`${url} returned HTTP ${response.status}`);
     return response.json();
 }
@@ -164,10 +167,15 @@ async function discoverProposals(apiBase, persona) {
 }
 
 // Batched account reads: one getMultipleAccountsInfo per ACCOUNTS_PER_RPC addresses, results in order.
-async function readAccounts(connection, addresses) {
+export async function readAccounts(connection, addresses) {
     const infos = [];
     for (let index = 0; index < addresses.length; index += ACCOUNTS_PER_RPC) {
-        infos.push(...await connection.getMultipleAccountsInfo(addresses.slice(index, index + ACCOUNTS_PER_RPC), 'confirmed'));
+        const batch = addresses.slice(index, index + ACCOUNTS_PER_RPC);
+        const result = await connection.getMultipleAccountsInfo(batch, 'confirmed');
+        if (!Array.isArray(result) || result.length !== batch.length) {
+            throw new Error(`getMultipleAccountsInfo returned ${Array.isArray(result) ? result.length : 'an invalid result'} for ${batch.length} address(es)`);
+        }
+        infos.push(...result);
     }
     return infos;
 }
@@ -345,7 +353,7 @@ async function main() {
     const live = Boolean(args.live);
     const day = args.day || new Date().toISOString().slice(0, 10);
     const apiBase = (args.api || process.env.AGENT_API_BASE || `http://localhost:${process.env.API_PORT || 3000}`).replace(/\/$/, '');
-    const connection = new Connection(process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
+    const connection = createRpcConnection(process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
     const persona = loadSocietyPersona(args.persona, ...(args.personas ? [path.resolve(args.personas)] : []));
     const policy = await import(/* @vite-ignore */ new URL(`./policies/${persona.role}.js`, import.meta.url).href);
     if (typeof policy.decide !== 'function' || !policy.NEEDS) throw new Error(`agents/policies/${persona.role}.js must export decide() and NEEDS`);
@@ -387,6 +395,8 @@ async function main() {
                         wallet = keypair.publicKey.toBase58();
                         await updateRun(pool, turn.runId, { summaryPatch: { wallet } });
                     }
+                    const funding = await ensureBotSolFunding({ connection, persona });
+                    if (funding.status === 'funded') await updateRun(pool, turn.runId, { summaryPatch: { funding } });
                 }
                 const budget = societyBudget(caps, spent);
                 let action = existing?.status === 'running' ? existing.summary?.society?.action || null : null;

@@ -73,8 +73,9 @@ describe('resolveLens', () => {
 
     it('refuses when the directory is empty or unavailable', async () => {
         await expect(resolveLens({ proposer: SELF, apiBase: 'http://x', fetchImpl: directoryFetch([]).fetchImpl })).rejects.toThrow(/no lens/);
-        await expect(fetchLensMembers({ apiBase: 'http://x', fetchImpl: directoryFetch([], 500).fetchImpl })).rejects.toThrow(/HTTP 500/);
-        await expect(fetchLensMembers({ apiBase: 'http://x', fetchImpl: async () => { throw new TypeError('fetch failed'); } })).rejects.toThrow(/unreachable/);
+        const retryOptions = { wait: async () => {}, log: () => {} };
+        await expect(fetchLensMembers({ apiBase: 'http://x', fetchImpl: directoryFetch([], 500).fetchImpl, retryOptions })).rejects.toThrow(/HTTP 500/);
+        await expect(fetchLensMembers({ apiBase: 'http://x', fetchImpl: async () => { throw new TypeError('fetch failed'); }, retryOptions })).rejects.toThrow(/unreachable/);
     });
 
     it('parses CLI lists into unique canonical keys', () => {
