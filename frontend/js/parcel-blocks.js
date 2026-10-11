@@ -1318,9 +1318,11 @@ async function renderBlockInfoStats(blockName) {
 
     // Add click event listeners to all parcel items
     document.querySelectorAll('.parcel-item').forEach(item => {
-        item.addEventListener('click', function () {
+        item.addEventListener('click', async function () {
             const parcelId = this.dataset.parcelId;
             console.log('Clicked parcel ID:', parcelId);
+            // calculateRoadMetrics (below) lives in road-analysis.js, loaded on first use.
+            await window.ensureOptionalTool('roadAnalysis');
 
             // Resolve the item against the committed fabric and current presentation.
             const selectedParcel = liveBlockLayerForId(parcelId);

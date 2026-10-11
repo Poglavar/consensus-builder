@@ -6,11 +6,20 @@ const detail = (id: number, name: string, cityId = 'zagreb') => ({
   parcels: [], summary: { total: 0, governmentOwned: 0, remaining: 0 },
 });
 
-async function drawPolygonOnMap(page: import('@playwright/test').Page) {
-  await page.locator('#tools-button').click();
-  const draw = page.locator('#areaMonitorDrawButton');
+// Watched-area drawing starts from the Activity sheet since fbe3758d; the sheet is then folded
+// away through its own close button so the map underneath takes the clicks.
+async function startDrawing(page: import('@playwright/test').Page) {
+  await page.locator('#activity-button').click();
+  const draw = page.locator('#activity-sheet #areaMonitorDrawButton');
   await draw.click();
-  await page.locator('#tools-button').click();
+  await expect(draw).toHaveClass(/active/);
+  const sheet = page.locator('#activity-sheet');
+  if (await sheet.isVisible()) await sheet.locator('[data-sheet-close]').click();
+  await expect(sheet).toBeHidden();
+}
+
+async function drawPolygonOnMap(page: import('@playwright/test').Page) {
+  await startDrawing(page);
   const map = page.locator('.leaflet-container').first();
   const box = await map.boundingBox();
   if (!box) throw new Error('Leaflet map has no visible bounds');
@@ -73,18 +82,17 @@ test.describe('Area monitor authoring @features', () => {
   test('draw cancellation drops the unfinished polygon and the unsupported upload stays disabled', async ({ mockApi: page }) => {
     await page.goto('/?city=zg');
     await waitForMapReady(page);
-    await page.locator('#tools-button').click();
-    const draw = page.locator('#areaMonitorDrawButton');
-    await draw.click();
-    await page.locator('#tools-button').click();
+    await startDrawing(page);
     const map = page.locator('.leaflet-container').first();
     const box = await map.boundingBox();
     if (!box) throw new Error('Leaflet map has no visible bounds');
     await page.mouse.click(box.x + box.width * 0.5, box.y + box.height * 0.5);
     await page.keyboard.press('Escape');
     await expect(page.locator('#area-monitor-creation-panel')).toHaveCount(0);
-    await page.locator('#tools-button').click();
-    await expect(page.locator('#areaMonitorUploadButton')).toBeDisabled();
+    await page.locator('#activity-button').click();
+    await expect(page.locator('#areaMonitorDrawButton')).not.toHaveClass(/active/);
+    // The unsupported GeoJSON upload placeholder was removed outright (fbe3758d): nothing offers it.
+    await expect(page.locator('#areaMonitorUploadButton')).toHaveCount(0);
     // Plan painting becomes available only after the real road-plan layer has loaded.
     await expect(page.locator('#areaMonitorFromPlanButton')).toBeDisabled();
   });

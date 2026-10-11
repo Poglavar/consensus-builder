@@ -575,8 +575,9 @@ body.land-fork-editing #parcel-info-panel {
     flex: 1 1 calc(50% - 12px);
 }
 
-/* Phone-only "Filters" toggle row (button + result count). Hidden on desktop, where the filters are
-   always shown; on the bottom sheet the filters fold behind it so the list keeps the height. */
+/* "Filters" toggle row (button + result count). Hidden on tall desktop windows, where the filters
+   are always shown; on the phone bottom sheet and on short windows the filters fold behind it so the
+   list keeps the height. */
 .proposal-filters-toggle-row {
     display: none;
 }
@@ -680,6 +681,34 @@ body.land-fork-editing #parcel-info-panel {
     .proposal-card-sub span {
         overflow-wrap: anywhere;
         min-width: 0;
+    }
+}
+
+/* Short desktop windows: the Proposals sheet is capped to the window (MapShell --sheet-max-height)
+   and is 340px wide, so the seven filter fields stack one per row and filled the whole sheet,
+   leaving the list itself 0px tall. Fold them behind the toggle as on phones. */
+@media (min-width: 768px) and (max-height: 900px) {
+    .proposal-filters-toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 8px 20px;
+        background-color: #fafbfc;
+        border-bottom: 1px solid #eee;
+        flex-shrink: 0;
+    }
+
+    .proposal-list-count {
+        display: none;
+    }
+
+    .proposal-list-controls {
+        flex-shrink: 0;
+    }
+
+    .proposal-list-controls.is-collapsed {
+        display: none;
     }
 }
 

@@ -1,12 +1,14 @@
 import { test, expect } from '../helpers/fixtures';
 import { openCity, clickMapPoint } from '../helpers/runtime';
 
+// The tools sit in their own Measure sheet behind the ruler button since fbe3758d (the Tools sheet
+// is gone); the button toggles the sheet away so the map is free for the clicks.
 test.describe('Map measurement and pinpoint @features', () => {
   test('two real clicks measure distance; Clear removes the line and markers', async ({ mockApi: page }) => {
     await openCity(page);
-    await page.locator('#tools-button').click();
+    await page.locator('#measurement-button').click();
     await page.locator('#measureButton').click();
-    await page.locator('#tools-button').click();
+    await page.locator('#measurement-button').click();
     await clickMapPoint(page, 15.982, 45.8001);
     await clickMapPoint(page, 15.9824, 45.8001);
     await expect(page.locator('.measurement-label')).toHaveCount(1);
@@ -14,7 +16,7 @@ test.describe('Map measurement and pinpoint @features', () => {
     expect(distance).toBeGreaterThan(25);
     expect(distance).toBeLessThan(40);
     await expect(page.locator('.measurement-marker')).toHaveCount(2);
-    await page.locator('#tools-button').click();
+    await page.locator('#measurement-button').click();
     await page.locator('#clearMeasurementsButton').click();
     await expect(page.locator('.measurement-label')).toHaveCount(0);
     await expect(page.locator('.measurement-marker')).toHaveCount(0);
@@ -28,9 +30,9 @@ test.describe('Map measurement and pinpoint @features', () => {
     page.on('console', message => { if (message.text().startsWith('[whatIsHere]')) diagnostics.push(message.text()); });
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
     await openCity(page);
-    await page.locator('#tools-button').click();
+    await page.locator('#measurement-button').click();
     await page.locator('#pinpointButton').click();
-    await page.locator('#tools-button').click();
+    await page.locator('#measurement-button').click();
     await clickMapPoint(page, 15.9822, 45.80025);
     await expect(page.locator('.pinpoint-readout')).toContainText('45.800');
     await expect.poll(() => diagnostics.join(' ')).toContain('parcel(s) cover this point');

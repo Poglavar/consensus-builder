@@ -1,7 +1,8 @@
 // Publishing a proposal as the artifact the server prepares from it (projections.md §3,
 // PARCEL-OPTIONAL.md rules 1 and 3): POST /proposals/prepare builds what the server derives (a
-// corridor's land, from its lanes), binds the site and stores an immutable artifact; the record that
-// is minted and published carries exactly that artifact's declaration, binding and land, not whatever
+// corridor's land, from its lanes), binds the site and signs the resulting artifact (the server stores
+// it only when the record is published); the record that is minted and published carries exactly that
+// artifact — signature included — and its declaration, binding and land, not whatever
 // the browser had loaded, selected or previewed. Parcel acts keep their declared parcels (the server
 // verifies them). Also turns the server's binding refusals into a readable list with intrusion widths.
 // Pure apart from the injected fetchers; UMD so backend/test/publish-binding.test.js runs it headlessly.

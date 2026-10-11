@@ -207,7 +207,16 @@ export async function connectWalletByConnectorId(page: Page, connectorId: string
   await expect(page.locator(selectors.walletModalOverlay)).toHaveCount(0);
 }
 
+// ethers loads on demand (index.html ensureWalletVendors); a wallet connect only starts the load,
+// so a stub that patches window.ethers must wait for it rather than race it.
+async function walletVendorsLoaded(page: Page): Promise<void> {
+  await page.waitForFunction(() => typeof (window as any).ensureWalletVendors === 'function');
+  const loaded = await page.evaluate(() => (window as any).ensureWalletVendors());
+  if (!loaded) throw new Error('the wallet vendors (ethers) failed to load');
+}
+
 export async function stubEvmProposalMintSuccess(page: Page, options: MockEvmProposalMintOptions = {}): Promise<void> {
+  await walletVendorsLoaded(page);
   await page.evaluate((stubOptions: MockEvmProposalMintOptions) => {
     const globalWindow = window as typeof window & {
       ethers?: {
@@ -300,6 +309,7 @@ export async function stubEvmProposalMintSuccess(page: Page, options: MockEvmPro
 }
 
 export async function stubEvmAcceptWithdrawSuccess(page: Page, options: MockEvmTxOptions = {}): Promise<void> {
+  await walletVendorsLoaded(page);
   await page.evaluate((stubOptions: MockEvmTxOptions) => {
     const globalWindow = window as typeof window & {
       ethers?: {
@@ -451,6 +461,7 @@ export async function stubSolanaBridgeSuccess(page: Page, options: MockSolanaBri
 }
 
 export async function stubEvmChainDataReads(page: Page, options: MockEvmLoaderOptions = {}): Promise<void> {
+  await walletVendorsLoaded(page);
   await page.evaluate((stubOptions: MockEvmLoaderOptions) => {
     const globalWindow = window as typeof window & {
       ethers?: {

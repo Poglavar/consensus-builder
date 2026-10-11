@@ -43,6 +43,14 @@ async function captureClipboard(page: import('@playwright/test').Page): Promise<
   });
 }
 
+// The address follows the map as ?at=lat,lon,zoom (js/map-core.js), so the app address is compared
+// without that view parameter.
+const addressWithoutView = (page: import('@playwright/test').Page) => page.evaluate(() => {
+  const params = new URLSearchParams(location.search);
+  params.delete('at');
+  return `${location.pathname}?${params}`;
+});
+
 const expectedLink = (page: import('@playwright/test').Page) => page.evaluate((account) => `${location.origin}/bets/${account}?city=${(window as any).CityConfigManager.getCurrentCityId()}`, PROPOSAL_ACCOUNT);
 
 test.describe('Bets sheet @features', () => {
@@ -82,6 +90,28 @@ test.describe('Bets sheet @features', () => {
     await expect(sheet.locator('#bets-sheet-content')).toContainText('Connect a Solana wallet to see your bets.');
     await sheet.locator('.bets-filter__btn[data-filter="open"]').click();
     await expect(sheet.locator('.bets-row')).toHaveCount(1);
+  });
+
+  // bets.open (js/ui/commands.js) is a palette-only command: it is the keyboard way into the sheet.
+  test('the command palette "Open bets" command opens the Bets sheet with its contests', async ({ mockApi: page }) => {
+    await mockMarkets(page);
+    await openCity(page);
+    await expect(page.locator('#bets-sheet')).toBeHidden();
+    const palette = page.locator('.command-palette-backdrop');
+    await page.keyboard.press('Meta+k');
+    await expect(palette).toBeVisible();
+    await page.locator('.command-palette__input').fill('Open bets');
+    const option = palette.locator('.command-palette__item[role="option"]').filter({ hasText: /^Open bets/ });
+    await expect(option).toHaveCount(1);
+    await option.click();
+    await expect(palette).toBeHidden();
+    const sheet = page.locator('#bets-sheet');
+    await expect(sheet).toBeVisible();
+    await expect(page.locator('#bets-button')).toHaveAttribute('aria-expanded', 'true');
+    await expect(page.locator('#bets-button-new')).toBeHidden();
+    await expect(sheet.locator('.bets-contest')).toHaveCount(1);
+    await expect(sheet.locator('.bets-contest__title')).toHaveText('Which proposal gets built?');
+    await expect(sheet.locator('.bets-row').first().locator('.bets-row__chance')).toHaveText('83.3% chance');
   });
 
   test('a bet asks for a wallet first, then opens the stake form over the sheet with a live "to win"', async ({ mockApi: page }) => {
@@ -211,9 +241,9 @@ test.describe('Bets sheet @features', () => {
     await expect.poll(() => page.evaluate(() => location.pathname)).toBe('/');
     await page.locator('#bets-sheet .bets-row__title').first().click();
     await expect(page.locator('#proposalMarketOverlay .cb-dialog__title')).toHaveText('Plan-led infill');
-    await expect.poll(() => page.evaluate(() => `${location.pathname}${location.search}`)).toBe(`/bets/${PROPOSAL_ACCOUNT}?city=zg&reduceMotion=1`);
+    await expect.poll(() => addressWithoutView(page)).toBe(`/bets/${PROPOSAL_ACCOUNT}?city=zg&reduceMotion=1`);
     await page.locator('#proposalMarketOverlay .close-circle-btn').click();
-    await expect.poll(() => page.evaluate(() => `${location.pathname}${location.search}`)).toBe('/?city=zg&reduceMotion=1');
+    await expect.poll(() => addressWithoutView(page)).toBe('/?city=zg&reduceMotion=1');
   });
 
   test('the path form of a bet link opens the dialog too', async ({ mockApi: page }) => {

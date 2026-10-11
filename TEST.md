@@ -68,10 +68,13 @@ Current audited results:
 
 - **Fast suite:** 6,366 passed, 6 skipped. This count is from the complete fast test run recorded for
   this revision; use the commands below to rerun it.
-- **Headed browser coverage:** 253 distinct collected cases across 64 spec files. The full headed
-  run passed 250/250 cases; 30 affected checks across focused headed runs passed the added circle, SEO, and
-  localization flows. Those runs overlap, so do not add their pass counts as unique tests.
-- **Feature inventory:** 99 UI command IDs are mapped to specs in `e2e/feature-inventory.json`.
+- **Headed browser coverage:** 283 cases across 68 spec files; the full headed run passed 283/283 on
+  2026-10-11. The first run that day failed 67/275: most specs still drove controls the 2026-10-09 UI
+  reorganisation had moved, the shared mock server lacked the signed prepare-then-publish protocol, and
+  seven were app bugs, fixed with the specs: shared links routing city-less records, lazily loaded road
+  tools, the facade redraw, the shared AI camera, the multi-select tray under the dock, the proposal list
+  on short windows, and ownership-highlight precedence.
+- **Feature inventory:** 104 UI command IDs are mapped to specs in `e2e/feature-inventory.json`.
   The inventory checker verifies that the registry and index agree; it does not establish that a
   command works. Only behavioral assertions in a passing headed run provide that evidence.
 - **Recent regressions:** real map/layer controls and dataset actions; parcel and proposal journeys;

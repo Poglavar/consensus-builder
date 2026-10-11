@@ -1522,7 +1522,10 @@ async function importAndApplySharedProposal(sharedProposal, options = {}) {
     // A member of another city's plan is refused before its ground is fetched from this city's
     // cadastre (storage would refuse the import anyway): it belongs to that city's store.
     const cityManager = (typeof window !== 'undefined' && window.CityConfigManager) || null;
-    const foreignCity = cityManager?.foreignCityFor?.(sharedProposal.city ?? normalized.city);
+    const foreignCity = cityManager?.foreignCityFor?.(sharedRecordCityOf({
+        city: sharedProposal.city ?? normalized.city,
+        cadastreParcelIds: normalized.cadastreParcelIds || sharedProposal.cadastreParcelIds
+    }));
     if (foreignCity) {
         return { applied: false, skipped: false, proposalId, reason: `Belongs to another city (${cityManager.getCityLabel(foreignCity)})` };
     }
@@ -1625,6 +1628,16 @@ async function fetchSharedProposalBatch(ids, backendBase) {
     }
 }
 
+// The city a shared record belongs to, by the rule storage applies when importing it
+// (proposals/data.js proposalCityOf): the city it names, else where its parcels are — so a record
+// without a city is routed to its city here instead of being imported, and refused, in this one.
+function sharedRecordCityOf(record) {
+    if (!record) return null;
+    const data = record.proposal_data || {};
+    const input = { city: record.city ?? data.city, cadastreParcelIds: record.cadastreParcelIds || data.cadastreParcelIds };
+    return typeof proposalCityOf === 'function' ? proposalCityOf(input) : (input.city || null);
+}
+
 async function sharedProposalCityBlocksLoad(firstProposalId, prefetchedPayload = null) {
     // Returns { blocked, payload }. Measured: this fetch (of the WHOLE proposal, just to read its
     // .city) was the biggest single cost on a shared-link open, and the apply loop then fetched the
@@ -1642,7 +1655,7 @@ async function sharedProposalCityBlocksLoad(firstProposalId, prefetchedPayload =
             payload = await response.json();
         }
         if (typeof promptCityMismatchForProposal !== 'function') return { blocked: false, payload, requestMade };
-        const proposalCityId = payload && (payload.city || (payload.proposal_data && payload.proposal_data.city));
+        const proposalCityId = sharedRecordCityOf(payload);
         if (!proposalCityId) return { blocked: false, payload, requestMade };
         const blocked = await promptCityMismatchForProposal(String(proposalCityId));
         return { blocked, payload, requestMade };
@@ -1734,9 +1747,8 @@ async function handleSharedPlanRoute(idParts, attempt = 0, options = {}) {
         // first that belongs to another city's store (CityConfigManager.foreignCityFor) is the one
         // asked about, and members of yet another city are refused below. The fetched payload is
         // reused (see prefetchedFirst) so the apply loop does not fetch this same proposal again.
-        const recordCity = record => record && (record.city || (record.proposal_data && record.proposal_data.city));
         const cityManager = (typeof window !== 'undefined' && window.CityConfigManager) || null;
-        const foreignId = uniqueIncomingIds.find(id => cityManager?.foreignCityFor?.(recordCity(batchRecords.records.get(id))));
+        const foreignId = uniqueIncomingIds.find(id => cityManager?.foreignCityFor?.(sharedRecordCityOf(batchRecords.records.get(id))));
         const checkedId = foreignId || firstProposalId;
         const cityCheck = await sharedProposalCityBlocksLoad(checkedId, batchRecords.records.get(checkedId));
         if (cityCheck.requestMade) recordFetchProfile.individualRequests += 1;

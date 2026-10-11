@@ -1,8 +1,8 @@
 /* ========== Selection tray ==========
    The bar at the bottom centre of the map while multi-parcel selection is on
    (js/ui/selection-tray.js, mounted in #selection-tray-slot): count, total area and the
-   Propose / Detect block / Clear / Done actions. On phones it sits one row up, between the Game
-   pill row and the right-hand button column, and its actions drop their labels. */
+   Propose / Detect block / Clear / Done actions. It sits in the row above the navigation dock; on
+   phones it spans the width and its actions drop their labels. */
 
 .selection-tray {
     display: flex;
@@ -84,31 +84,21 @@
     background: #1d4ed8;
 }
 
-/* Which row the tray takes: the bottom row (0) when the map is wide enough for it between the Game
-   pill and the bottom-right buttons, else the row above (1). The status toast, normally in row 1,
-   always stays one row above the tray. */
-body {
-    --selection-tray-row: 0;
-}
-
-@media (max-width: 1199px) {
-    body {
-        --selection-tray-row: 1;
-    }
-}
-
+/* Which row the tray takes: the full-width navigation dock (Proposals · Bets · Activity) owns the
+   bottom edge at every width, so the tray sits in the row just above it — the row the status toast
+   normally uses — and the toast steps up one row over the tray. It used to take the bottom row
+   beside the buttons on wide maps, which put it, and its actions, underneath the dock. */
 .map-shell-slot--tray {
-    bottom: calc(var(--map-shell-bottom) + var(--selection-tray-row) * (var(--map-shell-button-size) + var(--map-shell-gap)));
+    bottom: var(--map-shell-bottom-clearance);
 }
 
 body:has(#selection-tray) .floating-status {
-    bottom: calc(var(--map-shell-bottom) + (var(--selection-tray-row) + 1) * (var(--map-shell-button-size) + var(--map-shell-gap)));
+    bottom: calc(var(--map-shell-bottom-clearance) + var(--map-shell-button-size) + var(--map-shell-gap));
 }
 
-/* The scale bar stays above the toast, which the tray may have lifted a row (css/map.css places it
-   for the toast in row 1). */
+/* The scale bar stays above the toast, which the tray has lifted a row. */
 body:has(#selection-tray) .leaflet-bottom.leaflet-right .leaflet-control-scale {
-    bottom: calc(var(--map-shell-bottom) + (var(--selection-tray-row) + 1) * (var(--map-shell-button-size) + var(--map-shell-gap)) + var(--map-shell-gap) + 24px);
+    bottom: calc(var(--map-shell-bottom-clearance) + var(--map-shell-button-size) + 2 * var(--map-shell-gap) + 24px);
 }
 
 /* A panel docked on the right (the parcel panel after Propose) takes the right column; the tray
@@ -121,22 +111,14 @@ body:has(#selection-tray) .leaflet-bottom.leaflet-right .leaflet-control-scale {
 
 /* Phones: between the left edge and the right-hand button column; icons only. */
 @media (max-width: 767.98px) {
-    /* The row above the bottom bar, full width; the toast and the scale bar step up over it. */
+    /* The row above the bottom bar, full width (the toast and the scale bar step up over it as on
+       wider screens). */
     .map-shell-slot--tray {
         left: var(--map-shell-edge);
         right: var(--map-shell-edge);
-        bottom: var(--map-shell-bottom-clearance);
         transform: none;
         display: flex;
         justify-content: center;
-    }
-
-    body:has(#selection-tray) .floating-status {
-        bottom: calc(var(--map-shell-bottom-clearance) + var(--map-shell-button-size) + var(--map-shell-gap));
-    }
-
-    body:has(#selection-tray) .leaflet-bottom.leaflet-right .leaflet-control-scale {
-        bottom: calc(var(--map-shell-bottom-clearance) + var(--map-shell-button-size) + 2 * var(--map-shell-gap) + 24px);
     }
 
     /* The tray spans the row the mode strip ends on (css/map.css); the strip steps up over it. */

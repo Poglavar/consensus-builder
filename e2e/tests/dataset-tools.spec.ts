@@ -17,8 +17,20 @@ async function openDatasetTools(page: any) {
     await (window as any).CadastralParcelRepository.ensureIds(ids);
   }, PARCEL_IDS);
   await expect.poll(() => page.evaluate(ids => ids.filter((id: string) => !!(window as any).ParcelPresenter.getLayer(id)).length, PARCEL_IDS)).toBe(PARCEL_IDS.length);
-  await page.locator('#tools-button').click();
-  await expect(page.locator('#tools-sheet')).toBeVisible();
+  await openLayerActions(page, ROAD_DATA);
+}
+
+// The Tools sheet is gone (fbe3758d): road and block tools sit in folded "… data and analysis"
+// rows of the Layers sheet. Open the sheet (unless a tool left it open) and unfold the row.
+const ROAD_DATA = 'mapShell.reorg.roadData';
+const BLOCK_DATA = 'mapShell.reorg.blockData';
+async function openLayerActions(page: any, summaryKey: string) {
+  const sheet = page.locator('#layers-sheet');
+  if (!(await sheet.isVisible())) await page.locator('#layers-button').click();
+  await expect(sheet).toBeVisible();
+  const fold = sheet.locator(`details.layer-actions:has(> summary[data-i18n-key="${summaryKey}"])`);
+  if (!(await fold.evaluate((el: HTMLDetailsElement) => el.open))) await fold.locator('> summary').click();
+  await expect(fold).toHaveAttribute('open', '');
 }
 
 test.describe('Dataset road tools @features', () => {
@@ -26,8 +38,7 @@ test.describe('Dataset road tools @features', () => {
     await openDatasetTools(page);
     await page.locator('button[onclick="drawOSMRoads()"]').click();
     await expect.poll(() => page.evaluate(() => (window as any).osmRoadGeoJSON?.features?.length || 0)).toBeGreaterThan(0);
-    await page.locator('#tools-button').click();
-    await page.locator('#layers-button').click();
+    await openLayerActions(page, ROAD_DATA);
     const osmToggle = page.locator('#showOSMRoadLines');
     await expect(osmToggle).toBeChecked();
     // The dataset command loads the real features; the checkbox owns their map visibility.
@@ -36,8 +47,7 @@ test.describe('Dataset road tools @features', () => {
     await osmToggle.check();
     await expect.poll(() => page.evaluate(() => (window as any).map.hasLayer((window as any).osmRoadLayer))).toBe(true);
 
-    await page.locator('#layers-button').click();
-    await page.locator('#tools-button').click();
+    await openLayerActions(page, ROAD_DATA);
     await page.locator('button[onclick="drawGUPRoads()"]').click();
     await expect.poll(() => page.evaluate(() => (window as any).gupRoadLayer?.getLayers?.().length || 0)).toBeGreaterThan(0);
     await expect.poll(() => page.evaluate(() => (window as any).map.hasLayer((window as any).gupRoadLayer))).toBe(true);
@@ -54,7 +64,9 @@ test.describe('Dataset road tools @features', () => {
   test('road detection and analysis update parcel ownership and show results', async ({ mockApi: page }) => {
     await openDatasetTools(page);
     await page.locator('button[onclick="detectRoadsFromOSM()"]').click();
-    await expect.poll(() => page.evaluate(ids => ids.some((id: string) => (window as any).isRoadParcel(id)), PARCEL_IDS)).toBe(true);
+    // road detection loads on first use (optional-tools-loader.js): isRoadParcel exists once it has
+    await expect.poll(() => page.evaluate(ids => typeof (window as any).isRoadParcel === 'function'
+      && ids.some((id: string) => (window as any).isRoadParcel(id)), PARCEL_IDS)).toBe(true);
     const detectedId = await page.evaluate(ids => ids.find((id: string) => (window as any).isRoadParcel(id)), PARCEL_IDS);
     const roadStyle = await page.evaluate(id => (window as any).ParcelPresenter.getLayer(id).options.fillColor, detectedId);
     expect(roadStyle).toBeTruthy();
@@ -69,9 +81,9 @@ test.describe('Dataset road tools @features', () => {
     await page.locator('#analyzeAllRoadsButton').click();
     await expect(page.locator('#osm-road-segment-list-popup')).toBeVisible();
     await page.locator('#osm-road-segment-list-popup .close-button').click();
-    // Analysis opens its own segment sheet and hides the floating tools sheet. Reopen Tools to
-    // reach the actual visibility control after the analysis result exists.
-    await page.locator('#tools-button').click();
+    // Analysis opens its own segment sheet over the map. Back in the Layers sheet's road row, the
+    // visibility control for the analysis result appears once the result exists.
+    await openLayerActions(page, ROAD_DATA);
     await expect(page.locator('#road-analysis-toggle')).toBeVisible();
     await expect.poll(() => page.evaluate(() => (window as any).osmRoadAnalysisLayer?.getLayers?.().length || 0)).toBeGreaterThan(0);
     await page.locator('#toggleRoadAnalysisResults').uncheck();
@@ -79,8 +91,7 @@ test.describe('Dataset road tools @features', () => {
     await page.locator('#toggleRoadAnalysisResults').check();
     await expect.poll(() => page.evaluate(() => (window as any).map.hasLayer((window as any).osmRoadAnalysisLayer))).toBe(true);
 
-    await page.locator('#tools-button').click();
-    await expect(page.locator('#tools-sheet')).toBeVisible();
+    await openLayerActions(page, ROAD_DATA);
     await page.locator('#detectExistingRoadsButton').click();
     await expectStatusLogged(page, 'Existing roads loaded');
     await expect.poll(() => page.evaluate(id => (window as any).isRoadParcel(id), PARCEL_ID)).toBe(true);
@@ -98,7 +109,7 @@ test.describe('Dataset road tools @features', () => {
         && (window as any).multiParcelSelection.selectedParcels.size > 1;
     })).toBe(true);
 
-    await page.locator('#tools-button').click();
+    await openLayerActions(page, BLOCK_DATA);
     await page.locator('button[onclick="countBlocks()"]').click();
     await expectStatusLogged(page, 'Finished count.');
     const blocks = page.locator('#blocks-content .block-item');
@@ -110,8 +121,9 @@ test.describe('Dataset road tools @features', () => {
     expect(selectedBlock).toBeTruthy();
     expect(await page.evaluate(name => (window as any).blockStorage.blocks.has(name), selectedBlock)).toBe(true);
 
-    await page.locator('#tools-button').click();
-    await page.locator('#layers-button').click();
+    const layersSheet = page.locator('#layers-sheet');
+    if (!(await layersSheet.isVisible())) await page.locator('#layers-button').click();
+    await expect(layersSheet).toBeVisible();
     const blockPaths = () => page.evaluate(() => document.querySelectorAll('#map .leaflet-overlay-pane path').length);
     const pathsBeforeHide = await blockPaths();
     await page.locator('#parcelBlocksCheckbox').uncheck();

@@ -128,6 +128,9 @@ test.describe('Proposal sharing @core', () => {
 
     await sender.locator('#proposals-button').click();
     await expect(sender.locator('#proposals-sheet')).toBeVisible();
+    // plan-wide actions sit in the sheet's collapsed "Plan actions" section
+    await sender.locator('#proposal-list-actions > summary').click();
+    await expect(sender.locator('#proposal-list-actions')).toHaveAttribute('open', '');
     await expect(sender.locator('#shareAppliedProposalsButton')).toBeEnabled();
     await sender.locator('#shareAppliedProposalsButton').click();
     // The local proposal key in the row metadata is replaced by the canonical c2 identity when

@@ -167,6 +167,51 @@
     }
 
     /**
+     * The ownership-highlight style a parcel should wear, or null when none applies. Roads,
+     * tracks, ad parcels and parcels under an applied proposal keep their own style; only
+     * plain parcels of a selected ownership type are highlighted. Both the single-parcel style
+     * (getParcelStyle) and the bulk restyle (refreshParcelStylesForAppliedProposals) ask this,
+     * so the two cannot disagree about precedence.
+     * @param {string} idStr - The parcel ID
+     * @param {Object} layer - Optional layer object to check ownership type from
+     * @param {Object} options - Optional style options (isRoad override, feature)
+     * @returns {Object|null}
+     */
+    function ownershipHighlightStyle(idStr, layer = null, options = {}) {
+        const ownershipHighlight = global.ParcelsOwnershipHighlight;
+        if (!ownershipHighlight || typeof ownershipHighlight.getSelectedOwnershipTypes !== 'function') return null;
+        const selectedTypes = ownershipHighlight.getSelectedOwnershipTypes();
+        if (selectedTypes.size === 0) return null;
+
+        const properties = global.LiveParcelFabric?.get?.(idStr)?.properties || options?.feature?.properties || {};
+
+        // Roads, tracks, and ad parcels use their specific styles, don't apply ownership highlighting
+        const { isRoad: isRoadOverride } = options || {};
+        const propsRoadFlag = properties.isRoad === true || properties.isRoad === 'true';
+        const roadFlag = typeof isRoadOverride === 'boolean'
+            ? isRoadOverride
+            : (propsRoadFlag || (typeof global.isRoad === 'function' ? global.isRoad(idStr) : false));
+        const isAdParcel = Boolean(global.showAdParcels && adParcelIdSet.has(idStr));
+
+        // Check if this is a track parcel (via layer or by searching parcelLayer)
+        const isTrackParcelFlag = properties.isTrack === true || Boolean(layer && layer._trackStyle);
+
+        if (roadFlag || isAdParcel || isTrackParcelFlag || parcelHasAppliedSpatialProposal(idStr)) {
+            return null;
+        }
+
+        // Ask the module, not the feature: a re-ingested parcel arrives without the
+        // property, and its type lives in the id-keyed cache until something re-stamps it.
+        const ownershipType = (typeof ownershipHighlight.typeFor === 'function')
+            ? ownershipHighlight.typeFor(layer)
+            : properties.ownershipType;
+        if (!ownershipType || !selectedTypes.has(ownershipType)) return null;
+        return typeof ownershipHighlight.styleFor === 'function'
+            ? ownershipHighlight.styleFor(ownershipType) || null
+            : null;
+    }
+
+    /**
      * Get the appropriate style for a parcel, considering ownership highlighting
      * @param {string|number} parcelId - The parcel ID
      * @param {Object} layer - Optional layer object to check ownership type from
@@ -179,54 +224,8 @@
             return { ...normalStyle };
         }
 
-        // Get base style first - pass layer so track detection works
-        const baseStyle = getParcelBaseStyle(parcelId, layer, options);
-        const properties = global.LiveParcelFabric?.get?.(idStr)?.properties || options?.feature?.properties || {};
-
-        // Roads, tracks, and ad parcels use their specific styles, don't apply ownership highlighting
-        const { isRoad: isRoadOverride } = options || {};
-        const propsRoadFlag = properties.isRoad === true || properties.isRoad === 'true';
-        const roadFlag = typeof isRoadOverride === 'boolean'
-            ? isRoadOverride
-            : (propsRoadFlag || (idStr ? (typeof global.isRoad === 'function' ? global.isRoad(idStr) : false) : false));
-        const isAdParcel = Boolean(global.showAdParcels && idStr && adParcelIdSet.has(idStr));
-
-        // Check if this is a track parcel (via layer or by searching parcelLayer)
-        let isTrackParcelFlag = false;
-        if (properties.isTrack === true) {
-            isTrackParcelFlag = true;
-        } else if (layer && layer._trackStyle) {
-            isTrackParcelFlag = true;
-        }
-
-        if (roadFlag || isAdParcel || isTrackParcelFlag || (idStr && parcelHasAppliedSpatialProposal(idStr))) {
-            return baseStyle;
-        }
-
-        // Check for ownership type highlighting for non-road, non-ad parcels
-        const ownershipHighlight = global.ParcelsOwnershipHighlight;
-        if (ownershipHighlight && typeof ownershipHighlight.getSelectedOwnershipTypes === 'function') {
-            const selectedTypes = ownershipHighlight.getSelectedOwnershipTypes();
-            if (selectedTypes.size > 0) {
-                // Ask the module, not the feature: a re-ingested parcel arrives without the
-                // property, and its type lives in the id-keyed cache until something re-stamps it.
-                const ownershipType = (typeof ownershipHighlight.typeFor === 'function')
-                    ? ownershipHighlight.typeFor(layer)
-                    : properties.ownershipType;
-
-                if (ownershipType && selectedTypes.has(ownershipType)) {
-                    const highlightStyle = typeof ownershipHighlight.styleFor === 'function'
-                        ? ownershipHighlight.styleFor(ownershipType)
-                        : null;
-                    if (highlightStyle) {
-                        return highlightStyle;
-                    }
-                }
-            }
-        }
-
         // Fall back to base style if no ownership highlighting applies
-        return baseStyle;
+        return ownershipHighlightStyle(idStr, layer, options) || getParcelBaseStyle(parcelId, layer, options);
     }
 
     function recomputeParcelsWithAppliedSpatialProposals() {
@@ -365,18 +364,12 @@
                     return;
                 }
 
-                const selectedTypes = ownershipHighlight.getSelectedOwnershipTypes();
-                const ownershipType = (typeof ownershipHighlight.typeFor === 'function')
-                    ? ownershipHighlight.typeFor(layer)
-                    : feature.properties?.ownershipType;
-                if (ownershipType && selectedTypes.has(ownershipType)) {
-                    const highlightStyle = typeof ownershipHighlight.styleFor === 'function'
-                        ? ownershipHighlight.styleFor(ownershipType)
-                        : null;
-                    if (highlightStyle) {
-                        layer.setStyle(highlightStyle);
-                        return;
-                    }
+                // The same precedence as getParcelStyle: an ad parcel, road, track or applied
+                // proposal keeps its own style under an ownership highlight.
+                const highlightStyle = ownershipHighlightStyle(idStr, layer);
+                if (highlightStyle) {
+                    layer.setStyle(highlightStyle);
+                    return;
                 }
             }
 

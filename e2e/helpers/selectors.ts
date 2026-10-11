@@ -22,12 +22,16 @@ export const selectors = {
   settingsSheet: '#settings-sheet',
   proposalsButton: '#proposals-button',
   proposalsSheet: '#proposals-sheet',
-  toolsButton: '#tools-button',
-  toolsSheet: '#tools-sheet',
+  betsButton: '#bets-button',
+  betsSheet: '#bets-sheet',
+  // The ruler beside the map-mode buttons (2D only) toggles the Measure sheet.
+  measurementButton: '#measurement-button',
+  measurementSheet: '#measurement-sheet',
   activityButton: '#activity-button',
   activitySheet: '#activity-sheet',
   // The Simulation section inside the Activity sheet, and the running dot on the Activity button.
   simulationSection: '#activity-sheet .activity-simulation[data-section="game"]',
+  simulationSummary: '#activity-sheet .activity-simulation[data-section="game"] > summary',
   simulationPlayPause: '#game-play-pause-btn',
   simulationSettings: '#activity-sheet .activity-simulation-settings',
   simulationRunningDot: '#activity-running-dot',

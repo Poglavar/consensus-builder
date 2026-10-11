@@ -25,15 +25,18 @@ async function openLayers(page: any) {
     await expect.poll(() => page.evaluate(id => (window as any).LiveParcelFabric.get(id)?.properties?.BROJ_CESTICE, PARCEL_ID)).toBe('1234');
     await page.locator('#layers-button').click();
     await expect(page.locator('#layers-sheet')).toBeVisible();
-    const claimsCount = page.locator('#showClaimsCounts');
-    await expect(claimsCount).toBeDisabled();
+    // The never-built claims-count toggle was dropped from the sheet (fbe3758d); the ad-parcel toggle
+    // is the one parcel control zoom must never gate.
+    await expect(page.locator('#showClaimsCounts')).toHaveCount(0);
+    const adParcels = page.locator('#showAdParcelsCheckbox');
+    await expect(adParcels).toBeEnabled();
     const zoomIn = page.locator('.leaflet-control-zoom-in');
     const zoomOut = page.locator('.leaflet-control-zoom-out');
     if (await zoomIn.count()) {
       await zoomIn.click();
-      await expect(claimsCount).toBeDisabled();
+      await expect(adParcels).toBeEnabled();
       await zoomOut.click();
-      await expect(claimsCount).toBeDisabled();
+      await expect(adParcels).toBeEnabled();
     }
 }
 
@@ -52,7 +55,8 @@ test.describe('Layers sheet behavior @features', () => {
     expect(proposalId).toBeTruthy();
 
     await page.locator('#showParcelNumbers').check();
-    await expect(page.locator('.leaflet-marker-icon.parcel-number-label').first()).toContainText('1234');
+    // The label is a span inside the marker's anchor icon since 51152a2e.
+    await expect(page.locator('.leaflet-marker-icon.parcel-number-label-anchor .parcel-number-label').first()).toContainText('1234');
     await page.locator('#showOwnerCounts').check();
     await expect(page.locator('.parcel-owner-count-label').first()).toContainText('2');
     await page.locator('#showProposalCounts').check();

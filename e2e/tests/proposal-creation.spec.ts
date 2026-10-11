@@ -29,9 +29,12 @@ test.describe('Proposal creation and map lifecycle @features', () => {
     test(`${type} station: place on the map and persist the applied stop`, async ({ mockApi: page }) => {
       await openCity(page);
       await drawCorridor(page, type === 'bus' ? 'road' : 'track');
-      await page.locator('#tools-button').click();
-      await page.locator(`#tools-sheet [onclick="startTransitStationPlacement('${type}')"]`).click();
-      await page.locator('#tools-button').click();
+      // Stops are transport tools in the parcel palette since the Tools sheet went (fbe3758d). The
+      // corridor split parcel 1234, so open the palette from its northern remainder.
+      await clickMapPoint(page, 15.9822, 45.80045);
+      await expect(page.locator('#parcel-menu')).toBeVisible();
+      await page.locator('#parcel-menu').getByRole('menuitem', { name: 'Propose here', exact: true }).click();
+      await page.locator(`#parcel-info-panel .parcel-transport-btn--${type}`).click();
       await clickMapPoint(page, 15.9822, 45.80025);
       await expect.poll(() => page.evaluate(type => (window as any).proposalStorage.getAllProposals().filter((p: any) => p.structureProposal?.stationType === type).length, type)).toBe(1);
       const station = await page.evaluate(type => (window as any).proposalStorage.getAllProposals().find((p: any) => p.structureProposal?.stationType === type), type);

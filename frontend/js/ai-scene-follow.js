@@ -32,18 +32,31 @@
         .then(data => {
             if (!data) return null;
             scene = data;
-            // Race safety: if 3D was entered before this fetch resolved, apply the pose now so the
-            // restore never depends on fetch-vs-entry timing.
-            try {
-                if (data.view && typeof window.isThreeModeActive === 'function' && window.isThreeModeActive()
-                    && typeof window.applyThree3DGeoView === 'function') {
-                    window.applyThree3DGeoView(data.view);
-                }
-            } catch (_) { /* ignore */ }
+            if (data.view) restoreViewWhenModelIsUp(data.view);
             showRenderCardWhenReady();
             return data;
         })
         .catch(() => null);
+
+    // Race safety: the restore must never depend on fetch-vs-entry timing. If 3D is already entered
+    // (or entering — three-mode keeps the pose until its framing is done), apply the pose now.
+    // Otherwise the model view is still loading (map-mode-loader.js loads it lazily) and the URL
+    // entry has already read a null pose, so apply it as soon as the model view is up.
+    function restoreViewWhenModelIsUp(view) {
+        const apply = () => {
+            try {
+                if (typeof window.isThreeModeActive === 'function' && window.isThreeModeActive()
+                    && typeof window.applyThree3DGeoView === 'function') {
+                    return window.applyThree3DGeoView(view) === true;
+                }
+            } catch (error) {
+                console.warn(`[${new Date().toISOString()}] [ai-scene-follow] could not restore the shared camera`, error);
+            }
+            return false;
+        };
+        if (apply()) return;
+        window.addEventListener('threeModeReady', apply, { once: true });
+    }
 
     // The AI render is shown inline once the 3D world is up (it's being reconstructed from the
     // applied proposals, so poll briefly rather than assume it's ready).

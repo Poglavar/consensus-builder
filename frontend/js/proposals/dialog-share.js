@@ -290,7 +290,8 @@ function renderProposalListModal() {
 
     // Phones: the list is a half-height bottom sheet, and seven filter fields left the list itself
     // ~30-60px. There the filters fold behind a toggle (collapsed by default, showing how many are
-    // active); the CSS only honours the collapse at the sheet breakpoint, so desktop is unchanged.
+    // active); the CSS honours the collapse at the phone breakpoint and on short desktop windows,
+    // where the capped 340px sheet otherwise left the list no height; tall desktops show them.
     const resultCountText = `${chosen.sorted.length} ${t('modal.roadWidth.proposalList.resultCountWord', 'shown')}`;
 
     const activeFilterCount = countActiveProposalListFilters(proposalListState);

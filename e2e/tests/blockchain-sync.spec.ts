@@ -15,7 +15,9 @@ test.describe('Blockchain sync @features', () => {
       walletKind: 'metamask',
     });
 
-    await page.goto('/');
+    // A minted proposal joins only the store of the city its parcels belong to (c97bceea, projections
+    // M8), so the sync runs in Zagreb, the city of the HR- parcel the mocked contract returns.
+    await page.goto('/?city=zg');
     await waitForMapReady(page);
     await connectWalletByConnectorId(page, 'metamask');
     await waitForBlockchainRuntime(page, ['BlockchainSync', 'ethers', 'walletManager']);

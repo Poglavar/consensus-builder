@@ -7,6 +7,10 @@ test.describe('Parcel diagnostics @features', () => {
     await openCity(page);
     await openParcel(page, 'tools');
     const before = await page.evaluate(() => JSON.stringify((window as any).LiveParcelFabric.get((window as any).currentParcel.id)));
+    // Road analysis loads on first use (51152a2e): nothing has measured before the button does.
+    expect(await page.evaluate(() => typeof (window as any).calculateRoadMetrics)).toBe('undefined');
+    await page.locator('#measureAsRoadButton').click();
+    await expect(page.locator('#measureAsRoadButton')).toHaveText('Measurements added');
     const length = await page.evaluate(() => {
       const w = window as any;
       const metrics = w.calculateRoadMetrics(w.LiveParcelFabric.get(w.currentParcel.id).geometry.coordinates);
@@ -14,7 +18,6 @@ test.describe('Parcel diagnostics @features', () => {
       const metres = Number(metrics.length);
       return metres.toLocaleString('en-GB', { maximumFractionDigits: metres < 100 ? 1 : 0 });
     });
-    await page.locator('#measureAsRoadButton').click();
     await page.locator('.parcel-tab-btn').filter({ hasText: 'Info' }).click();
     await expect(page.locator('#roadMeasurements')).toBeVisible();
     await expect(page.locator('#roadMeasurements .metric-value').first()).toHaveText(new RegExp(`^${length.replace(/[.,]/g, '\\$&')}\\s?m$`)); // narrow no-break space before the unit

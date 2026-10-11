@@ -2,8 +2,8 @@ import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady, clickMapAt } from '../helpers/app';
 import { selectors } from '../helpers/selectors';
 
-// The map shell replaced the left sidebar (UI-REWORK.md): Layers/Settings buttons top-right,
-// Proposals/Tools/Activity bottom-right each toggle a sheet
+// The map shell replaced the left sidebar (UI-REWORK.md): Layers/Settings buttons top-right, the
+// Measure ruler beside the map-mode buttons, Proposals/Bets/Activity bottom-right each toggle a sheet
 // (frontend/js/ui/map-shell.js). This file took over sidebar.spec.ts, which clicked the sidebar
 // toggle and asserted the `collapsed` class flipped; the equivalent here is that each button really
 // shows/hides its sheet and keeps aria-expanded in step, plus the shell's closing rules (one sheet at
@@ -13,7 +13,8 @@ const SHEETS = [
   { name: 'Layers', button: selectors.layersButton, sheet: selectors.layersSheet },
   { name: 'Settings', button: selectors.settingsButton, sheet: selectors.settingsSheet },
   { name: 'Proposals', button: selectors.proposalsButton, sheet: selectors.proposalsSheet },
-  { name: 'Tools', button: selectors.toolsButton, sheet: selectors.toolsSheet },
+  { name: 'Measure', button: selectors.measurementButton, sheet: selectors.measurementSheet },
+  { name: 'Bets', button: selectors.betsButton, sheet: selectors.betsSheet },
   { name: 'Activity', button: selectors.activityButton, sheet: selectors.activitySheet },
 ];
 
@@ -48,8 +49,8 @@ test.describe('Map shell sheets @features', () => {
     await page.locator(selectors.layersButton).click();
     await expect(page.locator(selectors.layersSheet)).toBeVisible();
 
-    await page.locator(selectors.toolsButton).click();
-    await expect(page.locator(selectors.toolsSheet)).toBeVisible();
+    await page.locator(selectors.activityButton).click();
+    await expect(page.locator(selectors.activitySheet)).toBeVisible();
     await expect(page.locator(selectors.layersSheet)).toBeHidden();
     await expect(page.locator(selectors.layersButton)).toHaveAttribute('aria-expanded', 'false');
     await expect(page.locator(selectors.openSheet)).toHaveCount(1);
@@ -87,14 +88,15 @@ test.describe('Map shell sheets @features', () => {
   test('a control kept its old id inside the sheet that now holds it', async ({ mockApi: page }) => {
     // The sheets carry the sidebar's controls with their ids (inline handlers and globals depend on
     // them). revealControl is how commands and the palette reach one: it must open the right sheet.
+    // The base-map select lives in Layers and the watched-area tools in Activity since fbe3758d.
     await page.evaluate(() => (window as any).MapShell.revealControl('tile-source-select'));
-    await expect(page.locator(selectors.settingsSheet)).toBeVisible();
-    await expect(page.locator(`${selectors.settingsSheet} #tile-source-select`)).toBeVisible();
+    await expect(page.locator(selectors.layersSheet)).toBeVisible();
+    await expect(page.locator(`${selectors.layersSheet} #tile-source-select`)).toBeVisible();
 
-    await page.evaluate(() => (window as any).MapShell.revealControl('areaMonitorListButton'));
-    await expect(page.locator(selectors.toolsSheet)).toBeVisible();
-    await expect(page.locator(selectors.settingsSheet)).toBeHidden();
-    await expect(page.locator(`${selectors.toolsSheet} #areaMonitorListButton`)).toBeVisible();
+    await page.evaluate(() => (window as any).MapShell.revealControl('areaMonitorDrawButton'));
+    await expect(page.locator(selectors.activitySheet)).toBeVisible();
+    await expect(page.locator(selectors.layersSheet)).toBeHidden();
+    await expect(page.locator(`${selectors.activitySheet} #areaMonitorDrawButton`)).toBeVisible();
   });
 
   test('the simulation runs from the Activity sheet and marks the Activity button while it runs', async ({ mockApi: page }) => {
@@ -104,6 +106,10 @@ test.describe('Map shell sheets @features', () => {
     await page.locator(selectors.activityButton).click();
     const section = page.locator(selectors.simulationSection);
     await expect(section).toBeVisible();
+    // The Simulation section is folded (a <details>) since fbe3758d; its settings fold inside it.
+    await expect(section).not.toHaveAttribute('open');
+    await page.locator(selectors.simulationSummary).click();
+    await expect(section).toHaveAttribute('open', '');
     await expect(page.locator(selectors.simulationSettings)).not.toHaveAttribute('open');
 
     await page.locator(selectors.simulationPlayPause).click();
@@ -114,6 +120,7 @@ test.describe('Map shell sheets @features', () => {
     await expect(dot).toHaveAttribute('aria-label', 'Simulation running');
 
     await page.locator(selectors.activityButton).click();
+    await expect(section).toHaveAttribute('open', '');
     await page.locator(selectors.simulationPlayPause).click();
     await expect(page.locator(selectors.simulationPlayPause)).toHaveAttribute('aria-pressed', 'false');
     await expect(dot).toBeHidden();

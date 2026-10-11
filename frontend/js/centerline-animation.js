@@ -18,8 +18,10 @@ let animCenterlineSegmentsLayer = null;
 let animFinalCenterlineLayer = null;
 
 // Add function to show animation modal for current parcel
-function showAnimationModalForCurrentParcel() {
+async function showAnimationModalForCurrentParcel() {
     if (currentParcelCoordinates) {
+        // findMainAxis lives in road-analysis.js, which loads on first use (optional-tools-loader.js).
+        await window.ensureOptionalTool('roadAnalysis');
         showAnimationModal(currentParcelCoordinates);
     }
 }

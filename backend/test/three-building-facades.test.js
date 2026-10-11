@@ -171,8 +171,11 @@ describe('procedural building facades', () => {
             facadesEnabled: false, facadeStyle: 'mixed', facadeFloorLineMaterial: {},
             facadeCheckbox: {}, facadeStyleSelect: {}, facadeNote: {},
             FACADE_PREF_KEY: 'enabled', FACADE_STYLE_KEY: 'style',
-            PersistentStorage: { setItem: (key, value) => saved.set(key, value) }
+            PersistentStorage: { setItem: (key, value) => saved.set(key, value) },
+            frames: 0
         };
+        // the view renders on demand: every appearance change must ask for a frame
+        context.invalidateThreeView = () => { context.frames += 1; };
         vm.runInNewContext(setter + '\nsetFacadeAppearance(false, "mixed", false);', context);
         expect(saved.get('enabled')).toBe('1');
         expect(saved.get('style')).toBe('brick');
@@ -184,6 +187,7 @@ describe('procedural building facades', () => {
         expect(saved.get('enabled')).toBe('0');
         expect(saved.get('style')).toBe('plaster');
         expect(context.facadeNote.hidden).toBe(true);
+        expect(context.frames).toBe(3);
     });
 
     it('disposes owned geometry and materials once, retaining imported and shared resources', () => {

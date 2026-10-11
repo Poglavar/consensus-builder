@@ -548,6 +548,8 @@
             } catch (_) { }
         }
         // Shared uniforms only: toggling does not re-slice parcels, reload buildings or move the camera.
+        // The view renders on demand, so the new uniforms only reach the screen with a requested frame.
+        invalidateThreeView();
     }
 
     function setRerollBusy(busy) {

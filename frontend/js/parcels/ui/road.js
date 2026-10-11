@@ -14,7 +14,7 @@
         return fallback || key || '';
     };
 
-    function measureAsRoad() {
+    async function measureAsRoad() {
         if (!global.currentParcel || !global.currentParcel.layer) {
             if (typeof global.updateStatus === 'function') {
                 global.updateStatus(tParcel('panel.parcel.actions.measureStatusNoParcel', {}, 'No parcel selected for road measurement.'));
@@ -32,6 +32,8 @@
         try {
             const feature = global.LiveParcelFabric?.get?.(String(global.currentParcel.id));
             if (!feature?.geometry?.coordinates) throw new Error('Selected parcel is no longer live.');
+            // calculateRoadMetrics lives in road-analysis.js, loaded on first use (optional-tools-loader.js).
+            await global.ensureOptionalTool('roadAnalysis');
             const metrics = global.calculateRoadMetrics(feature.geometry.coordinates);
 
             const formattedLength = metrics ? CbFormat.formatLength(Number(metrics.length)) : 'N/A';
@@ -86,4 +88,5 @@
     }
 
     global.measureAsRoad = measureAsRoad;
+    if (typeof module === 'object' && module.exports) module.exports = { measureAsRoad };
 })(typeof window !== 'undefined' ? window : globalThis);

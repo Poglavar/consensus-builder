@@ -52,7 +52,8 @@ test.describe('Search and command palette @features', () => {
     await page.keyboard.press('Meta+k');
     await input.fill('Base map');
     await page.keyboard.press('Enter');
-    await expect(page.locator('#settings-sheet')).toBeVisible();
+    // The base-map select lives in the Layers sheet since fbe3758d.
+    await expect(page.locator('#layers-sheet')).toBeVisible();
     await expect(page.locator('#tile-source-select')).toBeFocused();
     await page.keyboard.press('Escape');
     await page.locator('#settings-button').focus();
@@ -72,10 +73,15 @@ test.describe('Search and command palette @features', () => {
     await expect(page.locator('#version-badge')).not.toBeEmpty();
     await page.locator('#version-badge').focus();
     await page.keyboard.press('Meta+k');
-    await page.locator('.command-palette__input').fill('How Consensus Builder works');
+    // Labelled "How it works" since a21963ab (the introduction tour).
+    await page.locator('.command-palette__input').fill('How it works');
     await page.keyboard.press('Enter');
     await expect(page.locator('#site-intro-modal')).toBeVisible();
-    await page.locator('.site-intro-cta').click();
+    // The introduction is a tour since a21963ab: its last step's button is the "Explore the map" CTA.
+    await page.keyboard.press('End');
+    const cta = page.locator('#site-intro-modal [data-site-intro-next]');
+    await expect(cta).toHaveText('Explore the map');
+    await cta.click();
     await expect(page.locator('#site-intro-modal')).toBeHidden();
     await page.keyboard.press('Meta+k');
     await page.locator('.command-palette__input').fill('Open the status log');

@@ -368,12 +368,6 @@
       ]
     },
     {
-      "id": "activity.agents",
-      "specs": [
-        "tests/activity-controls.spec.ts"
-      ]
-    },
-    {
       "id": "game.enable",
       "specs": [
         "tests/activity-controls.spec.ts"
@@ -612,6 +606,24 @@
       "specs": [
         "tests/data-sources.spec.ts"
       ]
+    },
+    {
+      "id": "layers.urbanBlocks",
+      "specs": [
+        "tests/urban-blocks.spec.ts"
+      ]
+    },
+    {
+      "id": "urbanBlocks.refresh",
+      "specs": [
+        "tests/urban-blocks.spec.ts"
+      ]
+    },
+    {
+      "id": "bets.open",
+      "specs": [
+        "tests/bets-sheet.spec.ts"
+      ]
     }
   ],
   "workflows": [
@@ -809,6 +821,12 @@
       "feature": "existing EVM parcel NFT claim portal handoff",
       "specs": [
         "tests/parcel-claim-portal.spec.ts"
+      ]
+    },
+    {
+      "feature": "signed prepare-then-publish, site-in-other-city refusal, proposals opening in their own city (city-less records by their parcels), address bar following the map, read-only second tab per city",
+      "specs": [
+        "tests/world-city-publication.spec.ts"
       ]
     }
   ],

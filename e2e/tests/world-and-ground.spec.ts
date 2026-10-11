@@ -10,10 +10,9 @@ test.describe('World navigation and open ground @features', () => {
     await expect(count).toHaveText('7'); await expect(count).toBeVisible();
     await expect(count).toHaveClass(/is-unopened/);
     await expect(page.locator('#proposals-button')).toHaveAttribute('aria-label', 'Proposals (7)');
+    // The Proposals sheet mounts the list itself (fbe3758d), so opening the sheet is the first opening.
     await page.locator('#proposals-button').click();
-    await expect(count).toHaveClass(/is-unopened/);
-    await page.locator('#showProposalsButton').click();
-    await expect(page.locator('.proposal-list-modal')).toBeVisible();
+    await expect(page.locator('#proposals-sheet .proposal-list-modal')).toBeVisible();
     await expect(count).not.toHaveClass(/is-unopened/);
   });
 
@@ -29,7 +28,8 @@ test.describe('World navigation and open ground @features', () => {
     await expect(page.locator('#proposals-button-count')).toHaveText('7');
     expect(new URL(countQueries.at(-1)!).searchParams.has('bbox')).toBe(true);
     expect(new URL(countQueries.at(-1)!).searchParams.has('city')).toBe(false);
-    await page.locator('#proposals-button').click(); await page.locator('#showProposalsButton').click();
+    await page.locator('#proposals-button').click();
+    await expect(page.locator('#proposals-sheet .proposal-list-modal')).toBeVisible();
     await expect.poll(() => listQueries.length).toBeGreaterThan(0);
     expect(new URL(listQueries.at(-1)!).searchParams.get('bbox')).toBe(new URL(countQueries.at(-1)!).searchParams.get('bbox'));
   });
@@ -69,18 +69,23 @@ test.describe('World navigation and open ground @features', () => {
       await expect(world).toHaveCount(0, { timeout: 15000 });
       await expect.poll(() => summaries.length).toBeGreaterThan(0);
       expect(new URL(summaries[0]).searchParams.get('limit')).toBe('1');
-      const arrival = page.locator('.world-arrival-card');
+      // The arrival caption card was removed (fbe3758d): the pick lands in 3D on the selected
+      // proposal, and the 2D mode tile leads back to the map.
+      const details = page.locator('#proposal-details-panel');
       if (hasProposal) {
-        await expect(arrival).toBeVisible({ timeout: 20000 });
-        await expect(arrival).toContainText('Latest proposal');
-        await expect.poll(() => page.evaluate(() => (window as any).isThreeModeActive())).toBe(true);
+        await expect.poll(() => page.evaluate(() => (window as any).isThreeModeActive?.() ?? false), { timeout: 20000 }).toBe(true);
         await expect.poll(() => page.evaluate(id => (window as any).ProposalSelection.getKey() === id, id)).toBe(true);
         expect(new URL(page.url()).searchParams.has('arrive')).toBe(false);
-        await arrival.getByRole('button', { name: 'Look around' }).click();
-        await expect(arrival).toHaveCount(0);
-        expect(await page.evaluate(() => (window as any).isThreeModeActive())).toBe(true);
+        await expect(page.locator('#mode-3d-toggle')).toHaveAttribute('aria-pressed', 'true');
+        // Back on the map the proposal is still selected, framed, and opens from the map.
+        await page.locator('#mode-2d-toggle').click();
+        await expect.poll(() => page.evaluate(() => (window as any).isThreeModeActive())).toBe(false);
+        await expect(page.locator('path.proposal-primary-outline').first()).toBeVisible();
+        await clickMapPoint(page, 15.9822, 45.80025);
+        await expect(details).toBeVisible();
+        await expect(details).toContainText('Park · parcel 1234');
       } else {
-        await expect(arrival).toHaveCount(0);
+        await expect(page.locator('#mode-2d-toggle')).toHaveAttribute('aria-pressed', 'true');
         expect(await page.evaluate(() => (window as any).isThreeModeActive?.() ?? false)).toBe(false);
       }
     });
@@ -132,16 +137,12 @@ test.describe('World navigation and open ground @features', () => {
       await page.locator('.world-activity a').click();
       await expect(page.locator('#world-view')).toHaveCount(0);
       // A globe pick arrives in 3D on the proposal (js/world/arrival.js); still under reduced motion.
-      const arrival = page.locator('.world-arrival-card');
-      await expect(arrival).toBeVisible({ timeout: 20000 });
-      await expect(arrival).toContainText('Park · parcel 1234');
-      await expect.poll(() => page.evaluate(() => (window as any).isThreeModeActive())).toBe(true);
+      // Its caption card was removed (fbe3758d): the 2D mode tile leads back to the map.
+      await expect.poll(() => page.evaluate(() => (window as any).isThreeModeActive?.() ?? false), { timeout: 20000 }).toBe(true);
       await expect.poll(() => page.evaluate(id => (window as any).ProposalSelection.getKey() === id, id)).toBe(true);
       expect(await page.evaluate(() => (window as any).getThreeModeInternals().controls.autoRotate)).toBe(false);
-      await arrival.getByRole('button', { name: 'Explore the map' }).click();
+      await page.locator('#mode-2d-toggle').click();
       await expect.poll(() => page.evaluate(() => (window as any).isThreeModeActive())).toBe(false);
-      await expect(arrival).toHaveCount(0);
-      await expect(page.locator('#proposal-details-panel')).toBeVisible();
       await expect(page.locator('.game-log-modal')).toHaveCount(0);
       await expect.poll(() => page.evaluate(id => (window as any).getProposalByIdOrHash(id).applied === true, id)).toBe(applied);
       await expect.poll(() => page.evaluate(() => (window as any).map.getZoom())).toBeGreaterThan(15);
@@ -150,12 +151,16 @@ test.describe('World navigation and open ground @features', () => {
       await expect(outline).toBeVisible();
       if (applied) await expect(outline).not.toHaveAttribute('stroke-dasharray', '10 5');
       else await expect(outline).toHaveAttribute('stroke-dasharray', '10 5');
-      if (!applied) {
-        await clickMapPoint(page, 15.9822, 45.80025);
-        await expect(page.locator('#proposal-details-panel')).toBeVisible();
-        await expect(page.locator('#parcel-menu')).toBeHidden();
-        expect(await page.evaluate(id => (window as any).getProposalByIdOrHash(id).applied === true, id)).toBe(false);
-      }
+      // 3D closes the 2D panels; the still-selected proposal reopens its details from the map.
+      await clickMapPoint(page, 15.9822, 45.80025);
+      await expect(page.locator('#proposal-details-panel')).toBeVisible();
+      await expect(page.locator('#proposal-details-panel')).toContainText('Park · parcel 1234');
+      await expect(page.locator('#parcel-menu')).toBeHidden();
+      expect(await page.evaluate(id => (window as any).getProposalByIdOrHash(id).applied === true, id)).toBe(applied);
+      // A map click opens the compact card; its expand button shows the Activity link.
+      const expand = page.locator('#proposal-details-minimize');
+      if (await expand.getAttribute('aria-expanded') === 'false') await expand.click();
+      await expect(expand).toHaveAttribute('aria-expanded', 'true');
       const activity = page.locator('#proposal-details-panel [data-activity-scope="proposalId"]');
       await expect(activity).toBeVisible(); await activity.click();
       await expect(page.locator('.game-log-modal')).toBeVisible();
@@ -170,32 +175,37 @@ test.describe('World navigation and open ground @features', () => {
   }
 
   test('a cross-city event keeps the globe cover over the default world map until its downloaded proposal is framed', async ({ mockApi: page }) => {
+    // A record is stored only in the city its parcels are in (c97bceea, projections.md M8), so the
+    // remote proposal is a Zagreb park and the event is picked from another city (Explore).
     await openCity(page); const id = await createSpace(page, 'park');
     const proposal = await page.evaluate(id => JSON.parse(JSON.stringify((window as any).getProposalByIdOrHash(id))), id);
     let releaseDownload!: () => void;
     const download = new Promise<void>(resolve => { releaseDownload = resolve; });
     await page.route('**/proposals/98765', async route => {
       await download;
-      await route.fulfill({ json: { ...proposal, id: 98765, proposalId: '98765', cityId: 'explore' } });
+      await route.fulfill({ json: { ...proposal, id: 98765, proposalId: '98765', cityId: 'zagreb', applied: false } });
     });
     await page.route('**/activity/recent?*', route => route.fulfill({ json: { events: [{
-      id: 'remote-park', action: { type: 'create', proposalId: '98765' }, proposalName: 'Remote park', cityId: 'explore',
+      id: 'remote-park', action: { type: 'create', proposalId: '98765' }, proposalName: 'Remote park', cityId: 'zagreb',
       location: { lat: 45.80025, lon: 15.9822 }, occurredAt: '2026-10-02T12:00:00Z',
     }] } }));
+    await page.goto('/?city=explore&at=44.8,20.4,14&reduceMotion=1&lang=en'); await waitForMapReady(page);
     await page.locator('#settings-button').click(); await page.locator('#world-view-button').click();
     await expect(page.locator('.world-activity a')).toBeVisible({ timeout: 15000 });
     await page.locator('.world-activity a').click();
-    await page.waitForURL(/city=explore/);
+    await page.waitForURL(/city=zagreb/);
     await expect(page.locator('.world-handoff')).toBeVisible();
     await expect.poll(() => page.evaluate(() => (window as any).WorldProposalEntry?.isOpening())).toBe(true);
     await expect(page.locator('.world-handoff')).toBeVisible();
     releaseDownload();
     await expect(page.locator('.world-handoff')).toHaveCount(0, { timeout: 15000 });
-    // Explore has OpenStreetMap buildings, so the pick arrives in 3D first (js/world/arrival.js).
-    const arrival = page.locator('.world-arrival-card');
-    await expect(arrival).toBeVisible({ timeout: 20000 });
-    await arrival.getByRole('button', { name: 'Explore the map' }).click();
-    await expect(page.locator('#proposal-details-panel')).toBeVisible();
+    // Zagreb has 3D buildings, so the pick arrives in 3D first (js/world/arrival.js); the 2D tile
+    // goes back to the map (the caption card was removed in fbe3758d).
+    await expect.poll(() => page.evaluate(() => (window as any).isThreeModeActive?.() ?? false), { timeout: 20000 }).toBe(true);
+    await expect.poll(() => page.evaluate(() => (window as any).ProposalSelection.getKey())).toBe('98765');
+    await page.locator('#mode-2d-toggle').click();
+    await expect.poll(() => page.evaluate(() => (window as any).isThreeModeActive())).toBe(false);
+    expect(await page.evaluate(() => (window as any).CityConfigManager.getCurrentCityId())).toBe('zagreb');
     await expect.poll(() => page.evaluate(() => (window as any).map.getZoom())).toBeGreaterThan(15);
     await expect.poll(() => page.evaluate(() => Math.abs((window as any).map.getCenter().lat - 45.80025))).toBeLessThan(0.002);
     await expect(page.locator('path.proposal-primary-outline').first()).toHaveAttribute('stroke-dasharray', '10 5');
@@ -276,6 +286,8 @@ test.describe('World navigation and open ground @features', () => {
     await openCity(page);
     await createSpace(page, 'park');
     await page.locator('#proposals-button').click();
+    // Plan-wide actions sit in the collapsed "Plan actions" group (fbe3758d).
+    await page.locator('#proposal-list-actions > summary').click();
     await page.locator('#roosterScoreButton').click();
     const panel = page.locator('#grain-score-panel');
     await expect(panel).toBeVisible();

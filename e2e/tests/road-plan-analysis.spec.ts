@@ -16,8 +16,10 @@ test.describe('Government plan and road analysis controls @features', () => {
     await expect.poll(() => page.evaluate(() => (window as any).governmentRoadPlanLayer?.getLayers?.().length || 0)).toBeGreaterThan(0);
     await expect.poll(() => page.evaluate(() => (window as any).getGovernmentPlanCollection?.()?.features?.[0]?.geometry?.type)).toBe('Polygon');
 
-    await page.locator('#layers-button').click();
-    await page.locator('#tools-button').click();
+    // The plan tools sit in the Layers sheet's folded "Road data and analysis" row since fbe3758d.
+    const roadData = page.locator('#layers-sheet details.layer-actions:has(> summary[data-i18n-key="mapShell.reorg.roadData"])');
+    await roadData.locator('> summary').click();
+    await expect(roadData).toHaveAttribute('open', '');
     const apply = page.locator('#applyGovernmentRoadPlanButton');
     await expect(apply).toBeEnabled();
     await apply.click();
@@ -41,9 +43,13 @@ test.describe('Government plan and road analysis controls @features', () => {
     });
     await openCity(page);
 
-    await page.locator('#tools-button').click();
+    // Since fbe3758d the city-plan toggle is a road layer (Layers sheet) and the watched-area tools
+    // live in the Activity sheet.
+    await page.locator('#layers-button').click();
     await page.locator('#amCityPlanToggle').check();
     await expect.poll(() => page.evaluate(() => (window as any).governmentRoadPlanLayer?.getLayers?.().length || 0)).toBeGreaterThan(0);
+    await page.locator('#activity-button').click();
+    await expect(page.locator('#activity-sheet')).toBeVisible();
     await expect(page.locator('#areaMonitorFromPlanButton')).toBeEnabled();
     await page.locator('#areaMonitorFromPlanButton').click();
     await expect(page.locator('#areaMonitorFromPlanButton')).toHaveClass(/active/);

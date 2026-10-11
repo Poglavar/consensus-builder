@@ -4,19 +4,19 @@ import { selectors } from '../helpers/selectors';
 
 /**
  * Basemap selector and layer toggling — tile source switching, building layer visibility, city and
- * data-source choice. Since the sidebar became the map shell (UI-REWORK.md) the base-map and
- * data-source selects live in the Settings sheet (Data & maintenance), the buildings toggle in the
- * Layers sheet, and the city select was replaced by the search box's city results; the UI tests
+ * data-source choice. Since the sidebar became the map shell (UI-REWORK.md) the data-source
+ * selects live in the Settings sheet (Data & maintenance), the base-map select and the buildings
+ * toggle in the Layers sheet (base map moved there in fbe3758d), and the city select was replaced by the search box's city results; the UI tests
  * below go through those sheets the way a visitor does.
  */
 
 test.describe('Basemap and layer controls @features', () => {
-  test('the Settings sheet base-map select switches the tile source', async ({ mockApi: page }) => {
+  test('the Layers sheet base-map select switches the tile source', async ({ mockApi: page }) => {
     await page.goto('/');
     await waitForMapReady(page);
 
-    await page.locator(selectors.settingsButton).click();
-    const select = page.locator(`${selectors.settingsSheet} #tile-source-select`);
+    await page.locator(selectors.layersButton).click();
+    const select = page.locator(`${selectors.layersSheet} #tile-source-select`);
     await expect(select).toBeVisible();
     // Should have at least OpenStreetMap and MapTiler
     await expect(select.locator('option[value="openstreetmap"]')).toHaveCount(1);

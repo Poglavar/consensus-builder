@@ -1,12 +1,22 @@
 import { test, expect } from '../helpers/fixtures';
 import { openCity } from '../helpers/runtime';
+import { Page } from '@playwright/test';
+
+// The simulation sits folded in the Activity sheet behind its own "Simulation" summary (fbe3758d).
+async function openSimulation(page: Page) {
+  await page.locator('#activity-button').click();
+  const simulation = page.locator('#activity-sheet details.activity-simulation');
+  await expect(simulation).toBeVisible();
+  if (!(await simulation.evaluate((details: HTMLDetailsElement) => details.open))) await simulation.locator('> summary').click();
+  await expect(simulation).toHaveAttribute('open', '');
+}
 
 test.describe('Activity and simulation controls @features', () => {
   for (const width of [1280, 390]) {
     test(`simulation play and pause stay circular at ${width}px`, async ({ mockApi: page }) => {
       await page.setViewportSize({ width, height: 900 });
       await openCity(page);
-      await page.locator('#activity-button').click();
+      await openSimulation(page);
       const play = page.locator('#game-play-pause-btn');
       await expect(play).toBeVisible();
       for (const running of [false, true, false]) {
@@ -56,19 +66,22 @@ test.describe('Activity and simulation controls @features', () => {
     await modal.locator('.game-log-modal-close').click();
     await expect(modal).toHaveCount(0);
 
-    // Opening the explorer closes its parent Activity sheet. The Agents shortcut is a sheet
-    // action too, so reopen the sheet through its real map-shell button before using it.
+    // Opening the explorer closes its parent Activity sheet. The separate Agents shortcut was
+    // removed (fbe3758d): the actors view is reached from the explorer's own view switch, so
+    // reopen the sheet through its real map-shell button and get there again.
     await page.locator('#activity-button').click();
     await expect(page.locator('#activity-sheet')).toBeVisible();
-    await page.locator('#activity-agents-button').click();
+    await page.locator('#activity-explorer-button').click();
     await expect(modal).toBeVisible();
+    await modal.locator('[data-activity-view="actors"]').click();
     await expect(modal.locator('[data-activity-view="actors"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(modal.locator('[data-activity-actors]')).toContainText('Map Steward');
     expect(requests.length).toBeGreaterThan(0);
   });
 
   test('simulation settings change the interval, play advances turns, pause stops it, and New Game confirms reset', async ({ mockApi: page }) => {
     await openCity(page);
-    await page.locator('#activity-button').click();
+    await openSimulation(page);
     const settings = page.locator('#activity-sheet .activity-simulation-settings');
     await settings.locator('summary').click();
     // The on/off switch is the section's first row, outside the settings fold.

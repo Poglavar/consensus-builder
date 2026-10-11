@@ -28,8 +28,13 @@ test.describe('Parcel inspector @core', () => {
     // Desktop: no blank phone drag handle above the panel, and the map credit stays on the bottom
     // line under the shell's button row instead of being lifted behind the panel.
     await expect(page.locator('#parcel-info-panel .mobile-dock-sheet-handle')).toBeHidden();
-    const credit = await page.locator('.leaflet-control-attribution').boundingBox();
-    expect(credit!.y + credit!.height).toBeGreaterThan(page.viewportSize()!.height - 4);
+    // The provider credit is MapCredits' control since adf27515 (it replaced Leaflet's attribution).
+    const credit = await page.locator('.map-credits-control').boundingBox();
+    const panel = await page.locator('#parcel-info-panel').boundingBox();
+    const bottomRow = await page.locator('#map-shell-bottom-right').boundingBox();
+    expect(credit!.y).toBeGreaterThanOrEqual(panel!.y + panel!.height);
+    expect(credit!.y + credit!.height).toBeGreaterThan(bottomRow!.y - credit!.height);
+    expect(credit!.y + credit!.height).toBeLessThanOrEqual(bottomRow!.y + 1);
   });
   test('government ownership follows the clicked parcel', async ({ mockApi: page }) => {
     await openCity(page);

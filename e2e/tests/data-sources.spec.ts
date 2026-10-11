@@ -33,15 +33,17 @@ test.describe('Data sources @features', () => {
     await notice.getByRole('button').last().click();
     await expect(notice).toHaveCount(0);
 
-    if (!(await page.locator('#parcel-source-settings-button').isVisible())) await page.locator('#settings-button').click();
+    // The source pickers sit beside their layers in the Layers sheet since fbe3758d.
+    await page.locator('#layers-button').click();
+    await expect(page.locator('#layers-sheet')).toBeVisible();
     await page.locator('#parcel-source-settings-button').click();
     const dialog = page.locator('#parcel-source-settings');
     await expect(dialog.getByRole('heading')).toHaveText('Choose a parcel source');
     await dialog.getByRole('button', { name: 'Close' }).click();
     await expect(dialog).toHaveCount(0);
 
-    // Opening a dialog folds the sheet away; reopen it as a person would.
-    if (!(await page.locator('#building-source-settings-button').isVisible())) await page.locator('#settings-button').click();
+    // Opening a dialog may fold the sheet away; reopen it as a person would.
+    if (!(await page.locator('#building-source-settings-button').isVisible())) await page.locator('#layers-button').click();
     await page.locator('#building-source-settings-button').click();
     await expect(dialog.getByRole('heading')).toHaveText('Choose a building source');
     await dialog.locator('#parcel-source-url').fill(URL_IN);
@@ -65,7 +67,7 @@ test.describe('Data sources @features', () => {
     await page.evaluate(() => (window as any).ensureBuildingFootprintsForBounds((window as any).map.getBounds()));
     expect((await footprints).postDataJSON()).toMatchObject({ city: 'zagreb', source: sourceId('ft') });
 
-    await page.locator('#settings-button').click();
+    await page.locator('#layers-button').click();
     await page.locator('#building-source-settings-button').click();
     await expect(dialog).toContainText('Current source: data.example (arcgis)');
     const backToDefault = page.waitForNavigation();

@@ -355,3 +355,33 @@ it('does not apply parcel visibility or emphasis after an async ground rebuild i
 
     expect(calls).toEqual(['restore']);
 });
+
+it('requests a frame when the facade toggle or style changes, because the view renders on demand', () => {
+    const states = [];
+    let frames = 0;
+    const context = loadInContext(threeModeDeclarations(['setFacadeAppearance']), {
+        facadesEnabled: false,
+        facadeStyle: 'mixed',
+        facadeState: {},
+        facadeFloorLineMaterial: { visible: true },
+        facadeCheckbox: null,
+        facadeStyleSelect: null,
+        facadeNote: null,
+        FACADE_PREF_KEY: 'facades',
+        FACADE_STYLE_KEY: 'facadeStyle',
+        PersistentStorage: { setItem() {} },
+        buildingFacades: {
+            STYLES: [{ id: 'mixed' }, { id: 'brick' }],
+            setState(_state, enabled, style) { states.push([enabled, style]); }
+        },
+        invalidateThreeView() { frames++; }
+    });
+
+    context.setFacadeAppearance(true);
+    context.setFacadeAppearance(true, 'brick');
+    context.setFacadeAppearance(false);
+
+    expect(states).toEqual([[true, 'mixed'], [true, 'brick'], [false, 'brick']]);
+    expect(frames).toBe(3);
+    expect(context.facadeFloorLineMaterial.visible).toBe(true);
+});

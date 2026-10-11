@@ -108,11 +108,15 @@ test.describe('Designer controls persist their edits @features', () => {
 
     await page.locator('#mode-3d-toggle').click();
     await expect(page.locator('#three-container canvas')).toBeVisible({ timeout: 15_000 });
+    // The model's display controls live in the Layers sheet (fbe3758d).
+    await page.locator('#layers-button').click();
+    await expect(page.locator('#model-layer-controls .three-mode-ui-panel')).toBeVisible();
     await page.locator('#three-mode-built-display').selectOption('off');
     await page.locator('#three-mode-planned-display').selectOption('off');
+    // Display changes hide retained groups rather than rebuilding them (51152a2e): count what is drawn.
     const sceneMeshes = () => page.evaluate(() => {
       const meshes: any[] = [];
-      (window as any).getThreeModeInternals().scene.traverse((object: any) => {
+      (window as any).getThreeModeInternals().scene.traverseVisible((object: any) => {
         if (!object.isMesh || !object.material) return;
         const materials = Array.isArray(object.material) ? object.material : [object.material];
         const opacity = Math.min(...materials.map((material: any) => material.userData?.cbBuildingOpacity ?? material.opacity ?? 1));
@@ -120,7 +124,7 @@ test.describe('Designer controls persist their edits @features', () => {
       });
       return meshes;
     });
-    const toggle = page.locator('.three-mode-wide-toggle input');
+    const toggle = page.locator('#model-layer-controls .three-mode-wide-row .three-mode-wide-toggle input');
     await expect(toggle).not.toBeChecked();
     const meshesWithoutExcludedParts = await sceneMeshes();
     await toggle.check();

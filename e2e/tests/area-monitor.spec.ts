@@ -2,16 +2,24 @@ import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
 import { installAreaMonitorSpaFallback } from '../helpers/mocks/area-monitor-server';
 
-async function openMonitorTools(page: import('@playwright/test').Page) {
-  await page.locator('#tools-button').click();
-  await expect(page.locator('#tools-sheet')).toBeVisible();
+// Watched areas (draw controls and the monitor list) live in the Activity sheet since fbe3758d.
+async function openWatchedAreas(page: import('@playwright/test').Page) {
+  await page.locator('#activity-button').click();
+  await expect(page.locator('#activity-sheet [data-section="areaMonitor"]')).toBeVisible();
+}
+// The address follows the map as ?at= (map-core.js), so a route is checked by path and city only.
+async function expectRoute(page: import('@playwright/test').Page, pathname: string, city: string) {
+  await expect.poll(() => {
+    const url = new URL(page.url());
+    return { pathname: url.pathname, city: url.searchParams.get('city') };
+  }).toEqual({ pathname, city });
 }
 
 test.describe('Area monitor @features', () => {
   test('draw control enters and Escape exits real polygon drawing mode', async ({ mockApi: page }) => {
     await page.goto('/?city=zg');
     await waitForMapReady(page);
-    await openMonitorTools(page);
+    await openWatchedAreas(page);
     const draw = page.locator('#areaMonitorDrawButton');
     await draw.click();
     await expect(draw).toHaveClass(/active/);
@@ -39,25 +47,26 @@ test.describe('Area monitor @features', () => {
     await expect(panel.locator('.panel-body')).toBeVisible();
     await panel.locator('#am-detail-close').click();
     await expect(page.locator('#area-monitor-detail-panel')).toHaveCount(0);
-    await expect(page).toHaveURL(/\/?\?city=zg$/);
+    await expectRoute(page, '/', 'zg');
   });
 
   test('list opens from Tools and selecting an item follows the actual monitor route', async ({ mockApi: page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/?city=zg');
     await waitForMapReady(page);
-    await openMonitorTools(page);
-    await page.locator('#areaMonitorListButton').click();
-    const modal = page.locator('#area-monitor-list-modal');
-    await expect(modal).toBeVisible();
-    await expect(modal).toContainText('Zapadni Jarunski Most');
-    await expect(modal).toContainText('Vukovarska Corridor');
-    await modal.getByRole('button', { name: /Zapadni Jarunski Most/ }).click();
+    await openWatchedAreas(page);
+    // The list is inline in the Activity sheet now (fbe3758d), not a modal behind a List button.
+    const list = page.locator('#activity-watched-areas-list');
+    await expect(list).toBeVisible();
+    await expect(list).toContainText('Zapadni Jarunski Most');
+    await expect(list).toContainText('Vukovarska Corridor');
+    await list.getByRole('button', { name: /Zapadni Jarunski Most/ }).click();
     await expect(page).toHaveURL(/\/monitors\/1$/);
     expect(await page.evaluate(() => (window as any).CityConfigManager.getCurrentCityId())).toBe('zagreb');
     await expect(page.locator('#area-monitor-detail-panel')).toBeVisible();
-    await expect(modal).toHaveCount(0);
-    await expect(page.locator('#tools-sheet')).toBeHidden();
+    await expect(page.locator('#area-monitor-list-modal')).toHaveCount(0);
+    // On a phone the sheet folds away so the selected area has the map.
+    await expect(page.locator('#activity-sheet')).toBeHidden();
   });
 
   test('wrong-city route can be cancelled without rendering or changing city', async ({ mockApi: page }) => {
@@ -67,7 +76,7 @@ test.describe('Area monitor @features', () => {
     const prompt = page.getByRole('alertdialog').filter({ hasText: /created for Zagreb.*current city is Belgrade/s });
     await expect(prompt).toBeVisible();
     await prompt.getByRole('button', { name: /cancel/i }).click();
-    await expect(page).toHaveURL(/\/?\?city=bg$/);
+    await expectRoute(page, '/', 'bg');
     await expect(page.locator('#area-monitor-detail-panel')).toHaveCount(0);
     await expect(page.locator('#area-monitor-list-modal')).toHaveCount(0);
   });

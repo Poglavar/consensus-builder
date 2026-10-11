@@ -7,6 +7,11 @@ async function openSettings(page: import('@playwright/test').Page) {
   await expect(page.locator('#settings-sheet')).toBeVisible();
 }
 
+async function openLayers(page: import('@playwright/test').Page) {
+  await page.locator('#layers-button').click();
+  await expect(page.locator('#layers-sheet')).toBeVisible();
+}
+
 // The resets sit folded under one "Reset data stored in this browser…" row (docs/design-language.md).
 async function openResets(page: import('@playwright/test').Page) {
   const fold = page.locator('#settings-sheet details.sheet-reset');
@@ -28,8 +33,12 @@ test.describe('Settings maintenance @features', () => {
     await coverage.locator('#parcel-coverage-close-btn').click();
     await expect(coverage).toBeHidden();
 
-    // Opening coverage owns the foreground modal and closes the sheet that opened it.
-    await openSettings(page);
+    // A press inside a dialog opened from a sheet is not an outside click (f38401a2): the Settings
+    // sheet that opened coverage is still there underneath once coverage closes.
+    await expect(page.locator('#settings-sheet')).toBeVisible();
+    // The base-map select moved to the Layers sheet (fbe3758d); opening Layers replaces Settings.
+    await openLayers(page);
+    await expect(page.locator('#settings-sheet')).toBeHidden();
     const tile = page.locator('#tile-source-select');
     const original = await tile.inputValue();
     const next = original === 'openstreetmap' ? 'maptiler' : 'openstreetmap';
@@ -37,7 +46,7 @@ test.describe('Settings maintenance @features', () => {
     await expect.poll(() => page.evaluate(() => (window as any).baseTileLayer?._url || '')).not.toBe('');
     await page.reload();
     await waitForMapReady(page);
-    await openSettings(page);
+    await openLayers(page);
     await expect(page.locator('#tile-source-select')).toHaveValue(next);
   });
 
@@ -74,8 +83,11 @@ test.describe('Settings maintenance @features', () => {
     const debug = page.locator('#debugModeCheckbox');
     if (!(await debug.isChecked())) await debug.check();
 
-    const seeded = await page.evaluate((parcelId) => {
+    const seeded = await page.evaluate(async (parcelId) => {
       const w = window as any;
+      // Road detection loads on its first command since 51152a2e; a detected road parcel exists only
+      // once it has run, so load it the way a road command would before registering one.
+      await w.ensureOptionalTool('roadDetection');
       const layer = w.ParcelPresenter.getLayer(parcelId);
       if (!layer) throw new Error(`Fixture parcel ${parcelId} did not load`);
       w.PersistentStorage.setItem('parcel_e2e-maintenance_geometry', '{}');
@@ -148,8 +160,11 @@ test.describe('Settings maintenance @features', () => {
   test('Use my location asks permission and opens the nearest configured city', async ({ mockApi: page }) => {
     await page.context().grantPermissions(['geolocation']);
     await page.context().setGeolocation({ latitude: 45.815, longitude: 15.982 });
-    await page.goto('/?city=zg');
+    // Start elsewhere: since c97bceea a detected city goes through switchCity, which (rightly) does
+    // nothing when the nearest city is the one already open.
+    await page.goto('/?city=lj');
     await waitForMapReady(page);
+    await expect.poll(() => page.evaluate(() => (window as any).CityConfigManager.getCurrentCityId())).toBe('ljubljana');
     // The city chip can open World view when that entry is available. Open search with its
     // dedicated control; the empty-query Cities group contains the supported location action.
     await page.locator('.map-search__icon-button').click();
@@ -162,6 +177,7 @@ test.describe('Settings maintenance @features', () => {
     await confirm.getByRole('button', { name: /^OK$/i }).click();
     await reloaded;
     await waitForMapReady(page);
+    expect(new URL(page.url()).searchParams.get('city')).toBe('zagreb');
     await expect.poll(() => page.evaluate(() => (window as any).CityConfigManager.getCurrentCityId())).toBe('zagreb');
   });
 });

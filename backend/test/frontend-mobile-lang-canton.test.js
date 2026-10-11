@@ -90,10 +90,19 @@ describe('phone proposal list', () => {
     it('the list collapses filters by default and wires the helpers', () => {
         const src = read('../../frontend/js/proposals/dialog-share.js');
         expect(src).toContain("proposal-list-controls${filtersOpen ? '' : ' is-collapsed'}");
-        expect(src).toContain('proposalListState.autofocusSearch = shouldAutofocusProposalListSearch(window)');
+        // the list is opened from list-ui.js since the Proposals sheet mounts it itself
+        expect(read('../../frontend/js/proposals/list-ui.js')).toContain('proposalListState.autofocusSearch = shouldAutofocusProposalListSearch(window)');
         const css = read('../../frontend/css/proposals.css');
         expect(css).toMatch(/@media \(max-width: 767\.98px\)\s*{\s*\.proposal-filters-toggle-row\s*{\s*display: flex/);
         expect(css).toMatch(/\.proposal-list-controls\.is-collapsed\s*{\s*display: none;/);
+    });
+
+    it('short desktop windows fold the filters too, so the capped sheet keeps room for the list', () => {
+        const css = read('../../frontend/css/proposals.css');
+        const block = css.match(/@media \(min-width: 768px\) and \(max-height: 900px\)\s*{([\s\S]*?)\n}/);
+        expect(block).not.toBeNull();
+        expect(block[1]).toMatch(/\.proposal-filters-toggle-row\s*{\s*display: flex/);
+        expect(block[1]).toMatch(/\.proposal-list-controls\.is-collapsed\s*{\s*display: none;/);
     });
 });
 

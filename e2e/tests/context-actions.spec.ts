@@ -87,7 +87,7 @@ test.describe('Map context actions @features', () => {
     await expect(groundMenu).toBeHidden();
   });
 
-  test('bare-ground menu exposes transport actions and real Tools station placement can be cancelled', async ({ mockApi: page }) => {
+  test('bare-ground menu exposes transport actions and real station placement can be cancelled', async ({ mockApi: page }) => {
     await openCity(page);
     await ensureSecondParcel(page);
     // The sample parcels leave a narrow, loaded unsurveyed gap between their boundaries.
@@ -104,13 +104,16 @@ test.describe('Map context actions @features', () => {
     await page.locator('#road-info-panel .close-button').click();
     await expect(page.locator('#road-info-panel')).toBeHidden();
 
-    await page.locator('#tools-button').click();
-    await expect(page.locator('#tools-sheet')).toBeVisible();
-    await page.locator('#tools-sheet [data-station-type="bus"]').click();
+    // The Tools sheet's station buttons went with the sheet (fbe3758d); station placement starts
+    // from the same bare-ground menu, and its own editor toolbar carries the Cancel.
+    await clickMapPoint(page, 15.98255, 45.80025);
+    await expect(menu).toBeVisible();
+    await menu.locator('[data-command="ground.busStation"]').click();
+    const toolbar = page.locator('#station-placement-toolbar');
+    await expect(toolbar).toBeVisible();
     await expect(page.locator('#station-placement-status')).toContainText(/bus|station/i);
     await expect.poll(() => page.evaluate(() => (window as any).transitStationPlacementMode)).toBe(true);
-    await page.locator('#tools-sheet button[onclick="cancelTransitStationPlacement()"]')
-      .click();
+    await toolbar.getByRole('button', { name: 'Cancel', exact: true }).click();
     await expect(page.locator('#station-placement-status')).toContainText('Station placement cancelled.');
     await expect.poll(() => page.evaluate(() => (window as any).transitStationPlacementMode)).toBe(false);
   });

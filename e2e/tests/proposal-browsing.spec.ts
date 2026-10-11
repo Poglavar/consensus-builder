@@ -66,12 +66,16 @@ test.describe('Proposal browsing @features', () => {
       ];
     }, PARCEL_ID);
 
+    // The Proposals sheet mounts the list itself (fbe3758d).
     await page.locator('#proposals-button').click();
-    await page.locator('#showProposalsButton').click();
-    const list = page.locator('.proposal-list-modal');
+    const list = page.locator('#proposals-sheet .proposal-list-modal');
     await expect(list.locator('.proposal-list-item')).toHaveCount(3);
-    // Desktop shows the filter controls directly; the collapse toggle only appears at the
-    // narrow-sheet breakpoint, so exercise the controls that are actually visible here.
+    // The list sits in the capped 340px Proposals sheet (fbe3758d); on this 720px-tall window the
+    // filters fold behind the Filters toggle so the list keeps its height.
+    await expect(list.locator('.proposal-list-item').first()).toBeInViewport();
+    await expect(list.locator('#proposal-list-controls')).toBeHidden();
+    await list.locator('.proposal-filters-toggle').click();
+    await expect(list.locator('.proposal-filters-toggle')).toHaveAttribute('aria-expanded', 'true');
     await expect(list.locator('#proposal-list-controls')).toBeVisible();
     await list.locator('#proposal-filter-search').fill('North');
     await expect(list.locator('.proposal-list-item')).toHaveCount(1);
@@ -94,6 +98,9 @@ test.describe('Proposal browsing @features', () => {
     await list.locator('.proposal-source-btn[data-source="local"]').click();
     await list.locator('#proposal-filter-type').selectOption('all');
     await expect(list.locator('.proposal-list-item')).toHaveCount(3);
+    // Fold the filters away again to reach the list rows.
+    await list.locator('.proposal-filters-toggle').click();
+    await expect(list.locator('#proposal-list-controls')).toBeHidden();
     const target = list.locator(`.proposal-list-item[data-proposal-id="${ids[2]}"]`);
     await target.locator('.proposal-delete-btn').click();
     await expect.poll(() => page.evaluate(id => (window as any).getProposalByIdOrHash(id) == null, ids[2])).toBe(true);
