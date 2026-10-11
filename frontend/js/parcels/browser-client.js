@@ -16,6 +16,10 @@
         worker.addEventListener('message', ({ data }) => {
             const request = pending.get(data?.id);
             if (!request) return;
+            if (data.progress) {
+                try { request.onProgress?.(data.progress); } catch (_) { /* Keep the worker request alive. */ }
+                return;
+            }
             pending.delete(data.id); clearTimeout(request.timer);
             if (data.error) request.reject(Object.assign(new Error(data.error.message), data.error));
             else request.resolve(data.result);
@@ -24,7 +28,7 @@
         worker.addEventListener('messageerror', () => reset(new Error('Parcel adapter worker returned unreadable data.')));
         return worker;
     }
-    function query(sourceId, method, args, { city } = {}) {
+    function query(sourceId, method, args, { city, onProgress } = {}) {
         const active = getWorker(), id = ++sequence;
         const customDescriptor = sourceId.startsWith('custom.')
             ? global.ParcelSourceSettings?.choiceForCity?.(city || global.CityConfigManager?.getCurrentCityId?.(), global) : undefined;
@@ -32,9 +36,10 @@
             const timer = setTimeout(() => {
                 reset(Object.assign(new Error('Parcel provider processing timed out.'), { code: 'parcel-source-unavailable', status: 504 }));
             }, 10 * 60 * 1000);
-            pending.set(id, { resolve, reject, timer });
+            const trackProgress = typeof onProgress === 'function';
+            pending.set(id, { resolve, reject, timer, onProgress: trackProgress ? onProgress : undefined });
             try { active.postMessage({ id, sourceId, method, args, customDescriptor,
-                relayBase: global.getBackendBase?.() }); }
+                relayBase: global.getBackendBase?.(), ...(trackProgress ? { trackProgress: true } : {}) }); }
             catch (error) { clearTimeout(timer); pending.delete(id); reject(error); }
         });
     }

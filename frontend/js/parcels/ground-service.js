@@ -753,7 +753,9 @@
                 ownKeys.forEach(key => {
                     const cacheKey = scoped(city, key);
                     const own = acquire()
-                        .then(() => fetchBounds(bounds, { city, keys: [key] }))
+                        .then(() => fetchBounds(bounds, { city, keys: [key], onProgress: detail => {
+                            if (detail?.phase) emit(options.onProgress, detail);
+                        } }))
                         .then(result => acceptTransportResult(result, {
                             city,
                             skipConversion: result && result.returnsWGS84 === true

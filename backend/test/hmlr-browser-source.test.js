@@ -102,6 +102,52 @@ beforeAll(() => {
 });
 afterEach(() => { vi.restoreAllMocks(); });
 
+test('reports real streamed archive bytes and parsed feature counts, then reuses cached parcels', async () => {
+    const f = fixture({ bulkFeatureCount: 600 }), progress = [];
+    let clock = Date.now();
+    const fetchImpl = async (url, options) => {
+        const original = await f.fetchImpl(url, options);
+        if (!f.endpoints.includes(url)) return original;
+        const bytes = new Uint8Array(await original.arrayBuffer());
+        const step = Math.ceil(bytes.length / 3);
+        return new Response(new ReadableStream({ start(controller) {
+            for (let offset = 0; offset < bytes.length; offset += step) controller.enqueue(bytes.slice(offset, offset + step));
+            controller.close();
+        } }), { headers: original.headers });
+    };
+    const result = await f.create({}, { fetchImpl, now: () => clock += 250, onProgress: detail => progress.push(detail) })
+        .queryIds([`${HMLR_BROWSER_GROUND_PREFIX}10000`]);
+    assert.equal(result.complete, true);
+    const north = progress.filter(detail => detail.authority === 'North');
+    const bytes = f.archives[0].length, step = Math.ceil(bytes / 3);
+    assert.deepEqual(north.filter(detail => detail.phase === 'source-download').map(detail => detail.loadedBytes), [0, step, step * 2, bytes]);
+    assert.ok(north.filter(detail => detail.phase === 'source-download').every(detail => detail.totalBytes === bytes));
+    assert.ok(north.findIndex(detail => detail.phase === 'source-decompress') > north.findIndex(detail => detail.loadedBytes === bytes));
+    assert.deepEqual(north.filter(detail => detail.phase === 'source-process').map(detail => detail.processedFeatures), [1, 250, 500, 600]);
+    assert.ok(north.filter(detail => detail.phase === 'source-process').every(detail => detail.totalFeatures === 600));
+    assert.equal(progress.at(-1).phase, 'source-prepare');
+
+    const downloads = f.archiveCalls.length;
+    progress.length = 0;
+    const cached = await f.create({}, { onProgress: detail => progress.push(detail) }).queryIds([`${HMLR_BROWSER_GROUND_PREFIX}10000`]);
+    assert.deepEqual(cached.features, result.features);
+    assert.equal(f.archiveCalls.length, downloads);
+    assert.ok(progress.some(detail => detail.phase === 'source-cache' && detail.authority === 'North'));
+    assert.ok(progress.every(detail => ['source-cache', 'source-prepare'].includes(detail.phase)));
+});
+
+test('throttles progress ticks but preserves phase changes and terminal counts when an observer throws', async () => {
+    const f = fixture({ bulkFeatureCount: 600 }), progress = [];
+    const result = await f.create({}, { now: () => Date.parse('2026-10-12'), onProgress: detail => {
+        progress.push(detail);
+        throw new Error('status display failed');
+    } }).queryIds([`${HMLR_BROWSER_GROUND_PREFIX}10000`]);
+    assert.equal(result.features[0].id, `${HMLR_BROWSER_GROUND_PREFIX}10000`);
+    const north = progress.filter(detail => detail.authority === 'North');
+    assert.deepEqual(north.map(detail => detail.phase), ['source-download', 'source-download', 'source-decompress', 'source-process', 'source-process']);
+    assert.deepEqual(north.filter(detail => detail.phase === 'source-process').map(detail => detail.processedFeatures), [1, 600]);
+});
+
 test.each(['missing-length', 'compressed-wire-length'])('reads verified decoded bytes with %s HTTP metadata', async mode => {
     const f = fixture();
     const fetchImpl = async (url, options) => {

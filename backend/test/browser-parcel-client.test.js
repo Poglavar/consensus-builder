@@ -91,6 +91,56 @@ describe('browser parcel worker client', () => {
         expect(worker.terminated).toBe(false);
     });
 
+    it('opts into progress only when an observer is provided and keeps progress separate from settlement', async () => {
+        const { client } = boot();
+        const onProgress = vi.fn();
+        const observed = client.queryBounds('source-a', [0, 0, 1, 1], { city: 'city-a', onProgress });
+        const unobserved = client.queryBounds('source-a', [1, 1, 2, 2], { city: 'city-a' });
+        const worker = FakeWorker.instances[0];
+
+        expect(worker.messages[0].trackProgress).toBe(true);
+        expect(worker.messages[1]).not.toHaveProperty('trackProgress');
+
+        worker.emit('message', { data: { id: 1, progress: { phase: 'downloading', loadedBytes: 2, totalBytes: 4 } } });
+        worker.emit('message', { data: { id: 2, progress: { phase: 'ignored' } } });
+        expect(onProgress).toHaveBeenCalledWith({ phase: 'downloading', loadedBytes: 2, totalBytes: 4 });
+
+        worker.emit('message', { data: { id: 1, result: { complete: true, features: [] } } });
+        worker.emit('message', { data: { id: 1, progress: { phase: 'after-final' } } });
+        worker.emit('message', { data: { id: 2, result: { complete: true, features: [] } } });
+        await expect(observed).resolves.toMatchObject({ complete: true });
+        await expect(unobserved).resolves.toMatchObject({ complete: true });
+        expect(onProgress).toHaveBeenCalledTimes(1);
+    });
+
+    it('keeps a request pending across progress and swallows observer exceptions', async () => {
+        vi.useFakeTimers();
+        const { client } = boot();
+        const onProgress = vi.fn(() => { throw new Error('observer failed'); });
+        const pending = client.queryIds('source-a', ['A-1'], { onProgress });
+        const worker = FakeWorker.instances[0];
+        const rejection = expect(pending).rejects.toMatchObject({ code: 'parcel-source-unavailable', status: 504 });
+
+        worker.emit('message', { data: { id: 1, progress: { phase: 'processing', processedFeatures: 1, totalFeatures: 3 } } });
+        await Promise.resolve();
+        expect(onProgress).toHaveBeenCalledTimes(1);
+        expect(worker.terminated).toBe(false);
+        await vi.advanceTimersByTimeAsync(10 * 60 * 1000);
+        await rejection;
+    });
+
+    it('cleans up after a terminal error so later progress is ignored', async () => {
+        const { client } = boot();
+        const onProgress = vi.fn();
+        const pending = client.queryIds('source-a', ['A-1'], { onProgress });
+        const worker = FakeWorker.instances[0];
+
+        worker.emit('message', { data: { id: 1, error: { message: 'failed' } } });
+        await expect(pending).rejects.toThrow('failed');
+        worker.emit('message', { data: { id: 1, progress: { phase: 'late' } } });
+        expect(onProgress).not.toHaveBeenCalled();
+    });
+
     it('terminates and rejects pending requests after a worker runtime error', async () => {
         const { client } = boot();
         const first = client.queryGeometry('source-a', { type: 'Polygon', coordinates: [] });

@@ -11,6 +11,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import vm from 'node:vm';
 
 const read = rel => readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8');
 const ui = read('../../frontend/js/ui-helpers.js');
@@ -19,6 +20,21 @@ const ground = read('../../frontend/js/parcels/ground-service.js');
 const css = read('../../frontend/css/utilities.css');
 const dictOf = locale => JSON.parse(read(`../../frontend/i18n/${locale}.json`));
 const locales = ['en', 'hr', 'sr', 'es'];
+
+it('updates both status displays with live progress without filling the session log', () => {
+    const elements = { status: { textContent: '' }, 'floating-status-text': { textContent: '' } };
+    const context = vm.createContext({ window: {}, document: {
+        readyState: 'loading', addEventListener() {}, getElementById: id => elements[id] || null
+    }, CbFormat: { formatTime: () => '12:00' } });
+    vm.runInContext(ui, context);
+    context.window.updateStatus('Loading parcels');
+    for (let mb = 1; mb <= 100; mb++) context.window.updateStatus(`Downloading… ${mb} MB`, { transient: true });
+    expect(elements.status.textContent).toBe('Downloading… 100 MB');
+    expect(elements['floating-status-text'].textContent).toBe('Downloading… 100 MB');
+    expect(vm.runInContext('statusLogText()', context)).toBe('12:00\tLoading parcels');
+    context.window.updateStatus('Loaded parcels');
+    expect(vm.runInContext('statusLogText()', context)).toBe('12:00\tLoading parcels\n12:00\tLoaded parcels');
+});
 
 describe('selecting text does not close the log', () => {
     const handler = ui.slice(

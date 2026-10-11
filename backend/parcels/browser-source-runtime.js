@@ -109,6 +109,12 @@ export function createBrowserParcelRuntime(options = {}) {
     const { factories = browserParcelFactories, ...fetchOptions } = options;
     const adapters = new Map();
     const pending = new Set();
+    const progressListeners = new Map();
+    function reportProgress(sourceId, detail) {
+        for (const listener of progressListeners.get(sourceId) || []) {
+            try { listener(detail); } catch { /* A display callback must not fail a provider query. */ }
+        }
+    }
     function trimAdapters() {
         while (adapters.size > 8) {
             const oldestResolved = [...adapters.keys()].find(sourceId => !pending.has(sourceId));
@@ -135,7 +141,8 @@ export function createBrowserParcelRuntime(options = {}) {
         pending.add(sourceId);
         let instancePromise;
         instancePromise = Promise.resolve().then(async () => {
-            const created = await factory(source, { fetchImpl, ...(source.adapter === 'dgu-wfs' ? { token: 'browser-relay' } : {}) });
+            const created = await factory(source, { fetchImpl, onProgress: detail => reportProgress(sourceId, detail),
+                ...(source.adapter === 'dgu-wfs' ? { token: 'browser-relay' } : {}) });
             const instance = withSourceControls(created, { maxConcurrentQueries: source.maxConcurrentQueries });
             pending.delete(sourceId);
             trimAdapters();
@@ -150,13 +157,26 @@ export function createBrowserParcelRuntime(options = {}) {
         return instancePromise;
     }
     return Object.freeze({
-        async query(sourceId, method, args, customDescriptor) {
+        async query(sourceId, method, args, customDescriptor, { onProgress } = {}) {
             if (!['queryBounds', 'queryIds', 'queryGeometry', 'queryPoint'].includes(method)) throw upstreamError('Unknown browser parcel operation.', 400);
-            const instance = await adapter(sourceId, customDescriptor);
-            if (typeof instance[method] !== 'function') throw upstreamError('Parcel source does not support this operation.', 422);
-            const result = await instance[method](...args);
-            if (result.complete !== true || !Array.isArray(result.features)) throw upstreamError('Browser parcel source returned incomplete data.');
-            return result;
+            // Cached adapters can serve several viewport cells. Subscribe for each query's
+            // lifetime, including time spent waiting for a shared authority download.
+            const listener = typeof onProgress === 'function' ? detail => onProgress(detail) : null;
+            if (listener) {
+                if (!progressListeners.has(sourceId)) progressListeners.set(sourceId, new Set());
+                progressListeners.get(sourceId).add(listener);
+            }
+            try {
+                const instance = await adapter(sourceId, customDescriptor);
+                if (typeof instance[method] !== 'function') throw upstreamError('Parcel source does not support this operation.', 422);
+                const result = await instance[method](...args);
+                if (result.complete !== true || !Array.isArray(result.features)) throw upstreamError('Browser parcel source returned incomplete data.');
+                return result;
+            } finally {
+                const listeners = progressListeners.get(sourceId);
+                listeners?.delete(listener);
+                if (!listeners?.size) progressListeners.delete(sourceId);
+            }
         },
         sources: catalog.sources.filter(source => browserParcelFactories[source.adapter]),
         clear() { adapters.clear(); }

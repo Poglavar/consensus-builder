@@ -9,7 +9,8 @@ self.addEventListener('message', async ({ data }) => {
             relayBase = data.relayBase;
             runtime = createBrowserParcelRuntime({ relayBase });
         }
-        self.postMessage({ id, result: await runtime.query(sourceId, method, args, customDescriptor) });
+        const onProgress = data.trackProgress ? progress => self.postMessage({ id, progress }) : undefined;
+        self.postMessage({ id, result: await runtime.query(sourceId, method, args, customDescriptor, { onProgress }) });
     } catch (error) {
         self.postMessage({ id, error: { message: error.message, status: error.status, code: error.code,
             upstreamStatus: error.upstreamStatus, retryAfterSeconds: error.retryAfterSeconds } });

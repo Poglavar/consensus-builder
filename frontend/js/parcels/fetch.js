@@ -303,7 +303,9 @@
         const provider = cityConfig(context.city || currentCity())?.parcels;
         if (provider?.source === 'parcel-source') {
             if (!global.BrowserParcelSources) throw new Error('Browser parcel adapters are unavailable.');
-            const payload = await global.BrowserParcelSources.queryBounds(provider.sourceId, latLonBbox.split(',').map(Number), { city: context.city });
+            const payload = await global.BrowserParcelSources.queryBounds(provider.sourceId, latLonBbox.split(',').map(Number), {
+                city: context.city, ...(typeof context.onProgress === 'function' ? { onProgress: context.onProgress } : {})
+            });
             if (payload.complete !== true || !Array.isArray(payload.features)) throw new Error('Parcel source returned an incomplete viewport response.');
             return { features: payload.features, returnsWGS84: true };
         }
@@ -359,7 +361,7 @@
             ?? global.CityConfigManager?.getParcelGridSize?.()
             ?? global.PARCELS_GRID_SIZE);
         const builder = typeof global.buildParcelRequestParams === 'function' ? global.buildParcelRequestParams : null;
-        const context = Object.freeze({ city, gridSize, builder });
+        const context = Object.freeze({ city, gridSize, builder, onProgress: options.onProgress });
         const results = [];
         let done = 0;
         for (const batch of chunks(keys, 6)) {
@@ -479,12 +481,21 @@
         global._fetchParcelDataInProgress = true;
         global.ParcelsState?.setIsFetchingParcels?.(true);
         global.updateStatus?.(statusText('checking_cadastral_ground', 'Checking cadastral ground…'));
+        let lastProgressText;
         try {
             const result = await repository.ensureBounds(requestedBounds, {
                 onProgress: detail => {
-                    if (detail && detail.total) {
+                    const message = global.ParcelSourceProgress?.format(detail, {
+                        language: global.i18n?.getLanguage?.() || 'en',
+                        translate: (key, params) => global.i18n?.t?.(key, params)
+                    });
+                    if (message) {
+                        if (message !== lastProgressText) global.updateStatus?.(message, { transient: true });
+                        lastProgressText = message;
+                    } else if (detail && detail.total) {
                         const done = detail.done || 0;
                         global.updateStatus?.(statusText('loading_cadastral_ground', `Loading cadastral ground ${done}/${detail.total}…`, { done, total: detail.total }));
+                        lastProgressText = null;
                     }
                 }
             });

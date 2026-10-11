@@ -18,24 +18,26 @@ const STATUS_LOG_PREVIEW_ENTRIES = 50;
 function updateStatus(message, options = {}) {
     const statusSpan = document.getElementById('status');
     if (statusSpan) {
-        // Add the message to the log
-        const timestamp = CbFormat.formatTime(new Date());
-        // A line about a proposal remembers WHICH one, so the log can offer to go there. Kept as a
-        // field rather than recovered from the sentence: titles are not unique, are translated, and
-        // are written by users.
-        const proposalId = options && options.proposalId ? String(options.proposalId) : null;
-        statusLog.push({ message, timestamp, proposalId });
+        // Live counters update the status without filling the session log with every tick.
+        if (!options.transient) {
+            // Add the message to the log
+            const timestamp = CbFormat.formatTime(new Date());
+            // A line about a proposal remembers WHICH one, so the log can offer to go there. Kept as a
+            // field rather than recovered from the sentence: titles are not unique, are translated, and
+            // are written by users.
+            const proposalId = options && options.proposalId ? String(options.proposalId) : null;
+            statusLog.push({ message, timestamp, proposalId });
 
-        if (statusLog.length > STATUS_LOG_MAX_ENTRIES) {
-            statusLog.splice(0, statusLog.length - STATUS_LOG_MAX_ENTRIES);
+            if (statusLog.length > STATUS_LOG_MAX_ENTRIES) {
+                statusLog.splice(0, statusLog.length - STATUS_LOG_MAX_ENTRIES);
+            }
+
+            // Update expanded view if it's currently shown
+            updateExpandedStatusView();
+            appendToStatusLogDialog();
         }
-
         // Update the display with the latest message
         statusSpan.textContent = message;
-
-        // Update expanded view if it's currently shown
-        updateExpandedStatusView();
-        appendToStatusLogDialog();
     }
 
     // Also update floating status (visible when sidebar is closed)

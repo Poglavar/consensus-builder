@@ -283,7 +283,7 @@ function cachedArchiveStore(cacheStorage, manifestUrl) {
     } });
 }
 
-async function responseBytes(response, expectedBytes, limit, label) {
+async function responseBytes(response, expectedBytes, limit, label, onBytes) {
     if (!response.ok || response.status !== 200) throw providerHttpError(response);
     if (expectedBytes !== null && (!Number.isSafeInteger(expectedBytes) || expectedBytes < 1 || expectedBytes > limit)) {
         throw upstreamError(`${label} has an invalid manifest byte limit.`);
@@ -300,6 +300,7 @@ async function responseBytes(response, expectedBytes, limit, label) {
             total += part.value.byteLength;
             if (total > byteLimit) throw upstreamError(`${label} exceeds its manifest byte limit.`);
             chunks.push(part.value);
+            onBytes?.(total);
         }
     } catch (error) { await reader.cancel().catch(() => {}); throw error; }
     finally { reader.releaseLock(); }
@@ -318,7 +319,7 @@ async function* withBatchWriteBackpressure(chunks, drainWrites) {
 
 export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalThis.fetch?.bind(globalThis), featureStore,
     cacheStorage = globalThis.caches, indexedDB = globalThis.indexedDB, allowSample = false, now = Date.now,
-    engineFactory = createHmlrBrowserGroundEngine, maxContextFeatures = MAX_CONTEXT_FEATURES } = {}) {
+    engineFactory = createHmlrBrowserGroundEngine, maxContextFeatures = MAX_CONTEXT_FEATURES, onProgress } = {}) {
     if (!descriptor || descriptor.id !== HMLR_BROWSER_GROUND_SOURCE || descriptor.adapter !== 'hmlr-browser'
         || descriptor.idPrefix !== ID_PREFIX || typeof descriptor.manifestUrl !== 'string' || typeof fetchImpl !== 'function'
         || typeof engineFactory !== 'function' || typeof now !== 'function' || !Number.isSafeInteger(maxContextFeatures)
@@ -333,6 +334,17 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
     const authorityState = new Map(), authorityPending = new Map(), shardPending = new Map(), shardCache = new Map();
     let manifestPromise, enginePromise;
     let authorityLoadQueue = Promise.resolve();
+    let lastProgress, lastProgressTime = -Infinity;
+    function reportProgress(detail) {
+        if (typeof onProgress !== 'function') return;
+        const time = now();
+        const changed = detail.phase !== lastProgress?.phase || detail.authority !== lastProgress?.authority;
+        const finished = (detail.totalBytes > 0 && detail.loadedBytes === detail.totalBytes)
+            || (detail.totalFeatures > 0 && detail.processedFeatures === detail.totalFeatures);
+        if (!changed && !finished && time - lastProgressTime < 200) return;
+        lastProgress = detail; lastProgressTime = time;
+        try { onProgress(detail); } catch { /* Progress observers must never interrupt parcel loading. */ }
+    }
 
     async function getManifest() {
         if (!manifestPromise) manifestPromise = (async () => {
@@ -356,6 +368,8 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
             bytes = null;
         }
         if (!bytes) {
+            const progress = { phase: 'source-download', authority: authority.name, totalBytes: authority.bytes };
+            reportProgress({ ...progress, loadedBytes: 0 });
             let response;
             try { response = await fetchImpl(authority.endpoint, { signal, redirect: 'follow', headers: {
                 Accept: 'application/zip', 'If-Match': authority.etag
@@ -370,7 +384,8 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
             if (finalUrl && (finalUrl.protocol !== 'https:' || ![ARCHIVE_HOST, ALLOWED_ARCHIVE_REDIRECT_HOST].includes(finalUrl.hostname)
                 || finalUrl.username || finalUrl.password)) { await response.body?.cancel(); throw upstreamError('HMLR archive redirected outside the verified publisher.'); }
             if (response.headers?.get?.('etag') !== authority.etag) throw upstreamError('HMLR authority archive ETag changed.');
-            bytes = await responseBytes(response, authority.bytes, MAX_ARCHIVE_BYTES, 'HMLR authority archive');
+            bytes = await responseBytes(response, authority.bytes, MAX_ARCHIVE_BYTES, 'HMLR authority archive',
+                loadedBytes => reportProgress({ ...progress, loadedBytes }));
             if (sha256Hex(bytes) !== authority.archiveSha256) throw upstreamError('HMLR authority archive SHA-256 does not match its release manifest.');
             await archiveCache.put(manifest.releaseId, authority.archiveSha256, bytes);
         }
@@ -391,6 +406,7 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
                 let stored = await store.getAuthority(manifest.releaseId, index);
                 if (stored?.ready && stored.archiveSha256 === authority.archiveSha256 && stored.featureCount === authority.featureCount
                     && stored.sourceDate === manifest.sourceDate) {
+                    reportProgress({ phase: 'source-cache', authority: authority.name });
                     const storedRows = await store.getIndex(manifest.releaseId, index);
                     const storedIds = new Set();
                     const validStoredRows = storedRows.length === authority.featureCount && storedRows.every(row => {
@@ -409,6 +425,7 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
                 // Download and local parsing have separate budgets. A completed download's
                 // timer must not abort a large council while it is being indexed locally.
                 const bytes = await getArchiveBytes(manifest, authority, AbortSignal.timeout(ARCHIVE_TIMEOUT_MS));
+                reportProgress({ phase: 'source-decompress', authority: authority.name });
                 const signal = AbortSignal.timeout(PARSE_TIMEOUT_MS);
                 const project = proj4('EPSG:27700', 'EPSG:4326');
                 const seen = new Set(), rows = [], pendingWrites = []; let batch = [], writeFailure = null;
@@ -440,6 +457,12 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
                             const record = { nativeId, bboxWgs: bounds.bboxWgs, bboxNative: bounds.bboxNative, feature };
                             rows.push({ nativeId, bboxWgs: bounds.bboxWgs, bboxNative: bounds.bboxNative });
                             batch.push(record); if (batch.length >= 250) flush();
+                            // Decompression and parsing stream together; report actual accepted
+                            // features, without inventing a separate completed unpacking phase.
+                            if (rows.length === 1 || rows.length % 250 === 0 || rows.length === authority.featureCount) {
+                                reportProgress({ phase: 'source-process', authority: authority.name,
+                                    processedFeatures: rows.length, totalFeatures: authority.featureCount });
+                            }
                         }
                     });
                     flush(); await drainWrites();
@@ -542,6 +565,7 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
         manifest.authorities.forEach((authority, index) => { if (boxes.some(candidateBox => overlaps(authority.bounds, candidateBox))) needed.push(index); });
         if (needed.length > MAX_QUERY_AUTHORITIES) throw upstreamError('HMLR overlap context spans too many authority archives; use a smaller query.', 413);
         await Promise.all(needed.map(loadAuthority));
+        reportProgress({ phase: 'source-prepare' });
         const fullIndexes = needed.map(index => [index, authorityState.get(index)]);
         const contextRows = rowsMatching(fullIndexes, boxes), context = [];
         for (let offset = 0; offset < contextRows.length; offset += 250) {
@@ -565,6 +589,7 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
         manifest.authorities.forEach((authority, index) => { if (overlaps(authority.bounds, bounds)) initial.push(index); });
         if (initial.length > MAX_QUERY_AUTHORITIES) throw upstreamError('HMLR viewport spans too many authority archives; use a smaller query.', 413);
         await Promise.all(initial.map(loadAuthority));
+        reportProgress({ phase: 'source-prepare' });
         const loaded = initial.map(index => [index, authorityState.get(index)]);
         const candidateRows = rowsMatching(loaded, [bounds]);
         if (candidateRows.length > MAX_QUERY_FEATURES) throw upstreamError('HMLR browser query exceeds the parcel limit; use a smaller viewport.', 413);
@@ -606,6 +631,7 @@ export function createHmlrBrowserParcelSource(descriptor, { fetchImpl = globalTh
             throw upstreamError('HMLR ID lookup spans too many authority parcels; use fewer IDs.', 413);
         }
         await Promise.all([...authorities].map(loadAuthority));
+        reportProgress({ phase: 'source-prepare' });
         const targetRows = [];
         for (const [nativeId, indices] of declared) {
             for (const index of indices) {

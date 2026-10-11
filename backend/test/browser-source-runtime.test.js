@@ -69,6 +69,78 @@ describe('createBrowserProviderFetch', () => {
 });
 
 describe('createBrowserParcelRuntime', () => {
+    it('broadcasts cached adapter progress to active queries for the same source and unsubscribes at settlement', async () => {
+        const subscriptions = [];
+        const gates = [];
+        const sourceId = 'custom.test';
+        const customDescriptor = { id: sourceId, adapter: 'test', endpoint: 'https://provider.test/data' };
+        const runtime = createBrowserParcelRuntime({ factories: { test: async (_descriptor, { onProgress }) => {
+            subscriptions.push(onProgress);
+            return { queryBounds: async () => {
+                const gate = {};
+                gate.promise = new Promise((resolve, reject) => { gate.resolve = resolve; gate.reject = reject; });
+                gates.push(gate);
+                return gate.promise;
+            } };
+        } } });
+        const firstProgress = vi.fn();
+        const secondProgress = vi.fn();
+        const first = runtime.query(sourceId, 'queryBounds', [1], customDescriptor, { onProgress: firstProgress });
+        await vi.waitFor(() => expect(gates).toHaveLength(1));
+        const second = runtime.query(sourceId, 'queryBounds', [2], customDescriptor, { onProgress: secondProgress });
+        await vi.waitFor(() => expect(gates).toHaveLength(2));
+
+        subscriptions[0]({ phase: 'downloading', loaded: 1 });
+        expect(firstProgress).toHaveBeenCalledWith({ phase: 'downloading', loaded: 1 });
+        expect(secondProgress).toHaveBeenCalledWith({ phase: 'downloading', loaded: 1 });
+
+        gates[0].resolve({ complete: true, features: [1] });
+        await expect(first).resolves.toMatchObject({ complete: true });
+        subscriptions[0]({ phase: 'after-first-settlement' });
+        expect(firstProgress).toHaveBeenCalledTimes(1);
+        expect(secondProgress).toHaveBeenCalledTimes(2);
+
+        gates[1].resolve({ complete: true, features: [2] });
+        await expect(second).resolves.toMatchObject({ complete: true });
+        subscriptions[0]({ phase: 'after-all-settled' });
+        expect(firstProgress).toHaveBeenCalledTimes(1);
+        expect(secondProgress).toHaveBeenCalledTimes(2);
+    });
+
+    it('isolates source progress and swallows observer errors while still unsubscribing on query errors', async () => {
+        const broadcasters = new Map();
+        let rejectQuery;
+        let resolveBQueryStarted;
+        const bQueryStarted = new Promise(resolve => { resolveBQueryStarted = resolve; });
+        let resolveBQuery;
+        const bQueryGate = new Promise(resolve => { resolveBQuery = resolve; });
+        const sourceA = { id: 'custom.a', adapter: 'test', endpoint: 'https://provider.test/a' };
+        const sourceB = { id: 'custom.b', adapter: 'test', endpoint: 'https://provider.test/b' };
+        const runtime = createBrowserParcelRuntime({ factories: { test: async (descriptor, { onProgress }) => {
+            broadcasters.set(descriptor.id, onProgress);
+            return { queryBounds: async () => descriptor.id === sourceA.id
+                ? new Promise((_resolve, reject) => { rejectQuery = reject; })
+                : (resolveBQueryStarted(), bQueryGate) };
+        } } });
+        const throwingObserver = vi.fn(() => { throw new Error('observer failed'); });
+        const pendingA = runtime.query(sourceA.id, 'queryBounds', [], sourceA, { onProgress: throwingObserver });
+        await vi.waitFor(() => expect(rejectQuery).toEqual(expect.any(Function)));
+        const pendingBProgress = vi.fn();
+        const pendingB = runtime.query(sourceB.id, 'queryBounds', [], sourceB, { onProgress: pendingBProgress });
+        await bQueryStarted;
+
+        broadcasters.get(sourceA.id)({ phase: 'downloading', loadedBytes: 1, totalBytes: 4 });
+        expect(throwingObserver).toHaveBeenCalledTimes(1);
+        expect(pendingBProgress).not.toHaveBeenCalled();
+        rejectQuery(new Error('query failed'));
+        await expect(pendingA).rejects.toThrow('query failed');
+        broadcasters.get(sourceA.id)({ phase: 'processing', processedFeatures: 1, totalFeatures: 3 });
+        expect(throwingObserver).toHaveBeenCalledTimes(1);
+
+        resolveBQuery({ complete: true, features: [] });
+        await expect(pendingB).resolves.toMatchObject({ complete: true });
+    });
+
     it('coalesces cold adapter creation and applies its query cap before concurrent calls run', async () => {
         let createCount = 0, active = 0, peak = 0;
         const pendingQueries = [];

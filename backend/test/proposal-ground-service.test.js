@@ -716,6 +716,11 @@ describe('CadastralParcelRepository.ensureBounds per-cell provisioning', () => {
         const call = f.service.ensureBounds(boundsFor(['0,0', '0,1']), { onProgress: detail => progress.push(detail) });
         await f.settle();
         expect(f.held).toHaveBeenCalledTimes(1);
+        const sourceProgress = { phase: 'source-download', authority: 'Oxford', loadedBytes: 5e6, totalBytes: 20e6 };
+        f.fetchBounds.mock.calls[0][1].onProgress(sourceProgress);
+        // Transport cell counts must not masquerade as whole-viewport progress.
+        f.fetchBounds.mock.calls[0][1].onProgress({ done: 1, total: 1 });
+        expect(progress).toEqual([sourceProgress]);
 
         f.resolveCell('0,0', ['A1']);
         await f.settle();
@@ -727,7 +732,7 @@ describe('CadastralParcelRepository.ensureBounds per-cell provisioning', () => {
         f.resolveCell('0,1', ['B1']);
         await call;
         expect(holdReleased).toBe(true);
-        expect(progress).toEqual([{ done: 1, total: 2 }, { done: 2, total: 2 }]);
+        expect(progress).toEqual([sourceProgress, { done: 1, total: 2 }, { done: 2, total: 2 }]);
         expect(f.onFeatures).toHaveBeenCalledTimes(2);
     });
 
