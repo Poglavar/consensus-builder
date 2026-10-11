@@ -1,0 +1,92 @@
+{
+  "taskId": "city:7229",
+  "decision": "held",
+  "checkedAt": "2026-10-10T20:54:28Z",
+  "identity": {
+    "cityCode": 7229,
+    "rank": 2012,
+    "name": "Kombolcha",
+    "country": "Ethiopia",
+    "iso2": "ET",
+    "iso3": "ETH",
+    "point": [
+      11.0840423975748,
+      39.7263876964214
+    ],
+    "populationPersons": 288941,
+    "queueAndRankedRosterMatch": true
+  },
+  "searches": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kombolcha Ethiopia cadastral parcel map land registry official",
+        "resultUrls": [
+          "https://mui.gov.et/land-and-cadastre-ceo/",
+          "https://justice.gov.et/en/directives/urban-cadastral-survey-directive-no-735-2013/",
+          "https://eland.addiscadaster.gov.et/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "ኮምቦልቻ ካዳስተር የመሬት ምዝገባ ካርታ ይፋዊ",
+        "resultUrls": [
+          "https://justice.gov.et/en/directives/urban-cadastral-survey-directive-no-735-2013/",
+          "https://amhara.gov.et/web/",
+          "https://amhara.gov.et/"
+        ]
+      }
+    ],
+    "pairedPacketAndReviewInspected": true
+  },
+  "custody": {
+    "registryFound": null,
+    "assessment": "Federal and regional institutional pages and Addis e-Land viewer do not establish a Kombolcha public parcel service or local record custody. Custody remains unresolved, not absent."
+  },
+  "samples": {
+    "retainedFullPolygonCount": 0,
+    "safeIdOnly": true
+  },
+  "qualification": {
+    "freshNativeIdAdapterReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "fullScopeMetricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "admitted": false
+  },
+  "firstPartyChecks": [
+    {
+      "url": "https://mui.gov.et/land-and-cadastre-ceo/",
+      "httpStatus": 200,
+      "observedTitle": "Land and Cadastre CEO -"
+    },
+    {
+      "url": "https://justice.gov.et/en/directives/urban-cadastral-survey-directive-no-735-2013/",
+      "httpStatus": 200,
+      "observedTitle": "Urban Cadastral Survey Directive No. 735/2013 - Ministry of Justice"
+    },
+    {
+      "url": "https://eland.addiscadaster.gov.et/",
+      "httpStatus": 200,
+      "observedTitle": "e-Land"
+    }
+  ],
+  "firstPartyCache": {
+    "path": "tmp/valhalla-parcel-research/7229/contacts.json",
+    "sha256": "5db093901992081f75032a9b4ac627a42950098b5d8bc6ab066f61c921567b0b",
+    "bytes": 3051,
+    "configuredCityNames": [
+      "Addis Ababa",
+      "Adama",
+      "Shaggar",
+      "Bishoftu",
+      "Hawassa",
+      "Dire Dawa",
+      "Harrari"
+    ],
+    "KombolchaListed": false
+  },
+  "decisionReason": "No Kombolcha native-ID polygon response, adapter qualification, or headed Details evidence; a viewer city-list miss is not citywide absence."
+}

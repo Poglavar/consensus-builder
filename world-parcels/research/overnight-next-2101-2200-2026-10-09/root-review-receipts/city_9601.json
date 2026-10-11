@@ -1,0 +1,16 @@
+{
+  "taskId": "city:9601",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-9601-hassan.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/hassan-service-review.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/root-review-receipts/source-evidence/city_9601-root-review.json"
+  ],
+  "checkedAt": "2026-10-11T00:19:07Z",
+  "reason": "Hassan district first-party land-record page directly names Bhoomi and the Hassan Taluk Office. English and Kannada searches are recorded and were independently rerun. The page supplies a service pathway, not a native-ID polygon response; worker bounded Bhoomi requests timed out or yielded no usable response. Timeout is not citywide absence. No fresh ID, paging, 13 cells, metric GEOS checks, binding, or headed Details proof; held.",
+  "registryFound": true,
+  "samplePolygonCount": 0,
+  "runtimeAdmitted": false
+}

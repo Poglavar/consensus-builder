@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 2819,
+  "queueRank": 1977,
+  "name": "Matala",
+  "country": "Angola",
+  "countryCode": "AO",
+  "iso3": "AGO",
+  "point": [-14.7448813616842, 15.0173584604037],
+  "population2025": 294087,
+  "population2025k": 294.087,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Matala Angola official cadastral parcel map cadastre geoportal land registry",
+        "result": "Found official Angola IGCA national cadastre authority, the official national property-registration portal, and an official MAT service-points page listing Matala. No anonymous Matala parcel feature service or parcel geometry endpoint was found.",
+        "actualResultUrls": ["https://www.igca.gov.ao/home", "https://inscrevaja.minfin.gov.ao/", "https://mat.gov.ao/web/pontos-atendimentos"]
+      },
+      {
+        "language": "Portuguese (official/local language)",
+        "query": "Matala Angola cadastro predial mapa de parcelas registo predial geoportal oficial",
+        "result": "Found official IGCA material describing the national cadastral authority and 2025 pilot, the Inscreva Já property-registration campaign, and MAT's Matala service-point entries. The public portal assets expose authenticated property-registration application routes, not an anonymous parcel layer.",
+        "actualResultUrls": ["https://www.igca.gov.ao/detalhes-noticias/16", "https://mtti.gov.ao/ao/galerias/registo-predial/", "https://mat.gov.ao/web/pontos-atendimentos", "https://inscrevaja.minfin.gov.ao/"]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.igca.gov.ao/home",
+      "operator": "Instituto Geográfico e Cadastral de Angola (IGCA)",
+      "evidence": "Official IGCA page identifies IGCA as Angola's national cartography and cadastre authority and describes the national geographic-information role. It did not expose a public Matala parcel layer in the retrieved material."
+    },
+    {
+      "url": "https://www.igca.gov.ao/detalhes-noticias/16",
+      "operator": "IGCA",
+      "evidence": "Official 2025 announcement describes the mass property-cadastre pilot and assignment of a Número de Identificação Predial (NIP); it is national programme evidence, not proof of an open Matala geometry service."
+    },
+    {
+      "url": "https://inscrevaja.minfin.gov.ao/",
+      "operator": "Ministry of Finance / Inscreva Já",
+      "evidence": "Official public campaign portal describes nationwide property registration and map-based self-registration. Its current JavaScript was inspected; property/application API routes are authenticated or application-specific, and no anonymous parcel feature response was obtained."
+    },
+    {
+      "url": "https://mat.gov.ao/web/pontos-atendimentos",
+      "operator": "Ministry of Territorial Administration (MAT)",
+      "evidence": "Official service-points page contains three Matala entries with weekday hours and embedded map views. The entries have placeholder-like contact/location values and do not identify a cadastral layer, native parcel IDs, or an open map API. This is local service/procedure context, not verified local cadastral custody."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {"url": "https://www.igca.gov.ao/home", "method": "GET via web discovery", "status": "retrieved by official-site search result; direct curl certificate hostname mismatch", "summary": "Official IGCA content was available through the web index. Direct TLS request was not bypassed because no certificate exception was authorized."},
+    {"url": "https://www.igca.gov.ao/detalhes-noticias/16", "method": "GET via web discovery", "status": "retrieved by official-site search result", "summary": "Official announcement was inspected for cadastral programme and NIP evidence; no anonymous geometry endpoint was exposed."},
+    {"url": "https://inscrevaja.minfin.gov.ao/", "method": "GET", "status": 200, "summary": "Landing page retrieved with verified TLS. Current runtime.js/main.js assets were retrieved and inspected; no unauthenticated parcel feature query was identified. No login, credentials, CAPTCHA bypass, or private token was used."},
+    {"url": "https://inscrevaja.minfin.gov.ao/runtime.js, /main.js", "method": "GET", "status": 200, "summary": "Current JavaScript/configuration inspected. It references authenticated property-registration services and map/application helpers; no safe anonymous Matala parcel schema, CRS, ID response, or geometry was returned."},
+    {"url": "https://mat.gov.ao/web/pontos-atendimentos", "method": "GET", "status": 200, "summary": "Official MAT HTML retrieved with verified TLS. Three Matala service entries and Google map embeds were present; embedded basemap views are not cadastral parcel services and were not treated as parcel evidence."},
+    {"url": "https://mtti.gov.ao/ao/galerias/registo-predial/", "method": "GET via web discovery", "status": "timeout/unusable", "summary": "Official Registo Predial page was a discovery lead but did not provide a usable public parcel endpoint."},
+    {"url": "Matala exact-point query [-14.7448813616842, 15.0173584604037]", "method": "not run", "status": "no public parcel endpoint identified", "summary": "No exact-point request was made; no absence inference is drawn."}
+  ],
+  "sourceIdentity": {"nativeIdField": null, "fallbackOidField": null, "compositeKey": null, "fieldMapping": {}, "crs": "Not confirmed", "geometryType": "Not confirmed"},
+  "coverageAssessment": {
+    "claimedScope": "IGCA is evidenced as Angola's national cartography/cadastre authority; the 2025 pilot describes national cadastral registration and NIP assignment.",
+    "verifiedOpenScope": "National authority and programme context plus MAT Matala service-point entries; no open Matala parcel geometry, schema, CRS, native identity, or citywide coverage was verified.",
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "No point query was run because no public parcel endpoint was identified; this is not evidence of citywide absence."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["geometry", "stable native parcel identifier if later exposed"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "personal data", "tax", "account", "legal description", "rights/title details"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_national_cadastre_programme_local_service_context_geometry_unverified",
+  "remainingUncertainty": "A non-public or authenticated IGCA/MinFin/MAT cadastral service may exist, and the national pilot may have Matala coverage, but no anonymous public parcel API or safe feature response was found. The MAT page's Matala contact/location fields are incomplete or placeholders.",
+  "nextStep": "Serial reviewer should independently inspect the current official IGCA/MinFin cadastral services and confirm whether an anonymous Matala parcel layer, native NIP/parcel ID, CRS, and city coverage are available before adapter qualification."
+}

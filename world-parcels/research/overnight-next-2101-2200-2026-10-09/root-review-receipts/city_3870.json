@@ -1,0 +1,16 @@
+{
+  "taskId": "city:3870",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-3870-morbi.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/morbi-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T23:16:15Z",
+  "reason": "Immutable WUP queue code 3870, rank 2107, India, point [22.8118169992892,70.8475791252109], and 275191 persons match the packet. English and Gujarati executed search records were inspected; independent official Morbi English and Gujarati pages support district land-record custody and e-Dhara/AnyRoR procedures. The Gujarati request URL in the packet is inconsistent with its actual-result URL, so that request record is not independent geometry evidence. AnyRoR and e-Milkat timed out. No first-party native-ID polygon response or safe sample exists. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are absent. Timeout does not establish citywide absence; runtime admission remains held.",
+  "firstPartyPagesChecked": [
+    "https://morbi.nic.in/service/land-records/",
+    "https://morbi.nic.in/gu/service/%E0%AA%B2%E0%AB%87%E0%AA%A8%E0%AB%8D%E0%AA%A1-%E0%AA%B0%E0%AB%87%E0%AA%95%E0%AB%8B%E0%AA%B0%E0%AB%8D%E0%AA%A1/"
+  ]
+}

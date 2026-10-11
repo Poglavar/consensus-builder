@@ -1,0 +1,54 @@
+{
+  "cityRecord": "city-3188-qamishli.json",
+  "cityCode": 3188,
+  "queueRank": 2010,
+  "name": "Qamishli",
+  "country": "Syrian Arab Republic",
+  "countryCode": "SY",
+  "point": [37.0498596581309, 41.23264118626],
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": null,
+  "requests": [
+    {
+      "method": "GET/search",
+      "url": "https://sana.sy/governorates/2433432/",
+      "outcome": "Official SANA report: electronic land-registry service launched through Maamelati/Anjez; coverage described as limited to selected provinces and expanding. No Qamishli parcel viewer, API URL, schema, CRS, or parcel geometry exposed."
+    },
+    {
+      "method": "GET/search",
+      "url": "https://sana.sy/locals/2522661/",
+      "outcome": "Official SANA report: electronic registry service expansion to eight named provinces. Hasakah/Qamishli was not evidenced in the listed coverage. This is a service-scope limitation, not evidence of cadastral absence."
+    },
+    {
+      "method": "GET/search",
+      "url": "https://sana.sy/en/syria/2280759/",
+      "outcome": "Official English SANA report: national archiving and future automation of land-registry records discussed. No public parcel map/API or bounded ID+geometry response exposed."
+    },
+    {
+      "method": "GET/search",
+      "url": "https://latakia.gov.sy/services",
+      "outcome": "Official provincial service catalog demonstrates that cadastral-plan and registry-extract requests are handled as services, but it is not a Qamishli/Hasakah parcel viewer and exposes no anonymous parcel geometry endpoint."
+    }
+  ],
+  "viewerInspection": {
+    "status": "not available",
+    "details": "Discovery did not identify an official Qamishli map viewer URL, current viewer JavaScript bundle, configuration, or public map/API service to inspect. No login, credentials, CAPTCHA bypass, private token, or unsafe registry fields were attempted."
+  },
+  "schemaCrs": {
+    "status": "not available",
+    "details": "No public parcel response was obtained; native field schema, CRS, geometry encoding, and stable parcel identity could not be verified."
+  },
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "retainedSamples": [],
+  "scopeLimits": [
+    "Official national registry announcements establish institutional responsibility and digitization activity, not Qamishli parcel coverage.",
+    "The service announcements' listed provincial coverage does not include Hasakah/Qamishli, but this cannot establish citywide absence of paper, restricted, local, or future digital records.",
+    "No exact-point query was issued because no public parcel endpoint was discovered.",
+    "No map extent miss, timeout, login wall, or unusable UI is treated as citywide cadastral absence.",
+    "No owner, address, contact, titleholder, personal, tax, account, transaction, or other unsafe fields were requested or retained."
+  ],
+  "runtimeReadiness": "held",
+  "uncertainty": "High: a real Qamishli/Hasakah cadastral source may exist behind local, restricted, paper, authenticated, or not-yet-public services. Independent serial review is required before any adapter or source admission."
+}

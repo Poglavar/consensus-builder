@@ -1,0 +1,14 @@
+{
+  "taskId": "city:3307",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-3307-jowhar.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/jowhar-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T02:55:00Z",
+  "registryFound": null,
+  "reason": "WUP code 3307, rank 2273, Somalia, point [2.77770492063847,45.5019966407998] and 257210 persons match the original 2025 source row and immutable queue. Executed English and Somali searches are recorded. The reviewed routes cover general ministry, legal, electoral GIS and noncadastral mapping material, with no first-party evidence of a Jowhar/Hirshabelle parcel-register custodian. Registry custody remains unresolved rather than false. No native-ID full polygon sample or parcel service schema exists. Fresh exact-ID reads, forced paging, 13 cells, metric GEOS checks, source binding and headed Details verification are unevidenced. DNS failure and lack of a public response do not establish citywide absence.",
+  "admission": "held; no runtime, catalog or report change"
+}

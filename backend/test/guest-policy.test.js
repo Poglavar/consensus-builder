@@ -94,7 +94,11 @@ describe('browser gates follow the policy', () => {
     it('publish, share and mint are gated where they leave the device; Offer goes through the ownership proof', () => {
         const upload = read('proposals/server-sync.js');
         const uploadBody = upload.slice(upload.indexOf('async function uploadProposalToServer('));
-        expect(uploadBody.slice(0, 600)).toContain("guestPolicyBlocks('publish')");
+        // A mirror copies the already-authored chain record; the local author gate applies to
+        // ordinary publication, before any preparation or authored upload leaves the device.
+        const gate = uploadBody.indexOf("guestPolicyBlocks('publish')");
+        expect(gate).toBeGreaterThan(-1);
+        expect(gate).toBeLessThan(uploadBody.indexOf('__publishBinding.prepareForPublish'));
 
         const sharing = read('proposals/sharing-routes.js');
         for (const fn of ['function shareAppliedProposals(', 'function shareSingleProposal(']) {

@@ -1,0 +1,22 @@
+{
+  "taskId": "city:2308",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-2308-nz-r-kor.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/nz-r-kor-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T23:57:12Z",
+  "reason": "The immutable WUP 2025 row and cohort queue match Nzérékoré, Guinea, rank 2133, point [7.75714501777164,-8.8176190649573], and 272866 persons. English and French searches and result URLs are recorded. The first-party national title procedure and DGPEIP coverage page establish only national custodial context, so registryFound remains null. Original ArcGIS responses show the anonymous layer is Pays, a country polygon with OBJECTID/ISO_CTRY, while the application layer returns 499 Token Required; neither is ordinary land-parcel geometry. Zero full parcel polygons or safe native parcel IDs were retained. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are not evidenced. Token access and lack of a verified local layer are not citywide absence; hold runtime admission.",
+  "firstPartyCacheChecked": [
+    "tmp/valhalla-parcel-research/2308/ssrs-mapserver.json",
+    "tmp/valhalla-parcel-research/2308/layer0.json",
+    "tmp/valhalla-parcel-research/2308/ssrs-query.json",
+    "tmp/valhalla-parcel-research/2308/application-mapserver.json"
+  ],
+  "firstPartyPagesChecked": [
+    "https://service-public.gov.gn/ova_sev/certificat-dimmatriculation-de-titre-foncier/",
+    "https://www.dgpeip.gov.gn/patrimoine"
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "cityCode": 2724,
+  "queueRank": 2229,
+  "name": "Hakodate",
+  "cityName": "Hakodate",
+  "country": "Japan",
+  "countryCode": "JP",
+  "iso2": "JP",
+  "iso3": "JPN",
+  "point": [41.7989765550467, 140.744567705954],
+  "population2025": 261557,
+  "population2025k": 261.557,
+  "populationUnit": "persons",
+  "status": "complete",
+  "runtimeEligible": false,
+  "runtimeReadiness": "held",
+  "registryFound": true,
+  "geometryVerified": true,
+  "parcelGeometryVerified": true,
+  "verifiedSample": true,
+  "discoveryMethod": "first-party-discovery-plus-public-registry-map-data",
+  "sampleFile": "hakodate-parcel-sample.geojson",
+  "sampleFiles": ["hakodate-parcel-sample.geojson"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hakodate official cadastral parcel map GIS API land registry",
+        "result": "Found the official Hakodate city planning map page and the G-Space Information Center dataset for Hakodate registry map polygons derived from Ministry of Justice registry map XML; the city viewer is planning information, not a cadastral parcel API.",
+        "actualResultUrls": [
+          "https://www.city.hakodate.hokkaido.jp/docs/2019102300022/",
+          "https://search.ckan.jp/datasets/www.geospatial.jp__ckan__dataset:aigid-moj-01202"
+        ]
+      },
+      {
+        "language": "Japanese (日本語)",
+        "query": "函館市 地籍図 公開 GIS 筆界 地番",
+        "result": "Found Hakodate Legal Affairs Bureau map-creation evidence and the G-Space Information Center Hakodate registry-map dataset; no separate Hakodate city parcel-download service was evidenced.",
+        "actualResultUrls": [
+          "https://houmukyoku.moj.go.jp/hakodate/page000192.html",
+          "https://www.geospatial.jp/ckan/dataset/aigid-moj-01202"
+        ]
+      }
+    ]
+  },
+  "source": {
+    "name": "G-Space Information Center / AIGID converted Ministry of Justice registry map data",
+    "datasetUrl": "https://www.geospatial.jp/ckan/dataset/aigid-moj-01202",
+    "downloadUrl": "https://www.geospatial.jp/ckan/dataset/decab247-069e-48b1-8391-b35993ed838f/resource/49ef028a-35bb-42e4-a5ca-762ebc03708d/download/01202__11_r_2024.shp.zip",
+    "sourceCustodian": "Ministry of Justice registry map data; local evidence: Hakodate Legal Affairs Bureau",
+    "datasetVersion": "2024",
+    "nativeCrs": "EPSG:6679 (JGD2011 / Japan Plane Rectangular CS XI)",
+    "outputCrs": "EPSG:4326",
+    "nativeFieldMapping": {
+      "nativeIdentityFields": ["ID", "地図名", "地番"],
+      "municipalityField": "市町村C / 市町村名",
+      "parcelNumberField": "地番",
+      "mapNameField": "地図名",
+      "geometryField": "Polygon geometry"
+    },
+    "compositeKeyProvenance": "ID alone is repeated in the 2024 shapefile, so the retained identity is ID|map=地図名|parcel=地番 for the exact feature containing the WUP point."
+  },
+  "queryEvidence": [
+    {
+      "stage": "official-service-schema",
+      "method": "GET",
+      "url": "https://services.arcgis.com/TcQTzc010Cdx1gPF/arcgis/rest/services/mojxml_01/FeatureServer/13?f=json",
+      "httpStatus": 200,
+      "result": "Public ArcGIS FeatureServer layer; polygon geometry, EPSG:3857 service CRS, OBJECTID system field and Japanese registry-map fields exposed."
+    },
+    {
+      "stage": "exact-point-probe",
+      "method": "GET",
+      "url": "https://services.arcgis.com/TcQTzc010Cdx1gPF/arcgis/rest/services/mojxml_01/FeatureServer/13/query?f=geojson&where=1%3D1&geometry=140.744567705954%2C41.7989765550467&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=%2A&returnGeometry=true&outSR=4326&resultRecordCount=3",
+      "httpStatus": 200,
+      "result": "Empty response from this agricultural substitute layer; not treated as absence."
+    },
+    {
+      "stage": "city-dataset-bounded-native-read",
+      "method": "GET",
+      "url": "https://www.geospatial.jp/ckan/dataset/decab247-069e-48b1-8391-b35993ed838f/resource/49ef028a-35bb-42e4-a5ca-762ebc03708d/download/01202__11_r_2024.shp.zip",
+      "httpStatus": 200,
+      "result": "Downloaded official public 2024 Hakodate shapefile; 183316 polygons; native CRS EPSG:6679; exact WUP point transformed to projected coordinates and matched by ST_Contains."
+    }
+  ],
+  "verifiedQuery": {
+    "stage": "exact-point-native-geometry-read",
+    "method": "local read of unchanged downloaded source",
+    "nativePoint": [41099.97, -244370.75],
+    "predicate": "ST_Contains(geometry, MakePoint(41099.97,-244370.75))",
+    "matchedNativeFields": {
+      "ID": "H000001917",
+      "地図名": "H24440001202002",
+      "地番": "19-59",
+      "市町村C": "01202",
+      "市町村名": "函館市"
+    }
+  },
+  "safeFieldAllowlist": ["ID", "地図名", "地番", "市町村C", "市町村名", "geometry"],
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInRepository": 3,
+    "retainedFullPolygons": 1,
+    "sourceCoverage": "public-coordinate polygons only; not all registry map sheets necessarily have public coordinates",
+    "pointSemantics": "exact WUP point was used unchanged; no coordinate shift"
+  },
+  "uncertainty": [
+    "The city planning viewer is not a cadastral service and was not used as parcel evidence.",
+    "The G-Space/AIGID conversion is a public derivative of Ministry of Justice registry map XML, not a direct local runtime API.",
+    "ID is not unique in the source; the retained composite identity depends on ID, map name, and parcel number.",
+    "Anonymous runtime adapter qualification remains held for serial review."
+  ]
+}

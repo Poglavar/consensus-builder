@@ -1,0 +1,14 @@
+{
+  "taskId": "city:5905",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-5905-sari.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/sari-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T01:38:59.059279Z",
+  "reason": "WUP 2025 source, immutable roster, and queue match code 5905, rank 2212, Iran (Islamic Republic of), point [36.5612105372209, 53.0634320073292], and 263887 persons. English and Persian executed searches are recorded. The provincial registry custodian is a lead, but verified requests encountered timeout, DNS/TLS failure, or HTTP 403; no safe anonymous native parcel ID or polygon was returned and no sample was retained. Route failures are not citywide absence; public geometry and every adapter/UI admission gate remain unverified.",
+  "registryFound": null,
+  "admission": "held; no runtime/catalog/report change"
+}

@@ -1,0 +1,28 @@
+{
+  "taskId": "city:8258",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-8258-eket.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/eket-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T00:22:34Z",
+  "reason": "Official AkwaGIS registry and Land PIN convention confirmed at its public land-search page. Anonymous search is validation followed by paid details; no real Eket native ID or polygon was returned. The recorded second query contains local place names and non-Ekid/Ibibio terms, so a native-language search is not independently established. Literal document non-match and malformed-PIN response are not citywide absence.",
+  "identityAudit": {
+    "source": "verified WUP 2025 archive, SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "result": "city code, rank, country, point and 2025 population persons agree with immutable queue and packet"
+  },
+  "bilingualSearchAudit": "incomplete: English query and a second query with local place names; no demonstrated Ekid/Ibibio-language query",
+  "custodyAssessment": "true",
+  "officialPageChecked": "https://akwagis.akwaibomstate.gov.ng/land-search",
+  "retainedFullPolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdAndFullPolygon": "missing",
+    "forcedPaging": "missing",
+    "thirteenBoundedCells": "missing",
+    "metricGeosValidityOverlap": "missing",
+    "sourceBinding": "missing",
+    "headedDetailsPanel": "missing"
+  }
+}

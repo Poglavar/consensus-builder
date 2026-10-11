@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-11T00:00:00Z",
+  "cityRecord": "city-2763-vologda.json",
+  "cohort": "overnight-next-2101-2200-2026-10-09",
+  "purpose": "Independent service review for Vologda official cadastral and parcel-oriented map sources.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "assessment": "Vologda has evidenced official municipal cadastral procedures and a regional Rosreestr/Roskadastr custodian. The current NSPD public map and regional Rosreestr host timed out on bounded anonymous requests. No safe native parcel ID, schema, CRS, or polygon was verified; the packet is complete for attempt 1 and runtime readiness remains held.",
+  "registryAssessment": "Official municipal service listings and official Vologda-hosted Roskadastr/EGRN documents establish local/regional cadastral custody. They do not prove open vector access or citywide parcel coverage.",
+  "coverageAssessment": {"claimedScope": "NSPD public cadastral map plus Vologda municipal and regional cadastral references.", "verifiedOpenScope": "Official service identity, procedure references, and indexed EGRN examples only; no anonymous parcel vector.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "officialPrimarySources": [
+    {"url": "https://nspd.gov.ru/", "operator": "Rosreestr / Roskadastr", "scope": "Current official National Spatial Data Platform public cadastral map entry point; transport timed out."},
+    {"url": "https://es.vologda-portal.ru/catalog", "operator": "Vologda municipal administration", "scope": "Official municipal catalog listing cadastral-plan and land services."},
+    {"url": "https://invest.vologda-portal.ru/wp-content/uploads/2026/03/EGRN-911.pdf", "operator": "Roskadastr Vologda branch / Vologda official portal", "scope": "Official Vologda EGRN document with safe cadastral-number evidence; no geometry retained."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Vologda Russia official cadastral map parcel GIS land registry Rosreestr Vologda official", "result": "Found NSPD and official Vologda-hosted Roskadastr/EGRN references; no open parcel geometry endpoint documented.", "actualResultUrls": ["https://nspd.gov.ru/", "https://invest.vologda-portal.ru/wp-content/uploads/2026/03/EGRN-911.pdf"]},
+    {"language": "Russian", "query": "Вологда официальный кадастровая карта земельные участки Росреестр публичная карта", "result": "Найдены официальные материалы Роскадастра и муниципальный каталог земельно-кадастровых услуг; анонимная геометрия участков не подтверждена.", "actualResultUrls": ["https://nspd.gov.ru/", "https://es.vologda-portal.ru/catalog", "https://invest.vologda-portal.ru/wp-content/uploads/2025/03/EGRN-sooruzhenie-4189.pdf"]}
+  ],
+  "attempts": [
+    "Ran separate English and Russian first-party discovery queries.",
+    "Reviewed official NSPD public-map entry point, Vologda municipal electronic-services catalog, and official Vologda-hosted Roskadastr/EGRN documents.",
+    "Attempted anonymous GET of https://nspd.gov.ru/ with TLS verification; connection timed out after 8 seconds.",
+    "Attempted anonymous GET of https://nspd.gov.ru/map; no response within the bounded request window.",
+    "Attempted anonymous GET of https://35.rosreestr.gov.ru/ with TLS verification; connection timed out after 8 seconds.",
+    "Did not log in, submit credentials, use private tokens, defeat CAPTCHA/Cloudflare, query owner/address/titleholder/tax/account/personal fields, shift the WUP point, or retain source-specific attribute sets."
+  ],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Not run: no anonymous full parcel-geometry endpoint was verified. Exact WUP point [59.2130858986738, 39.8830988270094] preserved unchanged.", "requestEvidence": [{"url": "https://nspd.gov.ru/", "method": "GET; anonymous", "httpStatus": null, "error": "connection timeout after 8 seconds", "assessment": "Transport failure only; not evidence of no parcels."}, {"url": "https://nspd.gov.ru/map", "method": "GET; anonymous", "httpStatus": null, "error": "bounded request produced no response", "assessment": "No schema or geometry inferred."}, {"url": "https://35.rosreestr.gov.ru/", "method": "GET; anonymous", "httpStatus": null, "error": "connection timeout after 8 seconds", "assessment": "Transport failure only; not evidence of no parcels."}]},
+  "safeFieldAllowlist": ["safe cadastral identifier only if exposed by a future anonymous endpoint", "geometry", "CRS/layer metadata", "official service metadata"],
+  "nextStep": "A serial reviewer may qualify the live NSPD/Rosreestr backend and current JavaScript/configuration without login or unsafe fields. Keep runtime held until safe native IDs and real polygon geometry are independently verified.",
+  "remainingUncertainty": "The live map backend, public API routes, native ID/schema/CRS, and Vologda citywide coverage remain unknown. Zero geometry from these timeouts is not an absence finding.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

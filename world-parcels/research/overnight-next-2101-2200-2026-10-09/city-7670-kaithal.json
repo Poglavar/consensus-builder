@@ -1,0 +1,59 @@
+{
+  "cityCode": 7670,
+  "queueRank": 2196,
+  "name": "Kaithal",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "point": [29.7995897199337, 76.4055225188099],
+  "population2025": 265502,
+  "population2025k": 265.502,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kaithal Haryana India official cadastral parcel map land records GIS Jamabandi HALRIS",
+        "result": "First-party discovery identified the official Kaithal district portal, Haryana Revenue/Jamabandi land-record procedure, and the Government of India DILRMP Kaithal cadastral-map status page. No anonymous Kaithal parcel feature service or polygon response was verified.",
+        "actualResultUrls": [
+          "https://kaithal.gov.in/",
+          "https://jamabandi.nic.in/DefaultPages/Default",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/73",
+          "https://revenueharyana.gov.in/document/map/"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "कैथल हरियाणा आधिकारिक भू नक्शा जमाबंदी भू अभिलेख कैडस्ट्रल मानचित्र",
+        "result": "Hindi first-party discovery identified the official Kaithal district portal, which links HALRIS land-record services, and official Haryana land-record information. The Government of India DILRMP result identifies district-level cadastral-map status for Kaithal, but no anonymous parcel geometry endpoint was verified.",
+        "actualResultUrls": [
+          "https://kaithal.gov.in/hi/",
+          "https://kaithal.gov.in/hi/जिले-के-बारे-में/",
+          "https://jamabandi.nic.in/DefaultPages/Default",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/73"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Official Kaithal district administration materials identify the district and link the Haryana HALRIS land-record service; official Haryana Revenue/Jamabandi materials describe the state's registration, mutation and Jamabandi workflow, and the DILRMP page is specifically for Kaithal district cadastral-map status. This evidences an official local/state registry procedure, not open parcel geometry or legal-title completeness.",
+  "registryEvidenceUrls": [
+    "https://kaithal.gov.in/hi/",
+    "https://kaithal.gov.in/hi/जिले-के-बारे-में/",
+    "https://ambala.gov.in/service/jamabandi-portal/",
+    "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/73"
+  ],
+  "sourceCandidate": "in-haryana-jamabandi-halris-kaithal",
+  "service": "Haryana Jamabandi / HALRIS land-record services and DILRMP cadastral-map status",
+  "serviceUrl": "https://jamabandi.nic.in/DefaultPages/Default",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "verifiedParcelResponse": null,
+  "runtimeReadiness": "held_pending_independent_serial_qualification",
+  "pointBasis": "Immutable WUP queue point; retained exactly and not shifted to seek a parcel hit."
+}

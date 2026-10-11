@@ -1,0 +1,16 @@
+{
+  "taskId": "city:1146",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-1146-a-coru-a.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/a-coru-a-service-review.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-1146-a-coru-a-sample.geojson",
+    "tmp/valhalla-parcel-research/a-coruna/layer.json",
+    "tmp/valhalla-parcel-research/a-coruna/query.geojson",
+    "tmp/valhalla-parcel-research/a-coruna/point-query.geojson"
+  ],
+  "reason": "WUP 1146 is A Coruña, Spain, rank 2131, at the unchanged point [43.3544183540172,-8.40764880737736] with 272920 persons. English and Spanish/Galician searches are recorded. Original first-party layer metadata identifies a public-parcels-only polygon layer and refcat; its bounded response has three features and exceededTransferLimit=true. Retained samples have only safe IDs, preserve full polygon topology (one coordinate has sub-nanometre serialization drift), and are metric-GEOS valid with no pairwise area overlap. The zero exact-point result applies only to this limited layer, not citywide absence. Fresh exact-ID adapter reads, forced paging, 13 bounded cells, full operation checks, source binding, and headed Details verification are unproven. Hold runtime admission.",
+  "checkedAt": "2026-10-10T23:52:24.140Z"
+}

@@ -511,7 +511,11 @@ const proposalStorage = {
     importOnChainProposal(raw) {
         if (!raw) return null;
 
-        const metaProps = raw.metadata && raw.metadata.properties ? raw.metadata.properties : {};
+        const metadataProperties = raw.metadata && raw.metadata.properties ? raw.metadata.properties : {};
+        const portableApi = (typeof window !== 'undefined' ? window : globalThis).__chainRecord;
+        const portable = metadataProperties.proposalProtocol
+            ? portableApi.fromMetadata(raw.metadata) : null;
+        const metaProps = portable || metadataProperties;
         const owns = (value, key) => value && typeof value === 'object'
             && Object.prototype.hasOwnProperty.call(value, key);
         if (owns(raw, 'parentParcelIds') || owns(metaProps, 'parcelIds')) {
@@ -531,6 +535,9 @@ const proposalStorage = {
         const cadastreParcelIds = normalizeParcelIdList(
             declaredCadastreIds
         );
+        if (portable && JSON.stringify(cadastreParcelIds.slice().sort()) !== JSON.stringify(portable.cadastreParcelIds.slice().sort())) {
+            throw new Error('Cannot import chain proposal: NFT metadata and the on-chain consent list disagree.');
+        }
         const authoredApi = (typeof window !== 'undefined' ? window : globalThis).ProposalAuthoredRecord;
         if (!authoredApi || typeof authoredApi.isDerivedParcelId !== 'function') {
             throw new Error('Cannot import chain proposal: authored proposal validation is unavailable.');
@@ -711,7 +718,7 @@ const proposalStorage = {
             chainProposalId: chainProposalId || existingOnchain.chainProposalId || incomingOnchain.chainProposalId || null,
             transactionHash: incomingOnchain.transactionHash || existingOnchain.transactionHash || raw.transactionHash || null,
             contractAddress: incomingOnchain.contractAddress || existingOnchain.contractAddress || raw.contractAddress || null,
-            metadataUri: incomingOnchain.metadataUri || existingOnchain.metadataUri || raw.metadataUri || raw.metadataUrl || null
+            metadataUri: incomingOnchain.metadataUri || existingOnchain.metadataUri || raw.metadataUri || raw.metadataUrl || raw.imageURI || null
         };
         if (mergedOnchain.chainId || mergedOnchain.transactionHash || mergedOnchain.contractAddress) {
             normalized.onchain = mergedOnchain;
@@ -860,6 +867,15 @@ const proposalStorage = {
             }
         }
 
+        if (portable) {
+            // New chain metadata owns every authored field. Local drafts or a similar parcel set
+            // cannot contribute a different name, geometry, offer or site to the minted proposal.
+            const localId = merged.proposalId;
+            for (const key of portableApi.FIELDS) delete merged[key];
+            Object.assign(merged, portable, { proposalId: localId });
+            delete merged.preparation;
+            delete merged.preparedArtifact;
+        }
         merged.proposalId = this._coerceProposalId(merged.proposalId);
         const authored = this._normalizeProposal(merged);
         this._indexProposal(authored);

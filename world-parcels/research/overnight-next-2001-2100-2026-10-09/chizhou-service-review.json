@@ -1,0 +1,84 @@
+{
+  "cityRecord": "city-11232-chizhou.json",
+  "schemaVersion": "1.0",
+  "cityCode": 11232,
+  "queueRank": 2052,
+  "city": "Chizhou",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete_packet_held_for_serial_review",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "First-party local evidence establishes Chizhou Natural Resources and Planning Bureau / Chizhou Real-Estate Registration Center custody and lists a city GIS public-service platform. Anonymous inspection did not verify a public parcel feature service, schema, CRS, native parcel ID, or geometry, so no GeoJSON sample is retained and runtime remains held.",
+  "queryOutcomes": "Separate English and Chinese discovery queries, outcomes, and actual URLs are recorded in city-11232-chizhou.json.",
+  "requestOutcomes": [
+    {
+      "request": "GET https://zrzyghj.chizhou.gov.cn/Sitemap/",
+      "outcome": "HTTP page retrieved. The official sitemap lists the Chizhou Geospatial Information Public Service Platform at http://cztdt.chizhou.gov.cn/chizhou/ and an immovable-property registration section."
+    },
+    {
+      "request": "GET https://zrzyghj.chizhou.gov.cn/Map/showList/page_1.html",
+      "outcome": "HTTP page retrieved. The official map section exposes standard-map raster/EPS downloads and city/district map pages, not a parcel vector service."
+    },
+    {
+      "request": "GET https://zrzyghj.chizhou.gov.cn/Map/show/731158.html",
+      "outcome": "HTTP page retrieved. Page JavaScript exposed image and EPS/TIF download paths for a standard administrative map; no parcel IDs, schema, CRS, or vector geometry were present."
+    },
+    {
+      "request": "GET http://cztdt.chizhou.gov.cn/chizhou/",
+      "outcome": "HTTP response was 403 Forbidden (Access not allowed). No login, CAPTCHA bypass, credential, private token, or retry through an alternate identity was used."
+    },
+    {
+      "request": "GET https://cztdt.chizhou.gov.cn/chizhou/",
+      "outcome": "Connection failed after a bounded request timeout; no service configuration, API endpoint, schema, CRS, or geometry response was obtained."
+    },
+    {
+      "request": "GET https://bdcweb.chizhou.gov.cn/pubpc/",
+      "outcome": "Connection timed out after a bounded 20-second request. No registration query or parcel request was issued."
+    },
+    {
+      "request": "GET https://zrzyghj.chizhou.gov.cn/file_cz/18/202603/2026033199553fd74b304f03be5cf2667c5a4f3d.pdf",
+      "outcome": "Official project document was identified in discovery; it describes collecting and consolidating cadastral survey and registered-parcel graphic data during 2026, but provides no anonymous parcel download endpoint."
+    }
+  ],
+  "scopeLimits": [
+    "The exact WUP point [30.6581046077459, 117.478427069436] was preserved in latitude/longitude order and was not shifted.",
+    "Local custodial evidence and a listed GIS platform do not prove an open vector parcel API or citywide public coverage.",
+    "No parcel schema, CRS, stable native parcel identity, geometry response, or citywide geometry coverage was verified.",
+    "The 403, timeout, and inaccessible public platform are recorded as route limitations, not evidence of cadastral absence.",
+    "No owner, address, contact, titleholder, tax/account, personal, or unsafe registration fields were requested or retained.",
+    "Packet completion is research bookkeeping only and does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate-reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel geometry response obtained",
+  "geometryQuality": "not evaluated; no geometry retained",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed because no verified public parcel feature service was found."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Chizhou Natural Resources and Planning Bureau and Chizhou Real-Estate Registration Center; city GIS platform listed by the bureau.",
+    "verifiedOpenScope": "Local institutional custody and official map/registration pages only; anonymous parcel geometry and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "uncertainty": "The GIS platform's service endpoints, authenticated registration-query API, schema, CRS, native parcel identity, and coverage remain unresolved. No claim is made about parcel absence, legal title, ownership, completeness, or currency.",
+  "retainedSample": null
+}

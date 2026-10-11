@@ -1,0 +1,17 @@
+{
+  "taskId": "city:11240",
+  "kind": "first_party_custody_extract",
+  "sourceArtifacts": [
+    {
+      "url": "https://www.jianhu.gov.cn/art/2026/1/4/art_32122_4392866.html",
+      "originalCacheSha256": "d120b6cf88f7351897d7d800a5946da9be9c2b650b26dad332453723a2dd54cb",
+      "safeObservation": "Jianhu County Natural Resources and Planning Bureau: unified natural-resource and real-estate registration, cadastral/real-estate surveying, and registration information management."
+    },
+    {
+      "url": "https://czj.yancheng.gov.cn/art/2026/1/20/art_20174_34073.html",
+      "originalCacheSha256": "e37e0b2541f4fc3d0e32ac31a9d264b220ec256f0c1511182862f3248f59c2dd",
+      "safeObservation": "Jianhu County Real Estate Registration Center is the purchaser for the 2026 state-owned construction-land cadastral database and map compilation project."
+    }
+  ],
+  "geometryClaim": null
+}

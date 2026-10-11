@@ -1,0 +1,70 @@
+{
+  "cityCode": 2822,
+  "queueRank": 2169,
+  "name": "Constanța",
+  "country": "Romania",
+  "countryCode": "RO",
+  "iso2": "RO",
+  "iso3": "ROU",
+  "point": [44.1817344726653, 28.6269258938302],
+  "population2025": 268757,
+  "population2025k": 268.757,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "kind": "city_parcel_source_research",
+  "schemaVersion": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Constanta Romania official cadastral parcel map GIS ANCPI Constanța cadastru hartă parcele",
+        "result": "First-party results identified OCPI Constanța, the official ANCPI public property viewer, the ANCPI INSPIRE Cadastral Parcel layer, and Constanța cadastral-sector materials. No live anonymous parcel feature response was obtained.",
+        "actualResultUrls": [
+          "https://ct.ancpi.ro/",
+          "https://geoportal.ancpi.ro/imobile.html",
+          "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1",
+          "https://www.ancpi.ro/pnccf_docs2/Constanta/Tabel%20sectoare%20CT_11.11.2025.pdf"
+        ]
+      },
+      {
+        "language": "Romanian",
+        "query": "Constanța cadastru hartă cadastrală parcele oficial ANCPI OCPI Constanța",
+        "result": "First-party results identified the official OCPI Constanța site, its PNCCF cadastral-sector/UAT map pages, RENNS information, and ANCPI's public property viewer. The indexed ANCPI layer metadata describes a polygon Cadastral Parcel layer, but current direct access failed.",
+        "actualResultUrls": [
+          "https://ct.ancpi.ro/pnccf/",
+          "https://ct.ancpi.ro/renns/",
+          "https://geoportal.ancpi.ro/imobile.html",
+          "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1",
+          "https://www.ancpi.ro/pnccf_docs2/Constanta/Tabel%20sectoare%20CT_14.05.2025.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "OCPI Constanța is the official county cadastral and real-estate-publicity office. Its first-party site exposes PNCCF cadastral-sector/UAT map materials and links to the ANCPI Geoportal; this is local registry-custodian evidence, not only national-agency prose.",
+  "officialSources": [
+    {"url": "https://ct.ancpi.ro/", "publisher": "OCPI Constanța", "observation": "Official county office site with cadastral-sector/UAT map links and Geoportal links."},
+    {"url": "https://ct.ancpi.ro/pnccf/", "publisher": "OCPI Constanța", "observation": "Official Constanța PNCCF page describing cadastral-program visualization and map materials."},
+    {"url": "https://geoportal.ancpi.ro/imobile.html", "publisher": "ANCPI", "observation": "Official public property-visualization application; indexed description says property boundaries can be consulted by address, county/UAT/cadastre-book number, or geographic position, subject to its terms."},
+    {"url": "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1", "publisher": "ANCPI INSPIRE Geoportal", "observation": "Indexed first-party layer metadata identifies Cadastral Parcel, polygon geometry, EPSG:4258, JSON/GeoJSON support, and id_namespace as display field."}
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "parcelGeometryVerified": false,
+  "sourceCandidate": "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1",
+  "serviceMetadata": {
+    "layerName": "Cadastral Parcel (CP_View layer 1)",
+    "geometryType": "esriGeometryPolygon",
+    "crs": "EPSG:4258",
+    "supportedQueryFormats": ["JSON", "geoJSON"],
+    "nativeFieldsObserved": ["id_namespace (indexed metadata display field)"],
+    "safeIdentityCandidate": "id_namespace; no value was retained because no feature response was obtained",
+    "fieldMapping": {"id_namespace": "properties.id", "polygon geometry": "Feature.geometry"},
+    "compositeKeyProvenance": "No composite key constructed; no feature attributes were returned."
+  },
+  "runtimeReadiness": "held_pending_independent_serial_qualification",
+  "runtimeAssessment": {"status": "held", "reason": "Official local custody and a public national parcel-layer candidate are evidenced, but current anonymous requests failed and no parcel geometry/native identity was verified. Research completion is not source integration, adapter admission, or runtime qualification."},
+  "pointBasis": "Immutable WUP queue point retained exactly in latitude/longitude order; no coordinate adjustment was made to seek a parcel hit."
+}

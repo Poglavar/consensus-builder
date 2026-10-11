@@ -1,0 +1,98 @@
+{
+  "cityRecord": "city-9050-nanchuan.json",
+  "cityCode": 9050,
+  "queueRank": 2090,
+  "city": "Nanchuan",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "reviewedAt": "2026-10-10T22:45:00Z",
+  "discovery": {
+    "english": "Official search located Chongqing cadastral-map inquiry guidance, the Nanchuan district custodian page, and the Yukuai-ban Nanchuan portal; no anonymous safe parcel API was found.",
+    "native": "中文官方检索确认南川区规划和自然资源局、南川区不动产登记中心及渝快办南川区入口；官方材料说明不动产登记和地籍图查询路径，但未确认匿名公开宗地几何API。"
+  },
+  "custodian": {
+    "name": "重庆市南川区规划和自然资源局 / 重庆市南川区不动产登记中心",
+    "role": "Local district natural-resources and registration custodians evidenced by official Nanchuan pages; the municipal Yukuai-ban route is a general government service portal, not itself a local parcel data custodian.",
+    "evidenceUrls": [
+      "https://ghzrzyj.cq.gov.cn/zz/ncq/zwgk/fdzdgknr/jgzn/",
+      "https://ghzrzyj.cq.gov.cn/zz/ncq/zwgk/jczwgk/qqdj/202212/t20221215_11393348.html",
+      "https://ghzrzyj.cq.gov.cn/zz/ncq/zwxx/bmdt/202602/t20260213_15443245.html"
+    ]
+  },
+  "attemptedRoutes": [
+    {
+      "route": "Official Nanchuan natural-resources bureau institution page",
+      "url": "https://ghzrzyj.cq.gov.cn/zz/ncq/zwgk/fdzdgknr/jgzn/",
+      "request": "HTTPS GET via official search/open route",
+      "result": "Official page content/search excerpt established local duties for unified registration, cadastral investigation, surveying, registration-data management, and public geographic-information services; no parcel endpoint or schema published there."
+    },
+    {
+      "route": "Official Nanchuan real-estate registration guide",
+      "url": "https://ghzrzyj.cq.gov.cn/zz/ncq/zwgk/jczwgk/qqdj/202212/t20221215_11393348.html",
+      "request": "HTTPS GET; response cached under tmp/valhalla-parcel-research/nanchuan-9050/nanchuan-guide.html",
+      "result": "HTTP 200. The current page lists registration and registration-information inquiry materials/subject requirements and linked DOCX/XLSX forms, but no public map service, parcel schema, CRS, or anonymous geometry response."
+    },
+    {
+      "route": "Chongqing cadastral-map online inquiry guidance",
+      "url": "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/yzzd/202003/t20200323_5980576.html",
+      "request": "HTTPS GET via official search result; direct fetch timed out after 20 seconds",
+      "result": "Official search result states that cadastral-map and real-estate information inquiry is offered through Yukuai-ban/official channels, but the route requires an interactive service flow and did not provide a bounded anonymous ID-plus-geometry response."
+    },
+    {
+      "route": "Yukuai-ban Nanchuan district portal",
+      "url": "https://zwykb.cq.gov.cn/qxzz/ncq/",
+      "request": "HTTPS GET; response cached under tmp/valhalla-parcel-research/nanchuan-9050/ykb2.html",
+      "result": "HTTP 200. Portal HTML and current JavaScript were inspected; it is a general government-service shell with login/interactive service mechanisms. No parcel layer request, schema, CRS, or safe anonymous geometry response was exposed."
+    },
+    {
+      "route": "Legacy Yukuai-ban public entry",
+      "url": "https://zwfw.cq.gov.cn/icity/public/index",
+      "request": "HTTPS GET with 20-second timeout",
+      "result": "Connection timed out; not treated as evidence of citywide absence and no retry with credentials or bypass was attempted."
+    },
+    {
+      "route": "Official Chongqing map-service landing page",
+      "url": "https://ghzrzyj.cq.gov.cn/bsfw_186/",
+      "request": "HTTPS GET; response cached under tmp/valhalla-parcel-research/nanchuan-9050/official-map.html",
+      "result": "HTTP 200. Page exposes public standard-map/general map links, but no Nanchuan cadastral parcel feature service or safe parcel geometry endpoint."
+    }
+  ],
+  "fieldPolicy": {
+    "allowlist": [
+      "safe stable native parcel identity if publicly returned",
+      "parcel polygon geometry",
+      "source field names and mapping in metadata only",
+      "CRS/format and request metadata"
+    ],
+    "notRequested": [
+      "owner/right-holder",
+      "address/contact",
+      "titleholder/certificate details",
+      "tax/account/identity/application data",
+      "private tokens, credentials, CAPTCHA or protected queries"
+    ]
+  },
+  "sourceFieldMapping": null,
+  "geometryReview": {
+    "publicGeometryFound": false,
+    "sampleFile": null,
+    "parcelCount": 0,
+    "reason": "No bounded anonymous native-ID-plus-geometry response was available from the official routes inspected; no polygon is retained."
+  },
+  "scopeLimits": [
+    "Exact WUP point [29.1611025892334, 107.106744758276] was preserved and was not shifted to force a parcel hit.",
+    "A zero exact-point hit, timeout, login wall, or unusable interactive UI was not used as evidence of citywide absence.",
+    "No owner, address, titleholder, contact, tax, account, personal, or other unsafe fields were requested.",
+    "No credentials, private tokens, CAPTCHA/Cloudflare bypass, or global TLS-verification disablement was used.",
+    "Source integration/admission was not performed; runtime readiness remains held pending independent serial adapter qualification."
+  ],
+  "qualification": {
+    "registryFound": true,
+    "publicParcelGeometryFound": false,
+    "runtimeReadiness": "held",
+    "serialReviewerRequired": true,
+    "uncertainty": "The local custodian and official inquiry procedures are evidenced, but the current public service's parcel endpoint, schema, CRS, safe native identity field, anonymous access behavior, and citywide coverage remain unknown."
+  }
+}

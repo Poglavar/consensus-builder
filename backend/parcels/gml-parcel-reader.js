@@ -2,6 +2,7 @@
 import { SaxesParser } from 'saxes';
 import proj4 from 'proj4';
 import { validateGeometry, upstreamError } from './source-contract.js';
+import { CATASTRO_ATOM_GML_SCHEMA } from './catastro-atom-profile.js';
 
 const GML = new Set(['http://www.opengis.net/gml', 'http://www.opengis.net/gml/3.2']);
 const GML32 = 'http://www.opengis.net/gml/3.2';
@@ -23,6 +24,30 @@ export const SAXONY_GML_SCHEMA = Object.freeze({
     gmlNamespace: 'http://www.opengis.net/gml/3.2',
     sourceCrs: 'EPSG:25833'
 });
+export const HESSEN_GML_SCHEMA = Object.freeze({
+    featureNamespace: 'http://repository.gdi-de.org/schemas/adv/produkt/alkis-vereinfacht/2.0',
+    featureName: 'Flurstueck',
+    idField: 'oid',
+    geometryField: 'geometrie',
+    gmlNamespace: GML32,
+    sourceCrs: 'EPSG:25832',
+    axisOrder: 'easting-northing',
+    localIdPattern: '^DEHE[A-Za-z0-9]{12}FL$'
+});
+// Every Hessen geometry component must be inline and fully parsed. An empty
+// member or an XLink cannot stand in for geometry that would otherwise be lost.
+const HESSEN_GEOMETRY_CHILDREN = Object.freeze({
+    geometrie: ['MultiSurface', 'MultiPolygon', 'Surface', 'Polygon'],
+    MultiSurface: ['surfaceMember', 'surfaceMembers'],
+    MultiPolygon: ['polygonMember'],
+    surfaceMember: ['Surface', 'Polygon'], surfaceMembers: ['Surface', 'Polygon'],
+    polygonMember: ['Polygon'], Surface: ['patches'], patches: ['PolygonPatch'],
+    Polygon: ['exterior', 'interior'], PolygonPatch: ['exterior', 'interior'],
+    exterior: ['LinearRing'], interior: ['LinearRing'], LinearRing: ['posList'], posList: []
+});
+const HESSEN_SINGLE_GEOMETRY_CHILD = new Set([
+    'geometrie', 'surfaceMember', 'polygonMember', 'Surface', 'exterior', 'interior', 'LinearRing'
+]);
 export const POZNAN_GML_SCHEMA = Object.freeze({
     featureNamespace: 'http://portal.geopoz.poznan.pl/wmsegib',
     featureName: 'dzialki',
@@ -31,6 +56,34 @@ export const POZNAN_GML_SCHEMA = Object.freeze({
     gmlNamespace: GML32,
     sourceCrs: 'EPSG:2177',
     axisOrder: 'northing-easting'
+});
+// Gdańsk DescribeFeatureType exposes geometry and a text cadastral ID. The
+// publisher's dzialki.<row> gml:id is not the cadastral identifier.
+export const GDANSK_GML_SCHEMA = Object.freeze({
+    featureNamespace: 'http://mapserver.gis.umn.edu/mapserver',
+    featureName: 'dzialki',
+    idField: 'ID_DZIALKI',
+    geometryField: 'geometry',
+    gmlNamespace: GML32,
+    sourceCrs: 'EPSG:2177',
+    axisOrder: 'northing-easting',
+    localIdPattern: '^[A-Za-z0-9][A-Za-z0-9._/-]{0,127}$'
+});
+// Sosnowiec's own DescribeFeatureType and safe GetFeature samples verify these
+// fields and N,E axes. Its row gml:id is unrelated to the municipal cadastral ID.
+export const SOSNOWIEC_GML_SCHEMA = Object.freeze({
+    featureNamespace: 'http://mapserver.gis.umn.edu/mapserver',
+    featureName: 'dzialki',
+    idField: 'ID_DZIALKI',
+    geometryField: 'geometry',
+    gmlNamespace: GML32,
+    sourceCrs: 'EPSG:2177',
+    axisOrder: 'northing-easting',
+    localIdPattern: '^(?=.{1,128}$)247501_1\\.[0-9]{4}\\.[0-9]+(?:/[0-9]+)?$'
+});
+const GDANSK_GEOMETRY_CHILDREN = Object.freeze({
+    ...HESSEN_GEOMETRY_CHILDREN,
+    geometry: HESSEN_GEOMETRY_CHILDREN.geometrie
 });
 // Kartverket's public Teig WFS uses a numeric app:teigId and a matching
 // gml:id (teig.<teigId>). Its data responses incorrectly report
@@ -64,10 +117,10 @@ export const FINLAND_CP_GML_SCHEMA = Object.freeze({
     sourceCrs: 'EPSG:3067',
     axisOrder: 'easting-northing'
 });
-const CUSTOM_SCHEMAS = [MAPSERVER_GML_SCHEMA, SAXONY_GML_SCHEMA, POZNAN_GML_SCHEMA, NORWAY_TEIG_GML_SCHEMA, FINLAND_CP_GML_SCHEMA];
+const CUSTOM_SCHEMAS = [MAPSERVER_GML_SCHEMA, SAXONY_GML_SCHEMA, HESSEN_GML_SCHEMA, POZNAN_GML_SCHEMA, GDANSK_GML_SCHEMA, SOSNOWIEC_GML_SCHEMA, NORWAY_TEIG_GML_SCHEMA, FINLAND_CP_GML_SCHEMA, CATASTRO_ATOM_GML_SCHEMA];
 proj4.defs('EPSG:27700', '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.1502,0.2470,0.8421,-20.4894 +units=m +no_defs');
 proj4.defs('EPSG:2177', '+proj=tmerc +lat_0=0 +lon_0=18 +k=0.999923 +x_0=6500000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
-for (const zone of [30,31,33]) proj4.defs(`EPSG:258${zone}`, `+proj=utm +zone=${zone} +ellps=GRS80 +towgs84=0,0,0 +units=m +no_defs`);
+for (const zone of [30,31,32,33]) proj4.defs(`EPSG:258${zone}`, `+proj=utm +zone=${zone} +ellps=GRS80 +towgs84=0,0,0 +units=m +no_defs`);
 // EPSG:3067 is EUREF-FIN / TM35FIN(E,N); the Finnish INSPIRE service emits E,N order.
 proj4.defs('EPSG:3067', '+proj=utm +zone=35 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
 const attr = (tag,name) => Object.values(tag.attributes).find(a => a.local === name && !a.uri)?.value;
@@ -104,6 +157,13 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
     const activeFeatureNamespace = customSchema ? customSchema.featureNamespace : featureNamespace;
     const activeFeatureName = customSchema ? customSchema.featureName : featureName;
     const isFinland = canonicalCustomSchema === FINLAND_CP_GML_SCHEMA;
+    const isHessen = canonicalCustomSchema === HESSEN_GML_SCHEMA;
+    const isGdansk = canonicalCustomSchema === GDANSK_GML_SCHEMA;
+    const isSosnowiec = canonicalCustomSchema === SOSNOWIEC_GML_SCHEMA;
+    const isCatastroAtom = canonicalCustomSchema === CATASTRO_ATOM_GML_SCHEMA;
+    const isMunicipalGeometry = isGdansk || isSosnowiec;
+    const strictFlatFields = isHessen || isMunicipalGeometry || isCatastroAtom;
+    const geometryChildren = isMunicipalGeometry || isCatastroAtom ? GDANSK_GEOMETRY_CHILDREN : HESSEN_GEOMETRY_CHILDREN;
     const isGmlTag = tag => customSchema ? tag.uri === customSchema.gmlNamespace : GML.has(tag.uri);
     const isFeatureTag = tag => customSchema
         ? tag.uri === customSchema.featureNamespace && tag.local === customSchema.featureName : featureTag(tag);
@@ -122,6 +182,10 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
             const matchedAttribute = attr(tag,'numberMatched');
             numberMatchedUnknown = matchedAttribute === 'unknown';
             numberMatched = count(matchedAttribute); numberReturned = count(attr(tag,'numberReturned'));
+            if (isCatastroAtom && (numberMatched === undefined || numberReturned !== numberMatched)) {
+                fail('Spanish ATOM parcel archive must declare complete matching feature counts.');
+            }
+            if (isCatastroAtom && numberMatched > maxFeatures) fail('Parcel GML exceeds feature limit.');
         }
         const parent = stack.at(-1)?.tag;
         if (parent && collectionTag(parent) && !(['member','featureMember','featureMembers','boundedBy'].includes(tag.local)
@@ -129,6 +193,30 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
         if (parent && ['member','featureMember','featureMembers'].includes(parent.local) && ['http://www.opengis.net/wfs/2.0','http://www.opengis.net/wfs',...GML].includes(parent.uri) && !isFeatureTag(tag)) fail('Unsupported parcel GML collection member.');
         if (current && geometryDepth !== null && !isGmlTag(tag)) fail('Unsupported parcel GML geometry namespace.');
         const frame = { tag, text: '' }; stack.push(frame);
+        if (isCatastroAtom && stack.length === 2) {
+            if (tag.uri === 'http://www.opengis.net/wfs/2.0' && tag.local === 'member') {
+                frame.parcelMemberFeatures = 0;
+                if (namespacedAttr(tag, 'http://www.w3.org/1999/xlink', 'href') !== undefined
+                    || ![undefined, 'false', '0'].includes(namespacedAttr(tag, 'http://www.w3.org/2001/XMLSchema-instance', 'nil'))) {
+                    fail('Spanish ATOM parcel members must contain an inline feature.');
+                }
+            } else if (!(isGmlTag(tag) && tag.local === 'boundedBy')) {
+                fail('Unexpected Spanish ATOM parcel collection content.');
+            }
+        }
+        if (current && (isMunicipalGeometry || isCatastroAtom) && [activeIdField, customSchema.geometryField].includes(tag.local)
+            && tag.uri !== current.namespace) fail('Unexpected municipal parcel field namespace.');
+        if (current && strictFlatFields && tag.uri === current.namespace
+            && [activeIdField, customSchema.geometryField].includes(tag.local)
+            && stack.length !== current.depth + 1) fail('Parcel GML has a path-confused identity or geometry field.');
+        if (current && strictFlatFields && parent?.uri === current.namespace && parent.local === activeIdField) {
+            fail('Parcel GML native identifier must be simple text.');
+        }
+        if (current && isCatastroAtom && tag.local === activeIdField
+            && (namespacedAttr(tag, 'http://www.w3.org/1999/xlink', 'href') !== undefined
+                || ![undefined, 'false', '0'].includes(namespacedAttr(tag, 'http://www.w3.org/2001/XMLSchema-instance', 'nil')))) {
+            fail('Spanish ATOM native identifiers must be inline non-nil text.');
+        }
         const srs = attr(tag,'srsName');
         if (srs !== undefined) {
             const resolved = crsName(srs, customSchema);
@@ -136,12 +224,20 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
             if (sourceCrs && sourceCrs !== resolved) fail('Parcel GML mixes coordinate systems.');
             sourceCrs = resolved;
         }
+        // A preceding parcel or referencePoint is not a CRS ancestor of this
+        // geometry. Keep the fixed Spanish profile's coordinate inheritance local.
+        if (isCatastroAtom) frame.crs = srs === undefined ? stack.at(-2)?.crs : sourceCrs;
         const dim = attr(tag,'srsDimension');
         if (dim !== undefined && dim !== '2') fail('Parcel GML must have two-dimensional coordinates.');
         if (isFeatureTag(tag)) {
+            if (isCatastroAtom && (stack.length !== 3 || parent?.uri !== 'http://www.opengis.net/wfs/2.0'
+                || parent.local !== 'member')) fail('Unexpected Spanish ATOM parcel member path.');
+            if (isCatastroAtom && ++stack.at(-2).parcelMemberFeatures !== 1) {
+                fail('Spanish ATOM parcel members must contain exactly one feature.');
+            }
             if (current || (activeFeatureNamespace && tag.uri !== activeFeatureNamespace) || (activeFeatureName && tag.local !== activeFeatureName)) fail('Unexpected parcel GML feature.');
             current = { depth: stack.length, namespace: tag.uri, id: null,
-                gmlId: customSchema?.gmlIdPrefix ? namespacedAttr(tag, customSchema.gmlNamespace, 'id') : null,
+                gmlId: (customSchema?.gmlIdPrefix || isHessen) ? namespacedAttr(tag, customSchema.gmlNamespace, 'id') : null,
                 polygons: [], geometrySeen: false,
                 ...(isFinland ? { inspireIdSeen: false, identifierObjectSeen: false, localIdSeen: false,
                     namespaceSeen: false, gmlIdentifierSeen: false, inspireNamespace: null, gmlIdentifier: null,
@@ -162,6 +258,28 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
                 ringKind = tag.local;
             }
             if (tag.local === 'posList' && (!polygon || !ringKind)) fail('Invalid parcel GML coordinate list.');
+        }
+        if (current && strictFlatFields && geometryDepth !== null) {
+            // Sosnowiec and Spanish ATOM geometry is inline. A nil component, even one carrying
+            // coordinates, cannot be reinterpreted as a usable source polygon.
+            if ((isSosnowiec || isCatastroAtom) && namespacedAttr(tag, 'http://www.w3.org/2001/XMLSchema-instance', 'nil') !== undefined) {
+                const nil = namespacedAttr(tag, 'http://www.w3.org/2001/XMLSchema-instance', 'nil');
+                if (!['false', '0'].includes(nil)) fail('Parcel GML has a nil or invalid geometry component.');
+            }
+            if (namespacedAttr(tag, 'http://www.w3.org/1999/xlink', 'href') !== undefined) {
+                fail('Parcel GML referenced geometry is unsupported.');
+            }
+            frame.hessenGeometryChildren = 0;
+            if (stack.length > geometryDepth) {
+                const parentFrame = stack.at(-2);
+                if (!geometryChildren[parent.local]?.includes(tag.local)) {
+                    fail('Invalid parcel GML geometry structure.');
+                }
+                parentFrame.hessenGeometryChildren++;
+                if ((HESSEN_SINGLE_GEOMETRY_CHILD.has(parent.local) || ((isMunicipalGeometry || isCatastroAtom) && parent.local === 'geometry')) && parentFrame.hessenGeometryChildren > 1) {
+                    fail('Parcel GML repeats a geometry component.');
+                }
+            }
         }
         if (current && isFinland) {
             const frames = stack.map(item => item.tag);
@@ -203,6 +321,10 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
     });
     parser.on('text', text => {
         const frame = stack.at(-1);
+        if (current && (isSosnowiec || isCatastroAtom) && geometryDepth !== null && frame
+            && !(frame.tag.local === 'posList' && isGmlTag(frame.tag)) && text.trim()) {
+            fail('Parcel GML has unexpected geometry text.');
+        }
         if (current && frame && (frame.finlandIdentityField || (frame.tag.local === activeIdField && frame.tag.uri === current.namespace)
             || (frame.tag.local === 'posList' && isGmlTag(frame.tag)))) {
             frame.text += text;
@@ -212,6 +334,12 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
     parser.on('cdata', () => fail('Parcel GML CDATA is unsupported.'));
     parser.on('closetag', tag => {
         const frame = stack.pop();
+        if (isCatastroAtom && frame.parcelMemberFeatures !== undefined && frame.parcelMemberFeatures !== 1) {
+            fail('Spanish ATOM parcel members must contain exactly one feature.');
+        }
+        if (strictFlatFields && frame.hessenGeometryChildren === 0 && tag.local !== 'posList') {
+            fail('Parcel GML has an empty geometry component.');
+        }
         if (current && isFinland && frame.finlandIdentityField) {
             const value = frame.text.trim();
             if (!value || value.length > 512 || /[\s\u0000-\u001f]/.test(value)) fail('Parcel GML has a missing or invalid Finland identity value.');
@@ -225,12 +353,14 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
             const native = frame.text.trim();
             if (!native || native.length > 256 || /[\s\u0000-\u001f]/.test(native)
                 || (activeIdField === 'INSPIREID' && !/^\d+$/.test(native))
-                || (canonicalCustomSchema === NORWAY_TEIG_GML_SCHEMA && !/^(?:0|[1-9]\d*)$/.test(native))) fail('Parcel GML has a missing or invalid native identifier.');
+                || (canonicalCustomSchema === NORWAY_TEIG_GML_SCHEMA && !/^(?:0|[1-9]\d*)$/.test(native))
+                || (strictFlatFields && !new RegExp(customSchema.localIdPattern).test(native))) fail('Parcel GML has a missing or invalid native identifier.');
             if (current.id !== null) fail('Parcel GML repeats a native identifier field.');
             current.id = native;
         }
         if (current && geometryDepth !== null && isGmlTag(tag)) {
             if (tag.local === 'posList') {
+                if (isCatastroAtom && !frame.crs) fail('Parcel GML coordinates have no inherited coordinate system.');
                 if(!sourceCrs) fail('Parcel GML coordinates have no coordinate system.');
                 if(!projections.has(sourceCrs)) projections.set(sourceCrs,proj4(sourceCrs,'EPSG:4326'));
                 const projection=projections.get(sourceCrs), ring=[];
@@ -260,6 +390,7 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
             if (!current.id || !current.geometrySeen || !current.polygons.length || polygon || ringKind) fail('Parcel GML feature is missing identity or polygon geometry.');
             if (customSchema?.gmlIdPrefix && (!current.gmlId || !current.gmlId.startsWith(customSchema.gmlIdPrefix)
                 || current.gmlId !== `${customSchema.gmlIdPrefix}${current.id}`)) fail('Parcel GML feature ID does not match its native identifier.');
+            if (isHessen && current.gmlId !== current.id) fail('Parcel GML feature ID does not match its native identifier.');
             if (isFinland && (!current.inspireIdSeen || !current.identifierObjectSeen || !current.localIdSeen || !current.namespaceSeen
                 || !current.gmlIdentifierSeen || current.inspireNamespace !== customSchema.expectedInspireNamespace
                 || customSchema.canonicalIdPrefix !== customSchema.expectedInspireNamespace
@@ -316,6 +447,9 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
     }
     if (!collection || !closedCollection || current
         || (numberMatched !== undefined && numberMatched < featureCount)) fail('Parcel GML has incomplete or inconsistent feature counts.');
+    if (isCatastroAtom && (numberMatched !== featureCount || numberReturned !== featureCount || duplicateNativeCount)) {
+        fail('Spanish ATOM parcel archive is not a complete unique declared parcel set.');
+    }
     const features = [...byId.values()];
     const extent = features.length ? features.reduce((out,f)=>[Math.min(out[0],f.bbox[0]),Math.min(out[1],f.bbox[1]),Math.max(out[2],f.bbox[2]),Math.max(out[3],f.bbox[3])],[Infinity,Infinity,-Infinity,-Infinity]) : null;
     return { features,featureCount,uniqueFeatureCount:features.length,numberMatched,numberMatchedUnknown,numberReturned,

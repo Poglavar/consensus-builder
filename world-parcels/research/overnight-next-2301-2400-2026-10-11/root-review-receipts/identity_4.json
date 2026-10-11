@@ -1,0 +1,15 @@
+{
+  "taskId": "identity:4",
+  "decision": "resolved",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/root-identity-4-73-first-party-evidence.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/root-identity-decision-overlay.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/skip-ledger.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/identity-review.json",
+    "world-parcels/research/africa-capitals-2026-10-08/city-victoria.json",
+    "world-parcels/research/africa-capitals-2026-10-08/victoria-safe-sample.geojson"
+  ],
+  "checkedAt": "2026-10-11T09:04:41.689Z"
+}

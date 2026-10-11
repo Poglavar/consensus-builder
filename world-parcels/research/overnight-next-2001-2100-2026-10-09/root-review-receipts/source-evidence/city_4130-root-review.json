@@ -1,0 +1,45 @@
+{
+  "taskId": "city:4130",
+  "decision": "held",
+  "checkedAt": "2026-10-10T21:11:30Z",
+  "identity": {
+    "cityCode": 4130,
+    "rank": 2025,
+    "country": "Pakistan",
+    "iso2": "PK",
+    "point": [
+      34.8309632986105,
+      71.8328903300032
+    ],
+    "populationPersons": 287866,
+    "queueAndRankedRosterMatch": true
+  },
+  "searches": {
+    "languages": [
+      "English",
+      "Urdu/local"
+    ],
+    "queriesAndResultUrlsPresent": true,
+    "pairedPacketAndReviewInspected": true
+  },
+  "custody": {
+    "registryFound": true,
+    "basis": "Official KP Dir/Kalam project identifies its Tehsil Timergara sub-office and land-settlement GIS project.",
+    "firstPartyUrl": "https://slrdirkalam.com/"
+  },
+  "publicGeometry": {
+    "found": null,
+    "sampleCount": 0,
+    "limit": "No anonymous native-ID full-polygon response evidenced; public availability and citywide coverage remain unresolved."
+  },
+  "qualification": {
+    "freshNativeIdAdapterReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "fullScopeMetricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "admitted": false
+  },
+  "decisionReason": "Local land-record custody is evidenced, but no public parcel polygon adapter or original polygon response exists for qualification."
+}

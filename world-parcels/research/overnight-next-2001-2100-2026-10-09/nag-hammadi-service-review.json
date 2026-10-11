@@ -1,0 +1,64 @@
+{
+  "cityRecord": "city-7358-nag-hammadi.json",
+  "cityCode": 7358,
+  "queueRank": 2019,
+  "name": "Nag Hammadi",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "point": [26.0445416382569, 32.2293805098391],
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "requests": [
+    {
+      "method": "GET/search",
+      "url": "https://www.esa.gov.eg/segel.aspx",
+      "outcome": "Official ESA page describes the national urban real-estate register GIS program, its participating agencies, and limited implementation history. It exposes no Nag Hammadi parcel viewer, feature API, schema, CRS, or geometry response."
+    },
+    {
+      "method": "GET/search",
+      "url": "https://www.esa.gov.eg/services.aspx",
+      "outcome": "Official ESA service catalog lists paper maps, digital maps, historical maps, coordinate certificates, boundary separation, and related surveying services. It is a service catalog, not an anonymous parcel-feature endpoint."
+    },
+    {
+      "method": "GET/HTML inspection",
+      "url": "https://www.esa.gov.eg/city_maps2.aspx",
+      "outcome": "Current public HTML is an ASP.NET city-map catalog with province/center/district selectors. The exposed options and page scripts did not provide Nag Hammadi parcel geometry or a public map/API configuration."
+    },
+    {
+      "method": "GET/HTML inspection",
+      "url": "https://www.esa.gov.eg/paper_maps_search.aspx",
+      "outcome": "Current public HTML is an ASP.NET paper-map search form with scale/map-name selectors. No parcel feature response, stable native parcel ID schema, or CRS payload was exposed."
+    },
+    {
+      "method": "GET/search",
+      "url": "https://www.alamiria.com/Sec/TashTxt?id=YWQULOSd56Q%3D",
+      "outcome": "Official Egyptian Gazette/Justice notice identifies cadastral survey sections under Nag Hammadi center and a real-estate-register procedure/effective-date postponement. This establishes local cadastral/procedure evidence, not a public geometry service."
+    },
+    {
+      "method": "GET/search",
+      "url": "https://mediadr.sis.gov.eg/xmlui/bitstream/handle/123456789/118949/WQ13_20260117_10015.pdf?isAllowed=y&sequence=2",
+      "outcome": "Official Gazette PDF mirror returns the same type of Nag Hammadi cadastral-section/effective-date evidence. No machine-readable parcel layer or anonymous feature endpoint was exposed."
+    }
+  ],
+  "viewerInspection": {
+    "status": "not available",
+    "details": "No official Nag Hammadi parcel viewer URL, current viewer JavaScript/configuration, public map service URL, or anonymous parcel API was identified. No login, credentials, CAPTCHA bypass, private token, or unsafe registry fields were attempted."
+  },
+  "schemaCrs": {
+    "status": "not available",
+    "details": "No parcel-feature response was obtained; native field names, stable parcel identity, geometry encoding, and CRS could not be verified."
+  },
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "retainedSamples": [],
+  "scopeLimits": [
+    "The official legal notice and ESA catalog evidence a cadastral custodian/procedure and map services, but not an open Nag Hammadi parcel layer.",
+    "Catalog selector absence or lack of an API is a public-service availability limitation, not evidence of citywide cadastral absence.",
+    "The exact WUP point was preserved and no exact-point parcel query was issued because no public parcel endpoint was discovered.",
+    "No owner, address, contact, titleholder, personal, tax, account, transaction, or other unsafe fields were requested or retained.",
+    "No raw source attribute sets or GeoJSON were retained; no stable native parcel ID plus full safe polygon was available."
+  ],
+  "runtimeReadiness": "held",
+  "uncertainty": "High: official local cadastral/procedural coverage is evidenced, but public digital parcel access, schema, CRS, and geometry availability remain unknown. Independent serial review is required before any adapter or source admission."
+}

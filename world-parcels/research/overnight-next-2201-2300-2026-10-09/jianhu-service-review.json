@@ -1,0 +1,29 @@
+{
+  "cityRecord": "city-11240-jianhu.json",
+  "cityCode": 11240,
+  "queueRank": 2248,
+  "name": "Jianhu",
+  "country": "China",
+  "countryCode": "CN",
+  "pointLatLon": [33.4691317265519, 119.769729666001],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method": "GET/search English", "url": "https://www.jianhu.gov.cn/art/2026/1/4/art_32122_4392866.html", "httpStatus": 200, "outcome": "Official local bureau page retrieved; identified Jianhu Natural Resources and Planning Bureau responsibility for unified registration, cadastral survey, real-estate surveying, and registration information management/query."},
+    {"method": "GET/search English", "url": "https://czj.yancheng.gov.cn/art/2026/1/20/art_20174_34073.html", "httpStatus": 200, "outcome": "Official procurement notice retrieved; identified the Jianhu County Real Estate Registration Center as purchaser for the 2026 cadastral database and cadastral-map compilation project."},
+    {"method": "GET/search Chinese", "url": "https://www.jianhu.gov.cn/art/2025/2/7/art_12508_4285702.html", "httpStatus": 200, "outcome": "Official county article retrieved; confirmed online Su Xiaodeng one-window registration services for consultation, appointment, application, query, and feedback, without publishing parcel geometry."},
+    {"method": "GET", "url": "https://ycjh.jszwfw.gov.cn/", "httpStatus": 200, "outcome": "Official Jianhu government-service homepage retrieved; identified the public real-estate one-window service route."},
+    {"method": "GET", "url": "http://www.jszwfw.gov.cn/bdczt/bdcindex.html", "httpStatus": 200, "outcome": "Public Jiangsu real-estate one-window landing page retrieved. Current HTML and linked JavaScript were inspected; no anonymous parcel ID+geometry endpoint or CRS/schema was exposed."},
+    {"method": "GET", "url": "https://www.jszwfw.gov.cn/script/12/2009091010398361.js", "httpStatus": 200, "outcome": "Linked first-party JavaScript retrieved for route inspection; it contained service-page helpers but no verified anonymous parcel feature response."},
+    {"method": "GET", "url": "https://ycjh.jszwfw.gov.cn/col/col186962/index.html", "httpStatus": 200, "outcome": "Official Jianhu high-efficiency service page retrieved; no parcel geometry service or safe parcel identity response was present."}
+  ],
+  "schemaAndCrs": {"geometryCrs": null, "nativeIdentity": null, "observedSchema": "No parcel feature response returned; official sources documented local custodianship and service workflows only."},
+  "safeFieldAllowlist": ["stable native parcel ID if independently verified", "polygon geometry", "source service URL", "CRS", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "No bounded anonymous parcel ID+geometry response was verified."},
+  "scopeLimits": ["The WUP point was preserved exactly and was not used to force a parcel hit.", "The local bureau and registration-center evidence establishes custodianship, not open parcel geometry.", "The 2026 cadastral database/map procurement notice is evidence of a local cadastral program, not an accessible API.", "No login, private token, CAPTCHA/Cloudflare bypass, or TLS-verification exception was used.", "Packet completion records research attempts only and is not source integration or admission."],
+  "uncertainty": "Jianhu has first-party local registry evidence and official service routes, but public anonymous parcel geometry, CRS, native identity, and a current map/API configuration remain unresolved."
+}

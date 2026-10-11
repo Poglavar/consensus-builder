@@ -1501,26 +1501,15 @@ async function createProposal() {
                     firstPolygonSample: parcelPolygons[0]
                 });
 
-                // The record is minted as the artifact the server prepares from it (POST
-                // /proposals/prepare, projections.md §3): the same declaration, site (and site hash)
-                // and — for a corridor — land that publication then stores unchanged. Slight
-                // intrusions and a corridor built off its preview are asked about BEFORE anything
-                // is signed. The image and metadata come from that site (there may be no parcel at
-                // all under it).
+                // Mint from the browser's local metric geometry and immutable cadastral facts.
+                // The complete record, site and source snapshot go to IPFS; no server preparation
+                // or server signing key participates. A later server mirror reads this commitment.
                 updateStatus(t('modal.createProposal.site.binding', 'Checking which parcels the site reaches into...'));
-                const prepared = await window.__publishBinding.prepareForPublish(proposal, {
-                    fetchPrepare: window.__publishBinding.createFetchPrepare(fetch.bind(window), resolveBackendBaseUrl(), publishBindingText),
-                    city: proposal.city || null,
-                    acceptedParcelIds: proposal.acceptedParcelIds || []
-                });
-                const confirmedPublish = await confirmPreparedPublish(prepared);
-                if (!confirmedPublish.ok) {
-                    throw Object.assign(new Error(confirmedPublish.message), { publishCancelled: true });
-                }
-                adoptPreparedRecord(proposal, prepared.proposal);
-                const mintSite = prepared.artifact.site || null;
+                const mintRecord = await window.__mintBinding.prepareForMint(proposal);
+                window.__mintBinding.adoptMintRecord(proposal, mintRecord);
+                const mintSite = mintRecord.site;
                 if (mintSite) pushParcelPolygons(mintSite.coordinates);
-                console.info(`[${new Date().toISOString()}] [createProposal] prepared for mint: ${proposal.cadastreParcelIds.length} parcel(s), coverage ${prepared.binding.coverage}, preparation ${prepared.preparation.id}`);
+                console.info(`[${new Date().toISOString()}] [createProposal] local mint record: ${proposal.cadastreParcelIds.length} parcel(s), coverage ${proposal.binding.coverage}`);
 
                 // Nothing to draw or mint is an error to report, never a silent skip: the user
                 // asked for an on-chain proposal and would otherwise get a local one unawares.
@@ -1723,7 +1712,6 @@ async function createProposal() {
                         const goalKey = resolveProposalGoalKey(proposal, null) || proposalType || 'proposal';
                         const goalLabel = goalKey.replace(/-/g, ' ');
                         const metadataTitle = proposal.name || proposal.title || `${goalLabel} Proposal`;
-                        const geometryPayload = buildGeometryMetadataPayload(proposal);
                         const metadataPayload = {
                             name: metadataTitle,
                             title: metadataTitle,
@@ -1750,29 +1738,12 @@ async function createProposal() {
                                     trait_type: 'Offer',
                                     value: `${offer} ${offerCurrency}`
                                 },
-                                // where it is: the city its site was placed in by the preparation
+                                // where it is: the city the authored record belongs to
                                 ...(proposal.city ? [{ trait_type: 'City', value: proposal.city }] : [])
                             ],
-                            properties: {
-                                proposalId: proposal.proposalId || hash || '',
-                                // the city the proposal belongs to (a chain record names none otherwise,
-                                // and a link to it would open in whatever city the reader last used)
-                                city: proposal.city || null,
-                                goal: goalKey,
-                                title: metadataTitle,
-                                cadastreParcelIds: parcelIdsForMinting,
-                                conditional: isConditional,
-                                lens: lensAddressesForMint,
-                                offer: {
-                                    amount: offer,
-                                    currency: offerCurrency
-                                },
-                                nativeAmount: nativeAmount,
-                                createdAt: createdAtIso,
-                                author,
-                                description,
-                                ...(geometryPayload ? { geometry: geometryPayload } : {})
-                            }
+                            // Full authored content, including site, binding and cadastral evidence.
+                            properties: window.__chainRecord.metadataProperties({ ...proposal,
+                                type: mapGoalToBackendType(goalKey) || 'parcel', lens: lensAddressesForMint, isConditional })
                         };
 
                         const fileNameBase = `proposal-${Date.now()}`;
@@ -2180,7 +2151,7 @@ function buildUploadReadyProposal(proposal) {
     const material = !!(siteApi && typeof siteApi.requiresParcels === 'function' && !siteApi.requiresParcels(uploadProposal));
     const serverBound = !!(window.__publishBinding && window.__publishBinding.isServerBinding(uploadProposal.binding));
     // A prepared record (POST /proposals/prepare) publishes its artifact's declaration exactly — the
-    // server verified it, and any client re-derivation would contradict what was prepared (and minted).
+    // server verified it, and any client re-derivation would contradict what was prepared.
     if (serverBound && (material || uploadProposal.preparation)) {
         uploadProposal.cadastreParcelIds = (uploadProposal.cadastreParcelIds || []).map(String);
     } else if (material) {

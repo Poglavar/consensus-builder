@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 4258,
+  "queueRank": 1990,
+  "name": "Bayannur",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [40.7619692560269, 107.401708534579],
+  "population2025": 291787,
+  "population2025k": 291.787,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bayannur cadastral parcel map official land registration GIS China",
+        "result": "Search found the official Bayannur municipal government organization page and the Bayannur Natural Resources Bureau site. The official organization page identifies the municipal Natural Resources Bureau, cadastral-survey functions, unified registration, and the Bayannur Real Estate Registration Center; no anonymous parcel feature service was found in search results.",
+        "actualResultUrls": [
+          "https://www.bynr.gov.cn/zfxxgk/fdzdgk/jgjj/202509/t20250930_24160.html",
+          "https://www.bynr.gov.cn/zfxxgk/fdzdgk/zcwj/202003/t20200318_44340.html",
+          "http://zrzy.bynr.gov.cn/"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "巴彦淖尔 地籍图 地块 GIS 不动产登记 官方",
+        "result": "Chinese-language search located the official Natural Resources Bureau page, its public 不动产地籍图查询 (real-estate cadastral-map query) entry, and the official Inner Mongolia registration hall link. The accessible local page is a search shell requiring a parcel code or natural-building information; no safe parcel ID plus geometry response was exposed.",
+        "actualResultUrls": [
+          "http://zrzy.bynr.gov.cn/ywcx/bdcdjt/",
+          "https://www.nmgbdcdj.cn/",
+          "https://www.bynr.gov.cn/zfxxgk/fdzdgk/jgjj/202509/t20250930_24160.html"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.bynr.gov.cn/zfxxgk/fdzdgk/jgjj/202509/t20250930_24160.html",
+      "operator": "Bayannur Municipal Natural Resources Bureau / Bayannur Real Estate Registration Center",
+      "evidence": "The official municipal page assigns the bureau unified natural-resource and real-estate registration, cadastral survey, and management of the city's natural-resource information platform. It identifies the Bayannur Real Estate Registration Center as handling urban-planning-area land and housing registration and cadastral survey."
+    },
+    {
+      "url": "http://zrzy.bynr.gov.cn/ywcx/bdcdjt/",
+      "operator": "Bayannur Municipal Natural Resources Bureau",
+      "evidence": "The bureau's public site labels this page 不动产地籍图可视化查询 and presents a query field for 宗地代码 or natural-building information. It is a public discovery/search shell, not verified parcel geometry coverage."
+    },
+    {
+      "url": "https://www.nmgbdcdj.cn/",
+      "operator": "Inner Mongolia real-estate registration service platform",
+      "evidence": "The official Bayannur bureau homepage links this domain as 不动产服务大厅. Anonymous retrieval timed out during this attempt; no login or challenge bypass was attempted."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.bynr.gov.cn/",
+      "method": "GET",
+      "status": 200,
+      "summary": "Official municipal homepage retrieved."
+    },
+    {
+      "url": "http://zrzy.bynr.gov.cn/",
+      "method": "GET",
+      "status": 200,
+      "summary": "Official Natural Resources Bureau homepage retrieved; its HTML links to the cadastral-map query page and the Inner Mongolia registration hall."
+    },
+    {
+      "url": "http://zrzy.bynr.gov.cn/ywcx/bdcdjt/",
+      "method": "GET",
+      "status": 200,
+      "summary": "Public cadastral-map query page retrieved. Current HTML exposes a search form at /web/search/140854 with content for parcel code or natural-building information; no map JavaScript, service URL, schema, CRS, or geometry endpoint was exposed."
+    },
+    {
+      "url": "http://zrzy.bynr.gov.cn/web/search/140854?content=%E5%B7%B4%E5%BD%A6%E6%B7%96%E5%B0%94",
+      "method": "GET",
+      "status": "timeout_after_20s",
+      "summary": "Bounded anonymous search request did not return a usable response. No parcel query was retried or broadened."
+    },
+    {
+      "url": "https://www.nmgbdcdj.cn/",
+      "method": "GET",
+      "status": "timeout_after_20s",
+      "summary": "Linked Inner Mongolia registration hall did not return within the bounded anonymous request window. No login, CAPTCHA/Cloudflare bypass, private token, or TLS exception was used."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": null,
+    "fallbackOidField": null,
+    "compositeKey": null,
+    "fieldMapping": {},
+    "crs": null,
+    "geometryType": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Bayannur municipal Natural Resources Bureau and Real Estate Registration Center cadastral-survey and real-estate-registration responsibilities; public cadastral-map query entry is documented.",
+    "verifiedOpenScope": "Official pages and query shell only; no anonymous parcel layer or bounded ID-plus-geometry response was verified.",
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "No exact-point query was possible because the public page exposed only a search shell and the anonymous search/registration routes timed out. This is not evidence of absence."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["native parcel identifier", "geometry", "source CRS", "source layer/service identifier"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "personal", "tax", "account", "private credentials/tokens"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_local_registry_and_cadastral_query_shell_no_open_geometry",
+  "remainingUncertainty": "The official cadastral query may resolve parcel records after service recovery or through a client-side/private registration workflow not exposed by the retrieved HTML. Native identity, schema, CRS, geometry, and citywide coverage remain unverified. No exact-point or citywide absence conclusion is made.",
+  "nextStep": "Serial reviewer should independently retry the official Bayannur cadastral query and Inner Mongolia registration routes, qualify any public anonymous endpoint, and verify safe native identity, CRS, Bayannur coverage, and bounded geometry before any adapter consideration."
+}

@@ -1,0 +1,125 @@
+{
+  "cityCode": 7779,
+  "queueRank": 2054,
+  "name": "Boisar",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [19.7970773861219, 72.745937102408],
+  "population2025": 283063,
+  "population2025k": 283.063,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "aliases": ["boisar"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Boisar Maharashtra official cadastral parcel map GIS Mahabhumi Bhu Naksha",
+        "result": "First-party discovery found the official Palghar District Superintendent of Land Records page and Maharashtra Mahabhunakasha/Bhu-Naksha viewer. The district page identifies the local land-record custodian and links the official map and land-record services; the viewer was not reachable during bounded direct requests.",
+        "actualResultUrls": [
+          "https://palghar.gov.in/en/",
+          "https://palghar.gov.in/",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/",
+          "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp"
+        ]
+      },
+      {
+        "language": "Marathi",
+        "query": "बोईसर महाराष्ट्र अधिकृत भू नकाशा गट क्रमांक महाभूमि",
+        "result": "मराठी प्रथम-पक्ष शोधात पालघर जिल्हा अधीक्षक भूमि अभिलेख पृष्ठ, बोईसरचा पालघर जिल्ह्यातील संदर्भ आणि अधिकृत महाभूनकाशा सेवा आढळली. सीमित थेट विनंत्यांमध्ये नकाशा सेवा प्रतिसाद देत नसल्याने सुरक्षित पार्सल ओळख व भूमिती मिळाली नाही.",
+        "actualResultUrls": [
+          "https://palghar.gov.in/%E0%A4%9C%E0%A4%BF%E0%A4%B2%E0%A5%8D%E0%A4%B9%E0%A4%BE-slr/",
+          "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/",
+          "https://bhumiabhilekh.maharashtra.gov.in/HelpAndFAQs/HelpAndFAQs"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "District Superintendent of Land Records, Palghar, Government of Maharashtra; Maharashtra Department of Land Records",
+    "basis": "The official Palghar district land-record page identifies the district land-record office and lists Bhu-Naksha/e-map and land-record services. The official contact page places the Palghar office on Palghar-Boisar Road. This establishes a local district custodian, but not an anonymously verified Boisar parcel response.",
+    "urls": [
+      "https://palghar.gov.in/%E0%A4%9C%E0%A4%BF%E0%A4%B2%E0%A5%8D%E0%A4%B9%E0%A4%BE-slr/",
+      "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS",
+      "https://mahabhunakasha.mahabhumi.gov.in/27/"
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://palghar.gov.in/%E0%A4%9C%E0%A4%BF%E0%A4%B2%E0%A5%8D%E0%A4%B9%E0%A4%BE-slr/",
+      "observation": "Official Palghar district page for the District Superintendent of Land Records; it lists land-record services and the Mahabhunakasha/e-map service. Its Marathi table reports district map digitization and uploaded-map counts by taluka, but does not expose parcel geometry in the page response.",
+      "scope": "Palghar district land-record administration and service references; not direct parcel coverage proof for the WUP point."
+    },
+    {
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS",
+      "observation": "Official Maharashtra Department of Land Records contact page identifies the Palghar district office at Palghar-Boisar Road.",
+      "scope": "Local district custodian contact/administration only; no parcel attributes requested or retained."
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/",
+      "observation": "Official Maharashtra Bhu-Naksha viewer route identified by first-party pages and search; direct bounded requests from this environment timed out before HTML/JavaScript/configuration could be read.",
+      "scope": "State cadastral map viewer route; coverage, schema, CRS, native identity, and anonymous geometry access remain unverified."
+    },
+    {
+      "url": "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp",
+      "observation": "Official NIC implementation directory identifies Maharashtra Bhu-Naksha implementation.",
+      "scope": "National/state implementation context only; not city or parcel geometry evidence."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "outcome": "Timed out after 30 seconds over ordinary TLS GET; no login, CAPTCHA, certificate bypass, or retry loop was attempted. No viewer JavaScript/configuration, schema, CRS, native ID, or geometry was obtained."
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "outcome": "Timed out after 20 seconds over ordinary TLS GET; no parcel request was made."
+    },
+    {
+      "url": "http://mahabhunakasha.mahabhumi.gov.in/27/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "outcome": "Bounded HTTP fallback did not produce a usable response; no downgrade beyond this probe was attempted."
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/mobile/www/index.html",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "outcome": "Bounded request did not produce a usable response; no mobile viewer configuration or geometry was obtained."
+    },
+    {
+      "url": "https://palghar.gov.in/%E0%A4%9C%E0%A4%BF%E0%A4%B2%E0%A5%8D%E0%A4%B9%E0%A4%BE-slr/",
+      "method": "GET via first-party indexed page",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Official district land-record page was readable through first-party discovery; it exposed service links and administrative scope, not an anonymous parcel API response."
+    }
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": "Palghar District Land Records / Maharashtra Mahabhunakasha",
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Palghar district land-record administration and Maharashtra cadastral map service.",
+    "verifiedOpenScope": "Local custodian and official service route verified; no bounded anonymous parcel ID-plus-geometry response obtained.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier if publicly returned", "parcel polygon geometry", "source CRS", "non-personal source layer metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax", "account", "personal identifiers", "encumbrances"],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "resultCategory": "local_cadastral_viewer_route_unavailable",
+  "remainingUncertainty": "The official Maharashtra viewer may expose village/parcel geometry when reachable, but its current configuration, endpoint schema, CRS, native identity field, Boisar coverage, and anonymous access could not be verified from this environment. The exact WUP point [19.7970773861219, 72.745937102408] was preserved and not shifted; no timeout or map availability failure is evidence of citywide absence.",
+  "researchFile": "research/overnight-next-2001-2100-2026-10-09/city-7779-boisar.json"
+}

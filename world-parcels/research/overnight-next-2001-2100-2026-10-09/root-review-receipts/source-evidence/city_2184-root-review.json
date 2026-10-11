@@ -1,0 +1,79 @@
+{
+  "taskId": "city:2184",
+  "decision": "held",
+  "checkedAt": "2026-10-10T21:28:43Z",
+  "identity": {
+    "cityCode": 2184,
+    "rank": 2039,
+    "name": "Modiin-Maccabim-Reut",
+    "country": "Israel",
+    "countryCode": "IL",
+    "point": [
+      31.8986246886273,
+      35.0077621307069
+    ],
+    "populationPersons": 285763,
+    "sourceArchiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "queueAnd2025WupRowMatch": true
+  },
+  "searches": {
+    "languagesRecorded": [
+      "English",
+      "Hebrew (local)"
+    ],
+    "pairedPacketAndReviewInspected": true,
+    "resultUrlsRecorded": true
+  },
+  "firstPartyChecks": [
+    {
+      "url": "https://www.modiin.muni.il/modiinwebsite/ChannelArticle.aspx?PageID=13_367",
+      "observation": "Official municipality page describes public GIS search for cadastral blocks and parcels."
+    },
+    {
+      "url": "https://services8.arcgis.com/JcXY3lLZni6BK4El/arcgis/rest/services/%D7%97%D7%9C%D7%A7%D7%95%D7%AA/FeatureServer/0?f=pjson",
+      "observation": "Public ArcGIS layer metadata names parcel polygons and EPSG:2039; original bounded response cache contains three polygons with native PARCEL_ID values."
+    }
+  ],
+  "firstPartyCache": [
+    {
+      "path": "tmp/valhalla-parcel-research/modiin/layer.json",
+      "sha256": "2ce3af25650b3972e790d5d838d3d407d7d1e385692fd1ce0ebb1fe8a1438ea9",
+      "bytes": 17795
+    },
+    {
+      "path": "tmp/valhalla-parcel-research/modiin/query.geojson",
+      "sha256": "c8580f14d581763a33bc3660441020d321c4fe721309c78877c45d670b204065",
+      "bytes": 2658
+    }
+  ],
+  "custody": {
+    "registryFound": true,
+    "assessment": "Three bounded public polygons are evidenced, but no independent live adapter qualification, exact native-ID rereads, forced paging, 13 cells, metric GEOS checks, source binding or headed Details verification exists. Municipal GIS and national feature service are distinct sources; national source publisher attribution is not independently established by the layer metadata."
+  },
+  "samples": {
+    "fullPolygonCountInOriginalCache": 3,
+    "nativeParcelIds": [
+      9856,
+      9857,
+      9858
+    ],
+    "retainedAttributeFields": [
+      "GUSH_NUM",
+      "GushHelka",
+      "LOCALITY_N",
+      "PARCEL",
+      "PARCEL_ID"
+    ],
+    "unsafeAttributesRetained": false
+  },
+  "qualification": {
+    "freshExactNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "admitted": false
+  },
+  "scopeCaveat": "Packet completion and bounded or blocked responses do not establish citywide coverage or citywide cadastral absence."
+}

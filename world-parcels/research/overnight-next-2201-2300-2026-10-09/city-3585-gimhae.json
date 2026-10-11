@@ -1,0 +1,40 @@
+{
+  "cityCode": 3585,
+  "queueRank": 2230,
+  "name": "Gimhae",
+  "country": "Republic of Korea",
+  "countryCode": "KR",
+  "point": [35.2238717108113, 128.851395701436],
+  "population2025": 261543,
+  "population2025k": 261.543,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gimhae cadastral parcel map official Korea cadastral map MOLIT",
+        "result": "Official discovery found Government24's cadastral-map procedure and MOLIT/VWorld national spatial-information routes. Gimhae's official municipal site was also found, but no anonymous Gimhae parcel response was exposed.",
+        "actualResultUrls": [
+          "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000027&FAX_TYPE=B&HighCtgCD=-&Mcode=10208",
+          "https://gimhae.go.kr/main.web",
+          "https://www.data.go.kr/data/15123884/openapi.do",
+          "https://www.data.go.kr/en/data/15140369/openapi.do"
+        ]
+      },
+      {
+        "language": "Korean",
+        "query": "김해시 지적도 공개 지도 필지 조회 공식",
+        "result": "공식 검색에서 김해시 누리집과 정부24 지적도(임야도) 열람 절차를 확인했다. 국토교통부 VWorld 연속지적도/WFS 계열 공개 인프라도 확인했으나, 익명 김해 필지 ID·도형 응답은 확보하지 못했다.",
+        "actualResultUrls": [
+          "https://gimhae.go.kr/main.web",
+          "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000027&HighCtgCD=A09005&tp_seq=01",
+          "https://www.data.go.kr/data/15123884/openapi.do"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "researchNote": "First-party discovery and bounded public-route checks were completed. Official national cadastral procedures and infrastructure are evidenced, but no safe anonymous Gimhae parcel ID-plus-geometry response was obtained. This packet is not source integration or runtime admission.",
+  "runtimeReadiness": "held"
+}

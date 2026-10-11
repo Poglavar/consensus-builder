@@ -1,0 +1,84 @@
+{
+  "cityRecord": "city-5933-hamamatsu.json",
+  "cityCode": 5933,
+  "queueRank": 2061,
+  "name": "Hamamatsu",
+  "country": "Japan",
+  "countryCode": "JP",
+  "attempt": 1,
+  "reviewedAt": "2026-10-10",
+  "discovery": {
+    "english": {
+      "query": "Hamamatsu official cadastral map parcel GIS",
+      "outcome": "Found first-party Hamamatsu City land-number map page and linked public WagMap viewer.",
+      "urls": [
+        "https://www.city.hamamatsu.shizuoka.jp/shisanze/zei/shisanze/tibanzu.html",
+        "https://www2.wagmap.jp/hamamatsu/Portal"
+      ]
+    },
+    "native": {
+      "query": "浜松市 地番図 公式 GIS",
+      "outcome": "Found the same official city land-number-map page and viewer; also found first-party Ministry of Justice/G空間情報センター public registry-map references.",
+      "urls": [
+        "https://www.city.hamamatsu.shizuoka.jp/shisanze/zei/shisanze/tibanzu.html",
+        "https://www2.wagmap.jp/hamamatsu/Portal",
+        "https://www.moj.go.jp/MINJI/minji05_00494.html",
+        "https://www.geospatial.jp/ckan/dataset/houmusyouchizu-2026-1-1056"
+      ]
+    }
+  },
+  "attemptedRoutes": [
+    {
+      "route": "Hamamatsu City official information page",
+      "request": "GET https://www.city.hamamatsu.shizuoka.jp/shisanze/zei/shisanze/tibanzu.html",
+      "result": "200/search-visible; identifies the city land-number map and links viewer; city warns it is reference-only."
+    },
+    {
+      "route": "Official WagMap portal",
+      "request": "GET https://www2.wagmap.jp/hamamatsu/Portal",
+      "result": "200; current JavaScript configuration lists map 64, 地番図, citywide extent 137.428747714074,34.616911608236 to 138.124263304898,35.317427199060."
+    },
+    {
+      "route": "Official viewer agreement and map bootstrap",
+      "request": "POST https://www2.wagmap.jp/hamamatsu/Agreement/Agree with MapId=64; then GET https://www2.wagmap.jp/hamamatsu/Map?mid=64&mpx=137.739147470906&mpy=34.7346658683187",
+      "result": "Anonymous agreement accepted; map bootstrap returned current configuration. Safe endpoints exposed include ../Map/ChangeAddress, ../Map/GetAttribute, ../Map/GetFeature, ../Map/GetFeatureList, and ../Map/GetLayerTree."
+    },
+    {
+      "route": "Exact WUP-point coordinate/address lookup",
+      "request": "GET https://www2.wagmap.jp/hamamatsu/Map/ChangeAddress?npu=1&fprj=DD_TOKYO&mpx=137.739147470906&mpy=34.7346658683187&prj1=DD_WGS84&prj2=K08_JGD2000&gprj=1",
+      "result": "200 JSON; exact point echoed as ddtbl X=137.739147470906, Y=34.7346658683187 and resolved to 浜松市中央区曳馬６丁目. This is an address/coordinate result, not a parcel hit."
+    },
+    {
+      "route": "Bounded parcel feature attempt",
+      "request": "Inspected viewer configuration for safe feature routes and schema; did not issue owner/titleholder or unsafe attribute requests.",
+      "result": "No parcel feature response with a stable native identity and geometry was obtained; no sample GeoJSON retained."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerMapId": 64,
+    "configuredInputCrs": "DD_WGS84 (longitude/latitude request parameters)",
+    "configuredConvertedCrs": "K08_JGD2000 / EPSG:2450 or EPSG:30168 for projected Japanese zone 8 workflows",
+    "safeObservedEndpoints": ["Map/ChangeAddress", "Map/GetAttribute", "Map/GetFeature", "Map/GetFeatureList", "Map/GetLayerTree"],
+    "nativeIdentity": "Not observed in a returned parcel feature; do not infer one from synthetic rows."
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently observed",
+    "parcel geometry only",
+    "source layer name",
+    "source field names and field mapping in metadata only",
+    "CRS and source URL metadata"
+  ],
+  "unsafeFieldsExcluded": ["owner", "titleholder", "resident", "contact", "tax", "account", "rights", "personal information", "address-level personal data"],
+  "sampleGeojson": null,
+  "uncertainty": [
+    "The exact-point lookup confirms local administrative address context but does not establish a parcel intersection.",
+    "The city land-number map is reference-only and not a legal cadastral certificate.",
+    "A public map/API route exists, but parcel feature schema and stable native identity remain unqualified by this attempt.",
+    "No zero-hit or map extent miss is being treated as citywide absence."
+  ],
+  "reviewDecision": {
+    "packetStatus": "complete",
+    "runtimeReadiness": "held",
+    "reason": "Local first-party map service evidenced; safe parcel identity/geometry adapter qualification is still pending serial review."
+  }
+}

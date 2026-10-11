@@ -1,0 +1,14 @@
+{
+  "taskId": "city:4705",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-4705-firozpur.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/firozpur-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T01:41:50.935432Z",
+  "reason": "WUP 2025 source, ranked roster, queue, and packet agree on code 4705, rank 2215, India, point [30.9408614876319, 74.6181641641679], and 263304 persons. English and Punjabi searches are recorded. The first-party Punjab cadastral viewer and land-records page support custody; the reported bounded village extent is administrative map provenance, not a native parcel ID or full polygon. No safe parcel response was retained. A village extent or failed WMS route cannot establish citywide absence. Fresh ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification have no evidence.",
+  "registryFound": true,
+  "admission": "held; no runtime/catalog/report change"
+}

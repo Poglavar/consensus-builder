@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-11",
+  "cityCode": 9299,
+  "wupCityCode": 9299,
+  "cityId": "wup2025:9299",
+  "name": "Vidisha",
+  "country": "India",
+  "countryCode": "IN",
+  "iso2": "IN",
+  "iso3": "IND",
+  "point": [23.5218096108288, 77.8130784789016],
+  "centerLatLon": [23.5218096108288, 77.8130784789016],
+  "population2025": 259638,
+  "population2025k": 259.638,
+  "populationUnit": "persons",
+  "queueRank": 2250,
+  "rank": 2250,
+  "status": "complete",
+  "runtimeReadiness": "held",
+  "registryFound": true,
+  "verifiedSample": false,
+  "geometryVerified": false,
+  "parcelGeometryVerified": false,
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Vidisha Madhya Pradesh official cadastral map GIS parcel map",
+        "result": "Official Vidisha district Land Records page identifies Madhya Pradesh Revenue Department Land Records as the custodian, says it maintains land records including survey numbers, and links the public WebGIS 2.0 portal. Government of India DILRMP also exposes Vidisha district/tehsil map digitization and georeferencing status.",
+        "actualResultUrls": [
+          "https://vidisha.nic.in/en/service/land-records/",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/453",
+          "https://webgis2.mpbhulekh.gov.in/"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "विदिशा भू नक्शा मध्य प्रदेश आधिकारिक cadastral map",
+        "result": "Hindi official Vidisha district Land Records page repeats that the Madhya Pradesh Revenue Department maintains land records and directs users to WebGIS 2.0 at webgis2.mpbhulekh.gov.in. The public service search result describes online parcel-map access by district, subdivision, tehsil, and village.",
+        "actualResultUrls": [
+          "https://vidisha.nic.in/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%85%E0%A4%AD%E0%A4%BF%E0%A4%B2%E0%A5%87%E0%A4%96/",
+          "https://services.india.gov.in/service/detail/check-dissemination-of-naksha-parcel-map-of-madhya-pradesh-online-1",
+          "https://webgis2.mpbhulekh.gov.in/"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://vidisha.nic.in/en/service/land-records/",
+      "operator": "District Vidisha, Government of Madhya Pradesh; Revenue Department Land Records",
+      "scope": "Local district custodian/service lead",
+      "observation": "Official district page states that Madhya Pradesh Revenue Department Land Records maintains land records including survey numbers and links WebGIS 2.0."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/453",
+      "operator": "Government of India, Department of Land Resources, DILRMP",
+      "scope": "National status dashboard, not the parcel-serving local registry",
+      "observation": "Vidisha district dashboard lists Vidisha tehsil with 656 villages, 235 digitized/georeferenced map units, 124677 total land parcels, 110369 georeferenced parcels, and Bhu-Naksha use. This establishes reported coverage status, not a retrievable parcel response for the WUP point."
+    },
+    {
+      "url": "https://webgis2.mpbhulekh.gov.in/",
+      "operator": "Madhya Pradesh Revenue Department / Commissioner Land Records",
+      "scope": "State public WebGIS 2.0 parcel-map service",
+      "observation": "Current official target named by Vidisha district and national service directory; direct access from this environment timed out before HTML/JavaScript/configuration could be inspected."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://webgis2.mpbhulekh.gov.in/",
+      "method": "GET",
+      "status": "transport timeout",
+      "attempt": 1,
+      "summary": "curl with TLS verification enabled, 25-second max time; no response body or headers received."
+    },
+    {
+      "url": "https://webgis2.mpbhulekh.gov.in/",
+      "method": "HEAD/GET",
+      "status": "TCP connection timeout",
+      "attempt": 2,
+      "summary": "curl with 8-second connect timeout and 15-second max time; failed to connect to port 443."
+    },
+    {
+      "url": "https://mpbhulekh.gov.in/",
+      "method": "HEAD/GET",
+      "status": "TCP connection timeout",
+      "summary": "Legacy/alternate official host also failed to connect within the bounded request."
+    },
+    {
+      "url": "http://webgis2.mpbhulekh.gov.in/",
+      "method": "HEAD/GET",
+      "status": "TCP connection timeout",
+      "summary": "Plain HTTP retry also failed; no redirect or service metadata obtained."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Vidisha tehsil/district land-record and cadastral-map coverage as reported by the official district service and DILRMP status dashboard.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "wupPointHit": null,
+    "limits": "No exact-point hit or miss was tested because the official viewer was unreachable. Reported district/tehsil coverage does not prove urban-city polygon availability at the WUP coordinate."
+  },
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeIdentityPolicy": "No native parcel identity was obtained. Do not synthesize an ID from the queue row or request unsafe owner/address/title fields.",
+  "sourceFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "sourceIds": [],
+  "remainingUncertainty": "The official portal's current JavaScript/configuration, API routes, schema, CRS, anonymous access rules, and bounded ID+geometry response remain unverified due to transport timeout.",
+  "nextStep": "Retry the official WebGIS 2.0 portal when reachable; inspect its current public bootstrap/configuration, then request only a small Vidisha-area geometry-plus-native-ID response and independently verify CRS and location before any runtime qualification.",
+  "runtimeEligible": false
+}

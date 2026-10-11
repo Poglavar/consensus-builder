@@ -1,10 +1,10 @@
-// Publishing a proposal as the artifact the server prepares from it (projections.md §3,
-// PARCEL-OPTIONAL.md rules 1 and 3): POST /proposals/prepare builds what the server derives (a
-// corridor's land, from its lanes), binds the site and signs the resulting artifact (the server stores
-// it only when the record is published); the record that is minted and published carries exactly that
-// artifact — signature included — and its declaration, binding and land, not whatever
-// the browser had loaded, selected or previewed. Parcel acts keep their declared parcels (the server
-// verifies them). Also turns the server's binding refusals into a readable list with intrusion widths.
+// Preparing an ordinary server publication as the artifact the server derives (projections.md §3,
+// PARCEL-OPTIONAL.md rules 1 and 3): POST /proposals/prepare builds corridor land from its lanes,
+// binds the site and signs the artifact; the server stores it only when the record is published.
+// This path is for authored uploads. Chain minting builds its site, binding, cadastral snapshot and
+// consent list locally, commits the full record to metadata, then optionally mirrors by chainRef;
+// it does not require this server signature. Parcel acts on the ordinary upload path keep their
+// declared parcels (the server verifies them). Also turns binding refusals into readable intrusion lists.
 // Pure apart from the injected fetchers; UMD so backend/test/publish-binding.test.js runs it headlessly.
 // (POST /proposals/binding stays as the live preview of a site being drawn, site-drawing.js.)
 (function (root, factory) {

@@ -1,0 +1,2810 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-11",
+  "scope": "24 technical-qualified city/source bindings. Original UN/WUP points, source candidate identities and geometries are unchanged. Full-safe datasets are not included. Qualification summaries retain at most three explicit sample IDs; metric per-feature records retain IDs, geometry hashes, and projected bounds only.",
+  "cityCount": 24,
+  "cities": [
+    {
+      "cityCode": "5646",
+      "appCityId": "west_valley_city",
+      "cityName": "West Valley City",
+      "qualificationCityName": "West Valley City",
+      "cityId": "wup2025:5646",
+      "countryCode": "US",
+      "country": "United States",
+      "sourceId": "us-ut-salt-lake-city-parcels",
+      "appCenterLatLon": [
+        40.6516355964175,
+        -111.987511764721
+      ],
+      "wupPointLatLon": [
+        40.6516355964175,
+        -111.987511764721
+      ],
+      "appViewFocus": null,
+      "candidate": {
+        "sourceFile": "qualification/evidence/cities/5646/candidate.json",
+        "sha256": "8e4ab6fc2b150b5ee7d7a069236924bb8c25ee673d3d149db3f6b13702ba3935",
+        "originalSeedPath": "qualification/evidence/cities/5646/candidate.json",
+        "originalSeedSha256": "8e4ab6fc2b150b5ee7d7a069236924bb8c25ee673d3d149db3f6b13702ba3935",
+        "qualificationRecordedSha256": "8e4ab6fc2b150b5ee7d7a069236924bb8c25ee673d3d149db3f6b13702ba3935",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/5646/candidate.json",
+        "evidenceOriginalSha256": "8e4ab6fc2b150b5ee7d7a069236924bb8c25ee673d3d149db3f6b13702ba3935",
+        "evidenceExportSha256": "a3cebb0116aac79253d8e37f9b9cb18cacf254172787a0ada167a828aeff36da"
+      },
+      "qualification": {
+        "sourceFile": "qualification/evidence/cities/5646/evidence/qualification.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/5646/qualification.json",
+        "status": "technical-qualified",
+        "sha256": "8ddc5ce5af3b8f0f2f661bb0bfe60f0302df33d1e073ff370eefd82db9283749",
+        "evidenceOriginalSha256": "8ddc5ce5af3b8f0f2f661bb0bfe60f0302df33d1e073ff370eefd82db9283749",
+        "evidenceExportSha256": "5ce562940186e337cb4714594ac17ebb28df42d055b38c6aec068102e125a14d",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "passedGateCount": 8,
+        "featureCount": 87,
+        "sampleIds": [
+          "US-UT-SALTLAKE-21182290100000"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "sourceFile": "qualification/evidence/cities/5646/evidence/metric-report.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/5646/metric-report.json",
+        "sha256": "9af897ed6d926d1b8255530f17695e8f8ca1040d242e4ef734ab892f41a9a521",
+        "evidenceOriginalSha256": "9af897ed6d926d1b8255530f17695e8f8ca1040d242e4ef734ab892f41a9a521",
+        "evidenceExportSha256": "9af897ed6d926d1b8255530f17695e8f8ca1040d242e4ef734ab892f41a9a521",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32612",
+        "inputSha256": "6c57e472cce765882adc99be8360936c8ddd95e80b6921ad47b82bf4f8dd88a9",
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-11/5646/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-11/5646/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-11/5646/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-11/5646/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "inputSha256": "6c57e472cce765882adc99be8360936c8ddd95e80b6921ad47b82bf4f8dd88a9",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32612",
+        "featureCount": 87,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/5646/independent-metric-audit.json",
+        "sha256": "9c7c0c90e14b70e11780e179c3c44316d65dde83c729ce2cf1c18c66787dca10",
+        "method": "Fresh independent metric recomputation from the saved, unchanged full-safe dataset before release."
+      },
+      "sourceProfile": {
+        "descriptorSha256": "63dc0443dcd8bb4d07a58f8bfa27fa15eb7eb34ce8fb72d892df1ee7e8acfcdd",
+        "adapter": "arcgis",
+        "endpoint": "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/UtahStatewideParcels/FeatureServer/0",
+        "idField": "PARCEL_ID",
+        "idFields": null,
+        "idPrefix": "US-UT-SALTLAKE-",
+        "metricSrid": 32612,
+        "scope": "Salt Lake County only, enforced by County=SaltLake; capital-area sample.",
+        "evidence": [
+          "The frozen city packet and service review identify UGRC and local-government cadastral parcel-boundary geometry for Salt Lake County, with native PARCEL_ID and a polygon containing the unchanged WUP point.",
+          "First-party UGRC Utah Parcels documentation (https://gis.utah.gov/products/sgid/cadastre/parcels/) states that SGID contains parcel boundaries for every Utah county and directly links the Salt Lake County basic-parcel service; Salt Lake is listed with September 2026 currency.",
+          "Anonymous official polygon-layer schemas confirm PARCEL_ID and pagination. A bounded native-ID read proves that the frozen Salt Lake County polygon equals the production UtahStatewideParcels polygon with County=SaltLake. The descriptor preserves the existing production source ID, prefix, codec, endpoint and county filter as directed by the packet nextStep; scope is the unchanged WUP point and bounded nearby cells, without a municipal-boundary or citywide-completeness claim."
+        ]
+      },
+      "sourceProfileSha256": "63dc0443dcd8bb4d07a58f8bfa27fa15eb7eb34ce8fb72d892df1ee7e8acfcdd",
+      "verifiedAt": "2026-10-11"
+    },
+    {
+      "cityCode": "632",
+      "appCityId": "surrey",
+      "cityName": "Surrey",
+      "qualificationCityName": "Surrey",
+      "cityId": "wup2025:632",
+      "countryCode": "CA",
+      "country": "Canada",
+      "sourceId": "ca-bc-surrey-lots",
+      "appCenterLatLon": [
+        49.1578411996007,
+        -122.842214202135
+      ],
+      "wupPointLatLon": [
+        49.1578411996007,
+        -122.842214202135
+      ],
+      "appViewFocus": null,
+      "candidate": {
+        "sourceFile": "qualification/evidence/cities/632/candidate.json",
+        "sha256": "864deeccf615dae94614596097db4cf0887c5365b07f0a7388c86eabddfaf734",
+        "originalSeedPath": "qualification/evidence/cities/632/candidate.json",
+        "originalSeedSha256": "864deeccf615dae94614596097db4cf0887c5365b07f0a7388c86eabddfaf734",
+        "qualificationRecordedSha256": "864deeccf615dae94614596097db4cf0887c5365b07f0a7388c86eabddfaf734",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/632/candidate.json",
+        "evidenceOriginalSha256": "864deeccf615dae94614596097db4cf0887c5365b07f0a7388c86eabddfaf734",
+        "evidenceExportSha256": "f0a8053ac1edfa148c3171e620ef91fe76f9cfffa93bd600fad66d8e7615becc"
+      },
+      "qualification": {
+        "sourceFile": "qualification/evidence/cities/632/evidence/qualification.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/632/qualification.json",
+        "status": "technical-qualified",
+        "sha256": "34e708f47417ad4bcfcb581dd57285477da395f3e17219936e6d61f41cf82118",
+        "evidenceOriginalSha256": "34e708f47417ad4bcfcb581dd57285477da395f3e17219936e6d61f41cf82118",
+        "evidenceExportSha256": "1d927e0148f4f5c76e21c2d65e0f8ef2c44263a22c4e8ae5e469e59a2e5c5aba",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "passedGateCount": 8,
+        "featureCount": 11,
+        "sampleIds": [
+          "CA-BC-SURREY-65634",
+          "CA-BC-SURREY-58622",
+          "CA-BC-SURREY-12777"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "sourceFile": "qualification/evidence/cities/632/evidence/metric-report.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/632/metric-report.json",
+        "sha256": "41432a431e76550dfb2593e34e239bf53192f3d69858a7633cf4d7ba9174d82c",
+        "evidenceOriginalSha256": "41432a431e76550dfb2593e34e239bf53192f3d69858a7633cf4d7ba9174d82c",
+        "evidenceExportSha256": "41432a431e76550dfb2593e34e239bf53192f3d69858a7633cf4d7ba9174d82c",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32610",
+        "inputSha256": "15e98fd873dffeedbeb1ee6b0605d79adacfdb5ad048a5e33792ac2dfb636611",
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-11/632/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-11/632/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-11/632/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-11/632/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "inputSha256": "15e98fd873dffeedbeb1ee6b0605d79adacfdb5ad048a5e33792ac2dfb636611",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32610",
+        "featureCount": 11,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/632/independent-metric-audit.json",
+        "sha256": "04868c2b5af15f5109898f05af61c172f69b9fb5e6f8ecd10406d3649395ad77",
+        "method": "Fresh independent metric recomputation from the saved, unchanged full-safe dataset before release."
+      },
+      "sourceProfile": {
+        "descriptorSha256": "13e6b3836304f25c24b28119e84d830876b57c9ad08e36b3d2f31651208d2dfe",
+        "adapter": "arcgis",
+        "endpoint": "https://gisservices.surrey.ca/arcgis/rest/services/ICI_Data/MapServer/1",
+        "idField": "MSLINK",
+        "idFields": null,
+        "idPrefix": "CA-BC-SURREY-",
+        "metricSrid": 32610,
+        "scope": "City of Surrey municipal lots in the COSMOS GIS; bounded local qualification only.",
+        "evidence": [
+          "Frozen Surrey service review identifies the City GIS/Engineering COSMOS property-map custodian and municipal lots polygons; it does not claim land-title authority or citywide completeness.",
+          "https://www.surrey.ca/services-payments/online-services/maps-cosmos identifies the City of Surrey Mapping Online System, property-map functions, and GIS data derived from legal plans, confirming municipal property-map purpose and geographic scope.",
+          "Official https://gisservices.surrey.ca/arcgis/rest/services/ICI_Data/MapServer/1 exposes municipal lot polygons with LTSA lot/block/plan/parcel and PID schema, corroborating the frozen parcel-purpose evidence; unchanged frozen sample geometries and the unchanged WUP point are verified locally."
+        ]
+      },
+      "sourceProfileSha256": "13e6b3836304f25c24b28119e84d830876b57c9ad08e36b3d2f31651208d2dfe",
+      "verifiedAt": "2026-10-11"
+    },
+    {
+      "cityCode": "3342",
+      "appCityId": "bologna",
+      "cityName": "Bologna",
+      "qualificationCityName": "Bologna",
+      "cityId": "wup2025:3342",
+      "countryCode": "IT",
+      "country": "Italy",
+      "sourceId": "it-bologna-sit-parcels",
+      "appCenterLatLon": [
+        44.4942527646909,
+        11.3383469340327
+      ],
+      "wupPointLatLon": [
+        44.4942527646909,
+        11.3383469340327
+      ],
+      "appViewFocus": null,
+      "candidate": {
+        "sourceFile": "qualification/evidence/cities/3342/candidate.json",
+        "sha256": "f8197a14ce39381488695823ef340c7a90f8014872c4426d91c905cc30c6c67d",
+        "originalSeedPath": "qualification/evidence/cities/3342/candidate.json",
+        "originalSeedSha256": "f8197a14ce39381488695823ef340c7a90f8014872c4426d91c905cc30c6c67d",
+        "qualificationRecordedSha256": "f8197a14ce39381488695823ef340c7a90f8014872c4426d91c905cc30c6c67d",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3342/candidate.json",
+        "evidenceOriginalSha256": "f8197a14ce39381488695823ef340c7a90f8014872c4426d91c905cc30c6c67d",
+        "evidenceExportSha256": "4c0453ee424085a6193c2ce88d7a158c2e0f2dcd719d09640e7f9fbc6bbcf6a6"
+      },
+      "qualification": {
+        "sourceFile": "qualification/evidence/cities/3342/evidence/qualification.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3342/qualification.json",
+        "status": "technical-qualified",
+        "sha256": "2204d985376269d77e3377c23b558306e7d1e804d4cfe33d2562e9605fdafebc",
+        "evidenceOriginalSha256": "2204d985376269d77e3377c23b558306e7d1e804d4cfe33d2562e9605fdafebc",
+        "evidenceExportSha256": "529f9bd62afe93432146ee39d4ae4fdb72750bcfa3f39adbe0137f0481987954",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "passedGateCount": 8,
+        "featureCount": 175,
+        "sampleIds": [
+          "IT-BOLOGNA-SIT-A944_ 187  296"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "sourceFile": "qualification/evidence/cities/3342/evidence/metric-report.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3342/metric-report.json",
+        "sha256": "fc3f38fa723fc2246d75edf951e2bbbe8d402ee2beb21bc4ba3162c221d5af95",
+        "evidenceOriginalSha256": "fc3f38fa723fc2246d75edf951e2bbbe8d402ee2beb21bc4ba3162c221d5af95",
+        "evidenceExportSha256": "fc3f38fa723fc2246d75edf951e2bbbe8d402ee2beb21bc4ba3162c221d5af95",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32632",
+        "inputSha256": "1729452303c0deaabd24bd01ef138518738d3253fbafe7b07f6c1d967405b4d6",
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-11/3342/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-11/3342/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-11/3342/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-11/3342/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "inputSha256": "1729452303c0deaabd24bd01ef138518738d3253fbafe7b07f6c1d967405b4d6",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32632",
+        "featureCount": 175,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3342/independent-metric-audit.json",
+        "sha256": "6baf60bfdb0ef1028049c7cac258e1733ce1f1325673111a3a891f920801c9f9",
+        "method": "Fresh independent metric recomputation from the saved, unchanged full-safe dataset before release."
+      },
+      "sourceProfile": {
+        "descriptorSha256": "dcdbf71cf1f5a6cd30c7a31a16e5c3a108714f4e74350c9a222b02bb7ceca87f",
+        "adapter": "arcgis",
+        "endpoint": "https://sitmappe.comune.bologna.it/arcgis/rest/services/CATASTO/CATASTO/MapServer/0",
+        "idField": "PARTKEY",
+        "idFields": null,
+        "idPrefix": "IT-BOLOGNA-SIT-",
+        "metricSrid": 32632,
+        "scope": "Comune di Bologna cadastral parcel reference geometry, restricted to source municipality COMUNE=A944; qualification covers bounded local samples only.",
+        "evidence": [
+          "The frozen packet source.custodianScope identifies the municipal cadastral map service published by Comune di Bologna SIT, and registryBasis records a parcel polygon with safe cadastral identity fields at the unchanged Bologna WUP point.",
+          "The frozen service review records PARTKEY=A944_ 187  296 with COMUNE=A944, FOGLIO=187 and MAPPALE=296; the retained unmodified sample is a cadastral parcel polygon, not a keyword-based inference.",
+          "Live first-party MapServer metadata documentInfo gives Title=CATASTO and Author=SIT Comune di Bologna; layer 0 gives esriGeometryPolygon, displayField=PARTKEY and cadastral fields COMUNE, FOGLIO and MAPPALE. Municipal scope is enforced by COMUNE=A944; no citywide completeness is claimed."
+        ]
+      },
+      "sourceProfileSha256": "dcdbf71cf1f5a6cd30c7a31a16e5c3a108714f4e74350c9a222b02bb7ceca87f",
+      "verifiedAt": "2026-10-11"
+    },
+    {
+      "cityCode": "60",
+      "appCityId": "geneva",
+      "cityName": "Geneva",
+      "qualificationCityName": "Geneva",
+      "cityId": "wup2025:60",
+      "countryCode": "CH",
+      "country": "Switzerland",
+      "sourceId": "ch-ge-sitg-cadastre-rdppf",
+      "appCenterLatLon": [
+        46.2017520971079,
+        6.13622539632436
+      ],
+      "wupPointLatLon": [
+        46.2017520971079,
+        6.13622539632436
+      ],
+      "appViewFocus": null,
+      "candidate": {
+        "sourceFile": "qualification/evidence/cities/60/candidate.json",
+        "sha256": "d5d3c19e5fcecf3c970a1199b88b717a56d0f63cc8b436e969b81b687a74e238",
+        "originalSeedPath": "qualification/evidence/cities/60/candidate.json",
+        "originalSeedSha256": "d5d3c19e5fcecf3c970a1199b88b717a56d0f63cc8b436e969b81b687a74e238",
+        "qualificationRecordedSha256": "d5d3c19e5fcecf3c970a1199b88b717a56d0f63cc8b436e969b81b687a74e238",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/60/candidate.json",
+        "evidenceOriginalSha256": "d5d3c19e5fcecf3c970a1199b88b717a56d0f63cc8b436e969b81b687a74e238",
+        "evidenceExportSha256": "ae6d9de63cf51d548b1a0b172037645cbbc9946c90e5fce3294d5abf646a83d3"
+      },
+      "qualification": {
+        "sourceFile": "qualification/evidence/cities/60/evidence/qualification.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/60/qualification.json",
+        "status": "technical-qualified",
+        "sha256": "48487f2bcfb20229ede4a3112475c759acdeed43083c8f641443c47b5aef9f62",
+        "evidenceOriginalSha256": "48487f2bcfb20229ede4a3112475c759acdeed43083c8f641443c47b5aef9f62",
+        "evidenceExportSha256": "640c942a0279e60dbdba8243a8c28702b4c9bcf1cd911fa204ae83cf0cedbaec",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "passedGateCount": 8,
+        "featureCount": 148,
+        "sampleIds": [
+          "CH-GE-SITG-EGRID-CH428339656353",
+          "CH-GE-SITG-EGRID-CH216334658388",
+          "CH-GE-SITG-EGRID-CH356765836385"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "sourceFile": "qualification/evidence/cities/60/evidence/metric-report.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/60/metric-report.json",
+        "sha256": "12da40d7316459432c9324c8da3a799ad246b48cf0a58279aaea1d8ee447b7f0",
+        "evidenceOriginalSha256": "12da40d7316459432c9324c8da3a799ad246b48cf0a58279aaea1d8ee447b7f0",
+        "evidenceExportSha256": "12da40d7316459432c9324c8da3a799ad246b48cf0a58279aaea1d8ee447b7f0",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32632",
+        "inputSha256": "a14011933eb076fe63c6b4fe4553d7eb035be348e22a8648cf782a197c50a4d3",
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-11/60/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-11/60/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-11/60/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-11/60/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "inputSha256": "a14011933eb076fe63c6b4fe4553d7eb035be348e22a8648cf782a197c50a4d3",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32632",
+        "featureCount": 148,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/60/independent-metric-audit.json",
+        "sha256": "e1a6a25d2eca624c49516bff670d9d68ea4e9d14855a527843b7a8e172a8b762",
+        "method": "Fresh independent metric recomputation from the saved, unchanged full-safe dataset before release."
+      },
+      "sourceProfile": {
+        "descriptorSha256": "3635140efb5e952f8ffd99ec36b04ff7b449b01dcd46e868129b6e9ffa6a8025",
+        "adapter": "arcgis",
+        "endpoint": "https://thematic.sitg.ge.ch/arcgis/rest/services/CADASTRE_RDPPF/MapServer/4",
+        "idField": "EGRID",
+        "idFields": null,
+        "idPrefix": "CH-GE-SITG-EGRID-",
+        "metricSrid": 32632,
+        "scope": "Official cantonal cadastral and official-survey map service for Geneva; the SITG catalog identifies the parcel data as official mensuration/cadastre data.",
+        "evidence": [
+          "Frozen city packet source.custodianScope and registryBasis identify the Canton of Geneva SITG official cadastral/official-survey parcel service and positive local parcel geometry around the unchanged WUP point; geographic scope is the Geneva canton, not Switzerland-wide or verified citywide completeness.",
+          "Frozen service review registryAssessment and geometryEvidence identify EGRID parcel polygons. The first-party layer 4 schema links CAD_PARCELLE_MENSU, whose official catalog describes current land-register parcels based on official survey and includes the Geneva municipality sections. See evidence/source-inspection.json."
+        ]
+      },
+      "sourceProfileSha256": "3635140efb5e952f8ffd99ec36b04ff7b449b01dcd46e868129b6e9ffa6a8025",
+      "verifiedAt": "2026-10-11"
+    },
+    {
+      "cityCode": "2668",
+      "appCityId": "hamilton",
+      "cityName": "Hamilton",
+      "qualificationCityName": "Hamilton",
+      "cityId": "wup2025:2668",
+      "countryCode": "CA",
+      "country": "Canada",
+      "sourceId": "ca-on-hamilton-assessment-parcel",
+      "appCenterLatLon": [
+        43.2335378918963,
+        -79.8541587136975
+      ],
+      "wupPointLatLon": [
+        43.2335378918963,
+        -79.8541587136975
+      ],
+      "appViewFocus": null,
+      "candidate": {
+        "sourceFile": "qualification/evidence/cities/2668/candidate.json",
+        "sha256": "9a395a85c296eed20f194815b1d0efa6acd8d3cec51000698ced8d0c46a56529",
+        "originalSeedPath": "qualification/evidence/cities/2668/candidate.json",
+        "originalSeedSha256": "9a395a85c296eed20f194815b1d0efa6acd8d3cec51000698ced8d0c46a56529",
+        "qualificationRecordedSha256": "9a395a85c296eed20f194815b1d0efa6acd8d3cec51000698ced8d0c46a56529",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/2668/candidate.json",
+        "evidenceOriginalSha256": "9a395a85c296eed20f194815b1d0efa6acd8d3cec51000698ced8d0c46a56529",
+        "evidenceExportSha256": "2b8c8dcf15a0792079963e24ba2c9cf372b466a9b4420d06bcaf86dbda23b2ff"
+      },
+      "qualification": {
+        "sourceFile": "qualification/evidence/cities/2668/evidence/qualification.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/2668/qualification.json",
+        "status": "technical-qualified",
+        "sha256": "8a404ed5a6beefb4363f0a56f0bad282846d077d02511235768b2b8545eb7380",
+        "evidenceOriginalSha256": "8a404ed5a6beefb4363f0a56f0bad282846d077d02511235768b2b8545eb7380",
+        "evidenceExportSha256": "440b0e3971b51e944d39ecf5be1f309de13df139d69497d5fa60d566145b7ed0",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "passedGateCount": 8,
+        "featureCount": 263,
+        "sampleIds": [
+          "CA-ON-HAMILTON-37466",
+          "CA-ON-HAMILTON-37468",
+          "CA-ON-HAMILTON-37476"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "sourceFile": "qualification/evidence/cities/2668/evidence/metric-report.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/2668/metric-report.json",
+        "sha256": "06f191e4aabe1033d33f2bbc9edd68b6207a8b24b8e84193b88753fd2c60ae81",
+        "evidenceOriginalSha256": "06f191e4aabe1033d33f2bbc9edd68b6207a8b24b8e84193b88753fd2c60ae81",
+        "evidenceExportSha256": "06f191e4aabe1033d33f2bbc9edd68b6207a8b24b8e84193b88753fd2c60ae81",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32617",
+        "inputSha256": "7a9067e2f1a29fa0332d3ed966ab965bbd0539586b3903a9a218088ce027ef16",
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-11/2668/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-11/2668/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-11/2668/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-11/2668/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "inputSha256": "7a9067e2f1a29fa0332d3ed966ab965bbd0539586b3903a9a218088ce027ef16",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32617",
+        "featureCount": 263,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/2668/independent-metric-audit.json",
+        "sha256": "2efa9c3eda1336bc44374762e1a5bbddb5c58d01969cca03f78700a1e5101c6f",
+        "method": "Fresh independent metric recomputation from the saved, unchanged full-safe dataset before release."
+      },
+      "sourceProfile": {
+        "descriptorSha256": "25667c4515740301238624b66a184108c1e5b17147222b6e26bbb8f15f688967",
+        "adapter": "arcgis",
+        "endpoint": "https://services.arcgis.com/rYz782eMbySr2srL/arcgis/rest/services/Hamilton_Assessment_Parcel/FeatureServer/0",
+        "idField": "OBJECTID",
+        "idFields": null,
+        "idPrefix": "CA-ON-HAMILTON-",
+        "metricSrid": 32617,
+        "scope": "City of Hamilton assessment parcel mapping from Teranet; bounded technical review only.",
+        "evidence": [
+          "Frozen Hamilton packet and live first-party item https://www.arcgis.com/sharing/rest/content/items/b18cec4690d241029935df1b02bb19db?f=json identify the City of Hamilton assessment parcel polygon service, sourced from Teranet on February 9, 2024; item extent contains the unchanged Hamilton point.",
+          "Producer purpose corroboration: https://teranetcommercialsolutions.zendesk.com/hc/en-ca/articles/360001563451-What-do-the-different-colour-boundaries-represent-on-the-map explains assessment parcels as boundaries based on MPAC legal land descriptions; municipal Teranet PARCEL_ASSESSMENT explanation at https://services.arcgis.com/rYz782eMbySr2srL/ArcGIS/rest/services/Municipal_Land_Disposition_Parcels/FeatureServer states assessment mapping maps assessable parcels. See evidence/source-purpose.json."
+        ]
+      },
+      "sourceProfileSha256": "25667c4515740301238624b66a184108c1e5b17147222b6e26bbb8f15f688967",
+      "verifiedAt": "2026-10-11"
+    },
+    {
+      "cityCode": "4796",
+      "appCityId": "nice",
+      "cityName": "Nice",
+      "qualificationCityName": "Nice",
+      "cityId": "wup2025:4796",
+      "countryCode": "FR",
+      "country": "France",
+      "sourceId": "nice-cotedazur-cadastre-arcgis",
+      "appCenterLatLon": [
+        43.6987107905202,
+        7.23303214314509
+      ],
+      "wupPointLatLon": [
+        43.6987107905202,
+        7.23303214314509
+      ],
+      "appViewFocus": null,
+      "candidate": {
+        "sourceFile": "qualification/evidence/cities/4796/candidate.json",
+        "sha256": "eae063d82ce4a3e7fcd9aa345e1d20125845d3420d549b73ad4175ecbeadae1d",
+        "originalSeedPath": "qualification/evidence/cities/4796/candidate.json",
+        "originalSeedSha256": "eae063d82ce4a3e7fcd9aa345e1d20125845d3420d549b73ad4175ecbeadae1d",
+        "qualificationRecordedSha256": "eae063d82ce4a3e7fcd9aa345e1d20125845d3420d549b73ad4175ecbeadae1d",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/4796/candidate.json",
+        "evidenceOriginalSha256": "eae063d82ce4a3e7fcd9aa345e1d20125845d3420d549b73ad4175ecbeadae1d",
+        "evidenceExportSha256": "665432366fe72e28fa999a7f63b4728b33fe26b62a97e6cbc6166334893ce9a8"
+      },
+      "qualification": {
+        "sourceFile": "qualification/evidence/cities/4796/evidence/qualification.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/4796/qualification.json",
+        "status": "technical-qualified",
+        "sha256": "485879a38cebf2fb594ab53860bd62169633e7056aca1c402e73c74af6325bbd",
+        "evidenceOriginalSha256": "485879a38cebf2fb594ab53860bd62169633e7056aca1c402e73c74af6325bbd",
+        "evidenceExportSha256": "b9b7fd21b9bdbb25088920f6cedcc790388461849d4b06a4f4243304cf46d44b",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "passedGateCount": 8,
+        "featureCount": 107,
+        "sampleIds": [
+          "FR-NCA-CADASTRE-060088   MT0022"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "sourceFile": "qualification/evidence/cities/4796/evidence/metric-report.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/4796/metric-report.json",
+        "sha256": "b843cc310acb61293ff7cbe08008c723350b9c9d530390e2db04d77f26320d72",
+        "evidenceOriginalSha256": "b843cc310acb61293ff7cbe08008c723350b9c9d530390e2db04d77f26320d72",
+        "evidenceExportSha256": "b843cc310acb61293ff7cbe08008c723350b9c9d530390e2db04d77f26320d72",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32632",
+        "inputSha256": "ad5b19f86b2863ac056f420782d533d1a29a75c063e956b0dc6cdc9e59cd3818",
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-11/4796/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-11/4796/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-11/4796/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-11/4796/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "inputSha256": "ad5b19f86b2863ac056f420782d533d1a29a75c063e956b0dc6cdc9e59cd3818",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32632",
+        "featureCount": 107,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/4796/independent-metric-audit.json",
+        "sha256": "a801b3bdf2d82d4aaf2ee62d67c4a1e12b8d33e94d3cdf47fcf281bbdbdf1dbd",
+        "method": "Fresh independent metric recomputation from the saved, unchanged full-safe dataset before release."
+      },
+      "sourceProfile": {
+        "descriptorSha256": "31bd2b152a2b22210837c62396fef8f84304d46aee499f47df6470780933253a",
+        "adapter": "arcgis",
+        "endpoint": "https://cartes.nicecotedazur.org/heberge2/rest/services/Cadastre/Cadastre/MapServer/8",
+        "idField": "CODEIDENT",
+        "idFields": null,
+        "idPrefix": "FR-NCA-CADASTRE-",
+        "metricSrid": 32632,
+        "scope": "Cadastre of the Métropole Nice Côte d’Azur; official layer extent covers the metropolitan service area.",
+        "evidence": [
+          "https://opendata.nicecotedazur.org/data/dataset/parcelles-cadastrales-de-la-metropole-nice-cote-d-azur: Parcelles cadastrales sur le territoire de la Métropole Nice Côte d'Azur. Données DGFiP (juillet 2025). The first-party spatial-text coverage includes NICE.",
+          "https://cartes.nicecotedazur.org/heberge2/rest/services/Cadastre/Cadastre/MapServer?f=pjson: serviceDescription is Cadastre de la Métropole Nice Côte d'Azur; layer 8 is Parcelles (Contours), an esriGeometryPolygon layer with CODEIDENT parcel identity.",
+          "Frozen city packet and independent service review identify the official metropolitan cadastral service and verify native CODEIDENT 060088   MT0022 at the unchanged WUP point."
+        ]
+      },
+      "sourceProfileSha256": "31bd2b152a2b22210837c62396fef8f84304d46aee499f47df6470780933253a",
+      "verifiedAt": "2026-10-11"
+    },
+    {
+      "cityCode": "3039",
+      "appCityId": "escondido",
+      "cityName": "Escondido",
+      "qualificationCityName": "Escondido",
+      "cityId": "wup2025:3039",
+      "countryCode": "US",
+      "country": "United States",
+      "sourceId": "us-ca-escondido-parcels",
+      "appCenterLatLon": [
+        33.1785,
+        -117.16550000000001
+      ],
+      "wupPointLatLon": [
+        33.1691791253299,
+        -117.195352456462
+      ],
+      "appViewFocus": {
+        "sampleCentroidCellIndex": 4,
+        "bbox": [
+          -117.166,
+          33.178,
+          -117.165,
+          33.179
+        ],
+        "centerLonLat": [
+          -117.16550000000001,
+          33.1785
+        ],
+        "featureCount": 1,
+        "qualificationReason": "WUP point had no containing sampled parcel; sample centroid cell added.",
+        "distanceFromWupPointKm": 2.969
+      },
+      "candidate": {
+        "sourceFile": "qualification/evidence/cities/3039/candidate.json",
+        "sha256": "1f519a10a0ceb1616e98c7a64aa6518cabda7a161004b983c9c879d48b7117a1",
+        "originalSeedPath": "qualification/evidence/cities/3039/candidate.json",
+        "originalSeedSha256": "1f519a10a0ceb1616e98c7a64aa6518cabda7a161004b983c9c879d48b7117a1",
+        "qualificationRecordedSha256": "1f519a10a0ceb1616e98c7a64aa6518cabda7a161004b983c9c879d48b7117a1",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3039/candidate.json",
+        "evidenceOriginalSha256": "1f519a10a0ceb1616e98c7a64aa6518cabda7a161004b983c9c879d48b7117a1",
+        "evidenceExportSha256": "1c0a553b3aec7805fa7861ce8772cb9e41e7528a611f4bf2f3696af75c1fdf18"
+      },
+      "qualification": {
+        "sourceFile": "qualification/evidence/cities/3039/evidence/qualification.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3039/qualification.json",
+        "status": "technical-qualified",
+        "sha256": "ac52c47c7ea5fafcc80de54d91543dfc89e7c5b68dcac4defe4df06679323df4",
+        "evidenceOriginalSha256": "ac52c47c7ea5fafcc80de54d91543dfc89e7c5b68dcac4defe4df06679323df4",
+        "evidenceExportSha256": "c11c5e4a3627084a1a207bb73ac724d2e2647b5fec41fe9eb2d080571e795fc9",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "passedGateCount": 8,
+        "featureCount": 3,
+        "sampleIds": [
+          "US-CA-ESCONDIDO-P-663555  ",
+          "US-CA-ESCONDIDO-P-663562  ",
+          "US-CA-ESCONDIDO-P-663563  "
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "sourceFile": "qualification/evidence/cities/3039/evidence/metric-report.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3039/metric-report.json",
+        "sha256": "43262eea30beea351f6df79a4263c6bd099b268154b385d5fee1319984de01d7",
+        "evidenceOriginalSha256": "43262eea30beea351f6df79a4263c6bd099b268154b385d5fee1319984de01d7",
+        "evidenceExportSha256": "43262eea30beea351f6df79a4263c6bd099b268154b385d5fee1319984de01d7",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32611",
+        "inputSha256": "98d618873ae2b06033b4adfadcff0805af3d653fa5f76a53acdcf882fc293182",
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-11/3039/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-11/3039/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-11/3039/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-11/3039/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "inputSha256": "98d618873ae2b06033b4adfadcff0805af3d653fa5f76a53acdcf882fc293182",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32611",
+        "featureCount": 3,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3039/independent-metric-audit.json",
+        "sha256": "86601b2aa9014d1cf1fb7279f0db8426ebfb0a9d39b0b792455446f8ec649d69",
+        "method": "Fresh independent metric recomputation from the saved, unchanged full-safe dataset before release."
+      },
+      "sourceProfile": {
+        "descriptorSha256": "e58dd5a518fb41e4e4af3de6995788ea2e42972dfedf26f84ca3d03ed805dbcb",
+        "adapter": "arcgis",
+        "endpoint": "https://gis.escondido.gov/server/rest/services/Data/Parcels/FeatureServer/0",
+        "idField": "APN",
+        "idFields": null,
+        "idPrefix": "US-CA-ESCONDIDO-",
+        "metricSrid": 32611,
+        "scope": "Official City of Escondido assessor-derived parcel layer, including proposed and retired parcels and stacked taxable parcels; no status or geometric exclusions.",
+        "evidence": [
+          "Frozen city packet registryAssessment and officialSources identify the City of Escondido official local parcel layer derived from county assessor parcels: https://gis.escondido.gov/server/rest/services/Data/Parcels/FeatureServer/0",
+          "Live FeatureServer and MapServer description states: The City of Escondido's parcel layer is derived from the San Diego County asessor's parcels. This establishes assessor/cadastral purpose and the City's layer scope; see evidence/official-feature-schema.json and evidence/official-map-schema.json.",
+          "Official description keys parcels to Assessor Parcel Number (APN), with temporary placeholder APNs for proposed parcels, and documents retired and stacked taxable parcels. Bounded safe object-ID reads confirm all three frozen sample geometries; no citywide or exact-WUP-point coverage claim."
+        ]
+      },
+      "sourceProfileSha256": "e58dd5a518fb41e4e4af3de6995788ea2e42972dfedf26f84ca3d03ed805dbcb",
+      "verifiedAt": "2026-10-11"
+    },
+    {
+      "cityCode": "3536",
+      "appCityId": "stockton",
+      "cityName": "Stockton",
+      "qualificationCityName": "Stockton",
+      "cityId": "wup2025:3536",
+      "countryCode": "US",
+      "country": "United States",
+      "sourceId": "san-joaquin-county-diesel-wfl1-parcels",
+      "appCenterLatLon": [
+        37.9838255374783,
+        -121.30363247299
+      ],
+      "wupPointLatLon": [
+        37.9838255374783,
+        -121.30363247299
+      ],
+      "appViewFocus": null,
+      "candidate": {
+        "sourceFile": "qualification/evidence/cities/3536/candidate.json",
+        "sha256": "ebd40b1942aae0568443806bf5813d06b412ebd92b108e6524fb2244827f15a9",
+        "originalSeedPath": "qualification/evidence/cities/3536/candidate.json",
+        "originalSeedSha256": "ebd40b1942aae0568443806bf5813d06b412ebd92b108e6524fb2244827f15a9",
+        "qualificationRecordedSha256": "ebd40b1942aae0568443806bf5813d06b412ebd92b108e6524fb2244827f15a9",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3536/candidate.json",
+        "evidenceOriginalSha256": "ebd40b1942aae0568443806bf5813d06b412ebd92b108e6524fb2244827f15a9",
+        "evidenceExportSha256": "c6a50cda78673368069a449f7d227d1fb826280e39bfaacb0f8aebdcc9224ca8"
+      },
+      "qualification": {
+        "sourceFile": "qualification/evidence/cities/3536/evidence/qualification.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3536/qualification.json",
+        "status": "technical-qualified",
+        "sha256": "793ef83d079463e395eeea07d1f582e247f421fa16efc062eeb8278fa29245f8",
+        "evidenceOriginalSha256": "793ef83d079463e395eeea07d1f582e247f421fa16efc062eeb8278fa29245f8",
+        "evidenceExportSha256": "23e395ebc2cc5cefb418f25f457c53c0049657479685300950017b3c7f3d552d",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "passedGateCount": 8,
+        "featureCount": 178,
+        "sampleIds": [
+          "US-CA-SAN-JOAQUIN-11512305"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "sourceFile": "qualification/evidence/cities/3536/evidence/metric-report.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3536/metric-report.json",
+        "sha256": "daf5c3493c00c8bddef9f290f256a95e74dcc58c8b3e0b9cec3ffa00fa7354a0",
+        "evidenceOriginalSha256": "daf5c3493c00c8bddef9f290f256a95e74dcc58c8b3e0b9cec3ffa00fa7354a0",
+        "evidenceExportSha256": "daf5c3493c00c8bddef9f290f256a95e74dcc58c8b3e0b9cec3ffa00fa7354a0",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32610",
+        "inputSha256": "32f88b7332b31d00893e2b05f25e67c1fcac018c1e00fafbe2ab018ca9876201",
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-11/3536/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-11/3536/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-11/3536/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-11/3536/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "inputSha256": "32f88b7332b31d00893e2b05f25e67c1fcac018c1e00fafbe2ab018ca9876201",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32610",
+        "featureCount": 178,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3536/independent-metric-audit.json",
+        "sha256": "91fbb726a2fd112f557d1b26de42609c897caf8f189e287fe8fcca2258289587",
+        "method": "Fresh independent metric recomputation from the saved, unchanged full-safe dataset before release."
+      },
+      "sourceProfile": {
+        "descriptorSha256": "c9e5e9f111938b46f9af516adb4d3082a983ed941f7429c79f25324d5758cc43",
+        "adapter": "arcgis",
+        "endpoint": "https://services3.arcgis.com/nUD9ady1mS8uVvoJ/ArcGIS/rest/services/Diesel_WFL1/FeatureServer/1",
+        "idField": "APN_CHR",
+        "idFields": null,
+        "idPrefix": "US-CA-SAN-JOAQUIN-",
+        "metricSrid": 32610,
+        "scope": null,
+        "evidence": [
+          "The frozen city packet identifies San Joaquin County Assessor parcel mapping and the Diesel_WFL1 Parcels layer, with County CD/GIS and City of Stockton IT/GIS attribution and County Assessor stewardship.",
+          "Live first-party layer metadata describes APN_CHR as the Assessor Parcel Number text with leading zeros and POLY_CODE classes as condominium, assessed, unassessed or government parcels; this establishes assessment parcel purpose rather than an inference from the layer name.",
+          "The layer's EPSG:3857 extent covers the frozen Stockton point; both the frozen sample and an independent anonymous safe-field point query at [-121.30363247299,37.9838255374783] return APN_CHR 11512305. This establishes local Stockton scope, not citywide completeness.",
+          "The official County Assessor parcel-maps page confirms online Assessor parcel maps and links GIS parcel information: https://www.sjgov.org/department/assessor/property-information/homeowners/parcel-maps"
+        ]
+      },
+      "sourceProfileSha256": "c9e5e9f111938b46f9af516adb4d3082a983ed941f7429c79f25324d5758cc43",
+      "verifiedAt": "2026-10-11"
+    },
+    {
+      "cityCode": "8067",
+      "appCityId": "pittsburgh",
+      "cityName": "Pittsburgh",
+      "qualificationCityName": "Pittsburgh",
+      "cityId": "wup2025:8067",
+      "countryCode": "US",
+      "country": "United States",
+      "sourceId": "us-pa-allegheny-parcels",
+      "appCenterLatLon": [
+        40.4196878479719,
+        -79.9703261647027
+      ],
+      "wupPointLatLon": [
+        40.4196878479719,
+        -79.9703261647027
+      ],
+      "appViewFocus": null,
+      "candidate": {
+        "sourceFile": "qualification/evidence/cities/8067/candidate.json",
+        "sha256": "c5d36bc5d7fbfce21d2da82b6820118dffad0e2fcc0d8140ead092adaa152a29",
+        "originalSeedPath": "qualification/evidence/cities/8067/candidate.json",
+        "originalSeedSha256": "c5d36bc5d7fbfce21d2da82b6820118dffad0e2fcc0d8140ead092adaa152a29",
+        "qualificationRecordedSha256": "c5d36bc5d7fbfce21d2da82b6820118dffad0e2fcc0d8140ead092adaa152a29",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/8067/candidate.json",
+        "evidenceOriginalSha256": "c5d36bc5d7fbfce21d2da82b6820118dffad0e2fcc0d8140ead092adaa152a29",
+        "evidenceExportSha256": "a7832609b5676f3a63149ecd4967b105aeaeaebae52a6eedf840ba5fae25a726"
+      },
+      "qualification": {
+        "sourceFile": "qualification/evidence/cities/8067/evidence/qualification.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/8067/qualification.json",
+        "status": "technical-qualified",
+        "sha256": "15059e53b5fd35fdada2f5e0605c824053654986a245b9e4c0d9027bdc74efb5",
+        "evidenceOriginalSha256": "15059e53b5fd35fdada2f5e0605c824053654986a245b9e4c0d9027bdc74efb5",
+        "evidenceExportSha256": "cc1f3542808fdbdfa13d5a31f64fc928bab931842498ec0df3c600574f8d4c60",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "passedGateCount": 8,
+        "featureCount": 364,
+        "sampleIds": [
+          "US-PA-ALLEGHENY-0013G00229000000"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "sourceFile": "qualification/evidence/cities/8067/evidence/metric-report.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/8067/metric-report.json",
+        "sha256": "904696647015d4157b118627e631eee2f088be4a5c4e1fdcb46ce2e061f24218",
+        "evidenceOriginalSha256": "904696647015d4157b118627e631eee2f088be4a5c4e1fdcb46ce2e061f24218",
+        "evidenceExportSha256": "904696647015d4157b118627e631eee2f088be4a5c4e1fdcb46ce2e061f24218",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32617",
+        "inputSha256": "a63b57e0f223318a6ed1d07d919de61391fb4ee70b0f17b74105a41e3d590598",
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-11/8067/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-11/8067/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-11/8067/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-11/8067/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "inputSha256": "a63b57e0f223318a6ed1d07d919de61391fb4ee70b0f17b74105a41e3d590598",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32617",
+        "featureCount": 364,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/8067/independent-metric-audit.json",
+        "sha256": "6ac8fa0299f9d40397976655a25f1998b5510e0ec1b6cf78eba2f2a0945f7068",
+        "method": "Fresh independent metric recomputation from the saved, unchanged full-safe dataset before release."
+      },
+      "sourceProfile": {
+        "descriptorSha256": "3f4825e4551746df99865c51870892c3eca92c5771bbcf8d154e1c924e1a0f79",
+        "adapter": "arcgis",
+        "endpoint": "https://gisdata.alleghenycounty.us/arcgis/rest/services/OPENDATA/Parcels/MapServer/0",
+        "idField": "PIN",
+        "idFields": null,
+        "idPrefix": "US-PA-ALLEGHENY-",
+        "metricSrid": 32617,
+        "scope": "Allegheny County parcel-boundary layer including Pittsburgh. Qualification is bounded around the frozen WUP point and does not establish citywide completeness, legal title, survey accuracy or currentness. Native CRS EPSG:2272 / WKID 102729; queries request WGS84 GeoJSON outSR=4326.",
+        "evidence": [
+          "Frozen city-8067-pittsburgh.json registry.sourceScope and geometry.nativeIdentity identify the Allegheny County public parcel-boundary layer including Pittsburgh; pittsburgh-service-review.json officialPrimarySources and geometryDecision bind PIN 0013G00229000000 to an anonymous polygon query at the unchanged WUP point. The frozen sample SHA-256 matches the queue.",
+          "The Allegheny County publisher describes the dataset as boundaries of individual parcels across the county, with block and lot identifiers, in https://data.wprdc.org/dataset/allegheny-county-parcel-boundaries1. The live county endpoint https://gisdata.alleghenycounty.us/arcgis/rest/services/OPENDATA/Parcels/MapServer identifies the DCS-GIS custodian and public parcel purpose; layer 0 exposes polygon geometry and string PIN identity. Safe metadata, a short exact purpose excerpt, schema and download-link inspection are retained in evidence/official-source-inspection.json.",
+          "The frozen service review documents official Pittsburgh GIS discovery and county scope. An independent bounded live query at [-79.9703261647027,40.4196878479719] returned the same PIN 0013G00229000000 and polygon geometry with only PIN and OBJECTID requested. This confirms a parcel at the Pittsburgh locator; it is not a citywide coverage assertion."
+        ]
+      },
+      "sourceProfileSha256": "3f4825e4551746df99865c51870892c3eca92c5771bbcf8d154e1c924e1a0f79",
+      "verifiedAt": "2026-10-11"
+    },
+    {
+      "cityCode": "351",
+      "appCityId": "pasto",
+      "cityName": "Pasto",
+      "qualificationCityName": "Pasto",
+      "cityId": "wup2025:351",
+      "countryCode": "CO",
+      "country": "Colombia",
+      "sourceId": "co-pasto-urban-parcels",
+      "appCenterLatLon": [
+        1.2089443727064,
+        -77.2772679864238
+      ],
+      "wupPointLatLon": [
+        1.2089443727064,
+        -77.2772679864238
+      ],
+      "appViewFocus": null,
+      "candidate": {
+        "sourceFile": "qualification/evidence/cities/351/candidate.json",
+        "sha256": "bf62159a8be7d9dd2ff6da1f98f93dd7f8be82668b8fd45a01f2235648bf638f",
+        "originalSeedPath": "qualification/evidence/cities/351/candidate.json",
+        "originalSeedSha256": "bf62159a8be7d9dd2ff6da1f98f93dd7f8be82668b8fd45a01f2235648bf638f",
+        "qualificationRecordedSha256": "bf62159a8be7d9dd2ff6da1f98f93dd7f8be82668b8fd45a01f2235648bf638f",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/351/candidate.json",
+        "evidenceOriginalSha256": "bf62159a8be7d9dd2ff6da1f98f93dd7f8be82668b8fd45a01f2235648bf638f",
+        "evidenceExportSha256": "43d7b2e69a6e08299918f01a3e3fe0812e6f43551e43a21c837613e562ea850a"
+      },
+      "qualification": {
+        "sourceFile": "qualification/evidence/cities/351/evidence/qualification.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/351/qualification.json",
+        "status": "technical-qualified",
+        "sha256": "2d294e91627402f96c3ae5b115389de63564b1d1a2d8147477cc3d53eeb544e8",
+        "evidenceOriginalSha256": "2d294e91627402f96c3ae5b115389de63564b1d1a2d8147477cc3d53eeb544e8",
+        "evidenceExportSha256": "3dc1c22c1fcd9ffc0ee37a078260f2e16998cc5bad5f326c7877e0242f235e02",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "passedGateCount": 8,
+        "featureCount": 353,
+        "sampleIds": [
+          "CO-PASTO-URBAN-520010103000002020801800000033",
+          "CO-PASTO-URBAN-520010103000000360005000000000",
+          "CO-PASTO-URBAN-520010103000000980021000000000"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "sourceFile": "qualification/evidence/cities/351/evidence/metric-report.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/351/metric-report.json",
+        "sha256": "1321fbbcdffe0228020d20f40d0baca94a3a07d3461de1dea3ddae15ddb674c8",
+        "evidenceOriginalSha256": "1321fbbcdffe0228020d20f40d0baca94a3a07d3461de1dea3ddae15ddb674c8",
+        "evidenceExportSha256": "1321fbbcdffe0228020d20f40d0baca94a3a07d3461de1dea3ddae15ddb674c8",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32618",
+        "inputSha256": "73c6db044efe156e217235cea3a63033b7501c12310142609c519290a654dd89",
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-11/351/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-11/351/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-11/351/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-11/351/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "inputSha256": "73c6db044efe156e217235cea3a63033b7501c12310142609c519290a654dd89",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32618",
+        "featureCount": 353,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/351/independent-metric-audit.json",
+        "sha256": "e25a6d3169ceedaeb97fe8b0ae4d5bc7f6e59d6ce7d7195de979373d4bad8d2f",
+        "method": "Fresh independent metric recomputation from the saved, unchanged full-safe dataset before release."
+      },
+      "sourceProfile": {
+        "descriptorSha256": "23b4d75b59dfc40a839e8f1e96c434f7781e3768d5c4013e599453ce20ad2b0c",
+        "adapter": "arcgis",
+        "endpoint": "https://geoportal.pasto.gov.co/server/rest/services/Planeacion/Mapa_base_registro_de_descargas/MapServer/29",
+        "idField": "codigo_predial_nacional",
+        "idFields": null,
+        "idPrefix": "CO-PASTO-URBAN-",
+        "metricSrid": 32618,
+        "scope": "Urban cadastral base for the municipality of Pasto, within the urban perimeter approved by the applicable POT. Layer description states IGAC open data obtained in 2021; rural parcels are separate layers.",
+        "evidence": [
+          "https://geoportal.pasto.gov.co/server/rest/services/Planeacion/Mapa_base_registro_de_descargas/MapServer/29: first-party description identifies the cadastral base on urban land within the municipality and the urban perimeter approved by the POT; IGAC open data obtained in 2021. See evidence/official-layer-metadata.json.",
+          "https://geoportal.pasto.gov.co/server/rest/services/Planeacion/Mapa_base_registro_de_descargas/MapServer: first-party serviceDescription is Mapa base del municipio de Pasto, and layer 29 is Predios urbanos. This establishes purpose and municipality scope, without claiming citywide completeness. See evidence/official-service-metadata.json."
+        ]
+      },
+      "sourceProfileSha256": "23b4d75b59dfc40a839e8f1e96c434f7781e3768d5c4013e599453ce20ad2b0c",
+      "verifiedAt": "2026-10-11"
+    },
+    {
+      "cityCode": "3430",
+      "appCityId": "riverside",
+      "cityName": "Riverside",
+      "qualificationCityName": "Riverside",
+      "cityId": "wup2025:3430",
+      "countryCode": "US",
+      "country": "United States",
+      "sourceId": "us.ca.riverside-city-parcels",
+      "appCenterLatLon": [
+        33.9351928344791,
+        -117.443821994716
+      ],
+      "wupPointLatLon": [
+        33.9351928344791,
+        -117.443821994716
+      ],
+      "appViewFocus": null,
+      "candidate": {
+        "sourceFile": "qualification/evidence/cities/3430/candidate.json",
+        "sha256": "f8e48bc51d24421be35eb749c2d9c3a56e6738237929cf69a5c482833522497d",
+        "originalSeedPath": "qualification/evidence/cities/3430/candidate.json",
+        "originalSeedSha256": "f8e48bc51d24421be35eb749c2d9c3a56e6738237929cf69a5c482833522497d",
+        "qualificationRecordedSha256": "f8e48bc51d24421be35eb749c2d9c3a56e6738237929cf69a5c482833522497d",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3430/candidate.json",
+        "evidenceOriginalSha256": "f8e48bc51d24421be35eb749c2d9c3a56e6738237929cf69a5c482833522497d",
+        "evidenceExportSha256": "5e8833877faa0c15f1520092ca46fedbef8a2eb7422913d7551898d304ad148b"
+      },
+      "qualification": {
+        "sourceFile": "qualification/evidence/cities/3430/evidence/qualification.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3430/qualification.json",
+        "status": "technical-qualified",
+        "sha256": "7acc754f2b51baac75469dfafd82d7e083ed6e0e833a66c20f4a2d59d5d940c6",
+        "evidenceOriginalSha256": "7acc754f2b51baac75469dfafd82d7e083ed6e0e833a66c20f4a2d59d5d940c6",
+        "evidenceExportSha256": "7779cf3d58c75cdd20433e22e6758b62ac1fa2d4cb17ce42b162a6b16f654b02",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "passedGateCount": 8,
+        "featureCount": 152,
+        "sampleIds": [
+          "us-ca-riverside-city:44648"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "sourceFile": "qualification/evidence/cities/3430/evidence/metric-report.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3430/metric-report.json",
+        "sha256": "e27d10ce733cddece3e4c3dc047e44dd6f3ad4ff8850eeaecf4aba9192248be4",
+        "evidenceOriginalSha256": "e27d10ce733cddece3e4c3dc047e44dd6f3ad4ff8850eeaecf4aba9192248be4",
+        "evidenceExportSha256": "e27d10ce733cddece3e4c3dc047e44dd6f3ad4ff8850eeaecf4aba9192248be4",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32611",
+        "inputSha256": "a6dbefb0a32b91a6656c5bf8b0f698e1976828361a537d873a7afa222a0aeb9a",
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-11/3430/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-11/3430/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-11/3430/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-11/3430/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "inputSha256": "a6dbefb0a32b91a6656c5bf8b0f698e1976828361a537d873a7afa222a0aeb9a",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32611",
+        "featureCount": 152,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3430/independent-metric-audit.json",
+        "sha256": "896438f4877013b0627fc54171a4fc3d0f79f498194e65884048a60841deba59",
+        "method": "Fresh independent metric recomputation from the saved, unchanged full-safe dataset before release."
+      },
+      "sourceProfile": {
+        "descriptorSha256": "98a5f5866d5ddcec04f36928ad50aa237458ff114c5da45e76214f483061c576",
+        "adapter": "arcgis",
+        "endpoint": "https://mapriverside.riversideca.gov/server/rest/services/Cadastral/Cadastral_Public/MapServer/86",
+        "idField": "ParcelFabric_Parcels.OBJECTID",
+        "idFields": null,
+        "idPrefix": "us-ca-riverside-city:",
+        "metricSrid": 32611,
+        "scope": null,
+        "evidence": [
+          "https://mapriverside.riversideca.gov/server/rest/services/Cadastral/Cadastral_Public/MapServer: official City of Riverside cadastral public viewer, city scope stated by serviceDescription; packet and service review identify local cadastral/map custody.",
+          "https://mapriverside.riversideca.gov/server/rest/services/Cadastral/Cadastral_Public/MapServer/86: first-party Parcel polygon layer in the cadastral service, City of Riverside copyright, ParcelFabric_Parcels native geometry/object identity and assessor parcel number schema confirm cadastral purpose; service review identifies the retained exact-point sample as native object 44648."
+        ]
+      },
+      "sourceProfileSha256": "98a5f5866d5ddcec04f36928ad50aa237458ff114c5da45e76214f483061c576",
+      "verifiedAt": "2026-10-11"
+    },
+    {
+      "cityCode": "4353",
+      "appCityId": "grenoble",
+      "cityName": "Grenoble",
+      "qualificationCityName": "Grenoble",
+      "cityId": "wup2025:4353",
+      "countryCode": "FR",
+      "country": "France",
+      "sourceId": "fr-ign-parcellaire-express",
+      "appCenterLatLon": [
+        45.1806156549356,
+        5.72378420259572
+      ],
+      "wupPointLatLon": [
+        45.1806156549356,
+        5.72378420259572
+      ],
+      "appViewFocus": null,
+      "candidate": {
+        "sourceFile": "qualification/evidence/cities/4353/candidate.json",
+        "sha256": "7ccf6a9df6e960032820d0a31f5ae60fc00f7e1fd194b192b796362b29aab59b",
+        "originalSeedPath": "qualification/evidence/cities/4353/candidate.json",
+        "originalSeedSha256": "7ccf6a9df6e960032820d0a31f5ae60fc00f7e1fd194b192b796362b29aab59b",
+        "qualificationRecordedSha256": "7ccf6a9df6e960032820d0a31f5ae60fc00f7e1fd194b192b796362b29aab59b",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/4353/candidate.json",
+        "evidenceOriginalSha256": "7ccf6a9df6e960032820d0a31f5ae60fc00f7e1fd194b192b796362b29aab59b",
+        "evidenceExportSha256": "1cc7f83de382812b0cbb45bc90fd07ea2b0fb6e20a3a70c60bcb58d7599e6975"
+      },
+      "qualification": {
+        "sourceFile": "qualification/evidence/cities/4353/evidence/qualification.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/4353/qualification.json",
+        "status": "technical-qualified",
+        "sha256": "c36c1331d186a20a4278afcfc32a156c23df0147a65a6754eef9b55cd3688649",
+        "evidenceOriginalSha256": "c36c1331d186a20a4278afcfc32a156c23df0147a65a6754eef9b55cd3688649",
+        "evidenceExportSha256": "ab4331c9e7685b50169c1bb9b677b69b851634d6d189803c2c085c8e12fd172a",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "passedGateCount": 8,
+        "featureCount": 161,
+        "sampleIds": [
+          "FR-PCI-38185000DN0001"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "sourceFile": "qualification/evidence/cities/4353/evidence/metric-report.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/4353/metric-report.json",
+        "sha256": "c5ba0704cd3ee59bf657932c40885f91fb6e4dcafd2872a3c3522c7684ca777e",
+        "evidenceOriginalSha256": "c5ba0704cd3ee59bf657932c40885f91fb6e4dcafd2872a3c3522c7684ca777e",
+        "evidenceExportSha256": "c5ba0704cd3ee59bf657932c40885f91fb6e4dcafd2872a3c3522c7684ca777e",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32631",
+        "inputSha256": "cc23321972d3529121529d76adaa3b81e53ee116f12bc6e33777a1078b362455",
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-11/4353/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-11/4353/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-11/4353/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-11/4353/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "inputSha256": "cc23321972d3529121529d76adaa3b81e53ee116f12bc6e33777a1078b362455",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32631",
+        "featureCount": 161,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/4353/independent-metric-audit.json",
+        "sha256": "c47ce42f26a98e5cd34b5bca1752699c1f72357f7ac66b852594fc4355c8e31c",
+        "method": "Fresh independent metric recomputation from the saved, unchanged full-safe dataset before release."
+      },
+      "sourceProfile": {
+        "descriptorSha256": "2011b63d7dc604c4336e1d758dad82d099372f9033aa2ec6a362d9c5ea632add",
+        "adapter": "wfs",
+        "endpoint": "https://data.geopf.fr/wfs/ows",
+        "idField": "idu",
+        "idFields": null,
+        "idPrefix": "FR-PCI-",
+        "metricSrid": 32631,
+        "scope": "Candidate for bounded Grenoble commune 38185 review, using the national IGN assembly of DGFiP PCI cadastral parcel polygons; no citywide completeness claim.",
+        "evidence": [
+          "IGN first-party catalogue describes Parcellaire Express (PCI) as cadastral parcel information assembled from DGFiP PCI Vecteur across cadastral France: https://www.data.gouv.fr/datasets/parcellaire-express-pci . Frozen packet and service review identify IGN and Grenoble commune 38185; official WFS exact lookup returned idu 38185000DN0001 with code_insee 38185.",
+          "Ville de Grenoble first-party dataset describes Grenoble land-parcel boundaries derived from DGFiP PCI: https://www.data.gouv.fr/datasets/parcelles-grenoble . That separate, publisher-simplified municipal dataset is corroborating scope evidence, not the geometry used for this candidate."
+        ]
+      },
+      "sourceProfileSha256": "2011b63d7dc604c4336e1d758dad82d099372f9033aa2ec6a362d9c5ea632add",
+      "verifiedAt": "2026-10-11"
+    },
+    {
+      "cityCode": "3792",
+      "appCityId": "longueuil",
+      "cityName": "Longueuil",
+      "qualificationCityName": "Longueuil",
+      "cityId": "wup2025:3792",
+      "countryCode": "CA",
+      "country": "Canada",
+      "sourceId": "ca-qc-longueuil-cadastre",
+      "appCenterLatLon": [
+        45.4995092536395,
+        -73.4660080560164
+      ],
+      "wupPointLatLon": [
+        45.4995092536395,
+        -73.4660080560164
+      ],
+      "appViewFocus": null,
+      "candidate": {
+        "sourceFile": "qualification/evidence/cities/3792/candidate.json",
+        "sha256": "50a5f5bedc7e2748ba21de58e00b63bad3a0999647eedb70b32b97c752b07e41",
+        "originalSeedPath": "qualification/evidence/cities/3792/candidate.json",
+        "originalSeedSha256": "50a5f5bedc7e2748ba21de58e00b63bad3a0999647eedb70b32b97c752b07e41",
+        "qualificationRecordedSha256": "50a5f5bedc7e2748ba21de58e00b63bad3a0999647eedb70b32b97c752b07e41",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3792/candidate.json",
+        "evidenceOriginalSha256": "50a5f5bedc7e2748ba21de58e00b63bad3a0999647eedb70b32b97c752b07e41",
+        "evidenceExportSha256": "84470e3cebb3b0bf7517fcc23359ede8feab02e08db2399d8de2fee473d1db9c"
+      },
+      "qualification": {
+        "sourceFile": "qualification/evidence/cities/3792/evidence/qualification.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3792/qualification.json",
+        "status": "technical-qualified",
+        "sha256": "c1e23acd42c83a3158e1ddbe68fdbd44205d51a07a6e95ae2945cbf0659f5a2e",
+        "evidenceOriginalSha256": "c1e23acd42c83a3158e1ddbe68fdbd44205d51a07a6e95ae2945cbf0659f5a2e",
+        "evidenceExportSha256": "61cd8e900dba6f08cb356ab652833a31e5553664a8851b4a2b18d4f20427a6e0",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "passedGateCount": 8,
+        "featureCount": 228,
+        "sampleIds": [
+          "CA-QC-LONGUEUIL-2 798 557"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "sourceFile": "qualification/evidence/cities/3792/evidence/metric-report.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3792/metric-report.json",
+        "sha256": "0402c1e865e4fa013d34c484bdab856063fcca2db866d05ffff43d82747b2974",
+        "evidenceOriginalSha256": "0402c1e865e4fa013d34c484bdab856063fcca2db866d05ffff43d82747b2974",
+        "evidenceExportSha256": "0402c1e865e4fa013d34c484bdab856063fcca2db866d05ffff43d82747b2974",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32618",
+        "inputSha256": "5415fa2f6d4bd8f3f745195d0fb2ffe34750e24ae9b4cb2b224caaed151ac5db",
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-11/3792/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-11/3792/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-11/3792/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-11/3792/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "inputSha256": "5415fa2f6d4bd8f3f745195d0fb2ffe34750e24ae9b4cb2b224caaed151ac5db",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32618",
+        "featureCount": 228,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3792/independent-metric-audit.json",
+        "sha256": "82dd6a1f620cf32fb8a726f28a88875b161d0848223195fbe8edc4f01118ed7c",
+        "method": "Fresh independent metric recomputation from the saved, unchanged full-safe dataset before release."
+      },
+      "sourceProfile": {
+        "descriptorSha256": "0f76af39ce91d1db12ca0ba43f5c9f80b3ad3a066f5adb8beb2b40ce73cb1c13",
+        "adapter": "arcgis",
+        "endpoint": "https://geomatique.longueuil.quebec/public/rest/services/DonneesPubliques/CadastreEtEvaluation/FeatureServer/0",
+        "idField": "NUMERO",
+        "idFields": null,
+        "idPrefix": "CA-QC-LONGUEUIL-",
+        "metricSrid": 32618,
+        "scope": "Municipal cadastral lot polygons in publisher-coded official states -1 and 0; bounded Longueuil neighborhood qualification only. Service extent may span the municipal agglomeration; citywide completeness and authoritative maintenance scope remain unverified.",
+        "evidence": [
+          "The frozen city packet and service review identify the city-operated municipal Cadastre polygon layer at https://geomatique.longueuil.quebec/public/rest/services/DonneesPubliques/CadastreEtEvaluation/FeatureServer/0 and native cadastral lot NUMERO 2 798 557 intersecting the exact Longueuil WUP locator.",
+          "Official City of Longueuil interactive-map page links its GeoHub for maps and open data; the inspected service separates cadastral lots from assessment-unit geometry and supplies official/future cadastral status codes. See evidence/source-purpose.json, layer-schema.json, service-schema.json and exact-count.json.",
+          "Official Quebec cadastral guidance identifies cadastral plans as representation of land properties with distinct native lot numbers: https://www.quebec.ca/habitation-territoire/information-fonciere/cadastre/consulter-cadastre . Geographic assertion is bounded local Longueuil coverage, not province-wide or citywide completeness."
+        ]
+      },
+      "sourceProfileSha256": "0f76af39ce91d1db12ca0ba43f5c9f80b3ad3a066f5adb8beb2b40ce73cb1c13",
+      "verifiedAt": "2026-10-11"
+    },
+    {
+      "cityCode": "7979",
+      "appCityId": "wazirabad",
+      "cityName": "Wazirabad",
+      "qualificationCityName": "Wazirabad",
+      "cityId": "wup2025:7979",
+      "countryCode": "PK",
+      "country": "Pakistan",
+      "sourceId": "pk-pulse-wazirabad-parcels",
+      "appCenterLatLon": [
+        32.4355546089934,
+        74.1248485345839
+      ],
+      "wupPointLatLon": [
+        32.4355546089934,
+        74.1248485345839
+      ],
+      "appViewFocus": null,
+      "candidate": {
+        "sourceFile": "qualification/evidence/cities/7979/candidate.json",
+        "sha256": "207f5f3c7de40c763e5723af2028ca50536523cfc81405b12aeac09cce1c58c6",
+        "originalSeedPath": "qualification/evidence/cities/7979/candidate.json",
+        "originalSeedSha256": "207f5f3c7de40c763e5723af2028ca50536523cfc81405b12aeac09cce1c58c6",
+        "qualificationRecordedSha256": "207f5f3c7de40c763e5723af2028ca50536523cfc81405b12aeac09cce1c58c6",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/7979/candidate.json",
+        "evidenceOriginalSha256": "207f5f3c7de40c763e5723af2028ca50536523cfc81405b12aeac09cce1c58c6",
+        "evidenceExportSha256": "df2d8d53483fab6cd6990b283763cd46219b7aed1241086dd7203e688d87c1e8"
+      },
+      "qualification": {
+        "sourceFile": "qualification/evidence/cities/7979/evidence/qualification.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/7979/qualification.json",
+        "status": "technical-qualified",
+        "sha256": "d28dd0949ffa82e42d21be55998e5c55dd61522fb729707ae104d5e93cd651e6",
+        "evidenceOriginalSha256": "d28dd0949ffa82e42d21be55998e5c55dd61522fb729707ae104d5e93cd651e6",
+        "evidenceExportSha256": "57b09e2a5ae05ea15427922fe6384bf968493e51382a35f7a9a66074f828e003",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "passedGateCount": 8,
+        "featureCount": 98,
+        "sampleIds": [
+          "PK-PULSE-WAZIRABAD-6911537"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "sourceFile": "qualification/evidence/cities/7979/evidence/metric-report.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/7979/metric-report.json",
+        "sha256": "2b18a7e081770ef5f8b4e0f76a1bc43fc1fca787ec952e386f22ebda2f1160db",
+        "evidenceOriginalSha256": "2b18a7e081770ef5f8b4e0f76a1bc43fc1fca787ec952e386f22ebda2f1160db",
+        "evidenceExportSha256": "2b18a7e081770ef5f8b4e0f76a1bc43fc1fca787ec952e386f22ebda2f1160db",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32643",
+        "inputSha256": "a87a4dc11d3229b8dedf8c75d95ded1f5e80d6b6d347709a233db73cf61f8b0b",
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-11/7979/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-11/7979/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-11/7979/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-11/7979/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "inputSha256": "a87a4dc11d3229b8dedf8c75d95ded1f5e80d6b6d347709a233db73cf61f8b0b",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32643",
+        "featureCount": 98,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/7979/independent-metric-audit.json",
+        "sha256": "86a258ceaef9bb8dc0b9904492b8c81b7f6f4aa6d95cfa91a77f3b33dcee3430",
+        "method": "Fresh independent metric recomputation from the saved, unchanged full-safe dataset before release."
+      },
+      "sourceProfile": {
+        "descriptorSha256": "9bf7906836ce2317078e4afef32d9a2e3430e781b265bf6c236a171a15524160",
+        "adapter": "pulse-public",
+        "endpoint": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/35",
+        "idField": "OBJECTID",
+        "idFields": null,
+        "idPrefix": "PK-PULSE-WAZIRABAD-",
+        "metricSrid": 32643,
+        "scope": null,
+        "evidence": [
+          "Frozen city packet and service review identify Punjab PULSE / PLRA Wazirabad cadastral Feature Layer 35 and native OBJECTID 6911537; the frozen geometry sample hash matches the queue.",
+          "https://www.pulse.gop.pk/ states: Provision of a parcel map linked to the land records of the province. The official program includes digital land records and cadastral maps.",
+          "https://lis.pulse.gop.pk/ explicitly maps Wazirabad to cadastral sublayer 35; current first-party layer metadata confirms name Wazirabad, polygon Feature Layer and OBJECTID OID schema. This supports Wazirabad scope, not citywide completeness or legal title."
+        ]
+      },
+      "sourceProfileSha256": "9bf7906836ce2317078e4afef32d9a2e3430e781b265bf6c236a171a15524160",
+      "verifiedAt": "2026-10-11"
+    },
+    {
+      "cityCode": "8207",
+      "appCityId": "buffalo",
+      "cityName": "Buffalo",
+      "qualificationCityName": "Buffalo",
+      "cityId": "wup2025:8207",
+      "countryCode": "US",
+      "country": "United States",
+      "sourceId": "us-ny-erie-parcels",
+      "appCenterLatLon": [
+        42.9359928509233,
+        -78.8390421008214
+      ],
+      "wupPointLatLon": [
+        42.9359928509233,
+        -78.8390421008214
+      ],
+      "appViewFocus": null,
+      "candidate": {
+        "sourceFile": "qualification/evidence/cities/8207/candidate.json",
+        "sha256": "2337f71dc9920e85d641fa554b33b596691851aeae39076ccc69d2cc70b284e1",
+        "originalSeedPath": "qualification/evidence/cities/8207/candidate.json",
+        "originalSeedSha256": "2337f71dc9920e85d641fa554b33b596691851aeae39076ccc69d2cc70b284e1",
+        "qualificationRecordedSha256": "2337f71dc9920e85d641fa554b33b596691851aeae39076ccc69d2cc70b284e1",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/8207/candidate.json",
+        "evidenceOriginalSha256": "2337f71dc9920e85d641fa554b33b596691851aeae39076ccc69d2cc70b284e1",
+        "evidenceExportSha256": "9dfda3d65e729fb71cb175e9ee9f813cb11dd6a9972675de1e7fc6e0b13c3614"
+      },
+      "qualification": {
+        "sourceFile": "qualification/evidence/cities/8207/evidence/qualification.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/8207/qualification.json",
+        "status": "technical-qualified",
+        "sha256": "c2beb5c2fc4a80769088ee2c7ec596996d10ede0e6c568951329a15e1de6776b",
+        "evidenceOriginalSha256": "c2beb5c2fc4a80769088ee2c7ec596996d10ede0e6c568951329a15e1de6776b",
+        "evidenceExportSha256": "a22a7448d74ac7a2e7ea00522df18828c5b2aed27c77510fa14f3c3765b14644",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "passedGateCount": 8,
+        "featureCount": 184,
+        "sampleIds": [
+          "US-NY-ERIE-56840",
+          "US-NY-ERIE-56842",
+          "US-NY-ERIE-335243"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "sourceFile": "qualification/evidence/cities/8207/evidence/metric-report.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/8207/metric-report.json",
+        "sha256": "85e3f454dd98e4ee22447cf59070bbc85ed2c6c4a2195044eef6ac7f304161fe",
+        "evidenceOriginalSha256": "85e3f454dd98e4ee22447cf59070bbc85ed2c6c4a2195044eef6ac7f304161fe",
+        "evidenceExportSha256": "85e3f454dd98e4ee22447cf59070bbc85ed2c6c4a2195044eef6ac7f304161fe",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32617",
+        "inputSha256": "6aab4399de5ff02b5389625852101aee8d15debefb7f42cb31d38e239e957f18",
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-11/8207/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-11/8207/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-11/8207/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-11/8207/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "inputSha256": "6aab4399de5ff02b5389625852101aee8d15debefb7f42cb31d38e239e957f18",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32617",
+        "featureCount": 184,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/8207/independent-metric-audit.json",
+        "sha256": "6510e0112602bdacd1452e3690a04f33d841cb707a5c02a5942a588716915ac0",
+        "method": "Fresh independent metric recomputation from the saved, unchanged full-safe dataset before release."
+      },
+      "sourceProfile": {
+        "descriptorSha256": "9f4d0bdb5d4d92e2e9b25ccb5e90cecf43cbf70726936f193db2cb8bfc7259c7",
+        "adapter": "arcgis",
+        "endpoint": "https://gis.erie.gov/server/rest/services/OGIS/Parcels/MapServer/0",
+        "idField": "OBJECTID",
+        "idFields": null,
+        "idPrefix": "US-NY-ERIE-",
+        "metricSrid": 32617,
+        "scope": "Erie County tax-parcel polygon service linked by the City of Buffalo; bounded local qualification only. Buffalo municipal completeness is unverified.",
+        "evidence": [
+          "Frozen packet officialSources and registryBasis identify Erie County Office of GIS as tax-parcel custodian. https://www3.erie.gov/gis/internet-mapping explicitly describes searching tax parcel data and identifies the county PARCELS layer as current to 2025.",
+          "Frozen packet and live first-party https://www.buffalony.gov/543/GIS-Maps link the City of Buffalo Online Mapping Parcel Viewer and Erie County Online Mapping System, establishing city relevance without asserting municipal completeness.",
+          "https://gis.erie.gov/server/rest/services/OGIS/Parcels/MapServer/0?f=pjson describes Erie County Parcels with esriGeometryPolygon, native OBJECTID and anonymous Query capability; frozen geometry and exact WUP-point observations use that same endpoint."
+        ]
+      },
+      "sourceProfileSha256": "9f4d0bdb5d4d92e2e9b25ccb5e90cecf43cbf70726936f193db2cb8bfc7259c7",
+      "verifiedAt": "2026-10-11"
+    },
+    {
+      "cityCode": "3218",
+      "appCityId": "oshawa",
+      "cityName": "Oshawa",
+      "qualificationCityName": "Oshawa",
+      "cityId": "wup2025:3218",
+      "countryCode": "CA",
+      "country": "Canada",
+      "sourceId": "ca-on-oshawa-assessed-parcels",
+      "appCenterLatLon": [
+        43.9038793922422,
+        -78.8826450091796
+      ],
+      "wupPointLatLon": [
+        43.9038793922422,
+        -78.8826450091796
+      ],
+      "appViewFocus": null,
+      "candidate": {
+        "sourceFile": "qualification/evidence/cities/3218/candidate.json",
+        "sha256": "c2caca86960c8c9be04bd2cbda174175fced5d926b3a4eb08f4eaaec3287ff0a",
+        "originalSeedPath": "qualification/evidence/cities/3218/candidate.json",
+        "originalSeedSha256": "c2caca86960c8c9be04bd2cbda174175fced5d926b3a4eb08f4eaaec3287ff0a",
+        "qualificationRecordedSha256": "c2caca86960c8c9be04bd2cbda174175fced5d926b3a4eb08f4eaaec3287ff0a",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3218/candidate.json",
+        "evidenceOriginalSha256": "c2caca86960c8c9be04bd2cbda174175fced5d926b3a4eb08f4eaaec3287ff0a",
+        "evidenceExportSha256": "57c491d2e4ca07e7cdb102fa6d03e3682924bd630541d1e82951a78ba8af9c52"
+      },
+      "qualification": {
+        "sourceFile": "qualification/evidence/cities/3218/evidence/qualification.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3218/qualification.json",
+        "status": "technical-qualified",
+        "sha256": "6308a4a0e16b65a2232355fc5e65988f46015d3cc772f95e2ab237cf5f8343ee",
+        "evidenceOriginalSha256": "6308a4a0e16b65a2232355fc5e65988f46015d3cc772f95e2ab237cf5f8343ee",
+        "evidenceExportSha256": "2566cbed45d8de0dc21096d2fca35e0757f42369c2f24b5034323f582ec4f03d",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "passedGateCount": 8,
+        "featureCount": 206,
+        "sampleIds": [
+          "CA-ON-OSHAWA-PCL000001",
+          "CA-ON-OSHAWA-PCL000002",
+          "CA-ON-OSHAWA-PCL000003"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "sourceFile": "qualification/evidence/cities/3218/evidence/metric-report.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3218/metric-report.json",
+        "sha256": "3eebd6230c801915445d6de3fb5ae16dbf9a3577e6366b55d22e20041d73135a",
+        "evidenceOriginalSha256": "3eebd6230c801915445d6de3fb5ae16dbf9a3577e6366b55d22e20041d73135a",
+        "evidenceExportSha256": "3eebd6230c801915445d6de3fb5ae16dbf9a3577e6366b55d22e20041d73135a",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32617",
+        "inputSha256": "bbf18974cd14d45db7f256ffbe70aa2aae1d4281dc0c9f0d906cfb13604b15c4",
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-11/3218/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-11/3218/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-11/3218/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-11/3218/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "inputSha256": "bbf18974cd14d45db7f256ffbe70aa2aae1d4281dc0c9f0d906cfb13604b15c4",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32617",
+        "featureCount": 206,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3218/independent-metric-audit.json",
+        "sha256": "b717942fe6f1b15b3be5e1a93e7ad0a3a7f302de873cbd4bbe75c38cd4e2d5ef",
+        "method": "Fresh independent metric recomputation from the saved, unchanged full-safe dataset before release."
+      },
+      "sourceProfile": {
+        "descriptorSha256": "80515d1c32b0c547fdea4fb30f16ec812ae7e5b7d744df37459ed396d920a39a",
+        "adapter": "arcgis",
+        "endpoint": "https://map.oshawa.ca/arcgis/rest/services/Operational/Parcels_AddPts/MapServer/1",
+        "idField": "PARCELID",
+        "idFields": null,
+        "idPrefix": "CA-ON-OSHAWA-",
+        "metricSrid": 32617,
+        "scope": "City of Oshawa municipal assessed parcels of land (FCODE=2150); assessed condominium records (FCODE=9920) are a separate documented theme.",
+        "evidence": [
+          "Frozen city packet and service review identify the City of Oshawa polygon layer Operational/Parcels_AddPts/MapServer/1 and PARCELID identities; official metadata independently states: \"To display property ownership boundaries (parcels) within the City of Oshawa.\" https://map.oshawa.ca/OpenData/Metadata/Parcel%20Metadata.pdf",
+          "Official metadata defines FCODE 2150 as assessed parcels of land and FCODE 9920 as assessed condominiums; this candidate fixes FCODE=2150 as its assessed-land scope. Live layer schema confirms polygon geometry, EPSG:26917, string PARCELID, OBJECTID, FCODE and GeoJSON/pagination support. See attempt-01/evidence/official-contract.json."
+        ]
+      },
+      "sourceProfileSha256": "80515d1c32b0c547fdea4fb30f16ec812ae7e5b7d744df37459ed396d920a39a",
+      "verifiedAt": "2026-10-11"
+    },
+    {
+      "cityCode": "6413",
+      "appCityId": "arlington",
+      "cityName": "Arlington",
+      "qualificationCityName": "Arlington",
+      "cityId": "wup2025:6413",
+      "countryCode": "US",
+      "country": "United States",
+      "sourceId": "arlington-tax-parcels",
+      "appCenterLatLon": [
+        32.7235,
+        -97.0655
+      ],
+      "wupPointLatLon": [
+        32.7174112900959,
+        -97.0729125498606
+      ],
+      "appViewFocus": {
+        "sampleCentroidCellIndex": 4,
+        "bbox": [
+          -97.066,
+          32.723,
+          -97.065,
+          32.724
+        ],
+        "centerLonLat": [
+          -97.0655,
+          32.7235
+        ],
+        "featureCount": 19,
+        "qualificationReason": "WUP point had no containing sampled parcel; sample centroid cell added.",
+        "distanceFromWupPointKm": 0.97
+      },
+      "candidate": {
+        "sourceFile": "qualification/evidence/cities/6413/candidate.json",
+        "sha256": "cdaa19aaf0f456142d9315030b32d079ddf1ca3573c955f4b276f48734779045",
+        "originalSeedPath": "qualification/evidence/cities/6413/candidate.json",
+        "originalSeedSha256": "cdaa19aaf0f456142d9315030b32d079ddf1ca3573c955f4b276f48734779045",
+        "qualificationRecordedSha256": "cdaa19aaf0f456142d9315030b32d079ddf1ca3573c955f4b276f48734779045",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/6413/candidate.json",
+        "evidenceOriginalSha256": "cdaa19aaf0f456142d9315030b32d079ddf1ca3573c955f4b276f48734779045",
+        "evidenceExportSha256": "98e9c5b34fe31c978db82fcf0fba3b2cb07750f79644479df4c89f43546e0b8c"
+      },
+      "qualification": {
+        "sourceFile": "qualification/evidence/cities/6413/evidence/qualification.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/6413/qualification.json",
+        "status": "technical-qualified",
+        "sha256": "8e3c0af47d32e16e07a46cc63ea42f0cb7d7f0d9d7d898b034a881a165f15c6f",
+        "evidenceOriginalSha256": "8e3c0af47d32e16e07a46cc63ea42f0cb7d7f0d9d7d898b034a881a165f15c6f",
+        "evidenceExportSha256": "eae959d3ad37efa4d64d71eaad63670e2498fe39c8140be81a8cc5708f95c30a",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "passedGateCount": 8,
+        "featureCount": 141,
+        "sampleIds": [
+          "US-TX-ARLINGTON-4201521",
+          "US-TX-ARLINGTON-4201522",
+          "US-TX-ARLINGTON-4201523"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "sourceFile": "qualification/evidence/cities/6413/evidence/metric-report.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/6413/metric-report.json",
+        "sha256": "3a358ddb01ff461b0e25b6cba328f0f822022ea103d60b6b0b7b6098a204b581",
+        "evidenceOriginalSha256": "3a358ddb01ff461b0e25b6cba328f0f822022ea103d60b6b0b7b6098a204b581",
+        "evidenceExportSha256": "3a358ddb01ff461b0e25b6cba328f0f822022ea103d60b6b0b7b6098a204b581",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32614",
+        "inputSha256": "ed72aecc3aca11181548bf29cfd7b2448fb6eb9bc5c3bf20e0e0e1867198e504",
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-11/6413/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-11/6413/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-11/6413/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-11/6413/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "inputSha256": "ed72aecc3aca11181548bf29cfd7b2448fb6eb9bc5c3bf20e0e0e1867198e504",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32614",
+        "featureCount": 141,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/6413/independent-metric-audit.json",
+        "sha256": "134996695e0493a5dfdd2ba323e61d83ed33609edfc61848069776e8a1ae8a8d",
+        "method": "Fresh independent metric recomputation from the saved, unchanged full-safe dataset before release."
+      },
+      "sourceProfile": {
+        "descriptorSha256": "41a8646566f794c4a6ffee15b1fd35d14bf3464f10e8dc321ff47b27f5a83231",
+        "adapter": "arcgis",
+        "endpoint": "https://gis2.arlingtontx.gov/agsext2/rest/services/OpenData/OD_Property/MapServer/2",
+        "idField": "TaxParcelId",
+        "idFields": null,
+        "idPrefix": "US-TX-ARLINGTON-",
+        "metricSrid": 32614,
+        "scope": null,
+        "evidence": [
+          "Frozen city packet and service review confirm the City of Arlington municipal Tax Parcel polygon layer; the official city Plat Search workflow uses its Tax Parcel identify layer for land parcels and recorded plats.",
+          "First-party layer metadata defines Tax Parcel as distinct measured tracts of land; the OD_Property service describes land in the city, and its document scope identifies City of Arlington TX. See evidence/source-inspection.json.",
+          "Frozen bounded sample contains native TaxParcelId values 4201521, 4201522, 4201523; the exact city point miss is not citywide absence."
+        ]
+      },
+      "sourceProfileSha256": "41a8646566f794c4a6ffee15b1fd35d14bf3464f10e8dc321ff47b27f5a83231",
+      "verifiedAt": "2026-10-11"
+    },
+    {
+      "cityCode": "1168",
+      "appCityId": "brno",
+      "cityName": "Brno",
+      "qualificationCityName": "Brno",
+      "cityId": "wup2025:1168",
+      "countryCode": "CZ",
+      "country": "Czechia",
+      "sourceId": "brno-city-gis-katastr-g-parcely",
+      "appCenterLatLon": [
+        49.203210413959,
+        16.6097275929996
+      ],
+      "wupPointLatLon": [
+        49.203210413959,
+        16.6097275929996
+      ],
+      "appViewFocus": null,
+      "candidate": {
+        "sourceFile": "qualification/evidence/cities/1168/candidate.json",
+        "sha256": "4daa754aec3c4c02e96c0dc1276d52a7ab766ecce87ada6b71ab9f906d25defb",
+        "originalSeedPath": "qualification/evidence/cities/1168/candidate.json",
+        "originalSeedSha256": "4daa754aec3c4c02e96c0dc1276d52a7ab766ecce87ada6b71ab9f906d25defb",
+        "qualificationRecordedSha256": "4daa754aec3c4c02e96c0dc1276d52a7ab766ecce87ada6b71ab9f906d25defb",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/1168/candidate.json",
+        "evidenceOriginalSha256": "4daa754aec3c4c02e96c0dc1276d52a7ab766ecce87ada6b71ab9f906d25defb",
+        "evidenceExportSha256": "8cf7764c02090914fdc3cef8196d4bd54ee5dbcae30e63f04080524275888af0"
+      },
+      "qualification": {
+        "sourceFile": "qualification/evidence/cities/1168/evidence/qualification.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/1168/qualification.json",
+        "status": "technical-qualified",
+        "sha256": "0c586785b1161e316feee90338b80dca7de612f2baf57e928cf4609f97f8a36e",
+        "evidenceOriginalSha256": "0c586785b1161e316feee90338b80dca7de612f2baf57e928cf4609f97f8a36e",
+        "evidenceExportSha256": "d66f3800daddf3312f35e03e41ec61261d476ef6093450b417205fd7828acd82",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "passedGateCount": 8,
+        "featureCount": 174,
+        "sampleIds": [
+          "CZ-BRNO-1417958702"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "sourceFile": "qualification/evidence/cities/1168/evidence/metric-report.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/1168/metric-report.json",
+        "sha256": "1c2288b996225d499c4d49620b6fff9092b70e89b4cfdc97245f32b083c7e03f",
+        "evidenceOriginalSha256": "1c2288b996225d499c4d49620b6fff9092b70e89b4cfdc97245f32b083c7e03f",
+        "evidenceExportSha256": "1c2288b996225d499c4d49620b6fff9092b70e89b4cfdc97245f32b083c7e03f",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32633",
+        "inputSha256": "a5ba8add58a7439c32021ff6bd9244520274071fd4c3d0a917aa80045d0d0b7f",
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-11/1168/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-11/1168/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-11/1168/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-11/1168/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "inputSha256": "a5ba8add58a7439c32021ff6bd9244520274071fd4c3d0a917aa80045d0d0b7f",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32633",
+        "featureCount": 174,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/1168/independent-metric-audit.json",
+        "sha256": "6807634a2d3a006a2f015fe90d73998ad779ff0bb68c9217b5120be2e42dd094",
+        "method": "Fresh independent metric recomputation from the saved, unchanged full-safe dataset before release."
+      },
+      "sourceProfile": {
+        "descriptorSha256": "52d466e06647816d7cd98b71fcbe94718fd22a75c683650b3052a3c8365b4d91",
+        "adapter": "arcgis",
+        "endpoint": "https://gis.brno.cz/ags3/rest/services/PUBLIC/katastr_g/MapServer/5",
+        "idField": "par_id",
+        "idFields": null,
+        "idPrefix": "CZ-BRNO-",
+        "metricSrid": 32633,
+        "scope": "Brno and surrounding cadastral data per official service Subject; bounded local qualification only.",
+        "evidence": [
+          "Frozen packet source.scope and registryBasis identify the official Brno GIS cadastral parcel feature layer and exact-point parcel response.",
+          "https://gis.brno.cz/ags3/rest/services/PUBLIC/katastr_g/MapServer?f=pjson: documentInfo.Subject is \"Katastrální data Brno a mimo Brno, žlutá vizualizace\" (cadastral data for Brno and outside Brno).",
+          "https://gis.brno.cz/ags3/rest/services/PUBLIC/katastr_g/MapServer/5?f=pjson: polygon Feature Layer 5 Parcely has native par_id and transport ogc_fid; the frozen safe sample contains native parcel 1417958702 at the preserved Brno point."
+        ]
+      },
+      "sourceProfileSha256": "52d466e06647816d7cd98b71fcbe94718fd22a75c683650b3052a3c8365b4d91",
+      "verifiedAt": "2026-10-11"
+    },
+    {
+      "cityCode": "7729",
+      "appCityId": "hammond",
+      "cityName": "Hammond",
+      "qualificationCityName": "Hammond",
+      "cityId": "wup2025:7729",
+      "countryCode": "US",
+      "country": "United States",
+      "sourceId": "us-in-lake-hammond-parcels",
+      "appCenterLatLon": [
+        41.5835,
+        -87.4985
+      ],
+      "wupPointLatLon": [
+        41.6091850522165,
+        -87.5857397291232
+      ],
+      "appViewFocus": {
+        "sampleCentroidCellIndex": 4,
+        "bbox": [
+          -87.499,
+          41.583,
+          -87.498,
+          41.584
+        ],
+        "centerLonLat": [
+          -87.4985,
+          41.5835
+        ],
+        "featureCount": 9,
+        "qualificationReason": "WUP point had no containing sampled parcel; sample centroid cell added.",
+        "distanceFromWupPointKm": 7.804
+      },
+      "candidate": {
+        "sourceFile": "qualification/evidence/cities/7729/candidate.json",
+        "sha256": "a7c9f8f8efaa5ee81673f89cdefe35a8b460caa6d90206f9c40c04da5dbcbcfa",
+        "originalSeedPath": "qualification/evidence/cities/7729/candidate.json",
+        "originalSeedSha256": "a7c9f8f8efaa5ee81673f89cdefe35a8b460caa6d90206f9c40c04da5dbcbcfa",
+        "qualificationRecordedSha256": "a7c9f8f8efaa5ee81673f89cdefe35a8b460caa6d90206f9c40c04da5dbcbcfa",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/7729/candidate.json",
+        "evidenceOriginalSha256": "a7c9f8f8efaa5ee81673f89cdefe35a8b460caa6d90206f9c40c04da5dbcbcfa",
+        "evidenceExportSha256": "01e174d21cf7b4d855de9bdf302b31bc070b577a762b6d39892569e394810e14"
+      },
+      "qualification": {
+        "sourceFile": "qualification/evidence/cities/7729/evidence/qualification.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/7729/qualification.json",
+        "status": "technical-qualified",
+        "sha256": "2ed494ebfdc8401c0850e43286ede8f4376a3a89e6b3b56e71dd1704d5505672",
+        "evidenceOriginalSha256": "2ed494ebfdc8401c0850e43286ede8f4376a3a89e6b3b56e71dd1704d5505672",
+        "evidenceExportSha256": "f03e30f54a0b3d1a69dc865fd3b5531009a7e98bb53083f5f27865a618c83d88",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "passedGateCount": 8,
+        "featureCount": 11,
+        "sampleIds": [
+          "US-IN-LAKE-HAMMOND-45-07-07-453-028.000-023",
+          "US-IN-LAKE-HAMMOND-45-07-10-378-005.000-023",
+          "US-IN-LAKE-HAMMOND-45-07-07-401-011.000-023"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "sourceFile": "qualification/evidence/cities/7729/evidence/metric-report.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/7729/metric-report.json",
+        "sha256": "599d6dcdb948369e3f80ff023b3a0e1c7e97cd64988970b4df7f7b09f555b629",
+        "evidenceOriginalSha256": "599d6dcdb948369e3f80ff023b3a0e1c7e97cd64988970b4df7f7b09f555b629",
+        "evidenceExportSha256": "599d6dcdb948369e3f80ff023b3a0e1c7e97cd64988970b4df7f7b09f555b629",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32616",
+        "inputSha256": "9725f07a24f4d6f41cd673db8c5c8652f15bd2ae00ab8e6eb7fc89bb4c03e835",
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-11/7729/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-11/7729/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-11/7729/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-11/7729/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "inputSha256": "9725f07a24f4d6f41cd673db8c5c8652f15bd2ae00ab8e6eb7fc89bb4c03e835",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32616",
+        "featureCount": 11,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/7729/independent-metric-audit.json",
+        "sha256": "98a53684bcbb4d74eb344a8dd3a5fedc9d4b339da0f924c9e492f314e770c955",
+        "method": "Fresh independent metric recomputation from the saved, unchanged full-safe dataset before release."
+      },
+      "sourceProfile": {
+        "descriptorSha256": "a247c25c75ded6e9b9d0080be329644ede330206ee3b786e4da4326fb82f87b3",
+        "adapter": "arcgis",
+        "endpoint": "https://services5.arcgis.com/8CXRnvSfSpwdf0R6/arcgis/rest/services/Lake_County_Parcels/FeatureServer/0",
+        "idField": "PARCELID",
+        "idFields": null,
+        "idPrefix": "US-IN-LAKE-HAMMOND-",
+        "metricSrid": 32616,
+        "scope": "Lake County, Indiana cadastral parcel boundaries, restricted by the publisher Incorporated Municipality field IncMuni=Hammond. The unchanged WUP point is west of the published service extent; bounded sampling includes the native sample centroid cell.",
+        "evidence": [
+          "Frozen city packet officialSources and live service/item metadata identify Lake County, Indiana cadastral parcel boundaries maintained by Lake County Auditor parcel fabric; county GIS custody is identified by the official Surveyor page (https://lakecountyin.gov/departments/surveyor).",
+          "The frozen sample hash matches the queue; live exact native-ID query confirms all three samples have IncMuni=Hammond (Incorporated Municipality). Descriptor filters every request and returned row by this safe geographic scope field. See attempt-01/evidence/hammond-scope-check.json and layer-metadata.json."
+        ]
+      },
+      "sourceProfileSha256": "a247c25c75ded6e9b9d0080be329644ede330206ee3b786e4da4326fb82f87b3",
+      "verifiedAt": "2026-10-11"
+    },
+    {
+      "cityCode": "5785",
+      "appCityId": "takasaki",
+      "cityName": "Takasaki",
+      "qualificationCityName": "Takasaki [Maebashi]",
+      "cityId": "wup2025:5785",
+      "countryCode": "JP",
+      "country": "Japan",
+      "sourceId": "jp-takasaki-parcel-map",
+      "appCenterLatLon": [
+        36.3622938663979,
+        139.038838162225
+      ],
+      "wupPointLatLon": [
+        36.3622938663979,
+        139.038838162225
+      ],
+      "appViewFocus": null,
+      "candidate": {
+        "sourceFile": "adapters/evidence/tasks/d842e675fc556680/attempt-02/qualification/5785/candidate-derived.json",
+        "sha256": "10d256b1756293350367828d4e399af9d73b7a5b25c40eb3a7dde2477d0dcda2",
+        "originalSeedPath": "tmp/parcel-qualification/cities/5785/attempt-01/candidate.json",
+        "originalSeedSha256": "8bfbc57624fb8635b335a3b5a750c6b3024b6aa70b5a07e4c8b78e76d24b5c5a",
+        "qualificationRecordedSha256": "10d256b1756293350367828d4e399af9d73b7a5b25c40eb3a7dde2477d0dcda2",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/5785/candidate.json",
+        "evidenceOriginalSha256": "10d256b1756293350367828d4e399af9d73b7a5b25c40eb3a7dde2477d0dcda2",
+        "evidenceExportSha256": "698278bb0322108279015e500b1f2988b7c6676a17878e06b294508b9dc5b6f6"
+      },
+      "qualification": {
+        "sourceFile": "adapters/evidence/tasks/d842e675fc556680/attempt-02/qualification/5785/evidence/qualification.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/5785/qualification.json",
+        "status": "technical-qualified",
+        "sha256": "4679a8e827d7367173a6123e67f626829e1c353bb8e82a763169df07b894f169",
+        "evidenceOriginalSha256": "4679a8e827d7367173a6123e67f626829e1c353bb8e82a763169df07b894f169",
+        "evidenceExportSha256": "476a963135700100b1fae23d2e367d0dcf9620846a9b1e37a5a02b38d6fb0fff",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "passedGateCount": 8,
+        "featureCount": 474,
+        "sampleIds": [
+          "JP-TAKASAKI-FUDEID-299414"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "sourceFile": "adapters/evidence/tasks/d842e675fc556680/attempt-02/qualification/5785/evidence/metric-report.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/5785/metric-report.json",
+        "sha256": "bfcf3267c8fbc0ad105d74bc661394d4fd7cec40d5e02b760d8a269d129db1f9",
+        "evidenceOriginalSha256": "bfcf3267c8fbc0ad105d74bc661394d4fd7cec40d5e02b760d8a269d129db1f9",
+        "evidenceExportSha256": "bfcf3267c8fbc0ad105d74bc661394d4fd7cec40d5e02b760d8a269d129db1f9",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32654",
+        "inputSha256": "a27f4217ac40334d6a278bab3b7ffcd71eb7b9992d78b6a03c7ed2e2d0745398",
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-11/5785/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-11/5785/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-11/5785/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-11/5785/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "inputSha256": "a27f4217ac40334d6a278bab3b7ffcd71eb7b9992d78b6a03c7ed2e2d0745398",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32654",
+        "featureCount": 474,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/5785/independent-metric-audit.json",
+        "sha256": "3190918552b6bcbd1ddc6cfa80d999f7d29a15a397d185e6fc490002d0e85345",
+        "method": "Fresh independent metric recomputation from the saved, unchanged full-safe dataset before release."
+      },
+      "sourceProfile": {
+        "descriptorSha256": "11de705519be9aa8b280c1e9f545056825c7208c708ee97aab3d6ce5ea4687b3",
+        "adapter": "geojson-snapshot",
+        "endpoint": "https://www.city.takasaki.gunma.jp/uploaded/attachment/42714.zip",
+        "idField": "FUDEID",
+        "idFields": [
+          "FUDEID"
+        ],
+        "idPrefix": "JP-TAKASAKI-FUDEID-",
+        "metricSrid": 32654,
+        "scope": null,
+        "evidence": [
+          "Frozen city packet identifies Takasaki City Asset Tax Division as publisher of citywide parcel-number polygons, with FUDEID documented as parcel geometry management number.",
+          "https://www.city.takasaki.gunma.jp/page/5424.html defines the cadastral map as drawings of land in Takasaki City and links its parcel-number map Shapefile publication.",
+          "https://www.city.takasaki.gunma.jp/page/3130.html links the parcel polygon ZIP and official schema; https://www.city.takasaki.gunma.jp/uploaded/attachment/42707.pdf specifies 筆ポリゴン_地番図.shp, FUDEID and Japan Plane Rectangular CS IX (JGD2011)."
+        ]
+      },
+      "sourceProfileSha256": "11de705519be9aa8b280c1e9f545056825c7208c708ee97aab3d6ce5ea4687b3",
+      "verifiedAt": "2026-10-11"
+    },
+    {
+      "cityCode": "2998",
+      "appCityId": "wiesbaden",
+      "cityName": "Wiesbaden",
+      "qualificationCityName": "Wiesbaden",
+      "cityId": "wup2025:2998",
+      "countryCode": "DE",
+      "country": "Germany",
+      "sourceId": "hessen-alkis-vereinfacht-wfs",
+      "appCenterLatLon": [
+        50.0324160875229,
+        8.24497585586087
+      ],
+      "wupPointLatLon": [
+        50.0324160875229,
+        8.24497585586087
+      ],
+      "appViewFocus": null,
+      "candidate": {
+        "sourceFile": "qualification-seeds/cities/2998/attempt-01/candidate.json",
+        "sha256": "aa5dcad6fc393da68888d217090299090339f2d412787fb408174294d3fc6841",
+        "originalSeedPath": "tmp/parcel-qualification/cities/2998/attempt-01/candidate.json",
+        "originalSeedSha256": "aa5dcad6fc393da68888d217090299090339f2d412787fb408174294d3fc6841",
+        "qualificationRecordedSha256": "aa5dcad6fc393da68888d217090299090339f2d412787fb408174294d3fc6841",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/2998/candidate.json",
+        "evidenceOriginalSha256": "aa5dcad6fc393da68888d217090299090339f2d412787fb408174294d3fc6841",
+        "evidenceExportSha256": "ca3c1ef2709bbd2891c3082abc784c60829d5b5305144dabbf6f39954241cb73"
+      },
+      "qualification": {
+        "sourceFile": "adapters/evidence/tasks/150d0dbecc2bce2a/attempt-02/qualification/2998/evidence/qualification.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/2998/qualification.json",
+        "status": "technical-qualified",
+        "sha256": "273c37c889b2d7e7f81d23f7a336cd9aaf5f6cb4de6dc47e52cad35cb2daaf55",
+        "evidenceOriginalSha256": "273c37c889b2d7e7f81d23f7a336cd9aaf5f6cb4de6dc47e52cad35cb2daaf55",
+        "evidenceExportSha256": "be52a8237e04e46688b6cc5c224e64970c5e827ef42e08956a9db1985adac362",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "passedGateCount": 8,
+        "featureCount": 19,
+        "sampleIds": [
+          "DE-HE-DEHE062000013CfcFL",
+          "DE-HE-DEHE062000013CfdFL"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "sourceFile": "adapters/evidence/tasks/150d0dbecc2bce2a/attempt-02/qualification/2998/evidence/metric-report.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/2998/metric-report.json",
+        "sha256": "119dc82a8556974b0ac620d3c5e07902af43cb4de9c4e6afec71dd61fe5784f4",
+        "evidenceOriginalSha256": "119dc82a8556974b0ac620d3c5e07902af43cb4de9c4e6afec71dd61fe5784f4",
+        "evidenceExportSha256": "119dc82a8556974b0ac620d3c5e07902af43cb4de9c4e6afec71dd61fe5784f4",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32632",
+        "inputSha256": "d101c083113b485b6565547733dbbcf1baf525c0d0f79b2fa34dc888b21f441c",
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-11/2998/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-11/2998/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-11/2998/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-11/2998/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "inputSha256": "d101c083113b485b6565547733dbbcf1baf525c0d0f79b2fa34dc888b21f441c",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32632",
+        "featureCount": 19,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/2998/independent-metric-audit.json",
+        "sha256": "76c9df0cb64bb523311a47eca97e20d6b95e95d63fe56c72116cdc6e38b7c2bb",
+        "method": "Fresh independent metric recomputation from the saved, unchanged full-safe dataset before release."
+      },
+      "sourceProfile": {
+        "descriptorSha256": "b84fb63e5304fb587fc35d4c1629ee11facf9176d95b3fbca5be2c2f2dd6cb61",
+        "adapter": "gml-wfs",
+        "endpoint": "https://www.gds.hessen.de/wfs2/aaa-suite/cgi-bin/alkis/vereinf/wfs",
+        "idField": "oid",
+        "idFields": null,
+        "idPrefix": "DE-HE-",
+        "metricSrid": 32632,
+        "scope": "State ALKIS cadastral parcels; frozen bounded Wiesbaden samples. Citywide completeness is unverified.",
+        "evidence": [
+          "Official Hessen WFS GetCapabilities identifies WFS HE ALKIS Vereinfacht and states: Das Liegenschaftskataster wird in elektronischer Form im Amtlichen Liegenschaftskatasterinformationssystem (ALKIS) geführt. The service lists cadastral Flurstücke and exposes ave:Flurstueck. See evidence/official-service-inspection.json.",
+          "The frozen city packet identifies the Hessian state cadastral authority and reports Wiesbaden municipality attributes in the bounded ave:Flurstueck response near the unchanged WUP locator. Its safe native oid sample polygons DEHE062000013CfcFL and DEHE062000013CfdFL are retained in the frozen sample input, whose expected SHA-256 is verified. This establishes bounded Wiesbaden parcel evidence, without a citywide coverage claim."
+        ]
+      },
+      "sourceProfileSha256": "b84fb63e5304fb587fc35d4c1629ee11facf9176d95b3fbca5be2c2f2dd6cb61",
+      "verifiedAt": "2026-10-11"
+    },
+    {
+      "cityCode": "2093",
+      "appCityId": "gdansk",
+      "cityName": "Gdańsk",
+      "qualificationCityName": "Gdansk",
+      "cityId": "wup2025:2093",
+      "countryCode": "PL",
+      "country": "Poland",
+      "sourceId": "gdansk-gml-wfs",
+      "appCenterLatLon": [
+        54.3729195961829,
+        18.6101651609193
+      ],
+      "wupPointLatLon": [
+        54.3729195961829,
+        18.6101651609193
+      ],
+      "appViewFocus": null,
+      "candidate": {
+        "sourceFile": "qualification-seeds/cities/2093/attempt-01/candidate.json",
+        "sha256": "ce9721181478fc96d3ef9a232ef9617a289f8d0fefa7bf6fe22f7f0165c9dec4",
+        "originalSeedPath": "tmp/parcel-qualification/cities/2093/attempt-01/candidate.json",
+        "originalSeedSha256": "ce9721181478fc96d3ef9a232ef9617a289f8d0fefa7bf6fe22f7f0165c9dec4",
+        "qualificationRecordedSha256": "ce9721181478fc96d3ef9a232ef9617a289f8d0fefa7bf6fe22f7f0165c9dec4",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/2093/candidate.json",
+        "evidenceOriginalSha256": "ce9721181478fc96d3ef9a232ef9617a289f8d0fefa7bf6fe22f7f0165c9dec4",
+        "evidenceExportSha256": "f52f7bb495427e553fa287b02ef624df192d42a761c6059c391307ea86fde7c5"
+      },
+      "qualification": {
+        "sourceFile": "adapters/evidence/tasks/bbe6b0089e4d5f3c/attempt-02/qualification/2093/evidence/qualification.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/2093/qualification.json",
+        "status": "technical-qualified",
+        "sha256": "dba942ea0fdc3a8fdf5b1689b51b14a9ab5d46b16237ba7a10bbe2f0a8d36408",
+        "evidenceOriginalSha256": "dba942ea0fdc3a8fdf5b1689b51b14a9ab5d46b16237ba7a10bbe2f0a8d36408",
+        "evidenceExportSha256": "403f50525229762c1e44a2e1fa83039496b147c4512d629183e38d1aab997e59",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "passedGateCount": 8,
+        "featureCount": 160,
+        "sampleIds": [
+          "PL-GDANSK-226101_1.0055.284/13",
+          "PL-GDANSK-226101_1.0055.284/15",
+          "PL-GDANSK-226101_1.0055.279/9"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "sourceFile": "adapters/evidence/tasks/bbe6b0089e4d5f3c/attempt-02/qualification/2093/evidence/metric-report.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/2093/metric-report.json",
+        "sha256": "aa20eb083f431421f6794f99dce5a6f205ebef5344fcf4c0b454f77b7a357131",
+        "evidenceOriginalSha256": "aa20eb083f431421f6794f99dce5a6f205ebef5344fcf4c0b454f77b7a357131",
+        "evidenceExportSha256": "aa20eb083f431421f6794f99dce5a6f205ebef5344fcf4c0b454f77b7a357131",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32634",
+        "inputSha256": "99c39cf042c9578f2a76eaa49e880c2524494ff34cf4c1bd5e59b9c7da69e7d1",
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-11/2093/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-11/2093/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-11/2093/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-11/2093/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "inputSha256": "99c39cf042c9578f2a76eaa49e880c2524494ff34cf4c1bd5e59b9c7da69e7d1",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32634",
+        "featureCount": 160,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/2093/independent-metric-audit.json",
+        "sha256": "ccf1b5f9e081529eebf929d74596e40723d5e3ffc08674485e85b51d9e2333b7",
+        "method": "Fresh independent metric recomputation from the saved, unchanged full-safe dataset before release."
+      },
+      "sourceProfile": {
+        "descriptorSha256": "65fed8f72468dd9d6f98ec8ad4789e182d90ca26b8e0597c7df63e0778d22f93",
+        "adapter": "gml-wfs",
+        "endpoint": "https://ewid-wms.gdansk.gda.pl/iip/ows",
+        "idField": "ID_DZIALKI",
+        "idFields": null,
+        "idPrefix": "PL-GDANSK-",
+        "metricSrid": 32634,
+        "scope": "Municipal parcel layer; frozen three-parcel local sample near the unchanged WUP point. No citywide completeness claim.",
+        "evidence": [
+          "Frozen city-2093-gdansk.json and gdansk-service-review.json identify municipal EGiB custody, parcel type ms:dzialki, native ID_DZIALKI and three full cadastral parcel polygons near the Gdańsk WUP point.",
+          "First-party municipal GetCapabilities inspected on 2026-10-10 identifies the public service publisher as Urząd Miejski w Gdańsku and exposes ms:dzialki titled Działki; DescribeFeatureType confirms ID_DZIALKI and geometry. See evidence/source-inspection.json.",
+          "GUGiK EGiB documentation describes the cadastral registry, local-authority custody and national parcel identifiers: https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/"
+        ]
+      },
+      "sourceProfileSha256": "65fed8f72468dd9d6f98ec8ad4789e182d90ca26b8e0597c7df63e0778d22f93",
+      "verifiedAt": "2026-10-11"
+    },
+    {
+      "cityCode": "3234",
+      "appCityId": "sosnowiec",
+      "cityName": "Sosnowiec",
+      "qualificationCityName": "Sosnowiec",
+      "cityId": "wup2025:3234",
+      "countryCode": "PL",
+      "country": "Poland",
+      "sourceId": "sosnowiec-gml-wfs",
+      "appCenterLatLon": [
+        50.2922574419292,
+        19.1460205522405
+      ],
+      "wupPointLatLon": [
+        50.2922574419292,
+        19.1460205522405
+      ],
+      "appViewFocus": null,
+      "candidate": {
+        "sourceFile": "qualification-seeds/cities/3234/attempt-01/candidate.json",
+        "sha256": "3877f06173ae563a8765a012be34433ea9b8fc46416886149d8fc4e7216ff09c",
+        "originalSeedPath": "tmp/parcel-qualification/cities/3234/attempt-01/candidate.json",
+        "originalSeedSha256": "3877f06173ae563a8765a012be34433ea9b8fc46416886149d8fc4e7216ff09c",
+        "qualificationRecordedSha256": "3877f06173ae563a8765a012be34433ea9b8fc46416886149d8fc4e7216ff09c",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3234/candidate.json",
+        "evidenceOriginalSha256": "3877f06173ae563a8765a012be34433ea9b8fc46416886149d8fc4e7216ff09c",
+        "evidenceExportSha256": "5046407622f3833ab27a3dd205440deb3e778469ff1c89e63d07efb0cc86749e"
+      },
+      "qualification": {
+        "sourceFile": "adapters/evidence/tasks/080cb96775ff5499/attempt-02/qualification/3234/evidence/qualification.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3234/qualification.json",
+        "status": "technical-qualified",
+        "sha256": "838da62a677ad8c4a4af4b8dbeca0fea106435d3631ab33b61b627991e8b38e2",
+        "evidenceOriginalSha256": "838da62a677ad8c4a4af4b8dbeca0fea106435d3631ab33b61b627991e8b38e2",
+        "evidenceExportSha256": "a3f48f0a6fdda6bcc9733d9623de00f7ab45dbcbf7d80c17bbc59e32d6f26cfb",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "passedGateCount": 8,
+        "featureCount": 184,
+        "sampleIds": [
+          "PL-SOSNOWIEC-247501_1.0011.29",
+          "PL-SOSNOWIEC-247501_1.0010.3473",
+          "PL-SOSNOWIEC-247501_1.0010.3163"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "sourceFile": "adapters/evidence/tasks/080cb96775ff5499/attempt-02/qualification/3234/evidence/metric-report.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3234/metric-report.json",
+        "sha256": "56c23825f12d52688685233acb8e32193d082ffb56fdbf341b51092e648652a4",
+        "evidenceOriginalSha256": "56c23825f12d52688685233acb8e32193d082ffb56fdbf341b51092e648652a4",
+        "evidenceExportSha256": "56c23825f12d52688685233acb8e32193d082ffb56fdbf341b51092e648652a4",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32634",
+        "inputSha256": "7f18c6b2b0d692085890f58426128ef805e61147a1429e05f3cdc95200649c5e",
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-11/3234/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-11/3234/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-11/3234/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-11/3234/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "inputSha256": "7f18c6b2b0d692085890f58426128ef805e61147a1429e05f3cdc95200649c5e",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32634",
+        "featureCount": 184,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3234/independent-metric-audit.json",
+        "sha256": "cf5150d7761cb7d8c3a0eff6dc5b8868cf3b7327d8bdf16b9de54f39bf744001",
+        "method": "Fresh independent metric recomputation from the saved, unchanged full-safe dataset before release."
+      },
+      "sourceProfile": {
+        "descriptorSha256": "5245ebe70160c23263f70f04a74307aad807603b457012117106156d207a0c37",
+        "adapter": "gml-wfs",
+        "endpoint": "https://sosnowiec.webewid.pl:9443/iip/ows",
+        "idField": "ID_DZIALKI",
+        "idFields": null,
+        "idPrefix": "PL-SOSNOWIEC-",
+        "metricSrid": 32634,
+        "scope": "Municipal Sosnowiec cadastral parcel layer; source bounds cover the unchanged WUP locator. Citywide completeness is unverified.",
+        "evidence": [
+          "Frozen packet officialSources, registryBasis and sourceCandidate identify Sosnowiec municipal geodesy/cartography custody of EGiB parcels; official municipal announcement links sosnowiec.webewid.pl: https://www.sosnowiec.pl/2023/07/aktualnosci/teraz-wniosek-o-dane-zgromadzone-w-zasobie-geodezyjnym-zlozysz-przez-profil-zaufany-lub-konto-bankowe/",
+          "Verified official WFS GetCapabilities identifies Urząd Miejski w Sosnowcu public WMS/WFS and ms:dzialki (Działki); WGS84 bounds [19.0697905083279,50.2239033125785,19.3191645970775,50.3181698377559] contain the unchanged WUP locator. DescribeFeatureType confirms ID_DZIALKI and geometry: https://sosnowiec.webewid.pl:9443/iip/ows",
+          "Official GUGiK EGiB documentation identifies cadastral parcel geometry and county/city-county custody; frozen native IDs begin with the Sosnowiec cadastral unit 247501_1: https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/"
+        ]
+      },
+      "sourceProfileSha256": "5245ebe70160c23263f70f04a74307aad807603b457012117106156d207a0c37",
+      "verifiedAt": "2026-10-11"
+    },
+    {
+      "cityCode": "3893",
+      "appCityId": "montpellier",
+      "cityName": "Montpellier",
+      "qualificationCityName": "Montpellier",
+      "cityId": "wup2025:3893",
+      "countryCode": "FR",
+      "country": "France",
+      "sourceId": "fr-mmm-montpellier-cadastre",
+      "appCenterLatLon": [
+        43.6153701485296,
+        3.86647003777739
+      ],
+      "wupPointLatLon": [
+        43.6153701485296,
+        3.86647003777739
+      ],
+      "appViewFocus": null,
+      "candidate": {
+        "sourceFile": "adapters/evidence/tasks/d842e675fc556680/attempt-02/qualification/3893/candidate-derived.json",
+        "sha256": "d174416d5323fc7ca558b7609fd8649021184eb855287a7206e7951e6dffed97",
+        "originalSeedPath": "tmp/parcel-qualification/cities/3893/attempt-01/candidate.json",
+        "originalSeedSha256": "3b6b013a56fb8a10017ac569772e4789cede792474b088914921593499f8393a",
+        "qualificationRecordedSha256": "d174416d5323fc7ca558b7609fd8649021184eb855287a7206e7951e6dffed97",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3893/candidate.json",
+        "evidenceOriginalSha256": "d174416d5323fc7ca558b7609fd8649021184eb855287a7206e7951e6dffed97",
+        "evidenceExportSha256": "a0bdb40ad26f27a57a1347e01affbece5c8e7d88f7bf0f8c98335577a37a3e24"
+      },
+      "qualification": {
+        "sourceFile": "adapters/evidence/tasks/d842e675fc556680/attempt-02/qualification/3893/evidence/qualification.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3893/qualification.json",
+        "status": "technical-qualified",
+        "sha256": "d2b806caf1c68ff86f6a8b5613238bbf62aa82841baa607f8549d8b08af77a19",
+        "evidenceOriginalSha256": "d2b806caf1c68ff86f6a8b5613238bbf62aa82841baa607f8549d8b08af77a19",
+        "evidenceExportSha256": "bb325083084be1b393acbe7caa20cac43c5465d8beca6f3092b37da47e1bd66d",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "passedGateCount": 8,
+        "featureCount": 173,
+        "sampleIds": [
+          "FR-MMM-MONTPELLIER-CODEIDENT-340172%20%20%20BV0156",
+          "FR-MMM-MONTPELLIER-CODEIDENT-340172%20%20%20BV0151",
+          "FR-MMM-MONTPELLIER-CODEIDENT-340172%20%20%20BV0069"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "sourceFile": "adapters/evidence/tasks/d842e675fc556680/attempt-02/qualification/3893/evidence/metric-report.json",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3893/metric-report.json",
+        "sha256": "891e87d1c247970db24499cc16360bbb40e8f79abae8a0389d140614c25a1fc2",
+        "evidenceOriginalSha256": "891e87d1c247970db24499cc16360bbb40e8f79abae8a0389d140614c25a1fc2",
+        "evidenceExportSha256": "891e87d1c247970db24499cc16360bbb40e8f79abae8a0389d140614c25a1fc2",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32631",
+        "inputSha256": "75b83cd04c418d106a2055152314158b3f75e6010c94c94aa669a1e523d08ba1",
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-11/3893/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-11/3893/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-11/3893/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-11/3893/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "inputSha256": "75b83cd04c418d106a2055152314158b3f75e6010c94c94aa669a1e523d08ba1",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32631",
+        "featureCount": 173,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3893/independent-metric-audit.json",
+        "sha256": "6f116b278a021fcfa5ce8141122a2cc8a2ed1076dbc7935d116123e1e68cbd76",
+        "method": "Fresh independent metric recomputation from the saved, unchanged full-safe dataset before release."
+      },
+      "sourceProfile": {
+        "descriptorSha256": "490b434f51329744490f12cf3aa57998a659d5f75747072a894294374ca745a4",
+        "adapter": "geojson-snapshot",
+        "endpoint": "https://data.montpellier3m.fr/sites/default/files/ressources/MMM_Montpellier_Cadastre.zip",
+        "idField": "Codeident",
+        "idFields": [
+          "Codeident"
+        ],
+        "idPrefix": "FR-MMM-MONTPELLIER-CODEIDENT-",
+        "metricSrid": 32631,
+        "scope": "Official Montpellier municipal compilation of DGFiP PCI vector cadastral geographic data; parcel layer in the authority Shapefile ZIP.",
+        "evidence": [
+          "The frozen city packet identifies MMM_MTP_Cadastre as a municipal compilation of the DGFiP PCI vector cadastral plan for Montpellier, with parcelle_Layer and source-native Codeident values; the official dataset page confirms the cadastral purpose and Ville de Montpellier geographic scope: https://data.montpellier3m.fr/dataset/cadastre-de-montpellier",
+          "The first-party resource page lists parcelle_Layer.shp, parcelle_Layer.dbf and parcelle_Layer.prj in the authority archive, proving an actual parcel layer beyond dataset keywords: https://data.montpellier3m.fr/dataset/cadastre-de-montpellier/resource/bb1b3ef2-1577-45eb-b850-4d610ebb6940"
+        ]
+      },
+      "sourceProfileSha256": "490b434f51329744490f12cf3aa57998a659d5f75747072a894294374ca745a4",
+      "verifiedAt": "2026-10-11"
+    }
+  ]
+}

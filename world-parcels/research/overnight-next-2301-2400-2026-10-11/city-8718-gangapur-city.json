@@ -1,0 +1,46 @@
+{
+  "cityCode": 8718,
+  "queueRank": 2332,
+  "name": "Gangapur City",
+  "country": "India",
+  "countryCode": "IN",
+  "iso2": "IN",
+  "iso3": "IND",
+  "point": [26.479092678941, 76.7283406911011],
+  "population2025": 250176,
+  "population2025k": 250.176,
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted",
+  "nativeIdReadiness": "not_applicable_no_verified_parcel_geometry",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gangapur City Rajasthan official cadastral parcel map land records GIS Bhunaksha",
+        "result": "First-party discovery found Rajasthan Bhu-Naksha, the state cadastral map viewer, Rajasthan Rajdharaa Urban GIS, and the official Gangapur City urban-planning map pages. The official services describe khasra/parcel map viewing, but no safe anonymous parcel feature response was qualified.",
+        "actualResultUrls": [
+          "https://bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+          "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+          "https://www.lsg.urban.rajasthan.gov.in/content/dam/raj/udh/organizations/ctp/pdf/Gangapur%20City%20Final.pdf",
+          "https://swcstest.rajasthan.gov.in/ComprehensiveLandInformation.aspx"
+        ]
+      },
+      {
+        "language": "Hindi (native/local discovery)",
+        "query": "गंगापुर सिटी राजस्थान आधिकारिक भू नक्शा भूमि रिकॉर्ड पार्सल मानचित्र",
+        "result": "Hindi-language first-party discovery returned the same official Rajasthan Bhu-Naksha and Rajdharaa services. The Hindi search also identified Gangapur City references to Bhu-Naksha, but no safe ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+          "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+          "https://apnakhata.rajasthan.gov.in/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Rajasthan Government's Bhu-Naksha is an official public cadastral map registry/viewer and Rajdharaa is an official state GIS portal exposing khasra search and map functions. A Gangapur City-specific town-planning map is official context, not a parcel-feature response. The local urban/revenue custodian and exact city coverage remain unverified.",
+  "researchNote": "The official Rajasthan viewer and current public service routes were identified, but the anonymous service was unavailable to this attempt and no native parcel identity plus unchanged polygon geometry was qualified. This packet is not source integration or runtime admission.",
+  "runtimeReadiness": "held"
+}

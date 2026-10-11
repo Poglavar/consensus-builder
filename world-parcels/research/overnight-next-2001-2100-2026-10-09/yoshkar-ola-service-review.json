@@ -1,0 +1,34 @@
+{
+  "cityRecord": "city-5605-yoshkar-ola.json",
+  "cityCode": 5605,
+  "queueRank": 2044,
+  "name": "Yoshkar-Ola",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "point": [56.6369367494595, 47.8869750721061],
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "serviceOutcome": "official local registry/procedure evidence found; no usable anonymous parcel geometry service verified",
+  "attempts": [
+    {"route": "Official municipal property registry", "url": "https://i-ola.ru/city/kumi/reestr-munitsipalnogo-imushchestva.php", "outcome": "Accessible/search-indexed first-party page; includes land-parcel registry section, but no geometry API."},
+    {"route": "Official municipal regulatory archive", "url": "https://i-ola.ru/regulatory/57/?SHOWALL_1=1", "outcome": "Accessible/search-indexed first-party archive; documents refer to cadastral-plan land-location schemes, but are not parcel feature responses."},
+    {"route": "Current national public cadastral map", "url": "https://nspd.gov.ru/map?thematic=PKK", "outcome": "Anonymous GET timed out after 20 seconds; no UI/config/API inspection possible."},
+    {"route": "Rosreestr public-map host", "url": "https://pkk.rosreestr.ru/", "outcome": "Anonymous GET timed out after 12 seconds."},
+    {"route": "Historical Rosreestr public-map host", "url": "https://pkk5.rosreestr.ru/", "outcome": "Anonymous GET timed out after 12 seconds."}
+  ],
+  "schemaAndCrs": {"inspected": false, "reason": "No public map response or configuration was retrieved."},
+  "safeFieldAllowlist": ["stable native parcel identifier", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "rights"],
+  "sampleGeojson": null,
+  "geometryRetention": "No GeoJSON retained because no safe native-ID geometry response was obtained.",
+  "coverageLimits": [
+    "Local registry evidence does not prove citywide open geometry coverage.",
+    "National-map timeouts do not prove absence or map-extent miss.",
+    "Exact WUP point was preserved and was not shifted to force a hit.",
+    "Runtime integration/admission remains held pending independent serial qualification."
+  ],
+  "uncertainty": "Current NSPD/Rosreestr public API route, schema, CRS, native identifier field, and target-city parcel availability remain unknown from this bounded anonymous attempt.",
+  "runtimeReadiness": "held",
+  "conclusion": "Packet complete for attempt 1 of 3; source lead is retained for retry, but no parcel sample or adapter qualification is claimed."
+}

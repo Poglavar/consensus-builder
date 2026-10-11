@@ -1,0 +1,33 @@
+{
+  "taskId": "city:2200",
+  "checkedAt": "2026-10-10T22:21:03Z",
+  "queueIdentity": "Exact rank, code, country, coordinates, and 2025 population match queue and verified WUP gzip (SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114).",
+  "admissionGatesVerified": false,
+  "missingAdmissionGates": [
+    "fresh adapter native-ID read protocol",
+    "forced pagination and complete manifest",
+    "13 bounded cells",
+    "independent metric GEOS validity, duplicate and overlap checks",
+    "source binding and full-parcel proposal operation",
+    "headed pointer and Details-panel verification"
+  ],
+  "firstPartyChecks": {
+    "boundedNumberMatched": 16,
+    "boundedNumberReturned": 3,
+    "retainedPolygonCount": 3,
+    "retainedGeometryExactMatch": true,
+    "broadBboxHits": 84694,
+    "exactPointMatches": 0,
+    "originalResponseReturnedExtraFields": true,
+    "retainedProperties": [
+      "id"
+    ]
+  },
+  "rawArtifactsSha256": {
+    "tmp/valhalla-parcel-research/pavlodar/wfs-capabilities.xml": "7c84417b95cba56751546c3dc65052cea6470a1b049fb4f2c82683799863cd74",
+    "tmp/valhalla-parcel-research/pavlodar/query-1791670723621415408.json": "2e9f5fbb2e312e5ce16cc62711c96592155fac24de229f7b3266b6fbf93ba6d7",
+    "tmp/valhalla-parcel-research/pavlodar/query-1791670723958613964.json": "c20b600abd4aca0b29fc000085e452c3e3eba2842e45afd784d5a4a48c086b42",
+    "tmp/valhalla-parcel-research/pavlodar/exact-point.json": "fa1ddbda430d7c589c48d72bbc536a09db4b9259e84cc1bbda7a1594e12d1769"
+  },
+  "reviewFinding": "Held: the saved first-party WFS returned three complete MultiPolygons and native cad_number values matching the three safe-ID sample geometries; the bounded response reported 16 matches and three returns. The broad bbox hit count 84694 is not a city coverage metric, and the exact-point zero is not absence. The original WFS read returned all source fields despite the packet saying only minimum safe fields were requested; the durable sample retains only id. Independent paging, 13-cell, metric GEOS, binding, and headed Details checks are missing."
+}

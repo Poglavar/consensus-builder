@@ -1,0 +1,92 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 12115,
+  "queueRank": 2272,
+  "name": "Yuhuan",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [28.1147158074451, 121.248734273497],
+  "population2025": 257224,
+  "population2025k": 257.224,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Yuhuan China official cadastral map parcel natural resources land registration map",
+        "result": "Searches found official Yuhuan government and Zhejiang natural-resources references to the local natural-resources/planning authority and geographic-information service, but no Yuhuan-specific anonymous cadastral viewer or parcel feature response.",
+        "actualResultUrls": [
+          "https://www.yuhuan.gov.cn/art/2025/3/20/art_1643414_59088371.html",
+          "https://www.yuhuan.gov.cn/module/download/downfile.jsp?classid=0&filename=bff472174fca4faf993fb476d1a20d42.pdf",
+          "https://www.mnr.gov.cn/zt/td/bdcdj/"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "玉环市 不动产登记 地图 地籍图 官方",
+        "result": "Official local results identify 玉环市自然资源和规划局 and a 玉环市地理信息服务中心; a local government historical report records completion of unified real-estate-registration responsibility consolidation. No public parcel layer, service configuration, schema, CRS, or bounded anonymous ID+geometry response was established.",
+        "actualResultUrls": [
+          "https://www.yuhuan.gov.cn/art/2025/3/20/art_1643414_59088371.html",
+          "https://www.yuhuan.gov.cn/module/download/downfile.jsp?classid=0&filename=bff472174fca4faf993fb476d1a20d42.pdf",
+          "https://yhsz.yuhuan.gov.cn/art/2016/4/22/art_1631253_30648381.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "basis": "First-party Yuhuan government results identify the Yuhuan Natural Resources and Planning Bureau as the local authority for planning/natural-resource administration, and a first-party Yuhuan Geographic Information Service Center decision document identifies the local geospatial service unit. A first-party local historical-government report records unified real-estate-registration responsibility consolidation in Yuhuan. This establishes local custodial/administrative evidence, not an open parcel API.",
+    "urls": [
+      "https://www.yuhuan.gov.cn/art/2025/3/20/art_1643414_59088371.html",
+      "https://www.yuhuan.gov.cn/module/download/downfile.jsp?classid=0&filename=bff472174fca4faf993fb476d1a20d42.pdf",
+      "https://yhsz.yuhuan.gov.cn/art/2016/4/22/art_1631253_30648381.html"
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.yuhuan.gov.cn/art/2025/3/20/art_1643414_59088371.html",
+      "observation": "Official Yuhuan government planning-verification publication; its publisher is the Yuhuan Natural Resources and Planning Bureau and it contains local land/project locations, but no parcel geometry service or safe parcel identity."
+    },
+    {
+      "url": "https://www.yuhuan.gov.cn/module/download/downfile.jsp?classid=0&filename=bff472174fca4faf993fb476d1a20d42.pdf",
+      "observation": "Official Yuhuan government financial document identifies the Yuhuan Geographic Information Service Center; it is organizational evidence only and exposes no parcel endpoint."
+    },
+    {
+      "url": "https://yhsz.yuhuan.gov.cn/art/2016/4/22/art_1631253_30648381.html",
+      "observation": "First-party Yuhuan local-history/government report states that unified real-estate-registration responsibilities were consolidated and certificate issuance initiated; it does not provide public parcel geometry."
+    },
+    {
+      "url": "https://www.mnr.gov.cn/zt/td/bdcdj/",
+      "observation": "Ministry of Natural Resources real-estate-registration topic page inspected as the national route; general policy/agency prose only, not Yuhuan parcel coverage."
+    }
+  ],
+  "routes": [
+    {"method": "GET/search", "url": "https://www.yuhuan.gov.cn/art/2025/3/20/art_1643414_59088371.html", "httpStatus": 403, "outcome": "Search index exposed the official page and publisher; direct curl was denied by the site edge. No login or bypass attempted."},
+    {"method": "GET/search", "url": "https://www.yuhuan.gov.cn/module/download/downfile.jsp?classid=0&filename=bff472174fca4faf993fb476d1a20d42.pdf", "httpStatus": 403, "outcome": "Search index exposed the official document and local geospatial-service-center reference; direct curl was denied by the site edge. No TLS exception or bypass attempted."},
+    {"method": "GET/search", "url": "https://yhsz.yuhuan.gov.cn/art/2016/4/22/art_1631253_30648381.html", "httpStatus": 200, "outcome": "Search result retrieved first-party historical-government text about unified real-estate registration; no parcel geometry."},
+    {"method": "GET", "url": "https://www.yuhuan.gov.cn/", "httpStatus": 403, "outcome": "Official city portal root denied anonymous curl; treated as access limitation, not evidence of citywide absence."},
+    {"method": "GET/search", "url": "https://www.mnr.gov.cn/zt/td/bdcdj/", "httpStatus": 0, "outcome": "National route was identified through first-party search; direct request timed out during this bounded attempt. General national agency route only."}
+  ],
+  "schemaAndCrs": {"geometryCrs": null, "nativeIdentity": null, "observedSchema": "No parcel feature schema or ID+geometry response returned."},
+  "safeFieldAllowlist": ["stable native parcel ID if independently verified", "polygon geometry", "source service URL", "CRS", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "resultCategory": "city_registry_found_no_public_parcel_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "Yuhuan local natural-resources/geographic-information custodial references and national real-estate-registration route discovered through first-party sources.",
+    "verifiedOpenScope": "No anonymous city-bounded parcel feature response was retrieved; no CRS, schema, native parcel identity, or safe polygon sample was available.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "The local bureau or geographic-information service may expose additional map functionality through an undiscovered route or permitted authentication. HTTP denial, timeout, or no public response is not evidence of citywide parcel absence. No login, credentials, CAPTCHA/Cloudflare bypass, or unsafe owner/address/contact/titleholder/tax/account fields were used. Packet completion records research attempts only and is not source integration or admission."
+}

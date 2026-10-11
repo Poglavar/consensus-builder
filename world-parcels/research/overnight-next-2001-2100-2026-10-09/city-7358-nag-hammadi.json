@@ -1,0 +1,61 @@
+{
+  "cityCode": 7358,
+  "queueRank": 2019,
+  "name": "Nag Hammadi",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "iso3": "EGY",
+  "point": [26.0445416382569, 32.2293805098391],
+  "population2025": 288576,
+  "population2025k": 288.576,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Nag Hammadi Egypt official cadastral map parcel registry GIS service",
+        "result": "First-party discovery found the Egyptian Survey Authority (ESA) national cadastral/urban real-estate registry program and map-service catalogs, plus an official Egyptian Gazette record describing cadastral sections in Nag Hammadi. No public Nag Hammadi parcel viewer, API, schema, CRS, or anonymous ID+geometry response was found.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/segel.aspx",
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/city_maps2.aspx",
+          "https://mediadr.sis.gov.eg/xmlui/bitstream/handle/123456789/118949/WQ13_20260117_10015.pdf?isAllowed=y&sequence=2"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "نجع حمادي مصر السجل العيني خريطة عقارية مساحية رسمي",
+        "result": "Arabic first-party discovery found an official Justice/Egyptian Gazette notice naming Nag Hammadi cadastral survey sections and postponing the effective date of the real-estate register system, and ESA pages listing paper, digital, historical, and city-map services. The public pages did not expose a parcel-feature endpoint or downloadable safe parcel geometry for Nag Hammadi.",
+        "actualResultUrls": [
+          "https://www.alamiria.com/Sec/TashTxt?id=YWQULOSd56Q%3D",
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/paper_maps_search.aspx",
+          "https://www.esa.gov.eg/city_maps2.aspx"
+        ]
+      }
+    ]
+  },
+  "attempt": 1,
+  "cohort": "overnight-next-2001-2100-2026-10-09",
+  "sourceAssessment": {
+    "localCustodian": "Nag Hammadi local cadastral sections/procedure were evidenced in the official Justice/Egyptian Gazette notice, but no local office viewer, public map endpoint, or anonymous parcel-download route was exposed.",
+    "nationalAuthorities": [
+      {
+        "name": "Egyptian Survey Authority (ESA)",
+        "role": "National surveying and cadastral-map authority; its official site describes the national urban real-estate register GIS program and publishes paper, digital, historical, and city-map service catalogs.",
+        "parcelService": "Public catalogs available; no anonymous Nag Hammadi parcel-feature service or bounded ID+geometry response evidenced."
+      },
+      {
+        "name": "Egyptian Ministry of Justice / Real Estate Publicity and Documentation sector",
+        "role": "Official legal/procedural authority for the real-estate register system; Gazette notice names cadastral sections under Nag Hammadi center.",
+        "parcelService": "Procedure/legal coverage evidenced; no public parcel geometry API found."
+      }
+    ],
+    "safeFieldsAllowed": ["stable native parcel ID", "geometry", "source CRS", "service URL", "retrieval timestamp"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "transaction details"]
+  },
+  "runtimeReadiness": "held",
+  "notes": "Exact WUP point preserved in latitude/longitude order and not shifted. Registry/procedure evidence supports registryFound=true, but it is not source integration or runtime admission. No GeoJSON sample retained because no public response supplied a verified stable native parcel identity with full safe geometry. Packet is complete for attempt 1; independent serial review remains required."
+}

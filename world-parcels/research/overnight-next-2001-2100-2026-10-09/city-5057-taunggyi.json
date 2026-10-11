@@ -1,0 +1,108 @@
+{
+  "cityCode": 5057,
+  "queueRank": 2093,
+  "name": "Taunggyi",
+  "country": "Myanmar",
+  "countryCode": "MM",
+  "point": [20.7812120589556, 97.0287752632216],
+  "population2025": 277312,
+  "population2025k": 277.312,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "aliases": ["taunggyi"],
+  "freshResearch": {
+    "researchedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Taunggyi Myanmar official cadastral map parcel land records GIS Survey Department",
+        "result": "First-party discovery identified the Myanmar Survey Department, the Shan State Government, and an official Taunggyi Township profile. Official sources confirm Taunggyi land administration context, but no anonymous parcel viewer/API or ID-plus-geometry response was exposed.",
+        "actualResultUrls": [
+          "https://www.surveydepartment.gov.mm/",
+          "https://myanmar.gov.mm/shan-state-government",
+          "https://ssic.gov.mm/taunggyi-township/"
+        ]
+      },
+      {
+        "language": "Burmese (official/local)",
+        "query": "တောင်ကြီး မြေစာရင်း မြေကွက်မြေပုံ မြေတိုင်း ဦးစီးဌာန",
+        "result": "မြန်မာဘာသာဖြင့် ပထမပါတီရှာဖွေမှုတွင် တောင်ကြီးမြို့နယ် မြေဧရိယာ/မြို့မြေစာရင်းဆိုင်ရာ အချက်အလက်များနှင့် တောင်ကြီးခရိုင် လယ်ယာမြေစီမံခန့်ခွဲရေးနှင့် စာရင်းအင်းဦးစီးဌာန ကိုးကားချက်ကို တွေ့ရှိခဲ့သည်။ အမည်ခံ parcel ID နှင့် geometry ပါသော အများပြည်သူသုံး API/viewer မတွေ့ရှိခဲ့ပါ။",
+        "actualResultUrls": [
+          "https://ssic.gov.mm/my/%E1%80%90%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%80%E1%80%BC%E1%80%AE%E1%80%B8%E1%80%99%E1%80%BC%E1%80%AD%E1%80%AF%E1%80%B7%E1%80%94%E1%80%9A%E1%80%BA/",
+          "https://www.moi.gov.mm/ppd/sites/default/files/book-pdf/2020-11/Vol-73%2CNo-46.pdf",
+          "https://www.surveydepartment.gov.mm/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Myanmar Survey Department, with a Taunggyi District Land Management and Statistics office evidenced in an official Myanmar Gazette record; Shan State Investment Committee also publishes an official Taunggyi Township land-area profile.",
+    "basis": "The official gazette search result names တောင်ကြီးခရိုင် လယ်ယာမြေစီမံခန့်ခွဲရေးနှင့် စာရင်းအင်းဦးစီးဌာန (Taunggyi District Land Management and Statistics Department). The official SSIC Taunggyi profile reports city land and other land-area categories. This establishes local land-record custodial context, not an open digital parcel feed.",
+    "urls": [
+      "https://www.moi.gov.mm/ppd/sites/default/files/book-pdf/2020-11/Vol-73%2CNo-46.pdf",
+      "https://ssic.gov.mm/taunggyi-township/",
+      "https://www.surveydepartment.gov.mm/"
+    ]
+  },
+  "requests": [
+    {
+      "method": "GET",
+      "url": "https://www.surveydepartment.gov.mm/",
+      "outcome": "Official Survey Department route identified in first-party discovery. Direct HTTPS and HTTP retrievals timed out after bounded attempts; no HTML, JavaScript, viewer configuration, API, schema, or CRS was recovered. No TLS verification bypass was used."
+    },
+    {
+      "method": "GET",
+      "url": "https://ssic.gov.mm/taunggyi-township/",
+      "outcome": "HTTP 200 official Taunggyi Township profile. It reports total land area and categories including City Land, but contains no parcel polygons, stable parcel IDs, viewer configuration, schema, or CRS."
+    },
+    {
+      "method": "GET",
+      "url": "https://ssic.gov.mm/my/%E1%80%90%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%80%E1%80%BC%E1%80%AE%E1%80%B8%E1%80%99%E1%80%BC%E1%80%AD%E1%80%AF%E1%80%B7%E1%80%94%E1%80%9A%E1%80%BA/",
+      "outcome": "Official Burmese Taunggyi Township page was returned in first-party search evidence; it reports land-area categories in Burmese and exposes no public parcel geometry service."
+    },
+    {
+      "method": "GET/search",
+      "url": "https://www.moi.gov.mm/ppd/sites/default/files/book-pdf/2020-11/Vol-73%2CNo-46.pdf",
+      "outcome": "Official Myanmar Gazette search evidence names the Taunggyi District Land Management and Statistics Department. This is custodian/procedure evidence only; no parcel geometry was requested or retained."
+    },
+    {
+      "method": "GET",
+      "url": "https://myanmar.gov.mm/shan-state-government",
+      "outcome": "Official national portal page confirms Shan State/Taunggyi administrative context; no cadastral viewer or parcel API exposed."
+    }
+  ],
+  "schemaCrs": {
+    "status": "not available",
+    "details": "No anonymous parcel response was obtained, so native field schema, stable parcel identity field, geometry encoding, source CRS, and citywide extent could not be verified."
+  },
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "retainedSamples": [],
+  "geometryReview": {
+    "publicGeometryFound": false,
+    "sampleFile": null,
+    "parcelCount": 0,
+    "reason": "No safe anonymous native parcel ID plus full polygon response was exposed by the official routes inspected."
+  },
+  "scopeLimits": [
+    "Exact WUP point [20.7812120589556, 97.0287752632216] was preserved in latitude/longitude order and was not shifted to force a parcel hit.",
+    "The local district land-management office and official Taunggyi land profile evidence a custodian and land-record context, not a verified open digital parcel layer.",
+    "The Survey Department host timed out; this access limitation is not evidence of citywide cadastral absence.",
+    "No exact-point hit/miss, map extent miss, timeout, login wall, or unusable UI was treated as citywide absence.",
+    "No owner/right-holder, address/contact, titleholder, personal, tax/account, transaction, or application fields were requested or retained.",
+    "No GeoJSON sample was retained because no safe native ID plus full parcel polygon was verified.",
+    "This packet is research evidence only; source integration/admission was not performed and runtime readiness remains held."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier",
+    "full parcel polygon geometry",
+    "source CRS",
+    "non-personal source layer metadata",
+    "request metadata"
+  ],
+  "runtimeReadiness": "held_serial_qualification_required",
+  "uncertainty": "Medium-high: a Taunggyi local land-record custodian is first-party evidenced, but public parcel coverage, current viewer/API routes, safe native identity fields, schema, CRS, and citywide coverage remain unknown."
+}

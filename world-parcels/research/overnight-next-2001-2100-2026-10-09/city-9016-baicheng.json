@@ -1,0 +1,103 @@
+{
+  "cityCode": 9016,
+  "queueRank": 2001,
+  "name": "Baicheng",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [45.6121514877514, 122.8397131348],
+  "population2025": 290420,
+  "population2025k": 290.42,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10T00:00:00Z",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Baicheng China official cadastral parcel map land registration service Baicheng natural resources GIS",
+        "result": "Search found official Jilin Natural Resources pages documenting the Baicheng Real Estate Registration Center and the provincial unified registration platform, but no anonymous Baicheng parcel map/API response.",
+        "actualResultUrls": [
+          "https://zrzy.jl.gov.cn/jlsbdcdj/gzdt/bdcsngzdt/201809/t20180926_5196515.html",
+          "https://zrzy.jl.gov.cn/jlsbdcdj/gzdt/bdcsngzdt/202109/t20210908_8211618.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "白城市 不动产登记 地籍图 宗地图 地图查询 自然资源 官方",
+        "result": "官方吉林省自然资源厅结果确认白城市不动产登记中心及省级统一登记平台试点/业务体系；未发现可匿名取得白城市宗地ID与几何的公开服务。",
+        "actualResultUrls": [
+          "https://zrzy.jl.gov.cn/jlsbdcdj/gzdt/bdcsngzdt/201809/t20180926_5196515.html",
+          "https://zrzy.jl.gov.cn/jlsbdcdj/gzdt/bdcsngzdt/202109/t20210908_8211618.html",
+          "https://zrzy.jl.gov.cn/jlsbdcdj/flfg_1231/t20181109_5443791.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Official Jilin Natural Resources pages identify the local Baicheng Real Estate Registration Center as the local registration custodian and state that Baicheng was an initial pilot for the provincial unified real-estate registration platform. This evidences a local registry, not an open parcel-geometry API.",
+  "registryEvidenceUrls": [
+    "https://zrzy.jl.gov.cn/jlsbdcdj/gzdt/bdcsngzdt/201809/t20180926_5196515.html",
+    "https://zrzy.jl.gov.cn/jlsbdcdj/gzdt/bdcsngzdt/202109/t20210908_8211618.html",
+    "https://zrzy.jl.gov.cn/jlsbdcdj/flfg_1231/t20181109_5443791.html"
+  ],
+  "requests": [
+    {
+      "url": "https://zrzy.jl.gov.cn/jlsbdcdj/gzdt/bdcsngzdt/201809/t20180926_5196515.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official Jilin page fetched successfully; confirms Baicheng Real Estate Registration Center services and local registration procedures. No parcel feature schema or geometry response was present."
+    },
+    {
+      "url": "https://zrzy.jl.gov.cn/jlsbdcdj/gzdt/bdcsngzdt/202109/t20210908_8211618.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official Jilin page fetched successfully; states Baicheng was selected as a pilot for the provincial unified registration platform. No public anonymous parcel endpoint was exposed."
+    },
+    {
+      "url": "https://zrzy.jl.gov.cn/jlsbdcdj/flfg_1231/t20181109_5443791.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official Jilin rules fetched successfully; describe lawful registration-record query boundaries and identity/interest requirements. No anonymous citywide geometry response was attempted or obtained."
+    },
+    {
+      "url": "https://www.baidu.com/s?wd=site%3Abaicheng.gov.cn+%E4%B8%8D%E5%8A%A8%E4%BA%A7%E7%99%BB%E8%AE%B0+%E5%9C%B0%E5%9B%BE",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Search request redirected to Baidu visual CAPTCHA; no result page was used and CAPTCHA was not bypassed. This is an access limitation, not evidence of absence."
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 418,
+      "outcome": "National map portal returned HTTP 418 to the anonymous request; no viewer configuration, parcel schema, or bounded Baicheng geometry was obtained. Treated as access failure, not absence evidence."
+    }
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "verifiedParcelResponse": null,
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only when publicly returned",
+    "parcel polygon geometry",
+    "source service metadata",
+    "CRS and response-format metadata"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner or right-holder names",
+    "addresses or contact details",
+    "title or certificate details",
+    "tax, account, identity, or application fields"
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Baicheng local registration custodian and Jilin provincial unified registration platform as described by official sources.",
+    "verifiedOpenScope": "Local registry existence and platform/procedure evidence only; no anonymous ID-plus-geometry response verified.",
+    "countrywideVerified": false,
+    "citywideGeometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "Held pending independent serial qualification of a real public parcel adapter. This packet is not source integration or admission.",
+  "resultCategory": "local_registry_evidenced_no_public_geometry",
+  "remainingUncertainty": "The local registry and provincial platform exist, but the public viewer/API endpoint, schema, CRS, safe native identity field, authentication boundary, and citywide parcel coverage remain unknown. No login, private token, CAPTCHA bypass, or protected property query was attempted."
+}

@@ -7,6 +7,8 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const formationDepth = require('../../frontend/js/proposals/formation-depth.js');
 const planOrder = require('../../frontend/js/proposals/plan-order.js');
+const chainRecord = require('../../frontend/js/proposals/chain-record.js');
+const { loadChainProposalFromRef } = require('../../frontend/js/proposals/chain-proposal-loader.js');
 const dataSource = readFileSync(new URL('../../frontend/js/proposals/data.js', import.meta.url), 'utf8');
 
 const saved = new Map();
@@ -57,6 +59,46 @@ function bootStore() {
 }
 
 describe('proposalStorage authored-log persistence', () => {
+    it.each([false, true])('reconstructs the complete minted record from chain and IPFS alone (local draft present: %s)', async localDraft => {
+        const { storage, persisted } = bootStore();
+        install('__chainRecord', chainRecord);
+        install('ProposalAuthoredRecord', require('../../frontend/js/proposals/authored-record.js'));
+        install('buildChainProposalId', (chain, contract, token) => `${chain}-${contract}-${token}`);
+        install('getProposalGoalLabel', goal => goal);
+        install('proposalStorage', storage);
+        const site = { type: 'Polygon', coordinates: [[[0, 0], [0.001, 0], [0.001, 0.001], [0, 0.001], [0, 0]]] };
+        const source = chainRecord.authoredRecord({
+            proposalId: 'minted-park', city: 'test-city', goal: 'park', type: 'structure',
+            name: 'Committed park', title: 'Committed park', description: 'As minted', author: 'Park author',
+            createdAt: '2026-10-01T12:00:00Z', offer: 0, offerCurrency: 'ETH',
+            depositEnabled: true, depositPercent: 20, isConditional: true, lens: [],
+            cadastreParcelIds: ['HR-1'], site, binding: { parcels: [{ parcelId: 'HR-1' }], coverage: 'complete' },
+            cadastreSnapshot: { protocol: 'cadastre-snapshot/1', regionHasCadastre: true, parcels: [{ id: 'HR-1', geometry: site }] },
+            structureProposal: { kind: 'park', geometry: site }
+        });
+        if (localDraft) storage.proposals.set(source.proposalId, {
+            ...source, title: 'A much longer locally edited draft title', author: 'Another author', offer: 999,
+            depositEnabled: false, buildingProposal: { parameters: { floors: 50 } }, preparation: { id: 'stale-server-signature' }
+        });
+        install('ChainDataLoader', { getProposalsByIds: vi.fn(async () => [{
+            proposalId: '77', imageURI: 'ipfs://committed-metadata', cadastreParcelIds: ['HR-1'], isConditional: true, lens: []
+        }]) });
+        const fetch = vi.fn(async url => {
+            expect(url).toBe('https://ipfs.io/ipfs/committed-metadata');
+            return { ok: true, json: async () => ({ properties: chainRecord.metadataProperties(source) }) };
+        });
+        install('fetch', fetch);
+        const result = await loadChainProposalFromRef({ chainType: 'evm', chainId: '84532', contract: '0xC', tokenId: '77' });
+        expect(result.ok).toBe(true);
+        expect(result.proposal).toMatchObject(source);
+        expect(result.proposal.onchain).toMatchObject({ proposalId: '77', metadataUri: 'ipfs://committed-metadata' });
+        expect(result.proposal).not.toHaveProperty('preparation');
+        expect(result.proposal).not.toHaveProperty('buildingProposal');
+        storage._persist();
+        expect(JSON.parse(persisted.get('proposal:minted-park'))).toMatchObject(source);
+        expect(fetch).toHaveBeenCalledTimes(1);
+    });
+
     it('persists flat cadastral declarations and strips all materialization output without mutating runtime state', () => {
         const { storage, persisted } = bootStore();
         const record = {

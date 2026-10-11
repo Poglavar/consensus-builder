@@ -1,0 +1,50 @@
+{
+  "cityRecord": "city-2692-aydin.json",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-11",
+  "cityCode": 2692,
+  "queueRank": 2173,
+  "name": "Aydin",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "point": [37.8426220062579, 27.8386026651766],
+  "status": "complete",
+  "registryFound": true,
+  "qualification": {
+    "result": "local_geometry_verified_runtime_held",
+    "officialSource": "TKGM Parsel Sorgu / MEGSIS public anonymous coordinate endpoint",
+    "localCustodian": "Aydın Büyükşehir Belediyesi CBS portal was separately identified as a municipal GIS lead, but its parcel endpoint was not exposed or qualified in this attempt.",
+    "geometry": "Exact point returned one Polygon; one nearby probe returned another Polygon; one nearby probe returned explicit 404 parcel-not-found.",
+    "sampleCount": 2,
+    "sampleFile": "sample-2692-aydin-tkgm.geojson",
+    "runtimeReadiness": "held"
+  },
+  "queriesAndRequests": "All bilingual discovery queries and all executed public requests, including HTTP outcomes and scope limits, are recorded in city-2692-aydin.json.",
+  "safeFieldAllowlist": [
+    "geometry",
+    "stable source-scoped parcel identity composite",
+    "province/district/neighborhood names and IDs used for qualification",
+    "ada number and parcel number as public parcel identity components",
+    "HTTP status and endpoint metadata"
+  ],
+  "excludedFields": [
+    "owners/titleholders",
+    "addresses and contact information",
+    "personal identifiers",
+    "tax/account data",
+    "ownership shares and other sensitive title data"
+  ],
+  "identityMapping": {
+    "sampleProperty": "id",
+    "sampleValuePattern": "TKGM:TR:Aydin:{ilceId}:{mahalleId}:{adaNo}:{parselNo}",
+    "sourceFields": ["ilAd", "ilceId", "mahalleId", "adaNo", "parselNo"],
+    "provenance": "Composite key is source-scoped metadata derived from the official response; it is not an internally generated row number and does not claim to be a TKGM database primary key."
+  },
+  "uncertainty": [
+    "The API response did not declare a CRS; retained geometry uses the response's observed geographic lon/lat convention, with CRS qualification held.",
+    "Two local polygons do not prove citywide or countrywide coverage.",
+    "The public endpoint's schema and availability may change; no private token, login, CAPTCHA bypass, or unsafe field was used.",
+    "A zero or 404 result at an individual coordinate would be a local probe outcome only, not evidence of citywide absence."
+  ],
+  "reviewDecision": "Hold runtime readiness for independent serial adapter review; retain packet as complete research evidence because the official local geometry response and all attempted routes are accurately documented."
+}

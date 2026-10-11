@@ -1,0 +1,55 @@
+{
+  "cityRecord": "city-5091-vinh-long.json",
+  "cityCode": 5091,
+  "queueRank": 2027,
+  "city": "Vinh Long",
+  "country": "Viet Nam",
+  "countryCode": "VN",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "reviewedAt": "2026-10-10T00:00:00Z",
+  "discovery": {
+    "english": "First-party discovery found the Vĩnh Long Land Registration Office, official land-data supply procedure, and VBDLIS public system shell; no anonymous parcel geometry endpoint was found.",
+    "native": "Tìm kiếm tiếng Việt trên các miền chính thức xác nhận cơ quan đăng ký đất đai và thủ tục cung cấp dữ liệu đất đai; không thu được hình học thửa đất ẩn danh công khai."
+  },
+  "custodian": {
+    "name": "Văn phòng Đăng ký đất đai tỉnh Vĩnh Long (Vĩnh Long Land Registration Office)",
+    "role": "Local/provincial cadastral custodian responsible for cadastral records, land databases, and land-information supply; distinguished from general national-agency documentation.",
+    "evidenceUrls": [
+      "https://vinhlong.gov.vn/stnmt/gioi-thieu/cac-%C4%91on-vi-truc-thuoc/van-phong-%C4%91ang-ky-%C4%91at-%C4%91ai-tinh-vinh-long",
+      "https://vinhlong.gov.vn/Portals/1042/Files/00dfd344-b0fd-40c0-bf5b-d28880d54eb8.pdf"
+    ]
+  },
+  "attemptedRoutes": [
+    {"route": "English first-party discovery", "url": "https://vinhlong.gov.vn/", "result": "Official portal found; search outcome led to the registry-office and land-data procedure pages, not a public parcel API."},
+    {"route": "Vietnamese first-party discovery", "url": "https://vinhlong.gov.vn/stnmt/gioi-thieu/cac-%C4%91on-vi-truc-thuoc/van-phong-%C4%91ang-ky-%C4%91at-%C4%91ai-tinh-vinh-long", "result": "Official Vietnamese page identifies registry/database duties and branches, but provides no anonymous geometry response."},
+    {"route": "Official VBDLIS public shell", "url": "https://tracuucr.vbdlis.vn/", "result": "HTTP 200 JavaScript application shell; no usable unauthenticated parcel query was exposed."},
+    {"route": "Current VBDLIS JavaScript/configuration", "url": "https://tracuucr.vbdlis.vn/static/js/main.cfe4002c.js", "result": "HTTP 200 bundle inspected for API/service/map routes. No anonymous Vĩnh Long ID-plus-geometry service was identified."},
+    {"route": "Land-data supply procedure", "url": "https://vinhlong.gov.vn/Portals/1042/Files/00dfd344-b0fd-40c0-bf5b-d28880d54eb8.pdf", "result": "HTTP 200 official procedure evidence; request-based data supply is documented, but no safe anonymous geometry sample is published in the retrieved document."}
+  ],
+  "fieldPolicy": {
+    "allowlist": ["stable native parcel ID if exposed", "parcel polygon geometry if exposed", "source field names and mapping in metadata only", "CRS/format and request metadata"],
+    "notRequested": ["owner/right-holder", "address/contact", "titleholder/certificate", "tax/account/identity/application data", "area/status/history and other source-specific attribute sets"]
+  },
+  "geometryReview": {
+    "publicGeometryFound": false,
+    "sampleFile": null,
+    "parcelCount": 0,
+    "identities": [],
+    "reason": "No safe anonymous parcel geometry response was obtained. No GeoJSON sample was retained."
+  },
+  "scopeLimits": [
+    "Exact WUP point [10.2346668297797, 105.956668022934] was preserved in latitude/longitude order; no coordinate shifting was used.",
+    "A zero or unavailable public response is not evidence of citywide cadastral absence.",
+    "The official procedure suggests request-based or portal-mediated data access; no login, credentials, CAPTCHA bypass, or private-token workflow was attempted.",
+    "No map extent, CRS, native parcel schema, or bounded ID-plus-geometry response was available to verify.",
+    "Packet completion is not source integration or admission."
+  ],
+  "qualification": {
+    "registryFound": true,
+    "publicParcelGeometryFound": false,
+    "runtimeReadiness": "held",
+    "serialReviewerRequired": true,
+    "uncertainty": "The local registry custodian and official data-request route are evidenced, but public parcel geometry, native identity schema, CRS, and citywide coverage remain unverified."
+  }
+}

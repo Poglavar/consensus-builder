@@ -1,0 +1,38 @@
+{
+  "cityCode": 415,
+  "queueRank": 2206,
+  "name": "Kaunas",
+  "country": "Lithuania",
+  "countryCode": "LT",
+  "point": [54.8983700168962, 23.9265885374715],
+  "population2025": 264162,
+  "population2025k": 264.162,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Lithuania official cadastral map parcel viewer Kaunas cadastral map API",
+        "result": "Official geoportal.lt results identify the real-estate cadastral map (parcel data), and an official Kaunas municipal ArcGIS REST service exposes a Kaunas parcel layer supplied by Registrų centras.",
+        "actualResultUrls": [
+          "https://www.geoportal.lt/geoportal/",
+          "https://digital.kaunas.lt/arcgis/rest/services/Bendra/Bendri_duomenys/MapServer/layers",
+          "https://www.geoportal.lt/mapproxy/rc_kadastro_zemelapis/MapServer"
+        ]
+      },
+      {
+        "language": "Lithuanian",
+        "query": "kadastrinis žemėlapis sklypai Kaunas oficialus žemėlapis Registrų centras geoportal",
+        "result": "Lithuanian-language official results identify the Kaunas municipal map and the national Nekilnojamojo turto kadastro žemėlapis; the Kaunas service documents sklypai (parcels), LKS-94, and Registrų centras as data provider.",
+        "actualResultUrls": [
+          "https://www.geoportal.lt/savivaldybes/kaunas",
+          "https://digital.kaunas.lt/arcgis/rest/services/Bendra/Bendri_duomenys/MapServer/0",
+          "https://www.registrucentras.lt/p/prisijungimai-prie-informaciniu-sistemu-posistemiu-ir-irankiu"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "A bounded anonymous query at the exact WUP point returned one parcel polygon. The retained sample uses the native unikalus_nr as its sole canonical identity; source field mapping and CRS are documented in kaunas-service-review.json. This packet is not source integration or runtime admission."
+}

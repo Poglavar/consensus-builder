@@ -1,0 +1,32 @@
+{
+  "cityRecord": "city-5792-tebessa.json",
+  "cityCode": 5792,
+  "queueRank": 2292,
+  "city": "Tebessa",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "reviewedAt": "2026-10-11",
+  "attempt": 1,
+  "result": "complete_research_no_verified_open_parcel_source",
+  "registryFound": null,
+  "requestOutcome": "English, Arabic/French, and French discovery found the national DGDN cadastral custodian and official legal workflow. Direct DGDN GET returned 503; the advertised citizen hostname failed DNS; ANFU returned an error/block page; ASGA general map viewer timed out. No parcel geometry or safe native parcel ID was obtained.",
+  "scopeLimits": [
+    "National agency documentation is not local Tebessa registry evidence.",
+    "The general ASGA 1:200,000 map lead is not cadastral parcel coverage.",
+    "No exact-point hit/miss was used to infer citywide coverage.",
+    "No owner, address, contact, titleholder, tax, account, or other unsafe fields were requested or retained."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier", "geometry", "source CRS", "service URL", "schema field names"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": null,
+  "sampleGeoJSON": null,
+  "qualification": {
+    "runtimeReadiness": "held",
+    "serialReviewerRequired": true,
+    "reason": "A serial reviewer must independently qualify any future real Tebessa adapter after a bounded anonymous ID-plus-geometry response is available."
+  },
+  "uncertainty": "The packet documents executed attempts and their failures only. Temporary unavailability, DNS failure, timeout, or an unusable public UI is not evidence that Tebessa lacks cadastral data.",
+  "noContactOrCredentials": true,
+  "noGeoJSONWritten": true
+}

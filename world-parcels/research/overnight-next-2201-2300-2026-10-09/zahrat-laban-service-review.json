@@ -1,0 +1,93 @@
+{
+  "cityRecord": "city-3021-zahrat-laban.json",
+  "cityCode": 3021,
+  "queueRank": 2266,
+  "name": "Zahrat Laban",
+  "country": "Saudi Arabia",
+  "countryCode": "SA",
+  "pointLatLon": [24.6320476798316, 46.5545842581718],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": null,
+  "routes": [
+    {
+      "method": "SEARCH",
+      "url": "https://alriyadh.gov.sa/en/gis-portal",
+      "httpStatus": 200,
+      "outcome": "Official Riyadh Municipality GIS Portal page loaded. It identifies an interactive Riyadh geospatial map and states that users can search and inquire about land-plot uses and status; it links to the current public map portal. Custodian evidence only; no parcel response obtained."
+    },
+    {
+      "method": "GET",
+      "url": "https://mapservice.alriyadh.gov.sa/geoportal/geomap",
+      "httpStatus": "timeout",
+      "outcome": "Direct public map portal request timed out after 25 seconds in local curl. No retry with credentials, CAPTCHA bypass, or TLS exception was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://eservices.alriyadh.gov.sa/Pages/MapViewer.aspx",
+      "httpStatus": "timeout",
+      "outcome": "Official Riyadh municipal map-viewer route timed out after 20 seconds in local curl; web discovery also reported a timeout. No parcel request was invented."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://rega.gov.sa/rega-services/platforms/geospatial-real-estate-portal/",
+      "httpStatus": 200,
+      "outcome": "Official Real Estate General Authority page states that its geospatial real-estate portal displays spatial/descriptive data including cities, neighborhoods, land parcels, and spatial search/inquiry. The linked interactive portal was not exposed as an anonymous parcel API in bounded discovery."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://my.gov.sa/saml.authn/content/gis",
+      "httpStatus": 200,
+      "outcome": "Official national GIS page describes national geospatial infrastructure, land-parcel data, and Riyadh urban maps. General national-agency/custodian evidence only, not a local parcel response."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://geoportal.geosa.gov.sa/Geoportal/pdf/Land%20Survey%20Technical%20Guideline.pdf",
+      "httpStatus": 200,
+      "outcome": "Official geospatial technical guideline states cadastral maps use SANSRS and UTM. This documents national CRS/survey context, but it is not evidence of parcel coverage or an anonymous query response at Zahrat Laban."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "Riyadh Municipality GIS portal linked mapservice.alriyadh.gov.sa/geoportal/geomap; current JavaScript/configuration and service endpoints were not recovered because the direct portal timed out.",
+    "geometryCrs": "Not observed for a Zahrat Laban parcel response. The national guideline references SANSRS and UTM, but no response CRS was obtained.",
+    "nativeIdentity": "Not observed; no parcel response was obtained.",
+    "sourceFieldMapping": {},
+    "boundedAnonymousResponse": {
+      "requestScope": "No anonymous Zahrat Laban parcel query completed",
+      "featureCount": 0,
+      "nativeIdentity": null
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel ID if exposed by an official service",
+    "polygon geometry",
+    "source service URL",
+    "source CRS / requested output CRS",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "tax/account",
+    "certificate/title",
+    "personal data"
+  ],
+  "sampleGeoJSON": null,
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "Official Riyadh municipal and national real-estate geospatial portals are evidenced, but no safe anonymous parcel ID-plus-geometry response was obtained."
+  },
+  "scopeLimits": [
+    "The exact WUP point [24.6320476798316, 46.5545842581718] was preserved in latitude/longitude order and not shifted.",
+    "Zero parcel hits are not inferred: no exact-point query completed.",
+    "Map extent miss, timeouts, or unusable public UI are route limitations, not evidence of citywide absence.",
+    "Riyadh Municipality is the evidenced local map custodian; the Real Estate General Authority and national geospatial authority are general/national custodians, not substitutes for a local parcel response.",
+    "No GeoJSON sample is retained because no safe native parcel identity and unchanged geometry were obtained.",
+    "No owner, address, contact, titleholder, tax/account, certificate/title, or personal fields were requested or retained."
+  ],
+  "uncertainty": "Official parcel-map capability is clear, but anonymous endpoint reachability, schema, native identity, response CRS, exact-point coverage, and update cadence remain unverified. Runtime/admission remains held."
+}

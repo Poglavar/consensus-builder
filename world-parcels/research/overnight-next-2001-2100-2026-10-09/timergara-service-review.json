@@ -1,0 +1,59 @@
+{
+  "cityRecord": "city-4130-timergara.json",
+  "cityCode": 4130,
+  "queueRank": 2025,
+  "city": "Timergara",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "reviewedAt": "2026-10-10T00:00:00Z",
+  "discovery": {
+    "english": "First-party KP land-settlement discovery identified the official Dir/Kalam Settlement of Land Records project, Timergara sub-office, project maps and GIS dashboard; no public parcel API was found.",
+    "native": "Urdu/local-language discovery identified official Urdu notices and the same first-party settlement project; no anonymous parcel ID-plus-geometry response was found."
+  },
+  "custodian": {
+    "name": "Settlement of Land Records in Districts Dir Lower, Dir Upper and Tehsil Kalam, Revenue and Estate Department, Government of Khyber Pakhtunkhwa",
+    "role": "Local/regional land-record settlement and GIS custodian evidenced by the official project site; its Timergara sub-office is listed. This is distinguished from general national agency prose and from the KP citizen-service directory.",
+    "evidenceUrls": [
+      "https://slrdirkalam.com/",
+      "https://slrdirkalam.com/mouza_list.php?id=1",
+      "https://slrdirkalam.com/googlemap.php",
+      "https://slrdirkalam.com/gis_progress.php"
+    ]
+  },
+  "attemptedRoutes": [
+    {"route": "English first-party discovery", "url": "https://slrdirkalam.com/", "result": "HTTP 200; official project scope, GIS settlement programme and Timergara sub-office identified."},
+    {"route": "Urdu/local first-party discovery", "url": "https://slrdirkalam.com/news.php?id=20", "result": "Official Urdu notice route identified through the project site; settlement/verification activity described, with no public feature service."},
+    {"route": "Project maps", "url": "https://slrdirkalam.com/googlemap.php", "result": "HTTP 200; static JPG maps only, no machine-readable parcel layer, schema, CRS or IDs."},
+    {"route": "GIS progress/dashboard", "url": "https://slrdirkalam.com/gis_progress.php", "result": "HTTP 200; static progress charts/images including Timergara2025.jpg, no viewer/API configuration or parcel response."},
+    {"route": "Dir Lower mouza list", "url": "https://slrdirkalam.com/mouza_list.php?id=1", "result": "HTTP 200; Timergara mouza/settlement entries listed, no parcel geometry."},
+    {"route": "KP SDLR route", "url": "https://sdlr.kp.gov.pk/", "result": "First-party route reachable, but no inspectable public parcel schema or bounded geometry response."},
+    {"route": "KP citizen-service directory", "url": "https://cfc.kp.gov.pk/Home/PhoneDirectory?s=uqo9gqEr5NICnLZK0EfxpA%3D%3D", "result": "HTTP 200; AC Office, Timergara listed under Dir Lower; contact/custodian evidence only, no parcel API."}
+  ],
+  "fieldPolicy": {
+    "allowlist": ["stable native parcel identifier only when publicly returned", "parcel polygon geometry", "source field names and mapping in metadata only", "CRS/format and request metadata"],
+    "notRequested": ["owner/right-holder", "address/contact", "titleholder/certificate", "tax/account/identity/application data", "area/status/history and other source-specific attributes"]
+  },
+  "geometryReview": {
+    "publicGeometryFound": false,
+    "sampleFile": null,
+    "parcelCount": 0,
+    "identities": [],
+    "reason": "No anonymous machine-readable parcel feature response with a safe native identity and full polygon was exposed. Static project-map images were not retained or treated as parcel polygons."
+  },
+  "scopeLimits": [
+    "Exact WUP point [34.8309632986105, 71.8328903300032] was preserved in latitude/longitude order and was not shifted.",
+    "The official project evidence establishes a local/regional land-record custodian and Timergara sub-office, not citywide public parcel geometry coverage.",
+    "Static map/progress images do not establish a safe native parcel ID, machine-readable CRS or complete cadastral coverage.",
+    "A missing public endpoint is not evidence that Timergara lacks parcels or a registry; login walls, protected systems and non-public databases were not bypassed.",
+    "Packet completion does not constitute source integration or admission."
+  ],
+  "qualification": {
+    "registryFound": true,
+    "publicParcelGeometryFound": false,
+    "runtimeReadiness": "held",
+    "serialReviewerRequired": true,
+    "uncertainty": "Local custodian and Timergara project scope are verified, but public parcel schema, CRS, native identity, anonymous geometry access and citywide coverage remain unverified."
+  }
+}

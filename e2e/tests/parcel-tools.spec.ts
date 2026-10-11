@@ -32,7 +32,7 @@ test.describe('Parcel diagnostics @features', () => {
     const base = await page.evaluate(() => (window as any).CityConfigManager.getParcelBuilderConfig().url);
     await page.context().route(`${base}**`, route => route.fulfill({ contentType: 'text/html', body: '<title>External tool fixture</title>' }));
     const opened = page.context().waitForEvent('page');
-    await page.locator('#parcelBuilderButton').click();
+    await page.locator('#parcelBuilderButton').click({ noWaitAfter: true });
     const child = await opened;
     await child.waitForURL(url => url.href.startsWith(base));
     expect(new URL(child.url()).searchParams.get('parcel_identifier')).toBe('1234-335754');

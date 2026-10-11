@@ -1,0 +1,51 @@
+{
+  "cityRecord": "city-5057-taunggyi.json",
+  "cityCode": 5057,
+  "queueRank": 2093,
+  "city": "Taunggyi",
+  "country": "Myanmar",
+  "countryCode": "MM",
+  "point": [20.7812120589556, 97.0287752632216],
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "reviewedAt": "2026-10-10T00:00:00Z",
+  "registryFound": true,
+  "custodian": {
+    "name": "Myanmar Survey Department / Taunggyi District Land Management and Statistics office",
+    "role": "First-party evidence establishes the national survey agency and a Taunggyi District land-management/statistics office; the official Taunggyi Township profile supplies local land-area context. No public parcel service was verified.",
+    "evidenceUrls": [
+      "https://www.surveydepartment.gov.mm/",
+      "https://www.moi.gov.mm/ppd/sites/default/files/book-pdf/2020-11/Vol-73%2CNo-46.pdf",
+      "https://ssic.gov.mm/taunggyi-township/"
+    ]
+  },
+  "discovery": {
+    "english": "Official discovery found the Myanmar Survey Department, official Shan State/Taunggyi administrative material, and the Taunggyi Township land-area profile; no anonymous parcel viewer/API was exposed.",
+    "native": "တရားဝင် မြန်မာဘာသာ ရှာဖွေမှုတွင် တောင်ကြီးခရိုင် မြေစီမံခန့်ခွဲရေးနှင့် စာရင်းအင်းရုံး ကိုးကားချက်နှင့် တောင်ကြီးမြို့နယ် မြေဧရိယာ အချက်အလက်များကို တွေ့ရှိခဲ့သော်လည်း အများပြည်သူသုံး parcel API/viewer မတွေ့ရှိခဲ့ပါ။"
+  },
+  "attemptedRoutes": [
+    {"route": "English first-party discovery", "url": "https://www.surveydepartment.gov.mm/", "result": "Survey Department identified; direct retrieval timed out."},
+    {"route": "Burmese first-party discovery", "url": "https://www.moi.gov.mm/ppd/sites/default/files/book-pdf/2020-11/Vol-73%2CNo-46.pdf", "result": "Official gazette evidence names the Taunggyi District Land Management and Statistics Department."},
+    {"route": "Official Taunggyi Township profile", "url": "https://ssic.gov.mm/taunggyi-township/", "result": "HTTP 200; land-area categories returned, no parcel geometry or service configuration."},
+    {"route": "Official Burmese Taunggyi Township profile", "url": "https://ssic.gov.mm/my/%E1%80%90%E1%80%B1%E1%80%AC%E1%80%84%E1%80%BA%E1%80%80%E1%80%BC%E1%80%AE%E1%80%B8%E1%80%99%E1%80%BC%E1%80%AD%E1%80%AF%E1%80%B7%E1%80%94%E1%80%9A%E1%80%BA/", "result": "Official Burmese content returned in search evidence; no parcel endpoint."},
+    {"route": "Official national administrative context", "url": "https://myanmar.gov.mm/shan-state-government", "result": "Shan State/Taunggyi context confirmed; no cadastral viewer/API."}
+  ],
+  "schemaCrs": {"status": "not available", "details": "No public ID-plus-geometry response was obtained."},
+  "sourceFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryReview": {"publicGeometryFound": false, "sampleFile": null, "parcelCount": 0, "reason": "No safe native parcel identity and full polygon were returned."},
+  "fieldPolicy": {
+    "allowlist": ["stable native parcel identifier", "full parcel polygon geometry", "source CRS", "non-personal source layer metadata", "request metadata"],
+    "notRequested": ["owner/right-holder", "address/contact", "titleholder/certificate", "personal identifiers", "tax/account", "transaction/application data"]
+  },
+  "scopeLimits": [
+    "The exact WUP point was preserved and not moved to force a parcel hit.",
+    "The Survey Department timeout is an access limitation, not evidence of parcel absence.",
+    "No exact-point query was issued because no public parcel endpoint was discovered.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, or unsafe property query was used.",
+    "No sample GeoJSON was retained; larger raw evidence was not created outside the ignored scratch area.",
+    "Packet completion is not source integration/admission."
+  ],
+  "runtimeReadiness": "held_serial_qualification_required",
+  "uncertainty": "A local Taunggyi land-record custodian is evidenced, but anonymous digital parcel availability, native ID field, schema, CRS, geometry encoding, and citywide coverage remain unverified."
+}

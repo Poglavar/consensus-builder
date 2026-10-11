@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "city": {
+    "code": "7979",
+    "name": "Wazirabad",
+    "point": [
+      74.1248485345839,
+      32.4355546089934
+    ]
+  },
+  "descriptor": {
+    "id": "pk-pulse-wazirabad-parcels",
+    "name": "Punjab PULSE Wazirabad cadastral reference polygons",
+    "adapter": "pulse-public",
+    "endpoint": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/35",
+    "idPrefix": "PK-PULSE-WAZIRABAD-",
+    "idField": "OBJECTID",
+    "objectIdField": "OBJECTID",
+    "idType": "integer",
+    "outFields": [
+      "OBJECTID"
+    ],
+    "queryFormat": "geojson",
+    "boundsQueryMode": "offset",
+    "idsQueryMode": "offset",
+    "pageSize": 500,
+    "idBatchSize": 80,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 25,
+    "capabilities": {
+      "areaEnumeration": true
+    },
+    "cityIds": [
+      "7979"
+    ],
+    "metricSrid": 32643,
+    "attribution": "Punjab PULSE / Punjab Land Records Authority; indicative cadastral reference polygons"
+  },
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Frozen city packet and service review identify Punjab PULSE / PLRA Wazirabad cadastral Feature Layer 35 and native OBJECTID 6911537; the frozen geometry sample hash matches the queue.",
+      "https://www.pulse.gop.pk/ states: Provision of a parcel map linked to the land records of the province. The official program includes digital land records and cadastral maps.",
+      "https://lis.pulse.gop.pk/ explicitly maps Wazirabad to cadastral sublayer 35; current first-party layer metadata confirms name Wazirabad, polygon Feature Layer and OBJECTID OID schema. This supports Wazirabad scope, not citywide completeness or legal title."
+    ]
+  },
+  "sourceCandidateSha256": "207f5f3c7de40c763e5723af2028ca50536523cfc81405b12aeac09cce1c58c6",
+  "qualificationRecordedSha256": "207f5f3c7de40c763e5723af2028ca50536523cfc81405b12aeac09cce1c58c6",
+  "sourceCandidatePath": "qualification/evidence/cities/7979/candidate.json",
+  "originalSeedSha256": "207f5f3c7de40c763e5723af2028ca50536523cfc81405b12aeac09cce1c58c6",
+  "originalSeedPath": "qualification/evidence/cities/7979/candidate.json"
+}

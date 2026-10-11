@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 4286,
+  "queueRank": 2067,
+  "cityId": "wup2025:4286",
+  "name": "Lipetsk",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso2": "RU",
+  "iso3": "RUS",
+  "point": [52.6055047775065, 39.5630595988047],
+  "centerLatLon": [52.6055047775065, 39.5630595988047],
+  "population2025": 281568,
+  "population2025k": 281.568,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Lipetsk official cadastral map public parcel map Rosreestr Lipetsk Russian Federation",
+        "result": "Search identified the official Lipetsk city-administration procedure for obtaining a land-location scheme on a cadastral plan or cadastral map, and the current NSPD national public cadastral-map route. No usable anonymous parcel geometry endpoint was established.",
+        "actualResultUrls": [
+          "https://lipetskcity.ru/service/nedvizhimoe-imushchestvo-i-zemelnye-otnosheniya/poluchenie-shemy-raspolozheniya-zemelnykh-uchastkov-na-kadastrovom-plane-ili-kadastrovoy-karte-soot/",
+          "https://nspd.gov.ru/map",
+          "https://rosreestr.gov.ru/"
+        ]
+      },
+      {
+        "language": "Russian (native/local)",
+        "query": "Липецк публичная кадастровая карта земельные участки официальный Росреестр НСПД",
+        "result": "Search identified the first-party city procedure and the Rosreestr/NSPD public-map route. Third-party map pages were excluded as non-custodial; direct NSPD access timed out before configuration or parcel data could be inspected.",
+        "actualResultUrls": [
+          "https://lipetskcity.ru/service/nedvizhimoe-imushchestvo-i-zemelnye-otnosheniya/poluchenie-shemy-raspolozheniya-zemelnykh-uchastkov-na-kadastrovom-plane-ili-kadastrovoy-karte-soot/",
+          "https://nspd.gov.ru/map",
+          "https://pkk.rosreestr.ru/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official Lipetsk city-administration page documents a municipal service for obtaining a land-location scheme on a cadastral plan or cadastral map and links the relevant public-service procedure. This evidences a local municipal land/property procedure, but not an open parcel geometry API.",
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://lipetskcity.ru/service/nedvizhimoe-imushchestvo-i-zemelnye-otnosheniya/poluchenie-shemy-raspolozheniya-zemelnykh-uchastkov-na-kadastrovom-plane-ili-kadastrovoy-karte-soot/",
+      "operator": "Official Lipetsk city administration",
+      "scope": "Municipal land/property procedure for a land-location scheme on a cadastral plan or cadastral map",
+      "observation": "First-party procedure page found; it describes documents and outcome, not a machine-readable parcel geometry service."
+    },
+    {
+      "url": "https://nspd.gov.ru/map",
+      "operator": "Rosreestr/NSPD national public cadastral map",
+      "scope": "Current national public cadastral map",
+      "observation": "Anonymous GET timed out before HTML, JavaScript configuration, service schema, CRS, or parcel response could be inspected."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://lipetskcity.ru/service/nedvizhimoe-imushchestvo-i-zemelnye-otnosheniya/poluchenie-shemy-raspolozheniya-zemelnykh-uchastkov-na-kadastrovom-plane-ili-kadastrovoy-karte-soot/",
+      "method": "GET via first-party search result",
+      "status": "official page found",
+      "summary": "Municipal procedure page exposes cadastral-plan/map documentation requirements and a public-service link; no parcel feature response or API was exposed."
+    },
+    {
+      "url": "https://nspd.gov.ru/map",
+      "method": "GET",
+      "status": "timeout after 20 seconds",
+      "summary": "Current public-map route was attempted; no HTML, JavaScript/configuration, schema, CRS, or geometry response was retrieved."
+    },
+    {
+      "url": "https://pkk.rosreestr.ru/",
+      "method": "GET",
+      "status": "not verified; retained as discovery lead",
+      "summary": "Legacy/current Rosreestr public-map host was identified in native-language discovery, but no usable anonymous response was accepted for this packet."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Local municipal cadastral-plan procedure plus national public cadastral-map discovery.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "targetPointHit": null,
+    "note": "No exact-point hit, map extent result, or parcel geometry was obtained; this is an access/endpoint limitation and does not establish citywide absence. The WUP point was preserved without shifting."
+  },
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted",
+  "nativeIdReadiness": "not_applicable_no_verified_parcel_response",
+  "sourceFields": null,
+  "crs": null,
+  "safeFieldAllowlist": ["stable native parcel identifier", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "rights"],
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "No anonymous parcel geometry response was retrieved. The official city source exposes a procedure, while the national map route timed out before its current public JavaScript/configuration could be followed.",
+  "remainingUncertainty": "Current NSPD/Rosreestr coverage, service schema/CRS, native parcel identifier field, and any parcel intersecting or near the exact WUP point remain unverified.",
+  "nextStep": "Retry the official NSPD/Rosreestr map when reachable, follow its current public JavaScript/configuration, and request only a small city-scoped ID+geometry response before considering adapter qualification."
+}

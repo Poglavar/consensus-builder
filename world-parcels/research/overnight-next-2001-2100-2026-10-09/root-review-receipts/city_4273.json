@@ -1,0 +1,13 @@
+{
+  "taskId": "city:4273",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-4273-pamplona.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pamplona-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/root-review-receipts/source-evidence/city_4273-root-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pamplona-sample.geojson"
+  ],
+  "checkedAt": "2026-10-10T21:11:30Z"
+}

@@ -1,0 +1,74 @@
+{
+  "cityCode": 4078,
+  "queueRank": 2314,
+  "name": "Vladimir",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "point": [56.1392240442076, 40.3986843003042],
+  "population2025": 251498,
+  "population2025k": 251.498,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Vladimir Russia official cadastral map parcel Rosreestr public map Vladimir region",
+        "result": "First-party discovery identified the current federal Rosreestr/NSPD public cadastral-map route and the official Vladimir city administration land-use/cadastral pages. The official city material evidences cadastral-plan procedures and publishes city cadastral references, but no safe anonymous parcel geometry response was obtained.",
+        "actualResultUrls": [
+          "https://nspd.gov.ru/map",
+          "https://vladimir-city.ru/urban/system/rules/",
+          "https://vladimir-city.ru/urban/system/address.php",
+          "https://www.vladimir-city.ru/news/main/1179098/"
+        ]
+      },
+      {
+        "language": "Russian",
+        "query": "Владимир публичная кадастровая карта официальный Росреестр земельные участки",
+        "result": "Русскоязычный поиск нашёл официальный сайт администрации города Владимира с материалами по правилам землепользования и кадастровым процедурам, а также официальное сообщение о Роскадастре и публичной кадастровой карте. Безопасный анонимный ответ с нативным идентификатором участка и геометрией не получен.",
+        "actualResultUrls": [
+          "https://vladimir-city.ru/urban/system/rules/",
+          "https://www.vladimir-city.ru/urban/relations/",
+          "https://www.vladimir-city.ru/news/main/1179098/",
+          "https://nspd.gov.ru/map"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "source": {
+    "sourceId": null,
+    "name": "Rosreestr/NSPD public cadastral map with official Vladimir city land/cadastral procedure evidence",
+    "url": "https://nspd.gov.ru/map",
+    "operator": "Rosreestr / National Spatial Data System; local procedural custodian evidenced by Vladimir city administration",
+    "serviceType": "Official cadastral/public-map route identified; parcel geometry not verified in this attempt.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified"
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official NSPD public cadastral map is the federal public route; official Vladimir city pages evidence local cadastral-plan, land-use and land-administration procedures.",
+    "verifiedOpenScope": "No first-party viewer configuration, parcel schema, native identity, CRS, or geometry response was retrieved. The exact WUP point was preserved and not shifted.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_registry_procedure_geometry_unverified",
+  "runtimeReadiness": "held_pending_serial_review",
+  "adapterReady": false,
+  "cohort": "overnight-next-2301-2400-2026-10-11",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "integrationState": "not_integrated",
+  "researchNote": "Registry/custodian evidence is real, but this packet is not source integration or runtime admission. A timeout, DNS failure, or unavailable viewer is not evidence of citywide cadastral absence."
+}

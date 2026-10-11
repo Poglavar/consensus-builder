@@ -1,0 +1,13 @@
+{
+  "taskId": "city:11747",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-11747-beldanga.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/beldanga-service-review.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/root-review-receipts/city_11747-source-evidence.json"
+  ],
+  "checkedAt": "2026-10-11T00:33:52Z",
+  "reason": "Identity matches the immutable WUP 2025 queue and source archive: rank 2165, IN/Beldanga, exact point and 269051 persons. Separate English and Bengali searches are recorded. Saved first-party Murshidabad land-record page links BanglarBhumi and supports institutional custody; the saved BanglarBhumi headers file is empty after a reported timeout. No anonymous native parcel ID, full polygon, CRS, or feature response is evidenced. No sample exists. Exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are absent; timeout is not citywide absence."
+}

@@ -1,0 +1,23 @@
+{
+  "taskId": "city:497",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-497-arraij-n.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/arraij-n-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T03:01:36Z",
+  "reason": "Official municipal cadastral/GIS custody is evidenced, but no anonymous native-ID parcel geometry response or qualified adapter exists.",
+  "checks": {
+    "immutableQueueIdentity": "matched",
+    "executedSearchLanguages": [
+      "English",
+      "Spanish"
+    ],
+    "retainedPolygonCount": 0,
+    "safeNativeIdGeometryRead": "not evidenced",
+    "adapterQualification": "not evidenced",
+    "runtimeAdmission": "held"
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "city": {
+    "code": "3218",
+    "name": "Oshawa",
+    "point": [
+      -78.8826450091796,
+      43.9038793922422
+    ]
+  },
+  "descriptor": {
+    "id": "ca-on-oshawa-assessed-parcels",
+    "name": "City of Oshawa assessed parcels of land",
+    "adapter": "arcgis",
+    "endpoint": "https://map.oshawa.ca/arcgis/rest/services/Operational/Parcels_AddPts/MapServer/1",
+    "idField": "PARCELID",
+    "idType": "string",
+    "idPattern": "^PCL[0-9]{6}$",
+    "objectIdField": "OBJECTID",
+    "idPrefix": "CA-ON-OSHAWA-",
+    "outFields": [
+      "OBJECTID",
+      "PARCELID",
+      "FCODE"
+    ],
+    "attributeFilters": {
+      "FCODE": 2150
+    },
+    "pageSize": 1000,
+    "idBatchSize": 80,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "boundsQueryMode": "offset",
+    "idsQueryMode": "offset",
+    "queryFormat": "geojson",
+    "countryCode": "CA",
+    "metricSrid": 32617,
+    "cityIds": [
+      "3218"
+    ],
+    "defaultForCity": false,
+    "capabilities": {
+      "exactId": true,
+      "areaEnumeration": true
+    },
+    "scope": "City of Oshawa municipal assessed parcels of land (FCODE=2150); assessed condominium records (FCODE=9920) are a separate documented theme.",
+    "attribution": "City of Oshawa GIS",
+    "catalogueUrl": "https://map.oshawa.ca/OpenData/Metadata/Parcel%20Metadata.pdf",
+    "licenceNote": "Official metadata specifies reference use only; reuse licence is unconfirmed.",
+    "evidenceFile": "attempt-01/evidence/official-contract.json"
+  },
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Frozen city packet and service review identify the City of Oshawa polygon layer Operational/Parcels_AddPts/MapServer/1 and PARCELID identities; official metadata independently states: \"To display property ownership boundaries (parcels) within the City of Oshawa.\" https://map.oshawa.ca/OpenData/Metadata/Parcel%20Metadata.pdf",
+      "Official metadata defines FCODE 2150 as assessed parcels of land and FCODE 9920 as assessed condominiums; this candidate fixes FCODE=2150 as its assessed-land scope. Live layer schema confirms polygon geometry, EPSG:26917, string PARCELID, OBJECTID, FCODE and GeoJSON/pagination support. See attempt-01/evidence/official-contract.json."
+    ]
+  },
+  "sourceCandidateSha256": "c2caca86960c8c9be04bd2cbda174175fced5d926b3a4eb08f4eaaec3287ff0a",
+  "qualificationRecordedSha256": "c2caca86960c8c9be04bd2cbda174175fced5d926b3a4eb08f4eaaec3287ff0a",
+  "sourceCandidatePath": "qualification/evidence/cities/3218/candidate.json",
+  "originalSeedSha256": "c2caca86960c8c9be04bd2cbda174175fced5d926b3a4eb08f4eaaec3287ff0a",
+  "originalSeedPath": "qualification/evidence/cities/3218/candidate.json"
+}

@@ -1,0 +1,81 @@
+{
+  "cityCode": 2972,
+  "queueRank": 2127,
+  "name": "Tanjung Balai",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso3": "IDN",
+  "point": [2.96503024318831, 99.7966303783882],
+  "population2025": 273506,
+  "population2025k": 273.506,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "kind": "city_parcel_source_research",
+  "schemaVersion": 1,
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tanjung Balai Indonesia official cadastral map parcel viewer ATR BPN",
+        "result": "First-party results identified the official ATR/BPN BHUMI/ATLAS geospatial portal and an official Kota Tanjungbalai report naming the local Kantor Pertanahan Kota Tanjungbalai. The portal's public catalog did not list a Tanjung Balai parcel dataset.",
+        "actualResultUrls": [
+          "https://atlas.atrbpn.go.id/",
+          "https://tanjungbalaikota.go.id/berita/wali-kota-tanjungbalai-targetkan-program-ptsl-tahun-2020-peta-bidang-tanah-9-000-dan-sertifikat-hak-atas-tanah-7-500-untuk-masyarakat-tanjungbalai"
+        ]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Tanjung Balai Sumatera Utara peta bidang tanah pertanahan resmi",
+        "result": "First-party results again identified the Kota Tanjungbalai/BPN local land office and ATR/BPN BHUMI. The official city report documents PTSL mapping and certificates, but does not expose an anonymous downloadable parcel layer.",
+        "actualResultUrls": [
+          "https://tanjungbalaikota.go.id/berita/wali-kota-tanjungbalai-targetkan-program-ptsl-tahun-2020-peta-bidang-tanah-9-000-dan-sertifikat-hak-atas-tanah-7-500-untuk-masyarakat-tanjungbalai",
+          "https://bhumi.atrbpn.go.id/bantuan/peta",
+          "https://jdih.atrbpn.go.id/peraturan/detail/78/peraturan-menteri-agraria-dan-tata-ruang-kepala-badan-pertanahan-nasional-nomor-21-tahun-2019"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official Kota Tanjungbalai publication identifies the local Kantor Pertanahan Kota Tanjungbalai/BPN office as the land-registration and PTSL mapping custodian. This is distinguished from the national ATR/BPN portal and its general geospatial services.",
+  "officialSources": [
+    {
+      "url": "https://tanjungbalaikota.go.id/berita/wali-kota-tanjungbalai-targetkan-program-ptsl-tahun-2020-peta-bidang-tanah-9-000-dan-sertifikat-hak-atas-tanah-7-500-untuk-masyarakat-tanjungbalai",
+      "publisher": "Pemerintah Kota Tanjungbalai",
+      "observation": "Official city report names the Kepala Kantor Pertanahan Kota Tanjungbalai and describes PTSL land-field mapping and certificates; it is evidence of local custody, not an open parcel API."
+    },
+    {
+      "url": "https://atlas.atrbpn.go.id/",
+      "publisher": "Kementerian ATR/BPN",
+      "observation": "Current BHUMI/ATLAS portal. Its JavaScript loads the public GeoNode catalog and its map configuration points to the ATR/BPN GeoServer WMS/WFS endpoints."
+    },
+    {
+      "url": "https://jdih.atrbpn.go.id/peraturan/detail/78/peraturan-menteri-agraria-dan-tata-ruang-kepala-badan-pertanahan-nasional-nomor-21-tahun-2019",
+      "publisher": "JDIH ATR/BPN",
+      "observation": "Official cadastral base-map regulation; general policy/procedure context, not city-specific parcel coverage."
+    }
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "parcelGeometryVerified": false,
+  "sourceCandidate": "https://atlas.atrbpn.go.id/geoserver/wfs",
+  "serviceMetadata": {
+    "service": "OGC WFS 2.0.0 via current BHUMI/ATLAS map service",
+    "capabilitiesUrl": "https://atlas.atrbpn.go.id/geoserver/wfs?service=WFS&request=GetCapabilities",
+    "candidateLayer": "bhumi:Persil",
+    "layerTitle": "Persil",
+    "declaredCrs": "EPSG:4326",
+    "safeIdentityCandidate": "nib (NIB); requested only as a safe native identity field",
+    "fieldMapping": {"nib": "native parcel identity"},
+    "geometryStatus": "No feature geometry returned by bounded requests; no sample retained.",
+    "catalogStatus": "The public GeoNode catalog returned 7 published resources, none identified as a Tanjung Balai parcel dataset."
+  },
+  "runtimeReadiness": "held_pending_independent_serial_qualification",
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "A real first-party WFS candidate and local custodian are evidenced, but no bounded anonymous parcel feature/native-ID response was obtained. Research completion is not source integration, adapter admission, or runtime qualification."
+  },
+  "pointBasis": "Immutable WUP queue point retained exactly in latitude/longitude order; no coordinate adjustment was made to obtain a parcel hit."
+}

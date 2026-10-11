@@ -1,0 +1,39 @@
+{
+  "taskId": "city:5028",
+  "decision": "held",
+  "checkedAt": "2026-10-11T03:05:09Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-5028-wakayama.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/wakayama-service-review.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/5028/portal.html",
+    "tmp/valhalla-parcel-research/5028/map.html",
+    "tmp/valhalla-parcel-research/5028/agreement.json"
+  ],
+  "reason": "Official Wakayama city map capture shows thematic map access and generic feature routes, but no evidenced cadastral layer, native parcel ID or polygon response. Local cadastral custody is supported; public parcel geometry and citywide coverage remain unresolved.",
+  "identityCheck": {
+    "queueRank": 2282,
+    "cityCode": 5028,
+    "country": "Japan",
+    "pointLatLon": [
+      34.2318015550311,
+      135.170036605849
+    ],
+    "population2025Persons": 255782,
+    "officialWupRowChecked": true
+  },
+  "searchLanguages": [
+    "English",
+    "Japanese"
+  ],
+  "samplePolygonCount": 0,
+  "admissionChecks": {
+    "freshNativeIdRead": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeometryAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "firstPartyUrls": [
+    "https://www.cepal.org/sites/default/files/presentations/catastro-nacional-inotu-cuba2024.pdf",
+    "https://faolex.fao.org/docs/pdf/cub154617.pdf"
+  ],
+  "firstPartyObservation": "INOTU national cadastre presentation and Cuban Decree-Law 332 support national/municipal cadastre administration; neither establishes an open Camagüey parcel feature service.",
+  "originalParcelResponseAvailable": false,
+  "retainedFullPolygonCount": 0,
+  "taskId": "city:1643",
+  "checkedAt": "2026-10-10T22:37:42Z",
+  "immutableQueueIdentity": {
+    "cityCode": 1643,
+    "rank": 2084,
+    "country": "Cuba",
+    "iso2": "CU",
+    "point": [
+      21.3839931165958,
+      -77.915415857871
+    ],
+    "populationPersons": 278716
+  },
+  "queryLanguages": [
+    "English",
+    "Spanish (local)"
+  ],
+  "qualificationMissing": [
+    "fresh exact native-ID read",
+    "forced pagination",
+    "13 bounded cells",
+    "metric GEOS validity/overlap checks",
+    "source binding",
+    "headed Details-panel verification"
+  ],
+  "decision": "held"
+}

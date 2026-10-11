@@ -300,7 +300,8 @@
         "marseille",
         "lille",
         "toulouse",
-        "bordeaux"
+        "bordeaux",
+        "grenoble"
       ],
       "additionalCityEvidence": {
         "marseille": "research/overnight-cities-2026-10-08/marseille-ign-root-acceptance.json",
@@ -311,7 +312,18 @@
       "cityScopes": {
         "marseille": "331 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 331 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32631 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Marseille commune; the unchanged WUP point lies within returned parcel geometry. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
         "lille": "281 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 281 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32631 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Lille metropolitan settlement locator near Marcq-en-Barœul, which is a separate commune. The initial query restricted to Lille commune 59350 returned no parcel at the WUP point; the existing nationwide IGN provider verifies nearby ground at the unchanged locator without that municipal restriction. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified."
-      }
+      },
+      "qualificationEvidence": [
+        {
+          "cityCode": "4353",
+          "appCityId": "grenoble",
+          "candidateSha256": "7ccf6a9df6e960032820d0a31f5ae60fc00f7e1fd194b192b796362b29aab59b",
+          "qualificationSha256": "c36c1331d186a20a4278afcfc32a156c23df0147a65a6754eef9b55cd3688649",
+          "fullSafeSha256": "cc23321972d3529121529d76adaa3b81e53ee116f12bc6e33777a1078b362455",
+          "metricReportSha256": "c5ba0704cd3ee59bf657932c40885f91fb6e4dcafd2872a3c3522c7684ca777e",
+          "evidenceFile": "world-parcels/research/qualification-2026-10-11/4353/qualification.json"
+        }
+      ]
     },
     {
       "id": "au-vic-vicmap-parcel",
@@ -2609,7 +2621,8 @@
       "countryCode": "US",
       "stateCode": "UT",
       "cityIds": [
-        "salt_lake_city"
+        "salt_lake_city",
+        "west_valley_city"
       ],
       "pageSize": 500,
       "maxFeatures": 10000,
@@ -2621,7 +2634,18 @@
       ],
       "evidenceFile": "research/us-capitals-batch-four-live-2026-10-06.json",
       "attribution": "Utah Geospatial Resource Center and local government. Adapted to WGS84.",
-      "licenceNote": "Source conditions are informational; users choose their source and intended use."
+      "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+      "qualificationEvidence": [
+        {
+          "cityCode": "5646",
+          "appCityId": "west_valley_city",
+          "candidateSha256": "8e4ab6fc2b150b5ee7d7a069236924bb8c25ee673d3d149db3f6b13702ba3935",
+          "qualificationSha256": "8ddc5ce5af3b8f0f2f661bb0bfe60f0302df33d1e073ff370eefd82db9283749",
+          "fullSafeSha256": "6c57e472cce765882adc99be8360936c8ddd95e80b6921ad47b82bf4f8dd88a9",
+          "metricReportSha256": "9af897ed6d926d1b8255530f17695e8f8ca1040d242e4ef734ab892f41a9a521",
+          "evidenceFile": "world-parcels/research/qualification-2026-10-11/5646/qualification.json"
+        }
+      ]
     },
     {
       "endpoint": "https://services1.arcgis.com/BkFxaEFNwHqX3tAw/arcgis/rest/services/FS_VCGI_OPENDATA_Cadastral_VTPARCELS_poly_standardized_parcels_SP_v1/FeatureServer/0",
@@ -6330,6 +6354,1080 @@
       "catalogueUrl": "https://geo.jundiai.sp.gov.br/geojundiai/",
       "attribution": "Município de Jundiaí / GeoJundiaí · cadastral references · adapted",
       "licenceNote": "Publisher conditions, legal effect and update schedule are informational. Public native parcel IDs and geometry only; ownership is not imported."
+    },
+    {
+      "id": "ca-bc-surrey-lots",
+      "name": "City of Surrey cadastral lots",
+      "adapter": "arcgis",
+      "endpoint": "https://gisservices.surrey.ca/arcgis/rest/services/ICI_Data/MapServer/1",
+      "idField": "MSLINK",
+      "idType": "integer",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "CA-BC-SURREY-",
+      "outFields": [
+        "OBJECTID",
+        "MSLINK"
+      ],
+      "pageSize": 2000,
+      "idBatchSize": 40,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 1,
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "queryFormat": "geojson",
+      "countryCode": "CA",
+      "metricSrid": 32610,
+      "cityIds": [
+        "surrey"
+      ],
+      "defaultForCity": true,
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "scope": "City of Surrey municipal lots in the COSMOS GIS; bounded local qualification only.",
+      "catalogueUrl": "https://www.surrey.ca/services-payments/online-services/maps-cosmos",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-11/632/candidate.json",
+      "qualificationEvidence": [
+        {
+          "cityCode": "632",
+          "appCityId": "surrey",
+          "candidateSha256": "864deeccf615dae94614596097db4cf0887c5365b07f0a7388c86eabddfaf734",
+          "qualificationSha256": "34e708f47417ad4bcfcb581dd57285477da395f3e17219936e6d61f41cf82118",
+          "fullSafeSha256": "15e98fd873dffeedbeb1ee6b0605d79adacfdb5ad048a5e33792ac2dfb636611",
+          "metricReportSha256": "41432a431e76550dfb2593e34e239bf53192f3d69858a7633cf4d7ba9174d82c",
+          "evidenceFile": "world-parcels/research/qualification-2026-10-11/632/qualification.json"
+        }
+      ]
+    },
+    {
+      "id": "it-bologna-sit-parcels",
+      "name": "Comune di Bologna SIT — cadastral parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://sitmappe.comune.bologna.it/arcgis/rest/services/CATASTO/CATASTO/MapServer/0",
+      "idField": "PARTKEY",
+      "objectIdField": "FID",
+      "idType": "string",
+      "idPrefix": "IT-BOLOGNA-SIT-",
+      "outFields": [
+        "FID",
+        "PARTKEY",
+        "COMUNE"
+      ],
+      "parcelNumberField": "PARTKEY",
+      "attributeFilters": {
+        "COMUNE": "A944"
+      },
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "queryFormat": "geojson",
+      "pageSize": 500,
+      "idBatchSize": 80,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 1,
+      "metricSrid": 32632,
+      "countryCode": "IT",
+      "cityIds": [
+        "bologna"
+      ],
+      "defaultForCity": true,
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "maxConcurrentQueries": 1,
+      "operator": "Comune di Bologna - Sistema Informativo Territoriale (SIT)",
+      "catalogueUrl": "https://sitmappe.comune.bologna.it/arcgis/rest/services/CATASTO/CATASTO/MapServer",
+      "scope": "Comune di Bologna cadastral parcel reference geometry, restricted to source municipality COMUNE=A944; qualification covers bounded local samples only.",
+      "attribution": "Comune di Bologna — Sistema Informativo Territoriale",
+      "licenceNote": "No named reuse licence in the frozen packet or inspected service/layer metadata; technical review does not establish reuse permission.",
+      "caveats": [
+        "Legacy ArcGIS service explicitly does not support offset pagination or ordering; use verified count/OID manifests and bounded OID batches.",
+        "Native PARTKEY is preserved literally, including spaces; FID is only a transport object ID.",
+        "Local bounded review does not establish citywide completeness, survey accuracy, legal title or currentness."
+      ],
+      "qualificationEvidence": [
+        {
+          "cityCode": "3342",
+          "appCityId": "bologna",
+          "candidateSha256": "f8197a14ce39381488695823ef340c7a90f8014872c4426d91c905cc30c6c67d",
+          "qualificationSha256": "2204d985376269d77e3377c23b558306e7d1e804d4cfe33d2562e9605fdafebc",
+          "fullSafeSha256": "1729452303c0deaabd24bd01ef138518738d3253fbafe7b07f6c1d967405b4d6",
+          "metricReportSha256": "fc3f38fa723fc2246d75edf951e2bbbe8d402ee2beb21bc4ba3162c221d5af95",
+          "evidenceFile": "world-parcels/research/qualification-2026-10-11/3342/qualification.json"
+        }
+      ]
+    },
+    {
+      "id": "ch-ge-sitg-cadastre-rdppf",
+      "name": "Geneva SITG cadastral survey parcels (EGRID)",
+      "adapter": "arcgis",
+      "endpoint": "https://thematic.sitg.ge.ch/arcgis/rest/services/CADASTRE_RDPPF/MapServer/4",
+      "idField": "EGRID",
+      "idType": "string",
+      "idPattern": "^CH[0-9]{12}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "CH-GE-SITG-EGRID-",
+      "outFields": [
+        "EGRID",
+        "OBJECTID"
+      ],
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "queryFormat": "geojson",
+      "pageSize": 200,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "capabilities": {
+        "point": false,
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "countryCode": "CH",
+      "cityIds": [
+        "geneva"
+      ],
+      "metricSrid": 32632,
+      "scope": "Official cantonal cadastral and official-survey map service for Geneva; the SITG catalog identifies the parcel data as official mensuration/cadastre data.",
+      "catalogueUrl": "https://sitg.ge.ch/donnees/cad-parcelle-mensu",
+      "attribution": "République et canton de Genève - Département du territoire / SITG",
+      "licenceNote": "The frozen packet supplies no licence annotation. Public anonymous access is verified separately; technical recommendation does not decide reuse rights or admission.",
+      "qualificationEvidence": [
+        {
+          "cityCode": "60",
+          "appCityId": "geneva",
+          "candidateSha256": "d5d3c19e5fcecf3c970a1199b88b717a56d0f63cc8b436e969b81b687a74e238",
+          "qualificationSha256": "48487f2bcfb20229ede4a3112475c759acdeed43083c8f641443c47b5aef9f62",
+          "fullSafeSha256": "a14011933eb076fe63c6b4fe4553d7eb035be348e22a8648cf782a197c50a4d3",
+          "metricReportSha256": "12da40d7316459432c9324c8da3a799ad246b48cf0a58279aaea1d8ee447b7f0",
+          "evidenceFile": "world-parcels/research/qualification-2026-10-11/60/qualification.json"
+        }
+      ],
+      "defaultForCity": true
+    },
+    {
+      "id": "ca-on-hamilton-assessment-parcel",
+      "name": "City of Hamilton Assessment Parcel",
+      "adapter": "arcgis",
+      "endpoint": "https://services.arcgis.com/rYz782eMbySr2srL/arcgis/rest/services/Hamilton_Assessment_Parcel/FeatureServer/0",
+      "idField": "OBJECTID",
+      "idType": "integer",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "CA-ON-HAMILTON-",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "pageSize": 2000,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "CA",
+      "metricSrid": 32617,
+      "cityIds": [
+        "hamilton"
+      ],
+      "scope": "City of Hamilton assessment parcel mapping from Teranet; bounded technical review only.",
+      "catalogueUrl": "https://www.arcgis.com/sharing/rest/content/items/b18cec4690d241029935df1b02bb19db?f=json",
+      "attribution": "City of Hamilton; Teranet data received February 9, 2024.",
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "qualificationEvidence": [
+        {
+          "cityCode": "2668",
+          "appCityId": "hamilton",
+          "candidateSha256": "9a395a85c296eed20f194815b1d0efa6acd8d3cec51000698ced8d0c46a56529",
+          "qualificationSha256": "8a404ed5a6beefb4363f0a56f0bad282846d077d02511235768b2b8545eb7380",
+          "fullSafeSha256": "7a9067e2f1a29fa0332d3ed966ab965bbd0539586b3903a9a218088ce027ef16",
+          "metricReportSha256": "06f191e4aabe1033d33f2bbc9edd68b6207a8b24b8e84193b88753fd2c60ae81",
+          "evidenceFile": "world-parcels/research/qualification-2026-10-11/2668/qualification.json"
+        }
+      ],
+      "defaultForCity": true
+    },
+    {
+      "id": "nice-cotedazur-cadastre-arcgis",
+      "name": "Métropole Nice Côte d’Azur Cadastre ArcGIS MapServer",
+      "adapter": "arcgis",
+      "endpoint": "https://cartes.nicecotedazur.org/heberge2/rest/services/Cadastre/Cadastre/MapServer/8",
+      "idField": "CODEIDENT",
+      "idType": "string",
+      "idPattern": "^[0-9]{6}[ 0-9]{3}[A-Z0-9]{2}[0-9]{4}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "FR-NCA-CADASTRE-",
+      "outFields": [
+        "CODEIDENT",
+        "OBJECTID"
+      ],
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "queryFormat": "geojson",
+      "pageSize": 200,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "FR",
+      "metricSrid": 32632,
+      "scope": "Cadastre of the Métropole Nice Côte d’Azur; official layer extent covers the metropolitan service area.",
+      "attribution": "Métropole Nice Côte d’Azur / Direction de l’Information Géographique; service attribution DGFIP 2025; layer attribution DGFIP 2020.",
+      "catalogueUrl": "https://opendata.nicecotedazur.org/data/dataset/parcelles-cadastrales-de-la-metropole-nice-cote-d-azur",
+      "capabilities": {
+        "point": false,
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "cityIds": [
+        "nice"
+      ],
+      "qualificationEvidence": [
+        {
+          "cityCode": "4796",
+          "appCityId": "nice",
+          "candidateSha256": "eae063d82ce4a3e7fcd9aa345e1d20125845d3420d549b73ad4175ecbeadae1d",
+          "qualificationSha256": "485879a38cebf2fb594ab53860bd62169633e7056aca1c402e73c74af6325bbd",
+          "fullSafeSha256": "ad5b19f86b2863ac056f420782d533d1a29a75c063e956b0dc6cdc9e59cd3818",
+          "metricReportSha256": "b843cc310acb61293ff7cbe08008c723350b9c9d530390e2db04d77f26320d72",
+          "evidenceFile": "world-parcels/research/qualification-2026-10-11/4796/qualification.json"
+        }
+      ],
+      "defaultForCity": true
+    },
+    {
+      "id": "us-ca-escondido-parcels",
+      "name": "City of Escondido assessor-derived parcel layer",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.escondido.gov/server/rest/services/Data/Parcels/FeatureServer/0",
+      "idField": "APN",
+      "idType": "string",
+      "idPattern": "^[A-Za-z0-9 -]{1,10}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-CA-ESCONDIDO-",
+      "outFields": [
+        "APN",
+        "OBJECTID"
+      ],
+      "pageSize": 2000,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "US",
+      "cityIds": [
+        "escondido"
+      ],
+      "metricSrid": 32611,
+      "capabilities": {
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true
+      },
+      "scope": "Official City of Escondido assessor-derived parcel layer, including proposed and retired parcels and stacked taxable parcels; no status or geometric exclusions.",
+      "catalogueUrl": "https://gis.escondido.gov/server/rest/services/Data/Parcels/FeatureServer/0",
+      "attribution": "City of Escondido",
+      "licenceNote": "Public anonymous query verified; reuse permission is not established by access alone.",
+      "qualificationEvidence": [
+        {
+          "cityCode": "3039",
+          "appCityId": "escondido",
+          "candidateSha256": "1f519a10a0ceb1616e98c7a64aa6518cabda7a161004b983c9c879d48b7117a1",
+          "qualificationSha256": "ac52c47c7ea5fafcc80de54d91543dfc89e7c5b68dcac4defe4df06679323df4",
+          "fullSafeSha256": "98d618873ae2b06033b4adfadcff0805af3d653fa5f76a53acdcf882fc293182",
+          "metricReportSha256": "43262eea30beea351f6df79a4263c6bd099b268154b385d5fee1319984de01d7",
+          "evidenceFile": "world-parcels/research/qualification-2026-10-11/3039/qualification.json"
+        }
+      ],
+      "defaultForCity": true
+    },
+    {
+      "id": "san-joaquin-county-diesel-wfl1-parcels",
+      "name": "San Joaquin County / Stockton Assessor parcels",
+      "adapter": "arcgis",
+      "cityIds": [
+        "stockton"
+      ],
+      "idPrefix": "US-CA-SAN-JOAQUIN-",
+      "endpoint": "https://services3.arcgis.com/nUD9ady1mS8uVvoJ/ArcGIS/rest/services/Diesel_WFL1/FeatureServer/1",
+      "idField": "APN_CHR",
+      "idType": "string",
+      "idPattern": "^[0-9]{8}$",
+      "objectIdField": "FID",
+      "outFields": [
+        "APN_CHR",
+        "FID"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "pageSize": 100,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32610,
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "attribution": "San Jouquin County CD/GIS & City of Stockton IT/GIS; Data Steward: San Joaquin County Assessor's Office",
+      "countryCode": "US",
+      "qualificationEvidence": [
+        {
+          "cityCode": "3536",
+          "appCityId": "stockton",
+          "candidateSha256": "ebd40b1942aae0568443806bf5813d06b412ebd92b108e6524fb2244827f15a9",
+          "qualificationSha256": "793ef83d079463e395eeea07d1f582e247f421fa16efc062eeb8278fa29245f8",
+          "fullSafeSha256": "32f88b7332b31d00893e2b05f25e67c1fcac018c1e00fafbe2ab018ca9876201",
+          "metricReportSha256": "daf5c3493c00c8bddef9f290f256a95e74dcc58c8b3e0b9cec3ffa00fa7354a0",
+          "evidenceFile": "world-parcels/research/qualification-2026-10-11/3536/qualification.json"
+        }
+      ],
+      "defaultForCity": true
+    },
+    {
+      "id": "us-pa-allegheny-parcels",
+      "name": "Allegheny County parcel boundaries",
+      "adapter": "arcgis",
+      "endpoint": "https://gisdata.alleghenycounty.us/arcgis/rest/services/OPENDATA/Parcels/MapServer/0",
+      "idPrefix": "US-PA-ALLEGHENY-",
+      "idField": "PIN",
+      "idType": "string",
+      "idPattern": "^[0-9A-Z]{16}$",
+      "objectIdField": "OBJECTID",
+      "outFields": [
+        "PIN",
+        "OBJECTID"
+      ],
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "queryFormat": "geojson",
+      "pageSize": 200,
+      "idBatchSize": 80,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 1,
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "countryCode": "US",
+      "stateCode": "PA",
+      "metricSrid": 32617,
+      "cityIds": [
+        "pittsburgh"
+      ],
+      "operator": "Allegheny County DCS-GIS",
+      "attribution": "Allegheny County DCS-GIS parcel boundaries",
+      "catalogueUrl": "https://data.wprdc.org/dataset/allegheny-county-parcel-boundaries1",
+      "licenceNote": "County-published regional catalogue specifies no licence; reuse rights require separate primary review.",
+      "scope": "Allegheny County parcel-boundary layer including Pittsburgh. Qualification is bounded around the frozen WUP point and does not establish citywide completeness, legal title, survey accuracy or currentness. Native CRS EPSG:2272 / WKID 102729; queries request WGS84 GeoJSON outSR=4326.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-11/8067/candidate.json",
+      "qualificationEvidence": [
+        {
+          "cityCode": "8067",
+          "appCityId": "pittsburgh",
+          "candidateSha256": "c5d36bc5d7fbfce21d2da82b6820118dffad0e2fcc0d8140ead092adaa152a29",
+          "qualificationSha256": "15059e53b5fd35fdada2f5e0605c824053654986a245b9e4c0d9027bdc74efb5",
+          "fullSafeSha256": "a63b57e0f223318a6ed1d07d919de61391fb4ee70b0f17b74105a41e3d590598",
+          "metricReportSha256": "904696647015d4157b118627e631eee2f088be4a5c4e1fdcb46ce2e061f24218",
+          "evidenceFile": "world-parcels/research/qualification-2026-10-11/8067/qualification.json"
+        }
+      ],
+      "defaultForCity": true
+    },
+    {
+      "id": "co-pasto-urban-parcels",
+      "name": "Pasto urban cadastral parcels (IGAC 2021 base)",
+      "adapter": "arcgis",
+      "endpoint": "https://geoportal.pasto.gov.co/server/rest/services/Planeacion/Mapa_base_registro_de_descargas/MapServer/29",
+      "idField": "codigo_predial_nacional",
+      "idType": "string",
+      "idPattern": "^[0-9]{30}$",
+      "objectIdField": "objectid",
+      "idPrefix": "CO-PASTO-URBAN-",
+      "outFields": [
+        "objectid",
+        "codigo_predial_nacional"
+      ],
+      "pageSize": 1000,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "queryFormat": "geojson",
+      "countryCode": "CO",
+      "metricSrid": 32618,
+      "cityIds": [
+        "pasto"
+      ],
+      "scope": "Urban cadastral base for the municipality of Pasto, within the urban perimeter approved by the applicable POT. Layer description states IGAC open data obtained in 2021; rural parcels are separate layers.",
+      "attribution": "Instituto Geográfico Agustín Codazzi - IGAC; Alcaldía de Pasto Geoportal",
+      "catalogueUrl": "https://geoportal.pasto.gov.co/server/rest/services/Planeacion/Mapa_base_registro_de_descargas/MapServer/29",
+      "capabilities": {
+        "point": false,
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "qualificationEvidence": [
+        {
+          "cityCode": "351",
+          "appCityId": "pasto",
+          "candidateSha256": "bf62159a8be7d9dd2ff6da1f98f93dd7f8be82668b8fd45a01f2235648bf638f",
+          "qualificationSha256": "2d294e91627402f96c3ae5b115389de63564b1d1a2d8147477cc3d53eeb544e8",
+          "fullSafeSha256": "73c6db044efe156e217235cea3a63033b7501c12310142609c519290a654dd89",
+          "metricReportSha256": "1321fbbcdffe0228020d20f40d0baca94a3a07d3461de1dea3ddae15ddb674c8",
+          "evidenceFile": "world-parcels/research/qualification-2026-10-11/351/qualification.json"
+        }
+      ],
+      "defaultForCity": true
+    },
+    {
+      "id": "us.ca.riverside-city-parcels",
+      "name": "City of Riverside cadastral parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://mapriverside.riversideca.gov/server/rest/services/Cadastral/Cadastral_Public/MapServer/86",
+      "idPrefix": "us-ca-riverside-city:",
+      "idField": "ParcelFabric_Parcels.OBJECTID",
+      "objectIdField": "ParcelFabric_Parcels.OBJECTID",
+      "idType": "integer",
+      "outFields": [
+        "ParcelFabric_Parcels.OBJECTID"
+      ],
+      "cityIds": [
+        "riverside"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "queryFormat": "geojson",
+      "pageSize": 80,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "capabilities": {
+        "areaEnumeration": true,
+        "supportsPagination": false
+      },
+      "metricSridByCity": {
+        "riverside": 32611
+      },
+      "countryCode": "US",
+      "metricSrid": 32611,
+      "qualificationEvidence": [
+        {
+          "cityCode": "3430",
+          "appCityId": "riverside",
+          "candidateSha256": "f8e48bc51d24421be35eb749c2d9c3a56e6738237929cf69a5c482833522497d",
+          "qualificationSha256": "7acc754f2b51baac75469dfafd82d7e083ed6e0e833a66c20f4a2d59d5d940c6",
+          "fullSafeSha256": "a6dbefb0a32b91a6656c5bf8b0f698e1976828361a537d873a7afa222a0aeb9a",
+          "metricReportSha256": "e27d10ce733cddece3e4c3dc047e44dd6f3ad4ff8850eeaecf4aba9192248be4",
+          "evidenceFile": "world-parcels/research/qualification-2026-10-11/3430/qualification.json"
+        }
+      ],
+      "defaultForCity": true
+    },
+    {
+      "id": "ca-qc-longueuil-cadastre",
+      "name": "Ville de Longueuil municipal cadastral lots",
+      "adapter": "arcgis",
+      "endpoint": "https://geomatique.longueuil.quebec/public/rest/services/DonneesPubliques/CadastreEtEvaluation/FeatureServer/0",
+      "idField": "NUMERO",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "CA-QC-LONGUEUIL-",
+      "outFields": [
+        "OBJECTID",
+        "NUMERO",
+        "STATUT"
+      ],
+      "attributeFilters": {
+        "STATUT": [
+          -1,
+          0
+        ]
+      },
+      "queryFormat": "esri-json",
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "pageSize": 100,
+      "idBatchSize": 80,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 25,
+      "capabilities": {
+        "point": false,
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true
+      },
+      "countryCode": "CA",
+      "metricSrid": 32618,
+      "cityIds": [
+        "longueuil"
+      ],
+      "operator": "Ville de Longueuil",
+      "catalogueUrl": "https://geohub.longueuil.quebec/",
+      "attribution": "Ville de Longueuil · municipal Cadastre",
+      "scope": "Municipal cadastral lot polygons in publisher-coded official states -1 and 0; bounded Longueuil neighborhood qualification only. Service extent may span the municipal agglomeration; citywide completeness and authoritative maintenance scope remain unverified.",
+      "licenceNote": "No reuse licence is established in the frozen packet or inspected service schema; legal and licence review remain for primary review.",
+      "qualificationEvidence": [
+        {
+          "cityCode": "3792",
+          "appCityId": "longueuil",
+          "candidateSha256": "50a5f5bedc7e2748ba21de58e00b63bad3a0999647eedb70b32b97c752b07e41",
+          "qualificationSha256": "c1e23acd42c83a3158e1ddbe68fdbd44205d51a07a6e95ae2945cbf0659f5a2e",
+          "fullSafeSha256": "5415fa2f6d4bd8f3f745195d0fb2ffe34750e24ae9b4cb2b224caaed151ac5db",
+          "metricReportSha256": "0402c1e865e4fa013d34c484bdab856063fcca2db866d05ffff43d82747b2974",
+          "evidenceFile": "world-parcels/research/qualification-2026-10-11/3792/qualification.json"
+        }
+      ],
+      "defaultForCity": true
+    },
+    {
+      "id": "pk-pulse-wazirabad-parcels",
+      "name": "Punjab PULSE Wazirabad cadastral reference polygons",
+      "adapter": "pulse-public",
+      "endpoint": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/35",
+      "idPrefix": "PK-PULSE-WAZIRABAD-",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "pageSize": 500,
+      "idBatchSize": 80,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 25,
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "cityIds": [
+        "wazirabad"
+      ],
+      "metricSrid": 32643,
+      "attribution": "Punjab PULSE / Punjab Land Records Authority; indicative cadastral reference polygons",
+      "countryCode": "PK",
+      "qualificationEvidence": [
+        {
+          "cityCode": "7979",
+          "appCityId": "wazirabad",
+          "candidateSha256": "207f5f3c7de40c763e5723af2028ca50536523cfc81405b12aeac09cce1c58c6",
+          "qualificationSha256": "d28dd0949ffa82e42d21be55998e5c55dd61522fb729707ae104d5e93cd651e6",
+          "fullSafeSha256": "a87a4dc11d3229b8dedf8c75d95ded1f5e80d6b6d347709a233db73cf61f8b0b",
+          "metricReportSha256": "2b18a7e081770ef5f8b4e0f76a1bc43fc1fca787ec952e386f22ebda2f1160db",
+          "evidenceFile": "world-parcels/research/qualification-2026-10-11/7979/qualification.json"
+        }
+      ],
+      "defaultForCity": true
+    },
+    {
+      "id": "us-ny-erie-parcels",
+      "name": "Erie County Office of GIS tax parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.erie.gov/server/rest/services/OGIS/Parcels/MapServer/0",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "idPrefix": "US-NY-ERIE-",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "pageSize": 1000,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "queryFormat": "geojson",
+      "capabilities": {
+        "point": false,
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "metricSrid": 32617,
+      "countryCode": "US",
+      "stateCode": "NY",
+      "cityIds": [
+        "buffalo"
+      ],
+      "operator": "Erie County Office of GIS",
+      "scope": "Erie County tax-parcel polygon service linked by the City of Buffalo; bounded local qualification only. Buffalo municipal completeness is unverified.",
+      "catalogueUrl": "https://www3.erie.gov/gis/internet-mapping",
+      "attribution": "Erie County Office of GIS",
+      "licenceNote": "County publishes tax parcel GIS data for free; redistribution terms and legal survey accuracy remain unverified.",
+      "caveats": [
+        "OBJECTID is the service-native identity; continuity across future service republishes is unverified.",
+        "The county website identifies the parcel layer as current to 2025; individual parcel currency and citywide completeness are unverified."
+      ],
+      "qualificationEvidence": [
+        {
+          "cityCode": "8207",
+          "appCityId": "buffalo",
+          "candidateSha256": "2337f71dc9920e85d641fa554b33b596691851aeae39076ccc69d2cc70b284e1",
+          "qualificationSha256": "c2beb5c2fc4a80769088ee2c7ec596996d10ede0e6c568951329a15e1de6776b",
+          "fullSafeSha256": "6aab4399de5ff02b5389625852101aee8d15debefb7f42cb31d38e239e957f18",
+          "metricReportSha256": "85e3f454dd98e4ee22447cf59070bbc85ed2c6c4a2195044eef6ac7f304161fe",
+          "evidenceFile": "world-parcels/research/qualification-2026-10-11/8207/qualification.json"
+        }
+      ],
+      "defaultForCity": true
+    },
+    {
+      "id": "ca-on-oshawa-assessed-parcels",
+      "name": "City of Oshawa assessed parcels of land",
+      "adapter": "arcgis",
+      "endpoint": "https://map.oshawa.ca/arcgis/rest/services/Operational/Parcels_AddPts/MapServer/1",
+      "idField": "PARCELID",
+      "idType": "string",
+      "idPattern": "^PCL[0-9]{6}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "CA-ON-OSHAWA-",
+      "outFields": [
+        "OBJECTID",
+        "PARCELID",
+        "FCODE"
+      ],
+      "attributeFilters": {
+        "FCODE": 2150
+      },
+      "pageSize": 1000,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "queryFormat": "geojson",
+      "countryCode": "CA",
+      "metricSrid": 32617,
+      "cityIds": [
+        "oshawa"
+      ],
+      "defaultForCity": true,
+      "capabilities": {
+        "exactId": true,
+        "areaEnumeration": true
+      },
+      "scope": "City of Oshawa municipal assessed parcels of land (FCODE=2150); assessed condominium records (FCODE=9920) are a separate documented theme.",
+      "attribution": "City of Oshawa GIS",
+      "catalogueUrl": "https://map.oshawa.ca/OpenData/Metadata/Parcel%20Metadata.pdf",
+      "licenceNote": "Official metadata specifies reference use only; reuse licence is unconfirmed.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-11/3218/candidate.json",
+      "qualificationEvidence": [
+        {
+          "cityCode": "3218",
+          "appCityId": "oshawa",
+          "candidateSha256": "c2caca86960c8c9be04bd2cbda174175fced5d926b3a4eb08f4eaaec3287ff0a",
+          "qualificationSha256": "6308a4a0e16b65a2232355fc5e65988f46015d3cc772f95e2ab237cf5f8343ee",
+          "fullSafeSha256": "bbf18974cd14d45db7f256ffbe70aa2aae1d4281dc0c9f0d906cfb13604b15c4",
+          "metricReportSha256": "3eebd6230c801915445d6de3fb5ae16dbf9a3577e6366b55d22e20041d73135a",
+          "evidenceFile": "world-parcels/research/qualification-2026-10-11/3218/qualification.json"
+        }
+      ]
+    },
+    {
+      "id": "arlington-tax-parcels",
+      "label": "City of Arlington Tax Parcel",
+      "adapter": "arcgis",
+      "endpoint": "https://gis2.arlingtontx.gov/agsext2/rest/services/OpenData/OD_Property/MapServer/2",
+      "cityIds": [
+        "arlington"
+      ],
+      "idField": "TaxParcelId",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "idPrefix": "US-TX-ARLINGTON-",
+      "outFields": [
+        "TaxParcelId",
+        "OBJECTID"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "pageSize": 200,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "metricSrid": 32614,
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "attribution": "City of Arlington, Texas GIS / OpenData",
+      "catalogueUrl": "https://gis2.arlingtontx.gov/agsext2/rest/services/OpenData/OD_Property/MapServer/2",
+      "viewerUrl": "https://gis.arlingtontx.gov/mapsonline/",
+      "countryCode": "US",
+      "qualificationEvidence": [
+        {
+          "cityCode": "6413",
+          "appCityId": "arlington",
+          "candidateSha256": "cdaa19aaf0f456142d9315030b32d079ddf1ca3573c955f4b276f48734779045",
+          "qualificationSha256": "8e3c0af47d32e16e07a46cc63ea42f0cb7d7f0d9d7d898b034a881a165f15c6f",
+          "fullSafeSha256": "ed72aecc3aca11181548bf29cfd7b2448fb6eb9bc5c3bf20e0e0e1867198e504",
+          "metricReportSha256": "3a358ddb01ff461b0e25b6cba328f0f822022ea103d60b6b0b7b6098a204b581",
+          "evidenceFile": "world-parcels/research/qualification-2026-10-11/6413/qualification.json"
+        }
+      ],
+      "defaultForCity": true
+    },
+    {
+      "id": "brno-city-gis-katastr-g-parcely",
+      "name": "GIS města Brna PUBLIC/katastr_g ArcGIS Feature Layer 5 Parcely",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.brno.cz/ags3/rest/services/PUBLIC/katastr_g/MapServer/5",
+      "idField": "par_id",
+      "idType": "integer",
+      "objectIdField": "ogc_fid",
+      "idPrefix": "CZ-BRNO-",
+      "outFields": [
+        "par_id",
+        "ogc_fid"
+      ],
+      "queryFormat": "geojson",
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "pageSize": 1000,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "CZ",
+      "metricSrid": 32633,
+      "cityIds": [
+        "brno"
+      ],
+      "operator": "Statutory City of Brno GIS / Magistrát města Brna",
+      "capabilities": {
+        "point": false,
+        "exactId": true,
+        "bbox": true,
+        "areaEnumeration": true,
+        "geometry": "full-wgs84"
+      },
+      "scope": "Brno and surrounding cadastral data per official service Subject; bounded local qualification only.",
+      "catalogueUrl": "https://gis.brno.cz/ags3/rest/services/PUBLIC/katastr_g/MapServer",
+      "licenceNote": "No reuse licence established in frozen packet or inspected service metadata.",
+      "qualificationEvidence": [
+        {
+          "cityCode": "1168",
+          "appCityId": "brno",
+          "candidateSha256": "4daa754aec3c4c02e96c0dc1276d52a7ab766ecce87ada6b71ab9f906d25defb",
+          "qualificationSha256": "0c586785b1161e316feee90338b80dca7de612f2baf57e928cf4609f97f8a36e",
+          "fullSafeSha256": "a5ba8add58a7439c32021ff6bd9244520274071fd4c3d0a917aa80045d0d0b7f",
+          "metricReportSha256": "1c2288b996225d499c4d49620b6fff9092b70e89b4cfdc97245f32b083c7e03f",
+          "evidenceFile": "world-parcels/research/qualification-2026-10-11/1168/qualification.json"
+        }
+      ],
+      "defaultForCity": true
+    },
+    {
+      "id": "us-in-lake-hammond-parcels",
+      "name": "Lake County Indiana parcel fabric, Hammond municipality",
+      "adapter": "arcgis",
+      "endpoint": "https://services5.arcgis.com/8CXRnvSfSpwdf0R6/arcgis/rest/services/Lake_County_Parcels/FeatureServer/0",
+      "idField": "PARCELID",
+      "idType": "string",
+      "idPattern": "^45-\\d{2}-\\d{2}-\\d{3}-\\d{3}\\.\\d{3}-\\d{3}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-IN-LAKE-HAMMOND-",
+      "outFields": [
+        "OBJECTID",
+        "PARCELID",
+        "IncMuni"
+      ],
+      "attributeFilters": {
+        "IncMuni": "Hammond"
+      },
+      "queryFormat": "geojson",
+      "boundsQueryMode": "offset",
+      "idsQueryMode": "offset",
+      "pageSize": 200,
+      "idBatchSize": 80,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "countryCode": "US",
+      "metricSrid": 32616,
+      "cityIds": [
+        "hammond"
+      ],
+      "scope": "Lake County, Indiana cadastral parcel boundaries, restricted by the publisher Incorporated Municipality field IncMuni=Hammond. The unchanged WUP point is west of the published service extent; bounded sampling includes the native sample centroid cell.",
+      "catalogueUrl": "https://www.arcgis.com/home/item.html?id=18b6b08c8c7e403cbd9451360c8f5a61",
+      "attribution": "Lake County Surveyor's Office; parcel fabric maintained by Lake County Auditor's Office.",
+      "licenceUrl": "https://www.arcgis.com/sharing/rest/content/items/18b6b08c8c7e403cbd9451360c8f5a61?f=json",
+      "licenceNote": "Publisher metadata requires attribution and prohibits commercial use. Technical qualification does not grant reuse permission or app admission. Data change frequently and do not represent a survey.",
+      "evidenceFile": "world-parcels/research/qualification-2026-10-11/7729/candidate.json",
+      "qualificationEvidence": [
+        {
+          "cityCode": "7729",
+          "appCityId": "hammond",
+          "candidateSha256": "a7c9f8f8efaa5ee81673f89cdefe35a8b460caa6d90206f9c40c04da5dbcbcfa",
+          "qualificationSha256": "2ed494ebfdc8401c0850e43286ede8f4376a3a89e6b3b56e71dd1704d5505672",
+          "fullSafeSha256": "9725f07a24f4d6f41cd673db8c5c8652f15bd2ae00ab8e6eb7fc89bb4c03e835",
+          "metricReportSha256": "599d6dcdb948369e3f80ff023b3a0e1c7e97cd64988970b4df7f7b09f555b629",
+          "evidenceFile": "world-parcels/research/qualification-2026-10-11/7729/qualification.json"
+        }
+      ],
+      "defaultForCity": true
+    },
+    {
+      "id": "jp-takasaki-parcel-map",
+      "name": "Takasaki City parcel-number map polygons",
+      "adapter": "geojson-snapshot",
+      "endpoint": "https://www.city.takasaki.gunma.jp/uploaded/attachment/42714.zip",
+      "countryCode": "JP",
+      "cityIds": [
+        "takasaki"
+      ],
+      "idPrefix": "JP-TAKASAKI-FUDEID-",
+      "idField": "FUDEID",
+      "idFields": [
+        "FUDEID"
+      ],
+      "idType": "integer",
+      "outFields": [
+        "FUDEID"
+      ],
+      "sourceCrs": "EPSG:6677",
+      "metricSrid": 32654,
+      "returnsWGS84": true,
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "maxFeatures": 10000,
+      "maxSnapshotBytes": 83886080,
+      "maxSnapshotFeatures": 600000,
+      "defaultForCity": true,
+      "snapshotFormat": "shapefile-zip",
+      "shapefileMembers": {
+        "shp": "筆ポリゴン_地番図.shp",
+        "shx": "筆ポリゴン_地番図.shx",
+        "dbf": "筆ポリゴン_地番図.dbf",
+        "prj": "筆ポリゴン_地番図.prj"
+      },
+      "zipEncoding": "utf-8",
+      "dbfEncoding": "shift_jis",
+      "snapshotScope": "archive",
+      "expectedSnapshotSha256": "fec7c8c079146cb47dca4412db212f1a22538c18276daf6513caceca48934b3c",
+      "expectedSnapshotFeatures": 577988,
+      "qualificationEvidence": [
+        {
+          "cityCode": "5785",
+          "appCityId": "takasaki",
+          "candidateSha256": "10d256b1756293350367828d4e399af9d73b7a5b25c40eb3a7dde2477d0dcda2",
+          "qualificationSha256": "4679a8e827d7367173a6123e67f626829e1c353bb8e82a763169df07b894f169",
+          "fullSafeSha256": "a27f4217ac40334d6a278bab3b7ffcd71eb7b9992d78b6a03c7ed2e2d0745398",
+          "metricReportSha256": "bfcf3267c8fbc0ad105d74bc661394d4fd7cec40d5e02b760d8a269d129db1f9",
+          "evidenceFile": "world-parcels/research/qualification-2026-10-11/5785/qualification.json"
+        }
+      ]
+    },
+    {
+      "id": "hessen-alkis-vereinfacht-wfs",
+      "adapter": "gml-wfs",
+      "name": "Hessen simplified ALKIS cadastral parcels",
+      "endpoint": "https://www.gds.hessen.de/wfs2/aaa-suite/cgi-bin/alkis/vereinf/wfs",
+      "version": "2.0.0",
+      "featureType": "ave:Flurstueck",
+      "idField": "oid",
+      "geometryField": "geometrie",
+      "responseCrs": "EPSG:25832",
+      "idPrefix": "DE-HE-",
+      "idType": "string",
+      "parcelNumberField": "oid",
+      "outFields": [
+        "oid"
+      ],
+      "countryCode": "DE",
+      "cityIds": [
+        "wiesbaden"
+      ],
+      "metricSrid": 32632,
+      "maxBboxKm2": 1,
+      "pageSize": 50,
+      "maxFeatures": 300,
+      "maxResponseBytes": 1048576,
+      "maxTotalResponseBytes": 8388608,
+      "timeoutMs": 12000,
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "operator": "Hessisches Landesamt für Bodenmanagement und Geoinformation",
+      "scope": "State ALKIS cadastral parcels; frozen bounded Wiesbaden samples. Citywide completeness is unverified.",
+      "qualificationEvidence": [
+        {
+          "cityCode": "2998",
+          "appCityId": "wiesbaden",
+          "candidateSha256": "aa5dcad6fc393da68888d217090299090339f2d412787fb408174294d3fc6841",
+          "qualificationSha256": "273c37c889b2d7e7f81d23f7a336cd9aaf5f6cb4de6dc47e52cad35cb2daaf55",
+          "fullSafeSha256": "d101c083113b485b6565547733dbbcf1baf525c0d0f79b2fa34dc888b21f441c",
+          "metricReportSha256": "119dc82a8556974b0ac620d3c5e07902af43cb4de9c4e6afec71dd61fe5784f4",
+          "evidenceFile": "world-parcels/research/qualification-2026-10-11/2998/qualification.json"
+        }
+      ],
+      "defaultForCity": true
+    },
+    {
+      "id": "gdansk-gml-wfs",
+      "name": "Gdańsk municipal EGiB cadastral parcel polygons",
+      "adapter": "gml-wfs",
+      "endpoint": "https://ewid-wms.gdansk.gda.pl/iip/ows",
+      "featureType": "ms:dzialki",
+      "version": "2.0.0",
+      "idField": "ID_DZIALKI",
+      "geometryField": "geometry",
+      "responseCrs": "EPSG:2177",
+      "idPrefix": "PL-GDANSK-",
+      "idType": "string",
+      "parcelNumberField": "ID_DZIALKI",
+      "outFields": [
+        "ID_DZIALKI"
+      ],
+      "maxBboxKm2": 1,
+      "pageSize": 50,
+      "maxFeatures": 300,
+      "maxResponseBytes": 1048576,
+      "maxTotalResponseBytes": 8388608,
+      "timeoutMs": 12000,
+      "countryCode": "PL",
+      "metricSrid": 32634,
+      "cityIds": [
+        "gdansk"
+      ],
+      "maxConcurrentQueries": 1,
+      "capabilities": {
+        "areaEnumeration": true
+      },
+      "operator": "Urząd Miejski w Gdańsku",
+      "catalogueUrl": "https://ewid-wms.gdansk.gda.pl/iip/ows?service=WFS&request=GetCapabilities&version=2.0.0",
+      "attribution": "Urząd Miejski w Gdańsku — EGiB",
+      "scope": "Municipal parcel layer; frozen three-parcel local sample near the unchanged WUP point. No citywide completeness claim.",
+      "licenceNote": "Anonymous metadata and prior bounded safe parcel access documented; reuse licence and currentness not independently established.",
+      "qualificationEvidence": [
+        {
+          "cityCode": "2093",
+          "appCityId": "gdansk",
+          "candidateSha256": "ce9721181478fc96d3ef9a232ef9617a289f8d0fefa7bf6fe22f7f0165c9dec4",
+          "qualificationSha256": "dba942ea0fdc3a8fdf5b1689b51b14a9ab5d46b16237ba7a10bbe2f0a8d36408",
+          "fullSafeSha256": "99c39cf042c9578f2a76eaa49e880c2524494ff34cf4c1bd5e59b9c7da69e7d1",
+          "metricReportSha256": "aa20eb083f431421f6794f99dce5a6f205ebef5344fcf4c0b454f77b7a357131",
+          "evidenceFile": "world-parcels/research/qualification-2026-10-11/2093/qualification.json"
+        }
+      ],
+      "defaultForCity": true
+    },
+    {
+      "id": "sosnowiec-gml-wfs",
+      "name": "Sosnowiec municipal EGiB parcel polygons",
+      "adapter": "gml-wfs",
+      "endpoint": "https://sosnowiec.webewid.pl:9443/iip/ows",
+      "featureType": "ms:dzialki",
+      "version": "2.0.0",
+      "idField": "ID_DZIALKI",
+      "geometryField": "geometry",
+      "responseCrs": "EPSG:2177",
+      "idType": "string",
+      "idPrefix": "PL-SOSNOWIEC-",
+      "parcelNumberField": "ID_DZIALKI",
+      "outFields": [
+        "ID_DZIALKI"
+      ],
+      "pageSize": 50,
+      "maxFeatures": 1500,
+      "maxBboxKm2": 1,
+      "maxResponseBytes": 1048576,
+      "maxTotalResponseBytes": 8388608,
+      "timeoutMs": 12000,
+      "maxConcurrentQueries": 1,
+      "countryCode": "PL",
+      "cityIds": [
+        "sosnowiec"
+      ],
+      "metricSrid": 32634,
+      "operator": "Urząd Miejski w Sosnowcu / Wydział Geodezji i Kartografii",
+      "scope": "Municipal Sosnowiec cadastral parcel layer; source bounds cover the unchanged WUP locator. Citywide completeness is unverified.",
+      "catalogueUrl": "https://www.sosnowiec.pl/2023/07/aktualnosci/teraz-wniosek-o-dane-zgromadzone-w-zasobie-geodezyjnym-zlozysz-przez-profil-zaufany-lub-konto-bankowe/",
+      "licenceNote": "Anonymous metadata and frozen bounded parcel samples evidenced; reuse permission and currentness are not established.",
+      "qualificationEvidence": [
+        {
+          "cityCode": "3234",
+          "appCityId": "sosnowiec",
+          "candidateSha256": "3877f06173ae563a8765a012be34433ea9b8fc46416886149d8fc4e7216ff09c",
+          "qualificationSha256": "838da62a677ad8c4a4af4b8dbeca0fea106435d3631ab33b61b627991e8b38e2",
+          "fullSafeSha256": "7f18c6b2b0d692085890f58426128ef805e61147a1429e05f3cdc95200649c5e",
+          "metricReportSha256": "56c23825f12d52688685233acb8e32193d082ffb56fdbf341b51092e648652a4",
+          "evidenceFile": "world-parcels/research/qualification-2026-10-11/3234/qualification.json"
+        }
+      ],
+      "defaultForCity": true
+    },
+    {
+      "id": "fr-mmm-montpellier-cadastre",
+      "name": "Montpellier municipal PCI cadastral parcels",
+      "adapter": "geojson-snapshot",
+      "endpoint": "https://data.montpellier3m.fr/sites/default/files/ressources/MMM_Montpellier_Cadastre.zip",
+      "sourceLayer": "parcelle_Layer",
+      "sourceFormat": "shapefile-zip",
+      "sourceCrs": "EPSG:2154",
+      "idField": "Codeident",
+      "idFields": [
+        "Codeident"
+      ],
+      "idPrefix": "FR-MMM-MONTPELLIER-CODEIDENT-",
+      "outFields": [
+        "Codeident"
+      ],
+      "countryCode": "FR",
+      "cityIds": [
+        "montpellier"
+      ],
+      "metricSrid": 32631,
+      "maxSnapshotBytes": 33554432,
+      "maxSnapshotFeatures": 50000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "capabilities": {
+        "areaEnumeration": true,
+        "snapshotDownload": true,
+        "runtimeAdapterSupported": true
+      },
+      "catalogueUrl": "https://data.montpellier3m.fr/dataset/cadastre-de-montpellier",
+      "licenceUrl": "https://www.etalab.gouv.fr/licence-ouverte-open-licence/",
+      "scope": "Official Montpellier municipal compilation of DGFiP PCI vector cadastral geographic data; parcel layer in the authority Shapefile ZIP.",
+      "descriptorState": "verified-snapshot-profile",
+      "idCodec": "encodeSnapshotNativeId([Codeident]) from production geojson-snapshot-source.js; preserve interior spaces",
+      "returnsWGS84": true,
+      "snapshotFormat": "shapefile-zip",
+      "shapefileMembers": {
+        "shp": "MMM_Montpellier_Cadastre/parcelle_Layer.shp",
+        "shx": "MMM_Montpellier_Cadastre/parcelle_Layer.shx",
+        "dbf": "MMM_Montpellier_Cadastre/parcelle_Layer.dbf",
+        "prj": "MMM_Montpellier_Cadastre/parcelle_Layer.prj",
+        "cpg": "MMM_Montpellier_Cadastre/parcelle_Layer.cpg"
+      },
+      "zipEncoding": "utf-8",
+      "dbfEncoding": "utf-8",
+      "snapshotScope": "archive",
+      "expectedSnapshotSha256": "88c55dc0b4f6807a8c6dd914306e403defb2473e37744622c5226b3fd9e6d910",
+      "expectedSnapshotFeatures": 39518,
+      "qualificationEvidence": [
+        {
+          "cityCode": "3893",
+          "appCityId": "montpellier",
+          "candidateSha256": "d174416d5323fc7ca558b7609fd8649021184eb855287a7206e7951e6dffed97",
+          "qualificationSha256": "d2b806caf1c68ff86f6a8b5613238bbf62aa82841baa607f8549d8b08af77a19",
+          "fullSafeSha256": "75b83cd04c418d106a2055152314158b3f75e6010c94c94aa669a1e523d08ba1",
+          "metricReportSha256": "891e87d1c247970db24499cc16360bbb40e8f79abae8a0389d140614c25a1fc2",
+          "evidenceFile": "world-parcels/research/qualification-2026-10-11/3893/qualification.json"
+        }
+      ],
+      "defaultForCity": true
     }
   ]
 }

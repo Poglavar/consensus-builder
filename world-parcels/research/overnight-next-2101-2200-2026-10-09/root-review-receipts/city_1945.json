@@ -1,0 +1,27 @@
+{
+  "taskId": "city:1945",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/provider-expansion/completions/1945.json",
+    "world-parcels/research/provider-expansion/cities/1945/city-1945-provider-1945.json",
+    "world-parcels/research/provider-expansion/cities/1945/provider-1945-service-review.json",
+    "world-parcels/research/provider-expansion/cities/1945/provider-1945-parcel-samples.geojson",
+    "world-parcels/research/provider-expansion/providers/a1528591604c86e552a0d85ed059abeefd6346c1b822acc1f524c05f1d2753e1.json",
+    "world-parcels/research/provider-expansion/providers/0198ab1272a58163c79e4b3c4245b2ba791ee8d7870fe1670aa5be2043943afd.json",
+    "world-parcels/research/provider-expansion/providers/ebbb5905d7a08776ea2693d21732c1f6e9d050d36fb7174bf8580355b3466a30.json"
+  ],
+  "checkedAt": "2026-10-11T00:48:07.381632Z",
+  "findings": {
+    "identity": "Immutable rank-2177 WUP queue and packet agree: Kabwe, Zambia (ZM), code 1945, point [-14.4336039608812, 28.4446474227614], population 267618 persons (267.618 thousand in WUP roster).",
+    "sample": "Completion hashes match immutable paired files. Three full polygon samples only; properties contain only string id values 24203, 24209 and 24210. Independent EPSG:32735 GEOS check found all three valid, with zero pairwise overlap area.",
+    "sourceEvidence": "Packet records six Kabwe query URLs with HTTP 200, but no original Kabwe response/cache bodies or full city qualification record. The cited 13-cell/54-request qualification artifact identifies Kitwe, not Kabwe; its metrics cannot establish Kabwe admission.",
+    "missingGates": [
+      "Executed English and native-language Kabwe searches are not evidenced in the paired files.",
+      "Kabwe-specific independent live adapter qualification with forced paging, 13 bounded cells, metric checks across the returned footprint, and source binding is not evidenced.",
+      "Headed Kabwe details-panel verification is not evidenced."
+    ],
+    "runtime": "Remain excluded; no registry, catalog, city-config, or generated coverage/report admission changes."
+  }
+}

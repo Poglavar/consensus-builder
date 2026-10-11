@@ -578,6 +578,32 @@ function adoptPreparedRecord(target, prepared) {
 }
 
 async function uploadProposalToServer(proposal) {
+    // Mirroring names a chain location only. Read the committed record even if this browser has
+    // since edited it, lost its preparation, changed cities, or has no cadastral ground loaded.
+    const chainRef = window.ChainProposalRef?.chainRefFromProposal(proposal);
+    if (chainRef) {
+        try {
+            const response = await fetch(`${resolveBackendBaseUrl()}/proposals/mirror`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chainRef })
+            });
+            const result = await response.json();
+            if (response.ok || (response.status === 409 && result.id)) {
+                const id = String(result.id);
+                proposal.chainMirrorProposalId = result.proposalId;
+                const stored = syncProposalWithServerId(proposal, id);
+                if (stored && stored !== proposal) {
+                    stored.chainMirrorProposalId = result.proposalId;
+                    proposalStorage.save();
+                }
+                return { ok: true, id: result.id, proposalId: result.proposalId };
+            }
+            return { ok: false, code: result.code, message: result.error || 'The chain proposal could not be mirrored.' };
+        } catch (error) {
+            console.warn(`[${new Date().toISOString()}] [chain-mirror] upload failed`, error);
+            return { ok: false, message: error.message || 'The chain proposal could not be mirrored.' };
+        }
+    }
     // Publishing leaves the device and the record carries its author (GuestPolicy 'publish'). Every
     // upload path (share dialog, walk gate, re-bind, mint persistence) funnels through here.
     const nameNeeded = guestPolicyBlocks('publish');
@@ -596,17 +622,10 @@ async function uploadProposalToServer(proposal) {
         console.warn('[uploadProposalToServer] publishing with partially loaded ground; the server re-checks parcels');
     }
 
-    // A proposal is published as the artifact the server prepares from it (POST /proposals/prepare,
-    // proposals/publish-binding.js, projections.md §3): its declaration is the binding of its site,
-    // a corridor's land is built by the server. A record minted from a preparation publishes that
-    // preparation unchanged — what was minted is what is stored; anything else is prepared now (an
-    // unchanged record prepares to the same artifact).
+    // Free server publication uses a signed preparation. Chain mirrors take the independent path
+    // above, so rotating this server's signing key can never invalidate a minted record.
     let bound = null;
-    const mintedPreparation = proposal.preparation && proposal.preparation.id
-        && typeof isProposalMinted === 'function' && isProposalMinted(proposal);
-    if (mintedPreparation) {
-        bound = { proposal: { ...proposal }, smallIntrusions: [], landShiftM: null };
-    } else {
+    {
         try {
             bound = await window.__publishBinding.prepareForPublish(proposal, {
                 fetchPrepare: window.__publishBinding.createFetchPrepare(fetch.bind(window), resolveBackendBaseUrl(), publishBindingText),

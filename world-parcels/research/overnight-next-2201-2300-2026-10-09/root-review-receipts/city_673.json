@@ -1,0 +1,13 @@
+{
+  "taskId": "city:673",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-673-agbara.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/agbara-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T02:07:24.642885Z",
+  "reason": "WUP code 673, rank 2233, Nigeria, point [6.50433430173984, 3.03723454634413], and 261298 persons match the immutable queue and original WUP row. English and Yoruba searches and eight reviewed routes are recorded. The official Ogun OLARMS page supports state land-record custody (registryFound true), but the accessible public routes provided descriptions or an app shell, not a safe anonymous native-ID polygon response. Certificate failure, timeout, and cache miss do not prove absence. No retained polygon or independent live adapter qualification exists: fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are missing. Held without admission.",
+  "admission": "held; no runtime/catalog/report change"
+}

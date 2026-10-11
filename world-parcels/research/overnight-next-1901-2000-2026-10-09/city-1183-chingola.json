@@ -1,0 +1,131 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:1183",
+  "cityCode": 1183,
+  "wupCityCode": 1183,
+  "name": "Chingola",
+  "country": "Zambia",
+  "countryCode": "ZM",
+  "iso2": "ZM",
+  "iso3": "ZMB",
+  "rank": 1976,
+  "queueRank": 1976,
+  "point": [-12.5459298146707, 27.8723779018079],
+  "centerLatLon": [-12.5459298146707, 27.8723779018079],
+  "pointBasis": "UN WUP2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 294193,
+  "population2025k": 294.193,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Low",
+  "cohort": "overnight-next-1901-2000-2026-10-09",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Chingola City Council's official departments page assigns estate management responsibility for processing land applications and maintaining the deeds register; its services page lists plot allocation/town planning and land distribution. The national official NSDI cadastre service identifies its Lots layer as lots from ZILMIS and returned anonymous parcel polygons in a bounded Chingola-area query.",
+  "registryEvidenceUrls": [
+    "https://www.chingolacouncil.gov.zm/?page_id=770",
+    "https://www.chingolacouncil.gov.zm/?page_id=792",
+    "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer"
+  ],
+  "verifiedSample": true,
+  "sampleFile": "chingola-sample.geojson",
+  "publicParcelGeometryFound": true,
+  "sourceIds": ["SDE.Lots.OBJECTID"],
+  "adapterReady": false,
+  "runtimeReadiness": "held",
+  "technicalBlocker": "A real anonymous polygon service and native OBJECTID were verified, but exact-point lookup returned zero features and citywide coverage, authoritative CRS transformation behavior, stable identity semantics, and adapter contract qualification remain for serial review.",
+  "scopeLimits": "The three retained polygons are bounded samples from an official national service near the WUP point, not proof of citywide coverage or exact-point parcel presence. No owner, address, titleholder, tax/account, contact, or other unsafe fields were requested or retained.",
+  "resultCategory": "official_national_cadastre_with_bounded_city_sample",
+  "coverageAssessment": {
+    "claimedScope": "Official Zambia NSDI Vector CadasterNew MapServer, Lots layer; service metadata says lots from ZILMIS and national Zambia cadaster/customary lots.",
+    "verifiedOpenScope": "Three complete polygon features were obtained from a 10 km UTM envelope centered on the WUP point; exact WUP-point intersects query returned zero features.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "Serial reviewer must independently qualify source-native identity, coverage, CRS, and adapter behavior before admission. Packet completion is not source integration/admission."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Chingola Zambia city council land registry cadastral plot map official",
+        "scope": "Fresh first-party discovery of local registry custody and public cadastral geometry.",
+        "result": "Official Chingola City Council pages identify estate/deeds-register duties and plot allocation/land distribution. Official Zambia NSDI MapServer search result exposed the CadasterNew Lots layer, described as lots from ZILMIS.",
+        "actualResultUrls": [
+          "https://www.chingolacouncil.gov.zm/?page_id=770",
+          "https://www.chingolacouncil.gov.zm/?page_id=792",
+          "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer"
+        ],
+        "executionMethod": "Executed as a fresh web search; first-party council and national service pages were reviewed."
+      },
+      {
+        "language": "Bemba",
+        "query": "Chingola ubutaka registry plot map council Zambia",
+        "scope": "Separate local-language discovery for city registry/cadastre custody and anonymous parcel geometry.",
+        "result": "No Bemba-language first-party cadastral page was returned by the search. English first-party Chingola Council and Zambia NSDI results were retained as the relevant official evidence; this is not evidence of source absence.",
+        "actualResultUrls": [
+          "https://www.chingolacouncil.gov.zm/?page_id=770",
+          "https://www.chingolacouncil.gov.zm/?page_id=792",
+          "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer"
+        ],
+        "executionMethod": "Executed as a separate fresh web search using Bemba terms; no login, CAPTCHA/Cloudflare bypass, or unsafe-data request was used."
+      }
+    ],
+    "requests": [
+      {
+        "checkedAt": "2026-10-10",
+        "method": "GET",
+        "url": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer",
+        "outcome": "200; official MapServer metadata returned national Zambia cadaster/customary lots and layer 0 Lots."
+      },
+      {
+        "checkedAt": "2026-10-10",
+        "method": "GET",
+        "url": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0?f=pjson",
+        "outcome": "200; polygon layer schema observed. Source spatial reference EPSG:32735 (WGS 84 / UTM zone 35S). Fields included native OBJECTID, UPID, PID, SRREF, survey and land-use fields; only OBJECTID was used for retained samples."
+      },
+      {
+        "checkedAt": "2026-10-10",
+        "method": "GET",
+        "url": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?f=geojson&where=1%3D1&geometry=594774.216%2C8612920.586&geometryType=esriGeometryPoint&inSR=32735&spatialRel=esriSpatialRelIntersects&outFields=SDE.Lots.OBJECTID%2CSDE.Lots.UPID&returnGeometry=true&outSR=4326",
+        "outcome": "200; empty FeatureCollection at the exact WUP point. This is a point result only and not an absence finding."
+      },
+      {
+        "checkedAt": "2026-10-10",
+        "method": "GET",
+        "url": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?f=geojson&where=1%3D1&geometry=589774%2C8607921%2C599774%2C8617921&geometryType=esriGeometryEnvelope&inSR=32735&spatialRel=esriSpatialRelIntersects&outFields=SDE.Lots.OBJECTID&returnGeometry=true&outSR=4326",
+        "outcome": "200; many polygon features returned with exceededTransferLimit=true. First three complete polygons were retained in chingola-sample.geojson with properties reduced to native OBJECTID identity only."
+      }
+    ],
+    "portals": [
+      {
+        "homeUrl": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer",
+        "observation": "Official national map/API service; current REST metadata and query route were inspected."
+      },
+      {
+        "homeUrl": "https://www.chingolacouncil.gov.zm/",
+        "observation": "Official local authority portal; custody/service pages reviewed, no city-specific public geometry endpoint identified."
+      }
+    ]
+  },
+  "nativeIdentity": "SDE.Lots.OBJECTID (numeric ArcGIS OID returned in feature id and source field). UPID was observed but blank in the bounded response and was not promoted.",
+  "schemaAndCrs": "Layer 0 is esriGeometryPolygon; source spatial reference EPSG:32735. Query responses were requested as GeoJSON with outSR=4326. The retained sample contains full polygon geometry and only canonical properties.id set to the native OBJECTID string.",
+  "fieldMapping": {
+    "safe native fields observed": ["SDE.Lots.OBJECTID", "SDE.Lots.UPID", "SDE.Lots.PID", "SDE.Lots.SRREF", "SDE.Lots.SURVEY_ARE", "SDE.Lots.SURVEY_UNI", "SDE.Lots.SURVEY_DAT", "SDE.Lots.LANDUSE", "SDE.Lots.OBJ_ID", "SDE.Lots.LANDTYPE", "SHAPE"],
+    "retained feature properties": "id only, derived from native SDE.Lots.OBJECTID; no raw attribute set retained.",
+    "composite-key provenance": "None; no composite identity was created."
+  },
+  "retainedSample": "chingola-sample.geojson",
+  "retainedProperties": "Exactly one canonical native identity per feature: properties.id = string form of SDE.Lots.OBJECTID.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeDataPolicy": "No owner, address, contact, titleholder, tax/account, legal-description, rights/interests, or other personal/property-record fields were requested or retained.",
+  "limits": [
+    "Exact WUP-point hit was zero; no coordinate was shifted to force a hit.",
+    "The bounded envelope query returned more than the service transfer limit; only three full polygons were retained, and no absence or citywide coverage claim is made.",
+    "The local council pages evidence custody and land administration, while the national MapServer evidences geometry; these are distinct findings.",
+    "Runtime readiness remains held pending independent serial adapter qualification."
+  ],
+  "uncertainty": "The service is official and returned native polygon geometry, but the relationship between national layer extent, Chingola municipal coverage, and exact parcel identity stability requires serial review."
+}

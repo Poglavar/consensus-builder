@@ -1,0 +1,13 @@
+{
+  "taskId": "city:2263",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-2263-jinja.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/jinja-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T01:59:03.805731Z",
+  "reason": "WUP rank 2227 identity and 261604 persons match the immutable roster, queue and original 2025 source row. English and Swahili searches were recorded. The first-party MLHUD Jinja MZO page independently confirms local land-registration custody, supporting registryFound true. UgNLIS portal configuration exposes candidate routes, but unparameterized empty responses, HTTP 500 and HTTP 404 yielded no native-ID polygon. No adapter, paging, 13-cell, metric GEOS, source-binding or headed Details proof exists. No citywide absence inferred.",
+  "admission": "held; no runtime/catalog/report change"
+}

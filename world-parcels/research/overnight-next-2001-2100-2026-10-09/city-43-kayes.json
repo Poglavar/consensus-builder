@@ -1,0 +1,143 @@
+{
+  "cityCode": 43,
+  "queueRank": 2083,
+  "name": "Kayes",
+  "country": "Mali",
+  "countryCode": "ML",
+  "point": [14.4482435798804, -11.4398841889849],
+  "population2025": 278727,
+  "population2025k": 278.727,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "aliases": ["kayes"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kayes Mali cadastral map parcel cadastre official registry",
+        "result": "First-party discovery found the official Mali DGDC site, its regional/subregional services page with DRDC/KAYES, the public NINACAD viewer, and the official DGDC cadastre page. No Kayes parcel geometry was established by the public routes inspected.",
+        "actualResultUrls": [
+          "https://dndc.gouv.ml/services-regionaux-et-subregionaux/",
+          "https://ninacad.sprdf.ml/",
+          "https://dndc.gouv.ml/cadastre/"
+        ]
+      },
+      {
+        "language": "French (official/local administrative)",
+        "query": "Kayes Mali cadastre parcelles foncières carte site officiel",
+        "result": "La recherche de première partie a confirmé la Direction générale des Domaines et du Cadastre, la DRDC de Kayes et l'organisation communale du cadastre; aucun service public anonyme exposant une géométrie parcellaire de Kayes n'a été vérifié.",
+        "actualResultUrls": [
+          "https://dndc.gouv.ml/services-regionaux-et-subregionaux/",
+          "https://dndc.gouv.ml/cadastre/",
+          "https://kayes.gouv.ml/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Direction générale des Domaines et du Cadastre du Mali, Direction régionale des Domaines et du Cadastre de Kayes (DRDC/KAYES)",
+    "basis": "The official DGDC regional/subregional services page explicitly lists DRDC/KAYES with a telephone number. This evidences a regional cadastral custodian, not an open parcel dataset.",
+    "urls": ["https://dndc.gouv.ml/services-regionaux-et-subregionaux/"]
+  },
+  "officialSources": [
+    {
+      "url": "https://ninacad.sprdf.ml/",
+      "observation": "Current public NINACAD viewer shell; its JavaScript configuration points to the public API and GeoServer parcel service.",
+      "scope": "Public national NINACAD viewer; the current public commune response did not contain Kayes."
+    },
+    {
+      "url": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+      "observation": "WFS capabilities expose layer sifMali:parcelle, EPSG:4326, and advertised WGS84 extent longitude -9.461653050247671 to -6.053873462910213.",
+      "scope": "Advertised service extent does not reach Kayes longitude -11.4398841889849; this is a service-extent limit, not evidence of citywide absence."
+    },
+    {
+      "url": "https://dndc.gouv.ml/cadastre/",
+      "observation": "Official DGDC page describes communal, local, regional and national cadastral organization and unique parcel identification (NINACAD).",
+      "scope": "National cadastral policy and procedure; not an anonymous Kayes geometry endpoint."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://dndc.gouv.ml/services-regionaux-et-subregionaux/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Returned the official regional/subregional directory; DRDC/KAYES was listed."
+    },
+    {
+      "url": "https://dndc.gouv.ml/cadastre/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Returned official cadastre description and NINACAD identification policy."
+    },
+    {
+      "url": "https://ninacad.sprdf.ml/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Fetched public viewer shell and identified current app bundle /assets/app-D5kMcntp.js."
+    },
+    {
+      "url": "https://ninacad.sprdf.ml/assets/app-D5kMcntp.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/javascript",
+      "outcome": "Inspected current configuration: API base https://ninacad.sprdf.ml; GeoServer base https://geodata.sprdf.ml/geoserver/sifMali/ows; public search/commune routes identified."
+    },
+    {
+      "url": "https://ninacad.sprdf.ml/api/Home/loadCommunes",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Returned the current public commune groups; Kayes was not present. This is not treated as citywide absence."
+    },
+    {
+      "url": "https://ninacad.sprdf.ml/api/Home/LoadSectionByCommune?commune=Kayes",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Returned isSuccess=true with an empty item list; because Kayes was not in the public commune list, no section lookup was qualified."
+    },
+    {
+      "url": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "outcome": "Returned WFS capabilities for sifMali:parcelle with EPSG:4326 and advertised extent not covering Kayes."
+    },
+    {
+      "url": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sifMali:parcelle&outputFormat=application/json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Returned schema; safe field mapping recorded in service review only."
+    },
+    {
+      "url": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=sifMali:parcelle&outputFormat=application/json&bbox=-11.4498841889849,14.4382435798804,-11.4298841889849,14.4582435798804,urn:ogc:def:crs:EPSG::4326&propertyName=uoid,numeroparc,ninacad,geom&count=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Returned an empty FeatureCollection (numberMatched=0, numberReturned=0) for the bounded 0.02-degree box around the exact WUP point; not treated as citywide absence and no sample was retained."
+    }
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sampleFile": null,
+  "source": "Mali DGDC / NINACAD public viewer and GeoServer WFS",
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "National NINACAD viewer and DGDC cadastral system; regional custodian at Kayes is listed.",
+    "verifiedOpenScope": "The inspected public parcel layer advertises an extent east of Kayes and the viewer exposes no Kayes commune/section entry; no Kayes geometry was verified.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier", "parcel polygon geometry", "source CRS", "non-personal source layer metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax", "account", "personal identifiers", "encumbrances"],
+  "runtimeReadiness": "held_serial_qualification_required",
+  "resultCategory": "local_custodian_public_viewer_no_kayes_geometry_verified",
+  "remainingUncertainty": "A regional cadastral custodian is verified, but no safe anonymous Kayes parcel ID-plus-geometry response was verified from the current public viewer/API. Exact-point/bounded-box absence and service extent were not generalized to citywide cadastral absence.",
+  "researchFile": "research/overnight-next-2001-2100-2026-10-09/city-43-kayes.json"
+}

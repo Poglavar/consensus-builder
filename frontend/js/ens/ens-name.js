@@ -19,10 +19,18 @@
         return slug ? `${slug}.${PARCELS_PARENT}` : '';
     }
 
-    // Only minted proposals (numeric on-chain ids) have a resolvable name.
-    function proposalEnsName(proposalId) {
-        const id = (proposalId === undefined || proposalId === null) ? '' : String(proposalId).trim();
-        return /^[0-9]+$/.test(id) ? `${id}.${PROPOSALS_PARENT}` : '';
+    // Legacy numeric proposal names remain supported. Chain mirrors use a short
+    // prefix of their canonical chain_<sha256(ref)> id; the gateway checks that
+    // the prefix identifies exactly one mirrored proposal before resolving it.
+    function proposalEnsName(proposal) {
+        const id = (proposal === undefined || proposal === null) ? '' : String(proposal).trim();
+        if (/^[0-9]+$/.test(id)) return `${id}.${PROPOSALS_PARENT}`;
+
+        const mirrorId = proposal && typeof proposal === 'object'
+            ? String(proposal.chainMirrorProposalId || proposal.proposalId || '').trim()
+            : id;
+        const match = mirrorId.match(/^chain_([0-9a-f]{64})$/i);
+        return match ? `chain-${match[1].slice(0, 48).toLowerCase()}.${PROPOSALS_PARENT}` : '';
     }
 
     // The ENS manager app page for a name (view/manage its records).

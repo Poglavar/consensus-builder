@@ -1,0 +1,262 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "7979",
+  "cityName": "Wazirabad",
+  "sourceId": "pk-pulse-wazirabad-parcels",
+  "candidateSha256": "207f5f3c7de40c763e5723af2028ca50536523cfc81405b12aeac09cce1c58c6",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 3
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 1,
+      "returnedCount": 1,
+      "freshCollectedIds": 98,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 98,
+      "collectedUniqueCount": 98
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 294
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "forcedComplete": true,
+      "pagingRequests": 10,
+      "observedPageLimits": [
+        1
+      ],
+      "singleIdRequests": 0,
+      "usesOffsetPaging": true,
+      "distinctOffsets": 2,
+      "pagedEvidence": true
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 1
+    },
+    "metric": {
+      "passed": true,
+      "inputSha256": "a87a4dc11d3229b8dedf8c75d95ded1f5e80d6b6d347709a233db73cf61f8b0b",
+      "featureCount": 98,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32643",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true,
+      "reportFile": "metric-report.json"
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "a87a4dc11d3229b8dedf8c75d95ded1f5e80d6b6d347709a233db73cf61f8b0b",
+  "featureCount": 98,
+  "sampleIds": [
+    "PK-PULSE-WAZIRABAD-6911537"
+  ],
+  "cellSizeDegrees": 0.001,
+  "requestCount": 52,
+  "requestLimit": 300,
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ],
+  "sampledCellsSummary": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        74.123,
+        32.434,
+        74.124,
+        32.435
+      ],
+      "complete": true,
+      "featureCount": 6
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        74.124,
+        32.434,
+        74.125,
+        32.435
+      ],
+      "complete": true,
+      "featureCount": 11
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        74.125,
+        32.434,
+        74.126,
+        32.435
+      ],
+      "complete": true,
+      "featureCount": 8
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        74.123,
+        32.435,
+        74.124,
+        32.436
+      ],
+      "complete": true,
+      "featureCount": 7
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        74.124,
+        32.435,
+        74.125,
+        32.436
+      ],
+      "complete": true,
+      "featureCount": 14
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        74.125,
+        32.435,
+        74.126,
+        32.436
+      ],
+      "complete": true,
+      "featureCount": 9
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        74.123,
+        32.436,
+        74.124,
+        32.437
+      ],
+      "complete": true,
+      "featureCount": 10
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        74.124,
+        32.436,
+        74.125,
+        32.437
+      ],
+      "complete": true,
+      "featureCount": 12
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        74.125,
+        32.436,
+        74.126,
+        32.437
+      ],
+      "complete": true,
+      "featureCount": 11
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        74.124,
+        32.433,
+        74.125,
+        32.434
+      ],
+      "complete": true,
+      "featureCount": 10
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        74.124,
+        32.437,
+        74.125,
+        32.438
+      ],
+      "complete": true,
+      "featureCount": 28
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        74.122,
+        32.435,
+        74.123,
+        32.436
+      ],
+      "complete": true,
+      "featureCount": 9
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        74.126,
+        32.435,
+        74.127,
+        32.436
+      ],
+      "complete": true,
+      "featureCount": 12
+    }
+  ]
+}

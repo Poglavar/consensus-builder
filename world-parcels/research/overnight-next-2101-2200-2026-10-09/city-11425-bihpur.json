@@ -1,0 +1,108 @@
+{
+  "cityCode": 11425,
+  "queueRank": 2188,
+  "name": "Bihpur",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [25.3963840202146, 86.9194491982122],
+  "population2025": 266585,
+  "population2025k": 266.585,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bihpur Bihar official cadastral map land records Bhu Naksha Bihar",
+        "result": "First-party Bihar BhuNaksha viewer and Bihar Directorate of Land Records & Survey pages found. The viewer describes itself as a Government of Bihar cadastral map service.",
+        "actualResultUrls": [
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://dlrs.bihar.gov.in/services.html"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "बिहपुर बिहार आधिकारिक भू नक्शा भूमि अभिलेख",
+        "result": "First-party Bihar BhuNaksha and BiharBhumi land-record gateway found; Hindi/local-language location labels and Bihpur village entry were confirmed through the public viewer service.",
+        "actualResultUrls": [
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://emutation.bihar.gov.in/biharbhumidemo/Default"
+        ]
+      }
+    ],
+    "service": {
+      "name": "BhuNaksha Bihar",
+      "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+      "custodian": "Directorate of Land Records & Survey, Government of Bihar / NIC",
+      "registryFound": true,
+      "locationPath": {
+        "state": "10 Bihar",
+        "district": "22 BHAGALPUR",
+        "subDivision": "02 नवगछिया",
+        "circle": "09 Bihpur",
+        "mauza": "0958 विहपुर(59)",
+        "gisLevels": "22,02,09,0958,RS,07,01",
+        "gisCode": "RS22020909580590701"
+      },
+      "observedSchema": {
+        "coordinateReferenceSystem": "EPSG:32645",
+        "extentFields": ["xmin", "ymin", "xmax", "ymax"],
+        "safeCandidateIdentity": "plot number / kide or service plot id only if returned by a bounded parcel response"
+      },
+      "geometryStatus": "No safe vector parcel geometry retained. The public extent response was successful, but the scalar plot-detail route returned an error and the tested plot-at-coordinate route did not yield a usable parcel response.",
+      "extent": {
+        "xmin": 149.06249378534253,
+        "ymin": 108.61358399353061,
+        "xmax": 491175.92691248684,
+        "ymax": 2808623.6026041117
+      }
+    },
+    "attempts": [
+      {
+        "request": "GET https://bhunaksha.bihar.gov.in/index.jsp; GET /assets/misc/config.js; GET /index.js",
+        "outcome": "200/public viewer HTML and JavaScript/config retrieved; SERVICE_PATH is empty and routes use /rest/... plus /WMS."
+      },
+      {
+        "request": "POST https://bhunaksha.bihar.gov.in/rest/Levels/count with state=10",
+        "outcome": "200; response 7 location levels."
+      },
+      {
+        "request": "POST https://bhunaksha.bihar.gov.in/village_selector.jsp with state=10",
+        "outcome": "200; public selector returned Bihar districts and location hierarchy."
+      },
+      {
+        "request": "POST https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel with state=10, codes=22,02",
+        "outcome": "200; returned Bihpur circle code 09 and mauza विहपुर(59) code 0958, plus survey choices."
+      },
+      {
+        "request": "POST https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref with state=10, gisLevels=22,02,09,0958,RS,07,01, srs=0",
+        "outcome": "200 JSON extent; EPSG:32645 and gisCode RS22020909580590701."
+      },
+      {
+        "request": "POST https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref with state=10, gisLevels=22,02,09,0958,CS,01,01, srs=0",
+        "outcome": "200 JSON but null extent/CRS; attribution identifies the same Bihpur mauza and cadastral survey selection."
+      },
+      {
+        "request": "GET/POST https://bhunaksha.bihar.gov.in/ScalarDatahandler with OP=5, state=10, Bihpur levels, plotno=1",
+        "outcome": "401 HTML error page / requested resource not found; no parcel attributes or geometry retained."
+      },
+      {
+        "request": "POST https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY with state=10, giscode=RS22020909580590701 and bounded projected test coordinate",
+        "outcome": "HTTP 204; no parcel response. This is not treated as evidence of citywide absence."
+      },
+      {
+        "request": "GET https://bhunaksha.bihar.gov.in/WMS?SERVICE=WMS&REQUEST=GetCapabilities",
+        "outcome": "HTTP 500; no capabilities document retrieved."
+      }
+    ]
+  },
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "integrationStatus": "research-only; not admitted or integrated",
+  "uncertainty": [
+    "The WUP point is preserved exactly in latitude/longitude order and was not shifted to force a parcel hit.",
+    "The successful extent is a map-sheet extent for the selected Bihpur mauza and revisional survey, not proof of complete citywide parcel coverage.",
+    "No owner, address, titleholder, contact, tax, account, or other unsafe fields were requested or retained."
+  ]
+}

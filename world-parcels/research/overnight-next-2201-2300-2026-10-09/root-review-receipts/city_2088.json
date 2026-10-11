@@ -1,0 +1,21 @@
+{
+  "taskId": "city:2088",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-2088-m-nster.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/m-nster-service-review.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/root-review-receipts/source-evidence/city_2088-capabilities.xml",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/root-review-receipts/source-evidence/city_2088-schema.xml",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/root-review-receipts/source-evidence/city_2088-bounded-three.geojson"
+  ],
+  "checkedAt": "2026-10-11T01:35:45.332297Z",
+  "reason": "Queue rank 2207, DE identity, point, and 264131 persons agree; English and German searches are documented. Original Münster WFS cache has three full EPSG:25832 Polygon features with safe native oid_uid/flurstuecks_kz values; GEOS finds each valid and pairwise intersection area zero. This bounded response does not establish fresh adapter reads, forced paging, 13 cells, source binding, or headed details-panel proof. Retain registryFound true; hold runtime admission.",
+  "admission": "held; no runtime/catalog/report change",
+  "sourceCacheSha256": {
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/root-review-receipts/source-evidence/city_2088-capabilities.xml": "b73a015d3bc01784b1fc5b64669a5516e5314da62516d5fd1800b42ba7c4590f",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/root-review-receipts/source-evidence/city_2088-schema.xml": "b5b80bb1f2536dbcd4e760762ebf50ceb802d6e840d7b2e0a9755f2d261309a8",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/root-review-receipts/source-evidence/city_2088-bounded-three.geojson": "f63080f4cf0e2b4501fb22b3731ac512b8997cff7fc86e3ef843378af43f2de3"
+  }
+}

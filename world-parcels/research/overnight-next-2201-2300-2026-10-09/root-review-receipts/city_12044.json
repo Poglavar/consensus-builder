@@ -1,0 +1,17 @@
+{
+  "taskId": "city:12044",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-12044-dinghai-district.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/dinghai-district-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T02:48:00Z",
+  "reason": "Verified WUP 2025 source archive SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114, immutable roster and queue agree on code 12044, rank 2265, China, point [30.0201113409173,122.10513345838], and 257524 persons. The packet records executed English and Chinese searches. First-party Zhoushan registration-center and Dinghai budget material supports local registry custody, so registryFound true is retained. The paired review records no anonymous parcel ID-and-geometry response, native identity, CRS or sample polygon. A local DNS timeout is an access limit, not parcel absence. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed Details verification are unevidenced. No runtime admission or coverage change.",
+  "registryFound": true,
+  "firstPartyCustodyUrls": [
+    "https://www.zhoushan.gov.cn/art/2024/8/16/art_1229810954_173837.html",
+    "https://www.zhoushan.gov.cn/module/download/downfile.jsp?classid=0&filename=b09edb7e8c5549b48039a61708792101.pdf"
+  ]
+}

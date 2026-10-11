@@ -60,6 +60,10 @@
             }
         }
         if (!CHAIN_TYPES.includes(chainType)) return null;
+        // Stored receipts carry a namespaced network even when chainType is explicit. URLs and
+        // wallet readers take the bare cluster/domain in both cases.
+        if (chainType === 'solana') chainId = chainIdStr.replace(/^solana-/i, '');
+        if (chainType === 'canton') chainId = chainIdStr.replace(/^canton-/i, '');
         return { chainType, chainId, contract: String(contract), tokenId: String(tokenId) };
     }
 

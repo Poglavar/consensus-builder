@@ -1,0 +1,15 @@
+{
+  "taskId": "city:2798",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-2798-pucallpa.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pucallpa-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T23:20:56Z",
+  "reason": "Pucallpa queue code 2798, rank 2111, Peru, exact WUP point and 274639 persons match. English and Spanish searches are recorded; the first-party municipal organization page independently names the Subgerencia de Catastro, supporting local registry custody. No parcel-specific geometry or native ID response and no sample polygon were obtained. IDEP catalog and INGEMMET route outcomes do not establish citywide absence. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap/operation checks, source binding, and headed Details verification are absent; no runtime admission.",
+  "firstPartyPagesChecked": [
+    "https://www.gob.pe/11721-municipalidad-provincial-de-coronel-portillo-organizacion-de-municipalidad-provincial-de-coronel-portillo"
+  ]
+}

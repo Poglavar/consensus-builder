@@ -1,0 +1,13 @@
+{
+  "taskId": "city:5577",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-5577-kabinda.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/kabinda-service-review.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/root-review-receipts/city_5577-source-evidence.json"
+  ],
+  "checkedAt": "2026-10-11T00:33:52Z",
+  "reason": "Identity matches the immutable WUP 2025 queue and source archive: rank 2164, CD/Kabinda, exact point and 269115 persons. Separate English and French searches are recorded. Fresh first-party ministry directory HTML confirms Kabinda under Lomami, supporting registryFound=true. No anonymous native parcel ID, full polygon, CRS, or feature response is evidenced. No sample exists. Exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are absent; keep held without inferring citywide absence."
+}

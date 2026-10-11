@@ -5,6 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import patch
 
 
 SCRIPT = Path(__file__).resolve().parents[1] / "run-valhalla-parcel-research.py"
@@ -69,6 +70,33 @@ class ValidatePacketTests(unittest.TestCase):
 
 
 class ResumeAndReceiptTests(unittest.TestCase):
+    def test_new_cohort_returns_generated_queue_and_preserves_previous(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            previous = root / "world-parcels/research/previous/pending-queue.json"
+            previous.parent.mkdir(parents=True)
+            previous.write_text("{}")
+            source = root / "wup.gz"
+            source.write_bytes(b"frozen-source")
+            args = SimpleNamespace(repo_root=root, state_dir=Path("state"),
+                                   queue=previous, job_name="test", codex="codex",
+                                   source=Path("wup.gz"), timeout_seconds=30)
+            instance = runner.Runner(args)
+            instance.state = {"queuePath": str(previous)}
+            def build(command, **kwargs):
+                output = Path(command[command.index("--output") + 1])
+                output.mkdir(parents=True)
+                (output / "pending-queue.json").write_text('{"cities":[]}')
+                return SimpleNamespace(returncode=0, stdout="generated", stderr="")
+            with patch.object(runner.subprocess, "run", side_effect=build):
+                queue = instance._write_queue_builder(2301, 2400)
+            self.assertTrue(queue.is_file())
+            self.assertIn("overnight-next-2301-2400-", str(queue))
+            self.assertEqual(previous.read_text(), "{}")
+            with patch.object(runner.subprocess, "run") as build_again:
+                self.assertEqual(instance._write_queue_builder(2301, 2400), queue)
+                build_again.assert_not_called()
+
     def test_resume_prefers_persisted_queue(self):
         with tempfile.TemporaryDirectory() as raw:
             root = Path(raw)

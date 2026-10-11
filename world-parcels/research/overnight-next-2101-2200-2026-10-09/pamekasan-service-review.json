@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-11",
+  "cityRecord": "city-7933-pamekasan.json",
+  "purpose": "Document first-party registry/map discovery, current viewer evidence, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Pamekasan's official ATR/BPN land-office site evidences a local land-registration custodian, and the official BHUMI/ATLAS viewer exposes a registered-land layer in its current client configuration. No safe anonymous native-ID-plus-complete-polygon response was obtained.",
+  "registryAssessment": "registryFound is true because the official Pamekasan ATR/BPN land-office site and local land-administration service context were evidenced. This does not establish open citywide parcel geometry or runtime admission.",
+  "officialPrimarySources": [
+    {"url": "https://kab-pamekasan.atrbpn.go.id/visi-misi", "observation": "Official Kabupaten Pamekasan ATR/BPN land-office page; local land-registration custodian."},
+    {"url": "https://satudata.pamekasankab.go.id/rencana_terbit/tahunan", "observation": "Official local-government data catalog listing land-mapping and land-administration indicators; not a parcel geometry service."},
+    {"url": "https://bhumi.atrbpn.go.id/bantuan/katalog_data", "observation": "Official BHUMI documentation describes cadastral/registered-land datasets and the ATLAS catalog integration."},
+    {"url": "https://atlas.atrbpn.go.id/", "observation": "Official ATR/BPN spatial-data portal reachable."}
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://bhumi.atrbpn.go.id/peta",
+    "observedTechnology": "Next.js public map page; current JavaScript configuration includes a Geoserver-vendor layer named Bidang Tanah with map_service_url /bhumigs/umum.",
+    "observedControls": ["public map viewer", "layer catalog/documentation", "coordinate/map inspection described in official help"],
+    "schemaAndCrs": "Not verified from a successful parcel feature response.",
+    "nativeFieldNames": ["data_source", "map_service_layer_name", "map_service_url", "map_service_vendor", "id"],
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://kab-pamekasan.atrbpn.go.id/visi-misi", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200; official local land-office page retrieved."},
+    {"url": "https://satudata.pamekasankab.go.id/rencana_terbit/tahunan", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200; local catalog retrieved, with land-related indicators but no parcel feature endpoint."},
+    {"url": "https://bhumi.atrbpn.go.id/peta", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200; current map HTML and JavaScript/configuration inspected. Parcel retrieval path is token/login mediated; no credentials or tokens used."},
+    {"url": "https://atlas.atrbpn.go.id/", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200; official spatial portal landing page retrieved."},
+    {"url": "https://bhumi.atrbpn.go.id/bhumigs/umum?service=WMS&request=GetCapabilities", "method": "GET", "normalTlsVerification": true, "result": "HTTP 404; guessed anonymous WMS route unavailable."},
+    {"url": "https://bhumi.atrbpn.go.id/bhumigs/umum?service=WFS&request=GetCapabilities", "method": "GET", "normalTlsVerification": true, "result": "HTTP 404; guessed anonymous WFS route unavailable."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "query": "No parcel feature query submitted because the current public client indicated a token/login-mediated retrieval path and no safe anonymous request shape was verified."},
+  "coverageAssessment": {"claimedScope": "Pamekasan local ATR/BPN custody and official national BHUMI/ATLAS viewer/catalog.", "verifiedOpenScope": "Official pages and viewer configuration only; no anonymous complete-polygon feature response.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "Exact public parcel query shape, CRS, native parcel identity and completeness remain unverified. HTTP 404 on guessed routes and the lack of an anonymous feature response are not evidence of cadastral absence.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."}
+}

@@ -1,0 +1,64 @@
+{
+  "taskId": "city:7779",
+  "decision": "held",
+  "identity": {
+    "cityCode": 7779,
+    "rank": 2054,
+    "name": "Boisar",
+    "country": "India",
+    "iso2": "IN",
+    "iso3": "IND",
+    "point": [
+      19.7970773861219,
+      72.745937102408
+    ],
+    "populationPersons": 283063,
+    "queueAndRankedRosterMatch": true
+  },
+  "searches": {
+    "englishAndNativeRecorded": true,
+    "queries": [
+      {
+        "language": "English",
+        "query": "Boisar Maharashtra official cadastral parcel map GIS Mahabhumi Bhu Naksha",
+        "resultUrls": [
+          "https://palghar.gov.in/en/",
+          "https://palghar.gov.in/",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/",
+          "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp"
+        ]
+      },
+      {
+        "language": "Marathi",
+        "query": "बोईसर महाराष्ट्र अधिकृत भू नकाशा गट क्रमांक महाभूमि",
+        "resultUrls": [
+          "https://palghar.gov.in/%E0%A4%9C%E0%A4%BF%E0%A4%B2%E0%A5%8D%E0%A4%B9%E0%A4%BE-slr/",
+          "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/",
+          "https://bhumiabhilekh.maharashtra.gov.in/HelpAndFAQs/HelpAndFAQs"
+        ]
+      }
+    ]
+  },
+  "custody": {
+    "registryFound": true,
+    "firstPartyUrl": "https://palghar.gov.in/%E0%A4%9C%E0%A4%BF%E0%A4%B2%E0%A5%8D%E0%A4%B9%E0%A4%BE-slr/",
+    "independentObservation": "HTTP 200 first-party Palghar District Superintendent of Land Records page; lists Bhu Naksha map uploads by taluka. This is district custody/service evidence, not Boisar native-ID geometry.",
+    "limitation": "Maharashtra Bhu-Naksha viewer timed out in bounded worker requests; this is access uncertainty, not absence."
+  },
+  "samples": {
+    "retainedFullPolygonCount": 0,
+    "safeNativeIdAndGeometryVerified": false,
+    "safeIdAttributesVerified": false
+  },
+  "qualification": {
+    "freshNativeIdAdapterReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "admitted": false
+  },
+  "decisionReason": "Local custodian is supported, but no original first-party native-ID full-polygon response or independently verified live adapter qualification exists. Response/cache acceptance metrics cannot be established. Keep public geometry and runtime coverage unresolved; no citywide absence inferred."
+}

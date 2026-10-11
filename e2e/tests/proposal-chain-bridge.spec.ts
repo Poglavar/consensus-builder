@@ -67,6 +67,7 @@ test.describe('Proposal chain bridge @features', () => {
     await page.goto('/');
     await waitForMapReady(page);
     await connectWalletByConnectorId(page, 'metamask');
+    await waitForBlockchainRuntime(page, ['ethers']);
 
     const result = await page.evaluate(async () => {
       const bridge = (window as typeof window & {

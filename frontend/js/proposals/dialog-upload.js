@@ -847,7 +847,8 @@ function showUploadProposalModal(proposal) {
         uploadButton.style.cursor = 'not-allowed';
 
         try {
-            const uploadProposal = buildUploadReadyProposal(proposal);
+            const uploadProposal = window.ChainProposalRef?.chainRefFromProposal(proposal)
+                ? proposal : buildUploadReadyProposal(proposal);
 
             console.log('[showUploadProposalModal] Proposal before upload:', {
                 hasRoadProposal: !!uploadProposal?.roadProposal,
@@ -1022,25 +1023,15 @@ function showUploadProposalModal(proposal) {
                 }
             }
 
-            // Minted as the artifact the server prepares from it (POST /proposals/prepare,
-            // projections.md §3), like the Create Proposal mint: the parcels minted are exactly the
-            // parcels the record then publishes, and a later upload reuses this preparation.
+            // Like Create Proposal, mint a local record; server publication is an optional mirror
+            // of what the chain and IPFS contain, independent of a preparation or signing key.
             setMintStatus(tShare('mintPreparing', 'Checking which parcels the proposal takes...'));
-            const prepared = await window.__publishBinding.prepareForPublish(proposal, {
-                fetchPrepare: window.__publishBinding.createFetchPrepare(fetch.bind(window), resolveBackendBaseUrl(), publishBindingText),
-                city: proposal.city || null,
-                acceptedParcelIds: proposal.acceptedParcelIds || []
-            });
-            const confirmedPublish = await confirmPreparedPublish(prepared);
-            if (!confirmedPublish.ok) {
-                setMintStatus(confirmedPublish.message, { isError: true });
-                return;
-            }
-            adoptPreparedRecord(proposal, prepared.proposal);
+            const mintRecord = await window.__mintBinding.prepareForMint(proposal);
+            window.__mintBinding.adoptMintRecord(proposal, mintRecord);
             if (typeof proposalStorage !== 'undefined') {
                 const key = proposal.proposalId || (typeof getProposalKey === 'function' ? getProposalKey(proposal) : null);
                 const stored = key ? proposalStorage.getProposal(key) : null;
-                if (stored && stored !== proposal) adoptPreparedRecord(stored, prepared.proposal);
+                if (stored && stored !== proposal) window.__mintBinding.adoptMintRecord(stored, mintRecord);
                 if (typeof proposalStorage.save === 'function') proposalStorage.save();
             }
 
@@ -1048,6 +1039,7 @@ function showUploadProposalModal(proposal) {
             // We need to get the parcel IDs from the proposal
             const parcelIds = proposal.cadastreParcelIds || [];
             if (parcelIds.length === 0) {
+                // This dialog uses the deployed EVM bridge, whose mint requires a parcel.
                 throw new Error('No parcels associated with this proposal');
             }
 
@@ -1144,7 +1136,9 @@ function showUploadProposalModal(proposal) {
                             // Screenshot geometry is read from the same repository that loaded the
                             // proposal's cadastral ground; proposal snapshots and map layers are not
                             // alternate geometry stores.
-                            const parentFeatures = window.CadastralParcelRepository?.getMany?.(parcelIds) || [];
+                            const parentFeatures = proposal.site
+                                ? [{ type: 'Feature', properties: {}, geometry: proposal.site }]
+                                : (window.CadastralParcelRepository?.getMany?.(parcelIds) || []);
 
                             console.log('[shareMint] Final parentFeatures count:', parentFeatures.length);
 
@@ -1206,13 +1200,8 @@ function showUploadProposalModal(proposal) {
                         const proposalAuthor = stampCurrentAuthor(proposal).author || '';
                         const isConditional = Boolean(proposal.conditional || proposal.isConditional);
 
-                        // Record the FULL geometry (and offer) in the metadata, matching the primary
-                        // create.js mint. Without it, a proposal minted through this share dialog
-                        // could not be reconstructed from the NFT alone (only its parcel ids survive) —
-                        // the blockchain path is meant to carry all proposal-pertinent data on-chain.
-                        const geometryPayload = (typeof buildGeometryMetadataPayload === 'function')
-                            ? buildGeometryMetadataPayload(proposal)
-                            : null;
+                        // Carry the full immutable record, matching Create Proposal, so chain +
+                        // IPFS can reconstruct it without a server row or this browser's storage.
                         const metadataPayload = {
                             name: proposalName,
                             title: proposalName,
@@ -1225,54 +1214,37 @@ function showUploadProposalModal(proposal) {
                                 { trait_type: 'Author', value: proposalAuthor },
                                 ...(proposal.city ? [{ trait_type: 'City', value: proposal.city }] : [])
                             ],
-                            properties: {
-                                proposalId: proposal.proposalId || '',
-                                // the city the proposal belongs to, as in create.js's mint
-                                city: proposal.city || null,
-                                goal: goalKey,
-                                title: proposalName,
-                                cadastreParcelIds: parcelIds,
-                                conditional: isConditional,
-                                lens: lensAddresses,
-                                offer: {
-                                    amount: (proposal.offer ?? proposal.budget ?? null),
-                                    currency: (proposal.offerCurrency || proposal.budgetCurrency || proposal.currency || null)
-                                },
-                                createdAt: createdAtIso,
-                                author: proposalAuthor,
-                                description: proposalDescription,
-                                ...(geometryPayload ? { geometry: geometryPayload } : {})
-                            }
+                            properties: window.__chainRecord.metadataProperties({ ...proposal,
+                                type: mapGoalToBackendType(goalKey) || 'parcel',
+                                createdAt: createdAtIso, author: proposalAuthor, lens: lensAddresses, isConditional })
                         };
 
                         let metadataUri = '';
                         let assetUploadResult = null;
 
-                        // Only attempt IPFS upload if we have a screenshot
+                        // Metadata is the portable proposal. A failed upload must stop the mint;
+                        // otherwise the chain would contain a paid-for, unreconstructable token.
                         if (screenshotDataUrl && window.AssetService && typeof window.AssetService.uploadProposalAssets === 'function') {
                             const fileNameBase = `proposal-${Date.now()}`;
                             const uploadChainId = (window.walletManager && typeof window.walletManager.getState === 'function')
                                 ? window.walletManager.getState()?.chainId
                                 : null;
 
-                            try {
-                                assetUploadResult = await window.AssetService.uploadProposalAssets({
-                                    imageData: screenshotDataUrl,
-                                    metadata: metadataPayload,
-                                    fileName: fileNameBase,
-                                    chainId: uploadChainId,
-                                    target: 'auto'
-                                });
-                                metadataUri = assetUploadResult?.metadataUri || assetUploadResult?.metadataUrl || '';
-                                console.log('[shareMint] IPFS upload result:', { metadataUri, imageUri: assetUploadResult?.imageUri });
-                            } catch (ipfsErr) {
-                                console.warn('[shareMint] IPFS upload failed, minting without metadata:', ipfsErr);
-                            }
+                            assetUploadResult = await window.AssetService.uploadProposalAssets({
+                                imageData: screenshotDataUrl,
+                                metadata: metadataPayload,
+                                fileName: fileNameBase,
+                                chainId: uploadChainId,
+                                target: 'auto'
+                            });
+                            metadataUri = assetUploadResult?.metadataUri || assetUploadResult?.metadataUrl || '';
+                            console.log('[shareMint] IPFS upload result:', { metadataUri, imageUri: assetUploadResult?.imageUri });
                         } else if (!screenshotDataUrl) {
-                            console.warn('[shareMint] No screenshot available, minting without IPFS metadata');
+                            throw new Error(tShare('mintNoImage', 'Could not capture the proposal image. Minting stopped before signing.'));
                         } else {
-                            console.warn('[shareMint] AssetService not available, minting without IPFS metadata');
+                            throw new Error(tShare('mintStorageUnavailable', 'Proposal storage is unavailable. Minting stopped before signing.'));
                         }
+                        if (!metadataUri) throw new Error(tShare('mintMetadataMissing', 'The upload returned no metadata URI. Minting stopped before signing.'));
 
                         // Step 3: Mint on blockchain
                         setMintStatus(tShare('mintWaitingSignature', 'Waiting for wallet signature...'));
@@ -1341,17 +1313,12 @@ function showUploadProposalModal(proposal) {
                             }
                         }
 
-                        // Persist the minted proposal to the server so its ENS name
-                        // (the on-chain tokenId) resolves through the gateway, which
-                        // reads Postgres. The server keys the row on proposalId, so
-                        // upload it under the tokenId; otherwise the /proposals/<tokenId>
-                        // link the ENS name points at would 404. Minting only writes
-                        // to chain + localStorage, so without this step the name is a
-                        // dead link until the proposal is uploaded separately.
+                        // Mirror the chain + IPFS record for server-backed discovery and ENS.
+                        // A failed mirror leaves the independent chain proposal intact.
                         if (tokenId) {
                             try {
                                 setMintStatus(tShare('mintSavingServer', 'Saving proposal to server...'));
-                                const persistResult = await uploadProposalToServer({ ...proposal, proposalId: tokenId });
+                                const persistResult = await uploadProposalToServer(proposal);
                                 if (!persistResult || !persistResult.ok) {
                                     throw new Error((persistResult && persistResult.message) || 'server save failed');
                                 }

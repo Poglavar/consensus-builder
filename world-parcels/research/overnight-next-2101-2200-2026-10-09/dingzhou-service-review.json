@@ -1,0 +1,70 @@
+{
+  "cityRecord": "city-9104-dingzhou.json",
+  "schemaVersion": "1.0",
+  "cityCode": 9104,
+  "queueRank": 2144,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Dingzhou government material identifies the local Natural Resources and Planning Bureau and Dingzhou Real Estate Registration Center as the registration custodian. Discovery did not verify an anonymous parcel viewer/API, safe native parcel ID, CRS, or polygon geometry, so no sample is retained and runtime remains held.",
+  "queryOutcomes": "Separate English and Simplified Chinese discovery queries, exact text, outcomes, and actual URLs are recorded in city-9104-dingzhou.json.",
+  "requestOutcomes": "First-party official pages/search results were checked. One direct fetch returned HTTP 502 and another returned a cache miss. No credentials, identity verification, CAPTCHA bypass, private token, or TLS exception was used.",
+  "attemptedRoutes": [
+    {
+      "route": "Dingzhou municipal government fee-directory notice",
+      "url": "https://www.dzs.gov.cn/col/1598581502444/2026/05/07/1778117169031.html",
+      "outcome": "Official search result identified the Dingzhou Natural Resources and Planning Bureau and Dingzhou Real Estate Registration Center; direct fetch returned HTTP 502; no parcel geometry."
+    },
+    {
+      "route": "Dingzhou Natural Resources and Planning Bureau surveying/geospatial-information index",
+      "url": "https://www.dengzhou.gov.cn/qtzd/dzszrzyhghj/zwgk/chdlxx/",
+      "outcome": "Official search result identified surveying/geospatial-information publications; direct fetch returned a cache miss; no parcel geometry or API schema."
+    },
+    {
+      "route": "Current public Dingzhou cadastral viewer/API",
+      "url": null,
+      "outcome": "No first-party public viewer/API route was identified, so JavaScript/configuration inspection and bounded anonymous ID+geometry request were not possible."
+    }
+  ],
+  "scopeLimits": [
+    "Exact WUP point [38.5260147050187, 114.972352996414] was preserved in latitude/longitude order; no exact-point hit/miss inference was made.",
+    "No citywide open parcel coverage, native field mapping, schema, CRS, or geometry was verified.",
+    "No unsafe property or personal fields were requested or retained.",
+    "Completion means research attempts were recorded, not that a source adapter is integrated."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/layer metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable open parcel geometry response; no hit/miss inference."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Dingzhou city local cadastral/real-estate registration administration.",
+    "verifiedOpenScope": "Local custodian and official publication evidence only; no anonymous parcel geometry.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "runtimeQualification": {
+    "state": "held",
+    "reason": "No independently qualified real adapter or verified open parcel geometry."
+  },
+  "uncertainty": "The local custodian is clear, but public viewer/API access, parcel identity semantics, CRS, geometry delivery, and citywide completeness remain unresolved.",
+  "retainedSample": null
+}

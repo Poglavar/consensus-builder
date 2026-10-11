@@ -1,0 +1,36 @@
+{
+  "taskId": "city:7670",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-7670-kaithal.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/kaithal-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T01:15:32Z",
+  "queueIdentity": {
+    "rank": 2196,
+    "cityCode": 7670,
+    "name": "Kaithal",
+    "country": "India",
+    "point": [
+      29.7995897199337,
+      76.4055225188099
+    ],
+    "population2025Persons": 265502
+  },
+  "review": {
+    "englishAndNativeSearchesRecorded": true,
+    "nativeLanguage": "Hindi",
+    "retainedFullPolygonCount": 0,
+    "safeNativeParcelIdAndGeometryResponse": false,
+    "registryFound": true,
+    "custodyBasis": "Kaithal district portal directly links HALRIS land records; local/state registry procedure is supported, while anonymous geometry is unresolved.",
+    "adapterQualification": "No fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification is evidenced. No parcel response exists from which to compute acceptance metrics.",
+    "absenceClaim": "No citywide parcel absence inferred from unavailable service, timeout, or lack of point result.",
+    "runtimeAdmitted": false
+  },
+  "firstPartyUrlsReviewed": [
+    "https://kaithal.gov.in/hi/"
+  ]
+}

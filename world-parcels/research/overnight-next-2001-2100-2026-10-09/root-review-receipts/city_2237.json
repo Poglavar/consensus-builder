@@ -1,0 +1,37 @@
+{
+  "taskId": "city:2237",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-2237-cape-coast.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/cape-coast-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-10T22:08:32Z",
+  "identity": {
+    "cityCode": 2237,
+    "queueRank": 2066,
+    "name": "Cape Coast",
+    "country": "Ghana",
+    "pointLatLon": [
+      5.12623542108598,
+      -1.25289513889212
+    ],
+    "population2025Persons": 281579
+  },
+  "reason": "English and Twi/Akan discovery records are present. First-party Lands Commission material supports cadastral custody and the current online portal shows login-gated services. Neither the packet nor the independently checked public portal provides an anonymous native-ID parcel polygon response; a login wall is not citywide absence.",
+  "firstPartyUrlsChecked": [
+    "https://www.lc.gov.gh/about-us/organizational-structure/survey-mapping-division-smd/",
+    "https://ccma.gov.gh/physical_planning_department.php",
+    "https://onlineservices.lc.gov.gh/"
+  ],
+  "admissionGatesVerified": false,
+  "missingGates": [
+    "fresh native-ID reads",
+    "forced paging",
+    "13 bounded cells",
+    "metric GEOS validity and overlap checks",
+    "source binding",
+    "headed Details-panel verification"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "taskId": "city:6255",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-6255-copperfield.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/copperfield-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/root-review-receipts/source-evidence/city_6255-root-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/copperfield-sample.geojson"
+  ],
+  "checkedAt": "2026-10-10T22:21:03Z",
+  "reason": "Held: fresh first-party HCAD query at the exact WUP point returned one polygon with native HCAD_NUM 1222230020026; its geometry exactly matches the one retained safe-ID sample. The prior 1 km count hit MaxRecordCount=1000 and cannot establish completeness. Independent paging, 13-cell, metric GEOS, binding, and headed Details checks are missing.",
+  "admissionGatesVerified": false
+}

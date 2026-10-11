@@ -1,0 +1,126 @@
+{
+  "cityCode": 1146,
+  "queueRank": 2131,
+  "name": "A Coruña",
+  "country": "Spain",
+  "countryCode": "ES",
+  "iso3": "ESP",
+  "point": [43.3544183540172, -8.40764880737736],
+  "population2025": 272920,
+  "population2025k": 272.92,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "kind": "city_parcel_source_research",
+  "schemaVersion": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "A Coruña official cadastral map parcels Xunta Galicia catastro visor",
+        "result": "First-party Xunta Galicia parcel/map viewers and the official Sede Electrónica del Catastro were found. A Coruña's official municipal GIS also exposed a public polygon layer for public cadastral parcels.",
+        "actualResultUrls": [
+          "https://mapas.xunta.gal/es/visualizador-de-mapas",
+          "https://www.sedecatastro.gob.es/",
+          "https://ide.coruna.gal/server/rest/services/Intranet/PARCELAS_CATASTRALES/MapServer/2"
+        ]
+      },
+      {
+        "language": "Spanish/Galician",
+        "query": "visor cartográfico parcelas A Coruña catastro oficial",
+        "result": "Official Xunta Galicia and Concello da Coruña map routes were found. The Concello ArcGIS layer is titled Parcelas Catastrales Públicas and states that it covers publicly owned parcels and other public administrations/companies, so it is not evidence of complete private cadastral coverage.",
+        "actualResultUrls": [
+          "https://mapas.xunta.gal/visores/parcelaria/",
+          "https://ide.coruna.gal/server/rest/services/Intranet/PARCELAS_CATASTRALES/MapServer",
+          "https://ide.coruna.gal/server/rest/services/Intranet/PARCELAS_CATASTRALES/MapServer/2"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://ide.coruna.gal/server/rest/services/Intranet/PARCELAS_CATASTRALES/MapServer",
+      "publisher": "Concello da Coruña",
+      "observation": "Official municipal ArcGIS service description says the map publishes cadastral parcels with buildings owned by the municipality and other administrations/public companies in A Coruña, using cadastral information downloaded from the Spanish Sede Electrónica del Catastro."
+    },
+    {
+      "url": "https://ide.coruna.gal/server/rest/services/Intranet/PARCELAS_CATASTRALES/MapServer/2",
+      "publisher": "Concello da Coruña",
+      "observation": "Layer 2 is a polygon Feature Layer named Parcelas Catastrales Públicas, with public JSON/GeoJSON query support, MaxRecordCount 2000, and service extent in EPSG:25829."
+    },
+    {
+      "url": "https://www.sedecatastro.gob.es/",
+      "publisher": "Dirección General del Catastro, Gobierno de España",
+      "observation": "National official cadastre portal documents the cadastral map viewer, cadastral cartographic downloads, web services, and INSPIRE formats."
+    }
+  ],
+  "requests": [
+    {
+      "checkedAt": "2026-10-10",
+      "method": "GET",
+      "url": "https://ide.coruna.gal/server/rest/services/Intranet/PARCELAS_CATASTRALES/MapServer/2?f=pjson",
+      "httpStatus": 200,
+      "outcome": "Layer metadata loaded. Geometry type is esriGeometryPolygon; native fields include objectid (OID), refcat, public-entity classification fields, date/history fields, and geometry measures. Service metadata declares EPSG:25829. Unsafe holder/tax/contact fields were not requested for retention."
+    },
+    {
+      "checkedAt": "2026-10-10",
+      "method": "GET",
+      "url": "https://ide.coruna.gal/server/rest/services/Intranet/PARCELAS_CATASTRALES/MapServer/2/query?where=1%3D1&outFields=*&returnGeometry=true&resultRecordCount=3&f=geojson",
+      "httpStatus": 200,
+      "outcome": "Bounded anonymous response returned three polygon features with stable native cadastral references and GeoJSON geometry. Response indicated exceededTransferLimit=true, so it is a sample only and not a complete extract. Raw response is retained under ignored tmp/valhalla-parcel-research/a-coruna/."
+    },
+    {
+      "checkedAt": "2026-10-10",
+      "method": "GET",
+      "url": "https://ide.coruna.gal/server/rest/services/Intranet/PARCELAS_CATASTRALES/MapServer/2/query?geometry=-8.40764880737736%2C43.3544183540172&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=refcat&returnGeometry=true&outSR=4326&f=geojson",
+      "httpStatus": 200,
+      "outcome": "Exact immutable WUP point query returned zero features in this public-only layer. This is not treated as citywide absence or as evidence that the broader cadastre lacks a parcel there."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "A local municipal cadastral GIS custodian is evidenced by the official Concello da Coruña ArcGIS service and its service description. The layer is public-parcels-only; national cadastral custody is separately evidenced by the Spanish Catastro portal.",
+  "registryEvidenceUrls": [
+    "https://ide.coruna.gal/server/rest/services/Intranet/PARCELAS_CATASTRALES/MapServer",
+    "https://www.sedecatastro.gob.es/"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sampleFile": "city-1146-a-coru-a-sample.geojson",
+  "sourceCandidate": {
+    "serviceUrl": "https://ide.coruna.gal/server/rest/services/Intranet/PARCELAS_CATASTRALES/MapServer/2",
+    "geometryType": "Polygon",
+    "crs": "EPSG:25829 in service metadata; GeoJSON response coordinates were longitude/latitude",
+    "coverage": "Publicly owned/public-administration parcels only, according to official service description"
+  },
+  "verifiedParcelResponse": {
+    "sampleFile": "city-1146-a-coru-a-sample.geojson",
+    "featureCount": 3,
+    "nativeIdentityField": "refcat",
+    "geometryType": "Polygon",
+    "queryCrs": "EPSG:4326"
+  },
+  "resultCategory": "local_public_parcel_service_verified_limited_scope",
+  "coverageAssessment": {
+    "claimedScope": "Publicly owned municipal and other public-administration/company cadastral parcels in the municipality of A Coruña.",
+    "verifiedOpenScope": "Anonymous polygon query and safe native identifiers verified for a bounded sample only; private parcel coverage was not established.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["refcat: stable native cadastral reference", "geometry: polygon"],
+  "nativeFieldsObserved": ["objectid", "refcat", "titu_acro", "titu_cif", "titular", "tp_suelo", "fch_dato", "historico", "st_area(shape)", "st_perimeter(shape)", "url_sec"],
+  "fieldMapping": {"id": "refcat", "geometry": "geometry"},
+  "compositeKeyProvenance": null,
+  "unsafeFieldsNotRequestedOrRetained": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "valuation", "assessment", "legal/title records"],
+  "runtimeReadiness": "held_pending_independent_serial_qualification",
+  "runtimeAssessment": {"status": "held", "reason": "The public service is limited to public parcels and has not been independently qualified as a citywide adapter source."},
+  "scopeLimits": [
+    "The exact WUP point was preserved and was not shifted to force a hit.",
+    "The public municipal layer is not a complete cadastral fabric; no private-parcel coverage claim is made.",
+    "The three-feature sample is bounded and the server reported exceededTransferLimit=true.",
+    "A zero exact-point hit, extent limitation, timeout, login wall, or unusable UI would not establish citywide absence; the zero point result is recorded only as a layer-specific outcome.",
+    "Research completion does not constitute source integration, adapter admission, or runtime qualification."
+  ],
+  "uncertainty": "The official municipal public-parcels service, native identifier field, polygon geometry, and service CRS are evidenced. Citywide cadastral completeness, private parcel availability, query pagination strategy, and runtime suitability remain unresolved.",
+  "researchGroup": "iberia",
+  "pointBasis": "Immutable WUP queue point; retained exactly and not shifted to seek a parcel hit."
+}

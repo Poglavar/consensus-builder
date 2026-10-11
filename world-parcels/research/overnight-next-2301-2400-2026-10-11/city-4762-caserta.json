@@ -1,0 +1,39 @@
+{
+  "cityCode": 4762,
+  "queueRank": 2306,
+  "name": "Caserta",
+  "country": "Italy",
+  "countryCode": "IT",
+  "point": [41.0647224792735, 14.3060067488945],
+  "population2025": 252391,
+  "population2025k": 252.391,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Caserta official cadastral map parcel geoportal Comune di Caserta",
+        "result": "First-party discovery identified the Comune di Caserta Ufficio di Piano/Sistema Informativo Territoriale geoportal and a current Cartografia Catastale Città di Caserta WMS listing in the official-facing Geoportale Cartografico. No safe anonymous parcel ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://sit.comune.caserta.it/",
+          "https://sit.comune.caserta.it/sistema-informativo-territoriale/",
+          "https://geoportale.urba.cloud/esplora/servizi-wms/"
+        ]
+      },
+      {
+        "language": "Italian",
+        "query": "Caserta cartografia catastale ufficiale mappa particelle Comune di Caserta",
+        "result": "La ricerca in italiano ha trovato il geoportale comunale SIT/Ufficio di Piano e la pagina dei servizi WMS che elenca Cartografia Catastale Città di Caserta. Il servizio WFS pubblico dichiara che l'accesso ai servizi vettoriali è riservato agli enti autorizzati; non è stata ottenuta una risposta anonima con identificativo catastale e geometria.",
+        "actualResultUrls": [
+          "https://sit.comune.caserta.it/sistema-informativo-territoriale/",
+          "https://geoportale.urba.cloud/esplora/servizi-wms/",
+          "https://geoportale.urba.cloud/esplora/servizi-wfs/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "A local municipal SIT/urban-planning geoportal and a Caserta cadastral WMS listing are evidenced. This packet records source discovery and bounded access only; it is not source integration or runtime admission.",
+  "runtimeReadiness": "held"
+}

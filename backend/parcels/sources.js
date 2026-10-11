@@ -9,6 +9,7 @@ import { createSocrataParcelSource } from './socrata-source.js';
 import { createOgcApiParcelSource } from './ogc-api-source.js';
 import { createGeojsonSnapshotParcelSource } from './geojson-snapshot-source.js';
 import { createGmlSnapshotParcelSource } from './gml-snapshot-source.js';
+import { createShapefileSnapshotParcelSource } from './shapefile-snapshot-source.js';
 import { createCatastroWfsParcelSource } from './catastro-wfs-source.js';
 import { createDlrsSheetParcelSource } from './dlrs-sheet-source.js';
 import { createKeralaParcelSource } from './kerala-source.js';
@@ -110,7 +111,10 @@ export function createParcelSource(descriptor, options = {}) {
     }
     validateCityMetrics(descriptor);
     const factory = { 'dda-public-plots': createDdaParcelSource, 'shenzhen-land-certain': (_descriptor, opts) => createShenzhenLandCertainSource(opts), 'dgu-wfs': createDguParcelSource, arcgis: createArcgisParcelSource, wfs: createWfsParcelSource, 'ogc-api': createOgcApiParcelSource,
-        'geojson-snapshot': createGeojsonSnapshotParcelSource, 'gml-snapshot': createGmlSnapshotParcelSource,
+        'geojson-snapshot': (source, opts) => source.snapshotFormat === 'shapefile-zip'
+            ? createShapefileSnapshotParcelSource(source, opts) : createGeojsonSnapshotParcelSource(source, opts),
+        'shapefile-snapshot': createShapefileSnapshotParcelSource, 'shapefile-zip': createShapefileSnapshotParcelSource,
+        'gml-snapshot': createGmlSnapshotParcelSource,
         'catastro-wfs': createCatastroWfsParcelSource, 'dlrs-sheet': createDlrsSheetParcelSource,
         'kerala-entebhoomi': createKeralaParcelSource,
         'nairobi-outlines': createNairobiOutlineSource,

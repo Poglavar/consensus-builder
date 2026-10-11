@@ -1,0 +1,79 @@
+{
+  "cityRecord": "city-3331-cascavel.json",
+  "cityCode": 3331,
+  "queueRank": 2005,
+  "city": "Cascavel",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "reviewedAt": "2026-10-10T00:00:00Z",
+  "discovery": {
+    "english": "Official municipal GeoCascavel and IPC results were found, plus a Paraná ArcGIS municipal cartographic service. The public ArcGIS layer inspected is cartographic linework/orthophoto, not parcel polygons; no anonymous parcel API was verified.",
+    "native": "Resultados oficiais em português identificaram o GeoCascavel como sistema municipal de mapeamento cadastral e orientações do IPC para localizar lotes. Não foi confirmada uma resposta pública anônima com ID nativo e geometria de parcelas."
+  },
+  "custodian": {
+    "name": "Município de Cascavel / Instituto de Planejamento de Cascavel (IPC)",
+    "role": "Local municipal cadastral/map custodian evidenced by official municipal pages",
+    "evidenceUrls": [
+      "https://cascavel.atende.net/cidadao/pagina/geocascavel",
+      "https://ipc.cascavel.pr.gov.br/perguntas-frequentes/"
+    ]
+  },
+  "attemptedRoutes": [
+    {
+      "route": "Municipal GeoCascavel dashboard",
+      "url": "https://geocascavel.cascavel.pr.gov.br/geo-view/faces/sistema/dashboard.xhtml",
+      "result": "Retry HTTP 200; dashboard HTML reachable, but no bounded anonymous parcel ID-plus-geometry response or public service configuration was recovered. Earlier DNS timeout recorded as transport failure only."
+    },
+    {
+      "route": "Official Paraná ArcGIS Cascavel group",
+      "url": "https://paranainterativo.pr.gov.br/interativo2/rest/services/Base_Cartografica/Base_Cartografica_Municipal/MapServer/70?f=pjson",
+      "result": "HTTP 200; group extent and sublayers returned in EPSG:31982. Available Cascavel sublayers are cartographic text/line and orthophoto, not parcel polygons."
+    },
+    {
+      "route": "Official Paraná ArcGIS Cascavel line layer",
+      "url": "https://paranainterativo.pr.gov.br/interativo2/rest/services/Base_Cartografica/Base_Cartografica_Municipal/MapServer/3845?f=pjson",
+      "result": "HTTP 200; schema is esriGeometryPolyline, EPSG:31982, named Cascavel [2021_05] (esc2000) - Linha; no parcel geometry."
+    },
+    {
+      "route": "IPC official urban-map page",
+      "url": "https://ipc.cascavel.pr.gov.br/download/mapa-urbano-do-municipio-de-cascavel/",
+      "result": "Found by official discovery; not separately fetched in this attempt and not treated as parcel API evidence."
+    }
+  ],
+  "fieldPolicy": {
+    "allowlist": [
+      "safe stable native parcel identity if publicly returned",
+      "parcel polygon geometry",
+      "source field names and mapping in metadata only",
+      "CRS/format and request metadata"
+    ],
+    "notRequested": [
+      "owner/right-holder",
+      "address/contact",
+      "titleholder/certificate",
+      "tax/account/identity/application data"
+    ]
+  },
+  "geometryReview": {
+    "publicGeometryFound": false,
+    "sampleFile": null,
+    "parcelCount": 0,
+    "reason": "No bounded anonymous native parcel ID-plus-polygon response was available from the official routes inspected; no polygon is retained."
+  },
+  "scopeLimits": [
+    "Exact WUP point [-24.9554648695865, -53.454425245713] was preserved and was not shifted to force a parcel hit.",
+    "No exact-point hit or map-extent miss was used as evidence of citywide absence.",
+    "Authentication, CAPTCHA, private tokens, and protected owner/property queries were not attempted.",
+    "The Paraná service is general municipal cartography and was not promoted to parcel integration without polygon schema evidence.",
+    "Registry existence is locally evidenced, but source integration/admission remains unqualified."
+  ],
+  "qualification": {
+    "registryFound": true,
+    "publicParcelGeometryFound": false,
+    "runtimeReadiness": "held",
+    "serialReviewerRequired": true,
+    "uncertainty": "GeoCascavel's internal endpoint, parcel schema, CRS/identity mapping, and citywide coverage remain unknown."
+  }
+}

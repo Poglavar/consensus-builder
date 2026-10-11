@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "name": "Urgench",
+  "country": "Uzbekistan",
+  "countryCode": "UZ",
+  "iso3": "UZB",
+  "cityCode": 981,
+  "wupCityCode": 981,
+  "cityId": "wup2025:981",
+  "queueRank": 2222,
+  "rank": 2222,
+  "population2025": 262377,
+  "population2025k": 262.377,
+  "populationUnit": "persons",
+  "point": [41.5533629942387, 60.6174767379248],
+  "centerLatLon": [41.5533629942387, 60.6174767379248],
+  "pointBasis": "UN WUP 2025 population-weighted settlement locator; not an administrative boundary or parcel-coverage claim.",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Chamber of State Cadastres directory identifies the Xorazm regional department in Urganch city at Istiqlol ko‘chasi 14-uy. This is first-party regional cadastral administration evidence, not proof of an open citywide parcel layer.",
+  "registryEvidenceUrls": [
+    "https://uzdkp.uz/",
+    "https://gov.uz/en/kadastr/pages/about",
+    "https://open.ngis.uz/",
+    "https://dshk.uz/ru/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Urgench Uzbekistan official cadastral parcel map land registry GIS cadastral service",
+        "result": "Official first-party results identified the Cadastre Agency/Chamber of State Cadastres, the Xorazm regional department located in Urganch, the National Geoportal, and the State Urban Planning Cadastre geoportal. The reviewed public material describes cadastral administration and public services, but no anonymous safe parcel feature response with native ID and geometry was verified.",
+        "actualResultUrls": [
+          "https://uzdkp.uz/",
+          "https://gov.uz/en/kadastr/pages/about",
+          "https://open.ngis.uz/",
+          "https://dshk.uz/ru/"
+        ]
+      },
+      {
+        "language": "Uzbek (Latin)",
+        "query": "Urganch O‘zbekiston rasmiy kadastr yer uchastkalari xaritasi davlat kadastrlari geoportal",
+        "result": "Rasmiy Kadastr agentligi va Davlat kadastrlari palatasi manbalari Xorazm viloyati boshqarmasi Urganch shahrida joylashganini ko‘rsatadi. Ochiq geoportal va xizmatlar topildi, ammo anonim so‘rovdan xavfsiz tabiiy uchastka identifikatori va to‘liq geometriya javobi tasdiqlanmadi.",
+        "actualResultUrls": [
+          "https://uzdkp.uz/",
+          "https://kadastr.uz/index.php/uz",
+          "https://open.ngis.uz/",
+          "https://dshk.uz/"
+        ]
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "uz-cadastre-xorazm-urganch-review-2026-10-11",
+    "name": "Uzbekistan Cadastre Agency / Chamber of State Cadastres public service and geoportal review",
+    "operator": "Cadastre Agency of Uzbekistan; Chamber of State Cadastres; Xorazm regional department",
+    "url": "https://uzdkp.uz/",
+    "scope": "Institutional and public-portal discovery only. No citywide parcel coverage, feature layer, or native parcel schema was verified.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No parcel feature was retrieved; no identity retained.",
+    "geometryStatus": "no_verified_public_geometry"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "The reviewed first-party portals expose cadastral/public-service and geoportal entry points, but no anonymous geometry+ID response was obtained.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "wupPointRelation": "No exact-point parcel response was obtained; this is not evidence of parcel absence."
+  },
+  "scopeLimits": "No owner, address, contact, titleholder, personal, tax, account, cadastral-number lookup, credential, token, or protected property data was requested or retained. The WUP point was preserved exactly in latitude/longitude order. No citywide completeness claim is made.",
+  "remainingUncertainty": "The National Geoportal and State Urban Planning Cadastre may have interactive or authenticated map layers, but the current public JavaScript/configuration could not be inspected to a safe anonymous parcel feature contract in this attempt.",
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "Low"
+}

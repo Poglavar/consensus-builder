@@ -1,0 +1,148 @@
+{
+  "cityCode": 10640,
+  "queueRank": 2117,
+  "name": "Xianning",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [29.8582655235444, 114.314350381779],
+  "population2025": 274146,
+  "population2025k": 274.146,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "kind": "city_parcel_source_research",
+  "schemaVersion": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Xianning China official cadastral parcel map GIS land registry natural resources Xianning",
+        "result": "First-party discovery found the Xianning Municipal Bureau of Natural Resources and Urban-Rural Development portal, Hubei Natural Resources Department notices describing Xianning's Tianditu public geospatial platform and property-map reform, and an official Xianning land-trading map route. No anonymous citywide cadastral feature service was verified.",
+        "actualResultUrls": [
+          "https://zrzyhghj.xianning.gov.cn/",
+          "https://zrzyt.hubei.gov.cn/bmdt/sxdt/202603/t20260311_5890260.shtml",
+          "https://zrzyt.hubei.gov.cn/bmdt/sxdt/202601/t20260113_5854090.shtml"
+        ]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "咸宁市 不动产登记 地籍图 宗地 GIS 自然资源 官方",
+        "result": "First-party discovery found the Xianning natural-resources portal with cadastral-map and cadastral-survey complaint contacts, and Hubei official notices stating that Xianning integrated more than 600,000 historical property records and uses real-estate unit codes in its internal property-map workflow. The public Tianditu and planning-map routes did not yield an anonymous cadastral feature response.",
+        "actualResultUrls": [
+          "https://zrzyhghj.xianning.gov.cn/",
+          "https://zrzyt.hubei.gov.cn/bmdt/sxdt/202601/t20260113_5854090.shtml",
+          "https://zrzyt.hubei.gov.cn/bmdt/sxdt/202603/t20260311_5890260.shtml"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://zrzyhghj.xianning.gov.cn/",
+      "publisher": "Xianning Municipal Bureau of Natural Resources and Urban-Rural Development",
+      "observation": "Official local custodian portal. It identifies the bureau and lists a real-estate registration center contact and a cadastral-map/cadastral-survey complaint contact. It links Tianditu Xianning, the planning public map, and the official land-trading system."
+    },
+    {
+      "url": "https://zrzyt.hubei.gov.cn/bmdt/sxdt/202601/t20260113_5854090.shtml",
+      "publisher": "Hubei Provincial Department of Natural Resources",
+      "observation": "Official report says Xianning built a property one-map system from historical property data, uses cadastral survey results and real-estate unit codes, and has an intelligent cadastral-information query tool. This is internal workflow/custodian evidence, not anonymous parcel geometry."
+    },
+    {
+      "url": "https://zrzyt.hubei.gov.cn/bmdt/sxdt/202603/t20260311_5890260.shtml",
+      "publisher": "Hubei Provincial Department of Natural Resources",
+      "observation": "Official report says the new Tianditu Xianning platform aggregates land, mineral, and territorial-planning thematic data and offers public map/service functions. It does not document an open cadastral parcel layer or API schema."
+    }
+  ],
+  "requests": [
+    {
+      "checkedAt": "2026-10-10T23:27:06Z",
+      "method": "GET via curl with normal TLS verification",
+      "url": "https://zrzyhghj.xianning.gov.cn/",
+      "httpStatus": 200,
+      "outcome": "Readable official portal. HTML exposed the current links to Tianditu Xianning, the planning public map, and the official land-trading system."
+    },
+    {
+      "checkedAt": "2026-10-10T23:27:11Z",
+      "method": "GET via curl, redirected official portal route",
+      "url": "http://zrzyhghj.xianning.gov.cn/ssp/main/index.html",
+      "httpStatus": 200,
+      "outcome": "Generic government service/search shell returned; no cadastral map endpoint or parcel schema was exposed in the fetched HTML."
+    },
+    {
+      "checkedAt": "2026-10-10T23:27:20Z",
+      "method": "GET via curl with normal TLS verification",
+      "url": "https://hubei.tianditu.gov.cn/xianning/",
+      "httpStatus": null,
+      "outcome": "Timed out after 10 seconds. No TLS exception, login, CAPTCHA bypass, or inference of absence was used."
+    },
+    {
+      "checkedAt": "2026-10-10T23:27:30Z",
+      "method": "GET via curl",
+      "url": "http://58.52.161.236:8083/public/",
+      "httpStatus": null,
+      "outcome": "Official portal's public planning-map route timed out after 10 seconds. No anonymous map/API response was obtained."
+    },
+    {
+      "checkedAt": "2026-10-10T23:27:31Z",
+      "method": "GET via curl",
+      "url": "http://219.139.108.3/trade-engine/trade/resources-maps",
+      "httpStatus": 200,
+      "outcome": "Official Xianning natural-resources land-trading map shell returned. Current JavaScript showed POST /trade-engine/transaction/doQuery and a TianDiTu map renderer for public land resources, not a cadastral layer."
+    },
+    {
+      "checkedAt": "2026-10-10T23:27:35Z",
+      "method": "POST form via curl, anonymous session, safe query fields only",
+      "url": "http://219.139.108.3/trade-engine/transaction/doQuery",
+      "httpStatus": 200,
+      "outcome": "Alias TDGPZYLB with district 421200 and land category/method filters returned a bounded JSON response containing 297 public land-trading resource records. Some records included ZYID and ZYZB polygon data, but the response also contained transaction, land-use, price, date, and counterparty fields; those unsafe/source-specific fields were not retained. The response is public land-resource/auction data, not verified cadastral registry coverage, and no GeoJSON sample was retained."
+    },
+    {
+      "checkedAt": "2026-10-10T23:27:35Z",
+      "method": "GET via curl with normal TLS verification",
+      "url": "http://219.139.108.3/trade-engine/trade/index",
+      "httpStatus": 200,
+      "outcome": "Official land-trading home page returned and identified the service as Xianning natural-resources and urban-rural-development online trading."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "A local registry/cadastre custodian is evidenced by the official Xianning natural-resources bureau portal, which names the real-estate registration center and cadastral-map/cadastral-survey contact, and by Hubei's official report describing Xianning cadastral-survey and property-map workflows. No open cadastral parcel feature service was verified.",
+  "registryEvidenceUrls": [
+    "https://zrzyhghj.xianning.gov.cn/",
+    "https://zrzyt.hubei.gov.cn/bmdt/sxdt/202601/t20260113_5854090.shtml"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "url": "http://219.139.108.3/trade-engine/trade/resources-maps",
+    "type": "official public land-trading resource map; not cadastral registry",
+    "status": "not_qualified"
+  },
+  "verifiedParcelResponse": {
+    "url": "http://219.139.108.3/trade-engine/transaction/doQuery",
+    "responseShape": "JSON rows with public land-resource attributes; some rows contain ZYID and ZYZB pointGroups",
+    "nativeIdentityFieldObserved": "ZYID",
+    "geometryFieldObserved": "ZYZB.pointGroups",
+    "crs": "unverified; response includes locationType values and both display coordinates and sourcePoint values",
+    "qualification": "not cadastral and not retained"
+  },
+  "resultCategory": "city_registry_custodian_evidenced_public_land_transaction_geometry_not_cadastral",
+  "coverageAssessment": {
+    "claimedScope": "Xianning municipal natural-resources, cadastral-survey, real-estate-registration, and public land-trading administration as described by official sources.",
+    "verifiedOpenScope": "Official portal and land-trading resource endpoint were reachable; no anonymous citywide cadastral parcel layer, schema, CRS, or completeness claim was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel or resource identifier only", "full parcel polygon geometry", "geometry CRS", "public source/layer metadata"],
+  "nativeFieldMapping": {"nativeIdentity": "ZYID observed in public land-trading response; not admitted as a cadastral identity", "geometry": "ZYZB.pointGroups observed in public land-trading response"},
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "Public land-resource polygons were observed in the response, but their cadastral status, coordinate reference system, and citywide completeness were not verified.",
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No cadastral geometry was qualified; no exact-point hit/miss inference."},
+  "runtimeReadiness": "held_pending_independent_serial_qualification",
+  "runtimeAssessment": {"status": "held", "reason": "The only anonymous geometry response found was an official land-trading resource feed, not a qualified cadastral parcel adapter or citywide cadastral layer."},
+  "remainingUncertainty": "The local cadastral and registration custodian is clear, and Xianning has current official geospatial/property-map initiatives. The public Tianditu and planning-map routes timed out in this attempt; the land-trading API exposed public transaction geometries but not a cadastral schema, CRS, parcel coverage boundary, or stable cadastral identity semantics. No credentials, private tokens, unsafe property/person fields, CAPTCHA bypass, or TLS exception was used.",
+  "researchGroup": "asia",
+  "pointBasis": "Immutable WUP queue point; retained exactly in latitude/longitude order and not shifted to seek a parcel hit."
+}

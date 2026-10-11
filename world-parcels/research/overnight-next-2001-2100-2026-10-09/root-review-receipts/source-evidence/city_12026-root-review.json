@@ -1,0 +1,43 @@
+{
+  "taskId": "city:12026",
+  "checkedAt": "2026-10-10T21:42:20Z",
+  "queueIdentityVerified": {
+    "cityCode": 12026,
+    "rank": 2047,
+    "country": "China",
+    "point": [
+      29.3186398777557,
+      121.433882158979
+    ],
+    "populationPersons": 283907
+  },
+  "executedSearchLanguages": [
+    "English",
+    "Chinese"
+  ],
+  "originalFirstPartyCache": [
+    {
+      "path": "tmp/valhalla-parcel-research/12026/map.html",
+      "sha256": "79690c2dfcc9e92227b83ce0ad43d8ea16883c4a001d8a11259f32cc78aaba0f",
+      "bytes": 288
+    }
+  ],
+  "firstPartyUrlsChecked": [
+    "https://www.ninghai.gov.cn/art/2022/10/16/art_1229092410_59079170.html",
+    "https://yzt.nbmz.ningbo.gov.cn/yzt/biz/map/map.html"
+  ],
+  "sourceObservation": "Ninghai government material identifies the county natural-resources/planning bureau. The original saved one-map response is HTTP 403; no parcel ID or polygon response exists in the packet.",
+  "fullSamplePolygonCount": 0,
+  "safeNativeParcelIdsRetained": 0,
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "decision": "held",
+  "decisionReason": "Public geometry and every live adapter qualification gate remain unverified. The viewer denial does not establish absence.",
+  "absenceConclusion": null
+}

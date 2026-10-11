@@ -1,0 +1,16 @@
+{
+  "taskId": "city:2374",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-2374-ambato.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ambato-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T23:20:56Z",
+  "reason": "Ambato queue code 2374, rank 2110, Ecuador, exact WUP point and 274672 persons match. English and Spanish searches are recorded; the first-party municipal department independently supports registry custody. No sample polygon or native ID value was obtained. A fresh anonymous ArcGIS layer request returned HTTP 200 with the application error \"Could not access any server machines\". This route failure is not citywide absence. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap/operation checks, source binding, and headed Details verification are absent; no runtime admission.",
+  "firstPartyPagesChecked": [
+    "https://ambato.gob.ec/direccion-de-catastros-y-avaluos/",
+    "https://arcgis.ambato.gob.ec/mapas/rest/services/Moviles/CATASTROFISICO/FeatureServer/1?f=pjson"
+  ]
+}

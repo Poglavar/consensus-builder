@@ -1,0 +1,97 @@
+{
+  "cityCode": 11628,
+  "queueRank": 2041,
+  "name": "Yangkou",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [28.4315593325592, 118.171217328587],
+  "population2025": 285611,
+  "population2025k": 285.611,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10T21:05:00Z",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Yangkou China Zhejiang official natural resources cadastral parcel map land registration GIS",
+        "result": "Official results identified Zhejiang public geospatial services and the Suichang Natural Resources and Planning Bureau through an official Suichang government publication, but no anonymous parcel feature service or ID-plus-geometry response was found.",
+        "actualResultUrls": [
+          "https://www.suichang.gov.cn/art/2025/5/22/art_1229428360_5521958.html",
+          "https://ditu.zjzwfw.gov.cn/platform-main/index.html",
+          "https://zrzyt.zj.gov.cn/"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "阳口 遂昌 自然资源 不动产登记 地籍图 宗地图 官方",
+        "result": "官方中文结果将该地点置于遂昌县语境，并确认遂昌县自然资源和规划局承担自然资源管理、测绘及不动产确权登记相关职责；未发现可匿名返回阳口宗地稳定ID与几何的公开接口。",
+        "actualResultUrls": [
+          "https://www.suichang.gov.cn/art/2025/5/22/art_1229428360_5521958.html",
+          "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3640/site/attach/0/a6518d04ce124458a8ef43b8bb85862b.pdf",
+          "https://ditu.zjzwfw.gov.cn/platform-main/index.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Official Suichang government search results identify 遂昌县自然资源和规划局 (Suichang County Natural Resources and Planning Bureau) as the local authority in a 2025 land-resource notice; official Zhejiang natural-resources material describes the corresponding cadastral and real-estate registration responsibilities. This evidences a local custodian, not an open parcel-geometry API.",
+  "registryEvidenceUrls": [
+    "https://www.suichang.gov.cn/art/2025/5/22/art_1229428360_5521958.html",
+    "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3640/site/attach/0/a6518d04ce124458a8ef43b8bb85862b.pdf"
+  ],
+  "requests": [
+    {
+      "url": "https://www.suichang.gov.cn/",
+      "method": "GET",
+      "httpStatus": 403,
+      "outcome": "Official county portal denied the anonymous request; no page or viewer configuration was obtained. Access limitation, not evidence of absence."
+    },
+    {
+      "url": "https://www.suichang.gov.cn/art/2025/5/22/art_1229428360_5521958.html",
+      "method": "GET",
+      "httpStatus": 403,
+      "outcome": "Official Suichang natural-resources publication was identified in first-party search results but denied to the direct anonymous fetch; no parcel geometry or schema was obtained."
+    },
+    {
+      "url": "https://ditu.zjzwfw.gov.cn/platform-main/index.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official Zhejiang public geospatial platform HTML fetched successfully. Current HTML exposed no cadastral/parcel feature endpoint, service schema, CRS or bounded ID-plus-geometry response; no authenticated or protected route was attempted."
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 418,
+      "outcome": "National map portal returned HTTP 418 to the anonymous request; no viewer configuration, CRS, parcel schema or bounded Yangkou geometry was obtained. Treated as access failure, not evidence of absence."
+    }
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "verifiedParcelResponse": null,
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only when publicly returned",
+    "parcel polygon geometry",
+    "source service metadata",
+    "CRS and response-format metadata"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner or right-holder names",
+    "addresses or contact details",
+    "title or certificate details",
+    "tax, account, identity, or application fields"
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Suichang County local natural-resources and real-estate registration custodian, Zhejiang public geospatial platform, and national Tianditu route.",
+    "verifiedOpenScope": "Local registry/custodian and general public mapping service existence only; no anonymous ID-plus-geometry response verified.",
+    "countrywideVerified": false,
+    "citywideGeometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "Held pending independent serial qualification of a real public parcel adapter. This packet is not source integration or admission.",
+  "resultCategory": "local_registry_evidenced_no_public_geometry",
+  "remainingUncertainty": "The local registration platform and any public viewer/API endpoint, schema, CRS, safe native identity field and citywide parcel coverage remain unknown. No login, private token, CAPTCHA bypass or protected owner/property query was attempted."
+}

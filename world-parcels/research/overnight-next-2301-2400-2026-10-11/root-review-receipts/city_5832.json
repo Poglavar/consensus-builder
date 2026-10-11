@@ -1,0 +1,22 @@
+{
+  "taskId": "city:5832",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/city-5832-laredo.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/laredo-service-review.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/laredo-parcel-sample.geojson",
+    "tmp/valhalla-parcel-research/laredo-5832/layer.json",
+    "tmp/valhalla-parcel-research/laredo-5832/query-point.json",
+    "tmp/valhalla-parcel-research/laredo-5832/query-fid-40927.geojson",
+    "tmp/valhalla-parcel-research/laredo-5832/query.json"
+  ],
+  "identityCheck": "WUP roster, queue, and packet agree: code 5832, rank 2335, United States of America, point [27.5178462953798,-99.4799582250288], 249861 persons.",
+  "searchCheck": "English and Spanish executed query text, outcomes, and result URLs inspected in paired packet.",
+  "sampleCheck": "One durable full polygon, canonical FID 40927, with only id property. Original point and exact FID responses support its local hit and native identity; retained polygon is geometrically valid but no metric cohort checks were done.",
+  "reason": "The City of Laredo landbase layer has a public polygon and system-maintained FID, but bounded local evidence does not establish citywide completeness or runtime qualification. A separate original scratch query response contains address attributes despite packet/review assertions that none were requested or retained; its contents were not copied into the durable sample.",
+  "admissionCheck": "No independently evidenced complete fresh native-ID manifest, forced paging, 13 bounded cells, metric GEOS overlap/operation checks, source binding, or headed Details-panel verification. Runtime remains held.",
+  "checkedAt": "2026-10-11T09:46:31Z"
+}

@@ -58,6 +58,13 @@
         return depth.stripDerivedRecordData({ ...(raw || {}), cadastreParcelIds });
     }
 
+    async function verifyPortableMetadata(metadata, chain, ref) {
+        if (!metadata?.properties?.proposalProtocol) return;
+        const api = global.__chainRecord || (typeof require === 'function' ? require('./chain-record.js') : null);
+        if (!api) throw new Error('The portable chain record reader is unavailable.');
+        await api.verifyAgainstChain(api.fromMetadata(metadata), { ...chain, ref });
+    }
+
     async function loadEvmProposal(ref) {
         const loader = global.ChainDataLoader;
         const storage = global.proposalStorage;
@@ -84,6 +91,7 @@
                 if (resp.ok) metadata = await resp.json();
             } catch (_) { /* reconstruct with what the chain gave us */ }
         }
+        if (metaUrl && !metadata) return { ok: false, reason: 'metadata-unavailable' };
 
         let cadastreParcelIds;
         try {
@@ -93,6 +101,7 @@
                 || metadata?.properties?.cadastreParcelIds
                 || []
             );
+            await verifyPortableMetadata(metadata, row, ref);
         } catch (error) {
             return { ok: false, reason: 'non-canonical-ground', error };
         }
@@ -124,13 +133,16 @@
             const connection = loader.getConnection(ref.chainId);
             const accountInfo = await connection.getAccountInfo(new global.solanaWeb3.PublicKey(ref.tokenId));
             if (!accountInfo || !accountInfo.data) return { ok: false, reason: 'not-found' };
+            if (accountInfo.owner && accountInfo.owner.toBase58() !== ref.contract) {
+                return { ok: false, reason: 'wrong-program' };
+            }
             parsed = loader.parseProposalAccount(accountInfo.data, ref.tokenId);
         } catch (error) {
             return { ok: false, reason: 'read-failed', error };
         }
         if (!parsed) return { ok: false, reason: 'not-found' };
 
-        const metaUri = parsed.metadataUri || parsed.metadataURI || '';
+        const metaUri = parsed.imageURI || parsed.metadataUri || parsed.metadataURI || '';
         let metadata = null;
         const metaUrl = resolveMetadataUrl(metaUri);
         if (metaUrl && typeof fetch === 'function') {
@@ -139,6 +151,7 @@
                 if (resp.ok) metadata = await resp.json();
             } catch (_) { /* reconstruct with what the chain gave us */ }
         }
+        if (metaUrl && !metadata) return { ok: false, reason: 'metadata-unavailable' };
 
         let cadastreParcelIds;
         try {
@@ -148,6 +161,7 @@
                 || metadata?.properties?.cadastreParcelIds
                 || []
             );
+            await verifyPortableMetadata(metadata, parsed, ref);
         } catch (error) {
             return { ok: false, reason: 'non-canonical-ground', error };
         }
@@ -157,9 +171,11 @@
             imageURI: metaUri,
             metadata,
             lens: parsed.lens || [],
-            chainId: ref.chainId,
+            isConditional: parsed.isConditional,
+            chainId: `solana-${String(ref.chainId).replace(/^solana-/, '')}`,
             contractAddress: ref.contract,
-            onchain: { chainType: 'solana', chainId: ref.chainId, contractAddress: ref.contract, proposalId: ref.tokenId, metadata }
+            onchain: { chainType: 'solana', chainId: `solana-${String(ref.chainId).replace(/^solana-/, '')}`,
+                contractAddress: ref.contract, proposalId: ref.tokenId, metadata, metadataUri: metaUri }
         });
         return imported ? { ok: true, proposal: imported } : { ok: false, reason: 'import-failed' };
     }
@@ -211,6 +227,7 @@
             rejectLegacyGround(match, metadata?.properties, 'Canton proposal');
             cadastreParcelIds = canonicalCadastreIds(
                 match.cadastreParcelIds
+                || (match.parcelId ? [match.parcelId] : null)
                 || metadata?.properties?.cadastreParcelIds
                 || []
             );

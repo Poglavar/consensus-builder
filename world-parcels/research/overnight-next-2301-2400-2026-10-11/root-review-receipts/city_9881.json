@@ -1,0 +1,20 @@
+{
+  "taskId": "city:9881",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/city-9881-mahbubnagar.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/mahbubnagar-service-review.json",
+    "tmp/valhalla-parcel-research/9881/service.json",
+    "tmp/valhalla-parcel-research/9881/layer30.json",
+    "tmp/valhalla-parcel-research/9881/query30.json"
+  ],
+  "checkedAt": "2026-10-11T09:14:46Z",
+  "reason": "Official Mahabubnagar district Survey and Land Records custody supports registryFound true. Cached TGRAC first-party service metadata lists Mahabubnagar layer 30 as village cadastral units; the parcel group lists Wanaparthy, Nalgonda, and Suryapet only. The point query has zero cadastral-unit features and Bhu Bharati timed out; neither proves citywide parcel absence.",
+  "identityCheck": "Original 2025 WUP CSV, immutable ranked roster, pending queue, packet, and paired review agree on code, rank, country, point, and population in persons.",
+  "searchCheck": "English and local-language query text and actual result URLs inspected in the paired packet/review.",
+  "sampleCheck": "No retained full parcel polygon or safe native parcel ID; the three-polygon limit is satisfied.",
+  "admissionCheck": "No independently evidenced fresh native-ID parcel reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. Runtime admission remains held."
+}

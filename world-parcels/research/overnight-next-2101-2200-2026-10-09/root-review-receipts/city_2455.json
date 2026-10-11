@@ -1,0 +1,23 @@
+{
+  "taskId": "city:2455",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-2455-talca.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/talca-service-review.json",
+    "tmp/valhalla-parcel-research/talca/Geo_Home.html",
+    "tmp/valhalla-parcel-research/talca/minvu-talca-layer.json",
+    "tmp/valhalla-parcel-research/talca/minvu-talca-query.json",
+    "tmp/valhalla-parcel-research/talca/sii-index.html"
+  ],
+  "checkedAt": "2026-10-11T01:12:06Z",
+  "reason": "Talca, Chile, rank 2193, WUP point [-35.4306484480997,-71.6538051346513] and 265820 persons match the immutable 2025 roster. English and Spanish searches with first-party result URLs and route outcomes are documented. Cached municipal Geoportal HTML contains planning geometry and one municipal-property record with unsafe linked attributes; the official MINVU Talca layer is planning geometry and its cached query is an ArcGIS 400 error. No safe general cadastral ID-plus-polygon response was obtained. The current cited municipal directory page did not reproduce the claimed CATASTRO staff listing; an official Obras page does describe maintenance of an urbanization/construction cadastre, which supports limited municipal cadastral duties but does not independently prove land-parcel register custody. Keep that custody scope qualified, not falsely absent. No live adapter, fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, or headed details-panel proof exists.",
+  "firstPartyCacheSha256": {
+    "tmp/valhalla-parcel-research/talca/Geo_Home.html": "0a44969530a11f4ef64a9d6668c2337484210e5a77316729c237992a579b3a78",
+    "tmp/valhalla-parcel-research/talca/minvu-talca-layer.json": "f67ab2109f4c9c0c0ed7b399c2914b0e93a77948ce9ddb76ae85d7d209282711",
+    "tmp/valhalla-parcel-research/talca/minvu-talca-query.json": "688748f12a6e1393cce7d3c4b567e33aec3194c14898f6271bf22e41417e045b",
+    "tmp/valhalla-parcel-research/talca/sii-index.html": "1bf7c55ebc0824a3f1ae6514d33537313e44ad5dec51d5e72bde108ce4f0c267"
+  },
+  "runtimeAdmitted": false
+}

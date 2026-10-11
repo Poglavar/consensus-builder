@@ -1,0 +1,927 @@
+{
+  "currentVersion" : 12, 
+  "id" : 0, 
+  "name" : "חלקות", 
+  "type" : "Feature Layer", 
+  "serviceItemId" : "0248030b7ba3474eae0f7d21b12c172f", 
+  "cacheMaxAge" : 3600, 
+  "displayField" : "STATUS_TEX", 
+  "description" : "", 
+  "copyrightText" : "", 
+  "defaultVisibility" : true, 
+  "editingInfo" : {
+    "lastEditDate" : 1788947267522, 
+    "schemaLastEditDate" : 1788947267522, 
+    "dataLastEditDate" : 1788160074183
+  }, 
+  "relationships" : [], 
+  "isDataVersioned" : false, 
+  "hasContingentValuesDefinition" : false, 
+  "supportsAppend" : true, 
+  "supportsCalculate" : true, 
+  "supportsASyncCalculate" : true, 
+  "supportsTruncate" : true, 
+  "supportsAttachmentsByUploadId" : true, 
+  "supportsAttachmentsResizing" : true, 
+  "supportsRollbackOnFailureParameter" : true, 
+  "supportsStatistics" : true, 
+  "supportsExceedsLimitStatistics" : true, 
+  "supportsAdvancedQueries" : true, 
+  "supportsValidateSql" : true, 
+  "supportsCoordinatesQuantization" : true, 
+  "supportsLayerOverrides" : true, 
+  "supportsTilesAndBasicQueriesMode" : true, 
+  "supportsFieldDescriptionProperty" : true, 
+  "supportsQuantizationEditMode" : true, 
+  "supportsColumnStoreIndex" : true, 
+  "supportsApplyEditsWithGlobalIds" : false, 
+  "supportsMultiScaleGeometry" : true, 
+  "supportsReturningQueryGeometry" : true, 
+  "enableNullGeometry" : false, 
+  "hasGeometryProperties" : true, 
+  "geometryProperties" : 
+  {
+    "shapeAreaFieldName" : "Shape__Area", 
+    "shapeLengthFieldName" : "Shape__Length", 
+    "units" : "esriMeters"
+  }, 
+  "advancedQueryCapabilities" : {
+    "supportsPagination" : true, 
+    "supportsPaginationOnAggregatedQueries" : true, 
+    "supportsQueryRelatedPagination" : true, 
+    "supportsQueryWithDistance" : true, 
+    "supportsOutDistance" : true, 
+    "supportsReturningQueryExtent" : true, 
+    "supportsStatistics" : true, 
+    "supportsOrderBy" : true, 
+    "supportsDistinct" : true, 
+    "supportsQueryWithResultType" : true, 
+    "supportsSqlExpression" : true, 
+    "supportsTimeRelation" : true, 
+    "supportsAdvancedQueryRelated" : true, 
+    "supportsCountDistinct" : true, 
+    "supportsPercentileStatistics" : true, 
+    "supportsApproxPercentileStatistics" : true, 
+    "supportsSpatialAggregationStatistics" : true, 
+    "supportsTrueCurve" : true, 
+    "supportedSpatialAggregationStatistics" : [
+      "EnvelopeAggregate", 
+      "CentroidAggregate", 
+      "ConvexHullAggregate"
+    ], 
+    "supportsLod" : true, 
+    "supportsQueryWithLodSR" : false, 
+    "supportedLodTypes" : [
+      "geohash"
+    ], 
+    "supportsReturningGeometryCentroid" : true, 
+    "supportsReturningGeometryEnvelope" : true, 
+    "supportsReturningGeometryProperties" : true, 
+    "supportsQueryWithDatumTransformation" : true, 
+    "supportsCurrentUserQueries" : true, 
+    "supportsHavingClause" : true, 
+    "supportsOutFieldSQLExpression" : true, 
+    "supportsMaxRecordCountFactor" : true, 
+    "supportsTopFeaturesQuery" : true, 
+    "supportsDisjointSpatialRel" : true, 
+    "supportsQueryWithCacheHint" : true, 
+    "supportedOperationsWithCacheHint" : [
+      "query", 
+      "queryTopFilter", 
+      "queryAnalytics", 
+      "queryAttachments", 
+      "queryRelated", 
+      "queryBins", 
+      "queryPivot"
+    ], 
+    "supportsQueryAnalytic" : true, 
+    "supportsQueryPivot" : true, 
+    "supportsQueryBins" : true, 
+    "supportsDefaultSR" : true, 
+    "supportsTranslations" : false, 
+    "supportsAggIds" : true, 
+    "supportsQueryWithCollation" : true, 
+    "supportsISODOW" : true, 
+    "supportsISOWeek" : true, 
+    "supportsFullTextSearch" : true, 
+    "fullTextSearchCapabilities" : {
+      "supportsAccentSensitivity" : true, 
+      "supportsStopWords" : true, 
+      "supportsSearchOperator" : true, 
+      "supportsOperator" : true
+    }, 
+    "fullTextSearchableFields" : [
+      "GushHelka"
+    ]
+  }, 
+  "advancedQueryAnalyticCapabilities" : {
+    "supportsLinearRegression" : true, 
+    "supportsTrendlineRegression" : true, 
+    "supportsAsync" : true, 
+    "supportsPercentileAnalytic" : true
+  }, 
+  "queryBinsCapabilities" : {
+    "supportsAsync" : true, 
+    "supportsAutoIntervalBin" : true, 
+    "supportsFixedIntervalBin" : true, 
+    "supportsFixedBoundariesBin" : true, 
+    "supportsDateBin" : true, 
+    "supportsClassificationBin" : true, 
+    "supportsStackBy" : true, 
+    "supportsSplitBy" : true, 
+    "supportsFirstDayOfWeek" : true, 
+    "supportsSnapToData" : true, 
+    "supportsReturnFullIntervalBin" : true, 
+    "supportsReturnStackValueRange" : true, 
+    "supportsNormalization" : true, 
+    "supportedStatisticTypes" : [
+      "COUNT", 
+      "SUM", 
+      "AVG", 
+      "VAR", 
+      "STDDEV", 
+      "MIN", 
+      "MAX", 
+      "PERCENTILE_CONT", 
+      "PERCENTILE_DISC", 
+      "APPROX_PERCENTILE_CONT", 
+      "APPROX_PERCENTILE_DISC", 
+      "CentroidAggregate", 
+      "EnvelopeAggregate", 
+      "ConvexHullAggregate"
+    ], 
+    "supportedNormalizationTypes" : [
+      "boxCox", 
+      "field", 
+      "inverse", 
+      "log", 
+      "naturalLog", 
+      "percentOfTotal", 
+      "squareRoot"
+    ]
+  }, 
+  "supportedOperationsWithCollation" : "query,addField,updateField", 
+  "advancedEditingCapabilities" : {
+    "supportedSqlFormatsInCalculate" : [
+      "standard"
+    ], 
+    "supportsAsyncApplyEdits" : true, 
+    "supportsReturnEditResults" : true, 
+    "supportsApplyEditsbyUploadID" : true, 
+    "supportedApplyEditsUploadIDFormats" : "JSON,PBF", 
+    "supportsTranslation" : false, 
+    "supportsMaxTranslations" : 10
+  }, 
+  "infoInEstimates" : [
+    "extent", 
+    "count"
+  ], 
+  "useStandardizedQueries" : true, 
+  "geometryType" : "esriGeometryPolygon", 
+  "minScale" : 0, 
+  "maxScale" : 0, 
+  "extent" : {
+    "xmin" : 130169.92599999998, 
+    "ymin" : 374226.32440000027, 
+    "xmax" : 284068.46879999992, 
+    "ymax" : 804540.125, 
+    "spatialReference" : {
+      "wkid" : 2039, 
+      "latestWkid" : 2039
+    }
+  }, 
+  "spatialReference" : {
+    "wkid" : 2039, 
+    "latestWkid" : 2039
+  }, 
+  "drawingInfo":{"renderer":{"type":"simple","symbol":{"type":"esriSFS","style":"esriSFSSolid","color":[252,201,233,255],"outline":{"type":"esriSLS","style":"esriSLSSolid","color":[110,110,110,255],"width":0.7}}},"scaleSymbols":true,"transparency":0,"labelingInfo":null}, 
+  "allowGeometryUpdates" : true, 
+  "trueCurveSupportMode" : "OGC", 
+  "supportedCurveTypes" : [
+    "esriGeometryCircularArc"
+  ], 
+  "supportedTrueCurvePbfFeatureEncodings" : [
+    "esriCompressedShapeBuffer", 
+    "esriDefault"
+  ], 
+  "allowTrueCurvesUpdates" : true, 
+  "onlyAllowTrueCurveUpdatesByTrueCurveClients" : false, 
+  "hasAttachments" : false, 
+  "htmlPopupType" : "esriServerHTMLPopupTypeAsHTMLText", 
+  "hasMetadata" : true, 
+  "hasM" : false, 
+  "hasZ" : false, 
+  "objectIdField" : "OBJECTID", 
+  "uniqueIdField" : 
+  {
+    "name" : "OBJECTID", 
+    "isSystemMaintained" : true
+  }, 
+  "globalIdField" : "", 
+  "typeIdField" : "", 
+  "collation" : {
+    "locale" : "neutral", 
+    "caseSensitive" : false, 
+    "accentSensitive" : true
+  }, 
+  "fields" : [
+    {
+      "name" : "OBJECTID", 
+      "type" : "esriFieldTypeOID", 
+      "alias" : "מזהה רשומה", 
+      "sqlType" : "sqlTypeOther", 
+      "nullable" : false, 
+      "editable" : false, 
+      "domain" : null, 
+      "defaultValue" : null, 
+      "description" : "{\"value\":\"מזהה ייחודי פנימי של הרשומה בשכבה.\",\"fieldValueType\":\"uniqueIdentifier\"}"
+    }, 
+    {
+      "name" : "PARCEL_ID", 
+      "type" : "esriFieldTypeDouble", 
+      "alias" : "מזהה חלקה", 
+      "sqlType" : "sqlTypeOther", 
+      "nullable" : true, 
+      "editable" : true, 
+      "domain" : null, 
+      "defaultValue" : null, 
+      "description" : "{\"value\":\"מזהה ייחודי של החלקה במאגר.\",\"fieldValueType\":\"uniqueIdentifier\"}"
+    }, 
+    {
+      "name" : "GUSH_NUM", 
+      "type" : "esriFieldTypeInteger", 
+      "alias" : "מספר גוש", 
+      "sqlType" : "sqlTypeOther", 
+      "nullable" : true, 
+      "editable" : true, 
+      "domain" : null, 
+      "defaultValue" : null, 
+      "description" : "{\"value\":\"מספר הגוש הקדסטרי של החלקה.\",\"fieldValueType\":\"uniqueIdentifier\"}"
+    }, 
+    {
+      "name" : "GUSH_SUFFI", 
+      "type" : "esriFieldTypeInteger", 
+      "alias" : "מספר תת-גוש", 
+      "sqlType" : "sqlTypeOther", 
+      "nullable" : true, 
+      "editable" : true, 
+      "domain" : null, 
+      "defaultValue" : null, 
+      "description" : "{\"value\":\"מספר תת-הגוש הקדסטרי, אם קיים.\",\"fieldValueType\":\"countOrAmount\"}"
+    }, 
+    {
+      "name" : "PARCEL", 
+      "type" : "esriFieldTypeInteger", 
+      "alias" : "מספר חלקה", 
+      "sqlType" : "sqlTypeOther", 
+      "nullable" : true, 
+      "editable" : true, 
+      "domain" : null, 
+      "defaultValue" : null, 
+      "description" : "{\"value\":\"מספר החלקה בתוך הגוש.\",\"fieldValueType\":\"countOrAmount\"}"
+    }, 
+    {
+      "name" : "LEGAL_AREA", 
+      "type" : "esriFieldTypeDouble", 
+      "alias" : "שטח רשום (מ\"ר)", 
+      "sqlType" : "sqlTypeOther", 
+      "nullable" : true, 
+      "editable" : true, 
+      "domain" : null, 
+      "defaultValue" : null, 
+      "description" : "{\"value\":\"השטח הרשום של החלקה במטרים רבועים.\",\"fieldValueType\":\"measurement\"}"
+    }, 
+    {
+      "name" : "STATUS", 
+      "type" : "esriFieldTypeInteger", 
+      "alias" : "קוד מצב רישום/הסדר", 
+      "sqlType" : "sqlTypeOther", 
+      "nullable" : true, 
+      "editable" : true, 
+      "domain" : null, 
+      "defaultValue" : null, 
+      "description" : "{\"value\":\"קוד מצב הרישום או ההסדר של החלקה.\",\"fieldValueType\":\"typeOrCategory\"}"
+    }, 
+    {
+      "name" : "STATUS_TEX", 
+      "type" : "esriFieldTypeString", 
+      "alias" : "מצב רישום/הסדר", 
+      "sqlType" : "sqlTypeOther", 
+      "length" : 30, 
+      "nullable" : true, 
+      "editable" : true, 
+      "domain" : null, 
+      "defaultValue" : null, 
+      "description" : "{\"value\":\"תיאור טקסטואלי של מצב הרישום או ההסדר.\",\"fieldValueType\":\"typeOrCategory\"}"
+    }, 
+    {
+      "name" : "LOCALITY_I", 
+      "type" : "esriFieldTypeInteger", 
+      "alias" : "קוד יישוב", 
+      "sqlType" : "sqlTypeOther", 
+      "nullable" : true, 
+      "editable" : true, 
+      "domain" : null, 
+      "defaultValue" : null, 
+      "description" : "{\"value\":\"קוד היישוב המשויך לחלקה.\",\"fieldValueType\":\"locationOrPlaceName\"}"
+    }, 
+    {
+      "name" : "LOCALITY_N", 
+      "type" : "esriFieldTypeString", 
+      "alias" : "שם יישוב", 
+      "sqlType" : "sqlTypeOther", 
+      "length" : 78, 
+      "nullable" : true, 
+      "editable" : true, 
+      "domain" : null, 
+      "defaultValue" : null, 
+      "description" : "{\"value\":\"שם היישוב המשויך לחלקה.\",\"fieldValueType\":\"locationOrPlaceName\"}"
+    }, 
+    {
+      "name" : "REG_MUN_ID", 
+      "type" : "esriFieldTypeInteger", 
+      "alias" : "מועצה אזורית", 
+      "sqlType" : "sqlTypeOther", 
+      "nullable" : true, 
+      "editable" : true, 
+      "domain" : 
+      {
+        "type" : "codedValue", 
+        "name" : "חלקות_REG_MUN_ID_b78c038d-b7eb-4a06-91f1-748af6fced11", 
+        "codedValues" : [
+          {
+            "name" : "הגליל העליון", 
+            "code" : 1
+          }, 
+          {
+            "name" : "מרום הגליל", 
+            "code" : 2
+          }, 
+          {
+            "name" : "הגליל התחתון", 
+            "code" : 3
+          }, 
+          {
+            "name" : "מטה אשר", 
+            "code" : 4
+          }, 
+          {
+            "name" : "עמק הירדן", 
+            "code" : 6
+          }, 
+          {
+            "name" : "עמק המעיינות", 
+            "code" : 7
+          }, 
+          {
+            "name" : "הגלבוע", 
+            "code" : 8
+          }, 
+          {
+            "name" : "עמק יזרעאל", 
+            "code" : 9
+          }, 
+          {
+            "name" : "זבולון", 
+            "code" : 12
+          }, 
+          {
+            "name" : "מגידו", 
+            "code" : 13
+          }, 
+          {
+            "name" : "מנשה", 
+            "code" : 14
+          }, 
+          {
+            "name" : "חוף הכרמל", 
+            "code" : 15
+          }, 
+          {
+            "name" : "עמק חפר", 
+            "code" : 16
+          }, 
+          {
+            "name" : "לב השרון", 
+            "code" : 18
+          }, 
+          {
+            "name" : "חוף השרון", 
+            "code" : 19
+          }, 
+          {
+            "name" : "דרום השרון", 
+            "code" : 20
+          }, 
+          {
+            "name" : "אפעל", 
+            "code" : 24
+          }, 
+          {
+            "name" : "חבל מודיעין", 
+            "code" : 25
+          }, 
+          {
+            "name" : "מטה יהודה", 
+            "code" : 26
+          }, 
+          {
+            "name" : "גן רווה", 
+            "code" : 27
+          }, 
+          {
+            "name" : "ברנר", 
+            "code" : 28
+          }, 
+          {
+            "name" : "חבל יבנה", 
+            "code" : 29
+          }, 
+          {
+            "name" : "גזר", 
+            "code" : 30
+          }, 
+          {
+            "name" : "נחל שורק", 
+            "code" : 31
+          }, 
+          {
+            "name" : "גדרות", 
+            "code" : 32
+          }, 
+          {
+            "name" : "באר-טוביה", 
+            "code" : 33
+          }, 
+          {
+            "name" : "שפיר", 
+            "code" : 34
+          }, 
+          {
+            "name" : "יואב", 
+            "code" : 35
+          }, 
+          {
+            "name" : "חוף אשקלון", 
+            "code" : 36
+          }, 
+          {
+            "name" : "שער הנגב", 
+            "code" : 37
+          }, 
+          {
+            "name" : "אשכול", 
+            "code" : 38
+          }, 
+          {
+            "name" : "שדות נגב", 
+            "code" : 39
+          }, 
+          {
+            "name" : "עמק לוד", 
+            "code" : 40
+          }, 
+          {
+            "name" : "בני שמעון", 
+            "code" : 41
+          }, 
+          {
+            "name" : "מרחבים", 
+            "code" : 42
+          }, 
+          {
+            "name" : "אלונה", 
+            "code" : 45
+          }, 
+          {
+            "name" : "רמת הנגב", 
+            "code" : 48
+          }, 
+          {
+            "name" : "לכיש", 
+            "code" : 50
+          }, 
+          {
+            "name" : "תמר", 
+            "code" : 51
+          }, 
+          {
+            "name" : "מעלה יוסף", 
+            "code" : 52
+          }, 
+          {
+            "name" : "חבל אילות", 
+            "code" : 53
+          }, 
+          {
+            "name" : "הערבה התיכונה", 
+            "code" : 54
+          }, 
+          {
+            "name" : "מבואות החרמון", 
+            "code" : 55
+          }, 
+          {
+            "name" : "משגב", 
+            "code" : 56
+          }, 
+          {
+            "name" : "נוף הגליל", 
+            "code" : 63
+          }, 
+          {
+            "name" : "אבו בסמה", 
+            "code" : 67
+          }, 
+          {
+            "name" : "גולן", 
+            "code" : 71
+          }, 
+          {
+            "name" : "מטה בנימין", 
+            "code" : 73
+          }, 
+          {
+            "name" : "ללא", 
+            "code" : 0
+          }
+        ]
+      }, 
+      "defaultValue" : null, 
+      "description" : "{\"value\":\"קוד המועצה האזורית המשויכת לחלקה.\",\"fieldValueType\":\"typeOrCategory\"}"
+    }, 
+    {
+      "name" : "COUNTY_ID", 
+      "type" : "esriFieldTypeInteger", 
+      "alias" : "נפה", 
+      "sqlType" : "sqlTypeOther", 
+      "nullable" : true, 
+      "editable" : true, 
+      "domain" : 
+      {
+        "type" : "codedValue", 
+        "name" : "חלקות_COUNTY_ID_ac1001d8-0d0d-429c-af73-579e8a3cba21", 
+        "codedValues" : [
+          {
+            "name" : "ללא", 
+            "code" : 0
+          }, 
+          {
+            "name" : "ירושלים", 
+            "code" : 11
+          }, 
+          {
+            "name" : "צפת", 
+            "code" : 21
+          }, 
+          {
+            "name" : "כנרת", 
+            "code" : 22
+          }, 
+          {
+            "name" : "יזרעאל - עפולה", 
+            "code" : 23
+          }, 
+          {
+            "name" : "עכו", 
+            "code" : 24
+          }, 
+          {
+            "name" : "יזרעאל - נצרת", 
+            "code" : 25
+          }, 
+          {
+            "name" : "גולן", 
+            "code" : 29
+          }, 
+          {
+            "name" : "חיפה", 
+            "code" : 31
+          }, 
+          {
+            "name" : "חדרה", 
+            "code" : 32
+          }, 
+          {
+            "name" : "השרון", 
+            "code" : 41
+          }, 
+          {
+            "name" : "פתח תקוה", 
+            "code" : 42
+          }, 
+          {
+            "name" : "רמלה", 
+            "code" : 43
+          }, 
+          {
+            "name" : "רחובות", 
+            "code" : 44
+          }, 
+          {
+            "name" : "תל אביב - תל אביב", 
+            "code" : 51
+          }, 
+          {
+            "name" : "תל אביב - רמת גן", 
+            "code" : 52
+          }, 
+          {
+            "name" : "תל אביב - חולון", 
+            "code" : 53
+          }, 
+          {
+            "name" : "אשקלון", 
+            "code" : 61
+          }, 
+          {
+            "name" : "באר שבע", 
+            "code" : 62
+          }, 
+          {
+            "name" : "אזור יהודה ושומרון - ג'נין", 
+            "code" : 71
+          }, 
+          {
+            "name" : "אזור יהודה ושומרון - שכם", 
+            "code" : 72
+          }, 
+          {
+            "name" : "אזור יהודה ושומרון - טול כרם", 
+            "code" : 73
+          }, 
+          {
+            "name" : "אזור יהודה ושומרון - רמאללה", 
+            "code" : 74
+          }, 
+          {
+            "name" : "אזור יהודה ושומרון - חברון", 
+            "code" : 77
+          }, 
+          {
+            "name" : "גבאליא", 
+            "code" : 86
+          }
+        ]
+      }, 
+      "defaultValue" : null, 
+      "description" : "{\"value\":\"קוד הנפה המנהלית של החלקה.\",\"fieldValueType\":\"typeOrCategory\"}"
+    }, 
+    {
+      "name" : "REGION_ID", 
+      "type" : "esriFieldTypeInteger", 
+      "alias" : "מחוז", 
+      "sqlType" : "sqlTypeOther", 
+      "nullable" : true, 
+      "editable" : true, 
+      "domain" : 
+      {
+        "type" : "codedValue", 
+        "name" : "חלקות_REGION_ID_3ae0da89-c0f3-4ef4-a38b-5a7f24138deb", 
+        "codedValues" : [
+          {
+            "name" : "ירושלים", 
+            "code" : 1
+          }, 
+          {
+            "name" : "הצפון", 
+            "code" : 2
+          }, 
+          {
+            "name" : "חיפה", 
+            "code" : 3
+          }, 
+          {
+            "name" : "המרכז", 
+            "code" : 4
+          }, 
+          {
+            "name" : "תל-אביב", 
+            "code" : 5
+          }, 
+          {
+            "name" : "הדרום", 
+            "code" : 6
+          }, 
+          {
+            "name" : "יהודה ושומרון", 
+            "code" : 7
+          }, 
+          {
+            "name" : "חבל עזה", 
+            "code" : 8
+          }, 
+          {
+            "name" : "ללא", 
+            "code" : 0
+          }
+        ]
+      }, 
+      "defaultValue" : null, 
+      "description" : "{\"value\":\"קוד המחוז המנהלי של החלקה.\",\"fieldValueType\":\"typeOrCategory\"}"
+    }, 
+    {
+      "name" : "TALAR_NUMB", 
+      "type" : "esriFieldTypeInteger", 
+      "alias" : "מספר תצר מעדכן", 
+      "sqlType" : "sqlTypeOther", 
+      "nullable" : true, 
+      "editable" : true, 
+      "domain" : null, 
+      "defaultValue" : null, 
+      "description" : "{\"value\":\"מספר התצר המעודכן המשויך לחלקה.\",\"fieldValueType\":\"uniqueIdentifier\"}"
+    }, 
+    {
+      "name" : "TALAR_YEAR", 
+      "type" : "esriFieldTypeInteger", 
+      "alias" : "שנת תצר מעדכן", 
+      "sqlType" : "sqlTypeOther", 
+      "nullable" : true, 
+      "editable" : true, 
+      "domain" : null, 
+      "defaultValue" : null, 
+      "description" : "{\"value\":\"שנת התצר המעודכן המשויכת לחלקה.\",\"fieldValueType\":\"dateAndTime\"}"
+    }, 
+    {
+      "name" : "SYS_DATE", 
+      "type" : "esriFieldTypeString", 
+      "alias" : "תאריך עדכון", 
+      "sqlType" : "sqlTypeOther", 
+      "length" : 20, 
+      "nullable" : true, 
+      "editable" : true, 
+      "domain" : null, 
+      "defaultValue" : null, 
+      "description" : "{\"value\":\"תאריך ושעת העדכון האחרונים של הרשומה.\",\"fieldValueType\":\"dateAndTime\"}"
+    }, 
+    {
+      "name" : "IS3D", 
+      "type" : "esriFieldTypeInteger", 
+      "alias" : "כולל תלת-ממד", 
+      "sqlType" : "sqlTypeOther", 
+      "nullable" : true, 
+      "editable" : true, 
+      "domain" : null, 
+      "defaultValue" : null, 
+      "description" : "{\"value\":\"מציין אם הרשומה כוללת ייצוג תלת-ממדי.\",\"fieldValueType\":\"binary\"}"
+    }, 
+    {
+      "name" : "Shape__Area", 
+      "type" : "esriFieldTypeDouble", 
+      "alias" : "שטח גאומטרי (מ\"ר)", 
+      "sqlType" : "sqlTypeDouble", 
+      "nullable" : true, 
+      "editable" : true, 
+      "domain" : null, 
+      "defaultValue" : null, 
+      "description" : "{\"value\":\"שטח הגאומטריה המחושב של הפוליגון במטרים רבועים.\",\"fieldValueType\":\"measurement\"}"
+    }, 
+    {
+      "name" : "Shape__Length", 
+      "type" : "esriFieldTypeDouble", 
+      "alias" : "אורך היקף (מ')", 
+      "sqlType" : "sqlTypeDouble", 
+      "nullable" : true, 
+      "editable" : true, 
+      "domain" : null, 
+      "defaultValue" : null, 
+      "description" : "{\"value\":\"אורך היקף הגאומטריה המחושב במטרים.\",\"fieldValueType\":\"measurement\"}"
+    }, 
+    {
+      "name" : "GushHelka", 
+      "type" : "esriFieldTypeString", 
+      "alias" : "גוש/חלקה", 
+      "sqlType" : "sqlTypeOther", 
+      "length" : 20, 
+      "nullable" : true, 
+      "editable" : true, 
+      "domain" : null, 
+      "defaultValue" : null, 
+      "description" : "{\"value\":\"מחרוזת משולבת של מספר הגוש והחלקה בפורמט גוש/חלקה.\",\"fieldValueType\":\"uniqueIdentifier\"}"
+    }
+  ], 
+  "indexes" : [
+    {
+      "name" : "PK__חלקות_חל__F4B70D85B32EF4B1", 
+      "fields" : "OBJECTID", 
+      "isAscending" : true, 
+      "isUnique" : true, 
+      "description" : "", 
+      "indexType" : "Attribute"
+    }, 
+    {
+      "name" : "חלקות_חלקות_Shape_sidx", 
+      "fields" : "Shape", 
+      "isAscending" : true, 
+      "isUnique" : false, 
+      "description" : "", 
+      "indexType" : "Spatial"
+    }, 
+    {
+      "name" : "Shape__Area_Index", 
+      "fields" : "Shape__Area", 
+      "isAscending" : true, 
+      "isUnique" : false, 
+      "description" : "", 
+      "indexType" : "Attribute"
+    }, 
+    {
+      "name" : "Shape__Length_Index", 
+      "fields" : "Shape__Length", 
+      "isAscending" : true, 
+      "isUnique" : false, 
+      "description" : "", 
+      "indexType" : "Attribute"
+    }, 
+    {
+      "name" : "IX_חלקות_חלקות_PARCEL_ID_GUSH_NUM_ASC", 
+      "fields" : "PARCEL_ID, GUSH_NUM", 
+      "isAscending" : true, 
+      "isUnique" : false, 
+      "description" : "Layer settings", 
+      "indexType" : "Attribute"
+    }, 
+    {
+      "name" : "FT_חלקות_חלקות_GushHelka", 
+      "fields" : "GushHelka", 
+      "description" : "Layer settings", 
+      "locale" : "neutral", 
+      "indexType" : "FullText"
+    }, 
+    {
+      "name" : "GUSH_NUM_Index", 
+      "fields" : "GUSH_NUM", 
+      "isAscending" : true, 
+      "isUnique" : false, 
+      "description" : "GUSH_NUM_Index", 
+      "indexType" : "Attribute"
+    }
+  ], 
+  "dateFieldsTimeReference" : {
+    "timeZone" : "UTC", 
+    "timeZoneIANA" : "Etc/UTC", 
+    "respectsDaylightSaving" : false
+  }, 
+  "preferredTimeReference" : null, 
+  "types" : [], 
+  "templates" : [
+    {
+      "name" : "חלקות", 
+      "description" : "", 
+      "drawingTool" : "esriFeatureEditToolPolygon", 
+      "prototype" : {
+        "attributes" : {
+          "PARCEL_ID" : null, 
+          "GUSH_NUM" : null, 
+          "GUSH_SUFFI" : null, 
+          "PARCEL" : null, 
+          "LEGAL_AREA" : null, 
+          "STATUS" : null, 
+          "STATUS_TEX" : null, 
+          "LOCALITY_I" : null, 
+          "LOCALITY_N" : null, 
+          "REG_MUN_ID" : null, 
+          "COUNTY_ID" : null, 
+          "REGION_ID" : null, 
+          "TALAR_NUMB" : null, 
+          "TALAR_YEAR" : null, 
+          "SYS_DATE" : null, 
+          "IS3D" : null, 
+          "GushHelka" : null
+        }
+      }
+    }
+  ], 
+  "supportedQueryFormats" : "JSON, geoJSON, PBF", 
+  "supportedAppendFormats" : "sqlite,geoPackage,shapefile,filegdb,featureCollection,geojson,csv,excel,jsonl,featureService,pbf", 
+  "supportedAppendSourceFilterFormats" : "sqlite,geoPackage,shapefile,filegdb,featureService", 
+  "supportedExportFormats" : "csv,shapefile,sqlite,geoPackage,filegdb,featureCollection,geojson,kml,excel,parquet", 
+  "supportedConvertFileFormats" : "JSON,PBF,Parquet", 
+  "supportedConvertContentFormats" : "LayerEditCollection,FeatureCollection", 
+  "supportedSpatialRelationships" : [
+    "esriSpatialRelIntersects", 
+    "esriSpatialRelContains", 
+    "esriSpatialRelCrosses", 
+    "esriSpatialRelEnvelopeIntersects", 
+    "esriSpatialRelIndexIntersects", 
+    "esriSpatialRelOverlaps", 
+    "esriSpatialRelTouches", 
+    "esriSpatialRelWithin", 
+    "esriSpatialRelDisjoint", 
+    "esriSpatialRelRelation"
+  ], 
+  "guidFormat" : "", 
+  "supportsContingentValues" : true, 
+  "supportsEditingContingentValues" : true, 
+  "supportedContingentValuesFormats" : "JSON, PBF", 
+  "supportsFieldGroups" : true, 
+  "supportedSyncDataOptions" : 260, 
+  "hasStaticData" : true, 
+  "maxRecordCount" : 2000, 
+  "standardMaxRecordCount" : 2000, 
+  "maxIdsCount" : 1000000, 
+  "standardMaxRecordCountNoGeometry" : 32000, 
+  "tileMaxRecordCount" : 4000, 
+  "maxRecordCountFactor" : 1, 
+  "capabilities" : "Query,Extract"
+}

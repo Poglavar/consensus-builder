@@ -1,0 +1,28 @@
+{
+  "cityRecord": "city-12086-changle.json",
+  "cityCode": 12086,
+  "queueRank": 2217,
+  "name": "Changle",
+  "country": "China",
+  "countryCode": "CN",
+  "pointLatLon": [25.9792933939973, 119.486785094445],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method": "GET/search English", "url": "https://www.fzcl.gov.cn/", "httpStatus": 200, "outcome": "Official Changle District government homepage retrieved; it exposes district government services including real-estate registration but no parcel feature schema."},
+    {"method": "GET/search Chinese", "url": "https://www.fzcl.gov.cn/xjwz/zwgk/jgzn/gzbm/qzzghj/", "httpStatus": 200, "outcome": "Official district bureau page retrieved; identified local responsibility for unified real-estate registration, cadastral survey, archives, and basic surveying."},
+    {"method": "GET", "url": "https://www.fzcl.gov.cn/xjwz/zwgk/gggs/202010/t20201015_3547210.htm", "httpStatus": 200, "outcome": "Official district notice retrieved; identified the Changle District Real Estate Registration and Trading Center and its announced platform URL http://124.72.21.193:8090/sd_web/."},
+    {"method": "GET", "url": "http://124.72.21.193:8090/sd_web/", "httpStatus": 0, "outcome": "Connection timed out after 20 seconds from the current environment; no login, retry bypass, or insecure workaround used. This is not evidence of absent service or parcels."},
+    {"method": "GET", "url": "https://zrzyt.fujian.gov.cn/zwgk/xwdt/zrzyyw/202403/t20240322_6418271.htm", "httpStatus": 200, "outcome": "Official Fujian Natural Resources article retrieved; identified the public Tianditu Fujian map route https://fujian.tianditu.gov.cn/map."},
+    {"method": "GET", "url": "https://fujian.tianditu.gov.cn/map", "httpStatus": 0, "outcome": "Viewer request timed out in the current environment; no current JavaScript/configuration or public parcel API could be inspected."}
+  ],
+  "schemaAndCrs": {"geometryCrs": null, "nativeIdentity": null, "observedSchema": "No parcel feature response returned; local pages document custodianship and service routes only."},
+  "safeFieldAllowlist": ["stable native parcel ID if independently verified", "polygon geometry", "source service URL", "CRS", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "No bounded anonymous parcel ID+geometry response was verified."},
+  "scopeLimits": ["The WUP point was preserved exactly and was not used to force a parcel hit.", "Local bureau and registration-center pages establish custodianship and service routes, not open parcel geometry.", "Timeouts of the announced district platform and Tianditu viewer do not prove citywide absence.", "Packet completion records research attempts only and is not source integration or admission."],
+  "uncertainty": "Changle has first-party local registry evidence and public provincial map-route evidence, but public anonymous parcel geometry, CRS, native identity, and current viewer/API configuration remain unresolved."
+}

@@ -1,0 +1,261 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "3234",
+  "cityName": "Sosnowiec",
+  "sourceId": "sosnowiec-gml-wfs",
+  "candidateSha256": "3877f06173ae563a8765a012be34433ea9b8fc46416886149d8fc4e7216ff09c",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 3
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 184,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 184,
+      "collectedUniqueCount": 184
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 466
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "feature-queries",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "featurePageRequests": 5,
+      "distinctFeatureQueries": 5,
+      "duplicatePageRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "inputSha256": "7f18c6b2b0d692085890f58426128ef805e61147a1429e05f3cdc95200649c5e",
+      "featureCount": 184,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32634",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true,
+      "reportFile": "metric-report.json"
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "7f18c6b2b0d692085890f58426128ef805e61147a1429e05f3cdc95200649c5e",
+  "featureCount": 184,
+  "sampleIds": [
+    "PL-SOSNOWIEC-247501_1.0011.29",
+    "PL-SOSNOWIEC-247501_1.0010.3473",
+    "PL-SOSNOWIEC-247501_1.0010.3163"
+  ],
+  "cellSizeDegrees": 0.001,
+  "requestCount": 173,
+  "requestLimit": 300,
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ],
+  "sampledCellsSummary": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        19.145,
+        50.291,
+        19.146,
+        50.292
+      ],
+      "complete": true,
+      "featureCount": 11
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        19.146,
+        50.291,
+        19.147,
+        50.292
+      ],
+      "complete": true,
+      "featureCount": 8
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        19.147,
+        50.291,
+        19.148,
+        50.292
+      ],
+      "complete": true,
+      "featureCount": 16
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        19.145,
+        50.292,
+        19.146,
+        50.293
+      ],
+      "complete": true,
+      "featureCount": 4
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        19.146,
+        50.292,
+        19.147,
+        50.293
+      ],
+      "complete": true,
+      "featureCount": 7
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        19.147,
+        50.292,
+        19.148,
+        50.293
+      ],
+      "complete": true,
+      "featureCount": 24
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        19.145,
+        50.293,
+        19.146,
+        50.294
+      ],
+      "complete": true,
+      "featureCount": 2
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        19.146,
+        50.293,
+        19.147,
+        50.294
+      ],
+      "complete": true,
+      "featureCount": 15
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        19.147,
+        50.293,
+        19.148,
+        50.294
+      ],
+      "complete": true,
+      "featureCount": 55
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        19.146,
+        50.29,
+        19.147,
+        50.291
+      ],
+      "complete": true,
+      "featureCount": 3
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        19.146,
+        50.294,
+        19.147,
+        50.295
+      ],
+      "complete": true,
+      "featureCount": 34
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        19.144,
+        50.292,
+        19.145,
+        50.293
+      ],
+      "complete": true,
+      "featureCount": 7
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        19.148,
+        50.292,
+        19.149,
+        50.293
+      ],
+      "complete": true,
+      "featureCount": 47
+    }
+  ]
+}

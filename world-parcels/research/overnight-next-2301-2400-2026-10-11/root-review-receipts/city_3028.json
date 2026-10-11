@@ -1,0 +1,17 @@
+{
+  "taskId": "city:3028",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/city-3028-hami.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/hami-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T09:11:32Z",
+  "reason": "Hami registration custody and query procedure are supported, but no public feature endpoint or anonymous native-ID/full-polygon response was obtained.",
+  "identityCheck": "Immutable WUP roster, pending queue, packet and paired review agree on code, rank, country, point, and 2025 population in persons.",
+  "searchCheck": "English and native/local-language executed queries and result URLs were inspected in the packet and paired review.",
+  "sampleCheck": "Zero full parcel polygons retained; no native parcel ID plus unchanged full polygon is verified. The three-polygon cap is satisfied.",
+  "admissionCheck": "No independent fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. No runtime admission."
+}

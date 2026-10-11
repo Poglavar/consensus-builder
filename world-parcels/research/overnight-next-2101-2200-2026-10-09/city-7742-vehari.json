@@ -1,0 +1,171 @@
+{
+  "cityCode": 7742,
+  "queueRank": 2120,
+  "name": "Vehari",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "locId": 586,
+  "point": [
+    30.0461292688875,
+    72.3537222073348
+  ],
+  "population2025": 273823,
+  "population2025k": 273.823,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Vehari Pakistan official cadastral parcel map land records Punjab PULSE PLRA",
+        "result": "First-party discovery identified the official Punjab PULSE public cadastral viewer, PLRA land-record authority, Vehari district administration, and Punjab village-wise cadastral-map service. The PULSE viewer explicitly lists Vehari and its current HTML configuration identifies a Vehari Feature Layer.",
+        "actualResultUrls": [
+          "https://lis.pulse.gop.pk/",
+          "https://www.punjab-zameen.gov.pk/",
+          "https://vehari.punjab.gov.pk/administration",
+          "https://jamabandi.punjab.gov.pk/CadastralMap.aspx/AccessibilityOptions.aspx"
+        ]
+      },
+      {
+        "language": "Urdu",
+        "query": "وہاڑی پاکستان سرکاری کادستر نقشہ اراضی ریکارڈ پنجاب پلس",
+        "result": "First-party/native-language discovery returned the official Punjab PULSE viewer and Vehari district administration context. The viewer lists Vehari; the district administration page describes official land-record functions. No personal or ownership lookup was used.",
+        "actualResultUrls": [
+          "https://lis.pulse.gop.pk/",
+          "https://vehari.punjab.gov.pk/administration",
+          "https://www.punjab-zameen.gov.pk/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://lis.pulse.gop.pk/",
+      "observation": "Current official Punjab PULSE public viewer. Its unchanged HTML lists Vehari as sublayer id 37, identifies public ArcGIS service configuration, and displays the indicative-property-lines disclaimer."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/37",
+      "observation": "First-party ArcGIS REST metadata for Vehari layer 37. Polygon layer; native spatial reference WKID 102100/latestWkid 3857; public fields include OBJECTID and other source attributes, which were not retained."
+    },
+    {
+      "url": "https://vehari.punjab.gov.pk/administration",
+      "observation": "Official Vehari district administration page describes land-record administration and Khasra Girdawari functions; this is local/district custodian context."
+    },
+    {
+      "url": "https://www.punjab-zameen.gov.pk/",
+      "observation": "Official Punjab Land Records Authority portal describing provincial land-record services."
+    },
+    {
+      "url": "https://jamabandi.punjab.gov.pk/CadastralMap.aspx/AccessibilityOptions.aspx",
+      "observation": "Official Punjab village-wise cadastral-map procedure page; it exposes district, tehsil, village and year selectors but was not used for unsafe record lookup."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Official Vehari district administration land-record functions plus the Punjab PULSE/PLRA public cadastral viewer and Vehari-specific public layer establish a local/district-linked cadastral/map service. This does not establish legal title or citywide completeness.",
+  "sourceCandidate": "pk-pulse-vehari-cadastral",
+  "service": "Punjab PULSE / Punjab Land Records Authority ArcGIS public cadastral viewer",
+  "serviceUrl": "https://lis.pulse.gop.pk/",
+  "layerUrl": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/37",
+  "layer": {
+    "id": 37,
+    "name": "Vehari",
+    "geometryType": "esriGeometryPolygon",
+    "sourceCrs": "WKID 102100 / EPSG:3857",
+    "nativeIdField": "OBJECTID",
+    "geometryField": "Shape",
+    "capabilities": "Map,Query,Data",
+    "maxRecordCount": 2000
+  },
+  "requests": [
+    {
+      "url": "https://lis.pulse.gop.pk/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Public viewer loaded; unchanged HTML inspected for current JavaScript/configuration, Vehari sublayer id 37, public service host, token bootstrap route, and disclaimer."
+    },
+    {
+      "url": "https://lis.pulse.gop.pk/api/gis/token",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Public viewer session token issued and used in memory only; token value omitted from logs and artifacts."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/37?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Layer metadata returned. Schema and CRS inspected; only OBJECTID was requested from the feature query. Source fields such as District, Tehsil, Mouza, Khasra_ID, Khewat_ID and Remarks were not requested or retained."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/37/query",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Bounded exact-point intersects query at unchanged WUP coordinate [30.0461292688875,72.3537222073348], ArcGIS point order [72.3537222073348,30.0461292688875], where=1=1, outFields=OBJECTID, returnGeometry=true, outSR=4326 returned one polygon with native OBJECTID 2616884. Geometry converted from service response to GeoJSON lon/lat for the retained sample."
+    }
+  ],
+  "query": {
+    "pointLatLon": [
+      30.0461292688875,
+      72.3537222073348
+    ],
+    "arcgisPointOrder": [
+      72.3537222073348,
+      30.0461292688875
+    ],
+    "where": "1=1",
+    "outFields": [
+      "OBJECTID"
+    ],
+    "returnGeometry": true,
+    "outSR": 4326,
+    "result": {
+      "featureCount": 1,
+      "nativeIds": [
+        "2616884"
+      ]
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native OBJECTID only",
+    "full parcel polygon geometry",
+    "geometry CRS/service metadata"
+  ],
+  "sourceFieldMapping": {
+    "OBJECTID": "stable native ArcGIS OID",
+    "Shape": "native polygon geometry"
+  },
+  "compositeKeyProvenance": null,
+  "geometrySample": {
+    "file": "vehari-parcel-sample.geojson",
+    "featureCount": 1,
+    "identity": "OBJECTID=2616884"
+  },
+  "verifiedSample": true,
+  "verifiedParcelResponse": {
+    "sampleFile": "vehari-parcel-sample.geojson",
+    "featureCount": 1,
+    "nativeIds": [
+      "2616884"
+    ]
+  },
+  "publicParcelGeometryFound": true,
+  "coverageAssessment": {
+    "claimedScope": "Vehari Feature Layer 37 in Punjab PULSE public cadastral viewer.",
+    "cityCoverage": "A Vehari-specific layer and one exact-point intersecting polygon were verified; this is not a citywide inventory or completeness proof.",
+    "exactPointChecked": true
+  },
+  "scopeLimits": [
+    "Exact-point result is a bounded sample, not citywide coverage.",
+    "PULSE disclaimer says displayed property lines are indicative and not legal boundaries.",
+    "Complete parcel details/login-gated functions were not accessed.",
+    "No owner, address, contact, titleholder, tax, account, Khasra, Khewat, or other unsafe fields were requested, logged, or retained.",
+    "No coordinate was shifted to force a hit.",
+    "Packet completion is not source integration/admission."
+  ],
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Layer schema includes many source attributes, but only OBJECTID and polygon geometry were used. Native CRS is Web Mercator Auxiliary Sphere (WKID 102100/latestWkid 3857), while retained GeoJSON is EPSG:4326. Citywide completeness, update currency, legal status, survey accuracy, and linkage to authoritative legal records remain unverified."
+}

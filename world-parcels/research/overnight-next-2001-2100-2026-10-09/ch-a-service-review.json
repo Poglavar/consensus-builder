@@ -1,0 +1,28 @@
+{
+  "cityRecord": "city-4015-ch-a.json",
+  "cityCode": 4015,
+  "queueRank": 2058,
+  "name": "Chía",
+  "country": "Colombia",
+  "countryCode": "CO",
+  "reviewedAt": "2026-10-10",
+  "attempt": 1,
+  "serviceStatus": "held",
+  "registryFound": true,
+  "registryCustodian": "Instituto Geográfico Agustín Codazzi (IGAC), gestor catastral de Chía; Alcaldía Municipal de Chía as local administrative custodian/contact point",
+  "queryAndRequestOutcome": "Separate English and Spanish discovery identified the official IGAC Colombia en Mapas cadastral viewer, an IGAC Chía-specific ArcGIS MapServer, and a CAR integrated cadastral MapServer. The Chía layer schema request timed out before response; the CAR layer request was blocked by TLS verification failure and was not retried with verification disabled. No safe anonymous parcel ID plus full polygon was obtained.",
+  "scopeLimits": [
+    "Official municipal sources evidence IGAC custody and a Chía cadastral update, but do not provide an open parcel download in the reviewed pages.",
+    "The official IGAC service advertised in discovery could not be contacted within the bounded timeout; this is an availability limitation, not evidence of absent coverage.",
+    "The CAR endpoint was not queried past certificate verification failure; no TLS exception was authorized.",
+    "The exact WUP point [4.87517981020063, -74.050002621291] was preserved in latitude/longitude order and was not shifted.",
+    "No sample GeoJSON was retained because no safe native identity and complete parcel polygon were verified."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier", "parcel polygon geometry", "source CRS", "non-personal source layer metadata"],
+  "sourceSpecificFields": "No feature schema was retrieved. The official service metadata indicated ArcGIS MapServer/GeoJSON capability, but native parcel field names and any composite-key rules remain unknown.",
+  "compositeKeyProvenance": null,
+  "runtimeReadiness": "held_serial_qualification_required",
+  "qualification": "Not qualified for runtime integration or admission. Serial review must independently verify a reachable official adapter route, safe field mapping, feature-level CRS, stable native identity, citywide coverage, and bounded geometry behavior.",
+  "uncertainty": "Local custody is evidenced, but anonymous parcel geometry, schema, update cadence, and adapter robustness remain unverified. No credentials, private tokens, owner/address data, or unsafe fields were requested.",
+  "status": "complete"
+}

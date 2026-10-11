@@ -1,0 +1,55 @@
+{
+  "cityRecord": "city-1628-th-i-nguy-n.json",
+  "cityCode": 1628,
+  "queueRank": 2078,
+  "city": "Thái Nguyên",
+  "country": "Viet Nam",
+  "countryCode": "VN",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "reviewedAt": "2026-10-10T00:00:00Z",
+  "discovery": {
+    "english": "First-party discovery identified the official provincial digital map, local land-data procedure, national land-data map and provincial cadastral-database reporting; no anonymous parcel geometry route was verified.",
+    "native": "Nguồn chính thức của tỉnh xác nhận Bản đồ số tỉnh Thái Nguyên, thủ tục cung cấp dữ liệu đất đai và vai trò của Văn phòng đăng ký đất đai; chưa xác minh được phản hồi công khai ẩn danh gồm mã thửa và hình học."
+  },
+  "custodian": {
+    "name": "Văn phòng đăng ký đất đai (Land Registration Office), Thái Nguyên",
+    "role": "Local land-information custodian evidenced by official provincial procedure guidance; national land-data center is the central custodian. This is not evidence of an open parcel API.",
+    "evidenceUrls": [
+      "https://hotropldn.thainguyen.gov.vn/chu-truong-chinh-sach/trinh-tu-thu-tuc-cung-cap-thong-tin-du-lieu-dat-dai-509.html",
+      "https://sonnmt.thainguyen.gov.vn/tin-noi-bat/hoc-tap-suot-doi-nang-cao-chuan-ky-thuat-so-van-phong-dang-ky-dat-dai-cu-the-hoa-tinh-than-nghi-quyet-so-71-nq-tw-297525"
+    ]
+  },
+  "attemptedRoutes": [
+    {"route": "English first-party discovery", "url": "https://chuyendoiso.thainguyen.gov.vn/thu-thuat-ung-dung-cong-nghe/huong-dan-cong-dan-su-dung-cac-tinh-nang-tren-ban-do-so-tinh-thai-nguyen-220120", "result": "Official instructions link to bandoso.thainguyen.gov.vn and describe administrative-unit detail views."},
+    {"route": "Vietnamese first-party discovery", "url": "https://hotropldn.thainguyen.gov.vn/chu-truong-chinh-sach/trinh-tu-thu-tuc-cung-cap-thong-tin-du-lieu-dat-dai-509.html", "result": "HTTP 200; official procedure identifies the local land-registration office as provider and describes portal/request routes."},
+    {"route": "Provincial cadastral-program report", "url": "https://sonnmt.thainguyen.gov.vn/tin-noi-bat/hoc-tap-suot-doi-nang-cao-chuan-ky-thuat-so-van-phong-dang-ky-dat-dai-cu-the-hoa-tinh-than-nghi-quyet-so-71-nq-tw-297525", "result": "Official report documents cadastral mapping/database work and completion claims at provincial scope; no parcel response."},
+    {"route": "Provincial digital map direct GET", "url": "https://bandoso.thainguyen.gov.vn/", "result": "Local GET failed DNS resolution; not treated as absence and not retried with unsafe workarounds."},
+    {"route": "National land-data map", "url": "https://maps.gdla.gov.vn/", "result": "HTTP 200 official shell; no bounded anonymous parcel ID-plus-geometry payload or usable schema/CRS was retained."}
+  ],
+  "fieldPolicy": {
+    "allowlist": ["stable native parcel identifier", "parcel polygon geometry", "source CRS", "source field names and mapping in metadata only", "request metadata"],
+    "sourceFieldMapping": null,
+    "notRequested": ["owner/right-holder", "address/contact", "titleholder/certificate", "tax/account/identity/application data", "encumbrances"]
+  },
+  "geometryReview": {
+    "publicGeometryFound": false,
+    "sampleFile": null,
+    "parcelCount": 0,
+    "reason": "No safely bounded anonymous parcel ID-plus-geometry response was verified. No exact-point hit/miss, extent miss, timeout, login wall, or unusable viewer behavior is used as evidence of citywide cadastral absence."
+  },
+  "scopeLimits": [
+    "Exact WUP point [21.584154508289, 105.837347632185] was preserved in latitude/longitude order and was not shifted.",
+    "RegistryFound=true reflects official local custodian/procedure evidence, not public geometry availability.",
+    "The provincial report includes sensitive land-user data in the broader system; those fields were not requested or retained.",
+    "No public parcel schema, CRS payload, native identity, or full parcel polygon was verified, so no sample GeoJSON was retained.",
+    "Packet completion does not constitute source integration/admission; runtime readiness remains held pending serial qualification."
+  ],
+  "qualification": {
+    "registryFound": true,
+    "publicParcelGeometryFound": false,
+    "runtimeReadiness": "held",
+    "serialReviewerRequired": true,
+    "uncertainty": "Custodian and cadastral-program evidence is strong, but public viewer/API accessibility and parcel-level anonymous schema/geometry remain unverified."
+  }
+}

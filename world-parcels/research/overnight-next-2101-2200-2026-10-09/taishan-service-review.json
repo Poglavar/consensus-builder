@@ -1,0 +1,94 @@
+{
+  "cityRecord": "city-11360-taishan.json",
+  "cityCode": 11360,
+  "queueRank": 2183,
+  "city": "Taishan",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "custodianAssessment": {
+    "localOrScopedEvidence": "The official Taishan government site names Taishan Natural Resources Bureau and its subordinate Taishan Real Estate Registration Bureau. The latter's stated remit expressly includes citywide registration, cadastral investigation, real-estate surveying, and management/publication/use oversight of registration results.",
+    "generalAgencyEvidence": "No general-agency prose was used as the sole basis for registryFound. National/provincial public-service portals were not treated as a Taishan parcel source."
+  },
+  "discovery": {
+    "englishQuery": "Taishan China official cadastral parcel map land registry GIS Taishan Natural Resources Bureau",
+    "nativeQuery": "台山市 不动产登记 地籍图 自然资源局 官方",
+    "urls": [
+      "https://www.cnts.gov.cn/zfgzbm/szrzyj/index.html",
+      "https://www.cnts.gov.cn/zfgzbm/szrzyj/zwgk/zfxxgkml/zzjg/nsjg/content/post_3309759.html",
+      "https://www.cnts.gov.cn/zfgzbm/szrzyj/tpxw/content/post_2810878.html",
+      "https://www.cnts.gov.cn/zfgzbm/szrzyj/bdczt/tzgg/content/post_3543094.html",
+      "https://www.gdzwfw.gov.cn/"
+    ]
+  },
+  "requests": [
+    {
+      "method": "GET",
+      "url": "https://www.cnts.gov.cn/zfgzbm/szrzyj/index.html",
+      "outcome": "HTTP 200. Official Taishan Natural Resources Bureau portal loaded. It linked the local real-estate topic and the Guangdong government service branch, but no parcel viewer, feature service, or geometry endpoint was exposed in the inspected HTML."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.cnts.gov.cn/zfgzbm/szrzyj/zwgk/zfxxgkml/zzjg/nsjg/content/post_3309759.html",
+      "outcome": "HTTP 200. Official organization page identifies the Taishan Real Estate Registration Bureau and its cadastral/registration responsibilities; no public parcel API or map endpoint was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.cnts.gov.cn/zfgzbm/szrzyj/tpxw/content/post_2810878.html",
+      "outcome": "HTTP 200. Official notice says the Yuezhizhu self-service machines can query Taishan-wide real-estate registration information, but lists identity authentication by ID-card reading or face-scan and person-specific property/certificate queries. No anonymous parcel geometry or safe public API was exposed; no authentication was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.cnts.gov.cn/zfgzbm/szrzyj/bdczt/tzgg/content/post_3543094.html",
+      "outcome": "HTTP 200. Official registration announcement confirms the local registration institution and local registration-center address, but contains unsafe personal/property details that were not retained. It is not a parcel geometry source."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.gdzwfw.gov.cn/",
+      "outcome": "HTTP 200. Guangdong government service homepage loaded and exposed a general 'real-estate registration information query' service label. The inspected page did not expose Taishan parcel geometry or an anonymous feature endpoint; no login or identity flow was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.gdzwfw.gov.cn/portal/v2/branch-hall?orgCode=MB2C9307X",
+      "outcome": "The direct branch-hall request returned an empty reply from the public route. This is a route failure, not evidence of registry or service absence; no retry with credentials or bypass was made."
+    }
+  ],
+  "responseEvidence": {
+    "geometry": "No bounded anonymous parcel ID+geometry response was obtained. No CRS, parcel schema, native identity, native field mapping, or composite-key provenance can be claimed.",
+    "nativeFieldsObserved": [],
+    "safeFieldAllowlist": [
+      "stable native parcel identity if later obtained from an official anonymous public response",
+      "parcel geometry",
+      "source URL",
+      "CRS and request provenance"
+    ],
+    "unsafeFieldsExcluded": [
+      "owner names",
+      "addresses",
+      "contact details",
+      "titleholder information",
+      "certificate contents",
+      "tax/account data",
+      "personal identifiers",
+      "identity-authenticated property results"
+    ]
+  },
+  "sample": {
+    "retained": false,
+    "reason": "No anonymous official parcel polygon response was obtained; no GeoJSON sample was created.",
+    "exactPoint": [22.2508392239325, 112.790546990734],
+    "exactPointHit": "not tested against parcel polygons; no coordinate shift performed"
+  },
+  "scopeLimits": [
+    "Local registration administration is evidenced, but public anonymous parcel coverage is unverified.",
+    "The Yuezhizhu route is identity-authenticated and person/property-specific, so it is outside the safe parcel-source scope.",
+    "The general Guangdong service portal is not evidence of an open Taishan parcel feature service.",
+    "A route timeout/empty reply, unavailable viewer, or absence of an exact-point hit would not establish citywide absence.",
+    "No credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe-field request, or TLS certificate exception was used.",
+    "This packet is research evidence only and is not source integration or adapter admission."
+  ],
+  "runtimeReadiness": "held-pending-independent-serial-reviewer",
+  "uncertainty": "Taishan has a clearly evidenced local registration/cadastral custodian and a citywide identity-authenticated property-information service, but the checked public routes do not expose an anonymous parcel map/API with safe native IDs and geometries. Coverage, CRS, schema, and exact-point parcel availability remain unknown."
+}

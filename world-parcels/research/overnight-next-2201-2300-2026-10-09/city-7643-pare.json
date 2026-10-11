@@ -1,0 +1,69 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 7643,
+  "queueRank": 2231,
+  "name": "Pare",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso3": "IDN",
+  "point": [-7.76915257792334, 112.190272243183],
+  "population2025": 261464,
+  "population2025k": 261.464,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pare Kediri Indonesia official cadastral parcel map GIS land registry",
+        "result": "Found LokaGeo Kabupaten Kediri, a local geospatial portal describing verified WebGIS and open spatial-data catalog coverage for Kediri Regency, and the official ATR/BPN ATLAS portal. No public Pare/Kediri cadastral parcel feature endpoint was established.",
+        "actualResultUrls": ["https://lokageokediri.com/", "https://lokageokediri.com/katalog-data.html", "https://atlas.atrbpn.go.id/", "https://kedirikota.go.id/p/berita/10112400/kota-kediri-dideklarasikan-sebagai-kota-lengkap-oleh-menteri-atrbpn-republik-indonesia"]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Pare Kediri peta bidang tanah kadaster GIS resmi pertanahan",
+        "result": "Found local Kediri geospatial catalog and ATR/BPN materials describing land/parcels generally. The inspected public catalogs exposed administrative/thematic layers and selected datasets for other areas, not a public Pare parcel response.",
+        "actualResultUrls": ["https://lokageokediri.com/", "https://lokageokediri.com/katalog-data.html", "https://atlas.atrbpn.go.id/", "https://data.go.id/dataset/dataset/pertanahan2"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "basis": "LokaGeo Kabupaten Kediri presents itself as the official local geospatial data/information portal and exposes a public WebGIS/catalog for Kabupaten Kediri. This establishes a local map/data custodian, but not an open cadastral parcel layer.",
+    "urls": ["https://lokageokediri.com/", "https://lokageokediri.com/katalog-data.html"]
+  },
+  "officialSources": [
+    {
+      "url": "https://lokageokediri.com/",
+      "observation": "Portal states it is the official Kabupaten Kediri geospatial data/information portal, with verified WebGIS and integration with BIG, ATR/BPN, Kemendagri, and Kominfo."
+    },
+    {
+      "url": "https://lokageokediri.com/katalog-data.html",
+      "observation": "Public catalog offered administrative boundaries and thematic datasets in SHP/GeoJSON formats; no cadastral parcel dataset was listed in the inspected catalog."
+    },
+    {
+      "url": "https://atlas.atrbpn.go.id/",
+      "observation": "Official ATR/BPN ATLAS landing page; current public catalog exposed seven datasets, including land-office locations, selected wakaf layers, and LBS, but no Pare/Kediri cadastral parcel layer."
+    },
+    {
+      "url": "https://kedirikota.go.id/p/berita/10112400/kota-kediri-dideklarasikan-sebagai-kota-lengkap-oleh-menteri-atrbpn-republik-indonesia",
+      "observation": "Official Kota Kediri page documents complete-city status for Kota Kediri; Pare is in Kabupaten Kediri, so this is contextual and not evidence of Pare coverage."
+    }
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "resultCategory": "city_registry_portal_found_no_public_parcel_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "LokaGeo Kabupaten Kediri local geospatial portal/catalog and national ATR/BPN ATLAS catalog.",
+    "verifiedOpenScope": "The local catalog and national catalog were inspected through their public pages/API. No city-bounded cadastral parcel feature response with a safe native identity was retrieved.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "Pare's cadastral data may be available through an authenticated, non-indexed, or separately administered ATR/BPN/Kediri workflow. A catalog omission or a single exact-point miss would not establish citywide absence. No login, credentials, CAPTCHA/Cloudflare bypass, or owner/address/titleholder fields were used."
+}

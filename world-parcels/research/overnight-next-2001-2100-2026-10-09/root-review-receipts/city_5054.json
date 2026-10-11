@@ -1,0 +1,15 @@
+{
+  "taskId": "city:5054",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-5054-batala.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/batala-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T22:11:54Z",
+  "registryFound": true,
+  "findings": [
+    "Official Punjab cadastral map cache shows the Gurdaspur selector and state revenue custodian.",
+    "No verified native-ID polygon response or adapter qualification; the village postback remains untested."
+  ]
+}

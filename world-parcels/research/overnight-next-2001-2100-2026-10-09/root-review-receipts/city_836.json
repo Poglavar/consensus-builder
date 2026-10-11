@@ -1,0 +1,44 @@
+{
+  "taskId": "city:836",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-836-saraf-umrah.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/saraf-umrah-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/ranked-population.json",
+    "tmp/valhalla-parcel-research/runs/20261010T223755-007641c1/stdout.jsonl",
+    "tmp/valhalla-parcel-research/836/aqari.html",
+    "tmp/valhalla-parcel-research/836/nic.html"
+  ],
+  "checkedAt": "2026-10-10T22:43:26Z",
+  "identityCheck": {
+    "queueRank": 2087,
+    "cityCode": 836,
+    "country": "Sudan",
+    "point": [
+      13.4752665126685,
+      23.3025682374627
+    ],
+    "population2025Persons": 278467,
+    "matchedOfficial2025Source": true
+  },
+  "searchCheck": {
+    "englishAndLocalExecutedInOriginalRun": true,
+    "originalRunLog": "tmp/valhalla-parcel-research/runs/20261010T223755-007641c1/stdout.jsonl",
+    "retryDidNotRepeatSearches": true
+  },
+  "sampleCheck": {
+    "retainedFullPolygons": 0,
+    "safeNativeIdsVerified": false
+  },
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "registryFound": null,
+  "reason": "Public national judiciary/Aqari and NIC pages responded HTTP 200 in the first run. The retry packet cites aqari.sd rather than the captured aqari.nctr.sd route. Neither retained page supplies a Saraf `Umrah native parcel ID plus full polygon response; local custody remains unresolved. No independent live adapter qualification exists; keep the city held and do not imply runtime admission."
+}

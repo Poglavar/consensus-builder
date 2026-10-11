@@ -1,0 +1,21 @@
+{
+  "taskId": "city:10597",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-10597-dalla.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/dalla-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T23:57:12Z",
+  "reason": "The immutable WUP 2025 row and cohort queue match Dalla, India, rank 2134, point [24.4580167199722,83.0074737035664], and 272778 persons. English and Hindi searches and result URLs are recorded. Uttar Pradesh BhuLekh is a first-party statewide portal, but neither Dalla administrative selection nor city-local registry custody was established, so registryFound remains null. Original HTML/JavaScript cache exposes public API bases, while the two guessed list routes returned No static resource errors. There is no bounded Dalla parcel response, retained full polygon, or safe native parcel ID. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are not evidenced. Route errors and unrelated Madhya Pradesh timeouts are not citywide absence; hold runtime admission.",
+  "firstPartyCacheChecked": [
+    "tmp/valhalla-parcel-research/10597/upbhulekh.html",
+    "tmp/valhalla-parcel-research/10597/up-main.js",
+    "tmp/valhalla-parcel-research/10597/districts_list.out",
+    "tmp/valhalla-parcel-research/10597/tehsils_list.out"
+  ],
+  "firstPartyPagesChecked": [
+    "https://upbhulekh.gov.in/"
+  ]
+}

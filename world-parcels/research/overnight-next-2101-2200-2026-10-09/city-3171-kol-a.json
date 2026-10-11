@@ -1,0 +1,52 @@
+{
+  "cityCode": 3171,
+  "queueRank": 2109,
+  "name": "Koléa",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "iso3": "DZA",
+  "point": [36.6461197299329, 2.73879748857359],
+  "population2025": 274748,
+  "population2025k": 274.748,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10T00:00:00Z",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Koléa Algeria official cadastral map parcel cadastre site:gov.dz",
+        "result": "Search identified the official Direction Générale du Domaine National / Agence Nationale du Cadastre Tipaza directorate page and its cadastral e-service/document routes; no public parcel geometry API was exposed in indexed results.",
+        "actualResultUrls": ["https://a.dgdn.dz/tipaza.html", "https://a.dgdn.dz/index.php"]
+      },
+      {
+        "language": "native/local (French and Arabic)",
+        "query": "Koléa Algérie cadastre parcelle carte officielle; القليعة الجزائر المحافظة العقارية مخطط مسح الأراضي خريطة رسمية",
+        "result": "French/Arabic discovery found the official Tipaza cadastral directorate route and official DGDN cadastral-document/e-service descriptions. Results describe document delivery and professional access, but did not expose an anonymous map or parcel-geometry endpoint for Koléa.",
+        "actualResultUrls": ["https://a.dgdn.dz/tipaza.html", "https://a.dgdn.dz/index.php", "https://www.joradp.dz/FTP/Jo-Arabe/1988/A1988010.pdf"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official DGDN/Agence Nationale du Cadastre Tipaza page evidences the wilaya cadastral directorate, its cadastral-document guide, public/professional e-service routes, and the official Tipaza contact. This establishes a local/wilaya cadastral custodian/procedure, not an open Koléa parcel layer.",
+  "registryEvidenceUrls": ["https://a.dgdn.dz/tipaza.html", "https://a.dgdn.dz/index.php"],
+  "requests": [
+    {"url": "https://a.dgdn.dz/tipaza.html", "method": "GET", "httpStatus": 200, "outcome": "Official DGDN Tipaza page was available through indexed first-party content; it identified the Tipaza cadastral directorate, cadastral e-service/document links, and official contact information."},
+    {"url": "https://a.dgdn.dz/index.php", "method": "GET", "httpStatus": 200, "outcome": "Official DGDN home page described online cadastral-document delivery and stated that the Centre region includes Tipaza; it did not provide public parcel geometry or a Koléa map query."},
+    {"url": "https://a.dgdn.dz/Document_cad.html", "method": "GET", "httpStatus": "timeout", "outcome": "Official cadastral-document route was linked by the viewer, but the anonymous fetch timed out; no login or retry escalation was used."},
+    {"url": "https://a.dgdn.dz/<php echo $adresse ; ?>/WathikaCad.php=", "method": "GET", "httpStatus": "timeout", "outcome": "The public e-service link resolved to a malformed/dynamic route in the indexed viewer and timed out; no credentials, private token, or bypass was attempted."},
+    {"url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx", "method": "GET", "httpStatus": "timeout", "outcome": "Official ASGA cartographic viewer was discovered, but its 1:200,000 map viewer timed out. Its indexed layer list was general cartography (communes/wilayas), not a verified parcel layer; no geometry was retained."}
+  ],
+  "source": "Direction Générale du Domaine National / Agence Nationale du Cadastre, Tipaza directorate",
+  "sourceIds": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "verifiedParcelResponse": null,
+  "safeFieldAllowlist": ["stable native parcel identity if later exposed", "parcel polygon geometry if later exposed", "official service metadata", "CRS and response-format metadata"],
+  "unsafeFieldsNotRequested": ["owner or right-holder names", "addresses or contact details", "title or certificate details", "tax, account, identity, or application data", "appellation, legal-description, valuation, land-use, and exemption fields"],
+  "coverageAssessment": {"claimedScope": "Tipaza cadastral directorate and DGDN cadastral-document services are official custodial/procedural routes.", "verifiedOpenScope": "Official local/wilaya custodian and procedure were evidenced, but no anonymous parcel geometry response was obtained.", "countrywideVerified": false, "citywideGeometryVerified": false},
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "No real public parcel geometry service or safe parcel response was qualified in this attempt; independent serial adapter qualification remains required. This packet is not source integration or admission.",
+  "resultCategory": "local_cadastral_custodian_no_public_geometry",
+  "remainingUncertainty": "The exact WUP point was not shifted and was not used to infer absence. The public e-service/document viewer routes were unavailable by timeout or dynamic-route failure, so Koléa parcel schema, CRS, native identity, parcel coverage, and citywide completeness remain unverified."
+}

@@ -1,0 +1,39 @@
+{
+  "cityRecord": "city-2736-rancagua.json",
+  "cityCode": 2736,
+  "queueRank": 2089,
+  "name": "Rancagua",
+  "country": "Chile",
+  "countryCode": "CL",
+  "attempt": 3,
+  "reviewedAt": "2026-10-10",
+  "serviceStatus": "held",
+  "registryFound": null,
+  "registryCustodian": null,
+  "queryAndRequestOutcome": "Artifact-validation retry only. The city record now records one retained official discovery URL for each required language query: SNIT for English discovery and SII property/cadastre services for Spanish discovery. Their recorded outcomes are non-qualifying: no Rancagua-specific result, request log, schema, CRS, anonymous ID+geometry response, or local custodian evidence was retained. No web search or network/API request was repeated.",
+  "attemptedRoutes": [],
+  "scopeLimits": [
+    "No sample GeoJSON was retained because no bounded anonymous geometry response was available.",
+    "The exact WUP point [-34.1683012609009, -70.735151752138] was preserved and not shifted.",
+    "A missing retained artifact is not evidence of citywide cadastral absence.",
+    "Packet completion does not establish source integration, runtime admission, or adapter qualification."
+  ],
+  "sourceSpecificFields": "No source-specific field names or feature response were available. If a later public service is qualified, canonical GeoJSON properties.id must use that service's stable native parcel identity only.",
+  "compositeKeyProvenance": null,
+  "safeFieldAllowlist": [
+    "stable native parcel identifier",
+    "parcel polygon geometry",
+    "source CRS/format metadata",
+    "non-personal layer metadata"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner/right-holder",
+    "address/contact",
+    "titleholder/certificate",
+    "tax/account/identity/application",
+    "assessment/mortgage/restriction/historical/source-specific attributes"
+  ],
+  "qualification": "Not qualified for runtime integration or admission; serial review would need an independently verified anonymous feature response, native identity mapping, CRS handling, and safe field selection.",
+  "uncertainty": "No Rancagua-specific evidence was available to support a local registry finding or parcel geometry finding. The source remains held.",
+  "status": "complete"
+}

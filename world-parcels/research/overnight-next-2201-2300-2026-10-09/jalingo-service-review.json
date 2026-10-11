@@ -1,0 +1,35 @@
+{
+  "cityRecord": "city-8774-jalingo.json",
+  "cityCode": 8774,
+  "queueRank": 2218,
+  "name": "Jalingo",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "pointLatLon": [8.91443574950481, 11.3643973620493],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH","url":"https://tagis.tarabastate.gov.ng/","httpStatus":200,"outcome":"Official TAGIS site identifies Taraba Geographic Information Service in Jalingo and describes digital land administration, cadastral mapping, land registration, surveying, and GIS services."},
+    {"method":"SEARCH","url":"https://www.tarabagis.com/","httpStatus":200,"outcome":"TAGIS service page describes the state land-information system and land administration/registration procedures; it is custodian evidence, not an exposed parcel API."},
+    {"method":"SEARCH","url":"https://www.tarabastate.gov.ng/contact","httpStatus":200,"outcome":"Official Taraba State contact directory lists Taraba Geographic Information Service, P.M.B. 1105, Donga Road, Jalingo, as a state government focal agency."},
+    {"method":"GET","url":"https://tagis.tarabastate.gov.ng/tagis-api/index.php","httpStatus":302,"outcome":"Public API route redirected to login.php and set a PHP session; no login was attempted and no private/authenticated endpoint was pursued."},
+    {"method":"GET","url":"https://app.tarabagis.com/page/sign-in.php","httpStatus":200,"outcome":"Public sign-in page reached; it is a login wall. No credentials were used."},
+    {"method":"GET","url":"https://tagis.tarabastate.gov.ng/downloads.php","httpStatus":200,"outcome":"Public downloads page exposed general PDFs and map/document references, but no public parcel GeoJSON, WFS, ArcGIS REST, or safe parcel-ID-plus-geometry response."},
+    {"method":"GET","url":"https://tagis.tarabastate.gov.ng/track.php","httpStatus":200,"outcome":"Public application-tracking page exposes a property-processing workflow that posts to process_property.php; it concerns submitted applications and was not queried for personal, title, owner, or parcel records."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "boundedAnonymousResponse": {"requestScope":"No anonymous parcel geometry request was available without authentication.","featureCount":null}
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if later exposed anonymously","polygon geometry if later exposed anonymously","source service URL","source CRS / requested output CRS","retrieval date"],
+  "unsafeFieldsNotRequested": ["owner","address","contact","titleholder","tax/account","certificate/title","personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired": true,"runtimeReadiness":"held","reason":"Local cadastral custodian is evidenced, but no safe anonymous parcel schema or geometry response was exposed. Adapter qualification remains a separate serial review."},
+  "scopeLimits": ["The exact WUP point was preserved and no coordinate shift or parcel-hit forcing was attempted.","A login wall, absent public API, or lack of an exact-point hit is not evidence of citywide parcel absence.","TAGIS is a local/state custodian; national/general agency search context was not treated as a local parcel service.","No GeoJSON sample is retained because no safe anonymous native ID-plus-geometry response was available.","No owner, address, contact, titleholder, tax/account, certificate/title, or personal fields were requested or retained.","Raw request/page captures remain under ignored tmp/valhalla-parcel-research/jalingo/."],
+  "uncertainty": "TAGIS publicly claims cadastral and digital land services for Taraba and is listed by the state government in Jalingo. The public API path and application portal require sign-in or provide workflow pages only; public coverage, schema, CRS, update cadence, licensing, and runtime adapter behavior remain unverified."
+}

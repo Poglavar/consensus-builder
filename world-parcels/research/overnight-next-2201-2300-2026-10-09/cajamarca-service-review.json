@@ -1,0 +1,64 @@
+{
+  "cityRecord": "city-1241-cajamarca.json",
+  "cityCode": 1241,
+  "queueRank": 2255,
+  "city": "Cajamarca",
+  "country": "Peru",
+  "countryCode": "PE",
+  "reviewStatus": "complete-held",
+  "attempt": 1,
+  "requests": [
+    {
+      "route": "Official municipal responsibility page",
+      "url": "https://www.gob.pe/23235-municipalidad-provincial-de-cajamarca-subgerencia-de-planificacion-territorial-y-centro-historico",
+      "outcome": "HTTP/search result available; page identifies the municipal subgerencia and says it maintains the urban and rural cadastre.",
+      "scope": "Custodian/responsibility evidence only; not a parcel API."
+    },
+    {
+      "route": "Official municipal parcel-location procedure",
+      "url": "https://www.gob.pe/institucion/municajamarca/informes-publicaciones/3121794-3-2-17-tupa-certificado-de-ubicacion-o-localizacion-de-predio",
+      "outcome": "Official procedure found; it describes a certificate locating a property using the Cajamarca urban development plan and identifies the Subgerencia de Ordenamiento Territorial y Catastro.",
+      "scope": "Procedure/document service; no anonymous parcel feature endpoint exposed."
+    },
+    {
+      "route": "Official SIAR Cajamarca viewer",
+      "url": "https://siar.regioncajamarca.gob.pe/visor/",
+      "outcome": "Viewer loads and states its information is referential; no cadastral parcel layer or public parcel schema was exposed in the accessible page.",
+      "scope": "General regional thematic viewer; not treated as parcel coverage."
+    },
+    {
+      "route": "Official MIDAGRI/SERFOR ArcGIS REST layer metadata",
+      "url": "https://geo.serfor.gob.pe/geoservicios/rest/services/Visor/OCAPAS_MIDAGRI/MapServer/6?f=pjson",
+      "outcome": "HTTP 200 JSON; layer is Predios Rurales - Cajamarca, polygon geometry, source and layer spatial reference EPSG:4326, public JSON/GeoJSON query support.",
+      "scope": "Regional/rural Cajamarca layer, not proof of complete urban municipal coverage."
+    },
+    {
+      "route": "Bounded anonymous parcel query around exact WUP point",
+      "url": "https://geo.serfor.gob.pe/geoservicios/rest/services/Visor/OCAPAS_MIDAGRI/MapServer/6/query",
+      "outcome": "HTTP 200 GeoJSON; 0.02-degree envelope around the unchanged point returned three full polygons with native UNICAT identifiers and no owner/address fields requested.",
+      "scope": "Bounded evidence only; no citywide completeness claim."
+    }
+  ],
+  "exactWupPoint": [-7.16227848966809, -78.5100362967466],
+  "schemaAndIdentity": {
+    "crs": "EPSG:4326 / WGS84",
+    "geometry": "Polygon",
+    "preferredNativeId": "UNICAT",
+    "secondaryServiceId": "OBJECTID",
+    "safeFieldAllowlist": ["UNICAT", "OBJECTID"],
+    "unsafeFieldsNotRequestedOrRetained": ["NOMPRE", "FECTIT", "PAINRE", "OFINRE", "INLECA", "TITULO", "address/owner/contact/tax fields"],
+    "compositeKey": "None; UNICAT is the native identity in the returned records."
+  },
+  "samplePolicy": {
+    "retainedGeojson": null,
+    "reason": "No retained sample is necessary; unchanged raw bounded response is preserved under ignored tmp/valhalla-parcel-research/city-1241/."
+  },
+  "uncertaintyAndLimits": [
+    "The exact point is a WUP city point, not a claim that the point itself is a parcel centroid or boundary hit.",
+    "The rural layer returned nearby polygons, but its metadata and bounded query do not establish complete citywide or urban cadastral coverage.",
+    "The SIAR viewer is explicitly referential and was not used as authoritative parcel evidence.",
+    "No login, credentials, private token, CAPTCHA bypass, unsafe owner/title/address data, or TLS exception was used.",
+    "Runtime readiness remains held pending independent serial adapter qualification."
+  ],
+  "completion": "Research attempts are recorded and packet files are complete for review; source integration/admission is not claimed."
+}

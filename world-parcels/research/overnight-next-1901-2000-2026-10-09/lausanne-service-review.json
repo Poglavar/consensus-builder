@@ -1,0 +1,32 @@
+{
+  "cityRecord": "city-231-lausanne.json",
+  "cityCode": 231,
+  "city": "Lausanne",
+  "country": "Switzerland",
+  "countryCode": "CH",
+  "reviewedAt": "2026-10-10",
+  "attempt": 1,
+  "outcome": "complete_bounded_geometry_verified_runtime_held",
+  "registryFound": true,
+  "custodian": "Direction du cadastre et de la géoinformation, État de Vaud; City of Lausanne viewer",
+  "scope": "The official Canton of Vaud viewer and City of Lausanne viewer document cadastral parcel publication. GeoAdmin's public CadastralWebMap identify service returned two Lausanne polygons in a bounded window.",
+  "queries": [
+    {"language": "English", "query": "Lausanne official cadastral map parcel GIS Vaud cadastre", "outcome": "Official Vaud cadastral viewer, City of Lausanne map, and Vaud geoservices pages found.", "urls": ["https://www.vd.ch/territoire-et-construction/cadastre-et-geoinformation/guichets-cartographiques/guichet-cantonal", "https://map.lausanne.ch/", "https://www.geo.vd.ch/"]},
+    {"language": "French", "query": "Lausanne cadastre officiel plan cadastral géoportail parcelles", "outcome": "Official French-language parcel-localisation page and City viewer found; parcel layer and update statements documented.", "urls": ["https://www.vd.ch/territoire-et-construction/cadastre-et-geoinformation/guichets-cartographiques/localisation-par-parcelle", "https://map.lausanne.ch/"]}
+  ],
+  "requestOutcomes": [
+    {"url": "https://www.geo.vd.ch/", "method": "GET", "outcome": "HTTP 200; current JavaScript/configuration retrieved. It identifies Vaud ArcGIS infrastructure and official cadastral viewer configuration."},
+    {"url": "https://agsgc.map.vd.ch/topomaps/default.ashx", "method": "GET", "outcome": "HTTP 200; public viewer bootstrap/config retrieved. No credentials or private token used."},
+    {"url": "https://api3.geo.admin.ch/rest/services/api/MapServer/ch.kantone.cadastralwebmap-farbe?f=pjson", "method": "GET", "outcome": "HTTP 200; layer schema exposed fields including id, number, egris_egrid, ak and identnd."},
+    {"url": "https://api3.geo.admin.ch/rest/services/api/MapServer/identify", "method": "GET", "outcome": "HTTP 200; bounded anonymous point identify at Lausanne map coordinates returned two polygon features in EPSG:2056. Response retained in ignored tmp evidence; safe sample retained separately."},
+    {"url": "https://api3.geo.admin.ch/rest/services/api/MapServer/ch.kantone.cadastralwebmap-farbe/query", "method": "GET", "outcome": "HTTP 400; endpoint does not expose a vector-table query route in this API form. This was not treated as service absence."}
+  ],
+  "schemaAndCrs": {"layer": "ch.kantone.cadastralwebmap-farbe", "sourceCrs": "EPSG:2056", "geometryType": "Polygon", "nativeIdentity": "egris_egrid", "identityEvidence": "The identify response returned egris_egrid values CH698375964586 and CH784783457688 alongside service feature ids 1121681 and 1131127."},
+  "sampleGeoJSON": "lausanne-sample.geojson",
+  "safeFieldAllowlist": ["native parcel identifier (EGRID)", "geometry", "source CRS", "source layer/service identifier", "parcel number only as source metadata"],
+  "excludedFields": ["owner", "titleholder", "address", "contact", "personal", "tax", "account", "private credentials/tokens"],
+  "attemptedRoutes": ["https://www.vd.ch/territoire-et-construction/cadastre-et-geoinformation/guichets-cartographiques/guichet-cantonal", "https://map.lausanne.ch/", "https://www.geo.vd.ch/", "https://api3.geo.admin.ch/rest/services/api/MapServer/ch.kantone.cadastralwebmap-farbe", "https://api3.geo.admin.ch/rest/services/api/MapServer/identify"],
+  "runtimeReadiness": "held",
+  "uncertainty": "Only a small Lausanne window was queried; no citywide extent enumeration was attempted. The exact WUP point was not moved to force a hit. No login, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS exception was used.",
+  "reviewDisposition": "Packet is complete as a research record. Keep runtime integration held until serial review independently qualifies a real adapter and safe EGRID mapping."
+}

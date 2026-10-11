@@ -1,0 +1,45 @@
+{
+  "cityRecord": "city-3733-pathein.json",
+  "cityCode": 3733,
+  "queueRank": 2294,
+  "name": "Pathein",
+  "country": "Myanmar",
+  "countryCode": "MM",
+  "pointLatLon": [16.7837934506663, 94.7378336489749],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH","url":"https://www.ayeyarwadyregion.gov.mm/ignite/contentView/800","outcome":"Official Ayeyarwady Region government Pathein Township information page found; it links a Pathein.pdf township information document. No parcel viewer, API, schema, or geometry was exposed."},
+    {"method":"SEARCH","url":"https://www.ayeyarwadyregion.gov.mm/ignite/page/8","outcome":"Official Ayeyarwady Region government contact page places the regional government at Maharbandula Road, Pathein, and confirms Pathein as the regional administrative seat. This is local-government context, not a parcel endpoint."},
+    {"method":"SEARCH","url":"https://slrd.gov.mm/my/about-history","outcome":"Official Survey Department/SLRD history page states that cadastral survey parties worked in Pathein District beginning in 1879 and that cadastral map and land-record operations were established. This is official custodian and historical cadastral evidence, not a current public map API."},
+    {"method":"SEARCH","url":"https://www.ayeyarwadyregion.gov.mm/ignite/contentView/4086","outcome":"Official regional-government Myanmar-language report dated 2026-08-26, with the dateline Pathein, names the regional Land Records Department director and township-level field-review teams. It evidences active regional land-record administration but returns no parcel feature."},
+    {"method":"SEARCH","url":"https://www.ayeyarwadyregion.gov.mm/ignite/contentView/4076","outcome":"Official regional-government report names the Ayeyarwady regional Land Records Department deputy director in local field coordination. No parcel geometry or public query service is exposed."},
+    {"method":"SEARCH","url":"https://www.patheinuniversity.edu.mm/wp-content/uploads/2020/07/3-Journal.pdf","outcome":"Pathein University publication describes Pathein city and cites the Land Record Department in Pathein Township as the source of its location map. This supports a local records custodian but is not a first-party parcel service."},
+    {"method":"GET","url":"https://slrd.gov.mm/","httpStatus":403,"outcome":"TLS-verified GET returned a Cloudflare challenge (cf-mitigated). No CAPTCHA/Cloudflare bypass was attempted and no configuration or API was recovered."},
+    {"method":"GET","url":"https://www.ayeyarwadyregion.gov.mm/","httpStatus":200,"outcome":"TLS-verified GET returned the public official regional-government HTML shell. Direct page inspection exposed ordinary content and Google Maps embed only; no cadastral viewer or parcel API configuration was present."},
+    {"method":"INSPECTION","url":"https://www.ayeyarwadyregion.gov.mm/","outcome":"Bounded HTML inspection found no parcel, cadastral, GIS, ArcGIS, WMS, WFS, or feature-service endpoint in the public shell. The embedded map is a general Google Maps location map, not parcel data."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "boundedAnonymousResponse": {"requestScope":"Official-page and public-shell inspection only; no safe anonymous parcel ID-plus-geometry endpoint was exposed and no parcel query was invented.","featureCount":null,"geometryRetained":false}
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if later exposed anonymously","polygon geometry if later exposed anonymously","official source service URL","source CRS or requested output CRS","retrieval date"],
+  "unsafeFieldsNotRequested": ["owner","address","contact","titleholder","tax/account","certificate/title","personal data","identity documents"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"A local/state land-record and cadastral custodian is evidenced, but no safe anonymous native parcel ID-plus-geometry response, current schema, CRS, or adapter behavior was obtained. Runtime qualification remains a separate serial review."},
+  "scopeLimits": [
+    "The exact WUP point [16.7837934506663, 94.7378336489749] was preserved in latitude/longitude order; no coordinate shift or parcel-hit forcing was attempted.",
+    "No exact-point query, map-extent query, or parcel geometry request was completed because no public parcel endpoint was exposed. This is not evidence of citywide parcel absence.",
+    "The official SLRD root returned a Cloudflare challenge; no bypass was attempted. The Ayeyarwady Region site was reachable, but its public shell exposed no cadastral service configuration.",
+    "The regional-government and SLRD evidence distinguishes a local/state custodian from general national agency prose; the Pathein University publication is corroborative only and was not treated as a registry API.",
+    "No GeoJSON sample is retained because no unchanged safe native ID-plus-geometry response was available.",
+    "No owner, address, contact, titleholder, tax/account, certificate/title, personal, or identity-document fields were requested or retained.",
+    "Request captures and scratch qualification evidence are under ignored tmp/valhalla-parcel-research/3733-pathein/."
+  ],
+  "uncertainty": "Myanmar cadastral and land-record administration in Pathein/Ayeyarwady is evidenced by official sources, including historical cadastral work in Pathein District and current regional land-record activity. Current public parcel coverage, anonymous viewer/API availability, schema, CRS, stable native identity, geometry licensing, update cadence, and runtime adapter behavior remain unverified. No citywide absence inference is made."
+}

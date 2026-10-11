@@ -1,0 +1,50 @@
+{
+  "cityRecord": "city-7564-okrika.json",
+  "cityCode": 7564,
+  "queueRank": 2007,
+  "city": "Okrika",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "reviewedAt": "2026-10-10T00:00:00Z",
+  "discovery": {
+    "english": "The official Rivers State SGRIV portal identifies the Office of the Surveyor General, Rivers State, but its public page exposes account/login entry points rather than anonymous parcel geometry. The main Rivers State portal returned HTTP 403.",
+    "native": "The Kirike/Igbo-oriented search returned no Okrika/Rivers first-party parcel map or anonymous geometry service; unrelated results were excluded."
+  },
+  "custodian": {
+    "name": "Office of the Surveyor General, Rivers State",
+    "role": "State land administration and survey custodian; public SGRIV portal",
+    "evidenceUrls": ["https://www.sgriv.com/"]
+  },
+  "attemptedRoutes": [
+    {"route": "Rivers State SGRIV public landing page", "url": "https://www.sgriv.com/", "result": "HTTP 200; identifies state custodian and links only to /register and /login; no anonymous map/API/schema/CRS/geometry."},
+    {"route": "Rivers State Government official portal", "url": "https://riversstate.gov.ng/", "result": "HTTP 403; no challenge bypass attempted."},
+    {"route": "Rivers State Ministry of Physical Planning portal", "url": "https://urban.riversstateapps.ng/", "result": "Discovered as an official lead; no bounded parcel request response verified."},
+    {"route": "Federal OSGOF cadastral/legal survey page", "url": "https://osgof.gov.ng/cadastral-legal-surveys/", "result": "HTTP 200; general nationwide cadastral-GIS agency description, not Okrika-specific open data."}
+  ],
+  "fieldPolicy": {
+    "allowlist": ["safe stable native parcel identity if publicly returned", "parcel polygon geometry", "source field names and mapping in metadata only", "CRS/format and request metadata"],
+    "notRequested": ["owner/right-holder", "address/contact", "titleholder/certificate", "tax/account/identity/application data"]
+  },
+  "geometryReview": {
+    "publicGeometryFound": false,
+    "sampleFile": null,
+    "parcelCount": 0,
+    "reason": "No bounded anonymous ID-plus-geometry response was available from the official routes inspected; no polygon is retained."
+  },
+  "scopeLimits": [
+    "Exact WUP point [4.75019979377667, 7.09828670405982] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point hit, map extent miss, HTTP 403, login wall, or absent public endpoint was used as evidence of citywide absence.",
+    "Authentication, CAPTCHA, private tokens, TLS bypass, and protected owner/property queries were not attempted.",
+    "The Rivers State local custodian was distinguished from federal OSGOF general agency prose.",
+    "No raw source-specific attribute set or synthetic identity was retained."
+  ],
+  "qualification": {
+    "registryFound": true,
+    "publicParcelGeometryFound": false,
+    "runtimeReadiness": "held",
+    "serialReviewerRequired": true,
+    "uncertainty": "Current SGRIV viewer/API configuration, endpoint parameters, schema, CRS, native identity, authentication boundary, and Okrika coverage remain unknown."
+  }
+}

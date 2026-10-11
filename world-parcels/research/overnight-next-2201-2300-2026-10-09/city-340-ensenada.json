@@ -1,0 +1,64 @@
+{
+  "cityCode": 340,
+  "queueRank": 2261,
+  "name": "Ensenada",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "iso3": "MEX",
+  "locId": 484,
+  "point": [31.8712779288792, -116.591917883329],
+  "population2025": 258104,
+  "population2025k": 258.104,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ensenada Baja California official cadastral map parcel GIS catastro predial",
+        "result": "First-party discovery found the official Baja California predial page, the Ensenada municipal administration page listing Subdirección de Catastro, and a municipal notice describing IMIP's SIGME cadastral GIS. The official sources establish a local cadastral custodian and parcel-capable GIS, but no public anonymous parcel feature endpoint was exposed.",
+        "actualResultUrls": [
+          "https://bajacalifornia.gob.mx/Tramites_Servicios/Predial",
+          "https://www.ensenada.gob.mx/?page_id=7114",
+          "https://www.ensenada.gob.mx/?p=24923",
+          "https://www.ensenada.gob.mx/?p=28137"
+        ]
+      },
+      {
+        "language": "Spanish (local)",
+        "query": "Ensenada Baja California sitio oficial catastro cartografía predial mapa parcelas",
+        "result": "La búsqueda oficial en español encontró la Subdirección de Catastro del Ayuntamiento, el IMIP y el SIGME. El Ayuntamiento describe capas catastrales hasta la identificación de predios y reporta cartografía de 168,248 predios en 2025; no se obtuvo una respuesta pública anónima acotada con identidad segura y geometría completa.",
+        "actualResultUrls": [
+          "https://www.ensenada.gob.mx/?page_id=7114",
+          "https://www.ensenada.gob.mx/?p=24923",
+          "https://www.ensenada.gob.mx/?p=28137",
+          "https://servicios.ensenada.gob.mx/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "custodian": "XXV Ayuntamiento de Ensenada, Dirección de Administración Urbana, Ecología y Medio Ambiente, Subdirección de Catastro; municipal technical/geographic service by Instituto Metropolitano de Investigación y Planeación (IMIP).",
+    "service": "Sistema de Información Geográfica del Municipio de Ensenada (SIGME) and municipal Catastro services",
+    "viewerUrl": null,
+    "localCustodianEvidence": "The official municipal administration page lists the Subdirección de Catastro and its valuation, property-registration and topography departments. The official IMIP notice says SIGME manages cadastral layers from the municipality polygon through identification of predios and, where applicable, condominium units.",
+    "scope": "Municipal cadastral/GIS coverage is evidenced; no claim is made that a public anonymous API or a city-boundary parcel extract is available. The 2026 municipal notice reports 168,248 predios cartographed in the municipal GIS during 2025.",
+    "nationalOrGeneralAgencyEvidence": "INEGI's Baja California carta catastral and the state law were used only as general reference; they are not treated as the local parcel service."
+  },
+  "parcelEvidence": {
+    "sampleFile": null,
+    "safeNativeIdentity": false,
+    "geometryRetained": false,
+    "reason": "No bounded anonymous public ID-plus-full-polygon response was obtained. The exact WUP point was preserved and not shifted; no exact-point miss, login wall, maintenance page, or unavailable API is treated as citywide absence.",
+    "runtimeReadiness": "held",
+    "qualification": "Not admitted as a runtime parcel adapter; serial review required."
+  },
+  "researchNotes": [
+    "The official municipal pages describe SIGME as a cadastral GIS and identify local Catastro/IMIP responsibility, which supports registryFound=true.",
+    "The municipal online-services portal displayed a maintenance notice and login prompt in accessible search material; no credentials were used.",
+    "Direct curl inspection of the official municipal HTTPS hosts was attempted with normal TLS verification; certificate validation failed locally, so TLS verification was not disabled and no certificate exception was used.",
+    "Only safe administrative, service, coverage, schema and geometry metadata were in scope. Owner, address, contact, titleholder, tax/account, deed, registration and personal fields were not requested.",
+    "This packet records source research only and is not source integration or runtime admission."
+  ]
+}

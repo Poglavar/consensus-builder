@@ -1,0 +1,40 @@
+{
+  "cityCode": 1852,
+  "queueRank": 2186,
+  "name": "Bydgoszcz",
+  "country": "Poland",
+  "countryCode": "PL",
+  "iso3": "POL",
+  "point": [53.1261021859871, 17.997811624784],
+  "population2025": 266908,
+  "population2025k": 266.908,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "kind": "city_parcel_source_research",
+  "schemaVersion": 1,
+  "freshResearch": {
+    "queries": [
+      {"language": "English", "query": "Bydgoszcz official cadastral map parcels geoportal API", "result": "First-party results identified the City of Bydgoszcz geodesy/cadastre procedure page and GUGiK Geoportal EGiB/ULDK documentation. The municipal page states that cadastral materials are available through Geoportal Krajowy and WMS/WFS services for city code 0461.", "actualResultUrls": ["https://um.bydgoszcz.pl/sprawa/204/udostepnienie-materialow-powiatowego-zasobu-geodezyjnego-i-kartograficznego/", "https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/", "https://uldk.gugik.gov.pl/opis.html"]},
+      {"language": "Polish", "query": "Bydgoszcz oficjalna mapa katastralna działki ewidencyjne geoportal WFS", "result": "First-party Polish results identified the official Urząd Miasta Bydgoszczy page for Powiatowy Zasób Geodezyjny i Kartograficzny and the GUGiK EGiB service. The page distinguishes the local municipal custodian from the national Geoportal delivery channel and gives TERYT county/city code 0461.", "actualResultUrls": ["https://um.bydgoszcz.pl/sprawa/204/udostepnienie-materialow-powiatowego-zasobu-geodezyjnego-i-kartograficznego/", "https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/", "https://www.gov.pl/web/gugik/zbiorcza-usluga-wfs-dla-ewidencji-gruntow-i-budynkow-udostepniona-w-modulach-mapowych-serwisu-geoportalgovpl"]}
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official City of Bydgoszcz page evidences the local geodesy/cadastre custodian and states that cadastral materials are available through Geoportal Krajowy and WMS/WFS services for city code 0461. GUGiK provides the public ULDK/EGiB delivery service.",
+  "officialSources": [
+    {"url": "https://um.bydgoszcz.pl/sprawa/204/udostepnienie-materialow-powiatowego-zasobu-geodezyjnego-i-kartograficznego/", "publisher": "Urząd Miasta Bydgoszczy", "observation": "Official local procedure page identifies public cadastral-material access and city code 0461 WMS/WFS routes."},
+    {"url": "https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/", "publisher": "GUGiK Geoportal", "observation": "Official EGiB page documents ULDK and public parcel geometry/identifier delivery through county WFS where available."},
+    {"url": "https://uldk.gugik.gov.pl/opis.html", "publisher": "GUGiK ULDK", "observation": "Official API documentation defines GetParcelByXY, safe identity fields, geometry output, and EPSG:2180/EPSG:4326 behavior."}
+  ],
+  "publicParcelGeometryFound": true,
+  "verifiedSample": true,
+  "parcelGeometryVerified": true,
+  "sourceCandidate": "https://uldk.gugik.gov.pl/",
+  "serviceMetadata": {"service": "GUGiK ULDK GetParcelByXY", "queryCrs": "EPSG:2180", "outputCrs": "EPSG:4326", "nativeIdentity": "046101_1.0128.268/2", "nativeFieldsObserved": ["id", "parcel", "region", "county", "commune", "geom_wkt", "datasource"], "safeIdentityCandidate": "id", "fieldMapping": {"id": "properties.id", "geom_wkt": "geometry"}},
+  "runtimeReadiness": "held_pending_independent_serial_qualification",
+  "runtimeAssessment": {"status": "held", "reason": "A live public source and one safe parcel response are evidenced, but research completion is not adapter admission or independent serial runtime qualification."},
+  "pointBasis": "Immutable WUP queue point retained exactly in latitude/longitude order; no coordinate adjustment was made.",
+  "sampleGeoJSON": "bydgoszcz-parcel-sample.geojson",
+  "sampleFile": "bydgoszcz-parcel-sample.geojson"
+}

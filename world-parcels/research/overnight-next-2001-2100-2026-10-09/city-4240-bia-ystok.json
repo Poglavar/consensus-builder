@@ -1,0 +1,21 @@
+{
+  "cityCode": 4240, "queueRank": 2016, "name": "Białystok", "country": "Poland", "countryCode": "PL", "iso3": "POL",
+  "point": [53.1338242364049, 23.148432356912], "population2025": 288641, "population2025k": 288.641, "populationUnit": "persons", "status": "complete",
+  "checkedAt": "2026-10-10T00:00:00Z",
+  "freshResearch": {"queries": [
+    {"language":"English","query":"Białystok official cadastral parcel map WFS city Poland","result":"Official city WFS metadata and a bounded anonymous parcel response were found at the Białystok municipal WebEWID service.","actualResultUrls":["https://webewid-wms.um.bialystok.pl/iip/ows?service=WFS&request=GetCapabilities","https://bip.bialystok.pl/urzad_miejski/poradnik_interesanta/jak-zalatwic-sprawe-wyszukiwarka-uslug/udostepnianie-mapy-ewidencyjnej-mapy-zasadniczej-oraz-innych-materialow-zasobu-geodezyjnego-i-kartograficznego.html"]},
+    {"language":"Polish","query":"Białystok oficjalna mapa ewidencyjna działki WFS geoportal","result":"Polish first-party results identified the municipal WebEWID WFS, the city cadastral-map procedure, and the public parcel layer; the city service is distinct from general national Geoportal prose.","actualResultUrls":["https://webewid-wms.um.bialystok.pl/iip/ows?service=WFS&request=GetCapabilities","https://bialystok.geoportal2.pl/map/geoportal/wfs.php?SERVICE=WFS&REQUEST=GetCapabilities","https://bip.bialystok.pl/urzad_miejski/poradnik_interesanta/jak-zalatwic-sprawe-wyszukiwarka-uslug/udostepnianie-mapy-ewidencyjnej-mapy-zasadniczej-oraz-innych-materialow-zasobu-geodezyjnego-i-kartograficznego.html"]}
+  ]},
+  "registryFound": true,
+  "registryBasis": "The City of Białystok municipal WebEWID WFS publishes the public cadastral parcel layer ms:dzialki; the BIP procedure identifies the municipal geodesy/cadastral map service. No ownership or title registry was queried.",
+  "registryEvidenceUrls": ["https://webewid-wms.um.bialystok.pl/iip/ows?service=WFS&request=GetCapabilities","https://bip.bialystok.pl/urzad_miejski/poradnik_interesanta/jak-zalatwic-sprawe-wyszukiwarka-uslug/udostepnianie-mapy-ewidencyjnej-mapy-zasadniczej-oraz-innych-materialow-zasobu-geodezyjnego-i-kartograficznego.html"],
+  "source": "Municipal Białystok WebEWID OGC WFS",
+  "sourceIds": ["206101_1.0011.257/6","206101_1.0011.257/3","206101_1.0011.1266/6"],
+  "verifiedSample": true, "publicParcelGeometryFound": true,
+  "verifiedParcelResponse": {"featureCount":3,"sampleFile":"bia-ystok-sample.geojson","queryCrs":"EPSG:2179","nativeLayerCrs":"EPSG:2179","nativeIdentityField":"ms:ID_DZIALKI","fieldMapping":{"properties.id":"ms:ID_DZIALKI","geometry":"ms:geometry/gml:Polygon; coordinates retained in native EPSG:2179 axis order"}},
+  "safeFieldAllowlist": ["stable native parcel identifier ms:ID_DZIALKI","parcel polygon geometry","service metadata","CRS and request metadata"],
+  "unsafeFieldsNotRequested": ["owner/right-holder","address/contact","title/certificate","tax/account/identity/application","raw source attribute sets","land-use or registry-group attributes"],
+  "coverageAssessment": {"claimedScope":"Municipal Białystok cadastral parcel service for the city unit; service metadata exposes the public parcel layer.","verifiedOpenScope":"Anonymous capabilities and one bounded local response verified.","countrywideVerified":false,"citywideGeometryVerified":false},
+  "runtimeReadiness":"held", "runtimeReadinessReason":"Real public municipal WFS and safe local geometry are evidenced; independent serial adapter qualification remains required. This packet is not source integration or admission.",
+  "remainingUncertainty":"The exact WUP point was preserved and not shifted, but the bounded query was not used to prove exact-point containment or citywide completeness. The response is a public cadastral-map view, not legal title/ownership evidence. National Geoportal and county Geoportal2 routes were recorded as discovery context; no login, CAPTCHA bypass, credentials, or unsafe fields were used."
+}

@@ -1,0 +1,62 @@
+{
+  "cityCode": 2736,
+  "queueRank": 2089,
+  "name": "Rancagua",
+  "country": "Chile",
+  "countryCode": "CL",
+  "iso3": "CHL",
+  "point": [-34.1683012609009, -70.735151752138],
+  "population2025": 277848,
+  "population2025k": 277.848,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "attempt": 3,
+  "aliases": ["rancagua"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Rancagua Chile official cadastral parcel map GIS cadastre",
+        "result": "Validation retry only: the retained official Chilean geospatial discovery landing page did not provide Rancagua-specific parcel evidence in the existing artifact set; no new search was performed.",
+        "actualResultUrls": ["https://www.snit.cl/"]
+      },
+      {
+        "language": "Spanish (local)",
+        "query": "Rancagua Chile mapa catastral oficial parcelas catastro GIS",
+        "result": "Validation retry only: the retained official Chilean property-valuation/cadastre discovery page did not provide Rancagua-specific public parcel geometry or a usable anonymous service response in the existing artifact set; no new search was performed.",
+        "actualResultUrls": ["https://www.sii.cl/servicios_online/1048-.html"]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryBasis": "No Rancagua-specific local registry, cadastre, map, procedure, or public parcel service evidence was available to validate in the existing artifact set.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sampleFile": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "safeFieldAllowlist": [
+    "stable native parcel identifier if independently exposed by a public service",
+    "parcel polygon geometry",
+    "source CRS and response-format metadata",
+    "non-personal service/layer metadata"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner or right-holder names",
+    "addresses or contact details",
+    "titleholder or certificate details",
+    "tax, account, identity, or application fields",
+    "assessment, mortgage, restriction, historical, and other source-specific attribute sets"
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Rancagua, Chile cadastral/parcels.",
+    "verifiedOpenScope": "No source-specific scope was available to validate on this retry.",
+    "countrywideVerified": false,
+    "citywideGeometryVerified": false
+  },
+  "runtimeReadiness": "held_serial_qualification_required",
+  "runtimeReadinessReason": "No real local service, anonymous feature response, native identity, geometry, or CRS behavior was available for independent qualification. This packet is not source integration or admission.",
+  "resultCategory": "no_source_evidence_available_on_validation_retry",
+  "remainingUncertainty": "The absence of retained evidence is not evidence of citywide cadastral absence. The exact WUP point was preserved in latitude/longitude order and was not shifted. No credentials, CAPTCHA bypass, private token, owner/address data, or unsafe fields were used."
+}

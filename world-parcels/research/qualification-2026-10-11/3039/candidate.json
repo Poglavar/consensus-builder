@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "city": {
+    "code": "3039",
+    "name": "Escondido",
+    "point": [
+      -117.195352456462,
+      33.1691791253299
+    ]
+  },
+  "descriptor": {
+    "id": "us-ca-escondido-parcels",
+    "name": "City of Escondido assessor-derived parcel layer",
+    "adapter": "arcgis",
+    "endpoint": "https://gis.escondido.gov/server/rest/services/Data/Parcels/FeatureServer/0",
+    "idField": "APN",
+    "idType": "string",
+    "idPattern": "^[A-Za-z0-9 -]{1,10}$",
+    "objectIdField": "OBJECTID",
+    "idPrefix": "US-CA-ESCONDIDO-",
+    "outFields": [
+      "APN",
+      "OBJECTID"
+    ],
+    "pageSize": 2000,
+    "idBatchSize": 80,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "countryCode": "US",
+    "cityIds": [
+      "3039"
+    ],
+    "metricSrid": 32611,
+    "capabilities": {
+      "exactId": true,
+      "bbox": true,
+      "areaEnumeration": true
+    },
+    "scope": "Official City of Escondido assessor-derived parcel layer, including proposed and retired parcels and stacked taxable parcels; no status or geometric exclusions.",
+    "catalogueUrl": "https://gis.escondido.gov/server/rest/services/Data/Parcels/FeatureServer/0",
+    "attribution": "City of Escondido",
+    "licenceNote": "Public anonymous query verified; reuse permission is not established by access alone."
+  },
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Frozen city packet registryAssessment and officialSources identify the City of Escondido official local parcel layer derived from county assessor parcels: https://gis.escondido.gov/server/rest/services/Data/Parcels/FeatureServer/0",
+      "Live FeatureServer and MapServer description states: The City of Escondido's parcel layer is derived from the San Diego County asessor's parcels. This establishes assessor/cadastral purpose and the City's layer scope; see evidence/official-feature-schema.json and evidence/official-map-schema.json.",
+      "Official description keys parcels to Assessor Parcel Number (APN), with temporary placeholder APNs for proposed parcels, and documents retired and stacked taxable parcels. Bounded safe object-ID reads confirm all three frozen sample geometries; no citywide or exact-WUP-point coverage claim."
+    ]
+  },
+  "sourceCandidateSha256": "1f519a10a0ceb1616e98c7a64aa6518cabda7a161004b983c9c879d48b7117a1",
+  "qualificationRecordedSha256": "1f519a10a0ceb1616e98c7a64aa6518cabda7a161004b983c9c879d48b7117a1",
+  "sourceCandidatePath": "qualification/evidence/cities/3039/candidate.json",
+  "originalSeedSha256": "1f519a10a0ceb1616e98c7a64aa6518cabda7a161004b983c9c879d48b7117a1",
+  "originalSeedPath": "qualification/evidence/cities/3039/candidate.json"
+}

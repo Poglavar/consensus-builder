@@ -1,4 +1,4 @@
-// Adapts fixed WFS 1.1/2.0 GeoJSON layers to complete WGS84 parcels, with optional provider pacing.
+// Adapts fixed WFS 1.1/2.0 GeoJSON layers with attribute IDs or verified native feature-ID routes.
 import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import proj4 from 'proj4';
 import { HttpError } from '../utils/helpers.js';
@@ -35,8 +35,17 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
     const idBatchSize = descriptor.idBatchSize ?? 80;
     const idType = descriptor.idType;
     const minRequestIntervalMs = descriptor.minRequestIntervalMs;
-    const identifier = /^[A-Za-z_][A-Za-z0-9_]*$/;
-    if (!id || !idPrefix || !identifier.test(idField) || !['string', 'integer'].includes(idType)
+    const featureIdMode = descriptor.nativeIdMode === 'feature-id';
+    const featureIdParameter = descriptor.featureIdParameter ?? (version === '2.0.0' ? 'resourceId' : 'featureID');
+    // XML NCNames permit Unicode letters, digits and combining marks, excluding CQL operators.
+    const identifier = /^[\p{L}_][\p{L}\p{N}\p{M}_]*$/u;
+    if (!id || !idPrefix || (featureIdMode ? idField !== null || idType !== 'string' || requestProperties !== true
+        || !['resourceId', 'featureID'].includes(featureIdParameter)
+        || (version === '1.1.0' && featureIdParameter !== 'featureID')
+        || !Array.isArray(outFields) || outFields.length !== 0
+        : typeof idField !== 'string' || !identifier.test(idField)) || !['string', 'integer'].includes(idType)
+        || (descriptor.nativeIdMode !== undefined && !featureIdMode)
+        || (!featureIdMode && descriptor.featureIdParameter !== undefined)
         || !['1.1.0', '2.0.0'].includes(version)
         || (responseSrid !== undefined && responseSrid !== 3857)
         || (responseCoordinatePrecision !== undefined && (responseSrid !== 3857
@@ -44,8 +53,8 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
         || (requestProperties !== undefined && typeof requestProperties !== 'boolean')
         || !Number.isSafeInteger(idBatchSize) || idBatchSize < 1 || idBatchSize > 80
         || (minRequestIntervalMs !== undefined && (!Number.isSafeInteger(minRequestIntervalMs) || minRequestIntervalMs < 100 || minRequestIntervalMs > 5000))
-        || !/^[A-Za-z_][A-Za-z0-9_.-]*:[A-Za-z_][A-Za-z0-9_.-]*$/.test(featureType)
-        || !Array.isArray(outFields) || !outFields.includes(idField)
+        || !/^([\p{L}_][\p{L}\p{N}\p{M}_.-]*):([\p{L}_][\p{L}\p{N}\p{M}_.-]*)$/u.test(featureType)
+        || !Array.isArray(outFields) || (!featureIdMode && !outFields.includes(idField))
         || (requestProperties && (typeof descriptor.geometryField !== 'string' || !identifier.test(descriptor.geometryField)
             || outFields.some(field => typeof field !== 'string' || !identifier.test(field))))
         || (descriptor.parcelNumberField && !outFields.includes(descriptor.parcelNumberField))
@@ -56,9 +65,16 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
         throw new Error('Invalid WFS parcel source descriptor.');
     }
     const idPattern = descriptor.idPattern ? new RegExp(descriptor.idPattern) : null;
-    const pageSize = descriptor.pageSize || 1000;
-    const maxFeatures = descriptor.maxFeatures || 10000;
-    const maxBboxKm2 = descriptor.maxBboxKm2 || 25;
+    const pageSize = featureIdMode ? descriptor.pageSize ?? 1000 : descriptor.pageSize || 1000;
+    const maxFeatures = featureIdMode ? descriptor.maxFeatures ?? 10000 : descriptor.maxFeatures || 10000;
+    const maxBboxKm2 = featureIdMode ? descriptor.maxBboxKm2 ?? 25 : descriptor.maxBboxKm2 || 25;
+    const maxResponseBytes = descriptor.maxResponseBytes ?? 8 * 1024 * 1024;
+    if (featureIdMode && (!Number.isSafeInteger(pageSize) || pageSize < 1 || pageSize > 10000
+        || !Number.isSafeInteger(maxFeatures) || maxFeatures < 1 || maxFeatures > 100000
+        || !Number.isFinite(maxBboxKm2) || maxBboxKm2 <= 0
+        || !Number.isSafeInteger(maxResponseBytes) || maxResponseBytes < 1 || maxResponseBytes > 20 * 1024 * 1024)) {
+        throw new Error('Invalid WFS parcel source limits.');
+    }
     // A few GeoServer deployments round GeoJSON to four decimal places. Asking for
     // metres preserves their source precision; transform only an explicitly tagged CRS.
     const toWgs84 = responseSrid === 3857 ? proj4('EPSG:3857', 'EPSG:4326') : null;
@@ -88,6 +104,32 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
     const validExternalId = value => idType === 'integer'
         ? typeof value === 'string' && /^(0|[1-9][0-9]*)$/.test(value) && Number.isSafeInteger(Number(value))
         : validId(value);
+    const routableFeatureId = value => validId(value) && /^[A-Za-z_][A-Za-z0-9_.:-]{0,255}$/.test(value);
+    // GeoTools' fid-<JVM UID> values are generated transport identities, even if a
+    // single server happens to reuse them. They cannot become durable parcel keys.
+    const generatedFeatureId = value => /(?:^|\.)fid--?[0-9a-f]+_[0-9a-f]+_-?[0-9a-f]+$/i.test(value);
+    const unstableIdentity = () => upstreamError('WFS provider has no stable native feature identity.', 502, 'parcel-source-unstable-identity');
+
+    async function readPayload(response) {
+        if (!featureIdMode) return response.json();
+        const reader = response.body?.getReader();
+        if (!reader) throw upstreamError('WFS provider omitted its response body.');
+        let bytes = 0;
+        const chunks = [];
+        try {
+            for (;;) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                bytes += value.byteLength;
+                if (bytes > maxResponseBytes) throw upstreamError('WFS provider exceeded the response byte limit.');
+                chunks.push(value);
+            }
+            return JSON.parse(Buffer.concat(chunks).toString('utf8'));
+        } finally {
+            await reader.cancel().catch(() => {});
+            reader.releaseLock();
+        }
+    }
 
     async function query(params) {
         const byId = new Map();
@@ -98,10 +140,13 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
             const search = new URLSearchParams({
                 service: 'WFS', version, request: 'GetFeature',
                 ...(version === '1.1.0' ? { typeName: featureType } : { typeNames: featureType }),
-                outputFormat: 'application/json', srsName: responseSrid === 3857 ? 'EPSG:3857' : 'CRS:84', sortBy: idField,
+                outputFormat: 'application/json', srsName: responseSrid === 3857 ? 'EPSG:3857' : 'CRS:84',
+                ...(!featureIdMode ? { sortBy: idField } : {}),
                 ...(requestProperties ? { propertyName: [...new Set([descriptor.geometryField, ...outFields])].join(',') } : {}),
                 ...(version === '1.1.0' ? { maxFeatures: String(pageSize) } : { count: String(pageSize) }),
-                startIndex: String(offset), ...params
+                // GeoServer requests a natural primary-key sort even for startIndex=0.
+                // A feature-ID-only layer has no attribute to invent for that sort.
+                ...(!featureIdMode || offset > 0 ? { startIndex: String(offset) } : {}), ...params
             });
             let payload;
             try {
@@ -109,9 +154,11 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
                     // Start the timeout after any provider-specific rate-limit wait.
                     const signal = AbortSignal.timeout(15000);
                     try {
-                        const response = await fetchImpl(`${endpoint}?${search}`, { signal, redirect: 'error', headers: { Accept: 'application/geo+json, application/json' } });
+                        const response = await fetchImpl(`${endpoint}?${search}`, { signal, redirect: 'error',
+                            ...(featureIdMode ? { cache: 'no-store' } : {}),
+                            headers: { Accept: 'application/geo+json, application/json' } });
                         if (!response.ok) throw providerHttpError(response);
-                        return await response.json();
+                        return await readPayload(response);
                     } catch (error) {
                         if (signal.aborted || error.name === 'TimeoutError' || error.name === 'AbortError') throw upstreamError('Parcel provider timed out.', 504);
                         if (error.status) throw error;
@@ -145,11 +192,13 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
                 if (hasFixedAttributeFilter && !attributeFilter.matches(feature?.properties || {})) {
                     throw upstreamError('WFS parcel provider returned a feature outside its configured attribute filter.');
                 }
-                const nativeId = feature?.properties?.[idField];
-                if (!validId(nativeId)) throw upstreamError('Parcel provider returned a missing or invalid native parcel ID.');
+                const nativeId = featureIdMode ? feature?.id : feature?.properties?.[idField];
+                if (featureIdMode && typeof nativeId === 'string' && generatedFeatureId(nativeId)) throw unstableIdentity();
+                if (featureIdMode ? !routableFeatureId(nativeId) : !validId(nativeId)) throw upstreamError('Parcel provider returned a missing or invalid native parcel ID.');
                 const geometry = wgs84Geometry(feature.geometry);
                 if (!validateGeometry(geometry)) throw upstreamError('Parcel provider returned invalid polygon geometry.');
-                // WFS feature IDs are pagination evidence only; durable cadastral IDs come from idField.
+                // Attribute mode uses feature IDs only as pagination evidence. Feature-ID
+                // mode also requires an independent native-ID round trip before bounds publish.
                 if (typeof feature.id !== 'string' || !feature.id || seenObjects.has(feature.id)) throw upstreamError('WFS parcel provider repeated or omitted a feature ID.');
                 seenObjects.add(feature.id);
                 const canonical = canonicalParcelFeature(descriptor, { ...feature, geometry }, nativeId);
@@ -172,7 +221,22 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
             const spatial = `BBOX(${descriptor.geometryField},${west},${south},${east},${north},'CRS:84')`;
             return query({ cql_filter: `(${attributeFilter.where}) AND (${spatial})` });
         }
-        return query({ bbox: `${bbox.join(',')},CRS:84` });
+        const result = query({ bbox: `${bbox.join(',')},CRS:84` });
+        return featureIdMode ? verifyFeatureIds(result) : result;
+    }
+
+    async function verifyFeatureIds(resultPromise) {
+        const result = await resultPromise;
+        // No schema attribute exists to sort on. Check every enumerated feature
+        // through the official ID route, without trusting page position or geometry IDs.
+        for (let offset = 0; offset < result.features.length; offset += idBatchSize) {
+            const batch = result.features.slice(offset, offset + idBatchSize);
+            const exact = await queryIds(batch.map(feature => feature.id));
+            const byId = new Map(exact.features.map(feature => [feature.id, feature]));
+            if (exact.absentIds.length || batch.some(feature => !byId.has(feature.id)
+                || JSON.stringify(feature.geometry) !== JSON.stringify(byId.get(feature.id).geometry))) throw unstableIdentity();
+        }
+        return result;
     }
 
     async function queryIds(ids) {
@@ -181,21 +245,30 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
         const native = unique.map(value => {
             if (typeof value !== 'string' || !value.startsWith(idPrefix)) throw new HttpError(400, 'Parcel ID belongs to a different source.');
             const tail = value.slice(idPrefix.length);
-            if (!validExternalId(tail)) throw new HttpError(400, 'Invalid parcel ID.');
+            if (featureIdMode ? !routableFeatureId(tail) : !validExternalId(tail)) throw new HttpError(400, 'Invalid parcel ID.');
+            // A vanished generated ID is not proof of parcel absence. Reject it even
+            // when the provider would answer the official route with an empty result.
+            if (featureIdMode && generatedFeatureId(tail)) throw unstableIdentity();
+            if (featureIdMode) return tail;
             if (idType === 'integer') {
                 return tail;
             }
             return `'${tail.replaceAll("'", "''")}'`;
         });
-        // GeoTools treats bare ID IN (...) as feature-ID syntax, not the attribute
-        // called "id". Quote that reserved identifier to query the published row key.
-        const nativeField = /^id$/i.test(idField) ? `"${idField}"` : idField;
         const features = [];
         for (let offset = 0; offset < native.length; offset += idBatchSize) {
             const batchIds = unique.slice(offset, offset + idBatchSize);
-            const idFilter = `${nativeField} IN (${native.slice(offset, offset + idBatchSize).join(',')})`;
-            const filter = hasFixedAttributeFilter ? `(${attributeFilter.where}) AND (${idFilter})` : idFilter;
-            const result = await query({ cql_filter: filter });
+            const batch = native.slice(offset, offset + idBatchSize).join(',');
+            let params;
+            if (featureIdMode) params = { [featureIdParameter]: batch };
+            else {
+                // GeoTools treats bare ID IN (...) as feature-ID syntax, not the attribute
+                // called "id". Quote that reserved identifier to query the published row key.
+                const nativeField = /^id$/i.test(idField) ? `"${idField}"` : idField;
+                const idFilter = `${nativeField} IN (${batch})`;
+                params = { cql_filter: hasFixedAttributeFilter ? `(${attributeFilter.where}) AND (${idFilter})` : idFilter };
+            }
+            const result = await query(params);
             if (result.features.some(feature => !batchIds.includes(feature.id))) throw upstreamError('Parcel ID query returned unexpected parcels.');
             features.push(...result.features);
         }

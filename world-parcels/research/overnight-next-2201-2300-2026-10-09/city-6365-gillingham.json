@@ -1,0 +1,105 @@
+{
+  "cityCode": 6365,
+  "queueRank": 2256,
+  "name": "Gillingham",
+  "country": "United Kingdom",
+  "countryCode": "GB",
+  "iso3": "GBR",
+  "point": [51.3717534761445, 0.53998883337219],
+  "population2025": 258422,
+  "population2025k": 258.422,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "checkedAt": "2026-10-11",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gillingham Kent official cadastral parcel map GIS Medway land parcels HM Land Registry INSPIRE",
+        "result": "Search identified HM Land Registry INSPIRE Index Polygons guidance and the current Use land and property data download page, which lists a Medway Council GML download; it also identified Medway Council's public map and land/property information pages.",
+        "actualResultUrls": [
+          "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data",
+          "https://use-land-property-data.service.gov.uk/datasets/inspire",
+          "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+          "https://medwaymaps.medway.gov.uk/SISWebMap9.0.2533.0/Map.aspx?MapName=MMS",
+          "https://www.medway.gov.uk/info/200133/planning/606/council_owned_property_and_land"
+        ]
+      },
+      {
+        "language": "English (UK local/native-language attempt)",
+        "query": "Gillingham Kent official land parcel map GIS cadastral Medway",
+        "result": "Search identified Medway Council's Gillingham-specific public-rights-of-way map/document and the Medway public map, but these are not verified cadastral parcel APIs. The HM Land Registry INSPIRE service remained the only verified national parcel source candidate.",
+        "actualResultUrls": [
+          "https://www.medway.gov.uk/info/200764/public_rights_of_way/522/legal_responsibilities_for_our_public_rights_of_way_prows",
+          "https://www.medway.gov.uk/downloads/file/8813/tq76ne67_gillingham",
+          "https://medwaymaps.medway.gov.uk/SISWebMap9.0.2533.0/Map.aspx?MapName=MMS",
+          "https://use-land-property-data.service.gov.uk/datasets/inspire"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": {
+    "custodian": "HM Land Registry (national agency), not a Gillingham or Medway local registry custodian.",
+    "urls": [
+      "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data",
+      "https://use-land-property-data.service.gov.uk/datasets/inspire"
+    ],
+    "observation": "Official guidance states that INSPIRE Index Polygons cover freehold registered property in England and Wales, provide indicative polygon extents, and use a Land Registry-INSPIRE ID related to a registered title. The current download page lists polygons by local authority, including Medway Council. This establishes a national source candidate, not a city-specific registry response or legal title boundary."
+  },
+  "source": {
+    "name": "HM Land Registry INSPIRE Index Polygons",
+    "publisher": "HM Land Registry",
+    "url": "https://use-land-property-data.service.gov.uk/datasets/inspire",
+    "nativeIdentity": "Land Registry-INSPIRE ID",
+    "safeFieldAllowlist": ["Land Registry-INSPIRE ID", "geometry"],
+    "nativeFieldsObservedOrDocumented": ["Land Registry-INSPIRE ID", "geometry"],
+    "fieldMapping": {"id": "Land Registry-INSPIRE ID", "geometry": "INSPIRE polygon geometry"},
+    "compositeKeyProvenance": null,
+    "scope": "England and Wales registered freehold property subset; monthly local-authority GML downloads; indicative extents only"
+  },
+  "requests": [
+    {
+      "method": "GET",
+      "url": "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "outcome": "Official HM Land Registry guidance loaded. It documents the dataset and GML access but does not itself return Gillingham geometry."
+    },
+    {
+      "method": "GET",
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+      "httpStatus": 302,
+      "outcome": "Repeated redirect loop in the anonymous request environment; no GML bytes or parcel records retained. This is an access failure, not evidence of absence."
+    },
+    {
+      "method": "GET",
+      "url": "https://medwaymaps.medway.gov.uk/SISWebMap9.0.2533.0/Map.aspx?MapName=MMS",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "outcome": "Official Medway Cadcorp map UI loaded. Its current HTML references the public Cadcorp webmap/proxy resources, but no bounded anonymous parcel ID+geometry response or parcel layer schema was exposed by the inspected UI/config."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.medway.gov.uk/info/200133/planning/606/council_owned_property_and_land",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "outcome": "Official Medway page states council land is maintained in an asset database using GIS and Ordnance Survey maps and directs searches for non-council property to Land Registry; it does not provide a public parcel geometry endpoint."
+    }
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "National England-and-Wales HM Land Registry INSPIRE freehold subset, distributed by local authority; not a complete cadastre and not a legal title plan.",
+    "verifiedOpenScope": "No Gillingham/Medway polygon response was retrieved in this attempt.",
+    "citywideCoverage": "Unknown",
+    "limits": ["Download access was blocked by redirect loop", "Medway viewer inspection did not produce a queryable parcel response", "Exact WUP point was not shifted and was not used as an absence test"]
+  },
+  "runtimeReadiness": "held_pending_independent_serial_qualification",
+  "resultCategory": "official_national_parcel_source_candidate_city_geometry_not_retrieved",
+  "uncertainty": "INSPIRE polygons are indicative extents of registered freehold property; they do not establish the extent of a title, complete coverage, or legal boundaries. No sample is retained because no safe native ID plus unchanged geometry response was obtained.",
+  "aliases": ["gillingham"]
+}

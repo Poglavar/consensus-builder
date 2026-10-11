@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-1429-matara.json",
+  "purpose": "Document first-party Matara/Sri Lanka cadastral-service discovery and bounded anonymous access attempts.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Sri Lanka Survey Department cadastral/LIS custody and Registrar General's Department Matara registry coverage are evidenced. The current public NSDI Parcel Fabrics layer was inspected, but its advertised extent excludes the unchanged Matara WUP point and the bounded anonymous query returned zero features. Survey Department SLCadastre and KML routes returned HTTP 406. No parcel polygon was retained; runtime remains held.",
+  "registryAssessment": "National cadastral custody is evidenced by Survey Department cadastral-survey and LIS pages. Matara is explicitly listed on the official RGD e-Land land-registry page. This establishes a registry/cadastre custodian, not a verified Matara-local public vector endpoint.",
+  "officialPrimarySources": [
+    {"url": "https://www.survey.gov.lk/sdweb/pages_service_land_info.php?id=6e1880f44d8da29c58503d0342b63fb78f5b976a&l=s", "observation": "Official Survey Department cadastral-survey page describes cadastral maps, parcel-based LIS, and Bimsaviya sources."},
+    {"url": "https://www.survey.gov.lk/sdweb/pages_service_land_info.php?id=817122c8f9f9958a8a7688733ed95c9c58fcb688&l=s", "observation": "Official Survey Department LIS page describes national parcel information and public parcel visualization/KML capabilities."},
+    {"url": "https://www.rgd.gov.lk/web/index.php/en/e-services/eland", "observation": "Official Registrar General's Department e-Land page includes Matara among land-registry locations."},
+    {"url": "https://www.nsdi.gov.lk/planning-cadastre", "observation": "Official Sri Lanka NSDI page publishes the Planning Cadastre WMS/ArcGIS resource."},
+    {"url": "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer/2?f=pjson", "observation": "Official ArcGIS layer metadata: Parcel Fabrics polygon layer, EPSG:4326, candidate native fields, and extent north of Matara."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Matara Sri Lanka official cadastral parcel map land registry GIS", "result": "Official Survey Department, RGD, NSDI, SLCadastre, and Survey Department KML references found; no Matara geometry response verified.", "resultUrls": ["https://www.survey.gov.lk/sdweb/pages_service_land_info.php?id=6e1880f44d8da29c58503d0342b63fb78f5b976a&l=s", "https://lis.survey.gov.lk/rgd/", "https://www.rgd.gov.lk/web/index.php/en/e-services/eland", "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer/2?f=pjson"]},
+    {"language": "Sinhala", "query": "මාතර ශ්‍රී ලංකා නිල කැඩැස්තර පාර්සල් සිතියම ඉඩම් ලියාපදිංචි GIS", "result": "Official Sinhala cadastral/title-settlement sources and Matara District gazette references found; no public Matara parcel geometry response verified.", "resultUrls": ["https://www.documents.gov.lk/view/extra-gazettes/2025/1/2417-40_E.pdf", "https://survey.gov.lk/sdweb/pdf/surveydocuments/DSR_sinhala/DSR%20Chapter%2021.pdf"]}
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "A small envelope around the unchanged WUP point was sent to the public NSDI Parcel Fabrics query; it returned zero features because the layer's advertised extent begins at latitude 6.716161691000025. No absence inference was made.",
+    "requestEvidence": [
+      {"url": "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer/2?f=pjson", "method": "GET", "httpStatus": 200, "result": "Schema and extent available; Matara point outside advertised extent."},
+      {"url": "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer/2/query", "method": "GET", "httpStatus": 200, "result": "Bounded anonymous query around [5.9576274962562, 80.5108105226058] returned empty FeatureCollection."},
+      {"url": "https://lis.survey.gov.lk/rgd/", "method": "GET", "httpStatus": 406, "result": "Security-layer block; no TLS exception or bypass."},
+      {"url": "https://it.survey.gov.lk/nsdi/lis/kml_service_tmp.php", "method": "GET", "httpStatus": 406, "result": "Security-layer block; search result mentioned Cadastre(Matara), but no KML fetched."}
+    ]
+  },
+  "fieldMapping": {
+    "nativeIdentityCandidates": ["parcel_id", "parcel_er", "parcel_st", "sheet_id", "lot_no", "plan_no", "objectid"],
+    "geometryLayer": "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer/2",
+    "mappingNote": "Candidates are from layer metadata only. No feature identity or geometry was promoted."
+  },
+  "crs": {"declared": "EPSG:4326", "inspectionNote": "NSDI layer sourceSpatialReference and extent metadata advertise EPSG:4326."},
+  "coverageAssessment": {"claimedScope": "Sri Lanka national cadastral/LIS and NSDI Planning Cadastre services.", "verifiedOpenScope": "Official custody and schema metadata; no Matara geometry; NSDI layer extent miss.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "safeFieldAllowlist": ["safe public native parcel/source ID if independently qualified", "geometry", "declared CRS", "non-sensitive layer/schema metadata"],
+  "remainingUncertainty": "A later TLS-valid or WAF-allowed Survey Department route may expose Matara cadastral polygons or KML. The current attempt does not establish absence, completeness, or an adapter-ready source. No unsafe property data was requested or retained."
+}

@@ -1,0 +1,33 @@
+{
+  "cityRecord": "city-7392-ponorogo.json",
+  "cityCode": 7392,
+  "queueRank": 2202,
+  "name": "Ponorogo",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "pointLatLon": [-7.86986453974811, 111.458146468309],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method": "GET", "url": "https://geoportal.ponorogo.go.id/main/", "httpStatus": 200, "outcome": "Official JavaScript portal loaded; configuration was inspected for public service routes."},
+    {"method": "GET", "url": "https://geoportal.ponorogo.go.id/api/site-settings/public", "httpStatus": 200, "outcome": "Returned official portal metadata naming Ponorogo local-government geospatial custodian and coverage."},
+    {"method": "GET", "url": "https://geoportal.ponorogo.go.id/csw/?service=CSW&request=GetCapabilities", "httpStatus": 200, "outcome": "Returned pycsw capabilities; service provider is Dinas Komunikasi Informatika dan Statistik, Ponorogo."},
+    {"method": "GET", "url": "https://geoportal.ponorogo.go.id/csw/?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&elementSetName=full&resultType=results&maxRecords=100&outputSchema=http://www.opengis.net/cat/csw/2.0.2&outputFormat=application/xml", "httpStatus": 200, "outcome": "Returned three named records: unique dataset identifier, RTRW spatial pattern, and transport infrastructure/network records; no cadastral parcel record was identified."},
+    {"method": "GET", "url": "https://geoportal.ponorogo.go.id/geoserver/wms?service=WMS&request=GetCapabilities", "httpStatus": 403, "outcome": "GeoServer capabilities route was forbidden at the public host; this is an access result, not evidence of absent layers."},
+    {"method": "GET", "url": "https://atlas.atrbpn.go.id/geonode/api/v2/resources?format=json&page_size=1000", "httpStatus": 200, "outcome": "Official national catalog returned seven public datasets; inspected metadata did not include a Ponorogo cadastral parcel dataset."},
+    {"method": "GET", "url": "https://penataanruang.ponorogo.go.id/", "httpStatus": 200, "outcome": "Official local spatial-planning viewer loaded and exposed administrative/RTRW layers, not cadastral parcels."}
+  ],
+  "schemaAndCrs": {
+    "localCatalog": "OGC CSW 2.0.2/3.0.0 capabilities; no parcel feature schema returned.",
+    "geometryCrs": null,
+    "nativeIdentity": null
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if independently verified", "polygon geometry", "source service URL", "CRS", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "No bounded anonymous parcel ID+geometry response was verified."},
+  "scopeLimits": ["A single WUP point is not a citywide coverage test.", "HTTP 403 and catalog omission do not prove service or citywide absence.", "The national ATR/BPN catalog is general agency evidence; local registry/custodian evidence is limited to Geoportal Palapa metadata and CSW."],
+  "uncertainty": "Public cadastral access for Ponorogo remains unresolved; packet records observed evidence only and does not constitute source integration or admission."
+}

@@ -1,0 +1,26 @@
+{
+  "taskId": "city:5091",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-5091-vinh-long.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/vinh-long-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-10T21:16:02Z",
+  "reason": "Local registry custody is documented, but no anonymous native-ID parcel polygon response or adapter qualification is evidenced. Portal and access limitations leave open geometry availability unresolved.",
+  "checks": {
+    "immutableQueueIdentity": true,
+    "bilingualExecutedSearchesRecorded": true,
+    "retainedFullPolygonCount": 0,
+    "safeSampleAttributes": true,
+    "independentLiveAdapterQualification": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "fullScopeMetricGeosAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "admitted": false,
+    "accessNote": "The cached VBDLIS page is an application shell; the cached provincial home request is 403. Neither proves citywide parcel absence."
+  }
+}

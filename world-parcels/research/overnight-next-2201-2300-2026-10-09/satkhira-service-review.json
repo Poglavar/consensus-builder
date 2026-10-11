@@ -1,0 +1,66 @@
+{
+  "cityRecord": "city-5537-satkhira.json",
+  "cityCode": 5537,
+  "queueRank": 2285,
+  "city": "Satkhira",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "service": {
+    "name": "Bangladesh DLRS / Ministry of Land land-map and mouza-map services",
+    "operator": "Department of Land Records and Surveys (DLRS), Ministry of Land, Government of Bangladesh",
+    "viewer": "https://map.land.gov.bd/",
+    "localCustodianEvidence": "The official DLRS map viewer provides division, district, upazila/thana, mouza, sheet and plot selectors; DLRS instructions state that final mouza maps are supplied through উপজেলা settlement publication camps and district record rooms. Satkhira-specific official municipal and district-hosted map documents were also found.",
+    "scope": "National survey/mouza-map service with administrative and survey-unit selection; the evidence does not establish a citywide parcel inventory for the WUP Satkhira point."
+  },
+  "attempts": [
+    {
+      "request": "GET https://map.land.gov.bd/",
+      "outcome": "HTTP 200; current HTML and JavaScript loaded.",
+      "evidence": "The current page identifies the land-map viewer and exposes selectors for division, district, upazila/thana, mouza, sheet and plot."
+    },
+    {
+      "request": "GET https://map.land.gov.bd/assets/js/main.js",
+      "outcome": "HTTP 200; current viewer configuration inspected.",
+      "evidence": "JavaScript config points to http://gis.land.gov.bd/geoserver/ and defines WMS layers including wsDMMS:mouza; legacy search code points to the wsDMMS WFS global_search route."
+    },
+    {
+      "request": "GET https://gis.land.gov.bd/geoserver/wms?service=WMS&request=GetCapabilities",
+      "outcome": "HTTP 503 Service Unavailable.",
+      "evidence": "Government-hosted endpoint unavailable at request time; no TLS exception or credentialed route used."
+    },
+    {
+      "request": "GET http://geo.iwmbd.com:8080/geoserver/wsDMMS/ows?service=WFS&version=1.0.0&request=GetCapabilities",
+      "outcome": "HTTP 200; capabilities returned.",
+      "evidence": "Capabilities exposed EPSG:4326/404000 layers including global_search and boundary layers, plus a small set of parcel-like layers for other areas; no Satkhira-specific parcel layer was listed."
+    },
+    {
+      "request": "GET bounded WFS GetFeature for wsDMMS:global_search and wsDMMS:gis_boundary_upazila around bbox 89.074,22.716,89.076,22.718, EPSG:4326, maxFeatures=10, outputFormat=application/json",
+      "outcome": "Both requests returned a GeoServer ServiceException: PostgreSQL pg_hba.conf rejected the anonymous host; no feature response or geometry was returned.",
+      "evidence": "The failure is an upstream database-access error, not a zero-hit result."
+    }
+  ],
+  "schemaAndCrs": {
+    "nativeFieldsObserved": ["label", "origin", "features"],
+    "fieldMapping": "Viewer search code uses label/origin and may unwrap nested features; no safe parcel feature schema or stable parcel identity was returned.",
+    "crs": "Capabilities declare EPSG:4326 for some layers and EPSG:404000 for global_search/boundaries; no Satkhira parcel layer CRS was available.",
+    "compositeKeyProvenance": "No parcel composite key was observed. Administrative selector values, if later obtained, must not be treated as parcel identity."
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if independently verified", "geometry", "source URL", "viewer administrative codes", "native CRS metadata", "request outcome"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax", "account", "personal", "registration or deed details"],
+  "sample": {
+    "retained": false,
+    "reason": "No safe anonymous Satkhira parcel ID plus full polygon was returned; no GeoJSON was created."
+  },
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "Official cadastral/mouza-map services are evidenced, but no bounded anonymous Satkhira parcel ID-plus-geometry response was verified."
+  },
+  "uncertainty": [
+    "The exact WUP point is preserved as [22.7170089292418, 89.0751014721903] in latitude/longitude order and was not shifted to force a parcel hit.",
+    "The WFS database rejection and the absence of a Satkhira-specific layer in capabilities do not establish citywide parcel absence.",
+    "Official map PDFs and map-purchase routes evidence cadastral/map custody, not an open machine-readable parcel API or runtime adapter."
+  ]
+}

@@ -31,6 +31,7 @@ import { verifyPreparation, isConstructedCorridor, PREPARED_TABLE, PREPARED_INSE
 import { recomputeCorridorStats } from './road-corridor.js';
 import { validateReparcellizationShares } from './reparcellization.js';
 import { attachProposalFloorModels } from '../buildings/floor-models.js';
+import { resolveChainMirror } from '../proposals/chain-mirror.js';
 
 const MAX_PROPOSAL_ID_LENGTH = 255;
 const MAX_CITY_LENGTH = 100;
@@ -502,6 +503,9 @@ export function precheckProposalCreate(req) {
     if (!body || typeof body !== 'object' || Array.isArray(body) || !req.validatedBody) {
         return fail('Proposal body must be a JSON object.');
     }
+    if (!req.chainMirror && (body.onchain || body.onchainData || body.nft || body.chainMirror)) {
+        return fail('Minted proposals must be mirrored from their chain location using POST /proposals/mirror.', 'chain-mirror-required');
+    }
     const legacyDeclaration = findLegacyCadastreDeclaration(body);
     if (legacyDeclaration) {
         return fail(`${legacyDeclaration.path} is retired. Send the proposal's land once in cadastreParcelIds.`);
@@ -517,6 +521,9 @@ export function precheckProposalCreate(req) {
     const explicitProposalId = validated.proposalId ?? validated.id ?? validated.proposal_id ?? null;
     if (isReservedNumericProposalId(explicitProposalId)) {
         return fail('proposalId must not be purely numeric: numeric ids are the server\'s row ids.');
+    }
+    if (!req.chainMirror && /^chain_/i.test(String(explicitProposalId || ''))) {
+        return fail('The chain_ proposal ID namespace is reserved for verified chain mirrors.', 'chain-mirror-required');
     }
     const type = validated.type ?? null;
     if (!type) return fail('type is required.');
@@ -663,13 +670,13 @@ export function createProposalParcelPrecheck(pool) {
 // isOwnStoreImageUrl) — screenshotUrl/screenshot_url and onchain(Data).imageUrl alike, since the
 // lists and the serializer fall back from one to the other. The paid route gets the same
 // thumbnail rule (a payment buys a row, not the right to hotlink into everyone's list).
-function dropUnprovableClaims(proposal, { paid }) {
+function dropUnprovableClaims(proposal, { paid, chainMirror = false }) {
     const dropped = [];
     if (!paid && proposal.agent !== undefined) {
         delete proposal.agent;
         dropped.push('agent');
     }
-    if (!paid && isReservedAuthorIdentity(proposal.author)) {
+    if (!paid && !chainMirror && isReservedAuthorIdentity(proposal.author)) {
         delete proposal.author;
         dropped.push('author');
     }
@@ -709,7 +716,7 @@ export function createProposalCreateHandler(pool) {
             const { validated, type, cadastreParcelIds, ownershipFlow } = precheck.value;
             const proposal = stripLocalProposalState(req.body);
             const paid = Boolean(req.x402Payment);
-            const droppedClaims = dropUnprovableClaims(proposal, { paid });
+            const droppedClaims = dropUnprovableClaims(proposal, { paid, chainMirror: Boolean(req.chainMirror) });
 
             // The city the site was placed in, not necessarily the one the request named (a Split
             // site published from Zagreb's view is Split's); stored in the record's own data too.
@@ -776,7 +783,7 @@ export function createProposalCreateHandler(pool) {
             // Corridor acquisition stats were scraped from the client's DOM and trusted. Recompute
             // them from PostGIS and overwrite the client copy (best-effort + Zagreb-only inside;
             // returns null on any failure, so a bad recompute never blocks proposal creation).
-            if (roadProposal) {
+            if (roadProposal && !req.chainMirror) {
                 const serverStats = await recomputeCorridorStats(pool, proposal);
                 if (serverStats) {
                     proposal.ownershipAndAcquisitionStats = serverStats;
@@ -790,7 +797,7 @@ export function createProposalCreateHandler(pool) {
             // Reparcellization land shares are recomputed from the stored child geometry (percents
             // must match the polygons, sum to ~100). The geometry-truth overwrites the client numbers
             // and validated:false flags a mismatch. Soft: a bad plan is still stored, just marked.
-            if (reparcellization) {
+            if (reparcellization && !req.chainMirror) {
                 const validatedReparcellization = validateReparcellizationShares(reparcellization);
                 if (validatedReparcellization) {
                     reparcellization = validatedReparcellization;
@@ -810,11 +817,14 @@ export function createProposalCreateHandler(pool) {
                 // The prepared artifact this record is (projections.md §3); the artifact itself is
                 // stored beside the row, in the same statement.
                 ...(bound.prepared ? { preparation: { id: bound.prepared.preparationId, digest: bound.prepared.digest, preparedAt: bound.prepared.preparedAt } } : {}),
+                // Exact minted content survives beside the server's receipt time and lifecycle.
+                // It is populated only by resolveChainMirror, never by a request body.
+                ...(req.chainMirror ? { chainMirror: req.chainMirror } : {}),
                 createdAt: createdAt.toISOString(),
                 ...(authoredAt ? { authoredAt } : {})
             });
             if (!authoredAt) delete proposalData.authoredAt;
-            delete proposalData.toleranceM;
+            if (!req.chainMirror) delete proposalData.toleranceM;
             if (!proposalData.site) delete proposalData.site;
             // A prepared corridor's land is the artifact's polygon; the browser's own cached ring of
             // its preview (latLngPairs) would be a second, stale copy of it.
@@ -822,7 +832,8 @@ export function createProposalCreateHandler(pool) {
             if (droppedClaims.length) {
                 console.warn(`[POST proposals ${proposalId}] dropped unprovable client claims: ${droppedClaims.join(', ')}`);
             }
-            const editToken = newEditToken();
+            // Anyone may mirror public content; doing so grants no right to rename that content.
+            const editToken = req.chainMirror ? { hash: null, token: null } : newEditToken();
             const storedRoadProposal = proposalData.roadProposal ?? null;
             const storedBuildingProposal = proposalData.buildingProposal ?? null;
             const storedStructureProposal = proposalData.structureProposal ?? null;
@@ -985,13 +996,17 @@ export function createProposalCreateHandler(pool) {
                 if (conflictingProposalId) {
                     try {
                         const existingSql = `
-                            SELECT id, proposal_id
+                            SELECT id, proposal_id, proposal_data->'chainMirror'->'ref' AS chain_ref
                             FROM proposal
                             WHERE proposal_id = $1
                             LIMIT 1
                         `;
                         const existingResult = await pool.query(existingSql, [conflictingProposalId]);
                         if (existingResult.rows.length > 0) {
+                            if (req.chainMirror && !['chainType', 'chainId', 'contract', 'tokenId'].every(
+                                key => existingResult.rows[0].chain_ref?.[key] === req.chainMirror.ref[key])) {
+                                return res.status(409).json({ code: 'chain-mirror-conflict', error: 'The existing record is not the requested verified chain mirror.' });
+                            }
                             return res.status(409).json({
                                 error: 'Proposal with this ID already exists',
                                 id: existingResult.rows[0].id,
@@ -1027,7 +1042,7 @@ export const EFFECTIVE_STATUS_SQL = `
         ELSE 'Active'
     END`;
 
-export function setupProposalsRoute(app, pool) {
+export function setupProposalsRoute(app, pool, mirrorOptions = {}) {
 
     // The complete public proposal representation. The single and batch endpoints deliberately
     // share this list and serializeProposalRow so a plan does not receive a thinner record than a
@@ -1178,6 +1193,7 @@ export function setupProposalsRoute(app, pool) {
     };
 
     app.post('/proposals', proposalCreateBodyValidator, createProposalCreateHandler(pool));
+    app.post('/proposals/mirror', resolveChainMirror(mirrorOptions), proposalCreateBodyValidator, createProposalCreateHandler(pool));
 
     app.get('/proposals/count', async (req, res) => {
         try {

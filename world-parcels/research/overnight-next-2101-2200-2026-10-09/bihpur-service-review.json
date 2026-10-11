@@ -1,0 +1,47 @@
+{
+  "cityRecord": "city-11425-bihpur.json",
+  "cityCode": 11425,
+  "queueRank": 2188,
+  "city": "Bihpur",
+  "country": "India",
+  "countryCode": "IN",
+  "reviewStatus": "complete-research-held-runtime",
+  "registryFound": true,
+  "source": {
+    "service": "BhuNaksha Bihar",
+    "firstPartyUrl": "https://bhunaksha.bihar.gov.in/index.jsp",
+    "custodian": "Directorate of Land Records & Survey, Government of Bihar / NIC",
+    "scope": "Public cadastral map viewer with Bihar location hierarchy and map-sheet extent; local custodian evidenced through the official Government of Bihar viewer and DLRS site."
+  },
+  "locationResolution": "Bihar state 10 → Bhagalpur district 22 → Naugachhia subdivision 02 → Bihpur circle 09 → mauza विहपुर(59), code 0958.",
+  "serviceRequests": [
+    "GET viewer HTML, config.js, and index.js: public 200 responses; JavaScript exposed REST level, extent, plot lookup, scalar, and WMS routes.",
+    "POST /rest/Levels/count state=10: 7 levels.",
+    "POST /rest/Levels/ListsAfterLevel state=10 codes=22,02: returned Bihpur code 09 and mauza code 0958.",
+    "POST /rest/MapInfo/getVVVVExtentGeoref state=10 gisLevels=22,02,09,0958,RS,07,01 srs=0: successful JSON extent, CRS EPSG:32645, gisCode RS22020909580590701.",
+    "POST /rest/MapInfo/getVVVVExtentGeoref for CS selection: response had null extent/CRS.",
+    "GET/POST ScalarDatahandler plot request: 401 HTML error / requested resource not found.",
+    "POST /rest/MapInfo/getPlotAtXY: HTTP 204 with no parcel response for the bounded projected test request.",
+    "GET /WMS GetCapabilities: HTTP 500."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel/map identifier only when returned by source",
+    "native geometry only when returned as a bounded public vector parcel response",
+    "source CRS, map-sheet/location codes, and service metadata"
+  ],
+  "fieldHandling": "No unsafe owner, address, contact, titleholder, personal, tax, account, or similar fields requested, logged, or retained. No raw source-specific attribute set retained.",
+  "geometry": {
+    "retainedGeojson": null,
+    "reason": "The available successful response was an extent, not parcel vector geometry; plot-detail and WMS capability checks did not provide a safe bounded feature response.",
+    "extent": {
+      "crs": "EPSG:32645",
+      "bbox": [149.06249378534253, 108.61358399353061, 491175.92691248684, 2808623.6026041117]
+    }
+  },
+  "limitations": [
+    "A zero exact-point hit, no parcel response, or viewer/API failure is not evidence of citywide cadastral absence.",
+    "The extent is tied to one mauza and survey/map-sheet selection and cannot establish complete coverage for the WUP city record.",
+    "Runtime readiness remains held pending independent serial adapter qualification."
+  ],
+  "decision": "Keep city packet complete for research with registryFound=true, no retained sample GeoJSON, and runtimeReadiness held; do not present this packet as source integration/admission."
+}

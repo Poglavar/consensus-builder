@@ -1,0 +1,126 @@
+{
+  "cityCode": 6781,
+  "queueRank": 2141,
+  "name": "Chengarchar",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "iso3": "BGD",
+  "point": [23.4446369418735, 90.6560950226861],
+  "population2025": 271704,
+  "population2025k": 271.704,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Chengarchar Bangladesh cadastral map parcel official",
+        "result": "Search found the first-party Bangladesh DLRS online map-search service and official map portals; no Chengarchar-specific parcel result was returned in search.",
+        "actualResultUrls": [
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://map.settlement.gov.bd/",
+          "https://map.land.gov.bd/"
+        ]
+      },
+      {
+        "language": "Bengali",
+        "query": "চেংগারচর বাংলাদেশ খতিয়ান মৌজা নকশা সরকারি",
+        "result": "Search found the first-party DLRS map-search and Ministry of Land map portals; no Chengarchar-specific parcel result was returned in search.",
+        "actualResultUrls": [
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://map.land.gov.bd/",
+          "https://dlrs.gov.bd/site/page/359236ae-4c8a-49e0-b2ab-1e9b13994908/Digital-BRS-%28Search-Map/%29"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Bangladesh Department of Land Records and Surveys (DLRS) first-party MapSearch is a live public cadastral/map service. Its public JavaScript documents map-search routes and parcel-sheet JSON routes.",
+  "administrativeLead": {
+    "division": "Chattogram",
+    "district": "Chandpur",
+    "localityLead": "Chengarchar is treated only as the WUP locality lead; no official mouza or upazila identity was confirmed by the executed public API calls."
+  },
+  "source": {
+    "operator": "Bangladesh Department of Land Records and Surveys (DLRS)",
+    "viewerUrl": "https://settlement.gov.bd/Map/MapSearch",
+    "mapPurchaseUrl": "https://map.settlement.gov.bd/",
+    "landZoningUrl": "https://map.land.gov.bd/",
+    "serviceType": "Public map-search / cadastral survey map service",
+    "surveyLead": "BDS (Bangladesh Digital Survey)"
+  },
+  "verifiedParcelResponse": null,
+  "geometryVerified": false,
+  "verifiedSample": false,
+  "runtimeReadiness": "held",
+  "attempts": [
+    {
+      "stage": "first-party-viewer",
+      "method": "GET",
+      "url": "https://settlement.gov.bd/Map/MapSearch",
+      "httpStatus": 200,
+      "result": "Public viewer HTML loaded; linked MapSearch.js was inspected. No login was used."
+    },
+    {
+      "stage": "viewer-bootstrap",
+      "method": "POST",
+      "url": "https://settlement.gov.bd/Map/GetDivisionList",
+      "httpStatus": 200,
+      "requestBody": "empty form body",
+      "result": "Returned official division list, including Chattogram."
+    },
+    {
+      "stage": "district-discovery",
+      "method": "POST",
+      "url": "https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise",
+      "httpStatus": 200,
+      "requestBody": "divid=040000000",
+      "result": "Returned official district list including Chandpur (unitcod 040700000; comcod 4116)."
+    },
+    {
+      "stage": "survey-discovery",
+      "method": "POST",
+      "url": "https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise",
+      "httpStatus": 200,
+      "requestBody": "districtid=040700000&comcod=4116",
+      "result": "Returned BDS / Bangladesh Digital Survey (rsnum 235255)."
+    },
+    {
+      "stage": "local-unit-discovery",
+      "method": "POST",
+      "url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap",
+      "httpStatus": 200,
+      "requestBody": "comcod=4116&rsno1=235255&districtid=040700000",
+      "result": "Returned an empty JSON array. No thana/upazila, mouza, sheet, parcel identity, or geometry was obtained."
+    },
+    {
+      "stage": "official-map-portals",
+      "method": "GET",
+      "url": "https://map.settlement.gov.bd/",
+      "httpStatus": 200,
+      "result": "Official DLRS map-purchase portal loaded and described searchable CS, SA, RS, BRS, and BDS mouza maps; no Chengarchar parcel geometry was queried."
+    },
+    {
+      "stage": "official-land-zoning-portal",
+      "method": "GET",
+      "url": "https://map.land.gov.bd/",
+      "httpStatus": 200,
+      "result": "Official Ministry of Land map portal loaded; public landing page documents digitized/georeferenced mouza sheets, but no Chengarchar geometry was obtained."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "DLRS public map-search service and Ministry of Land map portals; the service is national in framing but local coverage at the WUP point was not demonstrated.",
+    "verifiedOpenScope": "Chattogram division and Chandpur district bootstrap metadata only; BDS local-unit lookup was empty.",
+    "countrywideVerified": false,
+    "exactPointHit": null,
+    "absenceInference": false
+  },
+  "safeFieldAllowlist": ["native parcel identifier if returned", "geometry", "survey type", "district/upazila/mouza/sheet labels", "source URL"],
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInRepository": 3,
+    "unsafeFieldsExcluded": ["owner names", "addresses", "contact details", "titleholder data", "tax/account data", "khatian ownership details"]
+  },
+  "uncertainty": "The empty thana response may indicate unavailable BDS coverage, an incomplete parameter path, or a service-side data gap. It is not evidence of citywide parcel absence. Exact WUP coordinate was preserved without adjustment.",
+  "sampleFiles": []
+}

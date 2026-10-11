@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "purpose": "First-party source observations and prior-work scope for WUP identity decisions only.",
+  "checkedAt": "2026-10-11T09:04:41.689Z",
+  "wupArchive": {
+    "path": "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "sha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "rows2025": {
+      "4": {
+        "LocID": "124",
+        "Location": "Canada",
+        "ISO3_Code": "CAN",
+        "ISO2_Code": "CA",
+        "City_Code": "4",
+        "City_Name": "Victoria",
+        "Capital": "0",
+        "Year": "2025",
+        "PWCent_Latitude": "48.445978670856",
+        "PWCent_Longitude": "-123.360034699349",
+        "Pop_plausibility": "Moderate",
+        "Pop": "250.244"
+      },
+      "73": {
+        "LocID": "705",
+        "Location": "Slovenia",
+        "ISO3_Code": "SVN",
+        "ISO2_Code": "SI",
+        "City_Code": "73",
+        "City_Name": "Ljubljana",
+        "Capital": "1",
+        "Year": "2025",
+        "PWCent_Latitude": "46.0600747905532",
+        "PWCent_Longitude": "14.5096086691634",
+        "Pop_plausibility": "High",
+        "Pop": "246.671"
+      }
+    },
+    "populationUnit": "thousands"
+  },
+  "priorVictoria": {
+    "packetPath": "world-parcels/research/africa-capitals-2026-10-08/city-victoria.json",
+    "firstPartySamplePath": "world-parcels/research/africa-capitals-2026-10-08/victoria-safe-sample.geojson",
+    "cityId": "capital:SC:victoria",
+    "countryCode": "SC",
+    "centerLatLon": [
+      -4.6191,
+      55.4513
+    ],
+    "sampleParcelId": "SC-MLH-V5940",
+    "sampleFirstCoordinateLonLat": [
+      55.449467554821595,
+      -4.620092669098103
+    ],
+    "sourceId": "sc-mlh-current-parcels-arcgis",
+    "observation": "The prior bounded official Seychelles ArcGIS sample is geographically and nationally distinct from WUP4 Canada."
+  },
+  "priorLjubljana": {
+    "acceptancePath": "world-parcels/research/db-city-wfs-live-2026-10-03.json",
+    "capitalRosterPath": "world-parcels/research/world-capitals-2026-10-08/roster.json",
+    "countryCode": "SI",
+    "cityId": "capital:SI:ljubljana",
+    "rosterChecked": true,
+    "rosterResearchStatus": "previously_checked",
+    "officialWfsEndpoint": "https://ipi.eprostor.gov.si/wfs-si-gurs-kn/wfs",
+    "officialWfsResponseStatus": 200,
+    "boundedResponseBboxLonLat": [
+      14.504,
+      46.049,
+      14.507,
+      46.052
+    ],
+    "boundedResponseNumberMatched": 236,
+    "firstNativeId": "100100000278024754",
+    "priorAcceptanceOutcome": "pass",
+    "priorAcceptanceCellCount": 18,
+    "observation": "The prior Ljubljana investigation made a bounded first-party GURS WFS read and recorded native parcel IDs for the same Slovenian city."
+  },
+  "scope": "Identity and prior-attempt classification only; no fresh adapter qualification, citywide parcel coverage, or absence inference."
+}

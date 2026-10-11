@@ -1,0 +1,22 @@
+{
+  "cityRecord": "city-1453-cabimas.json",
+  "cityCode": 1453,
+  "queueRank": 2048,
+  "name": "Cabimas",
+  "country": "Venezuela (Bolivarian Republic of)",
+  "countryCode": "VE",
+  "reviewedAt": "2026-10-10",
+  "attempt": 1,
+  "serviceStatus": "held",
+  "registryFound": true,
+  "registryCustodian": "Alcaldía del Municipio Cabimas, Oficina de Catastro / SIGAT",
+  "queryAndRequestOutcome": "Separate English and Spanish discovery found first-party Cabimas SIGAT sources and the current Angular contributor portal. Bundle inspection identified /api/v1/contribuyente/alcaldias/241/catastro?cod=...; anonymous bounded requests returned 403. No public map/API parcel geometry response was verified.",
+  "scopeLimits": ["The municipal ordinance and management document evidence custody and procedure, not downloadable parcel geometry.", "A 403 lookup response is an access limitation, not evidence of citywide absence.", "The exact WUP point [10.389270060115, -71.439871918372] was preserved and not shifted.", "No sample GeoJSON was retained because no safe native ID plus full parcel polygon was returned."],
+  "safeFieldAllowlist": ["stable native parcel identifier", "parcel polygon geometry", "source CRS", "non-personal source layer metadata"],
+  "sourceSpecificFields": "The bundle exposes a cadastral-code lookup, but no safe parcel schema or geometry field mapping was available anonymously.",
+  "compositeKeyProvenance": null,
+  "runtimeReadiness": "held_serial_qualification_required",
+  "qualification": "Not qualified for runtime integration or admission; serial review must independently verify any authenticated/public adapter route, safe field mapping, CRS, and stable native identity.",
+  "uncertainty": "The local custodian is evidenced, but public parcel geometry, citywide coverage, update cadence, and adapter robustness remain unverified. No credentials, private tokens, owner/address data, or unsafe fields were requested.",
+  "status": "complete"
+}

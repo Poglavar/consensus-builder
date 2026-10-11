@@ -1,0 +1,40 @@
+{
+  "cityCode": 5035,
+  "queueRank": 2210,
+  "name": "Terrassa",
+  "country": "Spain",
+  "countryCode": "ES",
+  "point": [41.5603345913882, 2.01611575947249],
+  "population2025": 264025,
+  "population2025k": 264.025,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Terrassa official cadastral map parcel viewer Spain cadastre Catastro Terrassa",
+        "result": "Official discovery found the Dirección General del Catastro public portal and the Ajuntament de Terrassa IDE GeoPortal. The municipal first-party ArcGIS REST catalog exposes a Cadastre/ajt_cadastre MapServer with a public parcel polygon layer.",
+        "actualResultUrls": [
+          "https://www.sedecatastro.gob.es/",
+          "https://emap.terrassa.cat/geoPortal/?tab=descarregues",
+          "https://emap.terrassa.cat/arcgis/rest/services/Cadastre/ajt_cadastre/MapServer"
+        ]
+      },
+      {
+        "language": "Spanish/Catalan",
+        "query": "Terrassa visor cadastral parcelas mapa oficial catastro",
+        "result": "Official Spanish/Catalan discovery found the municipal IDE GeoPortal, its cadastral ArcGIS REST service, the Generalitat Mapa urbanístic de Catalunya, and the national Catastro portal. The Terrassa service returned an anonymous parcel ID and polygon for the exact WUP point.",
+        "actualResultUrls": [
+          "https://emap.terrassa.cat/geoPortal/?tab=descarregues",
+          "https://emap.terrassa.cat/arcgis/rest/services/Cadastre/ajt_cadastre/MapServer/5",
+          "https://dtes.gencat.cat/muc-visor/AppJava/home.do",
+          "https://www.sedecatastro.gob.es/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "A first-party local registry/cadastre map service was evidenced and queried anonymously. The packet retains one safe parcel sample identified by the native REFCAD value. This packet is not source integration or runtime admission.",
+  "runtimeReadiness": "held"
+}

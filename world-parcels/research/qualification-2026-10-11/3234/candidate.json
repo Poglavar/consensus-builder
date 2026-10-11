@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "city": {
+    "code": "3234",
+    "name": "Sosnowiec",
+    "point": [
+      19.1460205522405,
+      50.2922574419292
+    ]
+  },
+  "descriptor": {
+    "id": "sosnowiec-gml-wfs",
+    "name": "Sosnowiec municipal EGiB parcel polygons",
+    "adapter": "gml-wfs",
+    "endpoint": "https://sosnowiec.webewid.pl:9443/iip/ows",
+    "featureType": "ms:dzialki",
+    "version": "2.0.0",
+    "idField": "ID_DZIALKI",
+    "geometryField": "geometry",
+    "responseCrs": "EPSG:2177",
+    "idType": "string",
+    "idPrefix": "PL-SOSNOWIEC-",
+    "parcelNumberField": "ID_DZIALKI",
+    "outFields": [
+      "ID_DZIALKI"
+    ],
+    "pageSize": 50,
+    "maxFeatures": 1500,
+    "maxBboxKm2": 1,
+    "maxResponseBytes": 1048576,
+    "maxTotalResponseBytes": 8388608,
+    "timeoutMs": 12000,
+    "maxConcurrentQueries": 1,
+    "countryCode": "PL",
+    "cityIds": [
+      "sosnowiec"
+    ],
+    "metricSrid": 32634,
+    "operator": "Urząd Miejski w Sosnowcu / Wydział Geodezji i Kartografii",
+    "scope": "Municipal Sosnowiec cadastral parcel layer; source bounds cover the unchanged WUP locator. Citywide completeness is unverified.",
+    "catalogueUrl": "https://www.sosnowiec.pl/2023/07/aktualnosci/teraz-wniosek-o-dane-zgromadzone-w-zasobie-geodezyjnym-zlozysz-przez-profil-zaufany-lub-konto-bankowe/",
+    "licenceNote": "Anonymous metadata and frozen bounded parcel samples evidenced; reuse permission and currentness are not established."
+  },
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Frozen packet officialSources, registryBasis and sourceCandidate identify Sosnowiec municipal geodesy/cartography custody of EGiB parcels; official municipal announcement links sosnowiec.webewid.pl: https://www.sosnowiec.pl/2023/07/aktualnosci/teraz-wniosek-o-dane-zgromadzone-w-zasobie-geodezyjnym-zlozysz-przez-profil-zaufany-lub-konto-bankowe/",
+      "Verified official WFS GetCapabilities identifies Urząd Miejski w Sosnowcu public WMS/WFS and ms:dzialki (Działki); WGS84 bounds [19.0697905083279,50.2239033125785,19.3191645970775,50.3181698377559] contain the unchanged WUP locator. DescribeFeatureType confirms ID_DZIALKI and geometry: https://sosnowiec.webewid.pl:9443/iip/ows",
+      "Official GUGiK EGiB documentation identifies cadastral parcel geometry and county/city-county custody; frozen native IDs begin with the Sosnowiec cadastral unit 247501_1: https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/"
+    ]
+  },
+  "sourceCandidateSha256": "3877f06173ae563a8765a012be34433ea9b8fc46416886149d8fc4e7216ff09c",
+  "qualificationRecordedSha256": "3877f06173ae563a8765a012be34433ea9b8fc46416886149d8fc4e7216ff09c",
+  "sourceCandidatePath": "qualification-seeds/cities/3234/attempt-01/candidate.json",
+  "originalSeedSha256": "3877f06173ae563a8765a012be34433ea9b8fc46416886149d8fc4e7216ff09c",
+  "originalSeedPath": "tmp/parcel-qualification/cities/3234/attempt-01/candidate.json"
+}

@@ -1,0 +1,77 @@
+{
+  "taskId": "city:7358",
+  "decision": "held",
+  "checkedAt": "2026-10-10T21:08:05Z",
+  "identity": {
+    "cityCode": 7358,
+    "rank": 2019,
+    "name": "Nag Hammadi",
+    "country": "Egypt",
+    "iso2": "EG",
+    "iso3": "EGY",
+    "point": [
+      26.0445416382569,
+      32.2293805098391
+    ],
+    "populationPersons": 288576,
+    "wupArchiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "queueAndRankedRosterMatch": true
+  },
+  "searches": {
+    "englishAndNativeExecutedInPacket": true,
+    "queries": [
+      {
+        "language": "English",
+        "query": "Nag Hammadi Egypt official cadastral map parcel registry GIS service",
+        "resultUrls": [
+          "https://www.esa.gov.eg/segel.aspx",
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/city_maps2.aspx",
+          "https://mediadr.sis.gov.eg/xmlui/bitstream/handle/123456789/118949/WQ13_20260117_10015.pdf?isAllowed=y&sequence=2"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "نجع حمادي مصر السجل العيني خريطة عقارية مساحية رسمي",
+        "resultUrls": [
+          "https://www.alamiria.com/Sec/TashTxt?id=YWQULOSd56Q%3D",
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/paper_maps_search.aspx",
+          "https://www.esa.gov.eg/city_maps2.aspx"
+        ]
+      }
+    ]
+  },
+  "custody": {
+    "packetRegistryFound": true,
+    "assessment": "Official Egyptian Survey Authority register and map-service pages establish national custody; worker cites Justice/Gazette issue 13 for Nag Hammadi cadastral sections. The official issue metadata was independently located, but the specific PDF and Gazette HTML could not be fetched with normal TLS in this review."
+  },
+  "samples": {
+    "retainedFullPolygonCount": 0,
+    "safeNativeIdAndGeometryVerified": false
+  },
+  "qualification": {
+    "freshNativeIdAdapterReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "admitted": false
+  },
+  "firstPartyChecks": [
+    {
+      "url": "https://www.esa.gov.eg/segel.aspx",
+      "observation": "ESA urban real-estate register GIS program and responsible agencies visible; no parcel feature response."
+    },
+    {
+      "url": "https://www.esa.gov.eg/services.aspx",
+      "observation": "ESA surveying and map service catalog visible; no anonymous parcel feature response."
+    },
+    {
+      "url": "https://mediadr.sis.gov.eg/xmlui/handle/123456789/118949?locale-attribute=en",
+      "observation": "Official Gazette issue 13 metadata identifies 2026-01-17 issue and Ministry of Justice decisions 7328/7329; exact PDF content remained inaccessible with normal TLS."
+    }
+  ],
+  "decisionReason": "No public Nag Hammadi parcel ID plus polygon response, native schema or CRS, live adapter qualification, or headed Details check. Local procedure evidence is not open geometry proof."
+}

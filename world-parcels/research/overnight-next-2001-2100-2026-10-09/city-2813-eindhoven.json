@@ -1,0 +1,87 @@
+{
+  "cityCode": 2813,
+  "queueRank": 2014,
+  "name": "Eindhoven",
+  "country": "Netherlands",
+  "countryCode": "NL",
+  "iso3": "NLD",
+  "point": [51.4432163203009, 5.45844256201511],
+  "population2025": 288852,
+  "population2025k": 288.852,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10T00:00:00Z",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Eindhoven official cadastral parcel map API Netherlands PDOK Kadaster",
+        "result": "Official PDOK documentation identifies the Kadaster Kadastrale Kaart OGC API, the Perceel collection, and an unauthenticated Features endpoint covering the Netherlands.",
+        "actualResultUrls": [
+          "https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart",
+          "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel?f=html&lang=en"
+        ]
+      },
+      {
+        "language": "Dutch",
+        "query": "Eindhoven officiële kadastrale kaart percelen API PDOK Kadaster",
+        "result": "Nederlandstalige first-party PDOK results identify the Kadaster Kadastrale Kaart, public OGC API Features endpoint, daily update, no authentication, and parcel collection documentation.",
+        "actualResultUrls": [
+          "https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart",
+          "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1?f=html&lang=nl",
+          "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel?f=html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Kadaster is the national cadastral custodian and PDOK publishes its official Kadastrale Kaart parcel service. No separate Eindhoven municipal cadastral custodian was evidenced; this is distinguished from general PDOK platform documentation.",
+  "registryEvidenceUrls": [
+    "https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart",
+    "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel?f=json"
+  ],
+  "requests": [
+    {
+      "url": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Anonymous collection metadata returned the Perceel collection, national geographic extent, supported CRS list, storage CRS EPSG:28992, and updated timestamp."
+    },
+    {
+      "url": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/schema?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Anonymous schema returned stable UUID feature id, MultiPolygon geometry, and source fields. Source attributes were not retained."
+    },
+    {
+      "url": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items?f=json&bbox=5.4583,51.4431,5.4586,51.4434&limit=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Bounded anonymous bbox response returned two parcel MultiPolygons in GeoJSON/CRS84. The exact WUP point [51.4432163203009, 5.45844256201511] was preserved; the point is within the returned local query extent and no coordinate shifting was used."
+    }
+  ],
+  "source": "PDOK Kadaster Kadastrale Kaart OGC API Features",
+  "sourceIds": ["c153d50f-e31d-52e4-ab48-a23ecdb56b1c", "84bf43ab-d08c-557c-b24f-042c9439d5a9"],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "verifiedParcelResponse": {
+    "featureCount": 2,
+    "sampleFile": "eindhoven-sample.geojson",
+    "queryCrs": "CRS84 / GeoJSON coordinate order [longitude, latitude]",
+    "nativeLayerCrs": "EPSG:28992",
+    "nativeIdentityField": "OGC feature id (stable UUID)",
+    "fieldMapping": {"properties.id": "feature.id", "geometry": "feature.geometry unchanged from official GeoJSON response"}
+  },
+  "safeFieldAllowlist": ["stable native OGC feature UUID", "parcel polygon geometry", "source service metadata", "CRS and response-format metadata"],
+  "unsafeFieldsNotRequested": ["owner or right-holder names", "addresses or contact details", "title or certificate details", "tax, account, identity, or application fields", "area, status, historical, or other source-specific attribute sets"],
+  "coverageAssessment": {
+    "claimedScope": "Official Kadaster Kadastrale Kaart Perceel collection; PDOK metadata describes national parcel coverage.",
+    "verifiedOpenScope": "Anonymous official collection/schema metadata and a bounded local GeoJSON response verified.",
+    "countrywideVerified": false,
+    "citywideGeometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "A real public official source and safe local sample are evidenced, but runtime readiness remains held pending independent serial adapter qualification. This packet is not source integration or admission.",
+  "resultCategory": "national_registry_and_public_geometry",
+  "remainingUncertainty": "This attempt did not clip or enumerate the Eindhoven municipal boundary, and the public Kadastrale Kaart is an indicative cadastral boundary reference rather than proof of legal title or citywide completeness. No viewer login, CAPTCHA bypass, credentials, or unsafe property fields were used."
+}

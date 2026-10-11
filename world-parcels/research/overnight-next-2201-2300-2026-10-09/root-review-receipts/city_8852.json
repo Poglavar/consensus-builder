@@ -1,0 +1,38 @@
+{
+  "taskId": "city:8852",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-8852-mubi.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/mubi-service-review.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-11T01:50:32Z",
+  "identityCheck": {
+    "cityCode": 8852,
+    "queueRank": 2219,
+    "country": "Nigeria",
+    "countryCode": "NG",
+    "pointLatLon": [
+      10.264913350362,
+      13.270330031785
+    ],
+    "populationPersons": 262651,
+    "result": "matched packet, review, pending queue, ranked roster, and checked original WUP archive"
+  },
+  "bilingualSearchCheck": {
+    "languages": [
+      "English",
+      "Hausa"
+    ],
+    "result": "paired packet records executed searches in both languages; only reported search outcomes, not native geometry, were available"
+  },
+  "custody": "true; supported by first-party institutional pages, with city-level geometry coverage unresolved",
+  "sourceUrlsChecked": [
+    "https://adgis.adamawastate.gov.ng/ova_sev/digital-land-mapping-and-cadastral-services/",
+    "https://lands.adamawastate.gov.ng/"
+  ],
+  "fullPolygonCount": 0,
+  "runtimeAdmission": "held; no independent fresh native-ID reads, forced paging, thirteen bounded cells, metric GEOS checks, source binding, or headed Details verification",
+  "reason": "Official Adamawa cadastral and land-record custody is supported, but direct anonymous ADGIS and ministry requests hit a Cloudflare challenge. No public safe schema, native parcel ID, CRS, or full polygon response is evidenced. The challenge is not absence."
+}

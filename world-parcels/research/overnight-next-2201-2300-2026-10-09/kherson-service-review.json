@@ -1,0 +1,27 @@
+{
+  "cityRecord": "city-3402-kherson.json",
+  "cityCode": 3402,
+  "queueRank": 2263,
+  "name": "Kherson",
+  "country": "Ukraine",
+  "countryCode": "UA",
+  "pointLatLon": [46.6527350792091, 32.6180712372204],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method": "GET", "url": "https://dzk.gov.ua/", "httpStatus": 200, "outcome": "Official Centre of State Land Cadastre page loaded and linked the Public Cadastral Map."},
+    {"method": "GET", "url": "https://khersonska.land.gov.ua/nadannia-vidomostei-z-derzhavnoho-zemelnoho-kadastru-u-formi-vykopiiuvan-z-kartohrafichnoi-osnovy-derzhavnoho-zemelnoho-kadastru-kadastrovoi-karty-planu/", "httpStatus": 200, "outcome": "Kherson-specific official procedure loaded; it identifies cadastral-map extracts, the Kherson regional StateGeoCadastre, and the Kherson administrative-service centre."},
+    {"method": "GET", "url": "https://khersonska.land.gov.ua/iak-korystuvatysia-publichnoiu-kadastrovoiu-kartoiu-ukrainy/", "httpStatus": 200, "outcome": "Official Kherson regional guidance loaded; it describes the public cadastral map and safe parcel information such as area, cadastral number, use and ownership form."},
+    {"method": "GET", "url": "https://nsdi.gov.ua/docs/portal/2karta/4map_search.html", "httpStatus": 200, "outcome": "Official National Geoportal map-search documentation loaded; it documents parcel/name/coordinate search but did not provide a parcel response."},
+    {"method": "GET", "url": "https://map.land.gov.ua/kadastrova-karta", "httpStatus": null, "outcome": "Bounded 20-second TLS/HTTP GET timed out before headers/body; no JavaScript/configuration or API route could be inspected. This is an availability result, not evidence of absent layers."}
+  ],
+  "schemaAndCrs": {"localCatalog": null, "geometryCrs": null, "nativeIdentity": null, "observed": "Official National Geoportal documentation mentions WGS 84 coordinate search and USK-2000 coordinates in parcel details, but no live feature response was retrieved."},
+  "safeFieldAllowlist": ["stable native parcel ID if independently verified", "polygon geometry", "source service URL", "CRS", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "No bounded anonymous parcel ID+geometry response was verified."},
+  "scopeLimits": ["The exact WUP point is a city locator only and was not used to infer citywide presence or absence.", "The official regional procedure proves a Kherson cadastral custodian/procedure, not an open geometry API.", "The viewer timeout and lack of a live response do not prove citywide absence or map extent coverage."],
+  "uncertainty": "Public cadastral geometry access for Kherson remains unresolved from this environment. The packet records observed first-party evidence only and does not constitute source integration or admission."
+}

@@ -1,0 +1,43 @@
+{
+  "cityCode": 836,
+  "queueRank": 2087,
+  "name": "Saraf `Umrah",
+  "country": "Sudan",
+  "countryCode": "SD",
+  "iso2": "SD",
+  "iso3": "SDN",
+  "point": [13.4752665126685, 23.3025682374627],
+  "population2025": 278467,
+  "population2025k": 278.467,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 3,
+  "freshResearch": {
+    "mode": "validation-only retry; no searches or network/API requests executed",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sudan cadastral parcel map / land information official first-party discovery",
+        "result": "Recorded prior first-party route fetch reached the National Information Centre (NIC) public site; it did not establish a local Saraf `Umrah registry custodian or a safe parcel ID-plus-geometry response.",
+        "actualResultUrls": ["https://nic.gov.sd/"]
+      },
+      {
+        "language": "native/local",
+        "query": "السجل العقاري السودان خريطة قطع الأراضي صرف عمرة",
+        "result": "Recorded prior first-party route fetch reached the Sudan Aqari public Arabic site; the cached public page did not establish a local Saraf `Umrah registry custodian or a safe parcel ID-plus-geometry response.",
+        "actualResultUrls": ["https://aqari.sd/"]
+      }
+    ]
+  },
+  "registryFound": null,
+  "parcelSource": {
+    "publicGeometryFound": false,
+    "sampleFile": null,
+    "parcelCount": 0,
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null
+  },
+  "runtimeReadiness": "held",
+  "uncertainty": "No source evidence was re-investigated on this validation-only retry. Registry custody, public parcel schema/CRS, safe native parcel identity, and parcel geometry remain unverified.",
+  "validationNote": "Created because the validator reported zero city-836-*.json files. This packet does not claim source integration, parcel absence, or adapter qualification."
+}

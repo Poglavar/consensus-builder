@@ -1,0 +1,28 @@
+{
+  "cityRecord": "city-4697-rabak.json",
+  "cityCode": 4697,
+  "queueRank": 2300,
+  "name": "Rabak",
+  "country": "Sudan",
+  "countryCode": "SD",
+  "pointLatLon": [13.1874807019092, 32.7444507506874],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routesRecordedInCityRecord": true,
+  "schemaAndCrs": {"viewerConfig":null,"geometryCrs":null,"nativeIdentity":null,"sourceFieldMapping":null,"boundedAnonymousResponse":{"featureCount":null,"geometryRetained":false}},
+  "safeFieldAllowlist": ["stable native parcel ID", "polygon geometry", "official source URL", "source CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data", "identity documents"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"Official national cadastral/land-registration custody is evidenced, but no Rabak-specific safe anonymous native parcel ID-plus-geometry response, current schema, CRS, or adapter behavior was obtained."},
+  "scopeLimits": [
+    "Exact WUP point [13.1874807019092, 32.7444507506874] was preserved in latitude/longitude order; no coordinate shift or parcel-hit forcing was attempted.",
+    "No exact-point or extent parcel query completed because the official public sources exposed no usable parcel endpoint; this is not evidence of citywide absence.",
+    "The geoportal.gov.sd request timed out during DNS resolution after 20 seconds; no TLS bypass, login, CAPTCHA/Cloudflare bypass, or credentials were used.",
+    "The Judiciary source is a national custodian/procedure source, not proof of a local Rabak registry integration. No Rabak or White Nile local office endpoint was evidenced.",
+    "No GeoJSON sample is retained because no unchanged safe native ID-plus-geometry response was available.",
+    "Scratch/request evidence is under tmp/valhalla-parcel-research/rabak/."
+  ],
+  "uncertainty": "Current public parcel coverage and anonymous map/API availability for Rabak remain unknown. Runtime admission requires separate serial qualification of a real adapter and a verified safe parcel response."
+}

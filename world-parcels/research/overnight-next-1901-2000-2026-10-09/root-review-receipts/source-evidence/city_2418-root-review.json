@@ -1,0 +1,58 @@
+{
+  "taskId": "city:2418",
+  "queueIdentity": {
+    "cityCode": 2418,
+    "rank": 1975,
+    "name": "Lichinga",
+    "country": "Mozambique",
+    "point": [
+      -13.3067135962889,
+      35.2567895732004
+    ],
+    "populationPersons": 294317
+  },
+  "bilingualSearches": [
+    {
+      "language": "English",
+      "query": "Lichinga Mozambique official cadastral parcel map cadastre geoportal"
+    },
+    {
+      "language": "Portuguese (local/official language)",
+      "query": "Lichinga Moçambique cadastro predial mapa parcelas geoprocessamento oficial"
+    }
+  ],
+  "sourceArtifactReview": {
+    "tmp/valhalla-parcel-research/lichinga/webmap-item.json": {
+      "sha256": "957f0b46a6a3af03b5224198542efd3df90c1a2192e0732c5be452056117fa1c",
+      "bytes": 1132
+    },
+    "tmp/valhalla-parcel-research/lichinga/lichinga-mapserver.json": {
+      "sha256": "6180c317356d993368330fb5a7c17edd93c95d017c112e51dbee8746282365ae",
+      "bytes": 3370
+    },
+    "tmp/valhalla-parcel-research/lichinga/layer.json": {
+      "sha256": "7045a738ee702555c32b75854c2fa8f8363302ab90d90f0e2e412b4964dd8243",
+      "bytes": 7060
+    },
+    "tmp/valhalla-parcel-research/lichinga/query-ids.json": {
+      "sha256": "37f6305c648b9a6719761e832591e24986d88d3aec307a7b3683b9344d6f5d57",
+      "bytes": 491
+    },
+    "tmp/valhalla-parcel-research/lichinga/sample.geojson": {
+      "sha256": "798d073e11167cff522e516fac1791c7e005437c0534f8560e5e495c5ef494fa",
+      "bytes": 1143
+    },
+    "observation": "Cached Lichinga MapServer lists health units, markets, terminals, neighborhoods and population risk. The separate parcel layer and three sample polygons are around longitude 32.44, latitude -25.94, outside Lichinga, and are excluded from Lichinga coverage."
+  },
+  "durableParcelPolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "decision": "held",
+  "reason": "No verified city-scoped full parcel polygon with safe native ID or independently qualified live adapter."
+}

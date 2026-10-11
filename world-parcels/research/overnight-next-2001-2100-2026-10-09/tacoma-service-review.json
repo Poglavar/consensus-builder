@@ -1,0 +1,55 @@
+{
+  "cityRecord": "city-5275-tacoma.json",
+  "cityCode": 5275,
+  "queueRank": 2011,
+  "city": "Tacoma",
+  "country": "United States of America",
+  "countryCode": "US",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "reviewedAt": "2026-10-10T00:00:00Z",
+  "discovery": {
+    "english": "Official Pierce County GIS discovery found PublicGIS, Parcel Search, open GIS data, and the Tax_Parcels ArcGIS REST service. The service returned usable anonymous parcel metadata and an exact-point polygon.",
+    "native": "The local-language query was English because English is the United States local language; it independently recorded the Pierce County GIS and Assessor-Treasurer route. No separate Tacoma cadastral office was evidenced."
+  },
+  "custodian": {
+    "name": "Pierce County Spatial Services / Assessor-Treasurer",
+    "role": "Local county GIS and tax-parcel custodian for Tacoma; the ArcGIS service metadata identifies the Assessor-Treasurer Operations Team as the parcel-data contact.",
+    "evidenceUrls": [
+      "https://www.piercecountywa.gov/493/Geographic-Information-Systems-GIS",
+      "https://services2.arcgis.com/1UvBaQ5y1ubjUPmd/ArcGIS/rest/services/Tax_Parcels/FeatureServer/0"
+    ]
+  },
+  "attemptedRoutes": [
+    {"route": "Pierce County GIS Map Applications", "url": "https://www.piercecountywa.gov/2281/GIS-Map-Applications", "result": "HTTP 403 Cloudflare challenge; official search result identified PublicGIS and Parcel Search."},
+    {"route": "Pierce County GIS Information", "url": "https://www.piercecountywa.gov/7392/GIS-Information", "result": "HTTP 403 Cloudflare challenge; official search result identified county GIS scope and Tacoma contact address."},
+    {"route": "Pierce County Tax_Parcels FeatureServer root", "url": "https://services2.arcgis.com/1UvBaQ5y1ubjUPmd/ArcGIS/rest/services/Tax_Parcels/FeatureServer?f=pjson", "result": "HTTP 200; anonymous JSON service metadata, JSON query support, and Tax Parcels layer."},
+    {"route": "Tax Parcels layer metadata", "url": "https://services2.arcgis.com/1UvBaQ5y1ubjUPmd/ArcGIS/rest/services/Tax_Parcels/FeatureServer/0?f=pjson", "result": "HTTP 200; polygon schema, native identity field TaxParcelNumber, OBJECTID, native WKID 2927, and full county extent."},
+    {"route": "Exact WUP-point bounded intersects query", "url": "https://services2.arcgis.com/1UvBaQ5y1ubjUPmd/ArcGIS/rest/services/Tax_Parcels/FeatureServer/0/query", "result": "HTTP 200; one feature with TaxParcelNumber 5004820060 and full polygon geometry. Query used WUP point [47.2204132675148, -122.474024748272] without coordinate shifting."}
+  ],
+  "fieldPolicy": {
+    "allowlist": ["safe stable native parcel identity", "parcel polygon geometry", "source field names and mapping in metadata only", "CRS/format and request metadata"],
+    "notRequested": ["owner/right-holder", "address/contact", "titleholder/certificate", "tax/account/identity/application data", "business/legal-description/valuation/land-use/exemption fields"]
+  },
+  "geometryReview": {
+    "publicGeometryFound": true,
+    "sampleFile": "tacoma-sample.geojson",
+    "parcelCount": 1,
+    "identities": ["5004820060"],
+    "reason": "Official public ArcGIS query intersecting the exact WUP point returned one polygon; GeoJSON retains exactly one canonical native TaxParcelNumber property id and the full polygon geometry."
+  },
+  "scopeLimits": [
+    "Exact WUP point [47.2204132675148, -122.474024748272] was preserved and not shifted.",
+    "One exact-point hit does not establish citywide coverage; no city-boundary clip or bounded citywide count was performed.",
+    "County web viewer pages were Cloudflare-challenged; no CAPTCHA, login, credentials, private tokens, or protected property-owner queries were attempted.",
+    "Pierce County was distinguished as the local Tacoma parcel custodian from general national GIS/ArcGIS platform infrastructure.",
+    "Packet completion and sample verification do not constitute source integration or admission."
+  ],
+  "qualification": {
+    "registryFound": true,
+    "publicParcelGeometryFound": true,
+    "runtimeReadiness": "held",
+    "serialReviewerRequired": true,
+    "uncertainty": "Viewer configuration and municipal boundary coverage remain unverified; the public service schema, CRS, safe native identity, and one exact-point geometry are verified."
+  }
+}

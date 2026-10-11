@@ -1,0 +1,24 @@
+{
+  "cityRecord": "city-4273-pamplona.json",
+  "cityCode": 4273,
+  "queueRank": 2023,
+  "city": "Pamplona",
+  "country": "Spain",
+  "countryCode": "ES",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "reviewedAt": "2026-10-10T21:10:00Z",
+  "custodian": {"name": "Gobierno de Navarra / IDENA-SITNA; Ayuntamiento de Pamplona GeoPamplona documented separately", "role": "Regional official cadastral-parcel service with official municipal GeoPamplona publication routes", "evidenceUrls": ["https://www.navarra.es/es/web/geoportal/idena/servicios", "https://www.pamplona.es/la-ciudad/geopamplona/mapastematicos", "https://inspire.navarra.es/services/CP/wfs"]},
+  "attemptedRoutes": [
+    {"route": "English first-party discovery", "url": "https://www.navarra.es/es/web/geoportal/idena/servicios", "result": "HTTP search result/page evidence lists Navarra INSPIRE cadastral-parcel WMS/WFS and Pamplona GeoPamplona WMS/WFS endpoints."},
+    {"route": "Spanish first-party discovery", "url": "https://geoportal.navarra.es/es/inspire", "result": "HTTP search result/page evidence describes the official INSPIRE Cadastral Parcels dataset and WMS/WFS access."},
+    {"route": "IDENA WFS capabilities", "url": "https://inspire.navarra.es/services/CP/wfs?service=WFS&request=GetCapabilities", "result": "HTTP 200; WFS 2.0.0 capabilities identify CP:CadastralParcel, Navarra Government publisher, default EPSG:4258, alternate CRS including EPSG:4326, application/json output, and public no-conditions notice with CC BY 4.0."},
+    {"route": "Bounded anonymous parcel query", "url": "https://inspire.navarra.es/services/CP/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CP%3ACadastralParcel&outputFormat=application%2Fjson&count=3&srsName=EPSG%3A4326&bbox=-1.66%2C42.80%2C-1.63%2C42.83%2CEPSG%3A4326", "result": "HTTP 200; returned three full MultiPolygon features near Pamplona with IDs ES.RRTN.CP.016220413, ES.RRTN.CP.016220899, and ES.RRTN.CP.016220944."},
+    {"route": "Pamplona municipal WFS capabilities", "url": "https://sig.pamplona.es/ogc/wfs?service=WFS&request=GetCapabilities", "result": "Anonymous request timed out after 30 seconds; no schema or geometry response obtained. This timeout is not evidence of absence."},
+    {"route": "Pamplona municipal WMS/WMTS documentation", "url": "https://www.pamplona.es/la-ciudad/geopamplona/mapastematicos", "result": "Official municipal page confirms Catastro and other GeoPamplona thematic layers; no direct feature response was retained from the page."}
+  ],
+  "geometryReview": {"publicGeometryFound": true, "sampleFile": "pamplona-sample.geojson", "parcelCount": 3, "identities": ["ES.RRTN.CP.016220413", "ES.RRTN.CP.016220899", "ES.RRTN.CP.016220944"], "reason": "Official anonymous WFS response returned three full MultiPolygon geometries and stable feature IDs; retained properties contain only one canonical id."},
+  "fieldPolicy": {"nativeFieldNamesInspected": ["@featureType", "areaValue", "beginLifespanVersion", "inspireId", "label", "nationalCadastralReference", "validFrom"], "mapping": {"properties.id": "WFS feature id (stable native identity)", "geometry": "geometry"}, "allowlist": ["stable native parcel ID", "full parcel polygon", "CRS/request metadata"], "notRequested": ["owner/right-holder", "address/contact", "title/certificate", "tax/account/identity/application", "raw source-specific attributes"]},
+  "scopeLimits": ["Exact WUP point [42.8175145798326, -1.64665178979721] was preserved in latitude/longitude order and never shifted.", "The bounded bbox was an evidence sample, not a citywide coverage test.", "A municipal WFS timeout is not evidence of citywide absence.", "Public cadastral geometry is not ownership/title evidence.", "Packet completion is not source integration/admission."],
+  "qualification": {"registryFound": true, "publicParcelGeometryFound": true, "runtimeReadiness": "held", "serialReviewerRequired": true, "uncertainty": "Regional WFS capabilities, layer, CRS, stable IDs, and three nearby polygons are verified; municipal endpoint behavior and citywide completeness remain unverified."}
+}

@@ -1,0 +1,91 @@
+{
+  "cityRecord": "city-1142-kenema.json",
+  "schemaVersion": "1.0",
+  "cityCode": 1142,
+  "queueRank": 2342,
+  "city": "Kenema",
+  "country": "Sierra Leone",
+  "countryCode": "SL",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Sierra Leone land-administration custodians and services were found, but no public anonymous Kenema parcel viewer, vector API, safe native parcel identity, or full parcel polygon was qualified. Runtime remains held.",
+  "queryOutcomes": "Separate English and Krio discovery queries, exact text and actual result URLs are recorded in city-1142-kenema.json.",
+  "requestOutcomes": "TLS-verified GET https://app.molhcp.gov.sl/ returned HTTP 200. The current MLHCP HTML exposed public service pages (services.aspx, login.aspx, register.aspx) and describes land registration and cadastral survey requests, but no map JavaScript, public map configuration, or anonymous parcel API. TLS-verified GET https://www.nlc.gov.sl/digital-portal returned HTTP 200; its rendered page explicitly labels the Digital Land Portal Coming Soon and the LMIS Under Development, with interactive cadastral maps listed as a planned feature. TLS-verified GET https://sllap.molhcp.gov.sl/ returned HTTP 200; the project site describes land-information-system development and registration work, but exposed no public parcel service. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception was used.",
+  "attemptedRoutes": [
+    {
+      "route": "MLHCP official LMIS landing page",
+      "url": "https://app.molhcp.gov.sl/",
+      "outcome": "HTTP 200; official ministry portal. Public content lists land registration and cadastral survey services and links to login/register. No public map/API route or parcel schema was exposed in the current HTML/scripts."
+    },
+    {
+      "route": "MLHCP services route",
+      "url": "https://app.molhcp.gov.sl/services.aspx",
+      "outcome": "Linked by the current public portal for service descriptions; no anonymous parcel geometry endpoint was evidenced."
+    },
+    {
+      "route": "MLHCP public login/register routes",
+      "url": "https://app.molhcp.gov.sl/login.aspx and https://app.molhcp.gov.sl/register.aspx",
+      "outcome": "Public links were observed but not submitted or used; credentials and authenticated/private data were out of scope."
+    },
+    {
+      "route": "National Land Commission Digital Land Portal",
+      "url": "https://www.nlc.gov.sl/digital-portal",
+      "outcome": "HTTP 200; official NLC page says Coming Soon and Under Development. Interactive cadastral maps are described as a planned feature; no live map/API or parcel response was available."
+    },
+    {
+      "route": "Sierra Leone Land Administration Project",
+      "url": "https://sllap.molhcp.gov.sl/",
+      "outcome": "HTTP 200; official project site documents planned land-information-system development and land-tenure registration, with no public anonymous parcel vector service exposed."
+    },
+    {
+      "route": "MLHCP main site",
+      "url": "https://molhcp.gov.sl/",
+      "outcome": "Official ministry site found in first-party discovery; general ministry/GIS and Survey and Lands information only, no qualified Kenema parcel geometry endpoint."
+    }
+  ],
+  "scopeLimits": [
+    "The exact WUP point [7.87369875825733, -11.1856659997846] was preserved in latitude/longitude order; no coordinate adjustment was made.",
+    "No exact-point parcel hit or miss was obtained, and no absence inference was made.",
+    "National custodian and service descriptions do not establish an open Kenema citywide parcel layer.",
+    "The portal's login/register links were not exercised; no private, owner, address, contact, titleholder, tax/account, or personal fields were requested or retained.",
+    "No parcel geometry was retrieved, so no sample GeoJSON is retained and CRS/native field mapping cannot be established.",
+    "Packet completion records research status only; independent serial review is required before any adapter qualification or admission."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": null,
+  "geometryQuality": "not applicable; no parcel geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public vector geometry response; no hit/miss inference.",
+    "requestEvidence": [
+      "MLHCP public portal returned service and authentication links only.",
+      "NLC Digital Land Portal was marked Coming Soon/Under Development.",
+      "SLLAP exposed project documentation but no anonymous parcel vector response."
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Sierra Leone national land-administration and cadastral-survey services, with planned digital land portal coverage.",
+    "verifiedOpenScope": "Public ministry/NLC/project pages only; no open Kenema parcel geometry or citywide parcel vector coverage.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Whether Kenema has digitized cadastral data, the responsible local/regional registry office or survey office for a specific parcel, any future LMIS API, native parcel identity fields, geometry CRS, city boundary correspondence, and municipal coverage remain unresolved."
+}

@@ -1,0 +1,131 @@
+{
+  "cityCode": 1385,
+  "queueRank": 2063,
+  "name": "Moundou",
+  "country": "Chad",
+  "countryCode": "TD",
+  "point": [8.57073976290298, 16.0699307014051],
+  "population2025": 281943,
+  "population2025k": 281.943,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "aliases": ["moundou"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Moundou Chad cadastral map parcel cadastre official registry",
+        "result": "First-party discovery found Chad's Direction du Cadastre / Service de la Cartographie, official land-procedure documents naming Moundou, the official government portal, CDIG geographic-information portal, and ANATS. No public anonymous Moundou parcel viewer or parcel API was found.",
+        "actualResultUrls": [
+          "https://salb.un.org/en/ngia/service-de-la-cartographie-direction-du-cadastre",
+          "https://finances.gouv.td/index.php/le-ministere/le-ministre/item/download/237_96e775322cf246b1ffa96f3284ccfc00",
+          "https://connect.gouv.td/",
+          "https://www.cdig.td/"
+        ]
+      },
+      {
+        "language": "French (official/local administrative)",
+        "query": "Moundou Tchad cadastre parcelles plan parcellaire conservation foncière site officiel",
+        "result": "La recherche de première partie a confirmé la Direction du Cadastre, les procédures officielles de lotissement, bornage et plan parcellaire applicables aux communes dont Moundou, et la présence d'un centre ANATS à Moundou. Aucun service public anonyme ne fournissait une géométrie parcellaire sûre.",
+        "actualResultUrls": [
+          "https://finances.gouv.td/index.php/le-ministere/le-ministre/item/download/237_96e775322cf246b1ffa96f3284ccfc00",
+          "https://finances.gouv.td/index.php/le-ministere/le-ministre/item/download/438_afa372566d4acca63cb857e846d67eef",
+          "https://www.anats.td/",
+          "https://lexitchad.com/results?matiere=foncier"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Chad Direction du Cadastre / Service de la Cartographie, with cadastral and land-conservation procedure evidence for Moundou",
+    "basis": "Official Chad finance-hosted procedure material states that the Direction du Cadastre performs parcel identification, demarcation, parcel-plan preparation and plan updating, and official finance material names Moundou among the covered communes. This evidences a cadastral procedure and national custodian, not a public Moundou geometry service or separately verified local office.",
+    "urls": [
+      "https://salb.un.org/en/ngia/service-de-la-cartographie-direction-du-cadastre",
+      "https://finances.gouv.td/index.php/le-ministere/le-ministre/item/download/237_96e775322cf246b1ffa96f3284ccfc00",
+      "https://finances.gouv.td/index.php/le-ministere/le-ministre/item/download/438_afa372566d4acca63cb857e846d67eef"
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://salb.un.org/en/ngia/service-de-la-cartographie-direction-du-cadastre",
+      "observation": "UN SALB directory identifies Chad's Service de la Cartographie, Direction du Cadastre, with postal address BP 57, N'Djamena.",
+      "scope": "National custodian directory; it does not expose Moundou parcel geometry."
+    },
+    {
+      "url": "https://finances.gouv.td/index.php/le-ministere/le-ministre/item/download/237_96e775322cf246b1ffa96f3284ccfc00",
+      "observation": "Official procedure document describes cadastral parcel identification, demarcation, parcel-plan creation and plan updates, and includes the land-registration workflow.",
+      "scope": "Administrative procedure evidence, not an anonymous parcel data endpoint."
+    },
+    {
+      "url": "https://finances.gouv.td/index.php/le-ministere/le-ministre/item/download/438_afa372566d4acca63cb857e846d67eef",
+      "observation": "Official tax-code material explicitly names Moundou among communes with land-price and land-transfer provisions.",
+      "scope": "Legal/administrative evidence only; no parcel identifiers or geometry."
+    },
+    {
+      "url": "https://www.cdig.td/",
+      "observation": "Official Centre de Documentation et d'Information Géographique portal advertises cartographic and geographic-data resources.",
+      "scope": "General geographic-information portal; no public cadastral parcel layer was identified in the inspected shell."
+    },
+    {
+      "url": "https://www.anats.td/",
+      "observation": "Official ANATS site lists a CAU de Moundou, Logone Occidental.",
+      "scope": "Secure-title/identity service location evidence, not a cadastral parcel geometry service."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://connect.gouv.td/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "outcome": "Fetched official government portal shell; no anonymous cadastral map/API route was exposed."
+    },
+    {
+      "url": "https://www.cdig.td/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "outcome": "Fetched official CDIG portal shell; its advertised tools are general cartographic/geographic resources and no safe Moundou parcel endpoint was identified."
+    },
+    {
+      "url": "https://www.anats.td/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "outcome": "Fetched official ANATS shell; Moundou centre is listed, but no parcel geometry or cadastral API was exposed."
+    },
+    {
+      "url": "https://finances.gouv.td/index.php/le-ministere/le-ministre/item/download/237_96e775322cf246b1ffa96f3284ccfc00",
+      "method": "GET",
+      "httpStatus": "000",
+      "contentType": null,
+      "outcome": "TLS certificate validation failed because the certificate subject did not match finances.gouv.td. TLS verification was not bypassed, and the request was not treated as a successful fetch; the same official document was independently identified by first-party discovery search results."
+    },
+    {
+      "url": "https://finances.gouv.td/index.php/le-ministere/le-ministre/item/download/438_afa372566d4acca63cb857e846d67eef",
+      "method": "GET",
+      "httpStatus": "not_attempted_after_same_host_tls_failure",
+      "contentType": null,
+      "outcome": "Not retried with disabled or broadened TLS validation."
+    }
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sampleFile": null,
+  "source": "Chad Direction du Cadastre / Service de la Cartographie and official finance, CDIG and ANATS portals",
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "National cadastral custodian and official land procedures with explicit Moundou administrative coverage.",
+    "verifiedOpenScope": "No anonymous public parcel ID-plus-geometry response or current public cadastral viewer/API was verified for Moundou.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier", "parcel polygon geometry", "source CRS", "non-personal source layer metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax", "account", "personal identifiers", "encumbrances"],
+  "runtimeReadiness": "held_serial_qualification_required",
+  "resultCategory": "national_custodian_and_moundou_procedure_no_public_geometry_verified",
+  "remainingUncertainty": "The national cadastral custodian and Moundou-specific land procedures are evidenced, but no public anonymous parcel ID-plus-geometry service was found. No exact-point or citywide parcel-absence claim is made, and the finance-host TLS failure prevented direct retrieval without an authorized certificate exception.",
+  "researchFile": "research/overnight-next-2001-2100-2026-10-09/city-1385-moundou.json"
+}

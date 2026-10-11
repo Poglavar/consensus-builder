@@ -172,6 +172,8 @@ const SAFE_GROUPS = [
             "js/proposals/subdivision.js",
             "js/proposals/site-draft.js",
             "js/proposals/publish-binding.js",
+            "js/proposals/chain-record.js",
+            "js/proposals/mint-binding.js",
             "js/proposals/binding-drift.js",
             "js/proposals/parcel-arrangement.js",
             "js/proposals/readjustment-contributions.js",

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-09",
+  "updatedAt": "2026-10-11",
   "queueSource": "https://population.un.org/wup/",
   "sources": [
     {
@@ -2887,13 +2887,14 @@
       "method": "GET",
       "responseFormat": "canonical GeoJSON through wfs",
       "crs": "EPSG:4326",
-      "verificationStatus": "verified_live_city_adapter",
+      "verificationStatus": "verified_bounded_live_adapter",
       "reuseStatus": "https://www.data.gouv.fr/pages/legal/licences/etalab-2.0",
       "verifiedCityIds": [
         "wup2025:4276",
         "wup2025:3549",
         "wup2025:2391",
-        "wup2025:1566"
+        "wup2025:1566",
+        "wup2025:4353"
       ],
       "evidenceFile": "research/paris-live-wfs.json",
       "liveIntegration": {
@@ -2904,9 +2905,18 @@
           "marseille",
           "lille",
           "toulouse",
-          "bordeaux"
+          "bordeaux",
+          "grenoble"
         ],
-        "evidenceFile": "research/overnight-cities-2026-10-08/bordeaux-ign-root-acceptance.json"
+        "evidenceFile": "research/overnight-cities-2026-10-08/bordeaux-ign-root-acceptance.json",
+        "verifiedAt": "2026-10-11",
+        "adapter": "wfs",
+        "cityEvidenceFiles": {
+          "grenoble": "world-parcels/research/qualification-2026-10-11/4353/qualification.json"
+        },
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged."
       },
       "integrationAttempts": [
         {
@@ -2932,7 +2942,8 @@
         "wup2025:3549": "281 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 281 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32631 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Lille metropolitan settlement locator near Marcq-en-Barœul, which is a separate commune. The initial query restricted to Lille commune 59350 returned no parcel at the WUP point; the existing nationwide IGN provider verifies nearby ground at the unchanged locator without that municipal restriction. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
         "wup2025:2391": "85 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete counted paging, forced three-row geometry pages, all 85 fresh exact native identities, explicit absence, footprint and source binding passed in 31 requests. Independent metric EPSG:32631 GEOS found all polygons valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The existing national IGN/DGFiP Parcellaire Express provider and FR-PCI native idu namespace are reused. The exact WUP point returned no parcel; both original bounded-nearby samples have Toulouse INSEE prefix31555 and match fresh complete geometry exactly. No municipality boundary was inferred from the WUP point, and no full-city coverage claim is made. Legal title, survey accuracy, currentness, long-term key continuity and wider municipal completeness remain unverified.",
         "wup2025:1566": "110 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete counted paging, forced three-row geometry pages, all 110 fresh exact native identities, explicit absence, footprint and source binding passed in 41 requests. Independent metric EPSG:32630 GEOS found all polygons valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The existing national IGN/DGFiP Parcellaire Express provider and FR-PCI native idu namespace are reused. Native parcel33063000IX0001 covers the original exact WUP point and matches fresh complete geometry exactly. This is bounded settlement-local evidence, not proof of municipal cadastral completeness. Legal title, survey accuracy, currentness, long-term key continuity and wider municipal completeness remain unverified."
-      }
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/4353/qualification.json"
     },
     {
       "sourceId": "au-vic-vicmap-parcel",
@@ -9305,21 +9316,31 @@
       "endpoint": "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/UtahStatewideParcels/FeatureServer/0",
       "method": "ArcGIS REST adapter",
       "responseFormat": "WGS84 GeoJSON",
-      "verificationStatus": "verified_sample_capital_scope",
+      "verificationStatus": "verified_bounded_live_adapter",
       "reuseStatus": "Source conditions are informational; format and adapter engineering do not imply absence of parcel data.",
       "evidenceFile": "research/us-capitals-2026-10-06/ut.json",
       "liveIntegration": {
         "status": "enabled",
         "cityIds": [
-          "salt_lake_city"
+          "salt_lake_city",
+          "west_valley_city"
         ],
         "evidenceFile": "research/us-capitals-batch-four-live-2026-10-06.json",
         "reason": "Complete bounded, exact-native and binding acceptance passed.",
         "technicalBlockers": [],
-        "termsAreInformational": true
+        "termsAreInformational": true,
+        "verifiedAt": "2026-10-11",
+        "adapter": "arcgis",
+        "cityEvidenceFiles": {
+          "west_valley_city": "world-parcels/research/qualification-2026-10-11/5646/qualification.json"
+        },
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged."
       },
       "verifiedCityIds": [
-        "us-capital:UT"
+        "us-capital:UT",
+        "wup2025:5646"
       ],
       "integrationAttempts": [
         {
@@ -9382,7 +9403,8 @@
           "evidenceFile": "research/us-capitals-batch-four-reserve-sources-2026-10-06.json"
         }
       ],
-      "previousResearchSourceId": "us-capital-ut-parcel-research"
+      "previousResearchSourceId": "us-capital-ut-parcel-research",
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/5646/qualification.json"
     },
     {
       "sourceId": "us-vt-montpelier-parcels",
@@ -14088,6 +14110,732 @@
       "cityScopes": {
         "wup2025:7290": "Public cadastral parcel geometry around the unchanged Jundiaí WUP settlement locator. Thirteen aligned cells and 205 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:31983 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The exact unchanged WUP locator has no parcel hit in its containing cell; nearby public parcel BR-JUNDIAI-LOTES-JUND-GID-46298 supports complete one-parcel binding. Native gid identifies individual GIS ground polygons; the duplicate codlote business reference is not used as runtime identity. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness."
       }
+    },
+    {
+      "sourceId": "ca-bc-surrey-lots",
+      "name": "City of Surrey cadastral lots",
+      "operator": "City of Surrey cadastral lots",
+      "countryCode": "CA",
+      "scope": "City of Surrey municipal lots in the COSMOS GIS; bounded local qualification only.",
+      "endpoint": "https://gisservices.surrey.ca/arcgis/rest/services/ICI_Data/MapServer/1",
+      "method": "GET",
+      "responseFormat": "arcgis",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_bounded_live_adapter",
+      "reuseStatus": "terms_to_review",
+      "verifiedCityIds": [
+        "wup2025:632"
+      ],
+      "evidenceFile": "research/qualification-admission-2026-10-11.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "surrey"
+        ],
+        "verifiedAt": "2026-10-11",
+        "adapter": "arcgis",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/632/qualification.json",
+        "cityEvidenceFiles": {
+          "surrey": "world-parcels/research/qualification-2026-10-11/632/qualification.json"
+        },
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged."
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/632/qualification.json"
+    },
+    {
+      "sourceId": "it-bologna-sit-parcels",
+      "name": "Comune di Bologna SIT — cadastral parcels",
+      "operator": "Comune di Bologna - Sistema Informativo Territoriale (SIT)",
+      "countryCode": "IT",
+      "scope": "Comune di Bologna cadastral parcel reference geometry, restricted to source municipality COMUNE=A944; qualification covers bounded local samples only.",
+      "endpoint": "https://sitmappe.comune.bologna.it/arcgis/rest/services/CATASTO/CATASTO/MapServer/0",
+      "method": "GET",
+      "responseFormat": "arcgis",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_bounded_live_adapter",
+      "reuseStatus": "terms_to_review",
+      "verifiedCityIds": [
+        "wup2025:3342"
+      ],
+      "evidenceFile": "research/qualification-admission-2026-10-11.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "bologna"
+        ],
+        "verifiedAt": "2026-10-11",
+        "adapter": "arcgis",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3342/qualification.json",
+        "cityEvidenceFiles": {
+          "bologna": "world-parcels/research/qualification-2026-10-11/3342/qualification.json"
+        },
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged."
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/3342/qualification.json"
+    },
+    {
+      "sourceId": "ch-ge-sitg-cadastre-rdppf",
+      "name": "Geneva SITG cadastral survey parcels (EGRID)",
+      "operator": "Geneva SITG cadastral survey parcels (EGRID)",
+      "countryCode": "CH",
+      "scope": "Official cantonal cadastral and official-survey map service for Geneva; the SITG catalog identifies the parcel data as official mensuration/cadastre data.",
+      "endpoint": "https://thematic.sitg.ge.ch/arcgis/rest/services/CADASTRE_RDPPF/MapServer/4",
+      "method": "GET",
+      "responseFormat": "arcgis",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_bounded_live_adapter",
+      "reuseStatus": "terms_to_review",
+      "verifiedCityIds": [
+        "wup2025:60"
+      ],
+      "evidenceFile": "research/qualification-admission-2026-10-11.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "geneva"
+        ],
+        "verifiedAt": "2026-10-11",
+        "adapter": "arcgis",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/60/qualification.json",
+        "cityEvidenceFiles": {
+          "geneva": "world-parcels/research/qualification-2026-10-11/60/qualification.json"
+        },
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged."
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/60/qualification.json"
+    },
+    {
+      "sourceId": "ca-on-hamilton-assessment-parcel",
+      "name": "City of Hamilton Assessment Parcel",
+      "operator": "City of Hamilton Assessment Parcel",
+      "countryCode": "CA",
+      "scope": "City of Hamilton assessment parcel mapping from Teranet; bounded technical review only.",
+      "endpoint": "https://services.arcgis.com/rYz782eMbySr2srL/arcgis/rest/services/Hamilton_Assessment_Parcel/FeatureServer/0",
+      "method": "GET",
+      "responseFormat": "arcgis",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_bounded_live_adapter",
+      "reuseStatus": "terms_to_review",
+      "verifiedCityIds": [
+        "wup2025:2668"
+      ],
+      "evidenceFile": "research/qualification-admission-2026-10-11.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "hamilton"
+        ],
+        "verifiedAt": "2026-10-11",
+        "adapter": "arcgis",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/2668/qualification.json",
+        "cityEvidenceFiles": {
+          "hamilton": "world-parcels/research/qualification-2026-10-11/2668/qualification.json"
+        },
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged."
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/2668/qualification.json"
+    },
+    {
+      "sourceId": "nice-cotedazur-cadastre-arcgis",
+      "name": "Métropole Nice Côte d’Azur Cadastre ArcGIS MapServer",
+      "operator": "Métropole Nice Côte d’Azur Cadastre ArcGIS MapServer",
+      "countryCode": "FR",
+      "scope": "Cadastre of the Métropole Nice Côte d’Azur; official layer extent covers the metropolitan service area.",
+      "endpoint": "https://cartes.nicecotedazur.org/heberge2/rest/services/Cadastre/Cadastre/MapServer/8",
+      "method": "GET",
+      "responseFormat": "arcgis",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_bounded_live_adapter",
+      "reuseStatus": "terms_to_review",
+      "verifiedCityIds": [
+        "wup2025:4796"
+      ],
+      "evidenceFile": "research/qualification-admission-2026-10-11.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "nice"
+        ],
+        "verifiedAt": "2026-10-11",
+        "adapter": "arcgis",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/4796/qualification.json",
+        "cityEvidenceFiles": {
+          "nice": "world-parcels/research/qualification-2026-10-11/4796/qualification.json"
+        },
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged."
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/4796/qualification.json"
+    },
+    {
+      "sourceId": "us-ca-escondido-parcels",
+      "name": "City of Escondido assessor-derived parcel layer",
+      "operator": "City of Escondido assessor-derived parcel layer",
+      "countryCode": "US",
+      "scope": "Official City of Escondido assessor-derived parcel layer, including proposed and retired parcels and stacked taxable parcels; no status or geometric exclusions.",
+      "endpoint": "https://gis.escondido.gov/server/rest/services/Data/Parcels/FeatureServer/0",
+      "method": "GET",
+      "responseFormat": "arcgis",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_bounded_live_adapter",
+      "reuseStatus": "terms_to_review",
+      "verifiedCityIds": [
+        "wup2025:3039"
+      ],
+      "evidenceFile": "research/qualification-admission-2026-10-11.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "escondido"
+        ],
+        "verifiedAt": "2026-10-11",
+        "adapter": "arcgis",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3039/qualification.json",
+        "cityEvidenceFiles": {
+          "escondido": "world-parcels/research/qualification-2026-10-11/3039/qualification.json"
+        },
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged."
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/3039/qualification.json"
+    },
+    {
+      "sourceId": "san-joaquin-county-diesel-wfl1-parcels",
+      "name": "San Joaquin County / Stockton Assessor parcels",
+      "operator": "San Joaquin County / Stockton Assessor parcels",
+      "countryCode": "US",
+      "scope": "Bounded qualified sample; citywide completeness is unverified.",
+      "endpoint": "https://services3.arcgis.com/nUD9ady1mS8uVvoJ/ArcGIS/rest/services/Diesel_WFL1/FeatureServer/1",
+      "method": "GET",
+      "responseFormat": "arcgis",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_bounded_live_adapter",
+      "reuseStatus": "terms_to_review",
+      "verifiedCityIds": [
+        "wup2025:3536"
+      ],
+      "evidenceFile": "research/qualification-admission-2026-10-11.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "stockton"
+        ],
+        "verifiedAt": "2026-10-11",
+        "adapter": "arcgis",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3536/qualification.json",
+        "cityEvidenceFiles": {
+          "stockton": "world-parcels/research/qualification-2026-10-11/3536/qualification.json"
+        },
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged."
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/3536/qualification.json"
+    },
+    {
+      "sourceId": "us-pa-allegheny-parcels",
+      "name": "Allegheny County parcel boundaries",
+      "operator": "Allegheny County DCS-GIS",
+      "countryCode": "US",
+      "scope": "Allegheny County parcel-boundary layer including Pittsburgh. Qualification is bounded around the frozen WUP point and does not establish citywide completeness, legal title, survey accuracy or currentness. Native CRS EPSG:2272 / WKID 102729; queries request WGS84 GeoJSON outSR=4326.",
+      "endpoint": "https://gisdata.alleghenycounty.us/arcgis/rest/services/OPENDATA/Parcels/MapServer/0",
+      "method": "GET",
+      "responseFormat": "arcgis",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_bounded_live_adapter",
+      "reuseStatus": "terms_to_review",
+      "verifiedCityIds": [
+        "wup2025:8067"
+      ],
+      "evidenceFile": "research/qualification-admission-2026-10-11.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "pittsburgh"
+        ],
+        "verifiedAt": "2026-10-11",
+        "adapter": "arcgis",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/8067/qualification.json",
+        "cityEvidenceFiles": {
+          "pittsburgh": "world-parcels/research/qualification-2026-10-11/8067/qualification.json"
+        },
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged."
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/8067/qualification.json"
+    },
+    {
+      "sourceId": "co-pasto-urban-parcels",
+      "name": "Pasto urban cadastral parcels (IGAC 2021 base)",
+      "operator": "Pasto urban cadastral parcels (IGAC 2021 base)",
+      "countryCode": "CO",
+      "scope": "Urban cadastral base for the municipality of Pasto, within the urban perimeter approved by the applicable POT. Layer description states IGAC open data obtained in 2021; rural parcels are separate layers.",
+      "endpoint": "https://geoportal.pasto.gov.co/server/rest/services/Planeacion/Mapa_base_registro_de_descargas/MapServer/29",
+      "method": "GET",
+      "responseFormat": "arcgis",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_bounded_live_adapter",
+      "reuseStatus": "terms_to_review",
+      "verifiedCityIds": [
+        "wup2025:351"
+      ],
+      "evidenceFile": "research/qualification-admission-2026-10-11.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "pasto"
+        ],
+        "verifiedAt": "2026-10-11",
+        "adapter": "arcgis",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/351/qualification.json",
+        "cityEvidenceFiles": {
+          "pasto": "world-parcels/research/qualification-2026-10-11/351/qualification.json"
+        },
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged."
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/351/qualification.json"
+    },
+    {
+      "sourceId": "us.ca.riverside-city-parcels",
+      "name": "City of Riverside cadastral parcels",
+      "operator": "City of Riverside cadastral parcels",
+      "countryCode": "US",
+      "scope": "Bounded qualified sample; citywide completeness is unverified.",
+      "endpoint": "https://mapriverside.riversideca.gov/server/rest/services/Cadastral/Cadastral_Public/MapServer/86",
+      "method": "GET",
+      "responseFormat": "arcgis",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_bounded_live_adapter",
+      "reuseStatus": "terms_to_review",
+      "verifiedCityIds": [
+        "wup2025:3430"
+      ],
+      "evidenceFile": "research/qualification-admission-2026-10-11.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "riverside"
+        ],
+        "verifiedAt": "2026-10-11",
+        "adapter": "arcgis",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3430/qualification.json",
+        "cityEvidenceFiles": {
+          "riverside": "world-parcels/research/qualification-2026-10-11/3430/qualification.json"
+        },
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged."
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/3430/qualification.json"
+    },
+    {
+      "sourceId": "ca-qc-longueuil-cadastre",
+      "name": "Ville de Longueuil municipal cadastral lots",
+      "operator": "Ville de Longueuil",
+      "countryCode": "CA",
+      "scope": "Municipal cadastral lot polygons in publisher-coded official states -1 and 0; bounded Longueuil neighborhood qualification only. Service extent may span the municipal agglomeration; citywide completeness and authoritative maintenance scope remain unverified.",
+      "endpoint": "https://geomatique.longueuil.quebec/public/rest/services/DonneesPubliques/CadastreEtEvaluation/FeatureServer/0",
+      "method": "GET",
+      "responseFormat": "arcgis",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_bounded_live_adapter",
+      "reuseStatus": "terms_to_review",
+      "verifiedCityIds": [
+        "wup2025:3792"
+      ],
+      "evidenceFile": "research/qualification-admission-2026-10-11.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "longueuil"
+        ],
+        "verifiedAt": "2026-10-11",
+        "adapter": "arcgis",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3792/qualification.json",
+        "cityEvidenceFiles": {
+          "longueuil": "world-parcels/research/qualification-2026-10-11/3792/qualification.json"
+        },
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged."
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/3792/qualification.json"
+    },
+    {
+      "sourceId": "pk-pulse-wazirabad-parcels",
+      "name": "Punjab PULSE Wazirabad cadastral reference polygons",
+      "operator": "Punjab PULSE Wazirabad cadastral reference polygons",
+      "countryCode": "PK",
+      "scope": "Bounded qualified sample; citywide completeness is unverified.",
+      "endpoint": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/35",
+      "method": "GET",
+      "responseFormat": "pulse-public",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_bounded_live_adapter",
+      "reuseStatus": "terms_to_review",
+      "verifiedCityIds": [
+        "wup2025:7979"
+      ],
+      "evidenceFile": "research/qualification-admission-2026-10-11.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "wazirabad"
+        ],
+        "verifiedAt": "2026-10-11",
+        "adapter": "pulse-public",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/7979/qualification.json",
+        "cityEvidenceFiles": {
+          "wazirabad": "world-parcels/research/qualification-2026-10-11/7979/qualification.json"
+        },
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged."
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/7979/qualification.json"
+    },
+    {
+      "sourceId": "us-ny-erie-parcels",
+      "name": "Erie County Office of GIS tax parcels",
+      "operator": "Erie County Office of GIS",
+      "countryCode": "US",
+      "scope": "Erie County tax-parcel polygon service linked by the City of Buffalo; bounded local qualification only. Buffalo municipal completeness is unverified.",
+      "endpoint": "https://gis.erie.gov/server/rest/services/OGIS/Parcels/MapServer/0",
+      "method": "GET",
+      "responseFormat": "arcgis",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_bounded_live_adapter",
+      "reuseStatus": "terms_to_review",
+      "verifiedCityIds": [
+        "wup2025:8207"
+      ],
+      "evidenceFile": "research/qualification-admission-2026-10-11.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "buffalo"
+        ],
+        "verifiedAt": "2026-10-11",
+        "adapter": "arcgis",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/8207/qualification.json",
+        "cityEvidenceFiles": {
+          "buffalo": "world-parcels/research/qualification-2026-10-11/8207/qualification.json"
+        },
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged."
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/8207/qualification.json"
+    },
+    {
+      "sourceId": "ca-on-oshawa-assessed-parcels",
+      "name": "City of Oshawa assessed parcels of land",
+      "operator": "City of Oshawa assessed parcels of land",
+      "countryCode": "CA",
+      "scope": "City of Oshawa municipal assessed parcels of land (FCODE=2150); assessed condominium records (FCODE=9920) are a separate documented theme.",
+      "endpoint": "https://map.oshawa.ca/arcgis/rest/services/Operational/Parcels_AddPts/MapServer/1",
+      "method": "GET",
+      "responseFormat": "arcgis",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_bounded_live_adapter",
+      "reuseStatus": "terms_to_review",
+      "verifiedCityIds": [
+        "wup2025:3218"
+      ],
+      "evidenceFile": "research/qualification-admission-2026-10-11.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "oshawa"
+        ],
+        "verifiedAt": "2026-10-11",
+        "adapter": "arcgis",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3218/qualification.json",
+        "cityEvidenceFiles": {
+          "oshawa": "world-parcels/research/qualification-2026-10-11/3218/qualification.json"
+        },
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged."
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/3218/qualification.json"
+    },
+    {
+      "sourceId": "arlington-tax-parcels",
+      "name": "arlington-tax-parcels",
+      "operator": "arlington-tax-parcels",
+      "countryCode": "US",
+      "scope": "Bounded qualified sample; citywide completeness is unverified.",
+      "endpoint": "https://gis2.arlingtontx.gov/agsext2/rest/services/OpenData/OD_Property/MapServer/2",
+      "method": "GET",
+      "responseFormat": "arcgis",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_bounded_live_adapter",
+      "reuseStatus": "terms_to_review",
+      "verifiedCityIds": [
+        "wup2025:6413"
+      ],
+      "evidenceFile": "research/qualification-admission-2026-10-11.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "arlington"
+        ],
+        "verifiedAt": "2026-10-11",
+        "adapter": "arcgis",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/6413/qualification.json",
+        "cityEvidenceFiles": {
+          "arlington": "world-parcels/research/qualification-2026-10-11/6413/qualification.json"
+        },
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged."
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/6413/qualification.json"
+    },
+    {
+      "sourceId": "brno-city-gis-katastr-g-parcely",
+      "name": "GIS města Brna PUBLIC/katastr_g ArcGIS Feature Layer 5 Parcely",
+      "operator": "Statutory City of Brno GIS / Magistrát města Brna",
+      "countryCode": "CZ",
+      "scope": "Brno and surrounding cadastral data per official service Subject; bounded local qualification only.",
+      "endpoint": "https://gis.brno.cz/ags3/rest/services/PUBLIC/katastr_g/MapServer/5",
+      "method": "GET",
+      "responseFormat": "arcgis",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_bounded_live_adapter",
+      "reuseStatus": "terms_to_review",
+      "verifiedCityIds": [
+        "wup2025:1168"
+      ],
+      "evidenceFile": "research/qualification-admission-2026-10-11.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "brno"
+        ],
+        "verifiedAt": "2026-10-11",
+        "adapter": "arcgis",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/1168/qualification.json",
+        "cityEvidenceFiles": {
+          "brno": "world-parcels/research/qualification-2026-10-11/1168/qualification.json"
+        },
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged."
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/1168/qualification.json"
+    },
+    {
+      "sourceId": "us-in-lake-hammond-parcels",
+      "name": "Lake County Indiana parcel fabric, Hammond municipality",
+      "operator": "Lake County Indiana parcel fabric, Hammond municipality",
+      "countryCode": "US",
+      "scope": "Lake County, Indiana cadastral parcel boundaries, restricted by the publisher Incorporated Municipality field IncMuni=Hammond. The unchanged WUP point is west of the published service extent; bounded sampling includes the native sample centroid cell.",
+      "endpoint": "https://services5.arcgis.com/8CXRnvSfSpwdf0R6/arcgis/rest/services/Lake_County_Parcels/FeatureServer/0",
+      "method": "GET",
+      "responseFormat": "arcgis",
+      "crs": "EPSG:4326",
+      "verificationStatus": "verified_bounded_live_adapter",
+      "reuseStatus": "terms_to_review",
+      "verifiedCityIds": [
+        "wup2025:7729"
+      ],
+      "evidenceFile": "research/qualification-admission-2026-10-11.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "hammond"
+        ],
+        "verifiedAt": "2026-10-11",
+        "adapter": "arcgis",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/7729/qualification.json",
+        "cityEvidenceFiles": {
+          "hammond": "world-parcels/research/qualification-2026-10-11/7729/qualification.json"
+        },
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged."
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/7729/qualification.json"
+    },
+    {
+      "sourceId": "jp-takasaki-parcel-map",
+      "name": "Takasaki City parcel-number map polygons",
+      "operator": "Takasaki City parcel-number map polygons",
+      "countryCode": "JP",
+      "scope": "Bounded qualified sample; citywide completeness is unverified.",
+      "endpoint": "https://www.city.takasaki.gunma.jp/uploaded/attachment/42714.zip",
+      "method": "GET",
+      "responseFormat": "geojson-snapshot",
+      "crs": "EPSG:6677",
+      "verificationStatus": "verified_bounded_live_adapter",
+      "reuseStatus": "terms_to_review",
+      "verifiedCityIds": [
+        "wup2025:5785"
+      ],
+      "evidenceFile": "research/qualification-admission-2026-10-11.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "takasaki"
+        ],
+        "verifiedAt": "2026-10-11",
+        "adapter": "geojson-snapshot",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/5785/qualification.json",
+        "cityEvidenceFiles": {
+          "takasaki": "world-parcels/research/qualification-2026-10-11/5785/qualification.json"
+        },
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged."
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/5785/qualification.json"
+    },
+    {
+      "sourceId": "hessen-alkis-vereinfacht-wfs",
+      "name": "Hessen simplified ALKIS cadastral parcels",
+      "operator": "Hessisches Landesamt für Bodenmanagement und Geoinformation",
+      "countryCode": "DE",
+      "scope": "State ALKIS cadastral parcels; frozen bounded Wiesbaden samples. Citywide completeness is unverified.",
+      "endpoint": "https://www.gds.hessen.de/wfs2/aaa-suite/cgi-bin/alkis/vereinf/wfs",
+      "method": "GET",
+      "responseFormat": "gml-wfs",
+      "crs": "EPSG:25832",
+      "verificationStatus": "verified_bounded_live_adapter",
+      "reuseStatus": "terms_to_review",
+      "verifiedCityIds": [
+        "wup2025:2998"
+      ],
+      "evidenceFile": "research/qualification-admission-2026-10-11.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "wiesbaden"
+        ],
+        "verifiedAt": "2026-10-11",
+        "adapter": "gml-wfs",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/2998/qualification.json",
+        "cityEvidenceFiles": {
+          "wiesbaden": "world-parcels/research/qualification-2026-10-11/2998/qualification.json"
+        },
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged."
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/2998/qualification.json"
+    },
+    {
+      "sourceId": "gdansk-gml-wfs",
+      "name": "Gdańsk municipal EGiB cadastral parcel polygons",
+      "operator": "Urząd Miejski w Gdańsku",
+      "countryCode": "PL",
+      "scope": "Municipal parcel layer; frozen three-parcel local sample near the unchanged WUP point. No citywide completeness claim.",
+      "endpoint": "https://ewid-wms.gdansk.gda.pl/iip/ows",
+      "method": "GET",
+      "responseFormat": "gml-wfs",
+      "crs": "EPSG:2177",
+      "verificationStatus": "verified_bounded_live_adapter",
+      "reuseStatus": "terms_to_review",
+      "verifiedCityIds": [
+        "wup2025:2093"
+      ],
+      "evidenceFile": "research/qualification-admission-2026-10-11.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "gdansk"
+        ],
+        "verifiedAt": "2026-10-11",
+        "adapter": "gml-wfs",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/2093/qualification.json",
+        "cityEvidenceFiles": {
+          "gdansk": "world-parcels/research/qualification-2026-10-11/2093/qualification.json"
+        },
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged."
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/2093/qualification.json"
+    },
+    {
+      "sourceId": "sosnowiec-gml-wfs",
+      "name": "Sosnowiec municipal EGiB parcel polygons",
+      "operator": "Urząd Miejski w Sosnowcu / Wydział Geodezji i Kartografii",
+      "countryCode": "PL",
+      "scope": "Municipal Sosnowiec cadastral parcel layer; source bounds cover the unchanged WUP locator. Citywide completeness is unverified.",
+      "endpoint": "https://sosnowiec.webewid.pl:9443/iip/ows",
+      "method": "GET",
+      "responseFormat": "gml-wfs",
+      "crs": "EPSG:2177",
+      "verificationStatus": "verified_bounded_live_adapter",
+      "reuseStatus": "terms_to_review",
+      "verifiedCityIds": [
+        "wup2025:3234"
+      ],
+      "evidenceFile": "research/qualification-admission-2026-10-11.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "sosnowiec"
+        ],
+        "verifiedAt": "2026-10-11",
+        "adapter": "gml-wfs",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3234/qualification.json",
+        "cityEvidenceFiles": {
+          "sosnowiec": "world-parcels/research/qualification-2026-10-11/3234/qualification.json"
+        },
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged."
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/3234/qualification.json"
+    },
+    {
+      "sourceId": "fr-mmm-montpellier-cadastre",
+      "name": "Montpellier municipal PCI cadastral parcels",
+      "operator": "Montpellier municipal PCI cadastral parcels",
+      "countryCode": "FR",
+      "scope": "Official Montpellier municipal compilation of DGFiP PCI vector cadastral geographic data; parcel layer in the authority Shapefile ZIP.",
+      "endpoint": "https://data.montpellier3m.fr/sites/default/files/ressources/MMM_Montpellier_Cadastre.zip",
+      "method": "GET",
+      "responseFormat": "geojson-snapshot",
+      "crs": "EPSG:2154",
+      "verificationStatus": "verified_bounded_live_adapter",
+      "reuseStatus": "terms_to_review",
+      "verifiedCityIds": [
+        "wup2025:3893"
+      ],
+      "evidenceFile": "research/qualification-admission-2026-10-11.json",
+      "liveIntegration": {
+        "status": "enabled",
+        "cityIds": [
+          "montpellier"
+        ],
+        "verifiedAt": "2026-10-11",
+        "adapter": "geojson-snapshot",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/3893/qualification.json",
+        "cityEvidenceFiles": {
+          "montpellier": "world-parcels/research/qualification-2026-10-11/3893/qualification.json"
+        },
+        "storesParcelGeometryInDb": false,
+        "reuseTerms": "informational_only",
+        "selection": "Opt-in URL parcelSource=live; the existing default parcel source remains unchanged."
+      },
+      "qualificationEvidenceFile": "world-parcels/research/qualification-2026-10-11/3893/qualification.json"
     }
   ],
   "countryCoverage": [
@@ -78465,6 +79213,450 @@
           "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result."
         }
       }
+    },
+    {
+      "cityId": "wup2025:5646",
+      "name": "West Valley City",
+      "country": "United States",
+      "countryCode": "US",
+      "centerLatLon": [
+        40.6516355964175,
+        -111.987511764721
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "us-ut-salt-lake-city-parcels"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-11/5646/qualification.json",
+      "appCityId": "west_valley_city",
+      "note": "Bounded technical qualification around the unchanged UN World Urbanization Prospects locator. Sampled parcel IDs and geometries passed source qualification; citywide completeness, legal title and currentness are not established. Reuse terms remain subject to review."
+    },
+    {
+      "cityId": "wup2025:632",
+      "name": "Surrey",
+      "country": "Canada",
+      "countryCode": "CA",
+      "centerLatLon": [
+        49.1578411996007,
+        -122.842214202135
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "ca-bc-surrey-lots"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-11/632/qualification.json",
+      "appCityId": "surrey",
+      "note": "Bounded technical qualification around the unchanged UN World Urbanization Prospects locator. Sampled parcel IDs and geometries passed source qualification; citywide completeness, legal title and currentness are not established. Reuse terms remain subject to review."
+    },
+    {
+      "cityId": "wup2025:3342",
+      "name": "Bologna",
+      "country": "Italy",
+      "countryCode": "IT",
+      "centerLatLon": [
+        44.4942527646909,
+        11.3383469340327
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "it-bologna-sit-parcels"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-11/3342/qualification.json",
+      "appCityId": "bologna",
+      "note": "Bounded technical qualification around the unchanged UN World Urbanization Prospects locator. Sampled parcel IDs and geometries passed source qualification; citywide completeness, legal title and currentness are not established. Reuse terms remain subject to review."
+    },
+    {
+      "cityId": "wup2025:60",
+      "name": "Geneva",
+      "country": "Switzerland",
+      "countryCode": "CH",
+      "centerLatLon": [
+        46.2017520971079,
+        6.13622539632436
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "ch-ge-sitg-cadastre-rdppf"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-11/60/qualification.json",
+      "appCityId": "geneva",
+      "note": "Bounded technical qualification around the unchanged UN World Urbanization Prospects locator. Sampled parcel IDs and geometries passed source qualification; citywide completeness, legal title and currentness are not established. Reuse terms remain subject to review."
+    },
+    {
+      "cityId": "wup2025:2668",
+      "name": "Hamilton",
+      "country": "Canada",
+      "countryCode": "CA",
+      "centerLatLon": [
+        43.2335378918963,
+        -79.8541587136975
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "ca-on-hamilton-assessment-parcel"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-11/2668/qualification.json",
+      "appCityId": "hamilton",
+      "note": "Bounded technical qualification around the unchanged UN World Urbanization Prospects locator. Sampled parcel IDs and geometries passed source qualification; citywide completeness, legal title and currentness are not established. Reuse terms remain subject to review."
+    },
+    {
+      "cityId": "wup2025:4796",
+      "name": "Nice",
+      "country": "France",
+      "countryCode": "FR",
+      "centerLatLon": [
+        43.6987107905202,
+        7.23303214314509
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "nice-cotedazur-cadastre-arcgis"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-11/4796/qualification.json",
+      "appCityId": "nice",
+      "note": "Bounded technical qualification around the unchanged UN World Urbanization Prospects locator. Sampled parcel IDs and geometries passed source qualification; citywide completeness, legal title and currentness are not established. Reuse terms remain subject to review."
+    },
+    {
+      "cityId": "wup2025:3039",
+      "name": "Escondido",
+      "country": "United States",
+      "countryCode": "US",
+      "centerLatLon": [
+        33.1691791253299,
+        -117.195352456462
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "us-ca-escondido-parcels"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-11/3039/qualification.json",
+      "appCityId": "escondido",
+      "note": "Bounded technical qualification around the unchanged UN World Urbanization Prospects locator. Sampled parcel IDs and geometries passed source qualification; citywide completeness, legal title and currentness are not established. Reuse terms remain subject to review. The app opens on the positively sampled centroid cell (1 returned parcels, 2.969 km from the unchanged UN locator); this is a view focus only and does not change the qualification point.",
+      "appViewCenterLatLon": [
+        33.1785,
+        -117.16550000000001
+      ]
+    },
+    {
+      "cityId": "wup2025:3536",
+      "name": "Stockton",
+      "country": "United States",
+      "countryCode": "US",
+      "centerLatLon": [
+        37.9838255374783,
+        -121.30363247299
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "san-joaquin-county-diesel-wfl1-parcels"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-11/3536/qualification.json",
+      "appCityId": "stockton",
+      "note": "Bounded technical qualification around the unchanged UN World Urbanization Prospects locator. Sampled parcel IDs and geometries passed source qualification; citywide completeness, legal title and currentness are not established. Reuse terms remain subject to review."
+    },
+    {
+      "cityId": "wup2025:8067",
+      "name": "Pittsburgh",
+      "country": "United States",
+      "countryCode": "US",
+      "centerLatLon": [
+        40.4196878479719,
+        -79.9703261647027
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "us-pa-allegheny-parcels"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-11/8067/qualification.json",
+      "appCityId": "pittsburgh",
+      "note": "Bounded technical qualification around the unchanged UN World Urbanization Prospects locator. Sampled parcel IDs and geometries passed source qualification; citywide completeness, legal title and currentness are not established. Reuse terms remain subject to review."
+    },
+    {
+      "cityId": "wup2025:351",
+      "name": "Pasto",
+      "country": "Colombia",
+      "countryCode": "CO",
+      "centerLatLon": [
+        1.2089443727064,
+        -77.2772679864238
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "co-pasto-urban-parcels"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-11/351/qualification.json",
+      "appCityId": "pasto",
+      "note": "Bounded technical qualification around the unchanged UN World Urbanization Prospects locator. Sampled parcel IDs and geometries passed source qualification; citywide completeness, legal title and currentness are not established. Reuse terms remain subject to review."
+    },
+    {
+      "cityId": "wup2025:3430",
+      "name": "Riverside",
+      "country": "United States",
+      "countryCode": "US",
+      "centerLatLon": [
+        33.9351928344791,
+        -117.443821994716
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "us.ca.riverside-city-parcels"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-11/3430/qualification.json",
+      "appCityId": "riverside",
+      "note": "Bounded technical qualification around the unchanged UN World Urbanization Prospects locator. Sampled parcel IDs and geometries passed source qualification; citywide completeness, legal title and currentness are not established. Reuse terms remain subject to review."
+    },
+    {
+      "cityId": "wup2025:4353",
+      "name": "Grenoble",
+      "country": "France",
+      "countryCode": "FR",
+      "centerLatLon": [
+        45.1806156549356,
+        5.72378420259572
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "fr-ign-parcellaire-express"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-11/4353/qualification.json",
+      "appCityId": "grenoble",
+      "note": "Bounded technical qualification around the unchanged UN World Urbanization Prospects locator. Sampled parcel IDs and geometries passed source qualification; citywide completeness, legal title and currentness are not established. Reuse terms remain subject to review."
+    },
+    {
+      "cityId": "wup2025:3792",
+      "name": "Longueuil",
+      "country": "Canada",
+      "countryCode": "CA",
+      "centerLatLon": [
+        45.4995092536395,
+        -73.4660080560164
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "ca-qc-longueuil-cadastre"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-11/3792/qualification.json",
+      "appCityId": "longueuil",
+      "note": "Bounded technical qualification around the unchanged UN World Urbanization Prospects locator. Sampled parcel IDs and geometries passed source qualification; citywide completeness, legal title and currentness are not established. Reuse terms remain subject to review."
+    },
+    {
+      "cityId": "wup2025:7979",
+      "name": "Wazirabad",
+      "country": "Pakistan",
+      "countryCode": "PK",
+      "centerLatLon": [
+        32.4355546089934,
+        74.1248485345839
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "pk-pulse-wazirabad-parcels"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-11/7979/qualification.json",
+      "appCityId": "wazirabad",
+      "note": "Bounded technical qualification around the unchanged UN World Urbanization Prospects locator. Sampled parcel IDs and geometries passed source qualification; citywide completeness, legal title and currentness are not established. Reuse terms remain subject to review."
+    },
+    {
+      "cityId": "wup2025:8207",
+      "name": "Buffalo",
+      "country": "United States",
+      "countryCode": "US",
+      "centerLatLon": [
+        42.9359928509233,
+        -78.8390421008214
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "us-ny-erie-parcels"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-11/8207/qualification.json",
+      "appCityId": "buffalo",
+      "note": "Bounded technical qualification around the unchanged UN World Urbanization Prospects locator. Sampled parcel IDs and geometries passed source qualification; citywide completeness, legal title and currentness are not established. Reuse terms remain subject to review."
+    },
+    {
+      "cityId": "wup2025:3218",
+      "name": "Oshawa",
+      "country": "Canada",
+      "countryCode": "CA",
+      "centerLatLon": [
+        43.9038793922422,
+        -78.8826450091796
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "ca-on-oshawa-assessed-parcels"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-11/3218/qualification.json",
+      "appCityId": "oshawa",
+      "note": "Bounded technical qualification around the unchanged UN World Urbanization Prospects locator. Sampled parcel IDs and geometries passed source qualification; citywide completeness, legal title and currentness are not established. Reuse terms remain subject to review."
+    },
+    {
+      "cityId": "wup2025:6413",
+      "name": "Arlington",
+      "country": "United States",
+      "countryCode": "US",
+      "centerLatLon": [
+        32.7174112900959,
+        -97.0729125498606
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "arlington-tax-parcels"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-11/6413/qualification.json",
+      "appCityId": "arlington",
+      "note": "Bounded technical qualification around the unchanged UN World Urbanization Prospects locator. Sampled parcel IDs and geometries passed source qualification; citywide completeness, legal title and currentness are not established. Reuse terms remain subject to review. The app opens on the positively sampled centroid cell (19 returned parcels, 0.97 km from the unchanged UN locator); this is a view focus only and does not change the qualification point.",
+      "appViewCenterLatLon": [
+        32.7235,
+        -97.0655
+      ]
+    },
+    {
+      "cityId": "wup2025:1168",
+      "name": "Brno",
+      "country": "Czechia",
+      "countryCode": "CZ",
+      "centerLatLon": [
+        49.203210413959,
+        16.6097275929996
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "brno-city-gis-katastr-g-parcely"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-11/1168/qualification.json",
+      "appCityId": "brno",
+      "note": "Bounded technical qualification around the unchanged UN World Urbanization Prospects locator. Sampled parcel IDs and geometries passed source qualification; citywide completeness, legal title and currentness are not established. Reuse terms remain subject to review."
+    },
+    {
+      "cityId": "wup2025:7729",
+      "name": "Hammond",
+      "country": "United States",
+      "countryCode": "US",
+      "centerLatLon": [
+        41.6091850522165,
+        -87.5857397291232
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "us-in-lake-hammond-parcels"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-11/7729/qualification.json",
+      "appCityId": "hammond",
+      "note": "Bounded technical qualification around the unchanged UN World Urbanization Prospects locator. Sampled parcel IDs and geometries passed source qualification; citywide completeness, legal title and currentness are not established. Reuse terms remain subject to review. The app opens on the positively sampled centroid cell (9 returned parcels, 7.804 km from the unchanged UN locator); this is a view focus only and does not change the qualification point.",
+      "appViewCenterLatLon": [
+        41.5835,
+        -87.4985
+      ]
+    },
+    {
+      "cityId": "wup2025:5785",
+      "name": "Takasaki [Maebashi]",
+      "country": "Japan",
+      "countryCode": "JP",
+      "centerLatLon": [
+        36.3622938663979,
+        139.038838162225
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "jp-takasaki-parcel-map"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-11/5785/qualification.json",
+      "appCityId": "takasaki",
+      "note": "Bounded technical qualification around the unchanged UN World Urbanization Prospects locator. Sampled parcel IDs and geometries passed source qualification; citywide completeness, legal title and currentness are not established. Reuse terms remain subject to review."
+    },
+    {
+      "cityId": "wup2025:2998",
+      "name": "Wiesbaden",
+      "country": "Germany",
+      "countryCode": "DE",
+      "centerLatLon": [
+        50.0324160875229,
+        8.24497585586087
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "hessen-alkis-vereinfacht-wfs"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-11/2998/qualification.json",
+      "appCityId": "wiesbaden",
+      "note": "Bounded technical qualification around the unchanged UN World Urbanization Prospects locator. Sampled parcel IDs and geometries passed source qualification; citywide completeness, legal title and currentness are not established. Reuse terms remain subject to review."
+    },
+    {
+      "cityId": "wup2025:2093",
+      "name": "Gdansk",
+      "country": "Poland",
+      "countryCode": "PL",
+      "centerLatLon": [
+        54.3729195961829,
+        18.6101651609193
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "gdansk-gml-wfs"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-11/2093/qualification.json",
+      "appCityId": "gdansk",
+      "note": "Bounded technical qualification around the unchanged UN World Urbanization Prospects locator. Sampled parcel IDs and geometries passed source qualification; citywide completeness, legal title and currentness are not established. Reuse terms remain subject to review."
+    },
+    {
+      "cityId": "wup2025:3234",
+      "name": "Sosnowiec",
+      "country": "Poland",
+      "countryCode": "PL",
+      "centerLatLon": [
+        50.2922574419292,
+        19.1460205522405
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "sosnowiec-gml-wfs"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-11/3234/qualification.json",
+      "appCityId": "sosnowiec",
+      "note": "Bounded technical qualification around the unchanged UN World Urbanization Prospects locator. Sampled parcel IDs and geometries passed source qualification; citywide completeness, legal title and currentness are not established. Reuse terms remain subject to review."
+    },
+    {
+      "cityId": "wup2025:3893",
+      "name": "Montpellier",
+      "country": "France",
+      "countryCode": "FR",
+      "centerLatLon": [
+        43.6153701485296,
+        3.86647003777739
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "fr-mmm-montpellier-cadastre"
+      ],
+      "researchFile": "world-parcels/research/qualification-2026-10-11/3893/qualification.json",
+      "appCityId": "montpellier",
+      "note": "Bounded technical qualification around the unchanged UN World Urbanization Prospects locator. Sampled parcel IDs and geometries passed source qualification; citywide completeness, legal title and currentness are not established. Reuse terms remain subject to review."
     }
   ],
   "countryProbes": [

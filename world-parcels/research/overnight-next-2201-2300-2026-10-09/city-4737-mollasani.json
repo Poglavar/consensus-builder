@@ -1,0 +1,38 @@
+{
+  "cityCode": 4737,
+  "queueRank": 2225,
+  "name": "Mollasani",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "point": [31.585947863932, 48.8857274491511],
+  "population2025": 262157,
+  "population2025k": 262.157,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Mollasani Iran official cadastral parcel map cadastral registry Khuzestan; Mollasani Bavi land registry GIS",
+        "result": "Search confirmed Mollasani as a city in Bavi County, Khuzestan and surfaced general Iranian land/cadastre workflow material, but no city-specific public parcel viewer, API, or downloadable parcel layer.",
+        "actualResultUrls": [
+          "https://mapcarta.com/12592456",
+          "https://en.wikipedia.org/wiki/Mollasani",
+          "https://nezamat.ir/post-44174/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "ملاثانی کاداستر نقشه پارسل سازمان ثبت اسناد؛ ملاثانی سامانه کاتب کاداستر",
+        "result": "نتایج، مقررات و راهنمای عمومی کاداستر و سامانه کاتب/ثبت اسناد را نشان دادند، اما سرویس عمومی محلیِ پارسل با شناسه پایدار و هندسه برای ملاثانی پیدا نشد.",
+        "actualResultUrls": [
+          "https://amagestate.com/legal/cadastral-map-changes-organization/",
+          "https://amagestate.com/legal/cadastral-mapping-executive-regulation/",
+          "https://amagestate.com/wiki/kateb-guide/"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "researchNote": "First-party/public-service probing and qualification evidence are documented in mollasani-service-review.json. No parcel sample is retained because no safe native parcel identity plus unchanged geometry was returned anonymously."
+}

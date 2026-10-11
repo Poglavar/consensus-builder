@@ -1,0 +1,22 @@
+{
+  "taskId": "city:5150",
+  "decision": "held",
+  "admission": "held; no runtime, catalog, registry, or coverage/report change",
+  "checkedAt": "2026-10-11T02:35:10Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-5150-wuzhong.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/wuzhong-service-review.json",
+    "tmp/valhalla-parcel-research/5150/wuzhong.html",
+    "tmp/valhalla-parcel-research/5150/nx.html",
+    "tmp/valhalla-parcel-research/5150/tianditu.headers"
+  ],
+  "registryFound": true,
+  "publicGeometryFound": false,
+  "sourceUrls": [
+    "https://www.wuzhong.gov.cn/xxgk/jgzn/szfzcbm/zrzyj_42781/zsjg_42786/wzszrzyybdcqqdjzx/nsjg_55733/",
+    "https://ningxia.tianditu.gov.cn/"
+  ],
+  "reason": "Immutable roster and queue agree on Wuzhong, code 5150, rank 2258, China, point [37.9797858494557, 106.190279778773] and 258383 persons. English and Chinese searches are recorded. Original first-party Wuzhong HTML names the Natural Resources and Real Estate Rights Registration Center and its cadastral survey and registration functions, grounding registryFound true; Ningxia natural-resources HTML links its public Tianditu map. Direct Tianditu access timed out before viewer configuration or parcel schema could be read. No native parcel ID, full polygon, or sample was obtained. No independent adapter qualification, fresh native-ID read, forced paging, 13 bounded cells, metric GEOS checks, source binding, or headed Details verification exists. Timeout and the public map listing do not imply citywide parcel absence or coverage."
+}

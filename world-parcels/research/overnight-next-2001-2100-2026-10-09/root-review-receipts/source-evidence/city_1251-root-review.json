@@ -1,0 +1,73 @@
+{
+  "taskId": "city:1251",
+  "checkedAt": "2026-10-10T21:53:42Z",
+  "queueIdentityVerified": {
+    "cityCode": 1251,
+    "rank": 2057,
+    "country": "Senegal",
+    "countryCode": "SN",
+    "point": [
+      12.5660118868597,
+      -16.2721765081404
+    ],
+    "populationPersons": 282751,
+    "wupArchiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114"
+  },
+  "executedSearches": [
+    {
+      "language": "English",
+      "query": "Ziguinchor Senegal official cadastral map parcel GIS land registry public viewer API",
+      "resultUrls": [
+        "https://www.dgid.sn/",
+        "https://sig.onddl.sn/",
+        "https://www.geosenegal.gouv.sn/-base-de-donnees-geographiques-.html"
+      ]
+    },
+    {
+      "language": "French (local/official)",
+      "query": "Ziguinchor Sénégal cadastre carte parcellaire registre foncier SIG officiel parcelles",
+      "resultUrls": [
+        "https://www.dgid.sn/",
+        "https://sig.onddl.sn/",
+        "https://www.geosenegal.gouv.sn/occupation-du-sol-ziguinchor-nd-28-ii.html"
+      ]
+    }
+  ],
+  "searchTracePath": "tmp/valhalla-parcel-research/runs/20261010T214932-02d3e91c/stdout.jsonl",
+  "fullSamplePolygonCount": 0,
+  "safeNativeParcelIdsRetained": 0,
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "absenceConclusion": null,
+  "decision": "held",
+  "firstPartyEvidence": [
+    {
+      "url": "https://sig.onddl.sn/api/base/?page=1&page_size=1000&search=",
+      "cachePath": "tmp/valhalla-parcel-research/1251/api-base.json",
+      "sha256": "2b0c99004670e3da90578b209d5b68a979477111524e5938c64f6fc4793d1573",
+      "observation": "Cached official catalog meta.total_count=9, next=null; entries are regional, administrative, GADM and Casamance data, no parcel layer."
+    },
+    {
+      "url": "https://sig.onddl.sn/geoserver/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+      "cachePath": "tmp/valhalla-parcel-research/1251/wfs-capabilities.xml",
+      "observation": "Parsed original WFS feature list: dep_pole_casamance, departement, gadm41_sen_0 through 3, region; no parcel type."
+    },
+    {
+      "url": "https://sig.onddl.sn/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=geonode:dep_pole_casamance&outputFormat=application%2Fjson&count=1&srsName=EPSG:4326&bbox=-16.28,12.55,-16.26,12.58,EPSG:4326",
+      "cachePath": "tmp/valhalla-parcel-research/1251/wfs-bounded-response.txt",
+      "observation": "Original bounded response has numberReturned=1, geometry type Point, administrative fields; no parcel polygon."
+    },
+    {
+      "url": "https://www.dgid.sn/contact",
+      "observation": "First-party DGID contact page identifies CSF Ziguinchor and cadastral NICAD service."
+    }
+  ],
+  "sourceObservation": "DGID local cadastral custody is supported, but the inspected public ONDDL catalog contains no parcel feature type; its point is administrative and cannot prove parcel absence elsewhere.",
+  "decisionReason": "No safe native parcel ID or full polygon was found. All adapter qualification and headed UI gates remain unverified."
+}

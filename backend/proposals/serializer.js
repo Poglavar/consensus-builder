@@ -5,6 +5,7 @@ import { createRequire } from 'node:module';
 const requireCjs = createRequire(import.meta.url);
 const authoredRecord = requireCjs('../../frontend/js/proposals/authored-record.js');
 const siteBinding = requireCjs('../../frontend/js/proposals/site-binding.js');
+const chainRecord = requireCjs('../../frontend/js/proposals/chain-record.js');
 
 const isPolygonGeometry = value => !!value && typeof value === 'object'
     && (value.type === 'Polygon' || value.type === 'MultiPolygon') && Array.isArray(value.coordinates);
@@ -256,6 +257,17 @@ export function serializeProposalRow(row, options = {}) {
     // declarations.mjs). It stays in the row so the migration is reversible, but it is not part
     // of the proposal and must never be served, forked or re-published by a client.
     delete proposal.legacy;
+
+    if (proposal.chainMirror?.protocol === chainRecord.PROTOCOL) {
+        // A mirror serves the committed authored values. Database columns still index receipt
+        // time and normalized search fields, but cannot rewrite what chain + IPFS reconstructs.
+        const source = chainRecord.fromMetadata({ properties: {
+            proposalProtocol: chainRecord.PROTOCOL, proposal: proposal.chainMirror.record
+        } });
+        proposal.mirroredAt = iso(row.created_at, proposal.chainMirror.verifiedAt);
+        for (const key of chainRecord.FIELDS) if (key !== 'proposalId') delete proposal[key];
+        Object.assign(proposal, source, { proposalId: row.proposal_id });
+    }
 
     return stripLocalProposalState(proposal);
 }

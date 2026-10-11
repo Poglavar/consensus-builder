@@ -1,0 +1,14 @@
+{
+  "taskId": "city:1128",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-1128-machala.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/machala-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T02:16:05.371183Z",
+  "reason": "Machala: official municipal Avalúos y Catastros custody is supported, but no anonymous parcel polygon response, native ID, or source schema was obtained. Municipal challenge/timeouts and a thematic viewer do not establish absence. No live adapter qualification or headed Details verification.",
+  "firstPartyReference": "https://machaladigital.machala.gob.ec/pages/public/urbanismo/tramites-requisitos-avaluos-y-catastro.xhtml?id=13",
+  "admission": "held; no runtime/catalog/report change"
+}

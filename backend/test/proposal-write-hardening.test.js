@@ -103,17 +103,16 @@ describe('POST /proposals — client thumbnails', () => {
         expect(generateAndStoreProposalThumbnail).not.toHaveBeenCalled();
     });
 
-    it('drops a foreign onchain.imageUrl (the lists fall back to it) but keeps the rest of onchain', async () => {
+    it('requires chain verification instead of storing a claimed chain pointer or its foreign image', async () => {
         pool.setResults([insertResult(), updateResult()]);
 
         const res = await request(app).post('/proposals').send(validProposalBody({
             onchain: { transactionHash: '0xabc', imageUrl: 'https://tracker.example/pixel.png' }
         }));
 
-        expect(res.status).toBe(201);
-        const onchainColumn = JSON.parse(insertCall().params[30]);
-        expect(onchainColumn).toEqual({ transactionHash: '0xabc' });
-        expect(storedData().onchain.imageUrl).toBeUndefined();
+        expect(res.status).toBe(400);
+        expect(res.body.code).toBe('chain-mirror-required');
+        expect(pool.getCalls()).toHaveLength(0);
     });
 });
 

@@ -1,0 +1,35 @@
+{
+  "cityRecord": "city-4805-shendi.json",
+  "cityCode": 4805,
+  "queueRank": 2308,
+  "name": "Shendi",
+  "country": "Sudan",
+  "countryCode": "SD",
+  "pointLatLon": [16.6867207850358, 33.4285918072333],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": null,
+  "routes": [
+    {"method":"SEARCH","url":"https://aqari.nctr.sd/ar","httpStatus":"Discovery result available; official page readable in bounded web discovery; direct curl returned 502","outcome":"Sudan Judiciary national Aqari platform describes electronic land-registration, search-certificate, and parcel subdivision services. No anonymous parcel map/API response was obtained; no login or bypass was attempted."},
+    {"method":"GET","url":"https://aqari.nctr.sd/ar","httpStatus":"502","outcome":"Public HTML request through curl returned HTTP 502 from openresty. This is an access failure, not evidence of missing Shendi parcels."},
+    {"method":"SEARCH","url":"https://www.nic.gov.sd/public/projectDetails/3","httpStatus":"Discovery result available; official page readable","outcome":"National Information Center describes the Sudan Spatial Geoportal as a national interactive map browser exposing OGC WMS and WFS services. This is national custodian/platform evidence, not a Shendi parcel response."},
+    {"method":"GET","url":"https://www.geoportal.gov.sd/","httpStatus":"timeout","outcome":"Anonymous HTTPS request timed out during DNS resolution after 20 seconds. No TLS exception, credentials, CAPTCHA bypass, or retry loop was used."},
+    {"method":"SEARCH","url":"https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A","httpStatus":"Discovery result available; official page fetch failed in bounded web access","outcome":"Judiciary page identifies the General Registrar of Lands / land-registration administration as the technical supervisory authority for registration offices and procedures. It does not expose a public Shendi parcel feature service in this attempt."},
+    {"method":"GET","url":"https://services6.arcgis.com/nEMEkLg8rZV7Ijyb/ArcGIS/rest/services/SudanMap/FeatureServer?f=pjson","httpStatus":"200","outcome":"Reachable ArcGIS service metadata says the service has settlements, rivers, and localities layers and is for training purposes only; it is not a cadastral parcel source or city registry custodian."},
+    {"method":"GET","url":"https://services6.arcgis.com/nEMEkLg8rZV7Ijyb/ArcGIS/rest/services/SudanMap/FeatureServer/0/query","httpStatus":"200","outcome":"Bounded anonymous query against the settlements layer for NAME/NAME2 Shendi and Arabic شندي, returnGeometry=true, outSR=4326 returned an empty FeatureCollection. This layer is non-cadastral and the zero result is not evidence of citywide parcel absence."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "NIC page describes the official Geoportal protocols as OGC WMS/WFS, but its public viewer/configuration could not be retrieved because geoportal.gov.sd timed out.",
+    "geometryCrs": "No official Shendi parcel layer or parcel geometry response was obtained. The non-cadastral training settlements layer metadata reports EPSG:4326.",
+    "nativeIdentity": "No parcel identity was returned. The training settlements layer exposes OBJECTID_12, but it was not treated as a parcel identity and no feature was retained.",
+    "sourceFieldMapping": {"OBJECTID_12":"training settlements-layer OID; not a parcel identity and not retained", "NAME":"settlement name; not retained", "shape":"point geometry only; not parcel geometry"},
+    "boundedAnonymousResponse": {"requestScope":"Exact WUP point [16.6867207850358,33.4285918072333] preserved for research; name-filtered Shendi settlement query", "featureCount":0, "nativeIdentity":null, "result":"No result from non-cadastral training settlements layer; not a parcel absence finding"}
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if exposed by an official service", "polygon geometry", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"National official registry and spatial-portal custodians are evidenced, but the public Geoportal was unreachable in the bounded request and Aqari returned 502. No safe native parcel ID-plus-geometry sample or verified Shendi parcel endpoint is available."},
+  "scopeLimits": ["The exact WUP point [16.6867207850358,33.4285918072333] was preserved and not shifted.", "No exact-point hit or miss was inferred from the unavailable official endpoints or non-cadastral query.", "The ArcGIS training service contains settlements/localities, not cadastral parcels, and cannot establish citywide parcel coverage or absence.", "Official national custodians were identified, but a local Shendi registry/map endpoint was not independently exposed.", "No GeoJSON sample is retained because no safe native parcel identity plus unchanged full polygon was obtained.", "No owner, address, contact, titleholder, tax/account, certificate/title, or personal fields were requested or retained."],
+  "uncertainty": "The current status, coverage, and public anonymous API behavior of the Sudan Spatial Geoportal and Aqari platform remain unverified due timeout/502 access outcomes. Runtime/admission remains held; this packet does not claim source integration."
+}

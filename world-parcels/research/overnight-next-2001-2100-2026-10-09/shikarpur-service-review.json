@@ -1,0 +1,40 @@
+{
+  "cityRecord": "city-4445-shikarpur.json",
+  "cityCode": 4445,
+  "queueRank": 2037,
+  "name": "Shikarpur",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "point": [27.9548901822907, 68.6387289092882],
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "requests": [
+    {"method":"GET","url":"https://sindhzameen.gos.pk/Default.aspx","httpStatus":200,"outcome":"Official Board of Revenue Sindh portal fetched over verified TLS. It describes public digital land administration, records, cadastral/deh maps and revenue services; no parcel feature schema exposed on the landing page."},
+    {"method":"GET","url":"https://www.sindhzameen.gos.pk/Default.aspx","httpStatus":"TLS failure","outcome":"Certificate subject did not match www.sindhzameen.gos.pk. No certificate exception was used; the canonical non-www host was used instead."},
+    {"method":"GET","url":"https://sindhzameen.gos.pk/maps.aspx","httpStatus":200,"outcome":"Official maps page fetched. It links to Deh Maps at /map/Sindh_Map.aspx and general maps; no vector parcel service or CRS/schema was exposed."},
+    {"method":"GET","url":"https://sindhzameen.gos.pk/map/Sindh_Map.aspx","httpStatus":200,"outcome":"Current map JavaScript/configuration inspected. District navigation uses ASP.NET page routing and setdistrict('Shikarpur') to Taluka.aspx?district=Shikarpur; map content is a static district image with HTML image-map areas, not parcel features."},
+    {"method":"GET","url":"https://sindhzameen.gos.pk/map/Taluka.aspx?district=Shikarpur","httpStatus":200,"outcome":"Official Shikarpur district map page fetched. It names Shikarpur taluka and exposes static taluka-map imagery; no parcel geometry, stable parcel ID, service URL, CRS, or feature schema was present."},
+    {"method":"POST","url":"https://sindhzameen.gos.pk/map/Taluka.aspx/bindTaluka","httpStatus":200,"outcome":"Anonymous JSON response returned HTML listing 26 available dehs for Shikarpur taluka, including Shikar Pur. Response contained names and form callbacks only; no parcel polygons or safe parcel identity fields."},
+    {"method":"GET","url":"https://sindhzameen.gos.pk/Centers.aspx","httpStatus":200,"outcome":"Official active-center directory fetched. It lists the Shikarpur Peoples Service Center and identifies the local service custodian; this is registry-service evidence only, not parcel geometry."},
+    {"method":"GET","url":"https://bor.sindh.gov.pk/land-administration-revenue-management-information-system-larmis","httpStatus":200,"outcome":"Official Board of Revenue Sindh LARMIS page fetched. It describes computerized records, GIS/deh/survey-map development and integration at program level; no anonymous Shikarpur parcel feature response was provided."},
+    {"method":"GET","url":"https://sindhzameen.gos.pk/FAQs.aspx","httpStatus":200,"outcome":"Official FAQ fetched. It states records for all districts and most dehs are available and limits public land-record information for privacy; no parcel geometry endpoint or safe ID response was exposed."}
+  ],
+  "schemaCrs": {"status":"not available","details":"No public parcel feature response was obtained; native field schema, geometry encoding, CRS and stable parcel identity could not be verified."},
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "retainedSamples": [],
+  "safeFieldAllowlist": ["stable native parcel identifier only when publicly returned","parcel polygon geometry","source service metadata","CRS and response-format metadata"],
+  "unsafeFieldsNotRequested": ["owner or right-holder names","addresses or contact details","title or certificate details","tax, account, identity, or application fields"],
+  "scopeLimits": [
+    "The verified custodian scope is Board of Revenue Sindh and the Shikarpur district/taluka/deh map and service-center routes.",
+    "The map viewer is static image/HTML navigation plus an anonymous deh-list JSON callback; it is not evidence of citywide parcel geometry availability.",
+    "No exact-point parcel query was issued because no public parcel feature endpoint was discovered.",
+    "The certificate mismatch on the www alias was treated as a host/TLS limitation, not as source absence; no TLS verification bypass was used.",
+    "No map extent miss, timeout, login wall, or unusable UI is treated as citywide absence.",
+    "No owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested or retained."
+  ],
+  "coverageAssessment": {"claimedScope":"Sindh Board of Revenue public land-record portal, its Shikarpur district/taluka/deh map flow, Shikarpur service-center directory and LARMIS program page.","verifiedOpenScope":"Shikarpur registry/map custodian, static district/taluka map navigation and 26 deh names; no anonymous parcel ID-plus-geometry response.","countrywideVerified":false,"citywideGeometryVerified":false},
+  "runtimeReadiness":"held",
+  "uncertainty":"Moderate to high: the official portal evidences Shikarpur land-record custody and deh-map availability, but its public anonymous routes expose static images, names and record-service pages rather than safe machine-readable parcel geometry. Underlying GIS/database services, schema, CRS, native parcel identity and citywide coverage remain unknown. Independent serial review is required before adapter/source admission."
+}

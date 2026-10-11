@@ -1,0 +1,12 @@
+{
+  "taskId": "city:3331",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-3331-cascavel.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/cascavel-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/root-review-receipts/source-evidence/city_3331-root-review.json"
+  ],
+  "checkedAt": "2026-10-10T20:45:27Z"
+}

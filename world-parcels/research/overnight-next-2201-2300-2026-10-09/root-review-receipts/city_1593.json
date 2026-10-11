@@ -1,0 +1,13 @@
+{
+  "taskId": "city:1593",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-1593-arkhangelsk.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/arkhangelsk-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T03:12:57.284242Z",
+  "reason": "Live first-party Arkhangelsk municipal land page references formed parcels, NSPD map and a cadastral number, supporting cadastral context. Paired review records official service timeouts and no native ID, polygon, schema or CRS response. No independent adapter qualification exists; city remains held and timeout is not absence.",
+  "admission": "held; no runtime/catalog/report change"
+}

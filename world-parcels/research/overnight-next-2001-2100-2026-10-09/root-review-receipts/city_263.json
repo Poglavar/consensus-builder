@@ -1,0 +1,41 @@
+{
+  "taskId": "city:263",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-263-murmansk.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/murmansk-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-10T22:47:43Z",
+  "identityCheck": {
+    "wupArchiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "cityCode": 263,
+    "rank": 2091,
+    "country": "Russian Federation",
+    "point": [
+      68.9630670620546,
+      33.0895550402416
+    ],
+    "populationPersons": 277693,
+    "queueAndRosterMatch": true
+  },
+  "researchCheck": {
+    "englishAndLocalSearchRecorded": true,
+    "retainedFullPolygons": 0,
+    "safeIdGeometryResponseVerified": false,
+    "custodyFound": true,
+    "sourceAssessment": "Official Murmansk-region Rosreestr notice identifies cadastral custodianship and map inquiry; recorded NSPD/Rosreestr viewer timeouts leave the public geometry route unverified.",
+    "firstPartyCachesOpened": []
+  },
+  "admissionCheck": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "runtimeEnabled": false
+  },
+  "holdReason": "No independently evidenced anonymous city-scoped native-ID full-polygon adapter qualification. Viewer timeout, gateway failure, or unavailable route is unresolved access, not parcel absence."
+}

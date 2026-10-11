@@ -1,0 +1,53 @@
+{
+  "cityCode": 6002,
+  "queueRank": 2185,
+  "rank": 2185,
+  "name": "Bule Hora",
+  "cityName": "Bule Hora",
+  "country": "Ethiopia",
+  "iso2": "ET",
+  "countryCode": "ET",
+  "iso3": "ETH",
+  "locId": 231,
+  "capital": false,
+  "point": [5.63755617915242, 38.2376910811427],
+  "population2025": 267051,
+  "population2025k": 267.051,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bule Hora Ethiopia official GIS cadastral parcel map land registry",
+        "result": "No Bule Hora-specific official public parcel viewer or downloadable parcel dataset was found. Official national sources found were Ethio-NSDI and the Land Holding Registration and Information Agency e-Land viewer; their publicly indexed material does not establish Bule Hora coverage.",
+        "actualResultUrls": ["https://ethionsdi.gov.et/", "https://eland.addiscadaster.gov.et/", "https://eland.addiscadaster.gov.et/maps"]
+      },
+      {
+        "language": "Amharic (native/local-language route)",
+        "query": "ቡሌ ሆራ ካዳስተር መሬት ምዝገባ ካርታ",
+        "result": "Search found official Ethiopian urban land-holding registration guidance and the national e-Land service, but no Bule Hora-specific public parcel map, service endpoint, or bounded parcel geometry.",
+        "actualResultUrls": ["https://www.hopr.gov.et/documents/portlet_file_entry/20181/%E1%8B%A8%E1%8A%A8%E1%89%B0%E1%88%9B%2B%E1%88%AC%E1%89%B5%2B%E1%8B%AD%E1%8B%9E%E1%89%B3%2B%E1%8A%93%2B%E1%88%AC%E1%89%B5%2B%E1%8A%AD%2B%E1%8A%95%E1%89%A5%E1%88%A8%E1%89%B5%2B%E1%88%9D%E1%8B%9D%E1%88%98%E1%89%A3%2B%E1%88%A8%E1%89%82%E1%89%85%2B%E1%8B%8B%E1%8C%85%2B.pdf/dedb22f0-3719-c9a8-ff1f-1df04f53ca8b?download=true", "https://eland.addiscadaster.gov.et/"]
+      }
+    ]
+  },
+  "discoveryMethod": "Separate official English and Amharic discovery routes, followed by direct HTTPS inspection of the public e-Land landing page, current JavaScript bundle, and Ethio-NSDI host.",
+  "queryOutcomes": "The e-Land landing page returned HTTP 200 and its current bundle identifies the Land Holding Registration and Information Agency and city-specific e-services, but no anonymous Bule Hora parcel layer was evidenced. Ethio-NSDI did not pass normal TLS verification because the host presented a self-signed certificate; no certificate exception was used.",
+  "sourceAssessment": {
+    "localCustodian": null,
+    "nationalAgenciesObserved": ["Land Holding Registration and Information Agency (e-Land)", "Ethio-NSDI"],
+    "publicService": "https://eland.addiscadaster.gov.et/",
+    "cityPortal": null,
+    "nativeFieldsObserved": [],
+    "fieldMapping": null,
+    "compositeKeyProvenance": null,
+    "sourceCrs": null,
+    "outputCrs": null,
+    "scope": "No Bule Hora-specific anonymous parcel dataset or map/API response was evidenced; national agency prose and a general viewer do not prove local coverage."
+  },
+  "sample": null,
+  "runtimeReadiness": "held_pending_independent_serial_qualification",
+  "pointBasis": "Immutable WUP queue point; exact point preserved and not shifted.",
+  "attempt": 1
+}

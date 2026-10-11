@@ -1,0 +1,110 @@
+{
+  "cityCode": 8177,
+  "queueRank": 2123,
+  "rank": 2123,
+  "name": "Yibin",
+  "cityName": "Yibin",
+  "country": "China",
+  "iso2": "CN",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [28.7579007034079, 104.630174752774],
+  "population2025": 273660,
+  "population2025k": 273.66,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Yibin China official cadastral parcel map GIS land registration public map service 宜宾 cadastral parcel map official",
+        "result": "Official Sichuan Natural Resources reporting identified Yibin's local natural-resources bureau and a Sichuan southern unified geographic-information public-service platform project; no anonymous public parcel feature endpoint was found in discovery.",
+        "actualResultUrls": [
+          "https://dnr.sc.gov.cn/scdnr/scxxhjs/2019/4/12/0848e2ebed8f432d9475034613074478.shtml",
+          "https://zygh.yibin.gov.cn/"
+        ]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "宜宾 官方 地籍图 地块 查询 GIS 不动产 登记 地图",
+        "result": "The official Yibin Natural Resources and Planning Bureau site exposed a dedicated 不动产登记 section and linked the Yibin online real-estate registration portal; no safe anonymous ID-plus-geometry parcel response was exposed.",
+        "actualResultUrls": [
+          "https://zygh.yibin.gov.cn/gk/bdcdj/",
+          "http://bdc.ybdlr.gov.cn/bdc.php",
+          "https://rerc.com.cn/"
+        ]
+      }
+    ]
+  },
+  "registryFoundBasis": "The official Yibin Natural Resources and Planning Bureau maintains a local 不动产登记 (real-estate registration) section and links an online registration portal; this evidences local registry custody, but not open parcel-vector access.",
+  "discoveryMethod": "Separate English and Simplified-Chinese first-party discovery, official Yibin bureau page review, Sichuan Natural Resources GIS-platform report review, and bounded anonymous GET checks of the official bureau and linked portal routes.",
+  "queryOutcomes": "The local bureau and national/provincial natural-resources context were identified. The official bureau page exposes registration procedures/notices and links the Yibin registration portal, but the tested routes did not expose public map JavaScript/configuration, parcel-layer schema, CRS, or anonymous ID-plus-polygon output. No geometry was retained.",
+  "attempts": [
+    {
+      "method": "web search",
+      "language": "English",
+      "query": "Yibin China official cadastral parcel map GIS land registration public map service 宜宾 cadastral parcel map official",
+      "outcome": "Found official Sichuan Natural Resources reporting on Yibin's geographic-information public-service platform project and the official Yibin bureau site; no public parcel API was found."
+    },
+    {
+      "method": "web search",
+      "language": "Chinese (Simplified)",
+      "query": "宜宾 官方 地籍图 地块 查询 GIS 不动产 登记 地图",
+      "outcome": "Found the official Yibin bureau's 不动产登记 section and its linked online registration portal; no public parcel API or safe geometry response was found."
+    },
+    {
+      "method": "GET",
+      "url": "https://zygh.yibin.gov.cn/",
+      "httpStatus": 200,
+      "outcome": "Official Yibin Natural Resources and Planning Bureau homepage loaded; it identifies the local bureau and links the 不动产登记 section and a geographic-information platform route."
+    },
+    {
+      "method": "GET",
+      "url": "https://zygh.yibin.gov.cn/gk/bdcdj/",
+      "httpStatus": 200,
+      "outcome": "Official local real-estate registration page loaded. It exposed registration news, notices, regulations, procedures, and the linked portal http://bdc.ybdlr.gov.cn/bdc.php; no parcel service schema or geometry endpoint was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "http://bdc.ybdlr.gov.cn/bdc.php",
+      "httpStatus": null,
+      "outcome": "Bounded anonymous request did not return a usable response before timeout; no login was attempted, no credentials or tokens were used, and no absence inference was made."
+    },
+    {
+      "method": "GET",
+      "url": "http://202.61.89.138/zd/zdplatform/Index.html",
+      "httpStatus": null,
+      "outcome": "The geographic-information platform link from the official bureau page did not return a usable response within the bounded request; no TLS bypass or authentication was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://dnr.sc.gov.cn/scdnr/scxxhjs/2019/4/12/0848e2ebed8f432d9475034613074478.shtml",
+      "httpStatus": 200,
+      "outcome": "Official Sichuan Natural Resources report states that Yibin and provincial agencies planned a unified geographic-information public-service platform and natural-resources 3D map; it is project/custodian evidence, not a parcel feature response."
+    }
+  ],
+  "sourceAssessment": {
+    "localCustodian": "Yibin Natural Resources and Planning Bureau, including its local 不动产登记 section; the Sichuan Natural Resources report identifies the former Yibin land-resources bureau and local information center as participants in the public-platform work.",
+    "publicService": "No anonymously usable public parcel feature service was verified. The official bureau links an online real-estate registration portal and a geographic-information platform route, but neither yielded public parcel schema or ID-plus-polygon data in the bounded checks.",
+    "nativeFieldsObserved": null,
+    "fieldMapping": null,
+    "compositeKeyProvenance": null,
+    "crs": null
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier if a future official feature response exposes one", "geometry: polygon or multipolygon", "non-sensitive service schema and CRS metadata"],
+  "unsafeFieldsNotRequestedOrRetained": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "valuation", "assessment", "legal/title records"],
+  "scopeLimits": [
+    "Local registry custody is evidenced, but citywide parcel coverage is not established.",
+    "The official GIS-platform report describes an institutional project and does not provide an open parcel-vector download or feature response.",
+    "The linked portal/platform timeouts and unusable responses are availability findings, not evidence of cadastral absence.",
+    "The exact WUP point was preserved and not used to force a parcel hit; no exact-point hit test was performed against a verified parcel endpoint.",
+    "No full native parcel geometry with a safe native identity was obtained, so no GeoJSON sample is included.",
+    "No unsafe fields were requested or retained.",
+    "Research completion does not constitute source integration, adapter admission, or runtime qualification."
+  ],
+  "runtimeReadiness": "held_pending_independent_serial_qualification",
+  "uncertainty": "Yibin local registry custody and a documented public-platform initiative are established, but the current anonymous parcel service route, native identity fields, CRS, geometry access, and citywide completeness remain unresolved.",
+  "researchGroup": "east-asia",
+  "pointBasis": "Immutable WUP queue point; retained exactly and not shifted to seek a parcel hit."
+}

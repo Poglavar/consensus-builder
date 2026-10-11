@@ -545,8 +545,8 @@
                 return Number.isFinite(t) ? t : null;
             };
 
-            const aTime = parseTime(a.createdAt || a.metadata?.createdAt || a.metadata?.properties?.createdAt);
-            const bTime = parseTime(b.createdAt || b.metadata?.createdAt || b.metadata?.properties?.createdAt);
+            const aTime = parseTime(a.metadata?.properties?.proposal?.createdAt || a.createdAt || a.metadata?.createdAt || a.metadata?.properties?.createdAt);
+            const bTime = parseTime(b.metadata?.properties?.proposal?.createdAt || b.createdAt || b.metadata?.createdAt || b.metadata?.properties?.createdAt);
 
             if (aTime !== null && bTime !== null && aTime !== bTime) {
                 return bTime - aTime;
@@ -615,7 +615,8 @@
                 : null;
 
             const createdLabel = document.createElement('span');
-            const createdRaw = (entry.metadata && entry.metadata.properties && entry.metadata.properties.createdAt)
+            const createdRaw = entry.metadata?.properties?.proposal?.createdAt
+                || (entry.metadata && entry.metadata.properties && entry.metadata.properties.createdAt)
                 || (entry.metadata && entry.metadata.createdAt)
                 || entry.createdAt;
             if (createdRaw) {
@@ -630,7 +631,8 @@
             meta.appendChild(parcelsLabel);
             if (createdLabel.textContent) meta.appendChild(createdLabel);
 
-            const authorRaw = (entry.metadata && entry.metadata.properties && entry.metadata.properties.author)
+            const authorRaw = entry.metadata?.properties?.proposal?.author
+                || (entry.metadata && entry.metadata.properties && entry.metadata.properties.author)
                 || (entry.metadata && entry.metadata.author)
                 || entry.author
                 || entry.owner;
@@ -694,7 +696,12 @@
 
             main.appendChild(titleRow);
             main.appendChild(meta);
-            const proposalEns = (typeof proposalEnsName === 'function') ? proposalEnsName(entry.proposalId) : '';
+            const chainKey = typeof buildChainProposalId === 'function'
+                ? buildChainProposalId(entry.chainId, entry.contractAddress, entry.proposalId) : null;
+            const localRecord = chainKey ? globalScope.proposalStorage?.getProposal?.(chainKey) : null;
+            const ensRecord = entry.metadata?.properties?.proposalProtocol
+                ? (localRecord || entry) : entry.proposalId;
+            const proposalEns = (typeof proposalEnsName === 'function') ? proposalEnsName(ensRecord) : '';
             if (proposalEns && typeof ensNameLineHtml === 'function') {
                 const ensWrap = document.createElement('div');
                 ensWrap.innerHTML = ensNameLineHtml(proposalEns);
@@ -779,7 +786,8 @@
                 || t('modal.mintedProposals.proposalIdLabel', 'Proposal #{{id}}', { id: item.proposalId });
             const description = metadata && metadata.description ? metadata.description : '';
 
-            const createdAt = (metadata && (metadata.createdAt || metadata.date || metadata.properties?.createdAt))
+            const createdAt = metadata?.properties?.proposal?.createdAt
+                || (metadata && (metadata.createdAt || metadata.date || metadata.properties?.createdAt))
                 || item.createdAt
                 || null;
 

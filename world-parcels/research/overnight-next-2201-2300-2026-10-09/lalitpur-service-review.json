@@ -1,0 +1,101 @@
+{
+  "cityRecord": "city-9343-lalitpur.json",
+  "cityCode": 9343,
+  "queueRank": 2240,
+  "name": "Lalitpur",
+  "country": "India",
+  "countryCode": "IN",
+  "pointLatLon": [24.6906730291432, 78.4118945442006],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": null,
+  "routes": [
+    {
+      "method": "SEARCH",
+      "url": "https://upbhulekh.gov.in/",
+      "httpStatus": "200 in direct bounded GET",
+      "outcome": "Official Government of Uttar Pradesh Bhulekh route. It is the computerized land-record service; no safe parcel geometry response was requested or obtained. No owner, address, titleholder, contact, tax/account or personal fields were requested."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://upbhunaksha.gov.in/",
+      "httpStatus": "Public discovery result; direct anonymous GET timed out after 12 seconds with no response",
+      "outcome": "Official Uttar Pradesh BhuNaksha route. Search evidence exposed a location/plot viewer and a login route, but no current public JavaScript/configuration or safe anonymous parcel API response was qualified. The login route was not used."
+    },
+    {
+      "method": "GET",
+      "url": "https://upbhunaksha.gov.in/Public/LayarPublic.aspx",
+      "httpStatus": "Direct anonymous GET timed out after 20 seconds with no response",
+      "outcome": "Official public BhuNaksha viewer route. Timeout is a route limitation, not evidence of citywide absence; no exact-point hit or miss was inferred."
+    },
+    {
+      "method": "GET",
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=167",
+      "httpStatus": "First-party dashboard page available in bounded web discovery; direct request did not complete within the bounded check",
+      "outcome": "Official digitization dashboard for Lalitpur district. It reports 754 revenue villages, 736 verified/linked/georeferenced villages and 1,582 verified/linked/georeferenced mapsheets across the district’s listed tehsils. This is coverage evidence, not a parcel feature response."
+    },
+    {
+      "method": "GET",
+      "url": "https://lalitpur.nic.in/en/revenue/",
+      "httpStatus": "200 in direct bounded GET",
+      "outcome": "Official Lalitpur district administration Revenue page. It identifies the Revenue Department as custodian of Government lands and responsible for maintenance of land records. This is local district-custodian evidence, not a parcel API."
+    },
+    {
+      "method": "GET",
+      "url": "https://lalitpur.nic.in/en/key-e-governance-projects/",
+      "httpStatus": "200 in first-party discovery",
+      "outcome": "Official district page lists Bhulekh at http://upbhulekh.gov.in as the computerized land-record project. No geometry or schema was exposed by this page."
+    },
+    {
+      "method": "GET",
+      "url": "https://lalitpur.nic.in/",
+      "httpStatus": "First-party Hindi discovery result available",
+      "outcome": "Official Hindi Lalitpur district administration site. Used for native-language discovery and local administrative context; no parcel endpoint was inferred."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "No current public BhuNaksha JavaScript/configuration endpoint was recovered during the bounded anonymous attempt.",
+    "geometryCrs": "Not observed for a Lalitpur parcel response.",
+    "nativeIdentity": "Not observed; no parcel response was obtained.",
+    "sourceFieldMapping": {},
+    "boundedAnonymousResponse": {
+      "requestScope": "No Lalitpur parcel query completed",
+      "featureCount": 0,
+      "nativeIdentity": null
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel ID if exposed by an official service",
+    "polygon geometry",
+    "source service URL",
+    "source CRS / requested output CRS",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "tax/account",
+    "certificate/title",
+    "personal data"
+  ],
+  "sampleGeoJSON": null,
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "Official Uttar Pradesh land-record/cadastral workflows and Lalitpur district revenue custody are evidenced, but no safe anonymous parcel ID-plus-geometry response, schema, CRS or stable native identity was obtained."
+  },
+  "scopeLimits": [
+    "The exact WUP point [24.6906730291432, 78.4118945442006] was preserved in latitude/longitude order and not shifted.",
+    "No exact-point parcel hit or miss was inferred because the public BhuNaksha route timed out before a parcel query completed.",
+    "Timeouts, unavailable public configuration and login-oriented routes are route limitations, not evidence of citywide absence.",
+    "The Lalitpur district Revenue page is local district-custodian evidence; Bhulekh and BhuNaksha are state-level custodial/public-service routes. No local municipal parcel service was found.",
+    "The digitization dashboard establishes district-wide cadastral-map linkage/georeferencing coverage but does not expose a safe parcel feature response in this attempt.",
+    "No GeoJSON sample is retained because no safe native parcel identity and unchanged geometry were obtained.",
+    "No owner, address, contact, titleholder, tax/account, certificate/title or personal fields were requested or retained.",
+    "This packet records research only; it does not constitute source integration, admission or runtime qualification."
+  ],
+  "uncertainty": "The existence and district coverage of Uttar Pradesh land-record/cadastral services are well evidenced, but anonymous BhuNaksha endpoint reachability, public API schema, CRS, stable parcel identity, city-boundary coverage and update cadence remain unverified. Runtime/admission remains held."
+}

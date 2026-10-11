@@ -1,0 +1,38 @@
+{
+  "cityCode": 5217,
+  "queueRank": 2247,
+  "name": "Hazel Dell",
+  "country": "United States of America",
+  "countryCode": "US",
+  "point": [45.6532383734832, -122.569426017328],
+  "population2025": 259716,
+  "population2025k": 259.716,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "site:clark.wa.gov GIS parcel map Hazel Dell Washington official cadastral parcel",
+        "result": "First-party discovery identified Clark County MapsOnline, the Property Information Center, and the Clark County public ArcGIS taxlot service. These are local county custodial routes for Hazel Dell; the viewer warns that taxlot boundaries are reference data and not surveys.",
+        "actualResultUrls": [
+          "https://gis.clark.wa.gov/mapsonline/",
+          "https://gis.clark.wa.gov/gishome/Property/?account=118257122&pid=findSN",
+          "https://gis.clark.wa.gov/arcgisfed/rest/services/ClarkView_Public/TaxlotsPublic/MapServer/0"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "site:clark.wa.gov mapa parcelas Hazel Dell Washington GIS oficial",
+        "result": "The United States local-language route is English. The separate English-language discovery confirmed the same official Clark County GIS/assessor custodial routes; no separate non-English local registry service was exposed.",
+        "actualResultUrls": [
+          "https://gis.clark.wa.gov/mapsonline/",
+          "https://gis.clark.wa.gov/portal/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "Clark County GIS/Assessor MapsOnline and its public TaxlotsPublic ArcGIS layer are evidenced as a local county parcel/taxlot registry route. Viewer and REST point-query attempts timed out from this workspace, so no bounded anonymous feature response or sample polygon was retained. This is not evidence of citywide parcel absence, source integration, or runtime admission.",
+  "runtimeReadiness": "held"
+}

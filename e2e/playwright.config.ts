@@ -1,4 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
+import { enableBackgroundChromium } from './helpers/background-chromium.cjs';
+
+enableBackgroundChromium();
 
 const baseURL = process.env.BASE_URL || 'http://localhost:8080';
 const serverURL = new URL(baseURL);

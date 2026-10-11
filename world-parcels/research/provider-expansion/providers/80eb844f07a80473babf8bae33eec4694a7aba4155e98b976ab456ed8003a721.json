@@ -1,0 +1,4460 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-08T22:58:09.556Z",
+  "city": "seattle-parcels",
+  "descriptor": {
+    "id": "us-wa-king-county-parcel-boundary",
+    "adapter": "arcgis",
+    "endpoint": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0",
+    "idPrefix": "US-WA-KC-",
+    "idField": "PIN",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "idPattern": "^[0-9]{10}$",
+    "outFields": [
+      "PIN",
+      "OBJECTID"
+    ],
+    "pageSize": 1000,
+    "maxFeatures": 2000,
+    "maxBboxKm2": 1,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids"
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        -122.28,
+        47.679,
+        -122.279,
+        47.68
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        -122.279,
+        47.679,
+        -122.278,
+        47.68
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        -122.278,
+        47.679,
+        -122.277,
+        47.68
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        -122.28,
+        47.68,
+        -122.279,
+        47.681
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        -122.279,
+        47.68,
+        -122.278,
+        47.681
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        -122.278,
+        47.68,
+        -122.277,
+        47.681
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        -122.28,
+        47.681,
+        -122.279,
+        47.682
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        -122.279,
+        47.681,
+        -122.278,
+        47.682
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        -122.278,
+        47.681,
+        -122.277,
+        47.682
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        -122.279,
+        47.678,
+        -122.278,
+        47.679
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        -122.279,
+        47.682,
+        -122.278,
+        47.683
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        -122.281,
+        47.68,
+        -122.28,
+        47.681
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        -122.277,
+        47.68,
+        -122.276,
+        47.681
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 1589,
+      "requestIndexes": [
+        0,
+        2
+      ],
+      "bbox": [
+        -122.28,
+        47.679,
+        -122.279,
+        47.68
+      ],
+      "complete": true,
+      "count": 12,
+      "ids": [
+        {
+          "id": "US-WA-KC-8934600105",
+          "geometrySha256": "28aeb2e1028ff2000949918f506e2907edb06a9268c38d2276e36c78a65e8030"
+        },
+        {
+          "id": "US-WA-KC-5273200080",
+          "geometrySha256": "1196c5b21387aa9d2fe07ef24b547a2178a4915e0c64a98b39913f4f799ca657"
+        },
+        {
+          "id": "US-WA-KC-5273200060",
+          "geometrySha256": "2f97663f694142ed69f5078729a5e8f3ef01d5ca7bad26193afa1c194ef303d8"
+        },
+        {
+          "id": "US-WA-KC-5273200050",
+          "geometrySha256": "977a545cf53ecdfd8cc21d3791867b8c34d69a9166b7be3edb63b33f8ed961d8"
+        },
+        {
+          "id": "US-WA-KC-0381000305",
+          "geometrySha256": "43cf54e8b157cbf09c06b9ac830cf52f9f52b7fcc2f49ef656ecd3275998cabe"
+        },
+        {
+          "id": "US-WA-KC-0381000295",
+          "geometrySha256": "2969b88f89fbdfc412c1c34430c84cbd633b915144d8937e2d8c965fe7acd03a"
+        },
+        {
+          "id": "US-WA-KC-8934600110",
+          "geometrySha256": "17ddba7ef279b4986a6b5527c62a53c87177d14848a1ef76961e9a6ac4eaddaa"
+        },
+        {
+          "id": "US-WA-KC-0381000300",
+          "geometrySha256": "dfb215ab8454cd07559f6c0b10ab358875df5aaef40f42862273cf656681b0db"
+        },
+        {
+          "id": "US-WA-KC-7974200350",
+          "geometrySha256": "c60f2a2c9aa9fe80556031e0b3dc65ff9e48f817e31ae844a30f45461f846717"
+        },
+        {
+          "id": "US-WA-KC-5273200055",
+          "geometrySha256": "7a86a3604cd6bd8fdb8a0f5777c56156965424c1161d0f34c8dcc7a6ff9be653"
+        },
+        {
+          "id": "US-WA-KC-5273200075",
+          "geometrySha256": "89f86ffe0c60000b2e987417306cf720224ec059bbc1a35f0fe68951a35285ff"
+        },
+        {
+          "id": "US-WA-KC-5273200085",
+          "geometrySha256": "17f5e3833832590b42486bb963e7f560aa2cc6269339e28fde4e9a9eac250f96"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 845,
+      "requestIndexes": [
+        3,
+        5
+      ],
+      "bbox": [
+        -122.279,
+        47.679,
+        -122.278,
+        47.68
+      ],
+      "complete": true,
+      "count": 12,
+      "ids": [
+        {
+          "id": "US-WA-KC-8934600055",
+          "geometrySha256": "94a692995149d7ac2bde3bab081832797b2046a60dee886da1e2b6f42e40c41f"
+        },
+        {
+          "id": "US-WA-KC-5273200070",
+          "geometrySha256": "a9ae9033b8246f4547683e68ef23d35030022771f654b9f6e965134043e1f958"
+        },
+        {
+          "id": "US-WA-KC-5273200060",
+          "geometrySha256": "2f97663f694142ed69f5078729a5e8f3ef01d5ca7bad26193afa1c194ef303d8"
+        },
+        {
+          "id": "US-WA-KC-5273200036",
+          "geometrySha256": "5990825238efa4a486c676a4e2bb58d7a5f73e053c8cc5d970ead0659b8c7a89"
+        },
+        {
+          "id": "US-WA-KC-5273200031",
+          "geometrySha256": "a7f53c5c4b1d112746f6d59e48a3e65c1f40701e98240f7f1f915aa429ae311a"
+        },
+        {
+          "id": "US-WA-KC-2603560000",
+          "geometrySha256": "0c41559dfc67abdf85a9bce101ff898adf0dffc27f14c608d91e035778f7c2b3"
+        },
+        {
+          "id": "US-WA-KC-8934600060",
+          "geometrySha256": "8f0e2bb882fdcef8c179cc68c8c3f2d9aedfa376e92a41666fcd3b317908de21"
+        },
+        {
+          "id": "US-WA-KC-8934600085",
+          "geometrySha256": "f9d21f3192b45215ccbe5047f24b003db1ee5903cb628830aff530b7c08b9a66"
+        },
+        {
+          "id": "US-WA-KC-5273200034",
+          "geometrySha256": "c0941987f8731153cff9320e03431901efcc67912f22919a0e12c14d835840ca"
+        },
+        {
+          "id": "US-WA-KC-5273200047",
+          "geometrySha256": "afcfd37e1c098656c9ffe5faf5241cda210ba261f181a7d68fa633029502a0b2"
+        },
+        {
+          "id": "US-WA-KC-5273200065",
+          "geometrySha256": "58e87124d90499eec15bb2a5dfe3e11303c35d63efc3d4d73af7d92174f4bcc1"
+        },
+        {
+          "id": "US-WA-KC-5273200075",
+          "geometrySha256": "89f86ffe0c60000b2e987417306cf720224ec059bbc1a35f0fe68951a35285ff"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 888,
+      "requestIndexes": [
+        6,
+        8
+      ],
+      "bbox": [
+        -122.278,
+        47.679,
+        -122.277,
+        47.68
+      ],
+      "complete": true,
+      "count": 10,
+      "ids": [
+        {
+          "id": "US-WA-KC-8934600030",
+          "geometrySha256": "9e5b6bd6b8b71d2f7d388ca8d21659bd61be888525f4df41442df7fe2be2562f"
+        },
+        {
+          "id": "US-WA-KC-8934600005",
+          "geometrySha256": "568096158ba67db534977e98ab2f796e77db4e6956281459b9bb7bf349b77a3c"
+        },
+        {
+          "id": "US-WA-KC-5273200036",
+          "geometrySha256": "5990825238efa4a486c676a4e2bb58d7a5f73e053c8cc5d970ead0659b8c7a89"
+        },
+        {
+          "id": "US-WA-KC-5273200031",
+          "geometrySha256": "a7f53c5c4b1d112746f6d59e48a3e65c1f40701e98240f7f1f915aa429ae311a"
+        },
+        {
+          "id": "US-WA-KC-5273200026",
+          "geometrySha256": "793d9a2a74a02a075147381b2bc93482990967d5f2992761f941a8b43bd25916"
+        },
+        {
+          "id": "US-WA-KC-8934600010",
+          "geometrySha256": "086e750ca78676eeae3b8254da862519b546c714023b54872a049eb46d0d6b49"
+        },
+        {
+          "id": "US-WA-KC-8934600035",
+          "geometrySha256": "12ff3156e5be418c175e4e126984e3996f3c736f7cb3474befeb69310b708fca"
+        },
+        {
+          "id": "US-WA-KC-7974200700",
+          "geometrySha256": "d4da3dd49b5e30c7a9a0c6d4e18d524ee1bcf1bb706e45925faa8b333f1e874d"
+        },
+        {
+          "id": "US-WA-KC-5273200034",
+          "geometrySha256": "c0941987f8731153cff9320e03431901efcc67912f22919a0e12c14d835840ca"
+        },
+        {
+          "id": "US-WA-KC-5273200047",
+          "geometrySha256": "afcfd37e1c098656c9ffe5faf5241cda210ba261f181a7d68fa633029502a0b2"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 816,
+      "requestIndexes": [
+        9,
+        11
+      ],
+      "bbox": [
+        -122.28,
+        47.68,
+        -122.279,
+        47.681
+      ],
+      "complete": true,
+      "count": 5,
+      "ids": [
+        {
+          "id": "US-WA-KC-7974200250",
+          "geometrySha256": "4ae8c4f7187f1d6cb51eb3d184eacbf7c8f2b3d80745c03ee78f801f83959381"
+        },
+        {
+          "id": "US-WA-KC-5273200010",
+          "geometrySha256": "dce03d64fbb86c51a885efeb254a0181ff0afc3698e717bece4c2b03eac7e853"
+        },
+        {
+          "id": "US-WA-KC-7974200350",
+          "geometrySha256": "c60f2a2c9aa9fe80556031e0b3dc65ff9e48f817e31ae844a30f45461f846717"
+        },
+        {
+          "id": "US-WA-KC-5273200005",
+          "geometrySha256": "8d2430e2ab432aec8c5f18823f32663277286a033cb2f3a5c6296a448ae079a3"
+        },
+        {
+          "id": "US-WA-KC-5273200015",
+          "geometrySha256": "c07f89eb74006104476d4c01384646cb3031701a93d06bcdabb700f2fde0a127"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 834,
+      "requestIndexes": [
+        12,
+        14
+      ],
+      "bbox": [
+        -122.279,
+        47.68,
+        -122.278,
+        47.681
+      ],
+      "complete": true,
+      "count": 6,
+      "ids": [
+        {
+          "id": "US-WA-KC-7974200250",
+          "geometrySha256": "4ae8c4f7187f1d6cb51eb3d184eacbf7c8f2b3d80745c03ee78f801f83959381"
+        },
+        {
+          "id": "US-WA-KC-5273200031",
+          "geometrySha256": "a7f53c5c4b1d112746f6d59e48a3e65c1f40701e98240f7f1f915aa429ae311a"
+        },
+        {
+          "id": "US-WA-KC-5273200026",
+          "geometrySha256": "793d9a2a74a02a075147381b2bc93482990967d5f2992761f941a8b43bd25916"
+        },
+        {
+          "id": "US-WA-KC-5273200015",
+          "geometrySha256": "c07f89eb74006104476d4c01384646cb3031701a93d06bcdabb700f2fde0a127"
+        },
+        {
+          "id": "US-WA-KC-5273200020",
+          "geometrySha256": "2e38bdc3d8607b5ab906921dbbc1b361a055d673dab90fb996ee071a011345ae"
+        },
+        {
+          "id": "US-WA-KC-5273200027",
+          "geometrySha256": "8ce7267045041108822f1f7e6242977b04a53498d6cbbdc8d2def65ddab817ec"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 1108,
+      "requestIndexes": [
+        15,
+        17
+      ],
+      "bbox": [
+        -122.278,
+        47.68,
+        -122.277,
+        47.681
+      ],
+      "complete": true,
+      "count": 8,
+      "ids": [
+        {
+          "id": "US-WA-KC-8926600140",
+          "geometrySha256": "8c0a027306bb7cbb850b355114f4ce292dd862c29754784c84c1a642243a01ec"
+        },
+        {
+          "id": "US-WA-KC-7974200250",
+          "geometrySha256": "4ae8c4f7187f1d6cb51eb3d184eacbf7c8f2b3d80745c03ee78f801f83959381"
+        },
+        {
+          "id": "US-WA-KC-5273200031",
+          "geometrySha256": "a7f53c5c4b1d112746f6d59e48a3e65c1f40701e98240f7f1f915aa429ae311a"
+        },
+        {
+          "id": "US-WA-KC-5273200026",
+          "geometrySha256": "793d9a2a74a02a075147381b2bc93482990967d5f2992761f941a8b43bd25916"
+        },
+        {
+          "id": "US-WA-KC-8926600135",
+          "geometrySha256": "35b81b47f739648ca09ad8a79181eaadcad89b9cbe3e3351e41315027a2ac9cc"
+        },
+        {
+          "id": "US-WA-KC-8926600145",
+          "geometrySha256": "5b3c6a0e06138ecc764610339707ef9e3fe183bba5c891779096e575a6457a5e"
+        },
+        {
+          "id": "US-WA-KC-7974200700",
+          "geometrySha256": "d4da3dd49b5e30c7a9a0c6d4e18d524ee1bcf1bb706e45925faa8b333f1e874d"
+        },
+        {
+          "id": "US-WA-KC-5273200027",
+          "geometrySha256": "8ce7267045041108822f1f7e6242977b04a53498d6cbbdc8d2def65ddab817ec"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 846,
+      "requestIndexes": [
+        18,
+        20
+      ],
+      "bbox": [
+        -122.28,
+        47.681,
+        -122.279,
+        47.682
+      ],
+      "complete": true,
+      "count": 16,
+      "ids": [
+        {
+          "id": "US-WA-KC-7974200250",
+          "geometrySha256": "4ae8c4f7187f1d6cb51eb3d184eacbf7c8f2b3d80745c03ee78f801f83959381"
+        },
+        {
+          "id": "US-WA-KC-0431500365",
+          "geometrySha256": "fec12fbb9c1148f828c0f436357a6cc6086f946aee889cfba7de68f373c4474f"
+        },
+        {
+          "id": "US-WA-KC-0431500350",
+          "geometrySha256": "b36fbe08c734fab7b2149ef23cdc4bae2beb72ce12e759bcf1d05bb72a82e8ae"
+        },
+        {
+          "id": "US-WA-KC-0429000185",
+          "geometrySha256": "8128f943735edb5a9928f69a2b2ba102bdb42a837a64c0a9e81afa0873934e47"
+        },
+        {
+          "id": "US-WA-KC-0429000175",
+          "geometrySha256": "0e86130f5059b6418ebc46d4ae157d3b7b25c468d1192fe1b5fb4f039bb5c3d3"
+        },
+        {
+          "id": "US-WA-KC-0429000080",
+          "geometrySha256": "77fee3c964ffda3e38e85fcfe510fead83526ebd86e7051122389ae7be27831d"
+        },
+        {
+          "id": "US-WA-KC-0429000070",
+          "geometrySha256": "eec9f3cf9554dfebe39b00a4fde31adc98644798133e4fdae1e7b62c3b506396"
+        },
+        {
+          "id": "US-WA-KC-0429000030",
+          "geometrySha256": "f4ce0c5bfce4e19ac64c3140d3cea82bf93bcd67f725707d1bfa0211f08e46de"
+        },
+        {
+          "id": "US-WA-KC-0429000035",
+          "geometrySha256": "5d8b3af7c43a6000774b0d938ccbc0a65b02e7a1116b138d9095f88aa506df6b"
+        },
+        {
+          "id": "US-WA-KC-0429000040",
+          "geometrySha256": "a388f293ad60d4355383bc3db3f1482a3e36cb567ccd05523a9e7857ec4ef6aa"
+        },
+        {
+          "id": "US-WA-KC-0429000075",
+          "geometrySha256": "1900ecc2fee44c8115264f41e65b4855c07e94704ac6b098f269a3a3616e23e4"
+        },
+        {
+          "id": "US-WA-KC-0429000180",
+          "geometrySha256": "dbe83f2f18c9a9939ca306f4d0c5555b951d70015fa4937c7fc09f762cacda3e"
+        },
+        {
+          "id": "US-WA-KC-0431500355",
+          "geometrySha256": "add7bad56a036ede29be6168f5605f3cda16e1788750f0582f4189b1b232f83e"
+        },
+        {
+          "id": "US-WA-KC-0431500360",
+          "geometrySha256": "9a708d036fc805b3d3e4d13dc43777c246da2680b61242fe18cd52ce3d859f18"
+        },
+        {
+          "id": "US-WA-KC-0431500370",
+          "geometrySha256": "588246429ab9db95abde4fb822b171e01e465af5778813758a661191c8db1326"
+        },
+        {
+          "id": "US-WA-KC-7974200350",
+          "geometrySha256": "c60f2a2c9aa9fe80556031e0b3dc65ff9e48f817e31ae844a30f45461f846717"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 885,
+      "requestIndexes": [
+        21,
+        23
+      ],
+      "bbox": [
+        -122.279,
+        47.681,
+        -122.278,
+        47.682
+      ],
+      "complete": true,
+      "count": 16,
+      "ids": [
+        {
+          "id": "US-WA-KC-7974200250",
+          "geometrySha256": "4ae8c4f7187f1d6cb51eb3d184eacbf7c8f2b3d80745c03ee78f801f83959381"
+        },
+        {
+          "id": "US-WA-KC-0429000205",
+          "geometrySha256": "60f1d70b96efe39ccbed62c6496e1d0caca588e9dbacd752639d79731b361578"
+        },
+        {
+          "id": "US-WA-KC-0429000195",
+          "geometrySha256": "30b839306b62d46958f8e61bce2396d138b2d59f8facc1cc8b6191d91f1af7b1"
+        },
+        {
+          "id": "US-WA-KC-0429000185",
+          "geometrySha256": "8128f943735edb5a9928f69a2b2ba102bdb42a837a64c0a9e81afa0873934e47"
+        },
+        {
+          "id": "US-WA-KC-0429000165",
+          "geometrySha256": "20c91a85f74f5c9855fa0b8af218503ce1efe3070eda9f215f7aa2803333b324"
+        },
+        {
+          "id": "US-WA-KC-0429000155",
+          "geometrySha256": "998f77461158c6a5eed6b3f15031f4a3b00ae009d4042bd2157d5c1bdcdd503b"
+        },
+        {
+          "id": "US-WA-KC-0429000115",
+          "geometrySha256": "a8398d276c7885f93824dfcb6d4f2321af72ab33295d9af1b5073708967435c2"
+        },
+        {
+          "id": "US-WA-KC-0429000080",
+          "geometrySha256": "77fee3c964ffda3e38e85fcfe510fead83526ebd86e7051122389ae7be27831d"
+        },
+        {
+          "id": "US-WA-KC-0429000070",
+          "geometrySha256": "eec9f3cf9554dfebe39b00a4fde31adc98644798133e4fdae1e7b62c3b506396"
+        },
+        {
+          "id": "US-WA-KC-0429000075",
+          "geometrySha256": "1900ecc2fee44c8115264f41e65b4855c07e94704ac6b098f269a3a3616e23e4"
+        },
+        {
+          "id": "US-WA-KC-0429000110",
+          "geometrySha256": "4e3cfb55fa87102f94076cbe45901491ee08e0a04ac216aefa39a62fcbfda782"
+        },
+        {
+          "id": "US-WA-KC-0429000120",
+          "geometrySha256": "21548684d5a40c31d11efda50533ac6612b644a82254487006582c9441b16c52"
+        },
+        {
+          "id": "US-WA-KC-0429000160",
+          "geometrySha256": "8ea971ba5bfc3038808f2ee22a3662f74dc0e12a1cabed4402a351747594f412"
+        },
+        {
+          "id": "US-WA-KC-0429000170",
+          "geometrySha256": "968cc8c1d7337c3abb6ed1757ee6e13ca0839d1946f8cb5c1199c9a7cb679f9c"
+        },
+        {
+          "id": "US-WA-KC-0429000190",
+          "geometrySha256": "d2a7c32e91422f9ba4b160bdb5df477f05ca18b9ca6f27d6f05e5798f89277a1"
+        },
+        {
+          "id": "US-WA-KC-0429000200",
+          "geometrySha256": "318828d7b42ebd36dcd52e4e7baf14844abd60b165fc7dfee9724469065bdf45"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 837,
+      "requestIndexes": [
+        24,
+        26
+      ],
+      "bbox": [
+        -122.278,
+        47.681,
+        -122.277,
+        47.682
+      ],
+      "complete": true,
+      "count": 18,
+      "ids": [
+        {
+          "id": "US-WA-KC-8934100020",
+          "geometrySha256": "272cfbab84e194a95521d8c77982f84936ac24137de16cd27a828e0effc2edc7"
+        },
+        {
+          "id": "US-WA-KC-8934100010",
+          "geometrySha256": "a0cf6eb7358d9d36aae681d5a91d0a25c2fce5fc2602677be6a5d0d501e0c12e"
+        },
+        {
+          "id": "US-WA-KC-7974200250",
+          "geometrySha256": "4ae8c4f7187f1d6cb51eb3d184eacbf7c8f2b3d80745c03ee78f801f83959381"
+        },
+        {
+          "id": "US-WA-KC-0429000240",
+          "geometrySha256": "ae4d995be592b977cfffe1d8f8b9d08e1c45c2d67d9eec9b3dd0be3de47f4437"
+        },
+        {
+          "id": "US-WA-KC-0429000235",
+          "geometrySha256": "a31b1149c1963ac5b2c86eec8a9bbe00cfccd5e58010f7e1fdd42f56b47748f1"
+        },
+        {
+          "id": "US-WA-KC-0429000230",
+          "geometrySha256": "3729fed1f31d4eddfa7979ef542fafbde62867655693f8b8df34689837fa1eee"
+        },
+        {
+          "id": "US-WA-KC-0429000225",
+          "geometrySha256": "3d6856f583097a78119e7d1354bbb21415cd1cfbdf95027bc56e2072df64ee61"
+        },
+        {
+          "id": "US-WA-KC-0429000215",
+          "geometrySha256": "1ce5b7ddef4635161d79413b3f1ecbb9fe1229a412826937b0d7cae1d4dcc5c7"
+        },
+        {
+          "id": "US-WA-KC-0429000205",
+          "geometrySha256": "60f1d70b96efe39ccbed62c6496e1d0caca588e9dbacd752639d79731b361578"
+        },
+        {
+          "id": "US-WA-KC-0429000165",
+          "geometrySha256": "20c91a85f74f5c9855fa0b8af218503ce1efe3070eda9f215f7aa2803333b324"
+        },
+        {
+          "id": "US-WA-KC-0429000155",
+          "geometrySha256": "998f77461158c6a5eed6b3f15031f4a3b00ae009d4042bd2157d5c1bdcdd503b"
+        },
+        {
+          "id": "US-WA-KC-8934100005",
+          "geometrySha256": "6020cb1848b73532707d0b98e09e3cfa7a6f42d11ef4f47ec8433a27f731dbc9"
+        },
+        {
+          "id": "US-WA-KC-8934100015",
+          "geometrySha256": "1052a6dc7e02088609915a5c1e83e5ed5d75a19bf1fdf027cca9771c3959da91"
+        },
+        {
+          "id": "US-WA-KC-8934100025",
+          "geometrySha256": "2435e03a1795a5a4916c75298c26f494318f95e1a50e3e7551d46b0bb1d92b37"
+        },
+        {
+          "id": "US-WA-KC-0429000160",
+          "geometrySha256": "8ea971ba5bfc3038808f2ee22a3662f74dc0e12a1cabed4402a351747594f412"
+        },
+        {
+          "id": "US-WA-KC-0429000170",
+          "geometrySha256": "968cc8c1d7337c3abb6ed1757ee6e13ca0839d1946f8cb5c1199c9a7cb679f9c"
+        },
+        {
+          "id": "US-WA-KC-0429000210",
+          "geometrySha256": "12317fd96962b85ae6976807923f6b15cd7a8c86e8846644a049810c5d19a66d"
+        },
+        {
+          "id": "US-WA-KC-0429000220",
+          "geometrySha256": "0f300fc3498147ebe7e7f7b5a6c1ba44ed54d419d393a6ce3299062169b116a4"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 819,
+      "requestIndexes": [
+        27,
+        29
+      ],
+      "bbox": [
+        -122.279,
+        47.678,
+        -122.278,
+        47.679
+      ],
+      "complete": true,
+      "count": 14,
+      "ids": [
+        {
+          "id": "US-WA-KC-8934600090",
+          "geometrySha256": "19164768cbb588b0fd263f62d52b48b7ce0c14c283a5869500139a9fa3e73273"
+        },
+        {
+          "id": "US-WA-KC-8934600075",
+          "geometrySha256": "91cb21a2e65905e2b943752c48b42879b98f270de0119a8f4bfdcefb4c47031b"
+        },
+        {
+          "id": "US-WA-KC-8934600065",
+          "geometrySha256": "4c45ecb8dc50ac642433ef27c99c271e2beb1dac816e78a47767c9926823779b"
+        },
+        {
+          "id": "US-WA-KC-8927600055",
+          "geometrySha256": "79a08721e08b56f6710e84b71dc9d1c5d34454ec90131cdb5b7d2ca871821c76"
+        },
+        {
+          "id": "US-WA-KC-8927600025",
+          "geometrySha256": "25b7ce978b58c6e0c6dbb7c43bbd7cfa5841787acea2fbec2ea1bfaaca17c39e"
+        },
+        {
+          "id": "US-WA-KC-8927600035",
+          "geometrySha256": "e1ef9f6f3e109cab0547cc4f102da4345eeb8aa96e1817b629e3dfd94cc58f59"
+        },
+        {
+          "id": "US-WA-KC-8927600030",
+          "geometrySha256": "01931ebdd320f110286061e3ee444316ea2a58aff9ab86ca33c48a2a7ace4423"
+        },
+        {
+          "id": "US-WA-KC-8927600050",
+          "geometrySha256": "493b2e47167aac8d005b7118cabc0271c4561b71cf6fc57a7110fea38ec5c048"
+        },
+        {
+          "id": "US-WA-KC-8927600060",
+          "geometrySha256": "27d10a265aabe724e5a7aea341656f2531b6cb837b700c1477e4725d638804bc"
+        },
+        {
+          "id": "US-WA-KC-8934600060",
+          "geometrySha256": "8f0e2bb882fdcef8c179cc68c8c3f2d9aedfa376e92a41666fcd3b317908de21"
+        },
+        {
+          "id": "US-WA-KC-8934600070",
+          "geometrySha256": "a0ce2af808bc86e6312badf561bad4fddbf044b40db4283535ce31adf5967876"
+        },
+        {
+          "id": "US-WA-KC-8934600085",
+          "geometrySha256": "f9d21f3192b45215ccbe5047f24b003db1ee5903cb628830aff530b7c08b9a66"
+        },
+        {
+          "id": "US-WA-KC-8934600095",
+          "geometrySha256": "405fc7ec3b97d0b12d2be333c4489ae455c4294a559ae1b72aaf63d2cb07e629"
+        },
+        {
+          "id": "US-WA-KC-8934600100",
+          "geometrySha256": "d04a9d9a9f44ad73812bd01215b00d3d541f24cb5ae7ffee71d594a178469b68"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 828,
+      "requestIndexes": [
+        30,
+        32
+      ],
+      "bbox": [
+        -122.279,
+        47.682,
+        -122.278,
+        47.683
+      ],
+      "complete": true,
+      "count": 19,
+      "ids": [
+        {
+          "id": "US-WA-KC-0429000155",
+          "geometrySha256": "998f77461158c6a5eed6b3f15031f4a3b00ae009d4042bd2157d5c1bdcdd503b"
+        },
+        {
+          "id": "US-WA-KC-0429000140",
+          "geometrySha256": "de25fbf871eec5d414bd1d8947403838116bd3b341110758b76fc1262a055147"
+        },
+        {
+          "id": "US-WA-KC-0429000105",
+          "geometrySha256": "8aef727b71d18f8a9f9758d0528bf9d844555c490937aca00855c583d75d41c0"
+        },
+        {
+          "id": "US-WA-KC-0429000090",
+          "geometrySha256": "f0b23c4457778cc5fd43872365ae9955dbb9de627e2a5fde4829a2f9eecc79f1"
+        },
+        {
+          "id": "US-WA-KC-0429000070",
+          "geometrySha256": "eec9f3cf9554dfebe39b00a4fde31adc98644798133e4fdae1e7b62c3b506396"
+        },
+        {
+          "id": "US-WA-KC-0429000055",
+          "geometrySha256": "0efd2d251a9c18b9153548c0d133814795823c1acfd55afab5b7eabdbcdd7186"
+        },
+        {
+          "id": "US-WA-KC-0429000045",
+          "geometrySha256": "c50867699f7d4b9d462917a9d3bd887a91534e63815ddbfeeab01661fc2700f0"
+        },
+        {
+          "id": "US-WA-KC-0429000050",
+          "geometrySha256": "66c7a0e4e5314b2c44bc4d1ade1a2033ddc43ee9187b5f1d41c7ad8b1ac12f46"
+        },
+        {
+          "id": "US-WA-KC-0429000060",
+          "geometrySha256": "c74baec63b0d2862cb3da180161ae3fc243820dd34810732ed720383d5e700ca"
+        },
+        {
+          "id": "US-WA-KC-0429000065",
+          "geometrySha256": "f3290b37d29c0a9dfbdb2cc1d28f507927987f79fa7f693e845403f05fdfd1af"
+        },
+        {
+          "id": "US-WA-KC-0429000085",
+          "geometrySha256": "da091d7509770aa47a6dbacc0a8d526da376684782b6496380985f619995bb2d"
+        },
+        {
+          "id": "US-WA-KC-0429000095",
+          "geometrySha256": "b237233e530c2e7d396bfe15539506a7a6031fb09f629d0002b1771aea766866"
+        },
+        {
+          "id": "US-WA-KC-0429000100",
+          "geometrySha256": "270ed4d2a9a2091997d6423f5d842f31308d102a1c4b22ec06beee9bfcc48417"
+        },
+        {
+          "id": "US-WA-KC-0429000110",
+          "geometrySha256": "4e3cfb55fa87102f94076cbe45901491ee08e0a04ac216aefa39a62fcbfda782"
+        },
+        {
+          "id": "US-WA-KC-0429000125",
+          "geometrySha256": "5a522b94cb4d332dc52eb5b35a1548b275e63bf8470aca693acc02c016db6d9a"
+        },
+        {
+          "id": "US-WA-KC-0429000135",
+          "geometrySha256": "810b9781de49374253c9297a5bc48f0a2181456b825b473e28ac0ec7d9126201"
+        },
+        {
+          "id": "US-WA-KC-0429000145",
+          "geometrySha256": "193cfe913b325555b0325e63e7216474220db35ad1549649e5247bb923d168b2"
+        },
+        {
+          "id": "US-WA-KC-0429000150",
+          "geometrySha256": "5932faf62835d9600427cb68d15b43f3d297dac743023650ca9256028838d4f1"
+        },
+        {
+          "id": "US-WA-KC-0429000130",
+          "geometrySha256": "d6f740cbd86214e69871b4d7b59446d1a24b0e0781c1fee1b27ec4f2d4796e15"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 1108,
+      "requestIndexes": [
+        33,
+        35
+      ],
+      "bbox": [
+        -122.281,
+        47.68,
+        -122.28,
+        47.681
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "US-WA-KC-7974200350",
+          "geometrySha256": "c60f2a2c9aa9fe80556031e0b3dc65ff9e48f817e31ae844a30f45461f846717"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 832,
+      "requestIndexes": [
+        36,
+        38
+      ],
+      "bbox": [
+        -122.277,
+        47.68,
+        -122.276,
+        47.681
+      ],
+      "complete": true,
+      "count": 9,
+      "ids": [
+        {
+          "id": "US-WA-KC-8926600205",
+          "geometrySha256": "7132a27a8d21c32667cf34255f72dad69cb01465409e94a1563ef55302e2c7bd"
+        },
+        {
+          "id": "US-WA-KC-8926600160",
+          "geometrySha256": "ff6a2ff8a29166b58a07bd9c285982ce8e7fb9a3e698f2427131f5217d64dbb4"
+        },
+        {
+          "id": "US-WA-KC-8926600150",
+          "geometrySha256": "0bcc37d5548345230b52b0fe0c919da69ff55e20883f7352d7437d1fec7cdbd8"
+        },
+        {
+          "id": "US-WA-KC-8926600140",
+          "geometrySha256": "8c0a027306bb7cbb850b355114f4ce292dd862c29754784c84c1a642243a01ec"
+        },
+        {
+          "id": "US-WA-KC-7974200250",
+          "geometrySha256": "4ae8c4f7187f1d6cb51eb3d184eacbf7c8f2b3d80745c03ee78f801f83959381"
+        },
+        {
+          "id": "US-WA-KC-8926600135",
+          "geometrySha256": "35b81b47f739648ca09ad8a79181eaadcad89b9cbe3e3351e41315027a2ac9cc"
+        },
+        {
+          "id": "US-WA-KC-8926600145",
+          "geometrySha256": "5b3c6a0e06138ecc764610339707ef9e3fe183bba5c891779096e575a6457a5e"
+        },
+        {
+          "id": "US-WA-KC-8926600155",
+          "geometrySha256": "9f07655fd6ba8f5792c0721bcf32a50d5f1f5cb23abfe2dea7f94f6ad4e0e669"
+        },
+        {
+          "id": "US-WA-KC-7974200700",
+          "geometrySha256": "d4da3dd49b5e30c7a9a0c6d4e18d524ee1bcf1bb706e45925faa8b333f1e874d"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "elapsedMs": 2394,
+      "requestIndexes": [
+        39,
+        47
+      ],
+      "count": 19,
+      "geometryPages": 7,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 1052,
+      "requestIndexes": [
+        48,
+        50
+      ],
+      "count": 40,
+      "ids": [
+        "US-WA-KC-0381000295",
+        "US-WA-KC-0381000300",
+        "US-WA-KC-0381000305",
+        "US-WA-KC-0429000030",
+        "US-WA-KC-0429000035",
+        "US-WA-KC-0429000040",
+        "US-WA-KC-0429000045",
+        "US-WA-KC-0429000050",
+        "US-WA-KC-0429000055",
+        "US-WA-KC-0429000060",
+        "US-WA-KC-0429000065",
+        "US-WA-KC-0429000070",
+        "US-WA-KC-0429000075",
+        "US-WA-KC-0429000080",
+        "US-WA-KC-0429000085",
+        "US-WA-KC-0429000090",
+        "US-WA-KC-0429000095",
+        "US-WA-KC-0429000100",
+        "US-WA-KC-0429000105",
+        "US-WA-KC-0429000110",
+        "US-WA-KC-0429000115",
+        "US-WA-KC-0429000120",
+        "US-WA-KC-0429000125",
+        "US-WA-KC-0429000130",
+        "US-WA-KC-0429000135",
+        "US-WA-KC-0429000140",
+        "US-WA-KC-0429000145",
+        "US-WA-KC-0429000150",
+        "US-WA-KC-0429000155",
+        "US-WA-KC-0429000160",
+        "US-WA-KC-0429000165",
+        "US-WA-KC-0429000170",
+        "US-WA-KC-0429000175",
+        "US-WA-KC-0429000180",
+        "US-WA-KC-0429000185",
+        "US-WA-KC-0429000190",
+        "US-WA-KC-0429000195",
+        "US-WA-KC-0429000200",
+        "US-WA-KC-0429000205",
+        "US-WA-KC-0429000210"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-40",
+      "passed": true,
+      "elapsedMs": 843,
+      "requestIndexes": [
+        51,
+        53
+      ],
+      "count": 40,
+      "ids": [
+        "US-WA-KC-0429000215",
+        "US-WA-KC-0429000220",
+        "US-WA-KC-0429000225",
+        "US-WA-KC-0429000230",
+        "US-WA-KC-0429000235",
+        "US-WA-KC-0429000240",
+        "US-WA-KC-0431500350",
+        "US-WA-KC-0431500355",
+        "US-WA-KC-0431500360",
+        "US-WA-KC-0431500365",
+        "US-WA-KC-0431500370",
+        "US-WA-KC-2603560000",
+        "US-WA-KC-5273200005",
+        "US-WA-KC-5273200010",
+        "US-WA-KC-5273200015",
+        "US-WA-KC-5273200020",
+        "US-WA-KC-5273200026",
+        "US-WA-KC-5273200027",
+        "US-WA-KC-5273200031",
+        "US-WA-KC-5273200034",
+        "US-WA-KC-5273200036",
+        "US-WA-KC-5273200047",
+        "US-WA-KC-5273200050",
+        "US-WA-KC-5273200055",
+        "US-WA-KC-5273200060",
+        "US-WA-KC-5273200065",
+        "US-WA-KC-5273200070",
+        "US-WA-KC-5273200075",
+        "US-WA-KC-5273200080",
+        "US-WA-KC-5273200085",
+        "US-WA-KC-7974200250",
+        "US-WA-KC-7974200350",
+        "US-WA-KC-7974200700",
+        "US-WA-KC-8926600135",
+        "US-WA-KC-8926600140",
+        "US-WA-KC-8926600145",
+        "US-WA-KC-8926600150",
+        "US-WA-KC-8926600155",
+        "US-WA-KC-8926600160",
+        "US-WA-KC-8926600205"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-80",
+      "passed": true,
+      "elapsedMs": 836,
+      "requestIndexes": [
+        54,
+        56
+      ],
+      "count": 26,
+      "ids": [
+        "US-WA-KC-8927600025",
+        "US-WA-KC-8927600030",
+        "US-WA-KC-8927600035",
+        "US-WA-KC-8927600050",
+        "US-WA-KC-8927600055",
+        "US-WA-KC-8927600060",
+        "US-WA-KC-8934100005",
+        "US-WA-KC-8934100010",
+        "US-WA-KC-8934100015",
+        "US-WA-KC-8934100020",
+        "US-WA-KC-8934100025",
+        "US-WA-KC-8934600005",
+        "US-WA-KC-8934600010",
+        "US-WA-KC-8934600030",
+        "US-WA-KC-8934600035",
+        "US-WA-KC-8934600055",
+        "US-WA-KC-8934600060",
+        "US-WA-KC-8934600065",
+        "US-WA-KC-8934600070",
+        "US-WA-KC-8934600075",
+        "US-WA-KC-8934600085",
+        "US-WA-KC-8934600090",
+        "US-WA-KC-8934600095",
+        "US-WA-KC-8934600100",
+        "US-WA-KC-8934600105",
+        "US-WA-KC-8934600110"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 560,
+      "requestIndexes": [
+        57,
+        58
+      ],
+      "absentIds": [
+        "US-WA-KC-0000000000"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 884,
+      "requestIndexes": [
+        59,
+        61
+      ],
+      "selectedParcelId": "US-WA-KC-8934600010",
+      "count": 6,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 864,
+      "requestIndexes": [
+        62,
+        64
+      ],
+      "selectedParcelId": "US-WA-KC-8934600010",
+      "coverage": "complete",
+      "siteM2": 577.02,
+      "boundParcels": 1
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.28%2C47.679%2C-122.279%2C47.68&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:09.561Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 12,
+      "count": 12
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.28%2C47.679%2C-122.279%2C47.68&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:10.239Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 154,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        11351819,
+        11449140,
+        11368639,
+        11461242,
+        11340684,
+        11457389,
+        11461239,
+        11351816,
+        11387366,
+        11351818,
+        11368640,
+        11461241
+      ]
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&outFields=PIN%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=11351819%2C11449140%2C11368639%2C11461242%2C11340684%2C11457389%2C11461239%2C11351816%2C11387366%2C11351818%2C11368640%2C11461241",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:10.509Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 4854,
+      "features": [
+        {
+          "transportId": 11340684,
+          "properties": {
+            "PIN": "8934600105",
+            "OBJECTID": 11340684
+          },
+          "geometrySha256": "28aeb2e1028ff2000949918f506e2907edb06a9268c38d2276e36c78a65e8030"
+        },
+        {
+          "transportId": 11351816,
+          "properties": {
+            "PIN": "5273200080",
+            "OBJECTID": 11351816
+          },
+          "geometrySha256": "1196c5b21387aa9d2fe07ef24b547a2178a4915e0c64a98b39913f4f799ca657"
+        },
+        {
+          "transportId": 11351818,
+          "properties": {
+            "PIN": "5273200060",
+            "OBJECTID": 11351818
+          },
+          "geometrySha256": "2f97663f694142ed69f5078729a5e8f3ef01d5ca7bad26193afa1c194ef303d8"
+        },
+        {
+          "transportId": 11351819,
+          "properties": {
+            "PIN": "5273200050",
+            "OBJECTID": 11351819
+          },
+          "geometrySha256": "977a545cf53ecdfd8cc21d3791867b8c34d69a9166b7be3edb63b33f8ed961d8"
+        },
+        {
+          "transportId": 11368639,
+          "properties": {
+            "PIN": "0381000305",
+            "OBJECTID": 11368639
+          },
+          "geometrySha256": "43cf54e8b157cbf09c06b9ac830cf52f9f52b7fcc2f49ef656ecd3275998cabe"
+        },
+        {
+          "transportId": 11368640,
+          "properties": {
+            "PIN": "0381000295",
+            "OBJECTID": 11368640
+          },
+          "geometrySha256": "2969b88f89fbdfc412c1c34430c84cbd633b915144d8937e2d8c965fe7acd03a"
+        },
+        {
+          "transportId": 11387366,
+          "properties": {
+            "PIN": "8934600110",
+            "OBJECTID": 11387366
+          },
+          "geometrySha256": "17ddba7ef279b4986a6b5527c62a53c87177d14848a1ef76961e9a6ac4eaddaa"
+        },
+        {
+          "transportId": 11449140,
+          "properties": {
+            "PIN": "0381000300",
+            "OBJECTID": 11449140
+          },
+          "geometrySha256": "dfb215ab8454cd07559f6c0b10ab358875df5aaef40f42862273cf656681b0db"
+        },
+        {
+          "transportId": 11457389,
+          "properties": {
+            "PIN": "7974200350",
+            "OBJECTID": 11457389
+          },
+          "geometrySha256": "c60f2a2c9aa9fe80556031e0b3dc65ff9e48f817e31ae844a30f45461f846717"
+        },
+        {
+          "transportId": 11461239,
+          "properties": {
+            "PIN": "5273200055",
+            "OBJECTID": 11461239
+          },
+          "geometrySha256": "7a86a3604cd6bd8fdb8a0f5777c56156965424c1161d0f34c8dcc7a6ff9be653"
+        },
+        {
+          "transportId": 11461241,
+          "properties": {
+            "PIN": "5273200075",
+            "OBJECTID": 11461241
+          },
+          "geometrySha256": "89f86ffe0c60000b2e987417306cf720224ec059bbc1a35f0fe68951a35285ff"
+        },
+        {
+          "transportId": 11461242,
+          "properties": {
+            "PIN": "5273200085",
+            "OBJECTID": 11461242
+          },
+          "geometrySha256": "17f5e3833832590b42486bb963e7f560aa2cc6269339e28fde4e9a9eac250f96"
+        }
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.279%2C47.679%2C-122.278%2C47.68&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:11.149Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 12,
+      "count": 12
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.279%2C47.679%2C-122.278%2C47.68&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:11.461Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 154,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        11351817,
+        11461240,
+        11340688,
+        11351820,
+        11461237,
+        11387363,
+        11461238,
+        11351818,
+        11387361,
+        11361793,
+        11461241,
+        11351821
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&outFields=PIN%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=11351817%2C11461240%2C11340688%2C11351820%2C11461237%2C11387363%2C11461238%2C11351818%2C11387361%2C11361793%2C11461241%2C11351821",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:11.729Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 5276,
+      "features": [
+        {
+          "transportId": 11340688,
+          "properties": {
+            "PIN": "8934600055",
+            "OBJECTID": 11340688
+          },
+          "geometrySha256": "94a692995149d7ac2bde3bab081832797b2046a60dee886da1e2b6f42e40c41f"
+        },
+        {
+          "transportId": 11351817,
+          "properties": {
+            "PIN": "5273200070",
+            "OBJECTID": 11351817
+          },
+          "geometrySha256": "a9ae9033b8246f4547683e68ef23d35030022771f654b9f6e965134043e1f958"
+        },
+        {
+          "transportId": 11351818,
+          "properties": {
+            "PIN": "5273200060",
+            "OBJECTID": 11351818
+          },
+          "geometrySha256": "2f97663f694142ed69f5078729a5e8f3ef01d5ca7bad26193afa1c194ef303d8"
+        },
+        {
+          "transportId": 11351820,
+          "properties": {
+            "PIN": "5273200036",
+            "OBJECTID": 11351820
+          },
+          "geometrySha256": "5990825238efa4a486c676a4e2bb58d7a5f73e053c8cc5d970ead0659b8c7a89"
+        },
+        {
+          "transportId": 11351821,
+          "properties": {
+            "PIN": "5273200031",
+            "OBJECTID": 11351821
+          },
+          "geometrySha256": "a7f53c5c4b1d112746f6d59e48a3e65c1f40701e98240f7f1f915aa429ae311a"
+        },
+        {
+          "transportId": 11361793,
+          "properties": {
+            "PIN": "2603560000",
+            "OBJECTID": 11361793
+          },
+          "geometrySha256": "0c41559dfc67abdf85a9bce101ff898adf0dffc27f14c608d91e035778f7c2b3"
+        },
+        {
+          "transportId": 11387361,
+          "properties": {
+            "PIN": "8934600060",
+            "OBJECTID": 11387361
+          },
+          "geometrySha256": "8f0e2bb882fdcef8c179cc68c8c3f2d9aedfa376e92a41666fcd3b317908de21"
+        },
+        {
+          "transportId": 11387363,
+          "properties": {
+            "PIN": "8934600085",
+            "OBJECTID": 11387363
+          },
+          "geometrySha256": "f9d21f3192b45215ccbe5047f24b003db1ee5903cb628830aff530b7c08b9a66"
+        },
+        {
+          "transportId": 11461237,
+          "properties": {
+            "PIN": "5273200034",
+            "OBJECTID": 11461237
+          },
+          "geometrySha256": "c0941987f8731153cff9320e03431901efcc67912f22919a0e12c14d835840ca"
+        },
+        {
+          "transportId": 11461238,
+          "properties": {
+            "PIN": "5273200047",
+            "OBJECTID": 11461238
+          },
+          "geometrySha256": "afcfd37e1c098656c9ffe5faf5241cda210ba261f181a7d68fa633029502a0b2"
+        },
+        {
+          "transportId": 11461240,
+          "properties": {
+            "PIN": "5273200065",
+            "OBJECTID": 11461240
+          },
+          "geometrySha256": "58e87124d90499eec15bb2a5dfe3e11303c35d63efc3d4d73af7d92174f4bcc1"
+        },
+        {
+          "transportId": 11461241,
+          "properties": {
+            "PIN": "5273200075",
+            "OBJECTID": 11461241
+          },
+          "geometrySha256": "89f86ffe0c60000b2e987417306cf720224ec059bbc1a35f0fe68951a35285ff"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.278%2C47.679%2C-122.277%2C47.68&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:11.995Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 12,
+      "count": 10
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.278%2C47.679%2C-122.277%2C47.68&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:12.335Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 136,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        11340690,
+        11351822,
+        11351820,
+        11461237,
+        11387355,
+        11461238,
+        11387358,
+        11351821,
+        11457414,
+        11340692
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&outFields=PIN%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=11340690%2C11351822%2C11351820%2C11461237%2C11387355%2C11461238%2C11387358%2C11351821%2C11457414%2C11340692",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:12.607Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 4456,
+      "features": [
+        {
+          "transportId": 11340690,
+          "properties": {
+            "PIN": "8934600030",
+            "OBJECTID": 11340690
+          },
+          "geometrySha256": "9e5b6bd6b8b71d2f7d388ca8d21659bd61be888525f4df41442df7fe2be2562f"
+        },
+        {
+          "transportId": 11340692,
+          "properties": {
+            "PIN": "8934600005",
+            "OBJECTID": 11340692
+          },
+          "geometrySha256": "568096158ba67db534977e98ab2f796e77db4e6956281459b9bb7bf349b77a3c"
+        },
+        {
+          "transportId": 11351820,
+          "properties": {
+            "PIN": "5273200036",
+            "OBJECTID": 11351820
+          },
+          "geometrySha256": "5990825238efa4a486c676a4e2bb58d7a5f73e053c8cc5d970ead0659b8c7a89"
+        },
+        {
+          "transportId": 11351821,
+          "properties": {
+            "PIN": "5273200031",
+            "OBJECTID": 11351821
+          },
+          "geometrySha256": "a7f53c5c4b1d112746f6d59e48a3e65c1f40701e98240f7f1f915aa429ae311a"
+        },
+        {
+          "transportId": 11351822,
+          "properties": {
+            "PIN": "5273200026",
+            "OBJECTID": 11351822
+          },
+          "geometrySha256": "793d9a2a74a02a075147381b2bc93482990967d5f2992761f941a8b43bd25916"
+        },
+        {
+          "transportId": 11387355,
+          "properties": {
+            "PIN": "8934600010",
+            "OBJECTID": 11387355
+          },
+          "geometrySha256": "086e750ca78676eeae3b8254da862519b546c714023b54872a049eb46d0d6b49"
+        },
+        {
+          "transportId": 11387358,
+          "properties": {
+            "PIN": "8934600035",
+            "OBJECTID": 11387358
+          },
+          "geometrySha256": "12ff3156e5be418c175e4e126984e3996f3c736f7cb3474befeb69310b708fca"
+        },
+        {
+          "transportId": 11457414,
+          "properties": {
+            "PIN": "7974200700",
+            "OBJECTID": 11457414
+          },
+          "geometrySha256": "d4da3dd49b5e30c7a9a0c6d4e18d524ee1bcf1bb706e45925faa8b333f1e874d"
+        },
+        {
+          "transportId": 11461237,
+          "properties": {
+            "PIN": "5273200034",
+            "OBJECTID": 11461237
+          },
+          "geometrySha256": "c0941987f8731153cff9320e03431901efcc67912f22919a0e12c14d835840ca"
+        },
+        {
+          "transportId": 11461238,
+          "properties": {
+            "PIN": "5273200047",
+            "OBJECTID": 11461238
+          },
+          "geometrySha256": "afcfd37e1c098656c9ffe5faf5241cda210ba261f181a7d68fa633029502a0b2"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.28%2C47.68%2C-122.279%2C47.681&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:12.884Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "count": 5
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.28%2C47.68%2C-122.279%2C47.681&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:13.158Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 91,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        11343910,
+        11457389,
+        11351823,
+        11461234,
+        11461233
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&outFields=PIN%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=11343910%2C11457389%2C11351823%2C11461234%2C11461233",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:13.423Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 3867,
+      "features": [
+        {
+          "transportId": 11343910,
+          "properties": {
+            "PIN": "7974200250",
+            "OBJECTID": 11343910
+          },
+          "geometrySha256": "4ae8c4f7187f1d6cb51eb3d184eacbf7c8f2b3d80745c03ee78f801f83959381"
+        },
+        {
+          "transportId": 11351823,
+          "properties": {
+            "PIN": "5273200010",
+            "OBJECTID": 11351823
+          },
+          "geometrySha256": "dce03d64fbb86c51a885efeb254a0181ff0afc3698e717bece4c2b03eac7e853"
+        },
+        {
+          "transportId": 11457389,
+          "properties": {
+            "PIN": "7974200350",
+            "OBJECTID": 11457389
+          },
+          "geometrySha256": "c60f2a2c9aa9fe80556031e0b3dc65ff9e48f817e31ae844a30f45461f846717"
+        },
+        {
+          "transportId": 11461233,
+          "properties": {
+            "PIN": "5273200005",
+            "OBJECTID": 11461233
+          },
+          "geometrySha256": "8d2430e2ab432aec8c5f18823f32663277286a033cb2f3a5c6296a448ae079a3"
+        },
+        {
+          "transportId": 11461234,
+          "properties": {
+            "PIN": "5273200015",
+            "OBJECTID": 11461234
+          },
+          "geometrySha256": "c07f89eb74006104476d4c01384646cb3031701a93d06bcdabb700f2fde0a127"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.279%2C47.68%2C-122.278%2C47.681&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:13.701Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "count": 6
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.279%2C47.68%2C-122.278%2C47.681&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:14.000Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 100,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        11343910,
+        11351822,
+        11461234,
+        11461235,
+        11351821,
+        11461236
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&outFields=PIN%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=11343910%2C11351822%2C11461234%2C11461235%2C11351821%2C11461236",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:14.265Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 4365,
+      "features": [
+        {
+          "transportId": 11343910,
+          "properties": {
+            "PIN": "7974200250",
+            "OBJECTID": 11343910
+          },
+          "geometrySha256": "4ae8c4f7187f1d6cb51eb3d184eacbf7c8f2b3d80745c03ee78f801f83959381"
+        },
+        {
+          "transportId": 11351821,
+          "properties": {
+            "PIN": "5273200031",
+            "OBJECTID": 11351821
+          },
+          "geometrySha256": "a7f53c5c4b1d112746f6d59e48a3e65c1f40701e98240f7f1f915aa429ae311a"
+        },
+        {
+          "transportId": 11351822,
+          "properties": {
+            "PIN": "5273200026",
+            "OBJECTID": 11351822
+          },
+          "geometrySha256": "793d9a2a74a02a075147381b2bc93482990967d5f2992761f941a8b43bd25916"
+        },
+        {
+          "transportId": 11461234,
+          "properties": {
+            "PIN": "5273200015",
+            "OBJECTID": 11461234
+          },
+          "geometrySha256": "c07f89eb74006104476d4c01384646cb3031701a93d06bcdabb700f2fde0a127"
+        },
+        {
+          "transportId": 11461235,
+          "properties": {
+            "PIN": "5273200020",
+            "OBJECTID": 11461235
+          },
+          "geometrySha256": "2e38bdc3d8607b5ab906921dbbc1b361a055d673dab90fb996ee071a011345ae"
+        },
+        {
+          "transportId": 11461236,
+          "properties": {
+            "PIN": "5273200027",
+            "OBJECTID": 11461236
+          },
+          "geometrySha256": "8ce7267045041108822f1f7e6242977b04a53498d6cbbdc8d2def65ddab817ec"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.278%2C47.68%2C-122.277%2C47.681&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:14.535Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "count": 8
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.278%2C47.68%2C-122.277%2C47.681&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:15.103Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 118,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        11343910,
+        11351822,
+        11387263,
+        11340760,
+        11351821,
+        11457414,
+        11461236,
+        11387264
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&outFields=PIN%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=11343910%2C11351822%2C11387263%2C11340760%2C11351821%2C11457414%2C11461236%2C11387264",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:15.367Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 5484,
+      "features": [
+        {
+          "transportId": 11340760,
+          "properties": {
+            "PIN": "8926600140",
+            "OBJECTID": 11340760
+          },
+          "geometrySha256": "8c0a027306bb7cbb850b355114f4ce292dd862c29754784c84c1a642243a01ec"
+        },
+        {
+          "transportId": 11343910,
+          "properties": {
+            "PIN": "7974200250",
+            "OBJECTID": 11343910
+          },
+          "geometrySha256": "4ae8c4f7187f1d6cb51eb3d184eacbf7c8f2b3d80745c03ee78f801f83959381"
+        },
+        {
+          "transportId": 11351821,
+          "properties": {
+            "PIN": "5273200031",
+            "OBJECTID": 11351821
+          },
+          "geometrySha256": "a7f53c5c4b1d112746f6d59e48a3e65c1f40701e98240f7f1f915aa429ae311a"
+        },
+        {
+          "transportId": 11351822,
+          "properties": {
+            "PIN": "5273200026",
+            "OBJECTID": 11351822
+          },
+          "geometrySha256": "793d9a2a74a02a075147381b2bc93482990967d5f2992761f941a8b43bd25916"
+        },
+        {
+          "transportId": 11387263,
+          "properties": {
+            "PIN": "8926600135",
+            "OBJECTID": 11387263
+          },
+          "geometrySha256": "35b81b47f739648ca09ad8a79181eaadcad89b9cbe3e3351e41315027a2ac9cc"
+        },
+        {
+          "transportId": 11387264,
+          "properties": {
+            "PIN": "8926600145",
+            "OBJECTID": 11387264
+          },
+          "geometrySha256": "5b3c6a0e06138ecc764610339707ef9e3fe183bba5c891779096e575a6457a5e"
+        },
+        {
+          "transportId": 11457414,
+          "properties": {
+            "PIN": "7974200700",
+            "OBJECTID": 11457414
+          },
+          "geometrySha256": "d4da3dd49b5e30c7a9a0c6d4e18d524ee1bcf1bb706e45925faa8b333f1e874d"
+        },
+        {
+          "transportId": 11461236,
+          "properties": {
+            "PIN": "5273200027",
+            "OBJECTID": 11461236
+          },
+          "geometrySha256": "8ce7267045041108822f1f7e6242977b04a53498d6cbbdc8d2def65ddab817ec"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.28%2C47.681%2C-122.279%2C47.682&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:15.643Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 12,
+      "count": 16
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.28%2C47.681%2C-122.279%2C47.682&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:15.920Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 190,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        11368473,
+        11368464,
+        11408118,
+        11408009,
+        11343910,
+        11368476,
+        11457389,
+        11368393,
+        11408116,
+        11408013,
+        11368465,
+        11408008,
+        11368394,
+        11408025,
+        11368472,
+        11408117
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&outFields=PIN%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=11368473%2C11368464%2C11408118%2C11408009%2C11343910%2C11368476%2C11457389%2C11368393%2C11408116%2C11408013%2C11368465%2C11408008%2C11368394%2C11408025%2C11368472%2C11408117",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:16.191Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 7924,
+      "features": [
+        {
+          "transportId": 11343910,
+          "properties": {
+            "PIN": "7974200250",
+            "OBJECTID": 11343910
+          },
+          "geometrySha256": "4ae8c4f7187f1d6cb51eb3d184eacbf7c8f2b3d80745c03ee78f801f83959381"
+        },
+        {
+          "transportId": 11368393,
+          "properties": {
+            "PIN": "0431500365",
+            "OBJECTID": 11368393
+          },
+          "geometrySha256": "fec12fbb9c1148f828c0f436357a6cc6086f946aee889cfba7de68f373c4474f"
+        },
+        {
+          "transportId": 11368394,
+          "properties": {
+            "PIN": "0431500350",
+            "OBJECTID": 11368394
+          },
+          "geometrySha256": "b36fbe08c734fab7b2149ef23cdc4bae2beb72ce12e759bcf1d05bb72a82e8ae"
+        },
+        {
+          "transportId": 11368464,
+          "properties": {
+            "PIN": "0429000185",
+            "OBJECTID": 11368464
+          },
+          "geometrySha256": "8128f943735edb5a9928f69a2b2ba102bdb42a837a64c0a9e81afa0873934e47"
+        },
+        {
+          "transportId": 11368465,
+          "properties": {
+            "PIN": "0429000175",
+            "OBJECTID": 11368465
+          },
+          "geometrySha256": "0e86130f5059b6418ebc46d4ae157d3b7b25c468d1192fe1b5fb4f039bb5c3d3"
+        },
+        {
+          "transportId": 11368472,
+          "properties": {
+            "PIN": "0429000080",
+            "OBJECTID": 11368472
+          },
+          "geometrySha256": "77fee3c964ffda3e38e85fcfe510fead83526ebd86e7051122389ae7be27831d"
+        },
+        {
+          "transportId": 11368473,
+          "properties": {
+            "PIN": "0429000070",
+            "OBJECTID": 11368473
+          },
+          "geometrySha256": "eec9f3cf9554dfebe39b00a4fde31adc98644798133e4fdae1e7b62c3b506396"
+        },
+        {
+          "transportId": 11368476,
+          "properties": {
+            "PIN": "0429000030",
+            "OBJECTID": 11368476
+          },
+          "geometrySha256": "f4ce0c5bfce4e19ac64c3140d3cea82bf93bcd67f725707d1bfa0211f08e46de"
+        },
+        {
+          "transportId": 11408008,
+          "properties": {
+            "PIN": "0429000035",
+            "OBJECTID": 11408008
+          },
+          "geometrySha256": "5d8b3af7c43a6000774b0d938ccbc0a65b02e7a1116b138d9095f88aa506df6b"
+        },
+        {
+          "transportId": 11408009,
+          "properties": {
+            "PIN": "0429000040",
+            "OBJECTID": 11408009
+          },
+          "geometrySha256": "a388f293ad60d4355383bc3db3f1482a3e36cb567ccd05523a9e7857ec4ef6aa"
+        },
+        {
+          "transportId": 11408013,
+          "properties": {
+            "PIN": "0429000075",
+            "OBJECTID": 11408013
+          },
+          "geometrySha256": "1900ecc2fee44c8115264f41e65b4855c07e94704ac6b098f269a3a3616e23e4"
+        },
+        {
+          "transportId": 11408025,
+          "properties": {
+            "PIN": "0429000180",
+            "OBJECTID": 11408025
+          },
+          "geometrySha256": "dbe83f2f18c9a9939ca306f4d0c5555b951d70015fa4937c7fc09f762cacda3e"
+        },
+        {
+          "transportId": 11408116,
+          "properties": {
+            "PIN": "0431500355",
+            "OBJECTID": 11408116
+          },
+          "geometrySha256": "add7bad56a036ede29be6168f5605f3cda16e1788750f0582f4189b1b232f83e"
+        },
+        {
+          "transportId": 11408117,
+          "properties": {
+            "PIN": "0431500360",
+            "OBJECTID": 11408117
+          },
+          "geometrySha256": "9a708d036fc805b3d3e4d13dc43777c246da2680b61242fe18cd52ce3d859f18"
+        },
+        {
+          "transportId": 11408118,
+          "properties": {
+            "PIN": "0431500370",
+            "OBJECTID": 11408118
+          },
+          "geometrySha256": "588246429ab9db95abde4fb822b171e01e465af5778813758a661191c8db1326"
+        },
+        {
+          "transportId": 11457389,
+          "properties": {
+            "PIN": "7974200350",
+            "OBJECTID": 11457389
+          },
+          "geometrySha256": "c60f2a2c9aa9fe80556031e0b3dc65ff9e48f817e31ae844a30f45461f846717"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.279%2C47.681%2C-122.278%2C47.682&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:16.489Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 12,
+      "count": 16
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.279%2C47.681%2C-122.278%2C47.682&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:16.802Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 190,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        11368473,
+        11368464,
+        11408018,
+        11408026,
+        11343910,
+        11368467,
+        11368462,
+        11408024,
+        11408013,
+        11408027,
+        11368466,
+        11368463,
+        11368472,
+        11408023,
+        11368469,
+        11408017
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&outFields=PIN%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=11368473%2C11368464%2C11408018%2C11408026%2C11343910%2C11368467%2C11368462%2C11408024%2C11408013%2C11408027%2C11368466%2C11368463%2C11368472%2C11408023%2C11368469%2C11408017",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:17.090Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 7266,
+      "features": [
+        {
+          "transportId": 11343910,
+          "properties": {
+            "PIN": "7974200250",
+            "OBJECTID": 11343910
+          },
+          "geometrySha256": "4ae8c4f7187f1d6cb51eb3d184eacbf7c8f2b3d80745c03ee78f801f83959381"
+        },
+        {
+          "transportId": 11368462,
+          "properties": {
+            "PIN": "0429000205",
+            "OBJECTID": 11368462
+          },
+          "geometrySha256": "60f1d70b96efe39ccbed62c6496e1d0caca588e9dbacd752639d79731b361578"
+        },
+        {
+          "transportId": 11368463,
+          "properties": {
+            "PIN": "0429000195",
+            "OBJECTID": 11368463
+          },
+          "geometrySha256": "30b839306b62d46958f8e61bce2396d138b2d59f8facc1cc8b6191d91f1af7b1"
+        },
+        {
+          "transportId": 11368464,
+          "properties": {
+            "PIN": "0429000185",
+            "OBJECTID": 11368464
+          },
+          "geometrySha256": "8128f943735edb5a9928f69a2b2ba102bdb42a837a64c0a9e81afa0873934e47"
+        },
+        {
+          "transportId": 11368466,
+          "properties": {
+            "PIN": "0429000165",
+            "OBJECTID": 11368466
+          },
+          "geometrySha256": "20c91a85f74f5c9855fa0b8af218503ce1efe3070eda9f215f7aa2803333b324"
+        },
+        {
+          "transportId": 11368467,
+          "properties": {
+            "PIN": "0429000155",
+            "OBJECTID": 11368467
+          },
+          "geometrySha256": "998f77461158c6a5eed6b3f15031f4a3b00ae009d4042bd2157d5c1bdcdd503b"
+        },
+        {
+          "transportId": 11368469,
+          "properties": {
+            "PIN": "0429000115",
+            "OBJECTID": 11368469
+          },
+          "geometrySha256": "a8398d276c7885f93824dfcb6d4f2321af72ab33295d9af1b5073708967435c2"
+        },
+        {
+          "transportId": 11368472,
+          "properties": {
+            "PIN": "0429000080",
+            "OBJECTID": 11368472
+          },
+          "geometrySha256": "77fee3c964ffda3e38e85fcfe510fead83526ebd86e7051122389ae7be27831d"
+        },
+        {
+          "transportId": 11368473,
+          "properties": {
+            "PIN": "0429000070",
+            "OBJECTID": 11368473
+          },
+          "geometrySha256": "eec9f3cf9554dfebe39b00a4fde31adc98644798133e4fdae1e7b62c3b506396"
+        },
+        {
+          "transportId": 11408013,
+          "properties": {
+            "PIN": "0429000075",
+            "OBJECTID": 11408013
+          },
+          "geometrySha256": "1900ecc2fee44c8115264f41e65b4855c07e94704ac6b098f269a3a3616e23e4"
+        },
+        {
+          "transportId": 11408017,
+          "properties": {
+            "PIN": "0429000110",
+            "OBJECTID": 11408017
+          },
+          "geometrySha256": "4e3cfb55fa87102f94076cbe45901491ee08e0a04ac216aefa39a62fcbfda782"
+        },
+        {
+          "transportId": 11408018,
+          "properties": {
+            "PIN": "0429000120",
+            "OBJECTID": 11408018
+          },
+          "geometrySha256": "21548684d5a40c31d11efda50533ac6612b644a82254487006582c9441b16c52"
+        },
+        {
+          "transportId": 11408023,
+          "properties": {
+            "PIN": "0429000160",
+            "OBJECTID": 11408023
+          },
+          "geometrySha256": "8ea971ba5bfc3038808f2ee22a3662f74dc0e12a1cabed4402a351747594f412"
+        },
+        {
+          "transportId": 11408024,
+          "properties": {
+            "PIN": "0429000170",
+            "OBJECTID": 11408024
+          },
+          "geometrySha256": "968cc8c1d7337c3abb6ed1757ee6e13ca0839d1946f8cb5c1199c9a7cb679f9c"
+        },
+        {
+          "transportId": 11408026,
+          "properties": {
+            "PIN": "0429000190",
+            "OBJECTID": 11408026
+          },
+          "geometrySha256": "d2a7c32e91422f9ba4b160bdb5df477f05ca18b9ca6f27d6f05e5798f89277a1"
+        },
+        {
+          "transportId": 11408027,
+          "properties": {
+            "PIN": "0429000200",
+            "OBJECTID": 11408027
+          },
+          "geometrySha256": "318828d7b42ebd36dcd52e4e7baf14844abd60b165fc7dfee9724469065bdf45"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.278%2C47.681%2C-122.277%2C47.682&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:17.375Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 12,
+      "count": 18
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.278%2C47.681%2C-122.277%2C47.682&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:17.663Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 208,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        11343910,
+        11368467,
+        11387342,
+        11408029,
+        11368462,
+        11387343,
+        11408024,
+        11368459,
+        11340702,
+        11368460,
+        11368466,
+        11387341,
+        11408028,
+        11368457,
+        11368458,
+        11340701,
+        11368461,
+        11408023
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&outFields=PIN%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=11343910%2C11368467%2C11387342%2C11408029%2C11368462%2C11387343%2C11408024%2C11368459%2C11340702%2C11368460%2C11368466%2C11387341%2C11408028%2C11368457%2C11368458%2C11340701%2C11368461%2C11408023",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:17.936Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 16428,
+      "features": [
+        {
+          "transportId": 11340701,
+          "properties": {
+            "PIN": "8934100020",
+            "OBJECTID": 11340701
+          },
+          "geometrySha256": "272cfbab84e194a95521d8c77982f84936ac24137de16cd27a828e0effc2edc7"
+        },
+        {
+          "transportId": 11340702,
+          "properties": {
+            "PIN": "8934100010",
+            "OBJECTID": 11340702
+          },
+          "geometrySha256": "a0cf6eb7358d9d36aae681d5a91d0a25c2fce5fc2602677be6a5d0d501e0c12e"
+        },
+        {
+          "transportId": 11343910,
+          "properties": {
+            "PIN": "7974200250",
+            "OBJECTID": 11343910
+          },
+          "geometrySha256": "4ae8c4f7187f1d6cb51eb3d184eacbf7c8f2b3d80745c03ee78f801f83959381"
+        },
+        {
+          "transportId": 11368457,
+          "properties": {
+            "PIN": "0429000240",
+            "OBJECTID": 11368457
+          },
+          "geometrySha256": "ae4d995be592b977cfffe1d8f8b9d08e1c45c2d67d9eec9b3dd0be3de47f4437"
+        },
+        {
+          "transportId": 11368458,
+          "properties": {
+            "PIN": "0429000235",
+            "OBJECTID": 11368458
+          },
+          "geometrySha256": "a31b1149c1963ac5b2c86eec8a9bbe00cfccd5e58010f7e1fdd42f56b47748f1"
+        },
+        {
+          "transportId": 11368459,
+          "properties": {
+            "PIN": "0429000230",
+            "OBJECTID": 11368459
+          },
+          "geometrySha256": "3729fed1f31d4eddfa7979ef542fafbde62867655693f8b8df34689837fa1eee"
+        },
+        {
+          "transportId": 11368460,
+          "properties": {
+            "PIN": "0429000225",
+            "OBJECTID": 11368460
+          },
+          "geometrySha256": "3d6856f583097a78119e7d1354bbb21415cd1cfbdf95027bc56e2072df64ee61"
+        },
+        {
+          "transportId": 11368461,
+          "properties": {
+            "PIN": "0429000215",
+            "OBJECTID": 11368461
+          },
+          "geometrySha256": "1ce5b7ddef4635161d79413b3f1ecbb9fe1229a412826937b0d7cae1d4dcc5c7"
+        },
+        {
+          "transportId": 11368462,
+          "properties": {
+            "PIN": "0429000205",
+            "OBJECTID": 11368462
+          },
+          "geometrySha256": "60f1d70b96efe39ccbed62c6496e1d0caca588e9dbacd752639d79731b361578"
+        },
+        {
+          "transportId": 11368466,
+          "properties": {
+            "PIN": "0429000165",
+            "OBJECTID": 11368466
+          },
+          "geometrySha256": "20c91a85f74f5c9855fa0b8af218503ce1efe3070eda9f215f7aa2803333b324"
+        },
+        {
+          "transportId": 11368467,
+          "properties": {
+            "PIN": "0429000155",
+            "OBJECTID": 11368467
+          },
+          "geometrySha256": "998f77461158c6a5eed6b3f15031f4a3b00ae009d4042bd2157d5c1bdcdd503b"
+        },
+        {
+          "transportId": 11387341,
+          "properties": {
+            "PIN": "8934100005",
+            "OBJECTID": 11387341
+          },
+          "geometrySha256": "6020cb1848b73532707d0b98e09e3cfa7a6f42d11ef4f47ec8433a27f731dbc9"
+        },
+        {
+          "transportId": 11387342,
+          "properties": {
+            "PIN": "8934100015",
+            "OBJECTID": 11387342
+          },
+          "geometrySha256": "1052a6dc7e02088609915a5c1e83e5ed5d75a19bf1fdf027cca9771c3959da91"
+        },
+        {
+          "transportId": 11387343,
+          "properties": {
+            "PIN": "8934100025",
+            "OBJECTID": 11387343
+          },
+          "geometrySha256": "2435e03a1795a5a4916c75298c26f494318f95e1a50e3e7551d46b0bb1d92b37"
+        },
+        {
+          "transportId": 11408023,
+          "properties": {
+            "PIN": "0429000160",
+            "OBJECTID": 11408023
+          },
+          "geometrySha256": "8ea971ba5bfc3038808f2ee22a3662f74dc0e12a1cabed4402a351747594f412"
+        },
+        {
+          "transportId": 11408024,
+          "properties": {
+            "PIN": "0429000170",
+            "OBJECTID": 11408024
+          },
+          "geometrySha256": "968cc8c1d7337c3abb6ed1757ee6e13ca0839d1946f8cb5c1199c9a7cb679f9c"
+        },
+        {
+          "transportId": 11408028,
+          "properties": {
+            "PIN": "0429000210",
+            "OBJECTID": 11408028
+          },
+          "geometrySha256": "12317fd96962b85ae6976807923f6b15cd7a8c86e8846644a049810c5d19a66d"
+        },
+        {
+          "transportId": 11408029,
+          "properties": {
+            "PIN": "0429000220",
+            "OBJECTID": 11408029
+          },
+          "geometrySha256": "0f300fc3498147ebe7e7f7b5a6c1ba44ed54d419d393a6ce3299062169b116a4"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.279%2C47.678%2C-122.278%2C47.679&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:18.213Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 12,
+      "count": 14
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.279%2C47.678%2C-122.278%2C47.679&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:18.494Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 172,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        11340687,
+        11387362,
+        11340736,
+        11387365,
+        11340685,
+        11387297,
+        11387294,
+        11387363,
+        11387361,
+        11369053,
+        11387296,
+        11387364,
+        11340738,
+        11340686
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&outFields=PIN%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=11340687%2C11387362%2C11340736%2C11387365%2C11340685%2C11387297%2C11387294%2C11387363%2C11387361%2C11369053%2C11387296%2C11387364%2C11340738%2C11340686",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:18.764Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 5264,
+      "features": [
+        {
+          "transportId": 11340685,
+          "properties": {
+            "PIN": "8934600090",
+            "OBJECTID": 11340685
+          },
+          "geometrySha256": "19164768cbb588b0fd263f62d52b48b7ce0c14c283a5869500139a9fa3e73273"
+        },
+        {
+          "transportId": 11340686,
+          "properties": {
+            "PIN": "8934600075",
+            "OBJECTID": 11340686
+          },
+          "geometrySha256": "91cb21a2e65905e2b943752c48b42879b98f270de0119a8f4bfdcefb4c47031b"
+        },
+        {
+          "transportId": 11340687,
+          "properties": {
+            "PIN": "8934600065",
+            "OBJECTID": 11340687
+          },
+          "geometrySha256": "4c45ecb8dc50ac642433ef27c99c271e2beb1dac816e78a47767c9926823779b"
+        },
+        {
+          "transportId": 11340736,
+          "properties": {
+            "PIN": "8927600055",
+            "OBJECTID": 11340736
+          },
+          "geometrySha256": "79a08721e08b56f6710e84b71dc9d1c5d34454ec90131cdb5b7d2ca871821c76"
+        },
+        {
+          "transportId": 11340738,
+          "properties": {
+            "PIN": "8927600025",
+            "OBJECTID": 11340738
+          },
+          "geometrySha256": "25b7ce978b58c6e0c6dbb7c43bbd7cfa5841787acea2fbec2ea1bfaaca17c39e"
+        },
+        {
+          "transportId": 11369053,
+          "properties": {
+            "PIN": "8927600035",
+            "OBJECTID": 11369053
+          },
+          "geometrySha256": "e1ef9f6f3e109cab0547cc4f102da4345eeb8aa96e1817b629e3dfd94cc58f59"
+        },
+        {
+          "transportId": 11387294,
+          "properties": {
+            "PIN": "8927600030",
+            "OBJECTID": 11387294
+          },
+          "geometrySha256": "01931ebdd320f110286061e3ee444316ea2a58aff9ab86ca33c48a2a7ace4423"
+        },
+        {
+          "transportId": 11387296,
+          "properties": {
+            "PIN": "8927600050",
+            "OBJECTID": 11387296
+          },
+          "geometrySha256": "493b2e47167aac8d005b7118cabc0271c4561b71cf6fc57a7110fea38ec5c048"
+        },
+        {
+          "transportId": 11387297,
+          "properties": {
+            "PIN": "8927600060",
+            "OBJECTID": 11387297
+          },
+          "geometrySha256": "27d10a265aabe724e5a7aea341656f2531b6cb837b700c1477e4725d638804bc"
+        },
+        {
+          "transportId": 11387361,
+          "properties": {
+            "PIN": "8934600060",
+            "OBJECTID": 11387361
+          },
+          "geometrySha256": "8f0e2bb882fdcef8c179cc68c8c3f2d9aedfa376e92a41666fcd3b317908de21"
+        },
+        {
+          "transportId": 11387362,
+          "properties": {
+            "PIN": "8934600070",
+            "OBJECTID": 11387362
+          },
+          "geometrySha256": "a0ce2af808bc86e6312badf561bad4fddbf044b40db4283535ce31adf5967876"
+        },
+        {
+          "transportId": 11387363,
+          "properties": {
+            "PIN": "8934600085",
+            "OBJECTID": 11387363
+          },
+          "geometrySha256": "f9d21f3192b45215ccbe5047f24b003db1ee5903cb628830aff530b7c08b9a66"
+        },
+        {
+          "transportId": 11387364,
+          "properties": {
+            "PIN": "8934600095",
+            "OBJECTID": 11387364
+          },
+          "geometrySha256": "405fc7ec3b97d0b12d2be333c4489ae455c4294a559ae1b72aaf63d2cb07e629"
+        },
+        {
+          "transportId": 11387365,
+          "properties": {
+            "PIN": "8934600100",
+            "OBJECTID": 11387365
+          },
+          "geometrySha256": "d04a9d9a9f44ad73812bd01215b00d3d541f24cb5ae7ffee71d594a178469b68"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.279%2C47.682%2C-122.278%2C47.683&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:19.032Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 12,
+      "count": 19
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.279%2C47.682%2C-122.278%2C47.683&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:19.310Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 217,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        11408012,
+        11368473,
+        11408015,
+        11368470,
+        11368467,
+        11408010,
+        11368471,
+        11368468,
+        11408021,
+        11408016,
+        11408022,
+        11494425,
+        11368474,
+        11408019,
+        11368475,
+        11408014,
+        11408020,
+        11408011,
+        11408017
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&outFields=PIN%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=11408012%2C11368473%2C11408015%2C11368470%2C11368467%2C11408010%2C11368471%2C11368468%2C11408021%2C11408016%2C11408022%2C11494425%2C11368474%2C11408019%2C11368475%2C11408014%2C11408020%2C11408011%2C11408017",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:19.576Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 7214,
+      "features": [
+        {
+          "transportId": 11368467,
+          "properties": {
+            "PIN": "0429000155",
+            "OBJECTID": 11368467
+          },
+          "geometrySha256": "998f77461158c6a5eed6b3f15031f4a3b00ae009d4042bd2157d5c1bdcdd503b"
+        },
+        {
+          "transportId": 11368468,
+          "properties": {
+            "PIN": "0429000140",
+            "OBJECTID": 11368468
+          },
+          "geometrySha256": "de25fbf871eec5d414bd1d8947403838116bd3b341110758b76fc1262a055147"
+        },
+        {
+          "transportId": 11368470,
+          "properties": {
+            "PIN": "0429000105",
+            "OBJECTID": 11368470
+          },
+          "geometrySha256": "8aef727b71d18f8a9f9758d0528bf9d844555c490937aca00855c583d75d41c0"
+        },
+        {
+          "transportId": 11368471,
+          "properties": {
+            "PIN": "0429000090",
+            "OBJECTID": 11368471
+          },
+          "geometrySha256": "f0b23c4457778cc5fd43872365ae9955dbb9de627e2a5fde4829a2f9eecc79f1"
+        },
+        {
+          "transportId": 11368473,
+          "properties": {
+            "PIN": "0429000070",
+            "OBJECTID": 11368473
+          },
+          "geometrySha256": "eec9f3cf9554dfebe39b00a4fde31adc98644798133e4fdae1e7b62c3b506396"
+        },
+        {
+          "transportId": 11368474,
+          "properties": {
+            "PIN": "0429000055",
+            "OBJECTID": 11368474
+          },
+          "geometrySha256": "0efd2d251a9c18b9153548c0d133814795823c1acfd55afab5b7eabdbcdd7186"
+        },
+        {
+          "transportId": 11368475,
+          "properties": {
+            "PIN": "0429000045",
+            "OBJECTID": 11368475
+          },
+          "geometrySha256": "c50867699f7d4b9d462917a9d3bd887a91534e63815ddbfeeab01661fc2700f0"
+        },
+        {
+          "transportId": 11408010,
+          "properties": {
+            "PIN": "0429000050",
+            "OBJECTID": 11408010
+          },
+          "geometrySha256": "66c7a0e4e5314b2c44bc4d1ade1a2033ddc43ee9187b5f1d41c7ad8b1ac12f46"
+        },
+        {
+          "transportId": 11408011,
+          "properties": {
+            "PIN": "0429000060",
+            "OBJECTID": 11408011
+          },
+          "geometrySha256": "c74baec63b0d2862cb3da180161ae3fc243820dd34810732ed720383d5e700ca"
+        },
+        {
+          "transportId": 11408012,
+          "properties": {
+            "PIN": "0429000065",
+            "OBJECTID": 11408012
+          },
+          "geometrySha256": "f3290b37d29c0a9dfbdb2cc1d28f507927987f79fa7f693e845403f05fdfd1af"
+        },
+        {
+          "transportId": 11408014,
+          "properties": {
+            "PIN": "0429000085",
+            "OBJECTID": 11408014
+          },
+          "geometrySha256": "da091d7509770aa47a6dbacc0a8d526da376684782b6496380985f619995bb2d"
+        },
+        {
+          "transportId": 11408015,
+          "properties": {
+            "PIN": "0429000095",
+            "OBJECTID": 11408015
+          },
+          "geometrySha256": "b237233e530c2e7d396bfe15539506a7a6031fb09f629d0002b1771aea766866"
+        },
+        {
+          "transportId": 11408016,
+          "properties": {
+            "PIN": "0429000100",
+            "OBJECTID": 11408016
+          },
+          "geometrySha256": "270ed4d2a9a2091997d6423f5d842f31308d102a1c4b22ec06beee9bfcc48417"
+        },
+        {
+          "transportId": 11408017,
+          "properties": {
+            "PIN": "0429000110",
+            "OBJECTID": 11408017
+          },
+          "geometrySha256": "4e3cfb55fa87102f94076cbe45901491ee08e0a04ac216aefa39a62fcbfda782"
+        },
+        {
+          "transportId": 11408019,
+          "properties": {
+            "PIN": "0429000125",
+            "OBJECTID": 11408019
+          },
+          "geometrySha256": "5a522b94cb4d332dc52eb5b35a1548b275e63bf8470aca693acc02c016db6d9a"
+        },
+        {
+          "transportId": 11408020,
+          "properties": {
+            "PIN": "0429000135",
+            "OBJECTID": 11408020
+          },
+          "geometrySha256": "810b9781de49374253c9297a5bc48f0a2181456b825b473e28ac0ec7d9126201"
+        },
+        {
+          "transportId": 11408021,
+          "properties": {
+            "PIN": "0429000145",
+            "OBJECTID": 11408021
+          },
+          "geometrySha256": "193cfe913b325555b0325e63e7216474220db35ad1549649e5247bb923d168b2"
+        },
+        {
+          "transportId": 11408022,
+          "properties": {
+            "PIN": "0429000150",
+            "OBJECTID": 11408022
+          },
+          "geometrySha256": "5932faf62835d9600427cb68d15b43f3d297dac743023650ca9256028838d4f1"
+        },
+        {
+          "transportId": 11494425,
+          "properties": {
+            "PIN": "0429000130",
+            "OBJECTID": 11494425
+          },
+          "geometrySha256": "d6f740cbd86214e69871b4d7b59446d1a24b0e0781c1fee1b27ec4f2d4796e15"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.281%2C47.68%2C-122.28%2C47.681&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:19.861Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "count": 1
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.281%2C47.68%2C-122.28%2C47.681&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:20.383Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 55,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        11457389
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&outFields=PIN%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=11457389",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:20.673Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1335,
+      "features": [
+        {
+          "transportId": 11457389,
+          "properties": {
+            "PIN": "7974200350",
+            "OBJECTID": 11457389
+          },
+          "geometrySha256": "c60f2a2c9aa9fe80556031e0b3dc65ff9e48f817e31ae844a30f45461f846717"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.277%2C47.68%2C-122.276%2C47.681&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:20.969Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "count": 9
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.277%2C47.68%2C-122.276%2C47.681&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:21.257Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 127,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        11343910,
+        11387265,
+        11387263,
+        11340759,
+        11340754,
+        11340760,
+        11340758,
+        11457414,
+        11387264
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&outFields=PIN%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=11343910%2C11387265%2C11387263%2C11340759%2C11340754%2C11340760%2C11340758%2C11457414%2C11387264",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:21.530Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 5693,
+      "features": [
+        {
+          "transportId": 11340754,
+          "properties": {
+            "PIN": "8926600205",
+            "OBJECTID": 11340754
+          },
+          "geometrySha256": "7132a27a8d21c32667cf34255f72dad69cb01465409e94a1563ef55302e2c7bd"
+        },
+        {
+          "transportId": 11340758,
+          "properties": {
+            "PIN": "8926600160",
+            "OBJECTID": 11340758
+          },
+          "geometrySha256": "ff6a2ff8a29166b58a07bd9c285982ce8e7fb9a3e698f2427131f5217d64dbb4"
+        },
+        {
+          "transportId": 11340759,
+          "properties": {
+            "PIN": "8926600150",
+            "OBJECTID": 11340759
+          },
+          "geometrySha256": "0bcc37d5548345230b52b0fe0c919da69ff55e20883f7352d7437d1fec7cdbd8"
+        },
+        {
+          "transportId": 11340760,
+          "properties": {
+            "PIN": "8926600140",
+            "OBJECTID": 11340760
+          },
+          "geometrySha256": "8c0a027306bb7cbb850b355114f4ce292dd862c29754784c84c1a642243a01ec"
+        },
+        {
+          "transportId": 11343910,
+          "properties": {
+            "PIN": "7974200250",
+            "OBJECTID": 11343910
+          },
+          "geometrySha256": "4ae8c4f7187f1d6cb51eb3d184eacbf7c8f2b3d80745c03ee78f801f83959381"
+        },
+        {
+          "transportId": 11387263,
+          "properties": {
+            "PIN": "8926600135",
+            "OBJECTID": 11387263
+          },
+          "geometrySha256": "35b81b47f739648ca09ad8a79181eaadcad89b9cbe3e3351e41315027a2ac9cc"
+        },
+        {
+          "transportId": 11387264,
+          "properties": {
+            "PIN": "8926600145",
+            "OBJECTID": 11387264
+          },
+          "geometrySha256": "5b3c6a0e06138ecc764610339707ef9e3fe183bba5c891779096e575a6457a5e"
+        },
+        {
+          "transportId": 11387265,
+          "properties": {
+            "PIN": "8926600155",
+            "OBJECTID": 11387265
+          },
+          "geometrySha256": "9f07655fd6ba8f5792c0721bcf32a50d5f1f5cb23abfe2dea7f94f6ad4e0e669"
+        },
+        {
+          "transportId": 11457414,
+          "properties": {
+            "PIN": "7974200700",
+            "OBJECTID": 11457414
+          },
+          "geometrySha256": "d4da3dd49b5e30c7a9a0c6d4e18d524ee1bcf1bb706e45925faa8b333f1e874d"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.279%2C47.682%2C-122.278%2C47.683&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:21.802Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 12,
+      "count": 19
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.279%2C47.682%2C-122.278%2C47.683&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:22.073Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 217,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        11408012,
+        11368473,
+        11408015,
+        11368470,
+        11368467,
+        11408010,
+        11368471,
+        11368468,
+        11408021,
+        11408016,
+        11408022,
+        11494425,
+        11368474,
+        11408019,
+        11368475,
+        11408014,
+        11408020,
+        11408011,
+        11408017
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&outFields=PIN%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=11408012%2C11368473%2C11408015",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:22.339Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1056,
+      "features": [
+        {
+          "transportId": 11368473,
+          "properties": {
+            "PIN": "0429000070",
+            "OBJECTID": 11368473
+          },
+          "geometrySha256": "eec9f3cf9554dfebe39b00a4fde31adc98644798133e4fdae1e7b62c3b506396"
+        },
+        {
+          "transportId": 11408012,
+          "properties": {
+            "PIN": "0429000065",
+            "OBJECTID": 11408012
+          },
+          "geometrySha256": "f3290b37d29c0a9dfbdb2cc1d28f507927987f79fa7f693e845403f05fdfd1af"
+        },
+        {
+          "transportId": 11408015,
+          "properties": {
+            "PIN": "0429000095",
+            "OBJECTID": 11408015
+          },
+          "geometrySha256": "b237233e530c2e7d396bfe15539506a7a6031fb09f629d0002b1771aea766866"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&outFields=PIN%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=11368470%2C11368467%2C11408010",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:22.606Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1159,
+      "features": [
+        {
+          "transportId": 11368467,
+          "properties": {
+            "PIN": "0429000155",
+            "OBJECTID": 11368467
+          },
+          "geometrySha256": "998f77461158c6a5eed6b3f15031f4a3b00ae009d4042bd2157d5c1bdcdd503b"
+        },
+        {
+          "transportId": 11368470,
+          "properties": {
+            "PIN": "0429000105",
+            "OBJECTID": 11368470
+          },
+          "geometrySha256": "8aef727b71d18f8a9f9758d0528bf9d844555c490937aca00855c583d75d41c0"
+        },
+        {
+          "transportId": 11408010,
+          "properties": {
+            "PIN": "0429000050",
+            "OBJECTID": 11408010
+          },
+          "geometrySha256": "66c7a0e4e5314b2c44bc4d1ade1a2033ddc43ee9187b5f1d41c7ad8b1ac12f46"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&outFields=PIN%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=11368471%2C11368468%2C11408021",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:22.869Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1347,
+      "features": [
+        {
+          "transportId": 11368468,
+          "properties": {
+            "PIN": "0429000140",
+            "OBJECTID": 11368468
+          },
+          "geometrySha256": "de25fbf871eec5d414bd1d8947403838116bd3b341110758b76fc1262a055147"
+        },
+        {
+          "transportId": 11368471,
+          "properties": {
+            "PIN": "0429000090",
+            "OBJECTID": 11368471
+          },
+          "geometrySha256": "f0b23c4457778cc5fd43872365ae9955dbb9de627e2a5fde4829a2f9eecc79f1"
+        },
+        {
+          "transportId": 11408021,
+          "properties": {
+            "PIN": "0429000145",
+            "OBJECTID": 11408021
+          },
+          "geometrySha256": "193cfe913b325555b0325e63e7216474220db35ad1549649e5247bb923d168b2"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&outFields=PIN%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=11408016%2C11408022%2C11494425",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:23.125Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1568,
+      "features": [
+        {
+          "transportId": 11408016,
+          "properties": {
+            "PIN": "0429000100",
+            "OBJECTID": 11408016
+          },
+          "geometrySha256": "270ed4d2a9a2091997d6423f5d842f31308d102a1c4b22ec06beee9bfcc48417"
+        },
+        {
+          "transportId": 11408022,
+          "properties": {
+            "PIN": "0429000150",
+            "OBJECTID": 11408022
+          },
+          "geometrySha256": "5932faf62835d9600427cb68d15b43f3d297dac743023650ca9256028838d4f1"
+        },
+        {
+          "transportId": 11494425,
+          "properties": {
+            "PIN": "0429000130",
+            "OBJECTID": 11494425
+          },
+          "geometrySha256": "d6f740cbd86214e69871b4d7b59446d1a24b0e0781c1fee1b27ec4f2d4796e15"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&outFields=PIN%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=11368474%2C11408019%2C11368475",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:23.384Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1128,
+      "features": [
+        {
+          "transportId": 11368474,
+          "properties": {
+            "PIN": "0429000055",
+            "OBJECTID": 11368474
+          },
+          "geometrySha256": "0efd2d251a9c18b9153548c0d133814795823c1acfd55afab5b7eabdbcdd7186"
+        },
+        {
+          "transportId": 11368475,
+          "properties": {
+            "PIN": "0429000045",
+            "OBJECTID": 11368475
+          },
+          "geometrySha256": "c50867699f7d4b9d462917a9d3bd887a91534e63815ddbfeeab01661fc2700f0"
+        },
+        {
+          "transportId": 11408019,
+          "properties": {
+            "PIN": "0429000125",
+            "OBJECTID": 11408019
+          },
+          "geometrySha256": "5a522b94cb4d332dc52eb5b35a1548b275e63bf8470aca693acc02c016db6d9a"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&outFields=PIN%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=11408014%2C11408020%2C11408011",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:23.662Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1126,
+      "features": [
+        {
+          "transportId": 11408011,
+          "properties": {
+            "PIN": "0429000060",
+            "OBJECTID": 11408011
+          },
+          "geometrySha256": "c74baec63b0d2862cb3da180161ae3fc243820dd34810732ed720383d5e700ca"
+        },
+        {
+          "transportId": 11408014,
+          "properties": {
+            "PIN": "0429000085",
+            "OBJECTID": 11408014
+          },
+          "geometrySha256": "da091d7509770aa47a6dbacc0a8d526da376684782b6496380985f619995bb2d"
+        },
+        {
+          "transportId": 11408020,
+          "properties": {
+            "PIN": "0429000135",
+            "OBJECTID": 11408020
+          },
+          "geometrySha256": "810b9781de49374253c9297a5bc48f0a2181456b825b473e28ac0ec7d9126201"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&outFields=PIN%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=11408017",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:23.919Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 412,
+      "features": [
+        {
+          "transportId": 11408017,
+          "properties": {
+            "PIN": "0429000110",
+            "OBJECTID": 11408017
+          },
+          "geometrySha256": "4e3cfb55fa87102f94076cbe45901491ee08e0a04ac216aefa39a62fcbfda782"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=PIN+IN+%28%270381000295%27%2C%270381000300%27%2C%270381000305%27%2C%270429000030%27%2C%270429000035%27%2C%270429000040%27%2C%270429000045%27%2C%270429000050%27%2C%270429000055%27%2C%270429000060%27%2C%270429000065%27%2C%270429000070%27%2C%270429000075%27%2C%270429000080%27%2C%270429000085%27%2C%270429000090%27%2C%270429000095%27%2C%270429000100%27%2C%270429000105%27%2C%270429000110%27%2C%270429000115%27%2C%270429000120%27%2C%270429000125%27%2C%270429000130%27%2C%270429000135%27%2C%270429000140%27%2C%270429000145%27%2C%270429000150%27%2C%270429000155%27%2C%270429000160%27%2C%270429000165%27%2C%270429000170%27%2C%270429000175%27%2C%270429000180%27%2C%270429000185%27%2C%270429000190%27%2C%270429000195%27%2C%270429000200%27%2C%270429000205%27%2C%270429000210%27%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:24.199Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 14,
+      "count": 40
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=PIN+IN+%28%270381000295%27%2C%270381000300%27%2C%270381000305%27%2C%270429000030%27%2C%270429000035%27%2C%270429000040%27%2C%270429000045%27%2C%270429000050%27%2C%270429000055%27%2C%270429000060%27%2C%270429000065%27%2C%270429000070%27%2C%270429000075%27%2C%270429000080%27%2C%270429000085%27%2C%270429000090%27%2C%270429000095%27%2C%270429000100%27%2C%270429000105%27%2C%270429000110%27%2C%270429000115%27%2C%270429000120%27%2C%270429000125%27%2C%270429000130%27%2C%270429000135%27%2C%270429000140%27%2C%270429000145%27%2C%270429000150%27%2C%270429000155%27%2C%270429000160%27%2C%270429000165%27%2C%270429000170%27%2C%270429000175%27%2C%270429000180%27%2C%270429000185%27%2C%270429000190%27%2C%270429000195%27%2C%270429000200%27%2C%270429000205%27%2C%270429000210%27%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:24.454Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 408,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        11368640,
+        11449140,
+        11368639,
+        11368476,
+        11408008,
+        11408009,
+        11368475,
+        11408010,
+        11368474,
+        11408011,
+        11408012,
+        11368473,
+        11408013,
+        11368472,
+        11408014,
+        11368471,
+        11408015,
+        11408016,
+        11368470,
+        11408017,
+        11368469,
+        11408018,
+        11408019,
+        11494425,
+        11408020,
+        11368468,
+        11408021,
+        11408022,
+        11368467,
+        11408023,
+        11368466,
+        11408024,
+        11368465,
+        11408025,
+        11368464,
+        11408026,
+        11368463,
+        11408027,
+        11368462,
+        11408028
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&outFields=PIN%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=11368640%2C11449140%2C11368639%2C11368476%2C11408008%2C11408009%2C11368475%2C11408010%2C11368474%2C11408011%2C11408012%2C11368473%2C11408013%2C11368472%2C11408014%2C11368471%2C11408015%2C11408016%2C11368470%2C11408017%2C11368469%2C11408018%2C11408019%2C11494425%2C11408020%2C11368468%2C11408021%2C11408022%2C11368467%2C11408023%2C11368466%2C11408024%2C11368465%2C11408025%2C11368464%2C11408026%2C11368463%2C11408027%2C11368462%2C11408028",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:24.961Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 14881,
+      "features": [
+        {
+          "transportId": 11368462,
+          "properties": {
+            "PIN": "0429000205",
+            "OBJECTID": 11368462
+          },
+          "geometrySha256": "60f1d70b96efe39ccbed62c6496e1d0caca588e9dbacd752639d79731b361578"
+        },
+        {
+          "transportId": 11368463,
+          "properties": {
+            "PIN": "0429000195",
+            "OBJECTID": 11368463
+          },
+          "geometrySha256": "30b839306b62d46958f8e61bce2396d138b2d59f8facc1cc8b6191d91f1af7b1"
+        },
+        {
+          "transportId": 11368464,
+          "properties": {
+            "PIN": "0429000185",
+            "OBJECTID": 11368464
+          },
+          "geometrySha256": "8128f943735edb5a9928f69a2b2ba102bdb42a837a64c0a9e81afa0873934e47"
+        },
+        {
+          "transportId": 11368465,
+          "properties": {
+            "PIN": "0429000175",
+            "OBJECTID": 11368465
+          },
+          "geometrySha256": "0e86130f5059b6418ebc46d4ae157d3b7b25c468d1192fe1b5fb4f039bb5c3d3"
+        },
+        {
+          "transportId": 11368466,
+          "properties": {
+            "PIN": "0429000165",
+            "OBJECTID": 11368466
+          },
+          "geometrySha256": "20c91a85f74f5c9855fa0b8af218503ce1efe3070eda9f215f7aa2803333b324"
+        },
+        {
+          "transportId": 11368467,
+          "properties": {
+            "PIN": "0429000155",
+            "OBJECTID": 11368467
+          },
+          "geometrySha256": "998f77461158c6a5eed6b3f15031f4a3b00ae009d4042bd2157d5c1bdcdd503b"
+        },
+        {
+          "transportId": 11368468,
+          "properties": {
+            "PIN": "0429000140",
+            "OBJECTID": 11368468
+          },
+          "geometrySha256": "de25fbf871eec5d414bd1d8947403838116bd3b341110758b76fc1262a055147"
+        },
+        {
+          "transportId": 11368469,
+          "properties": {
+            "PIN": "0429000115",
+            "OBJECTID": 11368469
+          },
+          "geometrySha256": "a8398d276c7885f93824dfcb6d4f2321af72ab33295d9af1b5073708967435c2"
+        },
+        {
+          "transportId": 11368470,
+          "properties": {
+            "PIN": "0429000105",
+            "OBJECTID": 11368470
+          },
+          "geometrySha256": "8aef727b71d18f8a9f9758d0528bf9d844555c490937aca00855c583d75d41c0"
+        },
+        {
+          "transportId": 11368471,
+          "properties": {
+            "PIN": "0429000090",
+            "OBJECTID": 11368471
+          },
+          "geometrySha256": "f0b23c4457778cc5fd43872365ae9955dbb9de627e2a5fde4829a2f9eecc79f1"
+        },
+        {
+          "transportId": 11368472,
+          "properties": {
+            "PIN": "0429000080",
+            "OBJECTID": 11368472
+          },
+          "geometrySha256": "77fee3c964ffda3e38e85fcfe510fead83526ebd86e7051122389ae7be27831d"
+        },
+        {
+          "transportId": 11368473,
+          "properties": {
+            "PIN": "0429000070",
+            "OBJECTID": 11368473
+          },
+          "geometrySha256": "eec9f3cf9554dfebe39b00a4fde31adc98644798133e4fdae1e7b62c3b506396"
+        },
+        {
+          "transportId": 11368474,
+          "properties": {
+            "PIN": "0429000055",
+            "OBJECTID": 11368474
+          },
+          "geometrySha256": "0efd2d251a9c18b9153548c0d133814795823c1acfd55afab5b7eabdbcdd7186"
+        },
+        {
+          "transportId": 11368475,
+          "properties": {
+            "PIN": "0429000045",
+            "OBJECTID": 11368475
+          },
+          "geometrySha256": "c50867699f7d4b9d462917a9d3bd887a91534e63815ddbfeeab01661fc2700f0"
+        },
+        {
+          "transportId": 11368476,
+          "properties": {
+            "PIN": "0429000030",
+            "OBJECTID": 11368476
+          },
+          "geometrySha256": "f4ce0c5bfce4e19ac64c3140d3cea82bf93bcd67f725707d1bfa0211f08e46de"
+        },
+        {
+          "transportId": 11368639,
+          "properties": {
+            "PIN": "0381000305",
+            "OBJECTID": 11368639
+          },
+          "geometrySha256": "43cf54e8b157cbf09c06b9ac830cf52f9f52b7fcc2f49ef656ecd3275998cabe"
+        },
+        {
+          "transportId": 11368640,
+          "properties": {
+            "PIN": "0381000295",
+            "OBJECTID": 11368640
+          },
+          "geometrySha256": "2969b88f89fbdfc412c1c34430c84cbd633b915144d8937e2d8c965fe7acd03a"
+        },
+        {
+          "transportId": 11408008,
+          "properties": {
+            "PIN": "0429000035",
+            "OBJECTID": 11408008
+          },
+          "geometrySha256": "5d8b3af7c43a6000774b0d938ccbc0a65b02e7a1116b138d9095f88aa506df6b"
+        },
+        {
+          "transportId": 11408009,
+          "properties": {
+            "PIN": "0429000040",
+            "OBJECTID": 11408009
+          },
+          "geometrySha256": "a388f293ad60d4355383bc3db3f1482a3e36cb567ccd05523a9e7857ec4ef6aa"
+        },
+        {
+          "transportId": 11408010,
+          "properties": {
+            "PIN": "0429000050",
+            "OBJECTID": 11408010
+          },
+          "geometrySha256": "66c7a0e4e5314b2c44bc4d1ade1a2033ddc43ee9187b5f1d41c7ad8b1ac12f46"
+        },
+        {
+          "transportId": 11408011,
+          "properties": {
+            "PIN": "0429000060",
+            "OBJECTID": 11408011
+          },
+          "geometrySha256": "c74baec63b0d2862cb3da180161ae3fc243820dd34810732ed720383d5e700ca"
+        },
+        {
+          "transportId": 11408012,
+          "properties": {
+            "PIN": "0429000065",
+            "OBJECTID": 11408012
+          },
+          "geometrySha256": "f3290b37d29c0a9dfbdb2cc1d28f507927987f79fa7f693e845403f05fdfd1af"
+        },
+        {
+          "transportId": 11408013,
+          "properties": {
+            "PIN": "0429000075",
+            "OBJECTID": 11408013
+          },
+          "geometrySha256": "1900ecc2fee44c8115264f41e65b4855c07e94704ac6b098f269a3a3616e23e4"
+        },
+        {
+          "transportId": 11408014,
+          "properties": {
+            "PIN": "0429000085",
+            "OBJECTID": 11408014
+          },
+          "geometrySha256": "da091d7509770aa47a6dbacc0a8d526da376684782b6496380985f619995bb2d"
+        },
+        {
+          "transportId": 11408015,
+          "properties": {
+            "PIN": "0429000095",
+            "OBJECTID": 11408015
+          },
+          "geometrySha256": "b237233e530c2e7d396bfe15539506a7a6031fb09f629d0002b1771aea766866"
+        },
+        {
+          "transportId": 11408016,
+          "properties": {
+            "PIN": "0429000100",
+            "OBJECTID": 11408016
+          },
+          "geometrySha256": "270ed4d2a9a2091997d6423f5d842f31308d102a1c4b22ec06beee9bfcc48417"
+        },
+        {
+          "transportId": 11408017,
+          "properties": {
+            "PIN": "0429000110",
+            "OBJECTID": 11408017
+          },
+          "geometrySha256": "4e3cfb55fa87102f94076cbe45901491ee08e0a04ac216aefa39a62fcbfda782"
+        },
+        {
+          "transportId": 11408018,
+          "properties": {
+            "PIN": "0429000120",
+            "OBJECTID": 11408018
+          },
+          "geometrySha256": "21548684d5a40c31d11efda50533ac6612b644a82254487006582c9441b16c52"
+        },
+        {
+          "transportId": 11408019,
+          "properties": {
+            "PIN": "0429000125",
+            "OBJECTID": 11408019
+          },
+          "geometrySha256": "5a522b94cb4d332dc52eb5b35a1548b275e63bf8470aca693acc02c016db6d9a"
+        },
+        {
+          "transportId": 11408020,
+          "properties": {
+            "PIN": "0429000135",
+            "OBJECTID": 11408020
+          },
+          "geometrySha256": "810b9781de49374253c9297a5bc48f0a2181456b825b473e28ac0ec7d9126201"
+        },
+        {
+          "transportId": 11408021,
+          "properties": {
+            "PIN": "0429000145",
+            "OBJECTID": 11408021
+          },
+          "geometrySha256": "193cfe913b325555b0325e63e7216474220db35ad1549649e5247bb923d168b2"
+        },
+        {
+          "transportId": 11408022,
+          "properties": {
+            "PIN": "0429000150",
+            "OBJECTID": 11408022
+          },
+          "geometrySha256": "5932faf62835d9600427cb68d15b43f3d297dac743023650ca9256028838d4f1"
+        },
+        {
+          "transportId": 11408023,
+          "properties": {
+            "PIN": "0429000160",
+            "OBJECTID": 11408023
+          },
+          "geometrySha256": "8ea971ba5bfc3038808f2ee22a3662f74dc0e12a1cabed4402a351747594f412"
+        },
+        {
+          "transportId": 11408024,
+          "properties": {
+            "PIN": "0429000170",
+            "OBJECTID": 11408024
+          },
+          "geometrySha256": "968cc8c1d7337c3abb6ed1757ee6e13ca0839d1946f8cb5c1199c9a7cb679f9c"
+        },
+        {
+          "transportId": 11408025,
+          "properties": {
+            "PIN": "0429000180",
+            "OBJECTID": 11408025
+          },
+          "geometrySha256": "dbe83f2f18c9a9939ca306f4d0c5555b951d70015fa4937c7fc09f762cacda3e"
+        },
+        {
+          "transportId": 11408026,
+          "properties": {
+            "PIN": "0429000190",
+            "OBJECTID": 11408026
+          },
+          "geometrySha256": "d2a7c32e91422f9ba4b160bdb5df477f05ca18b9ca6f27d6f05e5798f89277a1"
+        },
+        {
+          "transportId": 11408027,
+          "properties": {
+            "PIN": "0429000200",
+            "OBJECTID": 11408027
+          },
+          "geometrySha256": "318828d7b42ebd36dcd52e4e7baf14844abd60b165fc7dfee9724469065bdf45"
+        },
+        {
+          "transportId": 11408028,
+          "properties": {
+            "PIN": "0429000210",
+            "OBJECTID": 11408028
+          },
+          "geometrySha256": "12317fd96962b85ae6976807923f6b15cd7a8c86e8846644a049810c5d19a66d"
+        },
+        {
+          "transportId": 11449140,
+          "properties": {
+            "PIN": "0381000300",
+            "OBJECTID": 11449140
+          },
+          "geometrySha256": "dfb215ab8454cd07559f6c0b10ab358875df5aaef40f42862273cf656681b0db"
+        },
+        {
+          "transportId": 11494425,
+          "properties": {
+            "PIN": "0429000130",
+            "OBJECTID": 11494425
+          },
+          "geometrySha256": "d6f740cbd86214e69871b4d7b59446d1a24b0e0781c1fee1b27ec4f2d4796e15"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=PIN+IN+%28%270429000215%27%2C%270429000220%27%2C%270429000225%27%2C%270429000230%27%2C%270429000235%27%2C%270429000240%27%2C%270431500350%27%2C%270431500355%27%2C%270431500360%27%2C%270431500365%27%2C%270431500370%27%2C%272603560000%27%2C%275273200005%27%2C%275273200010%27%2C%275273200015%27%2C%275273200020%27%2C%275273200026%27%2C%275273200027%27%2C%275273200031%27%2C%275273200034%27%2C%275273200036%27%2C%275273200047%27%2C%275273200050%27%2C%275273200055%27%2C%275273200060%27%2C%275273200065%27%2C%275273200070%27%2C%275273200075%27%2C%275273200080%27%2C%275273200085%27%2C%277974200250%27%2C%277974200350%27%2C%277974200700%27%2C%278926600135%27%2C%278926600140%27%2C%278926600145%27%2C%278926600150%27%2C%278926600155%27%2C%278926600160%27%2C%278926600205%27%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:25.252Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 14,
+      "count": 40
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=PIN+IN+%28%270429000215%27%2C%270429000220%27%2C%270429000225%27%2C%270429000230%27%2C%270429000235%27%2C%270429000240%27%2C%270431500350%27%2C%270431500355%27%2C%270431500360%27%2C%270431500365%27%2C%270431500370%27%2C%272603560000%27%2C%275273200005%27%2C%275273200010%27%2C%275273200015%27%2C%275273200020%27%2C%275273200026%27%2C%275273200027%27%2C%275273200031%27%2C%275273200034%27%2C%275273200036%27%2C%275273200047%27%2C%275273200050%27%2C%275273200055%27%2C%275273200060%27%2C%275273200065%27%2C%275273200070%27%2C%275273200075%27%2C%275273200080%27%2C%275273200085%27%2C%277974200250%27%2C%277974200350%27%2C%277974200700%27%2C%278926600135%27%2C%278926600140%27%2C%278926600145%27%2C%278926600150%27%2C%278926600155%27%2C%278926600160%27%2C%278926600205%27%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:25.517Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 408,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        11368461,
+        11408029,
+        11368460,
+        11368459,
+        11368458,
+        11368457,
+        11368394,
+        11408116,
+        11408117,
+        11368393,
+        11408118,
+        11361793,
+        11461233,
+        11351823,
+        11461234,
+        11461235,
+        11351822,
+        11461236,
+        11351821,
+        11461237,
+        11351820,
+        11461238,
+        11351819,
+        11461239,
+        11351818,
+        11461240,
+        11351817,
+        11461241,
+        11351816,
+        11461242,
+        11343910,
+        11457389,
+        11457414,
+        11387263,
+        11340760,
+        11387264,
+        11340759,
+        11387265,
+        11340758,
+        11340754
+      ]
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&outFields=PIN%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=11368461%2C11408029%2C11368460%2C11368459%2C11368458%2C11368457%2C11368394%2C11408116%2C11408117%2C11368393%2C11408118%2C11361793%2C11461233%2C11351823%2C11461234%2C11461235%2C11351822%2C11461236%2C11351821%2C11461237%2C11351820%2C11461238%2C11351819%2C11461239%2C11351818%2C11461240%2C11351817%2C11461241%2C11351816%2C11461242%2C11343910%2C11457389%2C11457414%2C11387263%2C11340760%2C11387264%2C11340759%2C11387265%2C11340758%2C11340754",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:25.779Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 27114,
+      "features": [
+        {
+          "transportId": 11340754,
+          "properties": {
+            "PIN": "8926600205",
+            "OBJECTID": 11340754
+          },
+          "geometrySha256": "7132a27a8d21c32667cf34255f72dad69cb01465409e94a1563ef55302e2c7bd"
+        },
+        {
+          "transportId": 11340758,
+          "properties": {
+            "PIN": "8926600160",
+            "OBJECTID": 11340758
+          },
+          "geometrySha256": "ff6a2ff8a29166b58a07bd9c285982ce8e7fb9a3e698f2427131f5217d64dbb4"
+        },
+        {
+          "transportId": 11340759,
+          "properties": {
+            "PIN": "8926600150",
+            "OBJECTID": 11340759
+          },
+          "geometrySha256": "0bcc37d5548345230b52b0fe0c919da69ff55e20883f7352d7437d1fec7cdbd8"
+        },
+        {
+          "transportId": 11340760,
+          "properties": {
+            "PIN": "8926600140",
+            "OBJECTID": 11340760
+          },
+          "geometrySha256": "8c0a027306bb7cbb850b355114f4ce292dd862c29754784c84c1a642243a01ec"
+        },
+        {
+          "transportId": 11343910,
+          "properties": {
+            "PIN": "7974200250",
+            "OBJECTID": 11343910
+          },
+          "geometrySha256": "4ae8c4f7187f1d6cb51eb3d184eacbf7c8f2b3d80745c03ee78f801f83959381"
+        },
+        {
+          "transportId": 11351816,
+          "properties": {
+            "PIN": "5273200080",
+            "OBJECTID": 11351816
+          },
+          "geometrySha256": "1196c5b21387aa9d2fe07ef24b547a2178a4915e0c64a98b39913f4f799ca657"
+        },
+        {
+          "transportId": 11351817,
+          "properties": {
+            "PIN": "5273200070",
+            "OBJECTID": 11351817
+          },
+          "geometrySha256": "a9ae9033b8246f4547683e68ef23d35030022771f654b9f6e965134043e1f958"
+        },
+        {
+          "transportId": 11351818,
+          "properties": {
+            "PIN": "5273200060",
+            "OBJECTID": 11351818
+          },
+          "geometrySha256": "2f97663f694142ed69f5078729a5e8f3ef01d5ca7bad26193afa1c194ef303d8"
+        },
+        {
+          "transportId": 11351819,
+          "properties": {
+            "PIN": "5273200050",
+            "OBJECTID": 11351819
+          },
+          "geometrySha256": "977a545cf53ecdfd8cc21d3791867b8c34d69a9166b7be3edb63b33f8ed961d8"
+        },
+        {
+          "transportId": 11351820,
+          "properties": {
+            "PIN": "5273200036",
+            "OBJECTID": 11351820
+          },
+          "geometrySha256": "5990825238efa4a486c676a4e2bb58d7a5f73e053c8cc5d970ead0659b8c7a89"
+        },
+        {
+          "transportId": 11351821,
+          "properties": {
+            "PIN": "5273200031",
+            "OBJECTID": 11351821
+          },
+          "geometrySha256": "a7f53c5c4b1d112746f6d59e48a3e65c1f40701e98240f7f1f915aa429ae311a"
+        },
+        {
+          "transportId": 11351822,
+          "properties": {
+            "PIN": "5273200026",
+            "OBJECTID": 11351822
+          },
+          "geometrySha256": "793d9a2a74a02a075147381b2bc93482990967d5f2992761f941a8b43bd25916"
+        },
+        {
+          "transportId": 11351823,
+          "properties": {
+            "PIN": "5273200010",
+            "OBJECTID": 11351823
+          },
+          "geometrySha256": "dce03d64fbb86c51a885efeb254a0181ff0afc3698e717bece4c2b03eac7e853"
+        },
+        {
+          "transportId": 11361793,
+          "properties": {
+            "PIN": "2603560000",
+            "OBJECTID": 11361793
+          },
+          "geometrySha256": "0c41559dfc67abdf85a9bce101ff898adf0dffc27f14c608d91e035778f7c2b3"
+        },
+        {
+          "transportId": 11368393,
+          "properties": {
+            "PIN": "0431500365",
+            "OBJECTID": 11368393
+          },
+          "geometrySha256": "fec12fbb9c1148f828c0f436357a6cc6086f946aee889cfba7de68f373c4474f"
+        },
+        {
+          "transportId": 11368394,
+          "properties": {
+            "PIN": "0431500350",
+            "OBJECTID": 11368394
+          },
+          "geometrySha256": "b36fbe08c734fab7b2149ef23cdc4bae2beb72ce12e759bcf1d05bb72a82e8ae"
+        },
+        {
+          "transportId": 11368457,
+          "properties": {
+            "PIN": "0429000240",
+            "OBJECTID": 11368457
+          },
+          "geometrySha256": "ae4d995be592b977cfffe1d8f8b9d08e1c45c2d67d9eec9b3dd0be3de47f4437"
+        },
+        {
+          "transportId": 11368458,
+          "properties": {
+            "PIN": "0429000235",
+            "OBJECTID": 11368458
+          },
+          "geometrySha256": "a31b1149c1963ac5b2c86eec8a9bbe00cfccd5e58010f7e1fdd42f56b47748f1"
+        },
+        {
+          "transportId": 11368459,
+          "properties": {
+            "PIN": "0429000230",
+            "OBJECTID": 11368459
+          },
+          "geometrySha256": "3729fed1f31d4eddfa7979ef542fafbde62867655693f8b8df34689837fa1eee"
+        },
+        {
+          "transportId": 11368460,
+          "properties": {
+            "PIN": "0429000225",
+            "OBJECTID": 11368460
+          },
+          "geometrySha256": "3d6856f583097a78119e7d1354bbb21415cd1cfbdf95027bc56e2072df64ee61"
+        },
+        {
+          "transportId": 11368461,
+          "properties": {
+            "PIN": "0429000215",
+            "OBJECTID": 11368461
+          },
+          "geometrySha256": "1ce5b7ddef4635161d79413b3f1ecbb9fe1229a412826937b0d7cae1d4dcc5c7"
+        },
+        {
+          "transportId": 11387263,
+          "properties": {
+            "PIN": "8926600135",
+            "OBJECTID": 11387263
+          },
+          "geometrySha256": "35b81b47f739648ca09ad8a79181eaadcad89b9cbe3e3351e41315027a2ac9cc"
+        },
+        {
+          "transportId": 11387264,
+          "properties": {
+            "PIN": "8926600145",
+            "OBJECTID": 11387264
+          },
+          "geometrySha256": "5b3c6a0e06138ecc764610339707ef9e3fe183bba5c891779096e575a6457a5e"
+        },
+        {
+          "transportId": 11387265,
+          "properties": {
+            "PIN": "8926600155",
+            "OBJECTID": 11387265
+          },
+          "geometrySha256": "9f07655fd6ba8f5792c0721bcf32a50d5f1f5cb23abfe2dea7f94f6ad4e0e669"
+        },
+        {
+          "transportId": 11408029,
+          "properties": {
+            "PIN": "0429000220",
+            "OBJECTID": 11408029
+          },
+          "geometrySha256": "0f300fc3498147ebe7e7f7b5a6c1ba44ed54d419d393a6ce3299062169b116a4"
+        },
+        {
+          "transportId": 11408116,
+          "properties": {
+            "PIN": "0431500355",
+            "OBJECTID": 11408116
+          },
+          "geometrySha256": "add7bad56a036ede29be6168f5605f3cda16e1788750f0582f4189b1b232f83e"
+        },
+        {
+          "transportId": 11408117,
+          "properties": {
+            "PIN": "0431500360",
+            "OBJECTID": 11408117
+          },
+          "geometrySha256": "9a708d036fc805b3d3e4d13dc43777c246da2680b61242fe18cd52ce3d859f18"
+        },
+        {
+          "transportId": 11408118,
+          "properties": {
+            "PIN": "0431500370",
+            "OBJECTID": 11408118
+          },
+          "geometrySha256": "588246429ab9db95abde4fb822b171e01e465af5778813758a661191c8db1326"
+        },
+        {
+          "transportId": 11457389,
+          "properties": {
+            "PIN": "7974200350",
+            "OBJECTID": 11457389
+          },
+          "geometrySha256": "c60f2a2c9aa9fe80556031e0b3dc65ff9e48f817e31ae844a30f45461f846717"
+        },
+        {
+          "transportId": 11457414,
+          "properties": {
+            "PIN": "7974200700",
+            "OBJECTID": 11457414
+          },
+          "geometrySha256": "d4da3dd49b5e30c7a9a0c6d4e18d524ee1bcf1bb706e45925faa8b333f1e874d"
+        },
+        {
+          "transportId": 11461233,
+          "properties": {
+            "PIN": "5273200005",
+            "OBJECTID": 11461233
+          },
+          "geometrySha256": "8d2430e2ab432aec8c5f18823f32663277286a033cb2f3a5c6296a448ae079a3"
+        },
+        {
+          "transportId": 11461234,
+          "properties": {
+            "PIN": "5273200015",
+            "OBJECTID": 11461234
+          },
+          "geometrySha256": "c07f89eb74006104476d4c01384646cb3031701a93d06bcdabb700f2fde0a127"
+        },
+        {
+          "transportId": 11461235,
+          "properties": {
+            "PIN": "5273200020",
+            "OBJECTID": 11461235
+          },
+          "geometrySha256": "2e38bdc3d8607b5ab906921dbbc1b361a055d673dab90fb996ee071a011345ae"
+        },
+        {
+          "transportId": 11461236,
+          "properties": {
+            "PIN": "5273200027",
+            "OBJECTID": 11461236
+          },
+          "geometrySha256": "8ce7267045041108822f1f7e6242977b04a53498d6cbbdc8d2def65ddab817ec"
+        },
+        {
+          "transportId": 11461237,
+          "properties": {
+            "PIN": "5273200034",
+            "OBJECTID": 11461237
+          },
+          "geometrySha256": "c0941987f8731153cff9320e03431901efcc67912f22919a0e12c14d835840ca"
+        },
+        {
+          "transportId": 11461238,
+          "properties": {
+            "PIN": "5273200047",
+            "OBJECTID": 11461238
+          },
+          "geometrySha256": "afcfd37e1c098656c9ffe5faf5241cda210ba261f181a7d68fa633029502a0b2"
+        },
+        {
+          "transportId": 11461239,
+          "properties": {
+            "PIN": "5273200055",
+            "OBJECTID": 11461239
+          },
+          "geometrySha256": "7a86a3604cd6bd8fdb8a0f5777c56156965424c1161d0f34c8dcc7a6ff9be653"
+        },
+        {
+          "transportId": 11461240,
+          "properties": {
+            "PIN": "5273200065",
+            "OBJECTID": 11461240
+          },
+          "geometrySha256": "58e87124d90499eec15bb2a5dfe3e11303c35d63efc3d4d73af7d92174f4bcc1"
+        },
+        {
+          "transportId": 11461241,
+          "properties": {
+            "PIN": "5273200075",
+            "OBJECTID": 11461241
+          },
+          "geometrySha256": "89f86ffe0c60000b2e987417306cf720224ec059bbc1a35f0fe68951a35285ff"
+        },
+        {
+          "transportId": 11461242,
+          "properties": {
+            "PIN": "5273200085",
+            "OBJECTID": 11461242
+          },
+          "geometrySha256": "17f5e3833832590b42486bb963e7f560aa2cc6269339e28fde4e9a9eac250f96"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=PIN+IN+%28%278927600025%27%2C%278927600030%27%2C%278927600035%27%2C%278927600050%27%2C%278927600055%27%2C%278927600060%27%2C%278934100005%27%2C%278934100010%27%2C%278934100015%27%2C%278934100020%27%2C%278934100025%27%2C%278934600005%27%2C%278934600010%27%2C%278934600030%27%2C%278934600035%27%2C%278934600055%27%2C%278934600060%27%2C%278934600065%27%2C%278934600070%27%2C%278934600075%27%2C%278934600085%27%2C%278934600090%27%2C%278934600095%27%2C%278934600100%27%2C%278934600105%27%2C%278934600110%27%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:26.097Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 12,
+      "count": 26
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=PIN+IN+%28%278927600025%27%2C%278927600030%27%2C%278927600035%27%2C%278927600050%27%2C%278927600055%27%2C%278927600060%27%2C%278934100005%27%2C%278934100010%27%2C%278934100015%27%2C%278934100020%27%2C%278934100025%27%2C%278934600005%27%2C%278934600010%27%2C%278934600030%27%2C%278934600035%27%2C%278934600055%27%2C%278934600060%27%2C%278934600065%27%2C%278934600070%27%2C%278934600075%27%2C%278934600085%27%2C%278934600090%27%2C%278934600095%27%2C%278934600100%27%2C%278934600105%27%2C%278934600110%27%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:26.385Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 282,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        11340738,
+        11387294,
+        11369053,
+        11387296,
+        11340736,
+        11387297,
+        11387341,
+        11340702,
+        11387342,
+        11340701,
+        11387343,
+        11340692,
+        11387355,
+        11340690,
+        11387358,
+        11340688,
+        11387361,
+        11340687,
+        11387362,
+        11340686,
+        11387363,
+        11340685,
+        11387364,
+        11387365,
+        11340684,
+        11387366
+      ]
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&outFields=PIN%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=11340738%2C11387294%2C11369053%2C11387296%2C11340736%2C11387297%2C11387341%2C11340702%2C11387342%2C11340701%2C11387343%2C11340692%2C11387355%2C11340690%2C11387358%2C11340688%2C11387361%2C11340687%2C11387362%2C11340686%2C11387363%2C11340685%2C11387364%2C11387365%2C11340684%2C11387366",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:26.660Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 9382,
+      "features": [
+        {
+          "transportId": 11340684,
+          "properties": {
+            "PIN": "8934600105",
+            "OBJECTID": 11340684
+          },
+          "geometrySha256": "28aeb2e1028ff2000949918f506e2907edb06a9268c38d2276e36c78a65e8030"
+        },
+        {
+          "transportId": 11340685,
+          "properties": {
+            "PIN": "8934600090",
+            "OBJECTID": 11340685
+          },
+          "geometrySha256": "19164768cbb588b0fd263f62d52b48b7ce0c14c283a5869500139a9fa3e73273"
+        },
+        {
+          "transportId": 11340686,
+          "properties": {
+            "PIN": "8934600075",
+            "OBJECTID": 11340686
+          },
+          "geometrySha256": "91cb21a2e65905e2b943752c48b42879b98f270de0119a8f4bfdcefb4c47031b"
+        },
+        {
+          "transportId": 11340687,
+          "properties": {
+            "PIN": "8934600065",
+            "OBJECTID": 11340687
+          },
+          "geometrySha256": "4c45ecb8dc50ac642433ef27c99c271e2beb1dac816e78a47767c9926823779b"
+        },
+        {
+          "transportId": 11340688,
+          "properties": {
+            "PIN": "8934600055",
+            "OBJECTID": 11340688
+          },
+          "geometrySha256": "94a692995149d7ac2bde3bab081832797b2046a60dee886da1e2b6f42e40c41f"
+        },
+        {
+          "transportId": 11340690,
+          "properties": {
+            "PIN": "8934600030",
+            "OBJECTID": 11340690
+          },
+          "geometrySha256": "9e5b6bd6b8b71d2f7d388ca8d21659bd61be888525f4df41442df7fe2be2562f"
+        },
+        {
+          "transportId": 11340692,
+          "properties": {
+            "PIN": "8934600005",
+            "OBJECTID": 11340692
+          },
+          "geometrySha256": "568096158ba67db534977e98ab2f796e77db4e6956281459b9bb7bf349b77a3c"
+        },
+        {
+          "transportId": 11340701,
+          "properties": {
+            "PIN": "8934100020",
+            "OBJECTID": 11340701
+          },
+          "geometrySha256": "272cfbab84e194a95521d8c77982f84936ac24137de16cd27a828e0effc2edc7"
+        },
+        {
+          "transportId": 11340702,
+          "properties": {
+            "PIN": "8934100010",
+            "OBJECTID": 11340702
+          },
+          "geometrySha256": "a0cf6eb7358d9d36aae681d5a91d0a25c2fce5fc2602677be6a5d0d501e0c12e"
+        },
+        {
+          "transportId": 11340736,
+          "properties": {
+            "PIN": "8927600055",
+            "OBJECTID": 11340736
+          },
+          "geometrySha256": "79a08721e08b56f6710e84b71dc9d1c5d34454ec90131cdb5b7d2ca871821c76"
+        },
+        {
+          "transportId": 11340738,
+          "properties": {
+            "PIN": "8927600025",
+            "OBJECTID": 11340738
+          },
+          "geometrySha256": "25b7ce978b58c6e0c6dbb7c43bbd7cfa5841787acea2fbec2ea1bfaaca17c39e"
+        },
+        {
+          "transportId": 11369053,
+          "properties": {
+            "PIN": "8927600035",
+            "OBJECTID": 11369053
+          },
+          "geometrySha256": "e1ef9f6f3e109cab0547cc4f102da4345eeb8aa96e1817b629e3dfd94cc58f59"
+        },
+        {
+          "transportId": 11387294,
+          "properties": {
+            "PIN": "8927600030",
+            "OBJECTID": 11387294
+          },
+          "geometrySha256": "01931ebdd320f110286061e3ee444316ea2a58aff9ab86ca33c48a2a7ace4423"
+        },
+        {
+          "transportId": 11387296,
+          "properties": {
+            "PIN": "8927600050",
+            "OBJECTID": 11387296
+          },
+          "geometrySha256": "493b2e47167aac8d005b7118cabc0271c4561b71cf6fc57a7110fea38ec5c048"
+        },
+        {
+          "transportId": 11387297,
+          "properties": {
+            "PIN": "8927600060",
+            "OBJECTID": 11387297
+          },
+          "geometrySha256": "27d10a265aabe724e5a7aea341656f2531b6cb837b700c1477e4725d638804bc"
+        },
+        {
+          "transportId": 11387341,
+          "properties": {
+            "PIN": "8934100005",
+            "OBJECTID": 11387341
+          },
+          "geometrySha256": "6020cb1848b73532707d0b98e09e3cfa7a6f42d11ef4f47ec8433a27f731dbc9"
+        },
+        {
+          "transportId": 11387342,
+          "properties": {
+            "PIN": "8934100015",
+            "OBJECTID": 11387342
+          },
+          "geometrySha256": "1052a6dc7e02088609915a5c1e83e5ed5d75a19bf1fdf027cca9771c3959da91"
+        },
+        {
+          "transportId": 11387343,
+          "properties": {
+            "PIN": "8934100025",
+            "OBJECTID": 11387343
+          },
+          "geometrySha256": "2435e03a1795a5a4916c75298c26f494318f95e1a50e3e7551d46b0bb1d92b37"
+        },
+        {
+          "transportId": 11387355,
+          "properties": {
+            "PIN": "8934600010",
+            "OBJECTID": 11387355
+          },
+          "geometrySha256": "086e750ca78676eeae3b8254da862519b546c714023b54872a049eb46d0d6b49"
+        },
+        {
+          "transportId": 11387358,
+          "properties": {
+            "PIN": "8934600035",
+            "OBJECTID": 11387358
+          },
+          "geometrySha256": "12ff3156e5be418c175e4e126984e3996f3c736f7cb3474befeb69310b708fca"
+        },
+        {
+          "transportId": 11387361,
+          "properties": {
+            "PIN": "8934600060",
+            "OBJECTID": 11387361
+          },
+          "geometrySha256": "8f0e2bb882fdcef8c179cc68c8c3f2d9aedfa376e92a41666fcd3b317908de21"
+        },
+        {
+          "transportId": 11387362,
+          "properties": {
+            "PIN": "8934600070",
+            "OBJECTID": 11387362
+          },
+          "geometrySha256": "a0ce2af808bc86e6312badf561bad4fddbf044b40db4283535ce31adf5967876"
+        },
+        {
+          "transportId": 11387363,
+          "properties": {
+            "PIN": "8934600085",
+            "OBJECTID": 11387363
+          },
+          "geometrySha256": "f9d21f3192b45215ccbe5047f24b003db1ee5903cb628830aff530b7c08b9a66"
+        },
+        {
+          "transportId": 11387364,
+          "properties": {
+            "PIN": "8934600095",
+            "OBJECTID": 11387364
+          },
+          "geometrySha256": "405fc7ec3b97d0b12d2be333c4489ae455c4294a559ae1b72aaf63d2cb07e629"
+        },
+        {
+          "transportId": 11387365,
+          "properties": {
+            "PIN": "8934600100",
+            "OBJECTID": 11387365
+          },
+          "geometrySha256": "d04a9d9a9f44ad73812bd01215b00d3d541f24cb5ae7ffee71d594a178469b68"
+        },
+        {
+          "transportId": 11387366,
+          "properties": {
+            "PIN": "8934600110",
+            "OBJECTID": 11387366
+          },
+          "geometrySha256": "17ddba7ef279b4986a6b5527c62a53c87177d14848a1ef76961e9a6ac4eaddaa"
+        }
+      ]
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=PIN+IN+%28%270000000000%27%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:26.934Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 13,
+      "count": 0
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=PIN+IN+%28%270000000000%27%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:27.220Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 49,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": []
+    },
+    {
+      "test": "footprint",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.277897121701%2C47.678982930265%2C-122.27748886417%2C47.6791552753481&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:27.497Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "count": 6
+    },
+    {
+      "test": "footprint",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.277897121701%2C47.678982930265%2C-122.27748886417%2C47.6791552753481&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:27.777Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 100,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        11340690,
+        11387355,
+        11387358,
+        11340689,
+        11387356,
+        11340692
+      ]
+    },
+    {
+      "test": "footprint",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&outFields=PIN%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=11340690%2C11387355%2C11387358%2C11340689%2C11387356%2C11340692",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:28.081Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 2001,
+      "features": [
+        {
+          "transportId": 11340689,
+          "properties": {
+            "PIN": "8934600040",
+            "OBJECTID": 11340689
+          },
+          "geometrySha256": "56d69c5e17b08d6ab6ab1f814b5d10d34dab3f5d4447bc47ae3f5a09e14ad201"
+        },
+        {
+          "transportId": 11340690,
+          "properties": {
+            "PIN": "8934600030",
+            "OBJECTID": 11340690
+          },
+          "geometrySha256": "9e5b6bd6b8b71d2f7d388ca8d21659bd61be888525f4df41442df7fe2be2562f"
+        },
+        {
+          "transportId": 11340692,
+          "properties": {
+            "PIN": "8934600005",
+            "OBJECTID": 11340692
+          },
+          "geometrySha256": "568096158ba67db534977e98ab2f796e77db4e6956281459b9bb7bf349b77a3c"
+        },
+        {
+          "transportId": 11387355,
+          "properties": {
+            "PIN": "8934600010",
+            "OBJECTID": 11387355
+          },
+          "geometrySha256": "086e750ca78676eeae3b8254da862519b546c714023b54872a049eb46d0d6b49"
+        },
+        {
+          "transportId": 11387356,
+          "properties": {
+            "PIN": "8934600015",
+            "OBJECTID": 11387356
+          },
+          "geometrySha256": "fd91ba639a1074878f18c65e6262fa2fc59b15b852ca1c76f5474aa93d01d1f5"
+        },
+        {
+          "transportId": 11387358,
+          "properties": {
+            "PIN": "8934600035",
+            "OBJECTID": 11387358
+          },
+          "geometrySha256": "12ff3156e5be418c175e4e126984e3996f3c736f7cb3474befeb69310b708fca"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.277897121701%2C47.678982930265%2C-122.27748886417%2C47.6791552753481&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:28.382Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "count": 6
+    },
+    {
+      "test": "source-binding",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&geometry=-122.277897121701%2C47.678982930265%2C-122.27748886417%2C47.6791552753481&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:28.690Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 100,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        11340690,
+        11387355,
+        11387358,
+        11340689,
+        11387356,
+        11340692
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query?where=1%3D1&outFields=PIN%2COBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=11340690%2C11387355%2C11387358%2C11340689%2C11387356%2C11340692",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:58:28.965Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 2001,
+      "features": [
+        {
+          "transportId": 11340689,
+          "properties": {
+            "PIN": "8934600040",
+            "OBJECTID": 11340689
+          },
+          "geometrySha256": "56d69c5e17b08d6ab6ab1f814b5d10d34dab3f5d4447bc47ae3f5a09e14ad201"
+        },
+        {
+          "transportId": 11340690,
+          "properties": {
+            "PIN": "8934600030",
+            "OBJECTID": 11340690
+          },
+          "geometrySha256": "9e5b6bd6b8b71d2f7d388ca8d21659bd61be888525f4df41442df7fe2be2562f"
+        },
+        {
+          "transportId": 11340692,
+          "properties": {
+            "PIN": "8934600005",
+            "OBJECTID": 11340692
+          },
+          "geometrySha256": "568096158ba67db534977e98ab2f796e77db4e6956281459b9bb7bf349b77a3c"
+        },
+        {
+          "transportId": 11387355,
+          "properties": {
+            "PIN": "8934600010",
+            "OBJECTID": 11387355
+          },
+          "geometrySha256": "086e750ca78676eeae3b8254da862519b546c714023b54872a049eb46d0d6b49"
+        },
+        {
+          "transportId": 11387356,
+          "properties": {
+            "PIN": "8934600015",
+            "OBJECTID": 11387356
+          },
+          "geometrySha256": "fd91ba639a1074878f18c65e6262fa2fc59b15b852ca1c76f5474aa93d01d1f5"
+        },
+        {
+          "transportId": 11387358,
+          "properties": {
+            "PIN": "8934600035",
+            "OBJECTID": 11387358
+          },
+          "geometrySha256": "12ff3156e5be418c175e4e126984e3996f3c736f7cb3474befeb69310b708fca"
+        }
+      ]
+    }
+  ],
+  "qualityFile": "research/overnight-cities-2026-10-08/seattle-parcels-quality.json",
+  "uniqueParcels": 106,
+  "requestCount": 65,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-08T22:58:29.250Z",
+  "qualityStatus": "passed_independent_metric_topology",
+  "qualityDecision": "approved_by_root",
+  "browserFile": "research/overnight-cities-2026-10-08/seattle-browser-check.json"
+}

@@ -1,0 +1,42 @@
+{
+  "taskId": "city:9564",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-9564-botou.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/botou-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/ranked-population.json",
+    "tmp/valhalla-parcel-research/runs/20261010T223755-af435a3b/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-10T22:43:26Z",
+  "identityCheck": {
+    "queueRank": 2088,
+    "cityCode": 9564,
+    "country": "China",
+    "point": [
+      38.0770634650992,
+      116.565811662975
+    ],
+    "population2025Persons": 278262,
+    "matchedOfficial2025Source": true
+  },
+  "searchCheck": {
+    "englishAndLocalExecutedInOriginalRun": true,
+    "originalRunLog": "tmp/valhalla-parcel-research/runs/20261010T223755-af435a3b/stdout.jsonl",
+    "retryDidNotRepeatSearches": true
+  },
+  "sampleCheck": {
+    "retainedFullPolygons": 0,
+    "safeNativeIdsVerified": false
+  },
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "registryFound": null,
+  "reason": "English and Chinese searches were executed in the first run. A local-government URL fetch was started, but no completed response was retained. Search results and incomplete fetches do not establish a Botou parcel service or citywide absence. No independent live adapter qualification exists; keep the city held and do not imply runtime admission."
+}

@@ -1,0 +1,4 @@
+
+
+# Preserve research response bytes and the receipt hashes that bind them.
+world-parcels/research/overnight-next-*/** -whitespace

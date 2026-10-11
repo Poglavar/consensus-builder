@@ -1,0 +1,37 @@
+{
+  "taskId": "city:9694",
+  "decision": "held",
+  "queueIdentity": {
+    "cityCode": 9694,
+    "rank": 1989,
+    "country": "China",
+    "point": [
+      34.3941707137711,
+      113.740847231705
+    ],
+    "populationPersons": 291958,
+    "matchesPendingQueueAndRankedRoster": true
+  },
+  "bilingualSearches": {
+    "languages": [
+      "English",
+      "native/local"
+    ],
+    "queriesAndResultsIn": "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-9694-xinzheng.json"
+  },
+  "custody": "registryFound true is supported by official local/state registry or natural-resources evidence; public parcel geometry remains unresolved",
+  "sourceArtifactSha256": {
+    "tmp/valhalla-parcel-research/9694/xinzheng-home.html": "e313f7d537f7b57e4cd3d21dd7f31dda4e810ba35af9f67f42bfc8f765719aa0"
+  },
+  "samplePolygonCount": 0,
+  "adapterQualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "finding": "Official Xinzheng bureau functions confirm cadastral investigation and registration custody; the saved public-information homepage has no parcel feature response, schema, or CRS. No safe native ID plus full polygon was evidenced.",
+  "scope": "No citywide or countrywide absence inference; no runtime/catalog/report admission."
+}

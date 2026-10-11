@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 8060,
+  "queueRank": 1998,
+  "name": "Euclid",
+  "country": "United States of America",
+  "countryCode": "US",
+  "iso3": "USA",
+  "point": [41.510843325213, -81.57541713518],
+  "population2025": 290669,
+  "population2025k": 290.669,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Euclid Ohio official GIS parcel map property viewer Cuyahoga County",
+        "result": "Found the official Cuyahoga County GIS parcel viewer, MyPlace property search, county GIS data page, and Open_Data_Parcels ArcGIS REST service.",
+        "actualResultUrls": [
+          "https://gis.cuyahogacounty.us/portal/apps/InformationLookup/index.html?appid=c2cad9a8816e42058cbc91678997abab",
+          "https://myplace.cuyahogacounty.gov/",
+          "https://cuyahogacounty.gov/i-want-to-contact/gis-data",
+          "https://gis.cuyahogacounty.gov/server/rest/services/Open_Data_Parcels/MapServer"
+        ]
+      },
+      {
+        "language": "English (US local-language query; the United States has no federally designated separate local language)",
+        "query": "Euclid Ohio county parcel viewer cadastral map official",
+        "result": "The separate local-language-equivalent discovery query surfaced the same official Cuyahoga County GIS and MyPlace sources; no distinct local-language custodian was identified.",
+        "actualResultUrls": [
+          "https://gis.cuyahogacounty.gov/server/rest/services/Open_Data_Parcels/MapServer",
+          "https://www.cuyahogacounty.gov/treasury/view-your-taxes",
+          "https://geospatial.gis.cuyahogacounty.gov/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://cuyahogacounty.gov/i-want-to-contact/gis-data",
+      "operator": "Cuyahoga County GIS",
+      "evidence": "Official county GIS data page directs users to county GIS services and mapping applications."
+    },
+    {
+      "url": "https://gis.cuyahogacounty.gov/server/rest/services/Open_Data_Parcels/MapServer",
+      "operator": "CuyahogaGIS / Cuyahoga County Fiscal Office",
+      "evidence": "Official REST service description identifies composite survey parcels with CAMA real-property characteristics within Cuyahoga County and advertises polygon layers."
+    },
+    {
+      "url": "https://myplace.cuyahogacounty.gov/",
+      "operator": "Cuyahoga County Fiscal Office",
+      "evidence": "Official county property-search application exposes parcel search and mapping; search results identify Euclid, Ohio parcels."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://gis.cuyahogacounty.gov/server/rest/services/Open_Data_Parcels/MapServer?f=pjson",
+      "method": "GET",
+      "status": "timeout",
+      "summary": "Direct anonymous curl request timed out after 20 seconds; no metadata was retained locally."
+    },
+    {
+      "url": "https://gis.cuyahogacounty.gov/server/rest/services/Open_Data_Parcels/MapServer",
+      "method": "GET",
+      "status": 403,
+      "summary": "The research web fetcher reached the official service URL but received HTTP 403. Search-indexed service metadata documents EPSG:3857, polygon layers 0 and 1, GeoJSON support, and a 2000-record maximum."
+    },
+    {
+      "url": "https://gis.cuyahogacounty.gov/server/rest/services/Open_Data_Parcels/MapServer/1/query",
+      "method": "GET",
+      "status": "unavailable",
+      "summary": "A bounded exact-point geometry query using the WUP coordinate, outFields=PARCEL_ID, returnGeometry=true, and outSR=4326 could not be fetched because the official host was inaccessible from the direct request path. No hit or miss is claimed."
+    },
+    {
+      "url": "https://geospatial.gis.cuyahogacounty.gov/server/rest/services/Open_Data_Parcels/MapServer/1/query",
+      "method": "GET",
+      "status": 200,
+      "summary": "The alternate host returned the CuyahogaGIS Hub HTML homepage rather than an ArcGIS JSON service response; route not qualified."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": "PARCEL_ID",
+    "fallbackOidField": "OBJECTID",
+    "compositeKey": null,
+    "fieldMapping": {
+      "PARCEL_ID": "search-indexed service display/native parcel identity; not returned in a verified feature response",
+      "OBJECTID": "ArcGIS object identifier; not retained"
+    },
+    "crs": "Search-indexed service metadata reports EPSG:3857 (Web Mercator); no feature response was verified.",
+    "geometryType": "esriGeometryPolygon (per search-indexed service metadata)"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Cuyahoga County survey/composite tax parcels, including Euclid as a county municipality.",
+    "verifiedOpenScope": "Official county viewer/service discovery only; no bounded anonymous feature response verified.",
+    "countrywideVerified": false,
+    "targetPointHit": null,
+    "targetPointHitInterpretation": "Not tested successfully; service access failure is not evidence of absence."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["PARCEL_ID", "OBJECTID", "geometry"],
+  "unsafeFieldsNotRetained": ["owner", "address", "contact", "titleholder", "tax/account", "legal description"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_county_parcel_service_discovered_geometry_unverified",
+  "remainingUncertainty": "The county custodian and public parcel service are evidenced, but current endpoint availability, complete Euclid coverage, schema response, CRS handling, and stable native identity were not independently verified in a bounded response. No owner or title records were accessed.",
+  "nextStep": "Serial reviewer should retry the official REST endpoint, verify layer schema and a bounded Euclid geometry response, confirm PARCEL_ID stability, and independently qualify any adapter before admission."
+}

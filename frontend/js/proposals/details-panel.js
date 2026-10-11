@@ -352,11 +352,11 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
     const nftChain = nftInfo && String(nftInfo.chain || nftInfo.chainId || '');
     const isSolanaPledgeProposal = Boolean(isMinted && nftInfo?.tokenId && nftChain.startsWith('solana'));
 
-    // ENS line for minted proposals (numeric on-chain token id → <id>.proposals.…).
-    // Self-gates: proposalEnsName returns '' for non-numeric ids, so drafts show nothing.
+    // ENS line for legacy minted ids and chain mirrors. Mirrors use their
+    // canonical proposal id so token ids cannot collide across chains.
     const proposalEnsHtml = (isMinted && nftInfo
         && typeof proposalEnsName === 'function' && typeof ensNameLineHtml === 'function')
-        ? ensNameLineHtml(proposalEnsName(nftInfo.tokenId))
+        ? ensNameLineHtml(proposalEnsName(fullProposal))
         : '';
 
     // Use stable proposalId only (hash support removed)

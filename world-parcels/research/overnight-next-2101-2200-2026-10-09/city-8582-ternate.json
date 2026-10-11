@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 8582,
+  "queueRank": 2174,
+  "cityId": "wup2025:8582",
+  "name": "Ternate",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso3": "IDN",
+  "locId": 360,
+  "capital": false,
+  "point": [0.789336549024661, 127.373762716998],
+  "centerLatLon": [0.789336549024661, 127.373762716998],
+  "population2025": 267842,
+  "population2025k": 267.842,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted",
+  "nativeIdReadiness": "not_ready_no_verified_ternate_parcel_response",
+  "runtimeReadiness": "held",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ternate Indonesia official cadastral parcel map cadastre GIS land parcels ATR BPN Kota Ternate",
+        "result": "Found the official Satu Data Ternate portal, the official Kantor Pertanahan Kota Ternate site, and national ATR/BPN BHUMI/ATLAS documentation. No public Ternate parcel geometry endpoint or safe native parcel-ID response was established.",
+        "actualResultUrls": [
+          "https://satudata.ternatekota.go.id/",
+          "https://kot-ternate.atrbpn.go.id/berita/jangan-langsung-membeli-tanah-cek-dulu-informasi-sertipikat-melalui-aplikasi-sentuh-tanahku",
+          "https://atlas.atrbpn.go.id/",
+          "https://bhumi.atrbpn.go.id/"
+        ]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Ternate peta bidang tanah resmi kadaster GIS pertanahan Kota Ternate ATR BPN",
+        "result": "Official Indonesian-language results identified the Kota Ternate land office and the Satu Data Ternate portal. The public Ternate API exposed no matching land/parcels mapset or cadastral dataset; BHUMI documentation describes parcel layers but did not provide a bounded anonymous Ternate response.",
+        "actualResultUrls": [
+          "https://satudata.ternatekota.go.id/",
+          "https://kot-ternate.atrbpn.go.id/",
+          "https://bhumi.atrbpn.go.id/bantuan/peta",
+          "https://bhumi.atrbpn.go.id/bantuan/katalog_data"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://satudata.ternatekota.go.id/",
+      "operator": "Pemerintah Kota Ternate, Satu Data Ternate",
+      "scope": "local municipal open-data custodian",
+      "observation": "Official city portal advertises public datasets and mapsets. Its current JavaScript configuration points to the public Pala API; no parcel geometry was exposed by the inspected searches."
+    },
+    {
+      "url": "https://kot-ternate.atrbpn.go.id/",
+      "operator": "Kantor Pertanahan Kota Ternate / ATR-BPN",
+      "scope": "local land-registry custodian",
+      "observation": "Official local land-office site was found, including a Ternate-specific land-information procedure article and office identity. It is registry/procedure evidence, not an open parcel geometry service."
+    },
+    {
+      "url": "https://atlas.atrbpn.go.id/",
+      "operator": "Kementerian ATR/BPN",
+      "scope": "national geospatial catalog",
+      "observation": "Official ATLAS portal loaded anonymously and describes geospatial datasets. The inspected catalog shell did not yield a bounded Ternate parcel layer response."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+      "operator": "Kementerian ATR/BPN",
+      "scope": "national public land-map viewer documentation",
+      "observation": "Official documentation confirms BHUMI is an interactive spatial map integrated with ATLAS and documents parcel-layer concepts. No safe anonymous Ternate ID-plus-geometry response was obtained."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://satudata.ternatekota.go.id/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official city open-data shell loaded; current JavaScript/configuration was inspected for its public API base and mapset/data routes."
+    },
+    {
+      "url": "https://pala.ternatekota.go.id/api/v1/search/global?q=bidang%20tanah",
+      "method": "GET",
+      "status": "HTTP 200; zero matching datasets and mapsets",
+      "summary": "Public API search returned no parcel/cadastral result. Response was not retained as a city artifact."
+    },
+    {
+      "url": "https://pala.ternatekota.go.id/api/v1/search/global?q=pertanahan",
+      "method": "GET",
+      "status": "HTTP 200; zero matching datasets and mapsets",
+      "summary": "Public API search returned no parcel/cadastral result."
+    },
+    {
+      "url": "https://pala.ternatekota.go.id/api/v1/search/global?q=peta%20tanah",
+      "method": "GET",
+      "status": "HTTP 200; zero matching datasets and mapsets",
+      "summary": "Public API search returned no parcel/cadastral result."
+    },
+    {
+      "url": "https://pala.ternatekota.go.id/api/v1/search/global?q=kadaster",
+      "method": "GET",
+      "status": "HTTP 200; zero matching datasets and mapsets",
+      "summary": "Public API search returned no parcel/cadastral result."
+    },
+    {
+      "url": "https://pala.ternatekota.go.id/api/v1/search/global?q=cadastral",
+      "method": "GET",
+      "status": "HTTP 200; zero matching datasets and mapsets",
+      "summary": "Public API search returned no parcel/cadastral result."
+    },
+    {
+      "url": "https://pala.ternatekota.go.id/api/v1/mapsets?search=tanah",
+      "method": "GET",
+      "status": "HTTP 200; zero mapsets",
+      "summary": "Direct public mapset search returned no matching mapset."
+    },
+    {
+      "url": "https://kot-ternate.atrbpn.go.id/berita/jangan-langsung-membeli-tanah-cek-dulu-informasi-sertipikat-melalui-aplikasi-sentuh-tanahku",
+      "method": "GET",
+      "status": "HTTP 200; JavaScript application shell",
+      "summary": "Official local land-office article route loaded, but no anonymous parcel geometry endpoint was exposed. No login, private token, or unsafe query was attempted."
+    },
+    {
+      "url": "https://atlas.atrbpn.go.id/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official national ATLAS shell loaded; no bounded Ternate parcel response was obtained."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official BHUMI shell loaded; documentation and current public UI were inspected without login or CAPTCHA bypass. No safe ID-plus-geometry response was obtained."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Ternate has an evidenced local land-registry custodian and a municipal open-data portal, but current open parcel geometry coverage is not verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier if publicly exposed", "geometry", "source layer name", "CRS", "service URL", "retrieval timestamp"],
+  "unsafeFieldsExcluded": ["owner", "address", "contact", "titleholder", "tax/account details", "personal identifiers", "mutation-party details"],
+  "sourceIds": [],
+  "blocker": "No safe anonymous Ternate parcel response containing a stable native ID and geometry was verified. The local portal and national viewer routes were metadata/UI evidence only.",
+  "remainingUncertainty": "Parcel data may be restricted to an authenticated workflow, a non-indexed layer, or an office procedure. Zero search results and an unusable/empty viewer route do not prove citywide absence, and the exact WUP point was not shifted or used as an absence test.",
+  "nextStep": "Retry only if the Ternate municipal portal publishes a parcel layer/document or a current public ATR/BPN route yields a safe native-ID-plus-geometry response; qualify any adapter independently before runtime use.",
+  "resultCategory": "official_local_registry_evidence_no_verified_open_ternate_geometry",
+  "runtimeEligible": false
+}

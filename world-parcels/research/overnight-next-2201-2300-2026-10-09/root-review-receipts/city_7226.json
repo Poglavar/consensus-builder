@@ -1,0 +1,18 @@
+{
+  "taskId": "city:7226",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-7226-abua.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/abua-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T02:39:07Z",
+  "reason": "Rivers State SGRIV identifies the Office of the Surveyor General, but exposes an application/account route, not a safe anonymous native-ID parcel polygon response. The purported Abua/Odual local search is written in English, so a native-language search is not evidenced. No adapter qualification or headed details check exists.",
+  "firstPartyCustodyUrls": [
+    "https://www.sgriv.com/",
+    "https://www.riversstate.gov.ng/"
+  ],
+  "runtimeAdmission": "not admitted",
+  "samplePolygonsRetained": 0
+}

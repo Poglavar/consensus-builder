@@ -2,23 +2,23 @@
   "schemaVersion": 1,
   "purpose": "Interactive inventory of parcel-registry research. Area shares describe jurisdictions with evidence, not cadastral polygon completeness.",
   "metadata": {
-    "asOf": "2026-10-09",
+    "asOf": "2026-10-11",
     "demographicSnapshotDate": "2026-10-07",
     "statisticsYear": 2025,
-    "cityCount": 1451,
+    "cityCount": 1475,
     "countryCount": 255,
     "statisticalJurisdictions": 237,
-    "checkedCityCount": 1371,
+    "checkedCityCount": 1395,
     "uncheckedCityCount": 80,
-    "cityRegistryFoundCount": 1022,
-    "verifiedCitySampleCount": 276,
+    "cityRegistryFoundCount": 1046,
+    "verifiedCitySampleCount": 300,
     "nationalCadastreCount": 72,
     "countryTwoRegionCount": 50,
     "populationMatchedCount": 1303,
     "growthMatchedCount": 435,
     "checkedCitiesMissingDate": 0,
     "wikiCityCount": 282,
-    "configuredAppCityCount": 193,
+    "configuredAppCityCount": 217,
     "unmatchedStatisticalAmounts": {
       "landAreaKm2": 0,
       "builtUpAreaKm2": 0.003000000084284693,
@@ -5043,6 +5043,59 @@
         "distanceKm": 1.098,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "wup2025:6413",
+      "name": "Arlington",
+      "country": "United States of America",
+      "countryCode": "US",
+      "latitude": 32.7174112900959,
+      "longitude": -97.0729125498606,
+      "registryCityIds": [
+        "wup2025:6413"
+      ],
+      "appCityIds": [
+        "arlington"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-11",
+      "checkedDateEvidence": {
+        "date": "2026-10-11",
+        "path": "research/qualification-admission-2026-10-11.json",
+        "field": "$.cities[16].verifiedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "arlington-tax-parcels"
+      ],
+      "evidenceUrls": [
+        "https://gis2.arlingtontx.gov/agsext2/rest/services/OpenData/OD_Property/MapServer/2"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-11/6413/qualification.json",
+        "research/qualification-admission-2026-10-11.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=32.71741&mlon=-97.07291#map=12/32.71741/-97.07291",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=32.71741%2C-97.07291",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "wup2025:10929",
@@ -12173,6 +12226,59 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:3342",
+      "name": "Bologna",
+      "country": "Italy",
+      "countryCode": "IT",
+      "latitude": 44.4942527646909,
+      "longitude": 11.3383469340327,
+      "registryCityIds": [
+        "wup2025:3342"
+      ],
+      "appCityIds": [
+        "bologna"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-11",
+      "checkedDateEvidence": {
+        "date": "2026-10-11",
+        "path": "research/qualification-admission-2026-10-11.json",
+        "field": "$.cities[2].verifiedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "it-bologna-sit-parcels"
+      ],
+      "evidenceUrls": [
+        "https://sitmappe.comune.bologna.it/arcgis/rest/services/CATASTO/CATASTO/MapServer/0"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-11/3342/qualification.json",
+        "research/qualification-admission-2026-10-11.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=44.49425&mlon=11.33835#map=12/44.49425/11.33835",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=44.49425%2C11.33835",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:1477",
       "name": "Bonn",
       "country": "Germany",
@@ -12911,6 +13017,59 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:1168",
+      "name": "Brno",
+      "country": "Czechia",
+      "countryCode": "CZ",
+      "latitude": 49.203210413959,
+      "longitude": 16.6097275929996,
+      "registryCityIds": [
+        "wup2025:1168"
+      ],
+      "appCityIds": [
+        "brno"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-11",
+      "checkedDateEvidence": {
+        "date": "2026-10-11",
+        "path": "research/qualification-admission-2026-10-11.json",
+        "field": "$.cities[17].verifiedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "brno-city-gis-katastr-g-parcely"
+      ],
+      "evidenceUrls": [
+        "https://gis.brno.cz/ags3/rest/services/PUBLIC/katastr_g/MapServer/5"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-11/1168/qualification.json",
+        "research/qualification-admission-2026-10-11.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=49.20321&mlon=16.60973#map=12/49.20321/16.60973",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=49.20321%2C16.60973",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:4679",
       "name": "Bucaramanga",
       "country": "Colombia",
@@ -13098,6 +13257,59 @@
         "distanceKm": 1.098,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "wup2025:8207",
+      "name": "Buffalo",
+      "country": "United States of America",
+      "countryCode": "US",
+      "latitude": 42.9359928509233,
+      "longitude": -78.8390421008214,
+      "registryCityIds": [
+        "wup2025:8207"
+      ],
+      "appCityIds": [
+        "buffalo"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-11",
+      "checkedDateEvidence": {
+        "date": "2026-10-11",
+        "path": "research/qualification-admission-2026-10-11.json",
+        "field": "$.cities[14].verifiedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "us-ny-erie-parcels"
+      ],
+      "evidenceUrls": [
+        "https://gis.erie.gov/server/rest/services/OGIS/Parcels/MapServer/0"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-11/8207/qualification.json",
+        "research/qualification-admission-2026-10-11.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=42.93599&mlon=-78.83904#map=12/42.93599/-78.83904",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=42.93599%2C-78.83904",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "capital:BI:bujumbura",
@@ -24471,6 +24683,59 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:3039",
+      "name": "Escondido",
+      "country": "United States of America",
+      "countryCode": "US",
+      "latitude": 33.1691791253299,
+      "longitude": -117.195352456462,
+      "registryCityIds": [
+        "wup2025:3039"
+      ],
+      "appCityIds": [
+        "escondido"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-11",
+      "checkedDateEvidence": {
+        "date": "2026-10-11",
+        "path": "research/qualification-admission-2026-10-11.json",
+        "field": "$.cities[6].verifiedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "us-ca-escondido-parcels"
+      ],
+      "evidenceUrls": [
+        "https://gis.escondido.gov/server/rest/services/Data/Parcels/FeatureServer/0"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-11/3039/qualification.json",
+        "research/qualification-admission-2026-10-11.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=33.16918&mlon=-117.19535#map=12/33.16918/-117.19535",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=33.16918%2C-117.19535",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:4160",
       "name": "Eskisehir",
       "country": "Türkiye",
@@ -26755,6 +27020,59 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:2093",
+      "name": "Gdansk",
+      "country": "Poland",
+      "countryCode": "PL",
+      "latitude": 54.3729195961829,
+      "longitude": 18.6101651609193,
+      "registryCityIds": [
+        "wup2025:2093"
+      ],
+      "appCityIds": [
+        "gdansk"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-11",
+      "checkedDateEvidence": {
+        "date": "2026-10-11",
+        "path": "research/qualification-admission-2026-10-11.json",
+        "field": "$.cities[21].verifiedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "gdansk-gml-wfs"
+      ],
+      "evidenceUrls": [
+        "https://ewid-wms.gdansk.gda.pl/iip/ows"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-11/2093/qualification.json",
+        "research/qualification-admission-2026-10-11.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=54.37292&mlon=18.61017#map=12/54.37292/18.61017",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=54.37292%2C18.61017",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:5764",
       "name": "General Santos",
       "country": "Philippines",
@@ -26807,6 +27125,59 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=6.10145&mlon=125.15029#map=12/6.10145/125.15029",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=6.10145%2C125.15029",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:60",
+      "name": "Geneva",
+      "country": "Switzerland",
+      "countryCode": "CH",
+      "latitude": 46.2017520971079,
+      "longitude": 6.13622539632436,
+      "registryCityIds": [
+        "wup2025:60"
+      ],
+      "appCityIds": [
+        "geneva"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-11",
+      "checkedDateEvidence": {
+        "date": "2026-10-11",
+        "path": "research/qualification-admission-2026-10-11.json",
+        "field": "$.cities[3].verifiedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "ch-ge-sitg-cadastre-rdppf"
+      ],
+      "evidenceUrls": [
+        "https://thematic.sitg.ge.ch/arcgis/rest/services/CADASTRE_RDPPF/MapServer/4"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-11/60/qualification.json",
+        "research/qualification-admission-2026-10-11.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=46.20175&mlon=6.13623#map=12/46.20175/6.13623",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=46.20175%2C6.13623",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -27657,6 +28028,60 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-33.88538&mlon=25.55029#map=12/-33.88538/25.55029",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-33.88538%2C25.55029",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:4353",
+      "name": "Grenoble",
+      "country": "France",
+      "countryCode": "FR",
+      "latitude": 45.1806156549356,
+      "longitude": 5.72378420259572,
+      "registryCityIds": [
+        "wup2025:4353"
+      ],
+      "appCityIds": [
+        "grenoble"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-03",
+      "checkedDateEvidence": {
+        "date": "2026-10-03",
+        "path": "research/lyon-live.json",
+        "field": "integrationAttempts[1].checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "fr-ign-parcellaire-express"
+      ],
+      "evidenceUrls": [
+        "https://data.geopf.fr/wfs/ows"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-11/4353/qualification.json",
+        "research/paris-live-wfs.json",
+        "research/lyon-live.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=45.18062&mlon=5.72378#map=12/45.18062/5.72378",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=45.18062%2C5.72378",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -28918,6 +29343,59 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:2668",
+      "name": "Hamilton",
+      "country": "Canada",
+      "countryCode": "CA",
+      "latitude": 43.2335378918963,
+      "longitude": -79.8541587136975,
+      "registryCityIds": [
+        "wup2025:2668"
+      ],
+      "appCityIds": [
+        "hamilton"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-11",
+      "checkedDateEvidence": {
+        "date": "2026-10-11",
+        "path": "research/qualification-admission-2026-10-11.json",
+        "field": "$.cities[4].verifiedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "ca-on-hamilton-assessment-parcel"
+      ],
+      "evidenceUrls": [
+        "https://services.arcgis.com/rYz782eMbySr2srL/arcgis/rest/services/Hamilton_Assessment_Parcel/FeatureServer/0"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-11/2668/qualification.json",
+        "research/qualification-admission-2026-10-11.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=43.23354&mlon=-79.85416#map=12/43.23354/-79.85416",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=43.23354%2C-79.85416",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:888",
       "name": "Hamilton",
       "country": "New Zealand",
@@ -28957,6 +29435,60 @@
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-37.77607&mlon=175.27436#map=12/-37.77607/175.27436",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-37.77607%2C175.27436",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:7729",
+      "name": "Hammond",
+      "country": "United States of America",
+      "countryCode": "US",
+      "latitude": 41.6091850522165,
+      "longitude": -87.5857397291232,
+      "registryCityIds": [
+        "wup2025:7729"
+      ],
+      "appCityIds": [
+        "hammond"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-11",
+      "checkedDateEvidence": {
+        "date": "2026-10-11",
+        "path": "research/qualification-admission-2026-10-11.json",
+        "field": "$.cities[18].verifiedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "us-in-lake-hammond-parcels"
+      ],
+      "evidenceUrls": [
+        "https://services5.arcgis.com/8CXRnvSfSpwdf0R6/arcgis/rest/services/Lake_County_Parcels/FeatureServer/0"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-11/7729/qualification.json",
+        "research/qualification-admission-2026-10-11.json",
+        "world-parcels/research/qualification-2026-10-11/7729/candidate.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=41.60919&mlon=-87.58574#map=12/41.60919/-87.58574",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=41.60919%2C-87.58574",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -45260,6 +45792,59 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:3792",
+      "name": "Longueuil",
+      "country": "Canada",
+      "countryCode": "CA",
+      "latitude": 45.4995092536395,
+      "longitude": -73.4660080560164,
+      "registryCityIds": [
+        "wup2025:3792"
+      ],
+      "appCityIds": [
+        "longueuil"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-11",
+      "checkedDateEvidence": {
+        "date": "2026-10-11",
+        "path": "research/qualification-admission-2026-10-11.json",
+        "field": "$.cities[12].verifiedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "ca-qc-longueuil-cadastre"
+      ],
+      "evidenceUrls": [
+        "https://geomatique.longueuil.quebec/public/rest/services/DonneesPubliques/CadastreEtEvaluation/FeatureServer/0"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-11/3792/qualification.json",
+        "research/qualification-admission-2026-10-11.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=45.49951&mlon=-73.46601#map=12/45.49951/-73.46601",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=45.49951%2C-73.46601",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:2362",
       "name": "Lop Buri",
       "country": "Thailand",
@@ -52435,6 +53020,59 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:3893",
+      "name": "Montpellier",
+      "country": "France",
+      "countryCode": "FR",
+      "latitude": 43.6153701485296,
+      "longitude": 3.86647003777739,
+      "registryCityIds": [
+        "wup2025:3893"
+      ],
+      "appCityIds": [
+        "montpellier"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-11",
+      "checkedDateEvidence": {
+        "date": "2026-10-11",
+        "path": "research/qualification-admission-2026-10-11.json",
+        "field": "$.cities[23].verifiedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "fr-mmm-montpellier-cadastre"
+      ],
+      "evidenceUrls": [
+        "https://data.montpellier3m.fr/sites/default/files/ressources/MMM_Montpellier_Cadastre.zip"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-11/3893/qualification.json",
+        "research/qualification-admission-2026-10-11.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=43.61537&mlon=3.86647#map=12/43.61537/3.86647",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=43.61537%2C3.86647",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:3645",
       "name": "Montreal",
       "country": "Canada",
@@ -56304,6 +56942,59 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:4796",
+      "name": "Nice",
+      "country": "France",
+      "countryCode": "FR",
+      "latitude": 43.6987107905202,
+      "longitude": 7.23303214314509,
+      "registryCityIds": [
+        "wup2025:4796"
+      ],
+      "appCityIds": [
+        "nice"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-11",
+      "checkedDateEvidence": {
+        "date": "2026-10-11",
+        "path": "research/qualification-admission-2026-10-11.json",
+        "field": "$.cities[5].verifiedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "nice-cotedazur-cadastre-arcgis"
+      ],
+      "evidenceUrls": [
+        "https://cartes.nicecotedazur.org/heberge2/rest/services/Cadastre/Cadastre/MapServer/8"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-11/4796/qualification.json",
+        "research/qualification-admission-2026-10-11.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=43.69871&mlon=7.23303#map=12/43.69871/7.23303",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=43.69871%2C7.23303",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:1403",
       "name": "Nimule",
       "country": "South Sudan",
@@ -58285,6 +58976,60 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:3218",
+      "name": "Oshawa",
+      "country": "Canada",
+      "countryCode": "CA",
+      "latitude": 43.9038793922422,
+      "longitude": -78.8826450091796,
+      "registryCityIds": [
+        "wup2025:3218"
+      ],
+      "appCityIds": [
+        "oshawa"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-11",
+      "checkedDateEvidence": {
+        "date": "2026-10-11",
+        "path": "research/qualification-admission-2026-10-11.json",
+        "field": "$.cities[15].verifiedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "ca-on-oshawa-assessed-parcels"
+      ],
+      "evidenceUrls": [
+        "https://map.oshawa.ca/arcgis/rest/services/Operational/Parcels_AddPts/MapServer/1"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-11/3218/qualification.json",
+        "research/qualification-admission-2026-10-11.json",
+        "world-parcels/research/qualification-2026-10-11/3218/candidate.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=43.90388&mlon=-78.88265#map=12/43.90388/-78.88265",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=43.90388%2C-78.88265",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:4390",
       "name": "Oshogbo",
       "country": "Nigeria",
@@ -59564,6 +60309,59 @@
       }
     },
     {
+      "id": "wup2025:351",
+      "name": "Pasto",
+      "country": "Colombia",
+      "countryCode": "CO",
+      "latitude": 1.2089443727064,
+      "longitude": -77.2772679864238,
+      "registryCityIds": [
+        "wup2025:351"
+      ],
+      "appCityIds": [
+        "pasto"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-11",
+      "checkedDateEvidence": {
+        "date": "2026-10-11",
+        "path": "research/qualification-admission-2026-10-11.json",
+        "field": "$.cities[9].verifiedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "co-pasto-urban-parcels"
+      ],
+      "evidenceUrls": [
+        "https://geoportal.pasto.gov.co/server/rest/services/Planeacion/Mapa_base_registro_de_descargas/MapServer/29"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-11/351/qualification.json",
+        "research/qualification-admission-2026-10-11.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=1.20894&mlon=-77.27727#map=12/1.20894/-77.27727",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=1.20894%2C-77.27727",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:7376",
       "name": "Patiala",
       "country": "India",
@@ -60373,6 +61171,60 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=27.63163&mlon=113.83151#map=12/27.63163/113.83151",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=27.63163%2C113.83151",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:8067",
+      "name": "Pittsburgh",
+      "country": "United States of America",
+      "countryCode": "US",
+      "latitude": 40.4196878479719,
+      "longitude": -79.9703261647027,
+      "registryCityIds": [
+        "wup2025:8067"
+      ],
+      "appCityIds": [
+        "pittsburgh"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-11",
+      "checkedDateEvidence": {
+        "date": "2026-10-11",
+        "path": "research/qualification-admission-2026-10-11.json",
+        "field": "$.cities[8].verifiedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "us-pa-allegheny-parcels"
+      ],
+      "evidenceUrls": [
+        "https://gisdata.alleghenycounty.us/arcgis/rest/services/OPENDATA/Parcels/MapServer/0"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-11/8067/qualification.json",
+        "research/qualification-admission-2026-10-11.json",
+        "world-parcels/research/qualification-2026-10-11/8067/candidate.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=40.41969&mlon=-79.97033#map=12/40.41969/-79.97033",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=40.41969%2C-79.97033",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -64388,6 +65240,59 @@
         "distanceKm": 18.029,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "wup2025:3430",
+      "name": "Riverside",
+      "country": "United States of America",
+      "countryCode": "US",
+      "latitude": 33.9351928344791,
+      "longitude": -117.443821994716,
+      "registryCityIds": [
+        "wup2025:3430"
+      ],
+      "appCityIds": [
+        "riverside"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-11",
+      "checkedDateEvidence": {
+        "date": "2026-10-11",
+        "path": "research/qualification-admission-2026-10-11.json",
+        "field": "$.cities[10].verifiedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "us.ca.riverside-city-parcels"
+      ],
+      "evidenceUrls": [
+        "https://mapriverside.riversideca.gov/server/rest/services/Cadastral/Cadastral_Public/MapServer/86"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-11/3430/qualification.json",
+        "research/qualification-admission-2026-10-11.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=33.93519&mlon=-117.44382#map=12/33.93519/-117.44382",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=33.93519%2C-117.44382",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "wup2025:2109",
@@ -71716,6 +72621,59 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:3234",
+      "name": "Sosnowiec",
+      "country": "Poland",
+      "countryCode": "PL",
+      "latitude": 50.2922574419292,
+      "longitude": 19.1460205522405,
+      "registryCityIds": [
+        "wup2025:3234"
+      ],
+      "appCityIds": [
+        "sosnowiec"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-11",
+      "checkedDateEvidence": {
+        "date": "2026-10-11",
+        "path": "research/qualification-admission-2026-10-11.json",
+        "field": "$.cities[22].verifiedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "sosnowiec-gml-wfs"
+      ],
+      "evidenceUrls": [
+        "https://sosnowiec.webewid.pl:9443/iip/ows"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-11/3234/qualification.json",
+        "research/qualification-admission-2026-10-11.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=50.29226&mlon=19.14602#map=12/50.29226/19.14602",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=50.29226%2C19.14602",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:1849",
       "name": "Sousse",
       "country": "Tunisia",
@@ -72176,6 +73134,59 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=38.66265&mlon=-90.28299#map=12/38.66265/-90.28299",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=38.66265%2C-90.28299",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:3536",
+      "name": "Stockton",
+      "country": "United States of America",
+      "countryCode": "US",
+      "latitude": 37.9838255374783,
+      "longitude": -121.30363247299,
+      "registryCityIds": [
+        "wup2025:3536"
+      ],
+      "appCityIds": [
+        "stockton"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-11",
+      "checkedDateEvidence": {
+        "date": "2026-10-11",
+        "path": "research/qualification-admission-2026-10-11.json",
+        "field": "$.cities[7].verifiedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "san-joaquin-county-diesel-wfl1-parcels"
+      ],
+      "evidenceUrls": [
+        "https://services3.arcgis.com/nUD9ady1mS8uVvoJ/ArcGIS/rest/services/Diesel_WFL1/FeatureServer/1"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-11/3536/qualification.json",
+        "research/qualification-admission-2026-10-11.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=37.98383&mlon=-121.30363#map=12/37.98383/-121.30363",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.98383%2C-121.30363",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -72981,6 +73992,60 @@
         "distanceKm": 7.026,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "wup2025:632",
+      "name": "Surrey",
+      "country": "Canada",
+      "countryCode": "CA",
+      "latitude": 49.1578411996007,
+      "longitude": -122.842214202135,
+      "registryCityIds": [
+        "wup2025:632"
+      ],
+      "appCityIds": [
+        "surrey"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-11",
+      "checkedDateEvidence": {
+        "date": "2026-10-11",
+        "path": "research/qualification-admission-2026-10-11.json",
+        "field": "$.cities[1].verifiedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "ca-bc-surrey-lots"
+      ],
+      "evidenceUrls": [
+        "https://gisservices.surrey.ca/arcgis/rest/services/ICI_Data/MapServer/1"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-11/632/qualification.json",
+        "research/qualification-admission-2026-10-11.json",
+        "world-parcels/research/qualification-2026-10-11/632/candidate.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=49.15784&mlon=-122.84221#map=12/49.15784/-122.84221",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=49.15784%2C-122.84221",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "capital:FJ:suva",
@@ -73867,6 +74932,59 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=28.57331&mlon=121.39515#map=12/28.57331/121.39515",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=28.57331%2C121.39515",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:5785",
+      "name": "Takasaki [Maebashi]",
+      "country": "Japan",
+      "countryCode": "JP",
+      "latitude": 36.3622938663979,
+      "longitude": 139.038838162225,
+      "registryCityIds": [
+        "wup2025:5785"
+      ],
+      "appCityIds": [
+        "takasaki"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-11",
+      "checkedDateEvidence": {
+        "date": "2026-10-11",
+        "path": "research/qualification-admission-2026-10-11.json",
+        "field": "$.cities[19].verifiedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "jp-takasaki-parcel-map"
+      ],
+      "evidenceUrls": [
+        "https://www.city.takasaki.gunma.jp/uploaded/attachment/42714.zip"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-11/5785/qualification.json",
+        "research/qualification-admission-2026-10-11.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=36.36229&mlon=139.03884#map=12/36.36229/139.03884",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=36.36229%2C139.03884",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -80093,6 +81211,59 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "wup2025:7979",
+      "name": "Wazirabad",
+      "country": "Pakistan",
+      "countryCode": "PK",
+      "latitude": 32.4355546089934,
+      "longitude": 74.1248485345839,
+      "registryCityIds": [
+        "wup2025:7979"
+      ],
+      "appCityIds": [
+        "wazirabad"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-11",
+      "checkedDateEvidence": {
+        "date": "2026-10-11",
+        "path": "research/qualification-admission-2026-10-11.json",
+        "field": "$.cities[13].verifiedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "pk-pulse-wazirabad-parcels"
+      ],
+      "evidenceUrls": [
+        "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/35"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-11/7979/qualification.json",
+        "research/qualification-admission-2026-10-11.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=32.43555&mlon=74.12485#map=12/32.43555/74.12485",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=32.43555%2C74.12485",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:10412",
       "name": "Weifang",
       "country": "China",
@@ -80388,6 +81559,116 @@
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=26.62235&mlon=-80.10129#map=12/26.62235/-80.10129",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=26.62235%2C-80.10129",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:5646",
+      "name": "West Valley City",
+      "country": "United States of America",
+      "countryCode": "US",
+      "latitude": 40.6516355964175,
+      "longitude": -111.987511764721,
+      "registryCityIds": [
+        "wup2025:5646"
+      ],
+      "appCityIds": [
+        "west_valley_city"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-06",
+      "checkedDateEvidence": {
+        "date": "2026-10-06",
+        "path": "research/us-capitals-2026-10-06/ut.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "us-ut-salt-lake-city-parcels"
+      ],
+      "evidenceUrls": [
+        "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/UtahStatewideParcels/FeatureServer/0"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-11/5646/qualification.json",
+        "research/us-capitals-2026-10-06/ut.json",
+        "research/us-capitals-batch-four-live-2026-10-06.json",
+        "research/us-capitals-batch-four-reserve-final-2026-10-06.json",
+        "research/us-capitals-batch-four-reserve-retry-2026-10-06.json",
+        "research/us-capitals-batch-four-reserve-sources-2026-10-06.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=40.65164&mlon=-111.98751#map=12/40.65164/-111.98751",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=40.65164%2C-111.98751",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "wup2025:2998",
+      "name": "Wiesbaden",
+      "country": "Germany",
+      "countryCode": "DE",
+      "latitude": 50.0324160875229,
+      "longitude": 8.24497585586087,
+      "registryCityIds": [
+        "wup2025:2998"
+      ],
+      "appCityIds": [
+        "wiesbaden"
+      ],
+      "cohorts": [
+        "registry"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-11",
+      "checkedDateEvidence": {
+        "date": "2026-10-11",
+        "path": "research/qualification-admission-2026-10-11.json",
+        "field": "$.cities[20].verifiedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": null,
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "hessen-alkis-vereinfacht-wfs"
+      ],
+      "evidenceUrls": [
+        "https://www.gds.hessen.de/wfs2/aaa-suite/cgi-bin/alkis/vereinf/wfs"
+      ],
+      "evidenceFiles": [
+        "world-parcels/research/qualification-2026-10-11/2998/qualification.json",
+        "research/qualification-admission-2026-10-11.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=50.03242&mlon=8.24498#map=12/50.03242/8.24498",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=50.03242%2C8.24498",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -86723,8 +88004,8 @@
       "population": 40126723,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 7,
-      "citiesWithRegistry": 7,
+      "citiesChecked": 11,
+      "citiesWithRegistry": 11,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": false,
@@ -87111,8 +88392,8 @@
       "population": 53425636,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 10,
-      "citiesWithRegistry": 10,
+      "citiesChecked": 11,
+      "citiesWithRegistry": 11,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": true,
@@ -87408,8 +88689,8 @@
       "population": 10609240,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": true,
@@ -87966,8 +89247,8 @@
       "population": 66650804,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 6,
-      "citiesWithRegistry": 6,
+      "citiesChecked": 9,
+      "citiesWithRegistry": 9,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": true,
@@ -88172,8 +89453,8 @@
       "population": 84075075,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 15,
-      "citiesWithRegistry": 15,
+      "citiesChecked": 16,
+      "citiesWithRegistry": 16,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": false,
@@ -89333,8 +90614,8 @@
       "population": 59146260,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 5,
-      "citiesWithRegistry": 5,
+      "citiesChecked": 6,
+      "citiesWithRegistry": 6,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": true,
@@ -89392,8 +90673,8 @@
       "population": 123103479,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 14,
-      "citiesWithRegistry": 13,
+      "citiesChecked": 15,
+      "citiesWithRegistry": 14,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": true,
@@ -91339,8 +92620,8 @@
       "population": 255219555,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 33,
-      "citiesWithRegistry": 22,
+      "citiesChecked": 34,
+      "citiesWithRegistry": 23,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": false,
@@ -91573,8 +92854,8 @@
       "population": 38140910,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 5,
-      "citiesWithRegistry": 5,
+      "citiesChecked": 7,
+      "citiesWithRegistry": 7,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": true,
@@ -93045,8 +94326,8 @@
       "population": 8967407,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 1,
-      "citiesWithRegistry": 1,
+      "citiesChecked": 2,
+      "citiesWithRegistry": 2,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": true,
@@ -93880,8 +95161,8 @@
       "population": 347275807,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 81,
-      "citiesWithRegistry": 81,
+      "citiesChecked": 89,
+      "citiesWithRegistry": 89,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": false,

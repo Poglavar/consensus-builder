@@ -1,0 +1,166 @@
+{
+  "cityCode": 11995,
+  "queueRank": 2046,
+  "name": "Zakiganj",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [24.8671030302612, 92.3602778356325],
+  "population2025": 284125,
+  "population2025k": 284.125,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "aliases": ["zakiganj"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Zakiganj Assam cadastral parcel map official land records GIS",
+        "result": "First-party discovery found the Government of Assam Directorate of Land Records, ILRMS, and the live NIC Assam Bhunaksha cadastral viewer. Assam Science Technology and Environment Council also documents Assam cadastral mapping under the SIS-DP project. The exact WUP locality was not separately named in the search results.",
+        "actualResultUrls": [
+          "https://dlrs.assam.gov.in/",
+          "https://ilrms.assam.gov.in/",
+          "https://bhunaksha.assam.gov.in/",
+          "https://astec.assam.gov.in/portlet-sub-innerpage/cadastral-mapping"
+        ]
+      },
+      {
+        "language": "Assamese/Bengali-local",
+        "query": "জকিগঞ্জ অসম ভূমি নক্সা চৰকাৰী মানচিত্ৰ",
+        "result": "Local-language first-party discovery returned Assam's Government land-record pages and Bhunaksha, whose live selector exposes Assamese transliterations and Assam village/cadastral hierarchy. Search also returned Bangladesh Zakiganj pages; those were excluded because the queue record is India and the WUP point is in Assam.",
+        "actualResultUrls": [
+          "https://bhunaksha.assam.gov.in/",
+          "https://landhub.assam.gov.in/jamabandiLanguage/index.php/Welcome/SelectLOC",
+          "https://dlrs.assam.gov.in/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Revenue and Disaster Management Department / Directorate of Land Records, Government of Assam; NIC Assam Bhunaksha service",
+    "basis": "The official Bhunaksha service is a live Assam cadastral map viewer. Its public hierarchy returned Sribhumi district code 21 and circles including Sribhumi, Badarapur, Nilamabazar, Patharkandi and Ramakrishnanagar, plus village/mouza codes under those circles. This evidences an Assam local/state cadastral map service, but not a verified Zakiganj-specific polygon.",
+    "urls": [
+      "https://bhunaksha.assam.gov.in/",
+      "https://ilrms.assam.gov.in/",
+      "https://dlrs.assam.gov.in/"
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://bhunaksha.assam.gov.in/",
+      "observation": "Current HTML loads /assets/index-qVUqnX9k.js; the current JavaScript identifies the backend and public routes for district, circle, village, coordinate click, parcel information, map tracing and WMS capabilities.",
+      "scope": "Assam cadastral map viewer; public hierarchy is state/district/circle/village based."
+    },
+    {
+      "url": "https://dlrs.assam.gov.in/",
+      "observation": "Official Directorate of Land Records portal for Assam land-record administration and related services.",
+      "scope": "State land-record custodian prose and service links; not itself a parcel geometry response."
+    },
+    {
+      "url": "https://ilrms.assam.gov.in/",
+      "observation": "Official Assam ILRMS page links citizen Jamabandi, Basundhara and Bhunaksha services.",
+      "scope": "State integrated land-record service directory."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/districts",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Returned the public Assam district list, including Sribhumi code 21."
+    },
+    {
+      "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/circles",
+      "method": "POST",
+      "requestBody": {"dist_code": "21"},
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Returned Sribhumi district circles and codes: 210101 through 210105."
+    },
+    {
+      "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/villages",
+      "method": "POST",
+      "requestBody": {"circle_code": "210101"},
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Returned a large public village/mouza list including Karimganj Town block entries; this was hierarchy evidence only and did not establish that the queue locality or exact WUP point is covered."
+    },
+    {
+      "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/villages",
+      "method": "POST",
+      "requestBody": {"circle_code": "210102"},
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Returned the Badarapur-area public village/mouza list."
+    },
+    {
+      "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/villages",
+      "method": "POST",
+      "requestBody": {"circle_code": "210103"},
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Returned the Nilamabazar-area public village/mouza list."
+    },
+    {
+      "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/villages",
+      "method": "POST",
+      "requestBody": {"circle_code": "210104"},
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Returned the Patharkandi-area public village/mouza list."
+    },
+    {
+      "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/villages",
+      "method": "POST",
+      "requestBody": {"circle_code": "210105"},
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Returned the Ramakrishnanagar-area public village/mouza list."
+    },
+    {
+      "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/authKey",
+      "method": "POST",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Returned a short-lived public viewer token; it was not retained in packet artifacts and was not used to access owner or protected data."
+    },
+    {
+      "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/click_info",
+      "method": "POST",
+      "requestBody": {"village_code": "210101010120002", "layer_code": "ASSAM_PARCEL", "crs": 32646, "x": 435375.68, "y": 2750384.10},
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Returned {\"error\":\"Failed to fetch districts\"}; repeated against several public Karimganj Town village codes with the same result. No native ID or geometry was returned. Coordinates were a bounded EPSG:32646 conversion of the exact WUP point, not a shifted search point."
+    },
+    {
+      "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/parcel_info",
+      "method": "POST",
+      "outcome": "Observed in the current public JavaScript as a parcel-geometry route, but not called without a verified village and dag selection because the bounded click route failed before returning a safe native identity."
+    },
+    {
+      "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/visitor",
+      "method": "POST",
+      "httpStatus": 404,
+      "contentType": "text/html",
+      "outcome": "Route not found; unrelated to parcel qualification."
+    }
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": "Bhunaksha Assam",
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Assam state cadastral map viewer operated through the Government of Assam/NIC service.",
+    "verifiedOpenScope": "Public district/circle/village hierarchy was verified for Sribhumi; no safe ID-plus-geometry response was verified for the exact Zakiganj WUP point or a confirmed city-local parcel.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier", "parcel polygon geometry", "source CRS", "non-personal source layer metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax", "account", "personal identifiers", "encumbrances"],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "resultCategory": "local_cadastral_viewer_geometry_unverified",
+  "remainingUncertainty": "Zakiganj is a low-plausibility queue locality and the exact WUP point was preserved. The official Assam viewer has a public parcel route, but its bounded coordinate lookup failed internally before returning a native parcel identity; no exact-point miss, map-extent miss, timeout, login wall or unusable UI was treated as evidence of citywide absence. No sample GeoJSON is retained.",
+  "researchFile": "research/overnight-next-2001-2100-2026-10-09/city-11995-zakiganj.json"
+}

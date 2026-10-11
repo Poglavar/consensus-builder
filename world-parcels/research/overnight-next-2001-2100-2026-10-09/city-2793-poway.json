@@ -1,0 +1,118 @@
+{
+  "cityCode": 2793,
+  "queueRank": 2049,
+  "name": "Poway",
+  "country": "United States of America",
+  "countryCode": "US",
+  "iso3": "USA",
+  "point": [32.9554070237508, -117.105325998816],
+  "population2025": 283508,
+  "population2025k": 283.508,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "aliases": ["poway"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Poway official parcel map GIS assessor parcel map San Diego County",
+        "result": "Official City of Poway discovery found the Online Maps & Data page, PowGIS public mapping application, City GeoHUB, and the public PowGIS ArcGIS REST parcel layer. The indexed layer metadata identifies APN Basemap as a polygon parcel layer and documents APN/PARCELID parcel identities.",
+        "actualResultUrls": [
+          "https://www.poway.org/784/Online-Maps",
+          "https://powaygis.poway.org/powaygis/rest/services/Public/PowGIS_Main_Labels/MapServer/2",
+          "https://powaygis.poway.org/powaygis/rest/services/Public/PowHUB_Landbase_Layers/MapServer/2"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "Poway mapa parcelas oficial GIS catastro San Diego County",
+        "result": "A separate local-language discovery query found no distinct Spanish-language local cadastral source. The official City of Poway English PowGIS/GeoHUB service remained the evidenced local source.",
+        "actualResultUrls": [
+          "https://www.poway.org/784/Online-Maps",
+          "https://powaygis.poway.org/powaygis/rest/services/Public/PowGIS_Main_Labels/MapServer/2"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The City of Poway publishes PowGIS and GeoHUB as local public mapping/data services. The PowGIS APN Basemap is an official public parcel polygon layer; its metadata attributes parcel maintenance to SanGIS using County Assessor/Recorder/County Clerk source data. This is local GIS/service evidence, not merely general national-agency prose.",
+  "registryEvidenceUrls": [
+    "https://www.poway.org/784/Online-Maps",
+    "https://powaygis.poway.org/powaygis/rest/services/Public/PowGIS_Main_Labels/MapServer/2",
+    "https://powaygis.poway.org/powaygis/rest/services/Public/PowHUB_Landbase_Layers/MapServer/2"
+  ],
+  "officialSources": [
+    {
+      "url": "https://www.poway.org/784/Online-Maps",
+      "observation": "City page says PowGIS searches by address, parcel number, or street intersection and displays parcel property reports, and identifies the City GeoHUB for GIS data/apps.",
+      "scope": "City of Poway public GIS entry points."
+    },
+    {
+      "url": "https://powaygis.poway.org/powaygis/rest/services/Public/PowGIS_Main_Labels/MapServer/2",
+      "observation": "Current ArcGIS layer metadata identifies APN Basemap, polygon geometry, public query formats, native source spatial reference 102646/latestWkid 2230, and parcel identity concepts APN/PARCELID. Metadata warns the layer may lag official Assessor Parcel Maps and is not survey-grade.",
+      "scope": "SanGIS parcel layer published through the City PowGIS service."
+    },
+    {
+      "url": "https://powaygis.poway.org/powaygis/rest/services/Public/PowHUB_Landbase_Layers/MapServer/2",
+      "observation": "Indexed ArcGIS metadata identifies the City PowHUB Parcel Info polygon layer, APN field, native OBJECTID identity, and EPSG:102646/2230 service spatial reference.",
+      "scope": "City of Poway PowHUB landbase parcel layer."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.poway.org/784/Online-Maps",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official City page fetched; PowGIS and GeoHUB links and parcel-map scope were confirmed."
+    },
+    {
+      "url": "https://powaygis.poway.org/powaygis/rest/services/Public/PowGIS_Main_Labels/MapServer/2?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "First-party indexed REST metadata was inspected. It returned polygon geometry, native layer CRS EPSG:102646/latestWkid 2230, public GeoJSON support, and source fields including OBJECTID, APN, and Shape. A direct shell request was also attempted but timed out after 8 seconds (HTTP 000)."
+    },
+    {
+      "url": "https://powaygis.poway.org/powaygis/rest/services/Public/PowGIS_Main_Labels/MapServer/2/query?where=1%3D1&geometry=-117.105325998816%2C32.9554070237508&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&resultRecordCount=3",
+      "method": "GET",
+      "httpStatus": null,
+      "outcome": "Bounded anonymous exact-point query was attempted with the unchanged WUP point and safe identity fields only. Direct shell request timed out after 8 seconds (HTTP 000); the web fetch tool refused the query endpoint. No geometry or parcel identity was treated as returned, and no sample GeoJSON was retained."
+    },
+    {
+      "url": "https://powaygis.poway.org/powaygis/rest/services/Public/PowHUB_Landbase_Layers/MapServer/2",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "First-party indexed REST metadata was inspected for the City PowHUB Parcel Info polygon layer; it exposed native OBJECTID/APN schema and EPSG:102646/2230 metadata. No feature query was retained after the PowGIS query timeout and no geometry response was available."
+    }
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sampleFile": null,
+  "source": "City of Poway PowGIS / PowHUB ArcGIS REST parcel layers; underlying parcel data described as SanGIS using County ARCC source data",
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "safeFieldAllowlist": [
+    "stable native parcel identifier (APN/PARCELID or OBJECTID if independently verified)",
+    "parcel polygon geometry",
+    "source CRS and response-format metadata",
+    "non-personal service/layer metadata"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner or right-holder names",
+    "addresses or contact details",
+    "titleholder or certificate details",
+    "tax, account, identity, or application fields",
+    "assessment, mortgage, restriction, historical, and other source-specific attribute sets"
+  ],
+  "coverageAssessment": {
+    "claimedScope": "City of Poway public PowGIS/PowHUB parcel mapping services, with PowGIS metadata describing a SanGIS parcel layer based on County ARCC records.",
+    "verifiedOpenScope": "Official city entry page and first-party indexed layer metadata were verified; no bounded parcel feature response was obtained in this attempt.",
+    "countrywideVerified": false,
+    "citywideGeometryVerified": false
+  },
+  "runtimeReadiness": "held_serial_qualification_required",
+  "runtimeReadinessReason": "A real local public parcel service is evidenced, but the anonymous feature query did not produce a retained geometry response. A serial reviewer must independently qualify route, identifier mapping, CRS handling, and safe-field behavior. This packet is not source integration or admission.",
+  "resultCategory": "local_registry_service_metadata_only",
+  "remainingUncertainty": "The local PowGIS/PowHUB service and parcel-layer schema are evidenced, but exact-point response availability, current feature-query behavior, citywide completeness, update cadence, and adapter qualification remain unverified. The exact WUP point was preserved in latitude/longitude order and was not shifted. A timeout or unusable query endpoint is not evidence of citywide absence. No credentials, CAPTCHA bypass, private token, owner/address data, or unsafe fields were used."
+}

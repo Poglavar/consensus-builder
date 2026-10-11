@@ -1,0 +1,40 @@
+{
+  "taskId": "city:4258",
+  "decision": "held",
+  "queueIdentity": {
+    "cityCode": 4258,
+    "rank": 1990,
+    "country": "China",
+    "point": [
+      40.7619692560269,
+      107.401708534579
+    ],
+    "populationPersons": 291787,
+    "matchesPendingQueueAndRankedRoster": true
+  },
+  "bilingualSearches": {
+    "languages": [
+      "English",
+      "Chinese"
+    ],
+    "queriesAndResultsIn": "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-4258-bayannur.json"
+  },
+  "custody": "registryFound true is supported by official local/state registry or natural-resources evidence; public parcel geometry remains unresolved",
+  "sourceArtifactSha256": {
+    "tmp/valhalla-parcel-research/bayannur/cadastre.html": "58c90e3eafe1d583f24de7c887ef9013f2bc4dde4de3ed9489014d482e7e51c6",
+    "tmp/valhalla-parcel-research/bayannur/cadastre.headers": "494b2fe95f20d7afd36a7f2901de45895c06e8f69d407aa940e012486e38dbc2",
+    "tmp/valhalla-parcel-research/bayannur/search.headers": "fc2bca02b56d502159d78e659b6538175dd85ac479bcbcca61d598e2cc8b2e32",
+    "tmp/valhalla-parcel-research/bayannur/search.html": "a411ef3e44c1247a09bbb28c3adcc2a6fe046cbfc5465269b03de5507ed6889e"
+  },
+  "samplePolygonCount": 0,
+  "adapterQualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "finding": "First-party cadastral page presents a search form for parcel code or natural building information, not a polygon feed. Saved search headers show HTTP 301 to /404/404.html followed by HTTP 200 for the 404 page; this conflicts with the worker timeout label. No safe native ID plus full polygon was evidenced.",
+  "scope": "No citywide or countrywide absence inference; no runtime/catalog/report admission."
+}

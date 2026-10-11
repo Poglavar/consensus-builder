@@ -1,0 +1,51 @@
+{
+  "cityCode": 844,
+  "queueRank": 2262,
+  "country": "Israel",
+  "countryCode": "IL",
+  "iso3": "ISR",
+  "name": "Netanya",
+  "aliases": ["netanya"],
+  "point": [32.3143145554001, 34.8598375549541],
+  "population2025": 257714,
+  "population2025k": 257.714,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Netanya Israel official cadastral parcel map GIS API parcel map",
+        "result": "Found the Netanya Municipality official GIS service page, describing public GIS layers and search by block/parcel, plus the public GovMap and national Survey of Israel cadastral service references.",
+        "actualResultUrls": [
+          "https://www.netanya.muni.il/homepage?CategoryID=230",
+          "https://govmap.gov.il/map.html?lang=en",
+          "https://services8.arcgis.com/JcXY3lLZni6BK4El/arcgis/rest/services/%D7%97%D7%9C%D7%A7%D7%95%D7%AA/FeatureServer"
+        ]
+      },
+      {
+        "language": "Hebrew",
+        "query": "נתניה מפה קדסטרית חלקות GIS API מפה",
+        "result": "Found the Netanya Municipality Hebrew GIS service page and the Survey of Israel/Data.gov.il cadastral parcel dataset; the public service exposes parcel boundaries and identification fields.",
+        "actualResultUrls": [
+          "https://www.netanya.muni.il/homepage?CategoryID=230",
+          "https://data.gov.il/he/datasets/israel_mapping_center/shape",
+          "https://www.arcgis.com/sharing/rest/content/items/0248030b7ba3474eae0f7d21b12c172f?f=json"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "localCustodian": "Netanya Municipality",
+    "localServiceDescriptionUrl": "https://www.netanya.muni.il/homepage?CategoryID=230",
+    "scope": "Municipal public GIS described as supporting block/parcel search; page says information is informative and non-binding.",
+    "nationalSource": "Survey of Israel / Israel Mapping Center cadastral parcel FeatureServer, linked to Data.gov.il.",
+    "nationalServiceUrl": "https://services8.arcgis.com/JcXY3lLZni6BK4El/arcgis/rest/services/%D7%97%D7%9C%D7%A7%D7%95%D7%AA/FeatureServer"
+  },
+  "serviceReview": "netanya-service-review.json",
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "Source discovery and a safe bounded response are complete; serial adapter qualification has not been independently performed.",
+  "parcelSample": "netanya-parcel-sample.geojson"
+}

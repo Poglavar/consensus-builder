@@ -1,0 +1,56 @@
+{
+  "cityRecord": "city-4411-xigu.json",
+  "cityCode": 4411,
+  "queueRank": 2098,
+  "city": "Xigu",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "reviewedAt": "2026-10-10T00:00:00Z",
+  "discovery": {
+    "english": "Official Lanzhou and Gansu government sources were found for the Lanzhou public geospatial platform and the Xigu real-estate registration service. No anonymous parcel viewer/API returning stable parcel IDs and polygons was established.",
+    "native": "中文官方检索确认兰州市地理信息公共服务平台、甘肃政务服务网西固区不动产登记资料查询事项及兰州市自然资源局西固分局；未确认可匿名返回西固宗地稳定ID和几何的公开接口。"
+  },
+  "custodian": {
+    "name": "兰州市自然资源局西固分局",
+    "role": "Local natural-resources and real-estate registration implementing body identified by the official Gansu service page",
+    "evidenceUrls": [
+      "https://zwfw.gansu.gov.cn/szgs/bszn/index.do?taskCode=11620100013902476C4622015008000&taskHandleItem=11620100013902476C462201500800001",
+      "https://gansu.tianditu.gov.cn/lanzhou/"
+    ]
+  },
+  "attemptedRoutes": [
+    {"route": "Official Lanzhou Tianditu public geospatial platform", "url": "https://gansu.tianditu.gov.cn/lanzhou/", "result": "HTTP 200; current platform page inspected; general map, thematic-layer and developer resources, but no public parcel schema."},
+    {"route": "Current Lanzhou viewer JavaScript/config", "url": "https://gansu.tianditu.gov.cn/lanzhou/assets/index.04ec47fbbd31d62e3b8c.js?04ec47fbbd31d62e3b8c", "result": "HTTP 200; WMS/WMTS and backend routes inspected; no anonymous Xigu parcel ID-plus-geometry service identified."},
+    {"route": "Lanzhou backend archive categories", "url": "https://gansu.tianditu.gov.cn/lanzhou/backend/api/archive/category/", "result": "HTTP 200; general category JSON only, no parcel geometry."},
+    {"route": "Lanzhou backend archive records", "url": "https://gansu.tianditu.gov.cn/lanzhou/backend/api/archive/manage/", "result": "HTTP 200; three general platform/project records, no parcel response or CRS."},
+    {"route": "Lanzhou backend app services", "url": "https://gansu.tianditu.gov.cn/lanzhou/backend/api/service/apps/", "result": "HTTP 200 with JSON status 403 authentication-required message; no credentials or bypass attempted."},
+    {"route": "Official Xigu registration-record service", "url": "https://zwfw.gansu.gov.cn/szgs/bszn/index.do?taskCode=11620100013902476C4622015008000&taskHandleItem=11620100013902476C462201500800001", "result": "HTTP 200; local implementing body and lawful record-query procedure evidenced; no anonymous parcel geometry."},
+    {"route": "Official Xigu services portal", "url": "https://zwfw.gansu.gov.cn/xigu/index.html", "result": "HTTP 200; registration-record query listed; no public parcel map/API in inspected page."}
+  ],
+  "fieldPolicy": {
+    "allowlist": ["safe stable native parcel identity if publicly returned", "parcel polygon geometry", "source field names and mapping in metadata only", "CRS/format and request metadata"],
+    "notRequested": ["owner/right-holder", "address/contact", "titleholder/certificate", "tax/account/identity/application data"]
+  },
+  "geometryReview": {
+    "publicGeometryFound": false,
+    "sampleFile": null,
+    "parcelCount": 0,
+    "reason": "No bounded anonymous ID-plus-geometry response was available from the official routes inspected; no polygon is retained."
+  },
+  "scopeLimits": [
+    "Exact WUP point [36.1036046201446, 103.630277040369] was preserved and was not shifted to force a parcel hit.",
+    "No exact-point hit, map-extent miss, timeout, login wall or unusable UI was used as evidence of citywide absence.",
+    "Authentication, CAPTCHA, private tokens and protected owner/property queries were not attempted.",
+    "General national or provincial agency material was not promoted to a Xigu parcel-geometry source.",
+    "Registry existence is locally evidenced, but source integration/admission remains unqualified."
+  ],
+  "qualification": {
+    "registryFound": true,
+    "publicParcelGeometryFound": false,
+    "runtimeReadiness": "held",
+    "serialReviewerRequired": true,
+    "uncertainty": "Public cadastral endpoint, schema, CRS, safe native identity field and citywide coverage remain unknown."
+  }
+}

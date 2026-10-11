@@ -1,0 +1,75 @@
+{
+  "taskId": "city:9743",
+  "decision": "held",
+  "checkedAt": "2026-10-10T20:49:35Z",
+  "identity": {
+    "cityCode": 9743,
+    "rank": 2009,
+    "name": "Banda",
+    "country": "India",
+    "countryCode": "IN",
+    "point": [
+      25.4800002900874,
+      80.3378842408088
+    ],
+    "populationPersons": 289334,
+    "sourceArchiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "packetQueueRosterMatch": true
+  },
+  "searches": {
+    "languagesRecorded": [
+      "English",
+      "Hindi"
+    ],
+    "queriesAndResultUrlsRecorded": true,
+    "independentSearchResponseCacheAvailable": false
+  },
+  "firstPartyCache": [
+    {
+      "path": "tmp/valhalla-parcel-research/9743/geodash.html",
+      "sha256": "0c4bacf035ad57e228f2fce7dacc39686926a52830930745a06eb0bce3f5be06",
+      "bytes": 24857
+    },
+    {
+      "path": "tmp/valhalla-parcel-research/9743/geodash.headers",
+      "sha256": "e699fb1c824104d21fcbe0a6cb87a9eed8fd40db559fa998325033faefda989d",
+      "bytes": 684
+    },
+    {
+      "path": "tmp/valhalla-parcel-research/9743/bhunaksha.html",
+      "sha256": "69961bc00b2a44770265596aaa9de9e768f77795ab7e865e31a9292f7d2a5c46",
+      "bytes": 75954
+    },
+    {
+      "path": "tmp/valhalla-parcel-research/9743/bhunaksha.headers",
+      "sha256": "0345ade3cfec46e721139b06b89985e0555dbc80d4319afc9f0ca50392193f29",
+      "bytes": 783
+    },
+    {
+      "path": "tmp/valhalla-parcel-research/9743/main.js",
+      "sha256": "071268458e19e27270071323d228d059e521d3fc4d87968a0247d148bcb15780",
+      "bytes": 2972677
+    }
+  ],
+  "firstPartyAssessment": "Original UP dashboard HTML has Banda district and tehsil aggregate cadastral-map rows. BhuNaksha original login HTML and JS expose a login/CAPTCHA boundary and route names; no original anonymous parcel ID/geometry response is saved. Worker-reported endpoint timeouts are access limits, not absence proof.",
+  "custody": {
+    "registryFound": true,
+    "basis": "Original first-party cache grounds the office, map hierarchy or cadastral program identified above."
+  },
+  "geometry": {
+    "retainedFullPolygonCount": 0,
+    "acceptedNativeIdPlusPolygonResponses": 0,
+    "citywideAbsenceEstablished": false,
+    "publicGeometryStatus": "unresolved; no verified polygon response in this bounded attempt"
+  },
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "admitted": false
+  },
+  "decisionReason": "No independently evidenced anonymous full-polygon parcel adapter or complete admission-gate proof. Retain the city as held; no runtime, catalog, or generated-coverage admission."
+}

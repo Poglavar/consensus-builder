@@ -1,0 +1,101 @@
+{
+  "cityCode": 2184,
+  "queueRank": 2039,
+  "name": "Modiin-Maccabim-Reut",
+  "country": "Israel",
+  "countryCode": "IL",
+  "point": [31.8986246886273, 35.0077621307069],
+  "population2025": 285763,
+  "population2025k": 285.763,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "aliases": ["modiin maccabim reut"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Modiin-Maccabim-Reut Israel official cadastral parcel map GIS API",
+        "result": "Found the official municipal GIS page describing block/parcel search and the Israel Mapping Center open parcel FeatureServer used for public geometry queries.",
+        "actualResultUrls": [
+          "https://modiin.muni.il/ModiinWebSite/ArticlePage.aspx?PageID=148_370",
+          "https://services8.arcgis.com/JcXY3lLZni6BK4El/arcgis/rest/services/%D7%97%D7%9C%D7%A7%D7%95%D7%AA/FeatureServer"
+        ]
+      },
+      {
+        "language": "Hebrew (local)",
+        "query": "ישראל מפה קדסטרית חלקות מודיעין מכבים רעות GIS גוש חלקה",
+        "result": "מצאתי את דף מערכת המידע הגיאוגרפי הרשמי של עיריית מודיעין-מכבים-רעות, המתאר חיפוש גושים וחלקות, ואת שכבת החלקות הפתוחה של המרכז למיפוי ישראל.",
+        "actualResultUrls": [
+          "https://www.modiin.muni.il/modiinwebsite/ChannelArticle.aspx?PageID=7_351",
+          "https://data.gov.il/he/datasets/israel_mapping_center/shape",
+          "https://www.gov.il/he/departments/units/kadaster-deprtment"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Modiin-Maccabim-Reut Municipality, Engineering / municipal GIS (advertised local service); parcel geometry endpoint is published by the Israel Mapping Center",
+    "basis": "The official municipal page states that the city GIS provides block and parcel search. The national first-party open-data parcel service provides the bounded public geometry response.",
+    "urls": [
+      "https://modiin.muni.il/ModiinWebSite/ArticlePage.aspx?PageID=148_370",
+      "https://services8.arcgis.com/JcXY3lLZni6BK4El/arcgis/rest/services/%D7%97%D7%9C%D7%A7%D7%95%D7%AA/FeatureServer"
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://services8.arcgis.com/JcXY3lLZni6BK4El/arcgis/rest/services/%D7%97%D7%9C%D7%A7%D7%95%D7%AA/FeatureServer/0",
+      "observation": "Israel Mapping Center parcel layer; public ArcGIS REST FeatureServer, CRS EPSG:2039 (ITM), polygon geometry, anonymous query support.",
+      "scope": "Israel-wide cadastral parcel layer; bounded local query only was executed."
+    },
+    {
+      "url": "https://www.modiin.muni.il/modiinwebsite/ChannelArticle.aspx?PageID=7_351",
+      "observation": "Official municipal engineering page advertises the city GIS and block/parcel search capabilities.",
+      "scope": "Municipal GIS service description; direct municipal service endpoint was not resolved anonymously."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.govmap.gov.il/map.html?lang=en",
+      "method": "GET",
+      "httpStatus": 403,
+      "outcome": "CloudFront request blocked; no login, CAPTCHA bypass, or TLS exception attempted. This is not evidence of parcel absence."
+    },
+    {
+      "url": "https://modiin.muni.il/ModiinWebSite/ArticlePage.aspx?PageID=148_370",
+      "method": "GET",
+      "httpStatus": 403,
+      "outcome": "Municipal page was found in first-party discovery and described by indexed content, but direct fetch was forbidden."
+    },
+    {
+      "url": "https://services8.arcgis.com/JcXY3lLZni6BK4El/arcgis/rest/services/%D7%97%D7%9C%D7%A7%D7%95%D7%AA/FeatureServer/0?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Inspected layer schema and extent. Native safe identity fields include PARCEL_ID, GUSH_NUM, PARCEL and GushHelka; service CRS is EPSG:2039. Unsafe owner/address fields were not requested."
+    },
+    {
+      "url": "https://services8.arcgis.com/JcXY3lLZni6BK4El/arcgis/rest/services/%D7%97%D7%9C%D7%A7%D7%95%D7%AA/FeatureServer/0/query",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Anonymous bounded intersects query over ITM envelope 198850,643094,202850,647094, with outSR=4326 and resultRecordCount=3, returned three Polygon features associated with locality Modiin-Maccabim-Reut. Exact WUP point was preserved and not shifted; the request was a map-extent sample, not an exact-point absence test. Full unchanged response is in ignored tmp/valhalla-parcel-research/modiin/query.geojson."
+    }
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": true,
+  "sampleFile": null,
+  "source": "Israel Mapping Center open cadastral parcel FeatureServer layer 0",
+  "sourceIds": ["PARCEL_ID=9856; GushHelka=5687/10", "PARCEL_ID=9857; GushHelka=5687/11", "PARCEL_ID=9858; GushHelka=5687/12"],
+  "coverageAssessment": {
+    "claimedScope": "Israel Mapping Center nationwide cadastral parcel layer.",
+    "verifiedOpenScope": "Three safe polygon responses were returned from a bounded envelope near the WUP point and identified as Modiin-Maccabim-Reut.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier", "parcel polygon geometry", "source CRS", "non-personal source layer metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax", "account", "personal identifiers", "encumbrances"],
+  "runtimeReadiness": "held_serial_qualification_required",
+  "resultCategory": "national_public_arcgis_geometry_verified_local_bounded",
+  "remainingUncertainty": "The municipal GIS capability is first-party advertised but its direct endpoint was blocked. The national parcel layer and local bounded geometry response are verified; this does not establish complete municipal coverage, update cadence, or runtime adapter readiness. No retained GeoJSON sample was created because raw geometry remains in ignored temporary evidence and no source attributes are retained.",
+  "researchFile": "research/overnight-next-2001-2100-2026-10-09/city-2184-modiin-maccabim-reut.json"
+}

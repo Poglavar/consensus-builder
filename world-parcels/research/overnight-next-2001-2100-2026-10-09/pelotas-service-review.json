@@ -1,0 +1,22 @@
+{
+  "cityRecord": "city-5572-pelotas.json",
+  "cityCode": 5572,
+  "queueRank": 2069,
+  "name": "Pelotas",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "reviewedAt": "2026-10-10",
+  "attempt": 1,
+  "serviceStatus": "held",
+  "registryFound": true,
+  "registryCustodian": "Prefeitura Municipal de Pelotas, Serviço de Mapeamento e Informações Geográficas / Secretaria Municipal de Urbanismo",
+  "queryAndRequestOutcome": "Separate English and Portuguese first-party discovery identified GeoPelotas. Following its current ArcGIS Hub configuration reached the public PMPELOTAS ArcGIS catalog and the lotes_total_tabelao_dez_enderecos_15122021 polygon FeatureServer. The service schema reported wkid 102100/latestWkid 3857 and native FID/cod_lote fields. An anonymous exact WUP-point intersects request in EPSG:4326 returned one parcel polygon with native cod_lote B3CG0601000.",
+  "scopeLimits": ["The response is a single exact-point bounded query, not a citywide parcel extract.", "The exact WUP point [-31.7485515284873, -52.3428058114373] was preserved and not shifted; one returned hit does not establish broader coverage.", "ArcGIS service publication does not establish update cadence, complete municipal coverage, or production adapter quality.", "No login, credential, private token, CAPTCHA/Cloudflare bypass, or unsafe attribute request was used."],
+  "safeFieldAllowlist": ["stable native parcel identifier", "parcel polygon geometry", "source CRS", "non-personal source layer metadata"],
+  "sourceSpecificFields": "The layer exposes native FID, OBJECTID, cod_lote, address-like fields, and shape metrics. The retained GeoJSON uses only canonical properties.id derived from native cod_lote and does not retain the raw source attribute set.",
+  "compositeKeyProvenance": null,
+  "runtimeReadiness": "held_serial_qualification_required",
+  "qualification": "Not qualified for runtime integration or admission; the serial reviewer must independently verify the service route, field mapping, CRS handling, stable identifier choice, and citywide coverage.",
+  "uncertainty": "The public municipal service and one parcel geometry are verified, but the sample is bounded to the exact point, and the service's complete coverage and normal viewer workflow were not exhaustively tested.",
+  "status": "complete"
+}

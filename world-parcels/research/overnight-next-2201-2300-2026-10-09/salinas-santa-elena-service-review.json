@@ -1,0 +1,46 @@
+{
+  "cityRecord": "city-13-salinas-santa-elena.json",
+  "cityCode": 13,
+  "queueRank": 2243,
+  "name": "Salinas [Santa Elena]",
+  "country": "Ecuador",
+  "countryCode": "EC",
+  "pointLatLon": [-2.22906103994047, -80.9055404467734],
+  "population2025": 260161,
+  "population2025k": 260.161,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method": "SEARCH", "url": "https://www.salinas.gob.ec/", "httpStatus": 200, "outcome": "Official GAD Municipal del Cantón Salinas site loaded. It identifies the municipality and links official institutional material; no public parcel map/API link was exposed in the page shell."},
+    {"method": "SEARCH", "url": "https://www.salinas.gob.ec/index.php/ordenanzas-vigentes", "httpStatus": 200, "outcome": "Official municipal ordinance index exposes the 2026-2027 cadastral ordinance, establishing the local cadastral competency and current municipal context; it is not a parcel geometry service."},
+    {"method": "SEARCH", "url": "https://salinas.gob.ec/images/descargas/ORDENANZAS_VIGENTES/CATASTRO%20-%20BIENIO%202022-2023/ORD.%20CATASTRO%202022%20-%202023%20-%20DICIEMBRE%2010-2021%27.pdf", "httpStatus": 200, "outcome": "Official municipal cadastral ordinance documents Unidad de Catastro y Avalúos, cadastral coding and parcel-fiche fields. Owner, contact, title and tax fields were not requested or retained."},
+    {"method": "GET", "url": "https://www.salinas.gob.ec/regpro-app-online/login.zul", "httpStatus": 200, "outcome": "Official Sistema de Registro de la Propiedad login page loaded anonymously. Login wall encountered; no credentials, private tokens or unsafe registry fields were requested."},
+    {"method": "GET", "url": "https://visorgeografico.presidencia.gob.ec/", "httpStatus": 403, "outcome": "Official national IEDG viewer host returned HTTP 403. No CAPTCHA/Cloudflare bypass or alternate protected route was attempted."},
+    {"method": "GET", "url": "https://www.geoportaligm.gob.ec/visorAFC/composer/", "httpStatus": 200, "outcome": "Official IGM viewer shell loaded anonymously. Visible/configured content was thematic mapping (including physical-construction suitability and other national layers), not a verified Salinas cadastral parcel layer; no parcel response was retained."},
+    {"method": "SEARCH", "url": "https://www.registrospublicos.gob.ec/programas-servicios/servicios/sistema-nacional-de-catastro/", "httpStatus": null, "outcome": "National registry agency prose was found, but it does not evidence a Salinas local parcel viewer/API or anonymous geometry route; treated as general national agency context only."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "Municipal site HTML, official cadastral ordinance, official Registro de la Propiedad login shell, IEDG viewer link and IGM AFC viewer shell were inspected.",
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "compositeKeyProvenance": "Municipal ordinance describes a local cadastral code composed from administrative, zone, sector, manzana/poligono, predio and property-horizontal/division components, but no parcel feature record was obtained to validate a composite key.",
+    "boundedAnonymousResponse": null
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if exposed", "polygon geometry if exposed", "source service URL", "source CRS", "requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "A local cadastral custodian is evidenced, but no anonymous parcel layer, schema, native identity, CRS or bounded geometry response was obtained."},
+  "scopeLimits": [
+    "The exact WUP point was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point parcel query succeeded; this is not evidence of citywide absence.",
+    "No full parcel polygons are retained because no safe native-identity geometry response was obtained.",
+    "The GAD Municipal del Cantón Salinas and Unidad de Catastro y Avalúos are treated as the local cadastral custodian; IEDG, IGM and Registrospublicos are national/general agency routes and are not treated as local parcel custodians.",
+    "The Registro de la Propiedad login wall and IEDG HTTP 403 were not bypassed.",
+    "The packet is complete as a research record, not source integration or runtime admission."
+  ],
+  "uncertainty": "The local municipal cadastral mandate and coding model are documented, but the current public parcel viewer/API, native parcel identity, field schema, CRS, anonymous query behavior and citywide geometry coverage remain unresolved."
+}

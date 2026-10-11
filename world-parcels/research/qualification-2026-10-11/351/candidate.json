@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "city": {
+    "code": "351",
+    "name": "Pasto",
+    "point": [
+      -77.2772679864238,
+      1.2089443727064
+    ]
+  },
+  "descriptor": {
+    "id": "co-pasto-urban-parcels",
+    "name": "Pasto urban cadastral parcels (IGAC 2021 base)",
+    "adapter": "arcgis",
+    "endpoint": "https://geoportal.pasto.gov.co/server/rest/services/Planeacion/Mapa_base_registro_de_descargas/MapServer/29",
+    "idField": "codigo_predial_nacional",
+    "idType": "string",
+    "idPattern": "^[0-9]{30}$",
+    "objectIdField": "objectid",
+    "idPrefix": "CO-PASTO-URBAN-",
+    "outFields": [
+      "objectid",
+      "codigo_predial_nacional"
+    ],
+    "pageSize": 1000,
+    "idBatchSize": 80,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "boundsQueryMode": "offset",
+    "idsQueryMode": "offset",
+    "queryFormat": "geojson",
+    "countryCode": "CO",
+    "metricSrid": 32618,
+    "cityIds": [
+      "351"
+    ],
+    "scope": "Urban cadastral base for the municipality of Pasto, within the urban perimeter approved by the applicable POT. Layer description states IGAC open data obtained in 2021; rural parcels are separate layers.",
+    "attribution": "Instituto Geográfico Agustín Codazzi - IGAC; Alcaldía de Pasto Geoportal",
+    "catalogueUrl": "https://geoportal.pasto.gov.co/server/rest/services/Planeacion/Mapa_base_registro_de_descargas/MapServer/29",
+    "capabilities": {
+      "point": false,
+      "exactId": true,
+      "bbox": true,
+      "areaEnumeration": true,
+      "geometry": "full-wgs84"
+    }
+  },
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "https://geoportal.pasto.gov.co/server/rest/services/Planeacion/Mapa_base_registro_de_descargas/MapServer/29: first-party description identifies the cadastral base on urban land within the municipality and the urban perimeter approved by the POT; IGAC open data obtained in 2021. See evidence/official-layer-metadata.json.",
+      "https://geoportal.pasto.gov.co/server/rest/services/Planeacion/Mapa_base_registro_de_descargas/MapServer: first-party serviceDescription is Mapa base del municipio de Pasto, and layer 29 is Predios urbanos. This establishes purpose and municipality scope, without claiming citywide completeness. See evidence/official-service-metadata.json."
+    ]
+  },
+  "sourceCandidateSha256": "bf62159a8be7d9dd2ff6da1f98f93dd7f8be82668b8fd45a01f2235648bf638f",
+  "qualificationRecordedSha256": "bf62159a8be7d9dd2ff6da1f98f93dd7f8be82668b8fd45a01f2235648bf638f",
+  "sourceCandidatePath": "qualification/evidence/cities/351/candidate.json",
+  "originalSeedSha256": "bf62159a8be7d9dd2ff6da1f98f93dd7f8be82668b8fd45a01f2235648bf638f",
+  "originalSeedPath": "qualification/evidence/cities/351/candidate.json"
+}

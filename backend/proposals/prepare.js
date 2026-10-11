@@ -1,11 +1,11 @@
-// Prepared publication artifacts (projections.md §3). A proposal is prepared ONCE, before anything is
-// uploaded or minted: the server materialises what it derives (a corridor's land, from its lanes, in
-// its own operation frame), binds the site to the cadastre, hashes it, and SIGNS the result (an HMAC
-// over its digest and the time it was prepared, with the server's PREPARE_SIGNING_KEY). Metadata
-// upload, minting and POST /proposals then all carry that exact artifact, and publication verifies the
-// signature and stores the artifact beside the row — a re-derivation at publish only VALIDATES it.
-// Without this, a 0.16 mm shift across a rounding boundary between what was minted and what was stored
-// changes the on-chain site hash.
+// Prepared artifacts for ordinary server publication (projections.md §3). POST /proposals/prepare
+// materialises corridor land from its lanes in the server's operation frame, binds the site to the
+// cadastre, hashes the artifact and signs it with PREPARE_SIGNING_KEY. A normal /proposals upload
+// carries that reference and artifact; publication verifies and stores them beside the row, and
+// re-derivation validates rather than replaces the committed geometry. Chain minting has an
+// independent path: the browser builds the authored site, binding, cadastral snapshot and consent
+// list into immutable metadata, and /proposals/mirror validates that record from {chainRef}. It does
+// not use this signing key or require a prepared artifact.
 //
 // Preparing stores nothing: an unbounded free call that wrote a row each time was a way to fill the
 // disk. Only a published proposal's artifact is kept (consensus.proposal_prepared). The signing key is

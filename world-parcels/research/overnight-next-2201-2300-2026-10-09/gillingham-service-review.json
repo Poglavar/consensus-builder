@@ -1,0 +1,29 @@
+{
+  "cityRecord": "city-6365-gillingham.json",
+  "cityCode": 6365,
+  "queueRank": 2256,
+  "name": "Gillingham",
+  "country": "United Kingdom",
+  "countryCode": "GB",
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": null,
+  "serviceReview": {
+    "candidate": "HM Land Registry INSPIRE Index Polygons, with Medway Council local-authority download",
+    "firstParty": true,
+    "custodianType": "national agency; no city/local registry custodian evidenced",
+    "viewerOrApi": "HM Land Registry download service is documented as GML files; Medway's public Cadcorp map UI was also inspected.",
+    "schemaCrs": "Not obtained from a parcel response in this attempt; no geometry sample retained.",
+    "safeFieldAllowlist": ["Land Registry-INSPIRE ID", "geometry"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax", "account", "personal data"],
+    "requestOutcomes": "HM Land Registry guidance returned 200; current INSPIRE download endpoint looped redirects; Medway map returned 200 but did not expose a verified parcel query response.",
+    "scopeLimits": "National England-and-Wales registered freehold subset, indicative only; no citywide Gillingham coverage established.",
+    "qualification": "Held. A serial reviewer must independently qualify a real adapter and a bounded native-ID-plus-geometry response before runtime admission."
+  },
+  "sampleGeojson": null,
+  "uncertainty": [
+    "A zero exact-point hit, map UI limitation, or download redirect loop is not evidence of citywide absence.",
+    "The WUP point is preserved exactly as [51.3717534761445, 0.53998883337219] in latitude/longitude order.",
+    "No synthetic identity or raw source attribute set was retained."
+  ]
+}

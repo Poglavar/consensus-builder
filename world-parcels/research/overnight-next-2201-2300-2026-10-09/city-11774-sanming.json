@@ -1,0 +1,121 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 11774,
+  "queueRank": 2298,
+  "name": "Sanming",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [26.2453255440308, 117.611365240127],
+  "population2025": 253572,
+  "population2025k": 253.572,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sanming China official cadastral parcel map land registry GIS natural resources bureau",
+        "result": "Searches did not establish a Sanming-specific anonymous parcel feature service. First-party Sanming material confirms the local Natural Resources Bureau and registration service, while official mapping references describe public Tianditu routes generally. No parcel ID+geometry response was verified.",
+        "actualResultUrls": [
+          "https://www.sm.gov.cn/wz/hdjlzsk/gtj/chdlxxgl_28291/202412/t20241202_2082850.htm",
+          "https://www.sm.gov.cn/zw/ztzl/zhlwgzlslbrw/zcwj_21979/202012/t20201209_1601133.htm"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "三明市 自然资源局 不动产登记 地籍图 宗地图 查询 服务",
+        "result": "First-party results identify the Sanming Real Estate Registration Center, local Natural Resources Bureau, online registration/service references, and a public Tianditu·Sanming route reference. No Sanming-specific public cadastral viewer configuration, schema, CRS, or anonymous parcel geometry endpoint was established.",
+        "actualResultUrls": [
+          "https://www.sm.gov.cn/wz/hdjlzsk/gtj/chdlxxgl_28291/202412/t20241202_2082850.htm",
+          "https://www.sm.gov.cn/zw/ztzl/zhlwgzlslbrw/zcwj_21979/202012/t20201209_1601133.htm",
+          "https://www.fjsx.gov.cn/zwgk/gggs/202211/P020221125583978552718.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "basis": "A first-party Sanming Municipal Government page sourced to the Sanming Natural Resources Bureau directs the public to the Sanming Administrative Service Center's Real Estate Registration Center windows for real-estate archive queries and certificate collection. A separate first-party Sanming government notice identifies the bureau and its Real Estate Registration Center service channel.",
+    "urls": [
+      "https://www.sm.gov.cn/wz/hdjlzsk/gtj/chdlxxgl_28291/202412/t20241202_2082850.htm",
+      "https://www.sm.gov.cn/zw/ztzl/zhlwgzlslbrw/zcwj_21979/202012/t20201209_1601133.htm"
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.sm.gov.cn/wz/hdjlzsk/gtj/chdlxxgl_28291/202412/t20241202_2082850.htm",
+      "observation": "First-party Sanming government FAQ, sourced to the Natural Resources Bureau, identifies the local Real Estate Registration Center and in-person real-estate archive query service; no parcel geometry or public API is exposed."
+    },
+    {
+      "url": "https://www.sm.gov.cn/zw/ztzl/zhlwgzlslbrw/zcwj_21979/202012/t20201209_1601133.htm",
+      "observation": "First-party Sanming government notice identifies the local Natural Resources Bureau, Sanming Real Estate service channels, and online handling/query references; it does not expose safe parcel geometry."
+    },
+    {
+      "url": "https://www.fjsx.gov.cn/zwgk/gggs/202211/P020221125583978552718.pdf",
+      "observation": "Official Fujian/Sanming-area natural-resources notice references the Tianditu·Shaxian online geospatial service route, but this is general/public mapping context and does not establish a Sanming city cadastral parcel layer or response schema."
+    }
+  ],
+  "routes": [
+    {
+      "method": "GET/search",
+      "url": "https://www.sm.gov.cn/wz/hdjlzsk/gtj/chdlxxgl_28291/202412/t20241202_2082850.htm",
+      "httpStatus": 200,
+      "outcome": "Official local-government page retrieved; local registration-center custodian evidenced, no geometry."
+    },
+    {
+      "method": "GET/search",
+      "url": "https://www.sm.gov.cn/zw/ztzl/zhlwgzlslbrw/zcwj_21979/202012/t20201209_1601133.htm",
+      "httpStatus": 200,
+      "outcome": "Official local-government notice retrieved; local bureau and registration service channels evidenced, no geometry."
+    },
+    {
+      "method": "GET/search",
+      "url": "https://www.fjsx.gov.cn/zwgk/gggs/202211/P020221125583978552718.pdf",
+      "httpStatus": 200,
+      "outcome": "Official regional notice retrieved; Tianditu·Shaxian public mapping reference found, but no Sanming parcel endpoint or safe parcel response."
+    },
+    {
+      "method": "GET",
+      "url": "https://fujian.tianditu.gov.cn/sm/",
+      "httpStatus": 0,
+      "outcome": "Candidate Sanming Tianditu route timed out during bounded anonymous retrieval; no map configuration, schema, CRS, or parcel response was obtained. Timeout is not evidence of citywide absence."
+    },
+    {
+      "method": "GET",
+      "url": "http://fujian.tianditu.gov.cn/sm/",
+      "httpStatus": 0,
+      "outcome": "Candidate HTTP route did not yield a bounded response before timeout; no credentials, CAPTCHA, or bypass was used. No parcel response obtained."
+    },
+    {
+      "method": "GET",
+      "url": "http://fujian.tianditu.gov.cn/smshaxian/",
+      "httpStatus": 0,
+      "outcome": "Regional Tianditu route did not yield a bounded response before timeout; retained only as an attempted route, not as evidence of absence."
+    }
+  ],
+  "schemaAndCrs": {
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "observedSchema": "No parcel feature schema or geometry response returned."
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if independently verified", "polygon geometry", "source service URL", "CRS", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "resultCategory": "city_registry_found_no_public_parcel_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "Sanming local registration custodian and Fujian/Sanming public geospatial routes discovered through first-party sources.",
+    "verifiedOpenScope": "No anonymous city-bounded parcel feature response was retrieved; no CRS, schema, native parcel identity, or safe polygon sample was available.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "The local registration center or provincial platform may expose additional map functionality behind permitted authentication or through an undiscovered route. A zero exact-point result, map extent miss, timeout, unavailable route, or authentication boundary would not establish citywide absence. Packet completion records research attempts only and is not source integration or admission."
+}

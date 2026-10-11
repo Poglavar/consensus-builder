@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "wupCityCode": 3870,
+  "queueRank": 2107,
+  "cityId": "wup2025:3870",
+  "name": "Morbi",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "capital": false,
+  "point": [22.8118169992892, 70.8475791252109],
+  "centerLatLon": [22.8118169992892, 70.8475791252109],
+  "population2025": 275191,
+  "population2025k": 275.191,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted",
+  "nativeIdReadiness": "not_ready_no_verified_anonymous_parcel_response",
+  "runtimeReadiness": "held",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Morbi Gujarat official cadastral parcel map GIS land records site:gov.in",
+        "result": "Found the official District Morbi land-records page, the Gujarat AnyRoR portal link, the Government of India DILRMP map-digitization status page for Morbi district, and the national NAKSHA programme page. No anonymous public parcel geometry endpoint was established.",
+        "actualResultUrls": [
+          "https://morbi.nic.in/service/land-records/",
+          "https://anyror.gujarat.gov.in/",
+          "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/3836",
+          "https://naksha.dolr.gov.in/NakshaPortal/"
+        ]
+      },
+      {
+        "language": "Gujarati",
+        "query": "મોરબી ગુજરાત સત્તાવાર જમીન નકશો કેડાસ્ટ્રલ પાર્સલ રેકોર્ડ",
+        "result": "Found the official Gujarati District Morbi land-records page. It states that Gujarat cadastral surveying was completed in 1960 and that computerized land records and mutation work are handled through taluka e-Dhara centres; it points to AnyRoR. No anonymous public parcel geometry endpoint was established.",
+        "actualResultUrls": [
+          "https://morbi.nic.in/gu/service/%E0%AA%B2%E0%AB%87%E0%AA%A8%E0%AB%8D%E0%AA%A1-%E0%AA%B0%E0%AB%87%E0%AA%95%E0%AB%8B%E0%AA%B0%E0%AB%8D%E0%AA%A1/",
+          "https://anyror.gujarat.gov.in/"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://morbi.nic.in/service/land-records/",
+      "operator": "District Morbi, Government of Gujarat; district land-records/e-Dhara information",
+      "scope": "local/district land-record custodian and procedure",
+      "observation": "Official page says the statewide cadastral survey was completed in 1960, land records are updated through computerized applications at each taluka e-Dhara centre, and computerized RoR/mutation services are available through the Mamlatdar office. It links to AnyRoR and lists VF7, VF8A and VF6 record types. No geometry or API was exposed in the page inspected."
+    },
+    {
+      "url": "https://morbi.nic.in/gu/service/%E0%AA%B2%E0%AB%87%E0%AA%A8%E0%AB%8D%E0%AA%A1-%E0%AA%B0%E0%AB%87%E0%ક%AC%E0%AA%B0%E0%AB%8D%E0%AA%A1/",
+      "operator": "District Morbi, Government of Gujarat; Gujarati land-records information",
+      "scope": "local/district land-record custodian and procedure",
+      "observation": "Gujarati first-party page repeats the cadastral survey, computerized e-Dhara record maintenance and official AnyRoR route. No safe anonymous parcel geometry response was exposed."
+    },
+    {
+      "url": "https://anyror.gujarat.gov.in/",
+      "operator": "Revenue Department, Government of Gujarat",
+      "scope": "state land-record portal, including rural/urban record workflows",
+      "observation": "Official URL was reached by the Morbi district page, but the anonymous HTTPS request timed out during this attempt; no login, CAPTCHA bypass, credentials or unsafe fields were used."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/3836",
+      "operator": "Department of Land Resources, Government of India",
+      "scope": "national map-digitization status/reporting, not a city parcel API",
+      "observation": "Search result identifies Gujarat / Morbi map-digitization status. It is evidence about programme reporting only, not a verified downloadable parcel layer or citywide anonymous geometry service."
+    },
+    {
+      "url": "https://naksha.dolr.gov.in/NakshaPortal/",
+      "operator": "Department of Land Resources, Government of India",
+      "scope": "national urban land-record modernization programme",
+      "observation": "Public programme page loaded, but no Morbi-specific safe parcel ID+geometry response was obtained."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {"url": "https://morbi.nic.in/service/land-records/", "method": "GET", "status": "HTTP 200", "summary": "Official English district land-records page loaded; HTML inspected for public service links and geometry/API references."},
+    {"url": "https://morbi.nic.in/gu/service/%E0%AA%B2%E0%AB%87%E0%AA%A8%E0%AF%8D%E0%AE%9F-%E0%AE%B0%E0%AF%87%E0%AE%95%E0%AF%8D%E0%AE%95%E0%AF%8B%E0%AE%B0%E0%AF%8D%E0%AE%9F%E0%AF%8D/", "method": "GET", "status": "HTTP 200", "summary": "The first Gujarati URL spelling was not used in the request record; the actual Gujarati page URL is recorded in officialAndRelevantLeads and freshResearch. It loaded HTTP 200 during discovery."},
+    {"url": "https://anyror.gujarat.gov.in/", "method": "GET", "status": "timeout after 20 seconds", "summary": "Official portal did not return within the bounded anonymous request; no retry escalation or authentication attempted."},
+    {"url": "https://e-milkat.gujarat.gov.in/", "method": "GET", "status": "timeout after 12 seconds", "summary": "Potential urban property-card route did not return within the bounded anonymous request; no credentials or bypass attempted."},
+    {"url": "https://naksha.dolr.gov.in/NakshaPortal/", "method": "GET", "status": "HTTP 200", "summary": "National NAKSHA programme page loaded; no Morbi-specific parcel response was requested or retained."},
+    {"url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/3836", "method": "GET", "status": "TLS verification failure in curl", "summary": "The Government of India status URL was identified in first-party search. The local curl certificate chain rejected the host; TLS verification was not disabled and no exception was used. Search result content was recorded only as programme-status evidence."}
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Morbi district land-record custody and Gujarat state land-record procedures are evidenced; no anonymous citywide parcel geometry scope is verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier if publicly exposed", "geometry", "source layer name", "CRS", "service URL", "retrieval timestamp"],
+  "unsafeFieldsExcluded": ["owner", "address", "contact", "titleholder", "tax/account details", "personal identifiers", "mutation-party details"],
+  "sourceIds": [],
+  "blocker": "No safe anonymous Morbi parcel response containing a native stable ID and geometry was verified. The official district pages provide custodian/procedure evidence; AnyRoR and e-Milkat timed out; national pages are not Morbi parcel APIs.",
+  "remainingUncertainty": "The official e-Dhara/AnyRoR and city-survey workflows may expose record data interactively or behind CAPTCHA/session steps, and DILRMP/Naksha programme material may have additional map coverage. These were not treated as open machine-readable parcel geometry, and no exact-point hit or miss was used as a citywide conclusion.",
+  "nextStep": "Retry the official Gujarat land-record services when available and inspect only public geometry-plus-ID responses; separately verify any Morbi-specific NAKSHA or cadastral map service without authentication or unsafe fields.",
+  "resultCategory": "official_local_registry_and_state_land_records_no_verified_open_geometry",
+  "runtimeEligible": false
+}

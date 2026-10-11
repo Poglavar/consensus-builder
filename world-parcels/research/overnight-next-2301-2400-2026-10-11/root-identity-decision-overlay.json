@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "kind": "root_identity_decision_overlay",
+  "cohort": "overnight-next-2301-2400",
+  "recordedAt": "2026-10-11T09:04:41.689Z",
+  "decisions": [
+    {
+      "wupCityCode": 4,
+      "rank": 2331,
+      "countryCode": "CA",
+      "name": "Victoria",
+      "decision": "different_settlement",
+      "effectiveAttemptState": "pending",
+      "candidatePointLatLon": [
+        48.445978670856,
+        -123.360034699349
+      ],
+      "populationPersons": 250244,
+      "priorCityId": "capital:SC:victoria",
+      "priorPointLatLon": [
+        -4.6191,
+        55.4513
+      ],
+      "reason": "The original UN WUP 2025 row identifies city code 4 as Victoria, Canada, at 48.445978670856 N, -123.360034699349 E with 250244 persons. The prior Victoria research explicitly identifies the Seychelles capital (SC), and its bounded official ArcGIS parcel sample lies around 55.45 E, -4.62 N. It is a namesake, not an attempt on the Canadian WUP settlement. Move the unchanged WUP4 row into pending research. Canadian parcel custody, public geometry and runtime qualification remain unresolved.",
+      "evidence": [
+        {
+          "path": "world-parcels/research/overnight-next-2301-2400-2026-10-11/root-identity-4-73-first-party-evidence.json",
+          "observation": "Original UN WUP row and geographically distinct official Seychelles parcel sample."
+        },
+        {
+          "path": "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+          "observation": "Immutable WUP rank, identity, point and population."
+        },
+        {
+          "path": "world-parcels/research/africa-capitals-2026-10-08/city-victoria.json",
+          "observation": "Prior city packet identifies Seychelles capital:SC:victoria."
+        },
+        {
+          "path": "world-parcels/research/africa-capitals-2026-10-08/victoria-safe-sample.geojson",
+          "observation": "Bounded official Seychelles ArcGIS polygon with safe native parcel ID."
+        }
+      ]
+    },
+    {
+      "wupCityCode": 73,
+      "rank": 2367,
+      "countryCode": "SI",
+      "name": "Ljubljana",
+      "decision": "confirmed_attempt",
+      "effectiveAttemptState": "attempted",
+      "candidatePointLatLon": [
+        46.0600747905532,
+        14.5096086691634
+      ],
+      "populationPersons": 246671,
+      "priorCityId": "capital:SI:ljubljana",
+      "priorPointLatLon": [
+        46.05,
+        14.516667
+      ],
+      "reason": "The original UN WUP 2025 row identifies city code 73 as Ljubljana, Slovenia, at 46.0600747905532 N, 14.5096086691634 E with 246671 persons. The previous capital roster marks Ljubljana SI previously checked, and the dated live-source acceptance records bounded HTTP 200 first-party GURS WFS parcel responses and native EID_PARCELA values in central Ljubljana. The city configuration already binds that source. This is a confirmed prior city investigation, so WUP73 remains excluded from pending research. The WUP identity remains unchanged; this classification does not requalify or newly admit the live adapter.",
+      "evidence": [
+        {
+          "path": "world-parcels/research/overnight-next-2301-2400-2026-10-11/root-identity-4-73-first-party-evidence.json",
+          "observation": "Original UN WUP row and bounded first-party GURS WFS response details."
+        },
+        {
+          "path": "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+          "observation": "Immutable WUP rank, identity, point and population."
+        },
+        {
+          "path": "world-parcels/research/db-city-wfs-live-2026-10-03.json",
+          "observation": "Prior bounded GURS WFS read and native-ID acceptance."
+        },
+        {
+          "path": "world-parcels/research/world-capitals-2026-10-08/roster.json",
+          "observation": "Previously checked Ljubljana SI capital record."
+        },
+        {
+          "path": "frontend/js/city-config.js",
+          "observation": "Existing Ljubljana runtime source binding, not a new admission."
+        }
+      ]
+    }
+  ],
+  "scope": "Prior-attempt identity only; no parcel custody, citywide coverage, absence or runtime-admission conclusion."
+}

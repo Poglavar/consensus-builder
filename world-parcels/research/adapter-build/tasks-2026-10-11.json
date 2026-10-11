@@ -1,0 +1,592 @@
+{
+  "schemaVersion": 1,
+  "tasks": [
+    {
+      "taskId": "shapefile-snapshot",
+      "sourceId": "jp-takasaki-parcel-map",
+      "protocol": "shapefile-zip",
+      "requiredBehavior": "Implement one bounded full Shapefile ZIP snapshot reader with verified member selection, native safe DBF identities, source CRS conversion EPSG:6677 and EPSG:2154, exact IDs, explicit absence, bbox and geometry contracts. Per-publisher derived descriptors must prove archive completeness and revision; do not interpret missing network bbox as inability to index a complete snapshot.",
+      "qualificationSeeds": [
+        {
+          "cityCode": "5785",
+          "candidatePath": "tmp/parcel-qualification/cities/5785/attempt-01/candidate.json",
+          "candidateSha256": "8bfbc57624fb8635b335a3b5a750c6b3024b6aa70b5a07e4c8b78e76d24b5c5a"
+        },
+        {
+          "cityCode": "5992",
+          "candidatePath": "tmp/parcel-qualification/cities/5992/attempt-01/candidate.json",
+          "candidateSha256": "3b14d25a2780c9347057a4054d28b3ac65355b6f31a8d5881b83729d4bcc82d7"
+        },
+        {
+          "cityCode": "3893",
+          "candidatePath": "tmp/parcel-qualification/cities/3893/attempt-01/candidate.json",
+          "candidateSha256": "3b6b013a56fb8a10017ac569772e4789cede792474b088914921593499f8393a"
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "cityCode": "5785",
+          "descriptor": {
+            "id": "jp-takasaki-parcel-map",
+            "name": "Takasaki City parcel-number map polygons",
+            "adapter": "shapefile-snapshot",
+            "endpoint": "https://www.city.takasaki.gunma.jp/uploaded/attachment/42714.zip",
+            "countryCode": "JP",
+            "cityIds": [
+              "5785"
+            ],
+            "idPrefix": "JP-TAKASAKI-FUDEID-",
+            "idField": "FUDEID",
+            "idFields": [
+              "FUDEID"
+            ],
+            "idType": "integer",
+            "outFields": [
+              "FUDEID"
+            ],
+            "sourceCrs": "EPSG:6677",
+            "metricSrid": 32654,
+            "returnsWGS84": false,
+            "capabilities": {
+              "areaEnumeration": true
+            },
+            "maxFeatures": 10000,
+            "maxSnapshotBytes": 83886080,
+            "maxSnapshotFeatures": 600000,
+            "defaultForCity": false
+          },
+          "classification": {
+            "isParcel": true,
+            "evidence": [
+              "Frozen city packet identifies Takasaki City Asset Tax Division as publisher of citywide parcel-number polygons, with FUDEID documented as parcel geometry management number.",
+              "https://www.city.takasaki.gunma.jp/page/5424.html defines the cadastral map as drawings of land in Takasaki City and links its parcel-number map Shapefile publication.",
+              "https://www.city.takasaki.gunma.jp/page/3130.html links the parcel polygon ZIP and official schema; https://www.city.takasaki.gunma.jp/uploaded/attachment/42707.pdf specifies 筆ポリゴン_地番図.shp, FUDEID and Japan Plane Rectangular CS IX (JGD2011)."
+            ]
+          }
+        },
+        {
+          "cityCode": "5992",
+          "descriptor": {
+            "id": "utsunomiya-city-chisekizu-2026",
+            "name": "Utsunomiya City 地籍図データ (2026-01-01)",
+            "adapter": "shapefile-zip",
+            "endpoint": "https://catalog.city.utsunomiya.tochigi.jp/dataset/cfb84636-4468-4051-ab14-ea3485653934/resource/85dcff85-23b0-4b30-95cc-c16f02f2bb73/download/01_01.zip",
+            "sourceUrl": "https://catalog.city.utsunomiya.tochigi.jp/dataset/chibannzu-070101",
+            "cityIds": [
+              "5992"
+            ],
+            "countryCode": "JP",
+            "idPrefix": "JP-UTSUNOMIYA-BUKKEN-",
+            "idField": "BUKKEN_NO",
+            "idFields": [
+              "BUKKEN_NO"
+            ],
+            "outFields": [
+              "BUKKEN_NO"
+            ],
+            "sourceCrs": "EPSG:6677",
+            "metricSrid": 32654,
+            "capabilities": {
+              "areaEnumeration": false,
+              "exactIdLookup": false,
+              "pointLookup": false,
+              "geometryLookup": false
+            },
+            "maxFeatures": 10000,
+            "maxBboxKm2": 25,
+            "scope": "Official catalog claims all Utsunomiya City; this endpoint is split 01 only. No citywide completeness verified."
+          },
+          "classification": {
+            "isParcel": true,
+            "evidence": [
+              "The frozen packet and official city publication https://www.city.utsunomiya.lg.jp/kurashi/zeikin/koteishisanzei/1041437.html describe a map based on Legal Affairs Bureau public maps for fixed-asset-tax assessment, depicting land parcel numbers. Its cadastral reference purpose is explicit; legal boundary and rights certification are disclaimed.",
+              "The frozen packet and official catalog https://catalog.city.utsunomiya.tochigi.jp/dataset/chibannzu-070101 explicitly identify the geographic scope as all Utsunomiya City, Shapefile-only publication, and JGD2011 Japan Plane Rectangular CS IX. Split 01 yielded BUKKEN_NO parcel polygons in the frozen review; retained sample integrity is verified."
+            ]
+          }
+        },
+        {
+          "cityCode": "3893",
+          "descriptor": {
+            "id": "fr-mmm-montpellier-cadastre",
+            "name": "Montpellier municipal PCI cadastral parcels",
+            "adapter": "shapefile-snapshot",
+            "endpoint": "https://data.montpellier3m.fr/sites/default/files/ressources/MMM_Montpellier_Cadastre.zip",
+            "sourceLayer": "parcelle_Layer",
+            "sourceFormat": "shapefile-zip",
+            "sourceCrs": "EPSG:2154",
+            "idField": "Codeident",
+            "idFields": [
+              "Codeident"
+            ],
+            "idPrefix": "FR-MMM-MONTPELLIER-CODEIDENT-",
+            "outFields": [
+              "Codeident"
+            ],
+            "countryCode": "FR",
+            "cityIds": [
+              "3893"
+            ],
+            "metricSrid": 32631,
+            "maxSnapshotBytes": 33554432,
+            "maxSnapshotFeatures": 50000,
+            "maxFeatures": 10000,
+            "maxBboxKm2": 25,
+            "capabilities": {
+              "areaEnumeration": true,
+              "snapshotDownload": true,
+              "runtimeAdapterSupported": false
+            },
+            "catalogueUrl": "https://data.montpellier3m.fr/dataset/cadastre-de-montpellier",
+            "licenceUrl": "https://www.etalab.gouv.fr/licence-ouverte-open-licence/",
+            "scope": "Official Montpellier municipal compilation of DGFiP PCI vector cadastral geographic data; parcel layer in the authority Shapefile ZIP.",
+            "descriptorState": "review-proposal-unsupported-adapter",
+            "idCodec": "encodeSnapshotNativeId([Codeident]) from production geojson-snapshot-source.js; preserve interior spaces"
+          },
+          "classification": {
+            "isParcel": true,
+            "evidence": [
+              "The frozen city packet identifies MMM_MTP_Cadastre as a municipal compilation of the DGFiP PCI vector cadastral plan for Montpellier, with parcelle_Layer and source-native Codeident values; the official dataset page confirms the cadastral purpose and Ville de Montpellier geographic scope: https://data.montpellier3m.fr/dataset/cadastre-de-montpellier",
+              "The first-party resource page lists parcelle_Layer.shp, parcelle_Layer.dbf and parcelle_Layer.prj in the authority archive, proving an actual parcel layer beyond dataset keywords: https://data.montpellier3m.fr/dataset/cadastre-de-montpellier/resource/bb1b3ef2-1577-45eb-b850-4d610ebb6940"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "taskId": "large-geojson-snapshot",
+      "sourceId": "jp-moj-geospatial-2026",
+      "protocol": "geojson-snapshot",
+      "requiredBehavior": "Support bounded complete loading/indexing of the official 323 MB snapshot without treating partial ranges as complete; enforce disk/memory/feature budgets and immutable revision/hash. Verify real source vintage and duplicate native identities; reject genuinely conflicting polygons without repair.",
+      "qualificationSeeds": [
+        {
+          "cityCode": "3739",
+          "candidatePath": "tmp/parcel-qualification/cities/3739/attempt-01/candidate.json",
+          "candidateSha256": "a670549bee07a2663d24b402a8bb5819904f59d58d3cba5a4444630c25fe7480"
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "cityCode": "3739",
+          "descriptor": {
+            "id": "jp-moj-geospatial-2026",
+            "name": "MOJ public-coordinate registry-map extract — Matsuyama, catalog 2026",
+            "adapter": "geojson-snapshot",
+            "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/38/aigid-moj-38201/38201_%E6%9D%BE%E5%B1%B1%E5%B8%82_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%994%E7%B3%BB_%E7%AD%86R_2026.geojson",
+            "idPrefix": "JP-MOJ-2026-",
+            "idFields": [
+              "市区町村C",
+              "地図名",
+              "ID"
+            ],
+            "outFields": [
+              "市区町村C",
+              "地図名",
+              "ID"
+            ],
+            "idNamespace": {
+              "field": "市区町村C",
+              "value": "38201"
+            },
+            "maxSnapshotBytes": 3145728,
+            "maxSnapshotFeatures": 3000,
+            "maxFeatures": 10000,
+            "maxBboxKm2": 25,
+            "expectedEtag": "\"ec247765d854a5d699945ff72b8bf466-39\"",
+            "countryCode": "JP",
+            "cityIds": [
+              "3739"
+            ],
+            "metricSrid": 32653,
+            "capabilities": {
+              "point": false,
+              "exactId": true,
+              "bbox": true,
+              "areaEnumeration": true,
+              "geometry": "full-wgs84"
+            },
+            "catalogueUrl": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-38201",
+            "attribution": "Ministry of Justice registry-map data; AIGID / Geospatial Information Center conversion.",
+            "licenceNote": "Catalog lists CCZero; underlying MOJ terms and conversion conditions require separate primary review.",
+            "scope": "Published Matsuyama municipality 38201 public-coordinate maps only; no citywide coverage claim. Catalog path labels 2026 while collection name labels 2025."
+          },
+          "classification": {
+            "isParcel": true,
+            "evidence": [
+              "Frozen city packet identifies aigid-moj-38201 as the Ministry of Justice registry-office map extract for Matsuyama municipality 38201. The live first-party conversion-publisher catalog https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-38201 is titled 愛媛県-松山市 and states 法務省により公開されている登記所備付地図データを; its public-coordinate GeoJSON resource matches the frozen download URL. Evidence: evidence/source-inspection.json.",
+              "The frozen packet and Matsuyama official cadastral page https://www.city.matsuyama.ehime.jp/kurashi/kurashi/jutaku/tochi/chiseki/chiseki.html identify cadastral maps as individual parcel-boundary surveys and document forwarding certified maps to registry offices and keeping city copies. The publisher explicitly converts only maps with public coordinates; this evidence establishes parcel purpose and municipal scope, not comprehensive city coverage."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "taskId": "hessen-gml-wfs",
+      "sourceId": "hessen-alkis-vereinfacht-wfs",
+      "protocol": "gml-wfs",
+      "requiredBehavior": "Build official Hessen ave:Flurstueck GML3.2 profile, safe oid/geometrie properties only, projected axis order EPSG:25832, exact-ID XML filters and actual unpaged complete count evidence.",
+      "qualificationSeeds": [
+        {
+          "cityCode": "2998",
+          "candidatePath": "tmp/parcel-qualification/cities/2998/attempt-01/candidate.json",
+          "candidateSha256": "aa5dcad6fc393da68888d217090299090339f2d412787fb408174294d3fc6841"
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "cityCode": "2998",
+          "descriptor": {
+            "id": "hessen-alkis-vereinfacht-wfs",
+            "adapter": "gml-wfs",
+            "name": "Hessen simplified ALKIS cadastral parcels",
+            "endpoint": "https://www.gds.hessen.de/wfs2/aaa-suite/cgi-bin/alkis/vereinf/wfs",
+            "version": "2.0.0",
+            "featureType": "ave:Flurstueck",
+            "idField": "oid",
+            "geometryField": "geometrie",
+            "responseCrs": "EPSG:25832",
+            "idPrefix": "DE-HE-",
+            "idType": "string",
+            "parcelNumberField": "oid",
+            "outFields": [
+              "oid"
+            ],
+            "countryCode": "DE",
+            "cityIds": [
+              "wiesbaden"
+            ],
+            "metricSrid": 32632,
+            "maxBboxKm2": 1,
+            "pageSize": 50,
+            "maxFeatures": 300,
+            "maxResponseBytes": 1048576,
+            "maxTotalResponseBytes": 8388608,
+            "timeoutMs": 12000,
+            "capabilities": {
+              "areaEnumeration": true
+            },
+            "operator": "Hessisches Landesamt für Bodenmanagement und Geoinformation",
+            "scope": "State ALKIS cadastral parcels; frozen bounded Wiesbaden samples. Citywide completeness is unverified."
+          },
+          "classification": {
+            "isParcel": true,
+            "evidence": [
+              "Official Hessen WFS GetCapabilities identifies WFS HE ALKIS Vereinfacht and states: Das Liegenschaftskataster wird in elektronischer Form im Amtlichen Liegenschaftskatasterinformationssystem (ALKIS) geführt. The service lists cadastral Flurstücke and exposes ave:Flurstueck. See evidence/official-service-inspection.json.",
+              "The frozen city packet identifies the Hessian state cadastral authority and reports Wiesbaden municipality attributes in the bounded ave:Flurstueck response near the unchanged WUP locator. Its safe native oid sample polygons DEHE062000013CfcFL and DEHE062000013CfdFL are retained in the frozen sample input, whose expected SHA-256 is verified. This establishes bounded Wiesbaden parcel evidence, without a citywide coverage claim."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "taskId": "gdansk-gml-wfs",
+      "sourceId": "gdansk-gml-wfs",
+      "protocol": "gml-wfs",
+      "requiredBehavior": "Build the Gdansk municipal ms:dzialki GML profile from actual schema, EPSG:2177 geometry and ID_DZIALKI, safe XML filters, source counts and paging.",
+      "qualificationSeeds": [
+        {
+          "cityCode": "2093",
+          "candidatePath": "tmp/parcel-qualification/cities/2093/attempt-01/candidate.json",
+          "candidateSha256": "ce9721181478fc96d3ef9a232ef9617a289f8d0fefa7bf6fe22f7f0165c9dec4"
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "cityCode": "2093",
+          "descriptor": {
+            "id": "gdansk-gml-wfs",
+            "name": "Gdańsk municipal EGiB cadastral parcel polygons",
+            "adapter": "gml-wfs",
+            "endpoint": "https://ewid-wms.gdansk.gda.pl/iip/ows",
+            "featureType": "ms:dzialki",
+            "version": "2.0.0",
+            "idField": "ID_DZIALKI",
+            "geometryField": "geometry",
+            "responseCrs": "EPSG:2177",
+            "idPrefix": "PL-GDANSK-",
+            "idType": "string",
+            "parcelNumberField": "ID_DZIALKI",
+            "outFields": [
+              "ID_DZIALKI"
+            ],
+            "maxBboxKm2": 1,
+            "pageSize": 50,
+            "maxFeatures": 300,
+            "maxResponseBytes": 1048576,
+            "maxTotalResponseBytes": 8388608,
+            "timeoutMs": 12000,
+            "countryCode": "PL",
+            "metricSrid": 32634,
+            "cityIds": [
+              "2093"
+            ],
+            "maxConcurrentQueries": 1,
+            "capabilities": {
+              "areaEnumeration": true
+            },
+            "operator": "Urząd Miejski w Gdańsku",
+            "catalogueUrl": "https://ewid-wms.gdansk.gda.pl/iip/ows?service=WFS&request=GetCapabilities&version=2.0.0",
+            "attribution": "Urząd Miejski w Gdańsku — EGiB",
+            "scope": "Municipal parcel layer; frozen three-parcel local sample near the unchanged WUP point. No citywide completeness claim.",
+            "licenceNote": "Anonymous metadata and prior bounded safe parcel access documented; reuse licence and currentness not independently established."
+          },
+          "classification": {
+            "isParcel": true,
+            "evidence": [
+              "Frozen city-2093-gdansk.json and gdansk-service-review.json identify municipal EGiB custody, parcel type ms:dzialki, native ID_DZIALKI and three full cadastral parcel polygons near the Gdańsk WUP point.",
+              "First-party municipal GetCapabilities inspected on 2026-10-10 identifies the public service publisher as Urząd Miejski w Gdańsku and exposes ms:dzialki titled Działki; DescribeFeatureType confirms ID_DZIALKI and geometry. See evidence/source-inspection.json.",
+              "GUGiK EGiB documentation describes the cadastral registry, local-authority custody and national parcel identifiers: https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "taskId": "sosnowiec-gml-wfs",
+      "sourceId": "sosnowiec-gml-wfs",
+      "protocol": "gml-wfs",
+      "requiredBehavior": "Build the separate Sosnowiec webEwid GML profile from actual schema, source EPSG:2177 axis-order evidence, safe ID_DZIALKI exact queries, counts and paging; do not assume the Gdansk endpoint schema is interchangeable.",
+      "qualificationSeeds": [
+        {
+          "cityCode": "3234",
+          "candidatePath": "tmp/parcel-qualification/cities/3234/attempt-01/candidate.json",
+          "candidateSha256": "3877f06173ae563a8765a012be34433ea9b8fc46416886149d8fc4e7216ff09c"
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "cityCode": "3234",
+          "descriptor": {
+            "id": "sosnowiec-gml-wfs",
+            "name": "Sosnowiec municipal EGiB parcel polygons",
+            "adapter": "gml-wfs",
+            "endpoint": "https://sosnowiec.webewid.pl:9443/iip/ows",
+            "featureType": "ms:dzialki",
+            "version": "2.0.0",
+            "idField": "ID_DZIALKI",
+            "geometryField": "geometry",
+            "responseCrs": "EPSG:2177",
+            "idType": "string",
+            "idPrefix": "PL-SOSNOWIEC-",
+            "parcelNumberField": "ID_DZIALKI",
+            "outFields": [
+              "ID_DZIALKI"
+            ],
+            "pageSize": 50,
+            "maxFeatures": 1500,
+            "maxBboxKm2": 1,
+            "maxResponseBytes": 1048576,
+            "maxTotalResponseBytes": 8388608,
+            "timeoutMs": 12000,
+            "maxConcurrentQueries": 1,
+            "countryCode": "PL",
+            "cityIds": [
+              "sosnowiec"
+            ],
+            "metricSrid": 32634,
+            "operator": "Urząd Miejski w Sosnowcu / Wydział Geodezji i Kartografii",
+            "scope": "Municipal Sosnowiec cadastral parcel layer; source bounds cover the unchanged WUP locator. Citywide completeness is unverified.",
+            "catalogueUrl": "https://www.sosnowiec.pl/2023/07/aktualnosci/teraz-wniosek-o-dane-zgromadzone-w-zasobie-geodezyjnym-zlozysz-przez-profil-zaufany-lub-konto-bankowe/",
+            "licenceNote": "Anonymous metadata and frozen bounded parcel samples evidenced; reuse permission and currentness are not established."
+          },
+          "classification": {
+            "isParcel": true,
+            "evidence": [
+              "Frozen packet officialSources, registryBasis and sourceCandidate identify Sosnowiec municipal geodesy/cartography custody of EGiB parcels; official municipal announcement links sosnowiec.webewid.pl: https://www.sosnowiec.pl/2023/07/aktualnosci/teraz-wniosek-o-dane-zgromadzone-w-zasobie-geodezyjnym-zlozysz-przez-profil-zaufany-lub-konto-bankowe/",
+              "Verified official WFS GetCapabilities identifies Urząd Miejski w Sosnowcu public WMS/WFS and ms:dzialki (Działki); WGS84 bounds [19.0697905083279,50.2239033125785,19.3191645970775,50.3181698377559] contain the unchanged WUP locator. DescribeFeatureType confirms ID_DZIALKI and geometry: https://sosnowiec.webewid.pl:9443/iip/ows",
+              "Official GUGiK EGiB documentation identifies cadastral parcel geometry and county/city-county custody; frozen native IDs begin with the Sosnowiec cadastral unit 247501_1: https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "taskId": "hmlr-zip-member",
+      "sourceId": "gb-hmlr-inspire-index-portsmouth",
+      "protocol": "gml-snapshot",
+      "requiredBehavior": "Fix official HMLR ZIP member loading failure with bounded archive integrity and parser regression tests. Requalify unchanged geometry; material genuine source overlaps remain disqualifying even after adapter works.",
+      "qualificationSeeds": [
+        {
+          "cityCode": "5388",
+          "candidatePath": "tmp/parcel-qualification/cities/5388/attempt-01/candidate.json",
+          "candidateSha256": "370e7045b6c9b169b21f4819055c7fe104a546624b230bf1274fb84f19c31865"
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "cityCode": "5388",
+          "descriptor": {
+            "id": "gb-hmlr-inspire-index-portsmouth",
+            "name": "HM Land Registry INSPIRE Index Polygons, Portsmouth City Council",
+            "adapter": "gml-snapshot",
+            "endpoint": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Portsmouth_City_Council.zip",
+            "catalogueUrl": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+            "idField": "INSPIREID",
+            "idType": "string",
+            "idPattern": "^[0-9]+$",
+            "idPrefix": "GB-HMLR-PORTSMOUTH-",
+            "outFields": [
+              "INSPIREID"
+            ],
+            "parcelNumberField": "INSPIREID",
+            "cityIds": [
+              "5388"
+            ],
+            "countryCode": "GB",
+            "metricSrid": 32630,
+            "maxFeatures": 10000,
+            "maxBboxKm2": 25,
+            "maxSnapshotBytes": 25165824,
+            "maxDecompressedBytes": 167772160,
+            "maxSnapshotFeatures": 150000,
+            "expectedEtag": "\"cf9ab547d4691bd9c1264d27b930c992\"",
+            "capabilities": {
+              "areaEnumeration": true,
+              "exactIds": true,
+              "geometryQuery": true
+            },
+            "defaultForCity": false,
+            "scope": "Portsmouth City Council authority download; indicative extents and positions of registered freehold properties only.",
+            "attribution": "HM Land Registry INSPIRE Index Polygons, Crown copyright and database right. Adapted to WGS84.",
+            "licenceNote": "Frozen first-party review records Open Government Licence; terms remain informational and technical qualification does not authorize admission.",
+            "caveats": [
+              "Indicative registered-freehold index geometry, not definitive legal boundaries or a complete city cadastre.",
+              "Complete authority ZIP is indexed in bounded transient memory; bounds and geometry queries are local snapshot enumeration, not an upstream bbox API.",
+              "Production OSGB36 conversion uses a Helmert approximation, approximately 5 m accuracy, without OSTN15.",
+              "Frozen packet records source-native overlaps; all source polygons remain unchanged."
+            ]
+          },
+          "classification": {
+            "isParcel": true,
+            "evidence": [
+              "Frozen city-5388-portsmouth.json freshResearch.portals and source: HM Land Registry's official INSPIRE Index Polygons describe indicative extents/positions of registered freehold property. https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+              "Frozen portsmouth-service-review.json officialPrimarySources and geometryDecision: the official page links Portsmouth City Council's local-authority ZIP; GML PREDEFINED registry polygons use native INSPIREID and EPSG:27700, with native ID 30222163 covering the unchanged WUP point. https://use-land-property-data.service.gov.uk/datasets/inspire/download/Portsmouth_City_Council.zip",
+              "This is registered-freehold registry geometry, distinct from the council's local land-charge extent service. Packet limitations explicitly exclude complete legal-boundary or citywide coverage claims."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "taskId": "catastro-atom-snapshot",
+      "sourceId": "es-dgc-inspire-cp-atom-47900",
+      "protocol": "gml-snapshot",
+      "requiredBehavior": "Implement source-scoped official Spanish ATOM ZIP transport and INSPIRE CP GML schema/CRS profile, native nationalCadastralReference lookup, complete archive counts and explicit absence. Do not loosen URL/ZIP security globally.",
+      "qualificationSeeds": [
+        {
+          "cityCode": "3109",
+          "candidatePath": "tmp/parcel-qualification/cities/3109/attempt-01/candidate.json",
+          "candidateSha256": "1586fbb95a4a6a49499b2e93e31964944b4c4f1767015d903a501e205657fade"
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "cityCode": "3109",
+          "descriptor": {
+            "id": "es-dgc-inspire-cp-atom-47900",
+            "name": "Dirección General del Catastro — Valladolid municipal INSPIRE cadastral parcels",
+            "adapter": "gml-snapshot",
+            "endpoint": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/47/47900-VALLADOLID/A.ES.SDGC.CP.47900.zip",
+            "idField": "nationalCadastralReference",
+            "idType": "string",
+            "idPattern": "^[A-Z0-9]{14}$",
+            "idPrefix": "ES-DGC-",
+            "outFields": [
+              "nationalCadastralReference"
+            ],
+            "parcelNumberField": "nationalCadastralReference",
+            "countryCode": "ES",
+            "cityIds": [
+              "3109"
+            ],
+            "metricSrid": 25830,
+            "maxBboxKm2": 1,
+            "maxFeatures": 5000,
+            "maxSnapshotBytes": 25165824,
+            "maxDecompressedBytes": 167772160,
+            "maxSnapshotFeatures": 30000,
+            "maxConcurrentQueries": 1,
+            "bbox": [
+              -10,
+              35,
+              5,
+              44
+            ],
+            "capabilities": {
+              "areaEnumeration": true
+            },
+            "catalogueUrl": "https://www.catastro.hacienda.gob.es/webinspire/",
+            "attribution": "Dirección General del Catastro, INSPIRE Cadastral Parcels",
+            "scope": "Frozen packet identifies municipal predefined dataset 47900-VALLADOLID. This candidate is held for snapshot transport support and does not establish citywide completeness.",
+            "caveats": [
+              "Production gml-snapshot default archive fetch accepts only UK Land Registry endpoints; this Spanish archive cannot be loaded by that unchanged default transport.",
+              "ES-DGC- plus the unchanged nationalCadastralReference uses the production Spanish canonical native-ID codec.",
+              "Archive body and schema have not been independently inspected in this attempt; the frozen service review reports EPSG:25830 GML and 22876 cadastral parcels."
+            ]
+          },
+          "classification": {
+            "isParcel": true,
+            "evidence": [
+              "Official Dirección General del Catastro INSPIRE page https://www.catastro.hacienda.gob.es/webinspire/ identifies Cadastral Parcel data and ATOM complete municipal downloads. Frozen city-3109-valladolid.json identifies its municipal predefined parcel dataset as 47900-VALLADOLID and the exact archive URL.",
+              "Frozen valladolid-service-review.json reports the official provincial ATOM entry for 47900-VALLADOLID, a 2026-08-21 archive containing 22876 cadastral parcels, nationalCadastralReference identity and EPSG:25830 geometry. This packet evidence confirms cadastral purpose and Valladolid geographic scope; live archive and schema revalidation remain held."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "taskId": "wfs-native-feature-id",
+      "sourceId": "https://atlas.atrbpn.go.id/geoserver/wfs|bhumi:Persil",
+      "protocol": "wfs",
+      "requiredBehavior": "Implement supported WFS feature-ID lookup when no native attribute-ID is evidenced, using official resourceId/featureID routes; prove stable native identity independently. Keep safe geometry-only property requests and complete bounded reads. Generated or unstable feature IDs cannot substitute for a stable parcel identity.",
+      "qualificationSeeds": [
+        {
+          "cityCode": "5713",
+          "candidatePath": "tmp/parcel-qualification/cities/5713/attempt-01/candidate.json",
+          "candidateSha256": "a4582f539e774f3a510494a928d5e41d48398f6be03c53951c9bf224d79679e0"
+        }
+      ],
+      "sourceEvidence": [
+        {
+          "cityCode": "5713",
+          "descriptor": {
+            "id": "https://atlas.atrbpn.go.id/geoserver/wfs|bhumi:Persil",
+            "name": "ATR/BPN BHUMI cadastral parcels (Rangkasbitung review)",
+            "adapter": "wfs",
+            "endpoint": "https://atlas.atrbpn.go.id/geoserver/wfs",
+            "featureType": "bhumi:Persil",
+            "version": "2.0.0",
+            "geometryField": "batas",
+            "idField": null,
+            "idType": "string",
+            "idPattern": "^Persil\\.fid--[0-9a-f]+_[0-9a-f]+_-[0-9a-f]+$",
+            "idPrefix": "ID-ATRBPN-PERSIL-",
+            "outFields": [],
+            "requestProperties": true,
+            "pageSize": 250,
+            "idBatchSize": 80,
+            "maxFeatures": 10000,
+            "maxBboxKm2": 1,
+            "cityIds": [
+              "5713"
+            ],
+            "metricSrid": 32748,
+            "defaultForCity": false,
+            "capabilities": {
+              "areaEnumeration": true,
+              "exactIds": false
+            },
+            "identityEvidence": "Frozen IDs are top-level WFS feature.id values. No native attribute ID is evidenced. idField remains null rather than inventing a schema attribute. Generic production WFS requires an attribute ID and cannot execute this descriptor.",
+            "idPrefixEvidence": "Review-local proposed prefix; no existing production catalog descriptor was found for this endpoint/layer. Native-ID encoding uses production source-contract canonicalParcelFeature concatenation without re-encoding. Prefix is not admitted."
+          },
+          "classification": {
+            "isParcel": true,
+            "evidence": [
+              "Frozen city packet and service review identify the ATR/BPN bhumi:Persil layer as the official national public cadastral parcel WFS. Official BHUMI documentation at https://bhumi.atrbpn.go.id/bantuan/katalog_data confirms land parcels are a main dataset and ATLAS is the ministry geospatial distribution platform.",
+              "City scope is a bounded anonymous three-polygon response within bbox [106.2366060263,-6.36243580595279,106.2566060263,-6.34243580595279], centered on the unchanged Rangkasbitung WUP coordinate. Packet records separately evidenced local registry custody by Kantor Pertanahan Kabupaten Lebak. Complete citywide coverage is unverified."
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

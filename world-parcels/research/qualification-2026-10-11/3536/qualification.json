@@ -1,0 +1,262 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "3536",
+  "cityName": "Stockton",
+  "sourceId": "san-joaquin-county-diesel-wfl1-parcels",
+  "candidateSha256": "ebd40b1942aae0568443806bf5813d06b412ebd92b108e6524fb2244827f15a9",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 4
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 1,
+      "returnedCount": 1,
+      "freshCollectedIds": 178,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 178,
+      "collectedUniqueCount": 178
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 504
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "forcedComplete": true,
+      "pagingRequests": 10,
+      "observedPageLimits": [
+        1
+      ],
+      "singleIdRequests": 0,
+      "usesOffsetPaging": true,
+      "distinctOffsets": 2,
+      "pagedEvidence": true
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 1
+    },
+    "metric": {
+      "passed": true,
+      "inputSha256": "32f88b7332b31d00893e2b05f25e67c1fcac018c1e00fafbe2ab018ca9876201",
+      "featureCount": 178,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32610",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true,
+      "reportFile": "metric-report.json"
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "32f88b7332b31d00893e2b05f25e67c1fcac018c1e00fafbe2ab018ca9876201",
+  "featureCount": 178,
+  "sampleIds": [
+    "US-CA-SAN-JOAQUIN-11512305"
+  ],
+  "cellSizeDegrees": 0.001,
+  "requestCount": 44,
+  "requestLimit": 300,
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ],
+  "sampledCellsSummary": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        -121.305,
+        37.982,
+        -121.304,
+        37.983
+      ],
+      "complete": true,
+      "featureCount": 18
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        -121.304,
+        37.982,
+        -121.303,
+        37.983
+      ],
+      "complete": true,
+      "featureCount": 17
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        -121.303,
+        37.982,
+        -121.302,
+        37.983
+      ],
+      "complete": true,
+      "featureCount": 9
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        -121.305,
+        37.983,
+        -121.304,
+        37.984
+      ],
+      "complete": true,
+      "featureCount": 18
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        -121.304,
+        37.983,
+        -121.303,
+        37.984
+      ],
+      "complete": true,
+      "featureCount": 21
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        -121.303,
+        37.983,
+        -121.302,
+        37.984
+      ],
+      "complete": true,
+      "featureCount": 23
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        -121.305,
+        37.984,
+        -121.304,
+        37.985
+      ],
+      "complete": true,
+      "featureCount": 20
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        -121.304,
+        37.984,
+        -121.303,
+        37.985
+      ],
+      "complete": true,
+      "featureCount": 22
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        -121.303,
+        37.984,
+        -121.302,
+        37.985
+      ],
+      "complete": true,
+      "featureCount": 23
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        -121.304,
+        37.981,
+        -121.303,
+        37.982
+      ],
+      "complete": true,
+      "featureCount": 12
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        -121.304,
+        37.985,
+        -121.303,
+        37.986
+      ],
+      "complete": true,
+      "featureCount": 24
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        -121.306,
+        37.983,
+        -121.305,
+        37.984
+      ],
+      "complete": true,
+      "featureCount": 24
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        -121.302,
+        37.983,
+        -121.301,
+        37.984
+      ],
+      "complete": true,
+      "featureCount": 21
+    }
+  ]
+}

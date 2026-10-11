@@ -1,0 +1,75 @@
+{
+  "cityRecord": "city-6000-osmaniye.json",
+  "cityCode": 6000,
+  "queueRank": 2034,
+  "name": "Osmaniye",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "point": [37.0686596131803, 36.2502319679722],
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": null,
+  "requests": [
+    {
+      "method": "GET/search",
+      "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+      "outcome": "Official TKGM page confirms Parsel Sorgu as the national public parcel service and documents province/district/neighborhood/parcel, coordinate, geometry display, and KML/PDF functions. It does not expose a bounded anonymous parcel response in the page content."
+    },
+    {
+      "method": "GET",
+      "url": "https://parselsorgu.tkgm.gov.tr/",
+      "outcome": "HTTP 200 HTML shell received (1,787 bytes). Current HTML loads main.js?v=76.3 and the public app configuration. No parcel result was returned by loading the shell directly."
+    },
+    {
+      "method": "GET",
+      "url": "https://parselsorgu.tkgm.gov.tr/main.js?v=76.3",
+      "outcome": "HTTP 200 JavaScript received (4,250 bytes). The current app configuration was followed to https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/ and the app's public route structure; no credentials, private token, CAPTCHA bypass, or login was used."
+    },
+    {
+      "method": "GET",
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/",
+      "outcome": "HTTP 404 Not Found. API root is not a parcel response endpoint."
+    },
+    {
+      "method": "GET",
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/geographicQuery?lat=37.0686596131803&lon=36.2502319679722",
+      "outcome": "HTTP 404 JSON response: no HTTP resource matched the URI. This was a bounded exact-point probe using the immutable WUP point; it is not evidence of citywide absence."
+    },
+    {
+      "method": "GET",
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/administrativeQuery",
+      "outcome": "HTTP 404 JSON response: no HTTP resource matched the URI. No province/neighborhood/parcel identifiers were invented, so no administrative parcel query was issued."
+    },
+    {
+      "method": "GET",
+      "url": "https://osmaniye-bld.gov.tr/",
+      "outcome": "Official Osmaniye Municipality page received. It links Kent Rehberi at https://kentrehberi.osmaniye.bel.tr/ and E-İmar at https://kentrehberi.osmaniye-bld.gov.tr/."
+    },
+    {
+      "method": "GET",
+      "url": "https://kentrehberi.osmaniye-bld.gov.tr/",
+      "outcome": "Request timed out after 12 seconds; no HTML, JavaScript/configuration, API route, schema, CRS, or parcel geometry was obtained."
+    }
+  ],
+  "viewerInspection": {
+    "status": "partially inspected",
+    "details": "TKGM current JavaScript/configuration was inspected and identifies the public MEGSIS API host. The municipal Kent Rehberi viewer was unreachable by bounded GET. No usable public map/API response was available for a retained sample."
+  },
+  "schemaCrs": {
+    "status": "not available",
+    "details": "No parcel response was obtained; native field schema, CRS, geometry encoding, and stable native parcel identity could not be verified."
+  },
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "retainedSamples": [],
+  "safeFieldAllowlist": ["stable native parcel ID", "geometry", "source CRS", "service URL", "retrieval timestamp"],
+  "scopeLimits": [
+    "TKGM is a national authority/service, not a city-specific registry custodian; official municipal links establish a local service custodian but not successful public parcel access.",
+    "The exact-point 404 and municipal timeout are service/request outcomes only and cannot establish citywide cadastral absence.",
+    "No map extent miss, login wall, timeout, or unusable UI is treated as citywide cadastral absence.",
+    "No owner, address, contact, titleholder, personal, tax, account, transaction, or other unsafe fields were requested or retained.",
+    "No native identity or geometry was retained, and no GeoJSON sample was created."
+  ],
+  "runtimeReadiness": "held",
+  "uncertainty": "High: TKGM provides an official public parcel viewer, but its current API route contract was not recoverable from bounded anonymous probes; Osmaniye's municipal viewer also timed out. A real public or restricted source may still exist behind viewer interaction, route parameters, service availability, or authenticated access. Independent serial review is required before any adapter or source admission."
+}

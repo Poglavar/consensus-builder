@@ -1,0 +1,66 @@
+{
+  "taskId": "city:8613",
+  "decision": "held",
+  "checkedAt": "2026-10-10T21:04:03Z",
+  "identity": {
+    "cityCode": 8613,
+    "rank": 2018,
+    "name": "Weinan",
+    "country": "China",
+    "iso2": "CN",
+    "iso3": "CHN",
+    "point": [
+      34.4962344497676,
+      109.487773754101
+    ],
+    "populationPersons": 288582,
+    "sourceArchiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "sourceQueueRosterPacketMatch": true
+  },
+  "searches": {
+    "languages": [
+      "English",
+      "Chinese"
+    ],
+    "pairedPacketAndReviewInspected": true,
+    "queryAndResultUrlsRecorded": true
+  },
+  "custody": {
+    "registryFound": true,
+    "assessment": "Official Shaanxi government material describes Weinan registration and transaction service integration; Shaanxi natural-resources material names the municipal real-estate registration bureau. Direct PDF fetch timed out during root review, so these are indexed first-party passages plus the worker packet, not a fresh full PDF verification.",
+    "firstPartyUrls": [
+      "https://www.shaanxi.gov.cn/xw/ztzl/zxzt/jjsxtjzfznzbhfgfgg/gzjb/202102/P020210205387520666649.pdf",
+      "https://zrzyt.shaanxi.gov.cn/ztzl/shsgnhd/yshjtpn/202305/P020241224570524819230.pdf"
+    ]
+  },
+  "samples": {
+    "retainedFullPolygonCount": 0,
+    "safeNativeParcelIdObserved": false
+  },
+  "firstPartyChecks": {
+    "cachedResponses": [
+      {
+        "path": "tmp/valhalla-parcel-research/weinan/weinan-gov.html",
+        "sha256": "20565bebe4123d7c93d8b27380c6441e0dcc3f87ed69b6e51d3e1fa6cfbae1a5",
+        "observation": "Municipal portal HTML; no parcel endpoint identified."
+      },
+      {
+        "path": "tmp/valhalla-parcel-research/weinan/search-results.html",
+        "sha256": "ef131c7f1138113f04af4f1d33d94d3546b00443d02576435af382dadf7bd56a",
+        "observation": "Public search shell for 不动产; no parcel ID/geometry response."
+      }
+    ],
+    "geometryResponseObserved": false,
+    "rootPdfFetch": "Timed out; no full PDF body read in root turn."
+  },
+  "qualification": {
+    "freshNativeIdAdapterReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "fullScopeMetricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "admitted": false
+  },
+  "decisionReason": "Local registration custody has first-party support, but no anonymous native parcel ID and polygon response, public adapter protocol, or runtime qualification was established. Search or viewer limits do not imply citywide absence."
+}

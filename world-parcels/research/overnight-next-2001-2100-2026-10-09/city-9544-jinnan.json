@@ -1,0 +1,73 @@
+{
+  "cityCode": 9544,
+  "queueRank": 2085,
+  "name": "Jinnan",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [38.9833467530819, 117.389965630398],
+  "population2025": 278673,
+  "population2025k": 278.673,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jinnan Tianjin China official cadastral parcel map GIS Natural Resources Planning Bureau",
+        "result": "Official Tianjin geospatial-platform results identify the Tianjin public geospatial information platform and a Jinnan district map product. An official Jinnan boundary-survey PDF exposes parcel/boundary-map evidence. No anonymous parcel ID-plus-geometry API was exposed in search results.",
+        "actualResultUrls": [
+          "https://tianjin.tianditu.gov.cn/",
+          "https://tianjin.tianditu.gov.cn/static/html/gydt003.html?t=jnq&y=2022",
+          "https://ghhzrzy.tj.gov.cn/ywpd/tdgl_43019/tdzs/zdxzdc/202012/W020201206203417127743.pdf"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "津南区 地籍图 宗地 地图 官方 天津市规划和自然资源局",
+        "result": "官方检索结果确认天地图·天津由天津市规划和自然资源局主办、天津市测绘地理信息研究中心承办，并有津南区地图产品；官方津南区勘测定界图显示宗地边界和地类图示。未发现可匿名返回稳定宗地ID与完整几何的公开接口。",
+        "actualResultUrls": [
+          "https://tianjin.tianditu.gov.cn/",
+          "https://tianjin.tianditu.gov.cn/static/html/bzmap.html",
+          "https://ghhzrzy.tj.gov.cn/ywpd/tdgl_43019/tdzs/zdxzdc/202012/W020201206203417127743.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official Tianjin geospatial public-service platform identifies the Tianjin Natural Resources and Planning authority and provides Jinnan district map products; the official Jinnan boundary-survey document is cadastral/boundary evidence. This establishes local/municipal custodial evidence, not an open parcel geometry API.",
+  "registryEvidenceUrls": [
+    "https://tianjin.tianditu.gov.cn/",
+    "https://tianjin.tianditu.gov.cn/static/html/gydt003.html?t=jnq&y=2022",
+    "https://ghhzrzy.tj.gov.cn/ywpd/tdgl_43019/tdzs/zdxzdc/202012/W020201206203417127743.pdf"
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "verifiedParcelResponse": null,
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only when publicly returned",
+    "full parcel polygon geometry",
+    "source service metadata",
+    "CRS and response-format metadata"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner or right-holder names",
+    "addresses or contact details",
+    "title or certificate details",
+    "tax, account, identity, or application fields"
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Tianjin municipal geospatial public-service platform and Jinnan district Natural Resources / cadastral boundary materials.",
+    "verifiedOpenScope": "Municipal/local custodial evidence and published map/boundary documents only; anonymous parcel geometry, schema, CRS, stable native identity, and citywide open coverage were not verified.",
+    "citywideGeometryVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "Held pending independent serial qualification of a real public parcel adapter. This packet is not source integration or admission.",
+  "resultCategory": "local_registry_evidenced_no_public_geometry",
+  "remainingUncertainty": "The current Tianjin viewer's parcel layer/API, schema, CRS, stable native parcel identity, anonymous access boundary, and geographic coverage remain unresolved. The exact WUP point was preserved and not shifted; no exact-point or map-extent miss was used as evidence of citywide absence."
+}

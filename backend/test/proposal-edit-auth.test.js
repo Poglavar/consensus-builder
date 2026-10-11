@@ -114,15 +114,14 @@ describe('POST /proposals drops claims the free route cannot prove', () => {
         expect(stored).not.toHaveProperty('ownerAcceptances');
     });
 
-    it('keeps author-controlled lifecycle states and the on-chain pointer', async () => {
+    it('keeps author-controlled lifecycle states on ordinary server uploads', async () => {
         pool.setResults([insertResult(), updateResult()]);
-        const onchain = { proposalId: 'ProposalPda111', chainId: 'solana-devnet', transactionHash: 'sig' };
+        const response = await request(app).post('/proposals').send(validProposalBody({ lifecycleStatus: 'Cancelled' }));
 
-        await request(app).post('/proposals').send(validProposalBody({ lifecycleStatus: 'Cancelled', onchain }));
-
+        expect(response.status).toBe(201);
         const params = pool.getCalls()[0].params;
         expect(params[7]).toBe('Cancelled');
-        expect(JSON.parse(params[30])).toEqual(onchain);
+        expect(params[30]).toBeNull();
     });
 });
 

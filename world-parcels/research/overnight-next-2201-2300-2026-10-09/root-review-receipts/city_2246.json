@@ -1,0 +1,42 @@
+{
+  "taskId": "city:2246",
+  "decision": "held",
+  "checkedAt": "2026-10-11T03:23:08Z",
+  "admission": "held; no runtime, catalog, registry, or coverage/report change",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-2246-cagliari.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/cagliari-service-review.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/cagliari-parcel-sample.geojson",
+    "tmp/valhalla-parcel-research/runs/20261011T031837-f4d54839/stdout.jsonl",
+    "tmp/valhalla-parcel-research/cagliari/catasto.html",
+    "tmp/valhalla-parcel-research/cagliari/wfs-cap.xml"
+  ],
+  "registryFound": true,
+  "publicGeometryFound": true,
+  "samplePolygonCount": 3,
+  "sourceUrls": [
+    "https://www.sardegnageoportale.it/areetematiche/catasto/",
+    "https://webgis.regione.sardegna.it/geoserver/ows"
+  ],
+  "independentLiveWfsCheck": {
+    "method": "WFS 1.1.0 GetFeature, bbox 9.1433,39.2370,9.1440,39.2377,EPSG:4326, maxFeatures 3, propertyName geom,com_fg_plla_ter",
+    "httpStatus": 200,
+    "totalFeatures": 18,
+    "numberMatched": 18,
+    "numberReturned": 3,
+    "nativeIds": [
+      "B354_0014_00169_A",
+      "B354_0014_00171_A",
+      "B354_0014_00172_A"
+    ],
+    "geometryExactlyMatchesSample": true,
+    "returnedPropertyNames": [
+      "comune",
+      "com_fg_plla_ter",
+      "bbox"
+    ]
+  },
+  "reason": "Immutable WUP roster and pending queue agree on Cagliari, code 2246, rank 2296, Italy, unchanged point [39.2373561913078, 9.14359375138819], and 253786 persons. The worker trace confirms executed English and Italian searches. First-party Sardegna viewer HTML names the national cadastral WMS; first-party regional WFS capabilities list dbu:particelle. An independent live bounded safe-field WFS read returned 18 matched features and exactly three returned full Polygons with source composite IDs; each geometry exactly matches the retained three-polygon sample. Sample properties contain only id and preliminary GEOS validation found all three nonempty/valid. This is public geometry discovery, not complete city coverage or runtime qualification. Fresh exact-ID reads, stable complete manifest and forced paging, 13 aligned bounded cells, independent metric full-polygon duplicate/overlap/operation checks, full-parcel source binding, and headed Details verification are missing. Keep admission held; no runtime/catalog/report change."
+}

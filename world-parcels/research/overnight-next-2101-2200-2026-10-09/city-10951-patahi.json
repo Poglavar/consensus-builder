@@ -1,0 +1,136 @@
+{
+  "cityCode": 10951,
+  "queueRank": 2167,
+  "name": "Patahi",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "point": [26.5381189062311, 85.1961558517323],
+  "population2025": 268862,
+  "population2025k": 268.862,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Patahi Bihar official land records cadastral map GIS parcel government",
+        "result": "First-party discovery identified the Government of Bihar Revenue and Land Reforms Department, Directorate of Land Records & Survey, and the public BhuNaksha Bihar cadastral viewer. Official BhuNaksha hierarchy requests exposed East Champaran/Pakri Dayal/Patahi and a Patahi Jadu mauza, but no parcel geometry for the exact WUP point.",
+        "actualResultUrls": [
+          "https://land.bihar.gov.in/landbihar/Default.aspx",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "https://dlrs.bihar.gov.in/services.html"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "पटाही बिहार भूमि अभिलेख नक्शा सरकारी वेबसाइट",
+        "result": "Hindi-language first-party discovery confirmed BiharBhumi/Bhu-Naksha and the Directorate of Land Records & Survey as official land-record and revenue-map services. The public viewer exposes Hindi administrative labels and the same Patahi hierarchy; no safe parcel feature response was obtained.",
+        "actualResultUrls": [
+          "https://biharbhumi.bihar.gov.in/Biharbhumi/default/UserRegister",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "https://dlrs.bihar.gov.in/services.html"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+      "observation": "Official Government of Bihar/NIC BhuNaksha Bihar cadastral mapping viewer. Current HTML and JavaScript were inspected; the public route exposes location hierarchy, map-instance counts, WMS configuration, and REST endpoints without login for the viewer." 
+    },
+    {
+      "url": "https://land.bihar.gov.in/landbihar/Default.aspx",
+      "observation": "Official Bihar Revenue and Land Reforms Department landing page naming Bhu-Manchitra/Bhu-Naksha, the Directorate of Land Records and Survey, and revenue-map services." 
+    },
+    {
+      "url": "https://dlrs.bihar.gov.in/services.html",
+      "observation": "Official Directorate of Land Records & Survey page listing Online Map, Online Revenue Records, Online Jamabandi Records, and final/draft survey map services." 
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The official Bihar Revenue and Land Reforms / Directorate of Land Records & Survey services and the current BhuNaksha public viewer establish the state cadastral custodian. The viewer also exposed the Patahi administrative/mauza hierarchy, but citywide parcel coverage was not established.",
+  "sourceCandidate": "in-bihar-bhunaksha-patahi",
+  "service": "BhuNaksha Bihar cadastral map viewer",
+  "serviceUrl": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+  "requests": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Loaded anonymously. Current HTML identified the state code 10 and the indexmain.jsp viewer transition; no credentials or login route was used."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/GetMapInstanceMap/getMapInstance",
+      "method": "POST",
+      "parameters": {"state": "10"},
+      "httpStatus": 200,
+      "outcome": "Returned current map-instance counts as JSON."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/10/indexmain.jsp",
+      "method": "POST",
+      "parameters": {"state": "10"},
+      "httpStatus": 200,
+      "outcome": "Loaded the current viewer HTML and JavaScript configuration. The viewer uses REST endpoints and WMS; no private token was found or requested."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST",
+      "parameters": {"state": "10", "level": "3", "codes": "02,06,23,", "hasmap": true},
+      "httpStatus": 200,
+      "outcome": "Returned the current hierarchy including mauza code 1175, Patahi Jadu(205), with composite viewer path 02_06_23_1175."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref",
+      "method": "POST",
+      "parameters": {"state": "10", "gisLevels": "02,06,23,1175,RS,07,01,", "srs": "0"},
+      "httpStatus": 200,
+      "outcome": "Returned gisCode RS02062311752050701, CRS EPSG:32645, and extent xmin 313326.41956055636, ymin 2939082.318081094, xmax 314976.25289672735, ymax 2941546.661059439."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY",
+      "method": "POST",
+      "parameters": {"state": "10", "giscode": "RS02062311752050701", "x": 320287.92215468397, "y": 2936543.5588484453},
+      "httpStatus": 200,
+      "outcome": "Returned an empty JSON array. The exact WUP point was transformed from EPSG:4326 to EPSG:32645 and lies outside the returned Patahi Jadu map extent; this is recorded as an extent miss, not citywide absence."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Layers/getLayers",
+      "method": "POST",
+      "parameters": {"state": "10", "layerType": "TABLE_LAYER_MASTER", "giscode": "RS02062311752050701"},
+      "httpStatus": 200,
+      "outcome": "Request completed but no retained layer schema or parcel attributes were needed; no geometry response was obtained."
+    }
+  ],
+  "query": {
+    "pointLatLon": [26.5381189062311, 85.1961558517323],
+    "exactPointChecked": true,
+    "projectedPoint": {"crs": "EPSG:32645", "x": 320287.92215468397, "y": 2936543.5588484453},
+    "result": {"featureCount": 0, "nativeIds": [], "reason": "The exact point was outside the bounded Patahi Jadu RS map extent; getPlotAtXY returned an empty array. No absence inference is made."}
+  },
+  "safeFieldAllowlist": ["stable native parcel identity if publicly exposed", "full parcel polygon geometry if publicly exposed", "geometry CRS/service metadata"],
+  "sourceFieldMapping": null,
+  "compositeKeyProvenance": "BhuNaksha viewer hierarchy codes: state 10; district 02; subdivision 06; circle 23 (Patahi); mauza 1175 (Patahi Jadu); survey type RS; map instance 07; sheet 01. This identifies a viewer map path, not a retained parcel identity.",
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Bihar official BhuNaksha cadastral map viewer and associated Revenue/Land Records & Survey services.",
+    "cityCoverage": "Not verified. One official mauza map extent and an empty exact-point lookup were reached, but the WUP point was outside that extent and no parcel feature geometry was returned.",
+    "exactPointChecked": true
+  },
+  "scopeLimits": [
+    "Exact WUP point and latitude/longitude order were preserved; no coordinate was shifted to force a parcel hit.",
+    "A zero lookup, extent miss, timeout, login wall, or unusable UI is not evidence of citywide absence.",
+    "No owner, address, contact, titleholder, tax, account, jamabandi, khata, survey-detail, or other unsafe fields were requested, logged, or retained.",
+    "No GeoJSON sample is retained because no safe native parcel identity and full polygon response was verified.",
+    "The viewer hierarchy/composite path is source provenance only and is not used as a synthetic parcel identity.",
+    "Packet completion is not source integration or runtime admission."
+  ],
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The official public viewer is reachable and exposes a current hierarchy, map extent, WMS configuration, and CRS. The selected Patahi Jadu map extent does not contain the exact WUP point, and the bounded point lookup returned no feature. The correct local map sheet for the WUP point, citywide completeness, parcel identity semantics, and anonymous geometry availability remain unverified."
+}

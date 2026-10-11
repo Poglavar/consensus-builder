@@ -1,0 +1,21 @@
+{
+  "taskId": "city:415",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-415-kaunas.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/kaunas-service-review.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/kaunas-sample.geojson",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/root-review-receipts/source-evidence/city_415-exact-point.geojson",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/root-review-receipts/source-evidence/city_415-layer.json"
+  ],
+  "checkedAt": "2026-10-11T01:30:53.108346Z",
+  "reason": "Queue/roster identity matches code 415, rank 2206, Lithuania, point, and 264162 persons. English and Lithuanian searches are recorded. Original first-party point response contains one polygon with native unikalus_nr 440010524440; saved sample has the same geometry, only id property, valid metric polygon (~2494.77 m2), and intersects the exact WUP point. Official layer metadata names Sklypai, EPSG:3346, maxRecordCount 2000, and Registru centras as data provider. No independently evidenced fresh exact-ID reads, forced paging, 13 bounded cells, full metric duplicate/overlap/operation checks, source binding, or headed Details verification; discovery remains held.",
+  "registryFound": true,
+  "admission": "held; no runtime/catalog/report change",
+  "sourceCacheCopies": {
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/root-review-receipts/source-evidence/city_415-exact-point.geojson": "99b83a62c66a30b98f4c429b8e0338616e5495ec630c5c89df966c9b806e5e9c",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/root-review-receipts/source-evidence/city_415-layer.json": "d3d2e41ae7b22c3ef69ba0e12a720738b0df6d816ad9b89cf115c80f77485f13"
+  }
+}

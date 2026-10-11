@@ -1,0 +1,39 @@
+{
+  "cityCode": 1593,
+  "queueRank": 2289,
+  "name": "Arkhangelsk",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso3": "RUS",
+  "point": [64.5486527205644, 40.5708717805602],
+  "population2025": 254797,
+  "population2025k": 254.797,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Arkhangelsk official cadastral map parcel viewer API Rosreestr NSPD",
+        "result": "Discovery identified the current official Russian public cadastral-map route as the National Spatial Data System (NSPD) map and an official Arkhangelsk municipal land-relations page referring to the city's geoinformation portal and cadastral numbering. Direct official service access was attempted separately but timed out.",
+        "actualResultUrls": [
+          "https://nspd.gov.ru/map?thematic=PKK",
+          "https://www.arhcity.ru/?page=518%2F3"
+        ]
+      },
+      {
+        "language": "Russian",
+        "query": "Архангельск официальная публичная кадастровая карта земельные участки Росреестр НСПД",
+        "result": "Поиск подтвердил официальный маршрут публичной кадастровой карты через ФГИС ЕЦП НСПД и официальную страницу администрации Архангельска, где указано, что местоположение сформированных земельных участков городского округа отображается на геоинформационном портале; приведен пример кадастрового номера 29:22:0000000:00. Прочие найденные карты-агрегаторы не использовались как реестр или доказательство геометрии.",
+        "actualResultUrls": [
+          "https://nspd.gov.ru/map?thematic=PKK",
+          "https://www.arhcity.ru/?page=518%2F3",
+          "https://roscadaster.com/map/arkhangelskaya-oblast/arkhangelsk"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "researchNote": "An official national cadastral viewer route and official municipal Arkhangelsk land/cadastral context are evidenced. Direct anonymous requests to NSPD and Rosreestr timed out from this host; no parcel identity, schema, CRS metadata, or geometry was obtained. This packet is not source integration or runtime admission."
+}

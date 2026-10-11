@@ -1,0 +1,57 @@
+{
+  "cityRecord": "city-711-rosetta.json",
+  "cityCode": 711,
+  "queueRank": 2310,
+  "city": "Rosetta",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": null,
+  "scope": "Rosetta/Rashid, Beheira, Egypt; exact WUP point [31.414022203023, 30.4118705722093] was preserved in longitude/latitude order in the request, while the city packet point is preserved in the required latitude/longitude field convention.",
+  "discovery": {
+    "english": "ESA first-party service and digital-map pages were found; they document authoritative surveying and a request/purchase workflow, not a public parcel viewer.",
+    "native": "Arabic ESA pages likewise document surveying/map services; no public Rosetta parcel map/API was found.",
+    "actualUrls": [
+      "https://www.esa.gov.eg/main.aspx",
+      "https://www.esa.gov.eg/services.aspx",
+      "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+      "https://egylandscape.huma-num.fr/map.html"
+    ]
+  },
+  "requests": [
+    {
+      "url": "https://www.egis.idsc.gov.eg/server/rest/services?f=pjson",
+      "method": "GET",
+      "outcome": "Succeeded anonymously; catalog inspected for parcel/cadastre/Rosetta naming, with no clearly identified public parcel layer retained."
+    },
+    {
+      "url": "https://www.egis.idsc.gov.eg/server/rest/services/MOC_DELayer/MapServer?f=pjson",
+      "method": "GET",
+      "outcome": "Succeeded anonymously; service has administrative layers Entities and Egy."
+    },
+    {
+      "url": "https://www.egis.idsc.gov.eg/server/rest/services/MOC_DELayer/MapServer/1/query",
+      "method": "GET",
+      "parameters": "where=1=1; geometry point x=31.414022203023,y=30.4118705722093; geometryType=esriGeometryPoint; inSR=4326; spatialRel=esriSpatialRelIntersects; outFields=OBJECTID; returnGeometry=true; outSR=4326",
+      "outcome": "Succeeded anonymously and returned administrative polygon OBJECTID 10 only. No parcel schema, native parcel identity, or parcel polygon was returned."
+    }
+  ],
+  "schemaCrs": {
+    "inspectedService": "MOC_DELayer/MapServer/1",
+    "responseCrs": "EPSG:4326",
+    "parcelSchema": null
+  },
+  "safeFieldAllowlist": ["OBJECTID", "geometry"],
+  "excludedFields": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "unsafe source-specific attributes"],
+  "retainedSamples": [],
+  "scopeLimits": [
+    "A public procurement page is not evidence of a public machine-readable parcel service.",
+    "The administrative exact-point response is not a parcel hit and cannot be generalized to citywide absence.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, or TLS exception was used.",
+    "No source integration or runtime admission is claimed."
+  ],
+  "runtimeReadiness": "held",
+  "uncertainty": "A current ESA parcel service may exist behind a request or restricted workflow; no safe anonymous route was evidenced during this bounded attempt."
+}

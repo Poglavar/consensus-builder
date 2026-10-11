@@ -1,0 +1,12 @@
+{
+  "taskId": "city:9299",
+  "kind": "first_party_custody_extract",
+  "sourceArtifacts": [
+    {
+      "url": "https://vidisha.nic.in/en/service/land-records/",
+      "originalCacheSha256": "cae7506b6708d908c6fb80be5e87db200ffb12cd05c471726823d565f13095df",
+      "safeObservation": "Vidisha District Administration identifies the Madhya Pradesh Revenue Department Land Records organization as maintaining survey-number land records and links https://webgis2.mpbhulekh.gov.in/."
+    }
+  ],
+  "geometryClaim": null
+}

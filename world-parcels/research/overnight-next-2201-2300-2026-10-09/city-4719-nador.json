@@ -1,0 +1,41 @@
+{
+  "cityCode": 4719,
+  "queueRank": 2287,
+  "name": "Nador",
+  "country": "Morocco",
+  "countryCode": "MA",
+  "iso2": "MA",
+  "iso3": "MAR",
+  "point": [35.1631712019321, -2.94575715073433],
+  "population2025": 255502,
+  "population2025k": 255.502,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Nador Morocco cadastral parcel map official geoportal cadastre",
+        "result": "Discovery identified ANCFCC as the national land-conservation, cadastre and mapping agency and returned its official Arabic portal, Nador office directory, cadastral product page, and online cadastral-plan request page. No public anonymous Nador parcel viewer/API or downloadable parcel geometry was found.",
+        "actualResultUrls": [
+          "https://www.ancfcc.gov.ma/ar",
+          "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+          "https://www.ancfcc.gov.ma/Plancadastralpage",
+          "https://www.ancfcc.gov.ma/arproduits-et-formalit%C3%A9s/produits/cadastre/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "الناظور المغرب الخريطة العقارية المحافظة العقارية المسح العقاري",
+        "result": "Arabic discovery returned the official ANCFCC Arabic portal, its Arabic cadastral-products page, and official external-services directory. The official material documents cadastral plans/maps and a Nador cadastral office, but no public anonymous parcel ID+geometry service.",
+        "actualResultUrls": [
+          "https://www.ancfcc.gov.ma/ar",
+          "https://www.ancfcc.gov.ma/arproduits-et-formalit%C3%A9s/produits/cadastre/",
+          "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "A local Nador cadastral custodian is evidenced by the official ANCFCC external-services directory. No public parcel geometry was retained because the official portal was in maintenance mode and no safe native parcel identity plus unchanged polygon was returned anonymously. This packet is not source integration or admission."
+}

@@ -1,0 +1,21 @@
+{
+  "cityRecord": "city-11986-fu-an.json",
+  "cityCode": 11986,
+  "queueRank": 2242,
+  "name": "Fu'an",
+  "country": "China",
+  "countryCode": "CN",
+  "pointLatLon": [27.0938226757313, 119.647876297754],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": "See city-11986-fu-an.json routes; all executed discovery and route attempts are recorded there with outcomes.",
+  "schemaAndCrs": {"geometryCrs": null, "nativeIdentity": null, "observedSchema": "No parcel feature schema, CRS, or ID+geometry response returned."},
+  "safeFieldAllowlist": ["stable native parcel ID if independently verified", "polygon geometry", "source service URL", "CRS", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "Local registry custodian was evidenced, but no bounded anonymous parcel ID+geometry response was verified."},
+  "scopeLimits": ["Exact WUP point was preserved and not used to force a parcel hit.", "Local-government pages establish the Fu'an registry custodian but do not establish an open parcel feature API.", "Provincial Tianditu/API guidance is general and was not treated as Fu'an parcel coverage.", "No sample GeoJSON was retained because no safe native parcel identity and unchanged full polygon were observed.", "Packet completion records research attempts only and is not source integration or admission."],
+  "uncertainty": "Fu'an has first-party local registry evidence and a provincial public mapping route, but anonymous parcel geometry, native identity, CRS, and service configuration remain unresolved. Authentication boundaries and unavailable or undiscovered routes are not evidence of citywide absence."
+}

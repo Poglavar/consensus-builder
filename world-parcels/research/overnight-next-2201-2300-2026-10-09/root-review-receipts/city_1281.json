@@ -1,0 +1,24 @@
+{
+  "taskId": "city:1281",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/provider-expansion/completions/1281.json",
+    "world-parcels/research/provider-expansion/cities/1281/city-1281-provider-1281.json",
+    "world-parcels/research/provider-expansion/cities/1281/provider-1281-service-review.json",
+    "world-parcels/research/provider-expansion/cities/1281/provider-1281-parcel-samples.geojson",
+    "world-parcels/research/provider-expansion/providers/0198ab1272a58163c79e4b3c4245b2ba791ee8d7870fe1670aa5be2043943afd.json",
+    "world-parcels/research/provider-expansion/providers/acc1949e34cf5ffab808d96bb67f9093dd1abe60ba876e2cc02e2909ac3add76.json"
+  ],
+  "checkedAt": "2026-10-11T02:24:16Z",
+  "findings": {
+    "identity": "Immutable WUP queue and ranked roster match Paarl, South Africa, code 1281, rank 2249, point [-33.6952714688879, 18.9943496682828], and 259665 persons (259.665 thousand).",
+    "discovery": "The paired packet and review claim public Erven geometry, and the completion hashes match the paired files. Their six GET records provide URLs, timestamps, and HTTP 200 status, but no retained original Paarl response bodies or independent acceptance metrics.",
+    "searches": "Neither paired file contains executed English and native-language search evidence.",
+    "samples": "Three distinct Polygon features have only safe native PRCL_KEY id properties matching the packet. All three are individually GEOS valid in EPSG:32734, but the second and third overlap by 627.704997 square metres; the third is contained by the second.",
+    "qualification": "The cited 13-cell, forced-page, native-ID, source-binding qualification artifact identifies its city as klipgat-csg-final, not Paarl. Its provider catalog entry lists cityIds klipgat and evaton only. No independent Paarl 13-cell, forced paging, fresh native-ID, full-polygon metric overlap, proposal binding, or headed Details-panel verification is evidenced.",
+    "admission": "Paarl remains excluded from runtime and coverage admission; positive bounded discovery does not establish citywide coverage or absence."
+  }
+}

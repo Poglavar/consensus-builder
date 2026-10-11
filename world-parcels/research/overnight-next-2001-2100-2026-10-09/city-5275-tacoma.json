@@ -1,0 +1,114 @@
+{
+  "cityCode": 5275,
+  "queueRank": 2011,
+  "name": "Tacoma",
+  "country": "United States of America",
+  "countryCode": "US",
+  "iso3": "USA",
+  "point": [47.2204132675148, -122.474024748272],
+  "population2025": 289128,
+  "population2025k": 289.128,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10T00:00:00Z",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tacoma Washington official parcel map GIS Pierce County assessor cadastral parcels API",
+        "result": "Official Pierce County GIS pages identify PublicGIS, Parcel Search, the open-data portal, and county GIS information. The official ArcGIS REST service publishes the county Tax Parcels layer and supports anonymous JSON queries.",
+        "actualResultUrls": [
+          "https://www.piercecountywa.gov/2281/GIS-Map-Applications",
+          "https://www.piercecountywa.gov/7392/GIS-Information",
+          "https://services2.arcgis.com/1UvBaQ5y1ubjUPmd/ArcGIS/rest/services/Tax_Parcels/FeatureServer/0"
+        ]
+      },
+      {
+        "language": "native/local (English)",
+        "query": "Tacoma parcel map GIS officiel Pierce County assessor tax parcels recherche parcelle",
+        "result": "The local-language variant (English, the United States local language) returned the same official Pierce County GIS and assessor parcel service route; no separate city cadastral office was identified.",
+        "actualResultUrls": [
+          "https://www.piercecountywa.gov/493/Geographic-Information-Systems-GIS",
+          "https://www.piercecountywa.gov/969/Parcel-Property-Information?nid=969",
+          "https://services2.arcgis.com/1UvBaQ5y1ubjUPmd/ArcGIS/rest/services/Tax_Parcels/FeatureServer/0"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Pierce County, the local county custodian for Tacoma parcel GIS, publishes PublicGIS, parcel search, and county tax-parcel data; the county Assessor-Treasurer is named as the parcel-data contact in the official service metadata.",
+  "registryEvidenceUrls": [
+    "https://www.piercecountywa.gov/2281/GIS-Map-Applications",
+    "https://www.piercecountywa.gov/7392/GIS-Information",
+    "https://www.piercecountywa.gov/493/Geographic-Information-Systems-GIS",
+    "https://services2.arcgis.com/1UvBaQ5y1ubjUPmd/ArcGIS/rest/services/Tax_Parcels/FeatureServer/0"
+  ],
+  "requests": [
+    {
+      "url": "https://www.piercecountywa.gov/2281/GIS-Map-Applications",
+      "method": "GET",
+      "httpStatus": 403,
+      "outcome": "County page request reached a Cloudflare challenge; search discovery established that the official page links PublicGIS and Parcel Search. No challenge was bypassed."
+    },
+    {
+      "url": "https://www.piercecountywa.gov/7392/GIS-Information",
+      "method": "GET",
+      "httpStatus": 403,
+      "outcome": "County GIS information page was blocked by a Cloudflare challenge; this is a UI access limitation, not evidence of parcel absence."
+    },
+    {
+      "url": "https://services2.arcgis.com/1UvBaQ5y1ubjUPmd/ArcGIS/rest/services/Tax_Parcels/FeatureServer?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Anonymous service metadata returned the Tax Parcels layer, maximum record count 2000, JSON support, and countywide service description."
+    },
+    {
+      "url": "https://services2.arcgis.com/1UvBaQ5y1ubjUPmd/ArcGIS/rest/services/Tax_Parcels/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Anonymous layer metadata returned esriGeometryPolygon, object ID field OBJECTID, stable parcel field TaxParcelNumber, source spatial reference WKID 2927 (Washington State Plane South, feet), and the full county extent. Unsafe attribute fields were not requested for retention."
+    },
+    {
+      "url": "https://services2.arcgis.com/1UvBaQ5y1ubjUPmd/ArcGIS/rest/services/Tax_Parcels/FeatureServer/0/query?f=pjson&where=1%3D1&geometry=-122.474024748272%2C47.2204132675148&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CTaxParcelNumber&returnGeometry=true&outSR=4326",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Bounded anonymous exact-point intersects query returned one polygon. Native TaxParcelNumber 5004820060 was returned with full geometry transformed to EPSG:4326 for GeoJSON retention; only safe ID and geometry were retained."
+    }
+  ],
+  "source": "Pierce County Tax_Parcels ArcGIS FeatureServer",
+  "sourceIds": ["5004820060"],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "verifiedParcelResponse": {
+    "featureCount": 1,
+    "sampleFile": "tacoma-sample.geojson",
+    "queryCrs": "EPSG:4326",
+    "nativeLayerCrs": "WKID 2927",
+    "nativeIdentityField": "TaxParcelNumber",
+    "objectIdField": "OBJECTID",
+    "fieldMapping": {"properties.id": "TaxParcelNumber", "geometry": "ArcGIS geometry.rings converted to GeoJSON Polygon coordinates"}
+  },
+  "safeFieldAllowlist": [
+    "stable native TaxParcelNumber parcel identifier",
+    "parcel polygon geometry",
+    "source service metadata",
+    "CRS and response-format metadata"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner or right-holder names",
+    "addresses or contact details",
+    "title or certificate details",
+    "tax, account, identity, or application fields",
+    "business, legal-description, valuation, land-use, and exemption fields"
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Pierce County tax parcel layer; official service metadata describes countywide tax parcel polygons.",
+    "verifiedOpenScope": "Anonymous public ArcGIS service and one bounded exact-point parcel response verified; service metadata reports the countywide extent.",
+    "countrywideVerified": false,
+    "citywideGeometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "A real public source and safe sample are evidenced, but runtime readiness remains held pending independent serial adapter qualification. This packet is not source integration or admission.",
+  "resultCategory": "local_registry_and_public_geometry",
+  "remainingUncertainty": "The county viewer UI was Cloudflare-challenged, and this attempt did not independently verify municipal boundary clipping or citywide parcel completeness. The exact WUP point was preserved and not shifted to force the hit."
+}

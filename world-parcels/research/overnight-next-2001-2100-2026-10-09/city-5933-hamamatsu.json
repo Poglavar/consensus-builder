@@ -1,0 +1,57 @@
+{
+  "cityCode": 5933,
+  "queueRank": 2061,
+  "country": "Japan",
+  "countryCode": "JP",
+  "point": [34.7346658683187, 137.739147470906],
+  "population2025": 282084,
+  "population2025k": 282.084,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hamamatsu official cadastral map parcel GIS",
+        "result": "Search located Hamamatsu City's official land-number map page and its official public WagMap viewer. The city describes the map as reference information for land numbers and approximate shapes, not an official proof or rights/area source.",
+        "actualResultUrls": [
+          "https://www.city.hamamatsu.shizuoka.jp/shisanze/zei/shisanze/tibanzu.html",
+          "https://www2.wagmap.jp/hamamatsu/Portal"
+        ]
+      },
+      {
+        "language": "Japanese",
+        "query": "浜松市 地番図 公式 GIS",
+        "result": "浜松市公式ページ confirms 浜松市地番図 and links the public map viewer; the viewer lists 地番図 as map 64. Separate first-party discovery also found the Ministry of Justice notice for public registry-map data and the G空間情報センター Hamamatsu dataset listing.",
+        "actualResultUrls": [
+          "https://www.city.hamamatsu.shizuoka.jp/shisanze/zei/shisanze/tibanzu.html",
+          "https://www2.wagmap.jp/hamamatsu/Portal",
+          "https://www.moj.go.jp/MINJI/minji05_00494.html",
+          "https://www.geospatial.jp/ckan/dataset/houmusyouchizu-2026-1-1056"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "name": "浜松市地番図 (Hamamatsu City land-number map)",
+    "custodian": "Hamamatsu City Finance Department, Asset Tax Division (財務部資産税課)",
+    "viewerUrl": "https://www2.wagmap.jp/hamamatsu/Portal",
+    "officialPageUrl": "https://www.city.hamamatsu.shizuoka.jp/shisanze/zei/shisanze/tibanzu.html",
+    "mapId": 64,
+    "scope": "Hamamatsu citywide reference map for land numbers and approximate parcel shapes",
+    "limitations": [
+      "City states it is prepared for fixed-asset-tax assessment reference.",
+      "City states it is not an official certificate and must not be used as the basis for area measurement or rights verification.",
+      "No owner, address, titleholder, tax, account, or personal fields were requested or retained."
+    ]
+  },
+  "sourceAssessment": {
+    "publicAnonymousAccess": true,
+    "parcelGeometrySampleRetained": false,
+    "reasonNoSample": "The public viewer loaded and exposed map configuration, but the bounded safe requests did not return a parcel feature with a stable native parcel identity and geometry. No polygon was invented or retained.",
+    "runtimeReadiness": "held",
+    "integrationStatus": "research packet only; not admitted to runtime"
+  }
+}

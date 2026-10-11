@@ -1,0 +1,18 @@
+{
+  "taskId": "city:1825",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/city-1825-la-romana.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/la-romana-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T09:34:52Z",
+  "reason": "The Registro Inmobiliario identifies La Romana within regional cadastral-survey jurisdiction and links parcel consultation. The paired evidence reports unavailable consultation routes and a challenged geoservice; no native-ID polygon response or qualified adapter exists. These access failures do not establish citywide absence.",
+  "firstPartyCustodyUrl": "https://ri.gob.do/?page_id=331",
+  "identityCheck": "Official WUP 2025 source checksum and exact 2025 row match the immutable ranked roster, pending queue, packet, and paired review: code 1825, rank 2324, Dominican Republic, point [18.4359187916605,-68.992085876653], 250479 persons.",
+  "searchCheck": "English and Spanish executed query text, results, and URLs inspected in the packet.",
+  "sampleCheck": "No sample polygon or native parcel ID retained; the three-full-polygon cap and safe-attribute limit are satisfied.",
+  "admissionCheck": "Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, and headed Details-panel verification have no independent evidence; no admission or runtime change."
+}

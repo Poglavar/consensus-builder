@@ -111,7 +111,9 @@ export function createParcelAttributeFilter(descriptor) {
     const nullFields = descriptor.attributeNull === undefined ? [] : descriptor.attributeNull;
     const fieldPattern = descriptor.adapter === 'arcgis'
         ? /^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*){0,7}$/
-        : /^[A-Za-z_][A-Za-z0-9_]*$/;
+        : descriptor.adapter === 'wfs'
+            ? /^[\p{L}_][\p{L}\p{N}\p{M}_]*$/u
+            : /^[A-Za-z_][A-Za-z0-9_]*$/;
     const validField = field => typeof field === 'string' && fieldPattern.test(field)
         && descriptor.outFields.includes(field);
     const entries = Object.entries(descriptor.attributeFilters || {}).map(([field, value]) =>

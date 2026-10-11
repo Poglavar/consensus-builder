@@ -1,0 +1,104 @@
+{
+  "cityCode": 7700,
+  "queueRank": 2316,
+  "name": "Shehong",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [30.8761527231365, 105.377733293742],
+  "population2025": 251287,
+  "population2025k": 251.287,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Shehong China official cadastral parcel map land resources GIS",
+        "result": "First-party discovery reached the official Shehong municipal government homepage and its department-service route for the Shehong Natural Resources and Planning Bureau. The bounded inspection found local department and registration-window information, but no public cadastral viewer or parcel feature API.",
+        "actualResultUrls": [
+          "https://www.shehong.gov.cn/",
+          "http://www.sczwfw.gov.cn/jiq/front/item/bmft_index?deptCode=11510822008503139F&areaCode=510981000000"
+        ]
+      },
+      {
+        "language": "Chinese (native/local)",
+        "query": "射洪市 官方 自然资源和规划局 不动产登记 地籍图 查询",
+        "result": "Native-language discovery identified the official Shehong government department-service page and the Sichuan provincial natural-resources real-estate-registration guide. The local page exposes registration service locations and department services, but no anonymous parcel map or geometry endpoint.",
+        "actualResultUrls": [
+          "https://www.shehong.gov.cn/",
+          "http://www.sczwfw.gov.cn/jiq/front/item/bmft_index?deptCode=11510822008503139F&areaCode=510981000000",
+          "https://dnr.sc.gov.cn/scdnr/sczrzf/2024/5/9/e05c93e3e78c4cc8a0935d0a191690ec/files/%E5%9B%9B%E5%B7%9D%E7%9C%81%E8%87%AA%E7%84%B6%E8%B5%84%E6%BA%90%E5%8E%85%E5%85%B3%E4%BA%8E%E5%8D%B0%E5%8F%91%E3%80%8A%E5%9B%9B%E5%B7%9D%E7%9C%81%E4%B8%8D%E5%8A%A8%E4%BA%A7%E7%99%BB%E8%AE%B0%E6%9C%8D%E5%8A%A1指南》的通知.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "geometryVerified": false,
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "runtimeEligible": false,
+  "runtimeReadiness": "held",
+  "discoveryMethod": "first-party English and Chinese discovery plus bounded anonymous inspection of the official municipal and Sichuan government service pages",
+  "sourceReview": "The official Shehong municipal homepage links the Shehong Natural Resources and Planning Bureau. Its department-service page lists a real-estate registration center service window at the government service center and a registration-related office address. This is local registry/procedure evidence. The inspected pages did not expose a public cadastral viewer, current map JavaScript/configuration, anonymous parcel feature route, schema/CRS, or safe native parcel ID plus polygon response.",
+  "attemptsRecorded": [
+    {
+      "method": "GET",
+      "url": "https://www.shehong.gov.cn/",
+      "httpStatus": 200,
+      "outcome": "Official Shehong municipal government homepage loaded. It exposed the department-service link for 射洪市自然资源和规划局 and a 政务地图 section, but no cadastral viewer or parcel API link was found in the bounded page inspection."
+    },
+    {
+      "method": "GET",
+      "url": "http://www.sczwfw.gov.cn/jiq/front/item/bmft_index?deptCode=11510822008503139F&areaCode=510981000000",
+      "httpStatus": 200,
+      "outcome": "Official Sichuan government service page for Shehong Natural Resources and Planning Bureau loaded. It lists the local real-estate registration center window at the Shehong government service center and department services. No public map, feature service, parcel schema, CRS, or anonymous geometry response was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://dnr.sc.gov.cn/scdnr/sczrzf/2024/5/9/e05c93e3e78c4cc8a0935d0a191690ec/files/%E5%9B%9B%E5%B7%9D%E7%9C%81%E8%87%AA%E7%84%B6%E8%B5%84%E6%BA%90%E5%8E%85%E5%85%B3%E4%BA%8E%E5%8D%B0%E5%8F%91%E3%80%8A%E5%9B%9B%E5%B7%9D%E7%9C%81%E4%B8%8D%E5%8A%A8%E4%产登记服务指南》的通知.pdf",
+      "httpStatus": 200,
+      "outcome": "Sichuan provincial first-party registration guide was found by native-language discovery. It describes county-level real-estate registration responsibility and procedures, but is general provincial guidance and does not establish a Shehong parcel API or geometry source."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://www.shehong.gov.cn/",
+      "httpStatus": 200,
+      "outcome": "English and native-language first-party discovery queries were run against official-source candidates. Search results and direct page inspection identified the local custodian/service route but no public cadastral map/API."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "No public cadastral viewer or current JavaScript/configuration endpoint was found.",
+    "geometryCrs": "Not observed.",
+    "nativeIdentity": "Not observed; no parcel feature response was obtained.",
+    "sourceFieldMapping": {},
+    "boundedAnonymousResponse": {
+      "requestScope": "Exact WUP point [30.8761527231365, 105.377733293742] was preserved for qualification; no coordinate shift was made.",
+      "featureCount": null,
+      "geometryFeatureCount": 0,
+      "result": "No public feature-query route was exposed; no exact-point hit or miss was inferred."
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel ID if later exposed and source-proven",
+    "full parcel polygon geometry if later exposed",
+    "source service URL",
+    "source CRS / requested output CRS",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "Local registry and natural-resources custodian evidence exists, but no public anonymous parcel geometry service, schema/CRS, or safe native ID-plus-polygon sample was qualified."
+  },
+  "scopeLimits": [
+    "Exact WUP point [30.8761527231365, 105.377733293742] was preserved and not shifted.",
+    "No exact-point hit or miss was used as evidence of citywide cadastral absence.",
+    "Provincial registration guidance and local service-window information are not source integration or parcel-feature evidence.",
+    "No parcel polygon is retained because no unchanged polygon with a qualified native identity was obtained.",
+    "No citywide coverage, update cadence, service CRS, or stable parcel-identity semantics were verified.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained."
+  ],
+  "uncertainty": "Shehong local natural-resources custodianship and real-estate registration service evidence are documented by official government pages. Current public map/API availability, parcel geometry coverage, schema, CRS, stable native identity semantics, and anonymous access remain unverified. Runtime/admission remains held."
+}

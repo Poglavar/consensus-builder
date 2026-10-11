@@ -1,0 +1,20 @@
+{
+  "taskId": "city:4805",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/city-4805-shendi.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/shendi-service-review.json",
+    "tmp/valhalla-parcel-research/4805/aqari.headers",
+    "tmp/valhalla-parcel-research/4805/sudanmap-service.json",
+    "tmp/valhalla-parcel-research/4805/shendi-query.geojson"
+  ],
+  "checkedAt": "2026-10-11T09:14:46Z",
+  "reason": "Official Sudan land-registration and geoportal leads do not yield an anonymous Shendi parcel response. Aqari returned 502, geoportal timed out, and the separate SudanMap service is a settlements/rivers/localities training layer. Custody remains unresolved (null); access failures and a nonparcel zero are not citywide absence.",
+  "identityCheck": "Original 2025 WUP CSV, immutable ranked roster, pending queue, packet, and paired review agree on code, rank, country, point, and population in persons.",
+  "searchCheck": "English and local-language query text and actual result URLs inspected in the paired packet/review.",
+  "sampleCheck": "No retained full parcel polygon or safe native parcel ID; the three-polygon limit is satisfied.",
+  "admissionCheck": "No independently evidenced fresh native-ID parcel reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. Runtime admission remains held."
+}

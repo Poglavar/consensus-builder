@@ -1,0 +1,15 @@
+{
+  "taskId": "city:3862",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-3862-nacala.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/nacala-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T23:43:12Z",
+  "reason": "WUP Nacala rank 2122, Mozambique, exact point, and 273732 persons match the immutable roster and queue. English and Portuguese executed searches and result URLs are recorded. The municipal service page loaded and says online services are unavailable; the historical Nacala cadastre evidence supports custody, while the public MOZGIS cadastral layer inspected is scoped to Matola. Its empty exact-point response is not Nacala-wide absence. No verified Nacala native-ID polygon response or sample exists. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are absent; runtime remains held.",
+  "firstPartyPagesChecked": [
+    "https://cmnacala.gov.mz/servicos"
+  ]
+}

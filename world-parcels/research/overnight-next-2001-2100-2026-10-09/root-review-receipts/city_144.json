@@ -1,0 +1,12 @@
+{
+  "taskId": "city:144",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-144-salalah.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/salalah-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/root-review-receipts/source-evidence/city_144-root-review.json"
+  ],
+  "checkedAt": "2026-10-10T22:30:38Z"
+}

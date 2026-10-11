@@ -1,0 +1,93 @@
+{
+  "cityCode": 6845,
+  "queueRank": 2257,
+  "name": "New Orleans",
+  "country": "United States of America",
+  "countryCode": "US",
+  "point": [29.9532208060308, -90.0721771633729],
+  "population2025": 258413,
+  "population2025k": 258.413,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "New Orleans official parcel GIS map Orleans Parish assessor cadastral parcels",
+        "result": "Found the City of New Orleans GIS parcel REST service; its Parcels layer says it contains parcels within the City of New Orleans, is maintained by the Orleans Parish Assessor's office, and is updated weekly.",
+        "actualResultUrls": [
+          "https://gis.nola.gov/arcgis/rest/services/LandBase/Parcels/MapServer/0",
+          "https://gis.nola.gov/",
+          "https://www.nolaassessor.com/contact-us/"
+        ]
+      },
+      {
+        "language": "English (local/native language)",
+        "query": "site:cityofno.com GIS parcel map New Orleans official",
+        "result": "Found the City of New Orleans GIS portal and its Assessor Landbase parcel service; no separate non-English local-language source is applicable for this US locality.",
+        "actualResultUrls": [
+          "https://gis.nola.gov/",
+          "https://maps.nola.gov/server/rest/services/Assessor/Landbase_Layers/MapServer/0"
+        ]
+      }
+    ],
+    "researchedAt": "2026-10-11",
+    "scope": "City of New Orleans / Orleans Parish parcel coverage, not a nationwide cadastral source"
+  },
+  "registryFound": true,
+  "registry": {
+    "custodian": "Orleans Parish Assessor's Office",
+    "publicService": "City of New Orleans Enterprise GIS / Assessor Landbase Layers",
+    "serviceUrl": "https://maps.nola.gov/server/rest/services/Assessor/Landbase_Layers/MapServer/0",
+    "layerId": 0,
+    "layerName": "Parcels",
+    "descriptionEvidence": "The service is a polygon parcel layer with GEOPIN and OBJECTID fields; the City GIS search result describes the corresponding LandBase/Parcels layer as maintained by the Orleans Parish Assessor's office and updated weekly."
+  },
+  "sourceEvidence": {
+    "routeAttempts": [
+      {
+        "route": "https://gis.nola.gov/arcgis/rest/services/LandBase/Parcels/MapServer/0?f=pjson",
+        "outcome": "TLS verification failed in the local curl environment (unable to get local issuer certificate); not retried with verification disabled.",
+        "request": "GET layer metadata"
+      },
+      {
+        "route": "https://maps.nola.gov/server/rest/services/Assessor/Landbase_Layers/MapServer/0?f=pjson",
+        "outcome": "Succeeded anonymously; polygon layer metadata returned.",
+        "request": "GET layer metadata"
+      },
+      {
+        "route": "https://maps.nola.gov/server/rest/services/Assessor/Landbase_Layers/MapServer/0/query",
+        "outcome": "Succeeded anonymously with three bounded records (OBJECTID 1, 2, 3) and full polygon geometry requested in EPSG:4326; raw unchanged response is in ignored tmp/valhalla-parcel-research/6845/sample-query.geojson.",
+        "request": "GET, objectIds=1,2,3, outFields=OBJECTID,GEOPIN, returnGeometry=true, outSR=4326, f=geojson"
+      },
+      {
+        "route": "https://maps.nola.gov/server/rest/services/Assessor/Landbase_Layers/MapServer/0/query",
+        "outcome": "Succeeded anonymously; exact WUP point returned zero intersecting parcel features. This is an exact-point result only and is not evidence of citywide absence.",
+        "request": "GET point geometry x=-90.0721771633729 y=29.9532208060308, inSR=4326, spatialRel=esriSpatialRelIntersects, returnGeometry=true, outSR=4326"
+      },
+      {
+        "route": "https://maps.nola.gov/server/rest/services/Assessor/Landbase_Layers/MapServer/0/query",
+        "outcome": "Succeeded anonymously; bounded non-geometry attribute response returned three records and confirmed safe field names.",
+        "request": "GET where=1=1, outFields=*, returnGeometry=false, resultRecordCount=3"
+      }
+    ],
+    "schema": {
+      "geometryType": "esriGeometryPolygon",
+      "nativeSpatialReference": {"wkid": 102682, "latestWkid": 3452},
+      "observedOutputSpatialReference": "EPSG:4326",
+      "nativeIdentity": "GEOPIN (integer), with OBJECTID as ArcGIS object identifier",
+      "safeFieldAllowlist": ["GEOPIN", "OBJECTID", "geometry"],
+      "excludedFields": ["SITUS_DIR", "SITUS_STREET", "SITUS_TYPE", "SITUS_NUMBER", "PERIMETER", "ACRES", "Shape_Area", "Shape_Length"],
+      "fieldMapping": {"id": "GEOPIN", "fallbackArcGISObjectId": "OBJECTID", "geometry": "geometry"},
+      "compositeKeyProvenance": null
+    },
+    "coverageLimitations": [
+      "The service is city/parish parcel coverage, not proof of a statewide or national cadastral registry.",
+      "The exact city point did not intersect a parcel; no coordinate was shifted to force a hit.",
+      "Only three bounded anonymous geometries were inspected and none is retained in the cohort packet.",
+      "No owner, address, contact, titleholder, tax/account, or other personal/unsafe fields were requested or retained."
+    ]
+  },
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "Source evidence is complete, but adapter qualification and admission remain a separate serial-review decision."
+}

@@ -1,0 +1,78 @@
+{
+  "taskId": "city:4686",
+  "decision": "held",
+  "checkedAt": "2026-10-10T22:04:26Z",
+  "identity": {
+    "cityCode": 4686,
+    "rank": 2064,
+    "name": "Ikirun",
+    "country": "Nigeria",
+    "countryCode": "NG",
+    "point": [
+      7.90367938512137,
+      4.6870672259009
+    ],
+    "populationPersons": 281875,
+    "populationUnit": "persons",
+    "sourceArchiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114"
+  },
+  "searches": {
+    "languagesRecorded": [
+      "English",
+      "Yoruba (local/native)"
+    ],
+    "queriesHaveResultsAndUrls": true,
+    "executionEvidence": "Worker packet records actual result URLs and outcomes; root checked those records and cited first-party sources."
+  },
+  "firstPartyChecks": [
+    {
+      "url": "https://www.osunstate.gov.ng/ministries/office-of-surveyor-general/",
+      "observation": "Official Osun State page lists the Surveyor General and cadastral/legal survey and mapping/GIS departments; its navigation also lists Ikirun as a major town."
+    },
+    {
+      "url": "https://www.cofo.osunstate.gov.ng/",
+      "observation": "Official CofO page is a land-document verification application, not an observed public parcel layer."
+    }
+  ],
+  "originalCache": [
+    {
+      "path": "tmp/valhalla-parcel-research/4686/osun-surveyor.html",
+      "sha256": "b9dc00f21b5abd559c75d75f35ef699498338849d90570c719a92a8924467425",
+      "bytes": 366667
+    },
+    {
+      "path": "tmp/valhalla-parcel-research/4686/cofo.html",
+      "sha256": "b993e777c2338f1f8a6827ce887f892502801292e957144610d906e83d2aa28a",
+      "bytes": 58346
+    },
+    {
+      "path": "tmp/valhalla-parcel-research/4686/519-a2e2c8402cad9c41.js",
+      "sha256": "73f3bfd09a7fb4927295263920e76cb6894350e1b29181d706ed14d6775384df",
+      "bytes": 17019
+    },
+    {
+      "path": "tmp/valhalla-parcel-research/4686/api-root.txt",
+      "sha256": "259db65b2e89c3ac85156a89bac999af78a6ef775ab50c17737f5a8a100ace3b",
+      "bytes": 129
+    }
+  ],
+  "custody": {
+    "packetRegistryFound": true,
+    "rootAssessment": "State cadastral/survey custody is supported by the official Osun page. The saved CofO client calls POST /verify using document data; its API root returns a welcome JSON, not parcel IDs or geometry."
+  },
+  "sample": {
+    "retainedFullPolygonCount": 0,
+    "nativeParcelIdObserved": false,
+    "safeIdAttributesVerified": false
+  },
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "admitted": false
+  },
+  "scopeCaveat": "No anonymous public native-ID/full-polygon response was independently verified. Restricted viewers, unavailable routes and portal shells do not show citywide parcel absence."
+}

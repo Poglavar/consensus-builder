@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "city": {
+    "code": "6413",
+    "name": "Arlington",
+    "point": [
+      -97.0729125498606,
+      32.7174112900959
+    ]
+  },
+  "descriptor": {
+    "id": "arlington-tax-parcels",
+    "label": "City of Arlington Tax Parcel",
+    "adapter": "arcgis",
+    "endpoint": "https://gis2.arlingtontx.gov/agsext2/rest/services/OpenData/OD_Property/MapServer/2",
+    "cityIds": [
+      "6413"
+    ],
+    "idField": "TaxParcelId",
+    "objectIdField": "OBJECTID",
+    "idType": "integer",
+    "idPrefix": "US-TX-ARLINGTON-",
+    "outFields": [
+      "TaxParcelId",
+      "OBJECTID"
+    ],
+    "queryFormat": "geojson",
+    "boundsQueryMode": "offset",
+    "idsQueryMode": "offset",
+    "pageSize": 200,
+    "idBatchSize": 80,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 1,
+    "metricSrid": 32614,
+    "capabilities": {
+      "areaEnumeration": true
+    },
+    "attribution": "City of Arlington, Texas GIS / OpenData",
+    "catalogueUrl": "https://gis2.arlingtontx.gov/agsext2/rest/services/OpenData/OD_Property/MapServer/2",
+    "viewerUrl": "https://gis.arlingtontx.gov/mapsonline/"
+  },
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Frozen city packet and service review confirm the City of Arlington municipal Tax Parcel polygon layer; the official city Plat Search workflow uses its Tax Parcel identify layer for land parcels and recorded plats.",
+      "First-party layer metadata defines Tax Parcel as distinct measured tracts of land; the OD_Property service describes land in the city, and its document scope identifies City of Arlington TX. See evidence/source-inspection.json.",
+      "Frozen bounded sample contains native TaxParcelId values 4201521, 4201522, 4201523; the exact city point miss is not citywide absence."
+    ]
+  },
+  "sourceCandidateSha256": "cdaa19aaf0f456142d9315030b32d079ddf1ca3573c955f4b276f48734779045",
+  "qualificationRecordedSha256": "cdaa19aaf0f456142d9315030b32d079ddf1ca3573c955f4b276f48734779045",
+  "sourceCandidatePath": "qualification/evidence/cities/6413/candidate.json",
+  "originalSeedSha256": "cdaa19aaf0f456142d9315030b32d079ddf1ca3573c955f4b276f48734779045",
+  "originalSeedPath": "qualification/evidence/cities/6413/candidate.json"
+}

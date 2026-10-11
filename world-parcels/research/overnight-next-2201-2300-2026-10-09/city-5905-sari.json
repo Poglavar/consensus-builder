@@ -1,0 +1,39 @@
+{
+  "cityCode": 5905,
+  "queueRank": 2212,
+  "name": "Sari",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "point": [36.5612105372209, 53.0634320073292],
+  "population2025": 263887,
+  "population2025k": 263.887,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sari Iran cadastral parcel map official GIS Sari municipality land registry",
+        "result": "Discovery identified the official Sari municipality site and the Mazandaran provincial SSAA registry office, but no city-specific public parcel viewer, service endpoint, or downloadable safe parcel dataset.",
+        "actualResultUrls": [
+          "https://sari.ir",
+          "https://mz.ssaa.ir",
+          "https://www.waze.com/live-map/directions/adarh-kl-thbt-asnad-w-amlak-astan-mazndran-azadi-local-lane-knargthr-aazady-sary?to=place.w.34734446.347606600.18668494"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "ساری کاداستر نقشه پارسل سامانه رسمی ثبت اسناد املاک؛ ساری نقشه املاک کاداستر سازمان ثبت اسناد مازندران",
+        "result": "نتایج، اداره کل ثبت اسناد و املاک استان مازندران در ساری و خدمات ملی کاتب/ثبت من/شمیم را نشان دادند؛ سرویس عمومی محلیِ پارسل با شناسه پایدار و هندسه ناشناس پیدا نشد.",
+        "actualResultUrls": [
+          "https://mz.ssaa.ir",
+          "https://amagestate.com/wiki/saqar-guide/",
+          "https://www.samisoft.ir/jam_location_finder/",
+          "https://t.me/s/mazandnotary_com?before=1951"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "researchNote": "First-party/public-service probing and qualification evidence are documented in sari-service-review.json. The provincial registry custodian is evidenced, but no anonymous safe parcel ID+geometry response was obtained; no parcel sample is retained. This packet is not source integration or runtime admission."
+}

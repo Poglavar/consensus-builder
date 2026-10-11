@@ -1,0 +1,43 @@
+{
+  "taskId": "city:4785",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-4785-legazpi.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/legazpi-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json",
+    "tmp/valhalla-parcel-research/legazpi/geoportal.html",
+    "tmp/valhalla-parcel-research/legazpi/lpscript.js",
+    "tmp/valhalla-parcel-research/legazpi/locations.json",
+    "tmp/valhalla-parcel-research/legazpi/albay-municipalities.json",
+    "tmp/valhalla-parcel-research/legazpi/tiepoints.json"
+  ],
+  "checkedAt": "2026-10-10T22:55:44Z",
+  "identityCheck": {
+    "rank": 2099,
+    "country": "Philippines",
+    "point": [
+      13.1496163977733,
+      123.733536495319
+    ],
+    "populationPersons": 276662,
+    "result": "packet matches immutable ranked roster and pending queue; source archive SHA-256 matches handoff and its 2025 Pop field"
+  },
+  "discoveryCheck": "English and local-language executed query records are present in packet; no full parcel polygons or safe native parcel IDs are retained.",
+  "firstPartyChecks": [
+    "Cached first-party lot-plotter page and JavaScript, province list, and Albay municipality list were opened; these contain viewer and location metadata, not parcel geometry.",
+    "Cached tiepoints.json is an empty list, so the worker’s positive tie-point count is not supported by that cache alone. A fresh ordinary session GET of the first-party lot-plotter then ALBAY/LEGAZPI and ALBAY/LEGASPI returned HTTP 200 with 29 and 25 tie-point metadata records respectively, each with pointref and id only. The same endpoint without the viewer session returned HTTP 401.",
+    "Tie-point IDs are survey-control metadata, not safe native parcel IDs or polygons. Neither access condition nor the empty cache establishes parcel absence."
+  ],
+  "admissionCheck": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "Local cadastral and assessor custody is evidenced, but lot-plotter responses establish only location and tie-point metadata; no parcel polygon/native ID adapter is qualified.",
+  "absenceClaim": false,
+  "runtimeAdmission": false
+}

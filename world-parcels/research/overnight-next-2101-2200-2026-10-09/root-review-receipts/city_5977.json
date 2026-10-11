@@ -1,0 +1,28 @@
+{
+  "taskId": "city:5977",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-5977-luton.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/luton-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T23:48:16Z",
+  "reason": "HM Land Registry guidance and the official dataset catalogue support national custody and an indicative registered-freehold INSPIRE subset. The local GML download redirected, WFS was disabled and WMS returned a raster only; no Luton native-ID polygon was retained. Fresh exact-ID reads, forced paging, 13 bounded cells, independent metric GEOS validity/overlap/operation checks, source binding, and headed Details verification are unevidenced; no admission.",
+  "queueIdentity": {
+    "cityCode": 5977,
+    "rank": 2125,
+    "country": "United Kingdom",
+    "point": [
+      51.8953504741231,
+      -0.449799472542919
+    ],
+    "populationPersons": 273544
+  },
+  "searchLanguages": [
+    "English",
+    "native/local (English; United Kingdom)"
+  ],
+  "retainedPolygonCount": 0,
+  "runtimeAdmission": false
+}

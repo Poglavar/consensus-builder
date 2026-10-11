@@ -1,11 +1,15 @@
 // ENS CCIP-Read gateway route. Resolves names forwarded by the L1
 // OffchainResolver and returns signed records, for two namespaces:
 //   <slug>.parcels.urbangametheory.eth     -> parcel_ens mapping
-//   <id>.proposals.urbangametheory.eth     -> minted proposal (numeric on-chain id)
+//   <id>.proposals.urbangametheory.eth     -> legacy numeric proposal or unique chain mirror
 // ownerOf (addr record) is best-effort and parcel-only.
 import { JsonRpcProvider, Contract } from 'ethers';
+import { createRequire } from 'node:module';
 import { resolveQuery, buildTextValue } from '../ens/gateway.js';
 import { parcelIdToCity } from '../ens/slug.js';
+
+const require = createRequire(import.meta.url);
+const { buildChainProposalPath } = require('../../frontend/js/proposals/chain-ref.js');
 
 const DEFAULT_PUBLIC_BASE_URL = 'https://urbangametheory.xyz';
 const DEFAULT_PARCELS_PARENT = 'parcels.urbangametheory.eth';
@@ -29,8 +33,7 @@ function buildConfig(env) {
     };
 }
 
-// Text records for a minted proposal name (<id>.proposals.…). Mirrors the
-// parcel text builder's shape; `label` is the numeric proposal id.
+// Text records for numeric legacy proposal names and chain-qualified mirror names.
 function proposalTextValue(key, { record, config, isApex }) {
     if (!record) {
         if (!isApex) return ''; // not a resolvable proposal / plan
@@ -41,6 +44,10 @@ function proposalTextValue(key, { record, config, isApex }) {
     const ids = record.ids || [];
     switch (key) {
         case 'url':
+            if (record.chainRef) {
+                const path = buildChainProposalPath(record.chainRef);
+                return path ? `${config.publicBaseUrl}${path}` : '';
+            }
             return `${config.publicBaseUrl}/proposals/${ids.join(',')}`;
         case 'description':
             return record.title || (ids.length > 1 ? `Plan of ${ids.length} proposals` : `Proposal ${ids[0]}`);
@@ -87,11 +94,40 @@ export function setupEnsRoute(app, pool) {
         return { ...row, city_name: city ? city.cityName : null };
     }
 
-    // Resolve a proposals label to a list of proposal ids:
+    // Resolve a proposals label to a legacy proposal id list or one chain mirror:
     //   - numeric / hyphen-chain (1, 1-2-3) → those minted proposal id(s)
+    //   - chain-<48 hex chars> → one unique canonical chain_<sha256> mirror
     //   - otherwise a named plan slug → ens_plan's proposal_ids (mutable)
-    // Minted proposals use numeric on-chain ids; local p-… drafts don't resolve.
     async function lookupProposal(label) {
+        const chainMatch = /^chain-([0-9a-f]{48})$/i.exec(label);
+        if (chainMatch) {
+            const prefix = `chain_${chainMatch[1].toLowerCase()}`;
+            const upperBound = `${prefix}g`;
+            try {
+                const { rows } = await pool.query(
+                    `SELECT proposal_id, title, name, screenshot_url,
+                            proposal_data->'chainMirror'->'ref' AS chain_ref
+                     FROM proposal
+                     WHERE proposal_id >= $1 AND proposal_id < $2
+                     LIMIT 2`,
+                    [prefix, upperBound],
+                );
+                // A truncated hash is only a name when it maps to one stored row.
+                if (rows.length !== 1 || !rows[0].chain_ref) return null;
+                const row = rows[0];
+                const chainRef = { ...row.chain_ref };
+                // The canonical stored Solana network is namespaced; public paths
+                // use the bare cluster expected by the chain proposal loader.
+                if (chainRef.chainType === 'solana') {
+                    chainRef.chainId = String(chainRef.chainId || '').replace(/^solana-/i, '');
+                }
+                if (!buildChainProposalPath(chainRef)) return null;
+                return { chainRef, title: row.title || row.name,
+                    screenshot_url: row.screenshot_url };
+            } catch (_) {
+                return null; // absent/old schema or query failure → fail closed
+            }
+        }
         if (/^[0-9]+(-[0-9]+)*$/.test(label)) {
             const ids = label.split('-');
             let title;

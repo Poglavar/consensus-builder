@@ -1,0 +1,13 @@
+{
+  "taskId": "city:6141",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-6141-myeik.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/myeik-service-review.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/root-review-receipts/source-evidence/city_6141-root-review.json"
+  ],
+  "checkedAt": "2026-10-10T20:26:25.049980Z",
+  "reviewFinding": "Immutable identity matches. English and Burmese searches are recorded and independently repeated. Official SLRD site identifies national custody, but direct first-party request returned 403 and no Myeik-local viewer, full parcel polygon, or native ID was obtained. A 403 is an access limit, not citywide absence; all admission gates remain unmet."
+}

@@ -1,0 +1,59 @@
+{
+  "cityCode": 3188,
+  "queueRank": 2010,
+  "name": "Qamishli",
+  "country": "Syrian Arab Republic",
+  "countryCode": "SY",
+  "iso3": "SYR",
+  "point": [37.0498596581309, 41.23264118626],
+  "population2025": 289200,
+  "population2025k": 289.2,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Qamishli Syria cadastral map parcel registry official",
+        "result": "Search found official Syrian General Directorate of Real Estate Affairs / Ministry of Local Administration and Environment material describing land-registry services and digitization, but no public Qamishli cadastral viewer, parcel API, schema, CRS, or anonymous parcel geometry response.",
+        "actualResultUrls": [
+          "https://sana.sy/governorates/2433432/",
+          "https://sana.sy/locals/2522661/",
+          "https://sana.sy/en/syria/2280759/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "قامشلي سوريا السجل العقاري الخريطة العقارية مديرية المصالح العقارية",
+        "result": "Arabic search found official announcements about electronic land-registry services and general registry responsibilities, but no Qamishli local map viewer or public parcel endpoint. The cited service expansion announcements list covered provinces without evidencing Hasakah/Qamishli parcel coverage.",
+        "actualResultUrls": [
+          "https://sana.sy/governorates/2433432/",
+          "https://sana.sy/locals/2522661/",
+          "https://latakia.gov.sy/services"
+        ]
+      }
+    ]
+  },
+  "attempt": 1,
+  "cohort": "overnight-next-2001-2100-2026-10-09",
+  "sourceAssessment": {
+    "localCustodian": "No Qamishli or Hasakah local registry/cadastre custodian with an accessible public parcel map or API was evidenced.",
+    "nationalAuthorities": [
+      {
+        "name": "General Directorate of Real Estate Affairs, Ministry of Local Administration and Environment",
+        "role": "Official Syrian land-registry authority; official announcements describe registry records, cadastral plans and electronic-service expansion.",
+        "parcelService": "No public Qamishli parcel viewer/API evidenced"
+      },
+      {
+        "name": "Syrian provincial/local administrative services",
+        "role": "Official service pages can describe requests for cadastral plans and registry extracts.",
+        "parcelService": "No Qamishli anonymous map/API response evidenced"
+      }
+    ],
+    "safeFieldsAllowed": ["stable native parcel ID", "geometry", "source CRS", "service URL", "retrieval timestamp"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "transaction details"]
+  },
+  "runtimeReadiness": "held",
+  "notes": "No parcel sample retained. Exact WUP point was preserved in latitude/longitude order and was not shifted. No official public viewer JavaScript/configuration or parcel API was located, so no exact-point request was issued. A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is not treated as citywide cadastral absence. Packet is complete for this attempt; source integration/admission remains unqualified."
+}

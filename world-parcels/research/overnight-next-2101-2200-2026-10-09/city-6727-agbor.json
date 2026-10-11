@@ -1,0 +1,112 @@
+{
+  "cityCode": 6727,
+  "queueRank": 2180,
+  "name": "Agbor",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "iso2": "NG",
+  "iso3": "NGA",
+  "locId": 566,
+  "capital": false,
+  "point": [6.24875754589369, 6.19484525731121],
+  "population2025": 267341,
+  "population2025k": 267.341,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Agbor Nigeria official cadastral map parcel viewer Delta State land registry GIS",
+        "result": "Found official Delta State land/urban-development material and the national Office of the Surveyor-General of the Federation; no public Agbor parcel viewer or machine-readable parcel layer was found.",
+        "actualResultUrls": [
+          "https://deltastate.gov.ng/sabzz1/",
+          "https://osgof.gov.ng/cadastral-legal-surveys/",
+          "https://osgof.gov.ng/services/"
+        ]
+      },
+      {
+        "language": "native/local (Ika/Delta context; English is Nigeria's official administrative language)",
+        "query": "Agbor Ika Delta State katastar mapa zemljišta parcela službeni",
+        "result": "No relevant local-language parcel service was found; the search surfaced the official Delta State land/survey material in English and non-cadastral map pages.",
+        "actualResultUrls": [
+          "https://deltastate.gov.ng/sabzz1/",
+          "https://www.deltastate.gov.ng/wp-content/uploads/2024/06/Delta-State-Internal-Revenue-Law-2020.pdf"
+        ]
+      }
+    ]
+  },
+  "sourceAssessment": {
+    "localCustodian": "Delta State Ministry of Lands, Survey & Urban Development is evidenced by official state material as the state land administration custodian; official budget/procedure material specifically mentions Agbor, land registration/planning, archives/registry, and LIS/GIS. No Agbor-specific public parcel service was evidenced.",
+    "nationalCustodian": "The Office of the Surveyor-General of the Federation is evidenced as Nigeria's national surveying and mapping authority, with cadastral/legal survey and cadastral GIS responsibilities.",
+    "publicService": null,
+    "nativeFieldsObserved": null,
+    "fieldMapping": null,
+    "compositeKeyProvenance": null,
+    "scope": "Official custody and service/procedure evidence only; no open parcel feature coverage was verified for Agbor."
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://deltastate.gov.ng/",
+      "httpStatus": 200,
+      "outcome": "Official Delta State site loaded; no Agbor parcel endpoint was exposed by the inspected route."
+    },
+    {
+      "method": "GET",
+      "url": "https://deltastate.gov.ng/sabzz1/",
+      "httpStatus": 200,
+      "outcome": "Official Delta State MDA services page loaded. It lists property-registration/land-based administration procedures and Ministry of Lands & Survey routes, but no anonymous parcel schema, API, or geometry response."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.deltastate.gov.ng/wp-content/uploads/2024/06/Delta-State-Internal-Revenue-Law-2020.pdf",
+      "httpStatus": 200,
+      "outcome": "Official state law PDF confirms Agbor is in a Ministry of Lands and Survey planning/registration zone; it is procedure/rate evidence, not parcel geometry or a public parcel service."
+    },
+    {
+      "method": "GET",
+      "url": "https://deltastate.gov.ng/wp-content/uploads/2024/01/Delta-State-2024-Budget.pdf",
+      "httpStatus": 200,
+      "outcome": "Official budget material mentions Agbor urban master planning and state LIS/GIS capacity; no parcel endpoint or safe parcel feature response was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://osgof.gov.ng/cadastral-legal-surveys/",
+      "httpStatus": 200,
+      "outcome": "Official national authority page loaded and documents cadastral/legal survey and cadastral GIS responsibilities; no public Agbor parcel layer was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://osgof.gov.ng/services/",
+      "httpStatus": 200,
+      "outcome": "Official national service catalog loaded; cadastral surveys and large-scale/cadastral map products are request-based, not an anonymous Agbor parcel query API."
+    },
+    {
+      "method": "GET",
+      "url": "https://deltamap.net/app/",
+      "httpStatus": 200,
+      "outcome": "Returned an unrelated JavaScript-required ARK game map application; it was not a Nigerian cadastral source and was excluded."
+    }
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier if a future official parcel feature response exposes one", "geometry: polygon if a future official parcel feature response exposes one", "source layer metadata", "CRS"],
+  "unsafeFieldsNotRequestedOrRetained": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "valuation", "assessment", "legal/title records"],
+  "geometryRetention": {
+    "sampleGeoJSON": null,
+    "featureCount": 0,
+    "reason": "No unchanged native parcel polygon with a verified safe native identity was obtained."
+  },
+  "scopeLimits": [
+    "No local Agbor cadastral map/API, native parcel field, CRS, or anonymous ID+geometry response was verified.",
+    "State and national custody/procedure evidence does not prove citywide open parcel coverage.",
+    "The exact WUP point was preserved and not shifted; no exact-point parcel hit was used or inferred.",
+    "A missing endpoint, map extent miss, timeout, login wall, or unusable UI would not establish citywide parcel absence.",
+    "No owner, address, contact, titleholder, personal, tax/account, valuation, or legal/title fields were requested or retained.",
+    "No TLS verification exception, credentials, login, CAPTCHA/Cloudflare bypass, or private token was used.",
+    "Packet completion is not source integration/admission; runtime qualification remains held for independent serial review."
+  ],
+  "runtimeReadiness": "held_pending_independent_serial_qualification",
+  "pointBasis": "Immutable WUP queue point; retained exactly in latitude/longitude order and not shifted to seek a parcel hit.",
+  "uncertainty": "The relevant Delta State and national custodians are evidenced, but public Agbor parcel-service availability, native identity/schema, CRS, geometry coverage, and adapter qualification remain unresolved."
+}

@@ -1,0 +1,55 @@
+{
+  "cityRecord": "city-1562-koutiala.json",
+  "cityCode": 1562,
+  "queueRank": 2050,
+  "city": "Koutiala",
+  "country": "Mali",
+  "countryCode": "ML",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "reviewedAt": "2026-10-10T21:43:17Z",
+  "discovery": {
+    "english": "Official discovery found the DGDC Koutiala bureau listing, public NINACAD viewer, GeoServer WFS capabilities, and an official Koutiala planning map.",
+    "native": "French administrative discovery independently confirmed the DGDC cadastral custodian and Mali cadastral procedures; no public Koutiala parcel geometry endpoint was verified."
+  },
+  "custodian": {
+    "name": "Direction générale des Domaines et du Cadastre du Mali, Bureau des Domaines et du Cadastre de Koutiala",
+    "role": "Local cadastral custodian evidenced by the official DGDC services directory; no separate municipal registry or public Koutiala parcel API was evidenced.",
+    "evidenceUrls": ["https://dndc.gouv.ml/services-regionaux-et-subregionaux/"]
+  },
+  "attemptedRoutes": [
+    {"route": "English first-party discovery", "url": "https://dndc.gouv.ml/services-regionaux-et-subregionaux/", "result": "Official page lists BUREAU/KOUTIALA."},
+    {"route": "French first-party discovery", "url": "https://dndc.gouv.ml/cadastre/", "result": "Official DGDC cadastre page documents communal/local/regional/national organization and unique NINACAD identification."},
+    {"route": "Viewer shell and current configuration", "url": "https://ninacad.sprdf.ml/assets/app-D5kMcntp.js", "result": "HTTP 200; current routes and GeoServer base identified."},
+    {"route": "Public commune list", "url": "https://ninacad.sprdf.ml/api/Home/loadCommunes", "result": "HTTP 200; Koutiala not listed."},
+    {"route": "Koutiala section lookup", "url": "https://ninacad.sprdf.ml/api/Home/LoadSectionByCommune?commune=Koutiala", "result": "HTTP 200; isSuccess=true and empty item list."},
+    {"route": "WFS capabilities", "url": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=2.0.0&request=GetCapabilities", "result": "HTTP 200; sifMali:parcelle, EPSG:4326, advertised longitude extent -9.461653050247671 to -6.053873462910213."},
+    {"route": "Parcel schema", "url": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=sifMali:parcelle&outputFormat=application/json", "result": "HTTP 200; schema fields geom, uoid, numeroparc, ninacad, section, surface, perimetre."},
+    {"route": "Bounded local parcel query", "url": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=sifMali:parcelle&outputFormat=application/json&bbox=-5.47304863912067,12.3746924626345,-5.45304863912067,12.3946924626345,urn:ogc:def:crs:EPSG::4326&propertyName=uoid,numeroparc,ninacad,section,geom&count=3", "result": "HTTP 200; empty FeatureCollection, numberMatched=0; no full parcel polygon retained."}
+  ],
+  "fieldPolicy": {
+    "allowlist": ["stable native parcel identifier", "parcel polygon geometry", "source CRS", "source field names and mapping in metadata only", "request metadata"],
+    "sourceFieldMapping": {"nativeIdentityCandidates": ["ninacad", "uoid", "numeroparc"], "geometry": "geom", "ignoredNonGeometryFields": ["section", "surface", "perimetre"]},
+    "notRequested": ["owner/right-holder", "address/contact", "titleholder/certificate", "tax/account/identity/application data", "encumbrances"]
+  },
+  "geometryReview": {
+    "publicGeometryFound": false,
+    "sampleFile": null,
+    "parcelCount": 0,
+    "reason": "The public viewer has no Koutiala commune entry, the service extent does not reach the exact point, and the bounded WFS request returned no features. These are route and coverage observations only, not evidence of citywide cadastral absence."
+  },
+  "scopeLimits": [
+    "Exact WUP point [12.3846924626345, -5.46304863912067] was preserved in latitude/longitude order and was not shifted.",
+    "The bounded request used a 0.02-degree box around the exact point and returned zero features; no citywide count or municipal-boundary query was performed.",
+    "The WFS advertised extent ending at longitude -6.053873462910213 is a service coverage limit, not proof that Koutiala lacks cadastral records elsewhere.",
+    "The official Koutiala planning PDF is planning evidence, not a parcel registry or safe parcel-ID geometry response.",
+    "Packet completion and absence of a retained sample do not constitute source integration or admission."
+  ],
+  "qualification": {
+    "registryFound": true,
+    "publicParcelGeometryFound": false,
+    "runtimeReadiness": "held",
+    "serialReviewerRequired": true,
+    "uncertainty": "Local cadastral custody is verified, but no safe anonymous Koutiala parcel ID-plus-geometry response was verified from the current public viewer/API."
+  }
+}

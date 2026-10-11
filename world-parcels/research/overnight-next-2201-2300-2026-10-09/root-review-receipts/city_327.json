@@ -1,0 +1,17 @@
+{
+  "taskId": "city:327",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-327-alor-setar.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/alor-setar-service-review.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/root-review-receipts/source-evidence/city_327-iplan.html"
+  ],
+  "checkedAt": "2026-10-11T01:35:45.333002Z",
+  "reason": "Queue rank 2208, MY identity, point, and 264051 persons agree; English and Malay searches are documented. Original PLANMalaysia page is a public i-Plan shell; no Alor Setar native-ID polygon response was obtained. Login, TLS, and viewer route limitations are unresolved, not citywide absence. Retain registryFound null; hold runtime admission.",
+  "admission": "held; no runtime/catalog/report change",
+  "sourceCacheSha256": {
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/root-review-receipts/source-evidence/city_327-iplan.html": "6eb4c76768edb899c2f8d2de13fcbf6ac9c93b9514795e4986c95b1ef566e5f4"
+  }
+}

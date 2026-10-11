@@ -1,0 +1,39 @@
+{
+  "cityCode": 8139,
+  "queueRank": 2280,
+  "name": "Abat",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "point": [4.63089312301126, 7.81643394598082],
+  "population2025": 256126,
+  "population2025k": 256.126,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Abat Nigeria cadastral parcel map land registry official; Abat Nigeria 4.630893 7.816434 land registry GIS",
+        "result": "First-party discovery identified AkwaGIS, the official Akwa Ibom State GIS/land-administration portal. The public land-search flow is a lookup by Land PIN or plan/COD number; no public coordinate/extent parcel query or safe anonymous parcel geometry response was exposed.",
+        "actualResultUrls": [
+          "https://akwagis.akwaibomstate.gov.ng/",
+          "https://akwagis.akwaibomstate.gov.ng/land-search",
+          "https://akwagis.akwaibomstate.gov.ng/about",
+          "https://akwagis.akwaibomstate.gov.ng/faqs"
+        ]
+      },
+      {
+        "language": "Ibibio/local",
+        "query": "Abat Nigeria Akwa Ibom cadastral map land registry GIS; Abat ndebanye ala khadarastali",
+        "result": "No distinct local-language first-party parcel service was found. The relevant first-party result remained the English AkwaGIS land-registry portal for Akwa Ibom; no additional local-language endpoint or coordinate search was evidenced.",
+        "actualResultUrls": [
+          "https://akwagis.akwaibomstate.gov.ng/land-search",
+          "https://akwaibomstate.gov.ng/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "Abat is evidenced as a town in Onna, Akwa Ibom State. AkwaGIS is a first-party state land-registry/GIS custodian and its public search service is evidenced, but parcel-level access requires a supplied Land PIN or plan/COD number and paid detail access. This packet records source discovery only; it is not source integration, runtime admission, or evidence of citywide parcel absence.",
+  "runtimeReadiness": "held"
+}

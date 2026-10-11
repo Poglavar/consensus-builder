@@ -68,6 +68,10 @@ describe('chainRefFromProposal — Solana detection', () => {
         const p = { chainType: 'evm', onchain: { chainId: '84532', contractAddress: '0xC', proposalId: '3' } };
         expect(chainRefFromProposal(p).chainType).toBe('evm');
     });
+    it('uses the bare cluster for a mirrored receipt with an explicit chainType', () => {
+        const p = { onchain: { chainType: 'solana', chainId: 'solana-devnet', contractAddress: 'PROG', proposalId: 'ACCT' } };
+        expect(chainRefFromProposal(p)).toEqual({ chainType: 'solana', chainId: 'devnet', contract: 'PROG', tokenId: 'ACCT' });
+    });
 });
 
 describe('chainRefFromProposal — Canton detection', () => {

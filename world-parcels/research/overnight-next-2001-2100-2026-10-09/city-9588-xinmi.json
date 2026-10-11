@@ -1,0 +1,47 @@
+{
+  "cityCode": 9588,
+  "queueRank": 2022,
+  "name": "Xinmi",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [34.5298990454338, 113.363471947789],
+  "population2025": 288262,
+  "population2025k": 288.262,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Xinmi China official cadastral parcel map land registry GIS service parcel geometry",
+        "result": "Search found the official Xinmi government portal and official Xinmi Natural Resources and Planning Bureau pages, but no public anonymous parcel feature service or parcel geometry endpoint.",
+        "actualResultUrls": [
+          "https://public.xinmi.gov.cn/D1604Y/8702241.jhtml",
+          "https://www.xinmi.gov.cn/"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "新密市 不动产登记 地籍图 GIS 官方",
+        "result": "Official Chinese results identified the Xinmi Natural Resources and Planning Bureau, its Natural Resources Registration Office, and a government notice describing registration-information and cadastral-map visual inquiry via the Zhengzhou real-estate-registration information system; no anonymous public parcel ID plus geometry API was exposed.",
+        "actualResultUrls": [
+          "https://public.xinmi.gov.cn/D1604Y/8702241.jhtml",
+          "https://public.xinmi.gov.cn/D6802X/7607000.jhtml",
+          "https://public.xinmi.gov.cn/attachment/%E9%80%9A%E8%BF%87%E7%BA%BF%E4%B8%8A%E6%B8%A0%E9%81%93%E6%9F%A5%E8%AF%A2%E4%B8%8D%E5%8A%A8%E4%BA%A7%E7%99%BB%E8%AE%B0%E4%BF%A1%E6%81%AF%E5%8A%9E%E4%BA%8B%E6%8C%87%E5%8D%97.pdf?gjdz_DSyt6PARVbhL0inAZyiMmkxN7OXKgERWO-yX5c_l-5iQtQaUJ2ozM85PzVyHplwLXKcjMsU46FjLJvx2F6pPBm9kP6h="
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "The official Xinmi Natural Resources and Planning Bureau page assigns its Natural Resources Registration Office responsibility for unified natural-resource and real-estate registration, cadastral surveys, real-estate surveying, dispute handling, results application, and maintaining the registration information platform. The official Xinmi notice also identifies the Zhengzhou real-estate-registration information system as the basis for cadastral-map visual inquiry.",
+  "sourceUrls": [
+    "https://public.xinmi.gov.cn/D1604Y/8702241.jhtml",
+    "https://public.xinmi.gov.cn/D6802X/7607000.jhtml",
+    "https://public.xinmi.gov.cn/?d=534",
+    "https://www.xinmi.gov.cn/"
+  ],
+  "parcelService": null,
+  "geometrySample": null,
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter"
+}

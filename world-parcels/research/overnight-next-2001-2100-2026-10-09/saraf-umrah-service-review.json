@@ -1,0 +1,55 @@
+{
+  "cityRecord": "city-836-saraf-umrah.json",
+  "cityCode": 836,
+  "queueRank": 2087,
+  "name": "Saraf `Umrah",
+  "country": "Sudan",
+  "countryCode": "SD",
+  "point": [13.4752665126685, 23.3025682374627],
+  "attempt": 3,
+  "reviewStatus": "complete",
+  "reviewMode": "artifact-validation retry; no web search, source discovery, or network/API request repeated",
+  "discovery": {
+    "english": {
+      "query": "Sudan cadastral parcel map / land information official first-party discovery",
+      "result": "Recorded prior first-party route fetch reached the National Information Centre (NIC) public site; no local Saraf `Umrah registry custodian or safe parcel ID-plus-geometry response was established.",
+      "actualResultUrls": ["https://nic.gov.sd/"]
+    },
+    "native": {
+      "query": "السجل العقاري السودان خريطة قطع الأراضي صرف عمرة",
+      "result": "Recorded prior first-party route fetch reached the Sudan Aqari public Arabic site; no local Saraf `Umrah registry custodian or safe parcel ID-plus-geometry response was established.",
+      "actualResultUrls": ["https://aqari.sd/"]
+    }
+  },
+  "attemptedRoutes": [
+    {"url": "https://nic.gov.sd/", "outcome": "HTTP 200 public page recorded; general national information site, not evidence of a local Saraf `Umrah cadastral custodian or parcel API."},
+    {"url": "https://aqari.sd/", "outcome": "HTTP 200 public Arabic page recorded; no safe anonymous parcel ID-plus-geometry response retained or established."}
+  ],
+  "schemaCrs": {
+    "status": "not available",
+    "details": "No source response was re-inspected or newly requested during this validation-only retry."
+  },
+  "fieldPolicy": {
+    "allowlist": ["stable native parcel identifier", "full parcel polygon geometry", "source CRS", "source field names and mapping in metadata only", "request metadata"],
+    "notRequested": ["owner/right-holder", "address/contact", "titleholder/certificate", "tax/account/identity/application data", "encumbrances"]
+  },
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "retainedSamples": [],
+  "scopeLimits": [
+    "The exact WUP point [13.4752665126685, 23.3025682374627] is preserved in latitude/longitude order and was not shifted.",
+    "No city, local registry custodian, official viewer, JavaScript/configuration, public map/API service, schema, CRS, bounded anonymous ID-plus-geometry response, or parcel polygon was investigated on this retry.",
+    "No prior city packet or sample file was present to normalize; no geometry was invented or retained.",
+    "No zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is treated as evidence of citywide cadastral absence.",
+    "Packet completion is not source integration/admission; runtime readiness remains held pending independent serial review."
+  ],
+  "geometryReview": {
+    "publicGeometryFound": false,
+    "sampleFile": null,
+    "parcelCount": 0,
+    "reason": "No parcel geometry evidence is available in this validation-only retry."
+  },
+  "registryFound": null,
+  "runtimeReadiness": "held",
+  "uncertainty": "High: this retry corrects the missing city-record artifact only. It cannot establish Sudanese local registry custody, public parcel coverage, native identity, schema/CRS, or geometry without repeating source investigation."
+}

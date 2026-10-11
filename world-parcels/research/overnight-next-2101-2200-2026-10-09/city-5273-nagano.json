@@ -1,0 +1,50 @@
+{
+  "cityCode": 5273,
+  "queueRank": 2152,
+  "name": "Nagano",
+  "country": "Japan",
+  "countryCode": "JP",
+  "iso3": "JPN",
+  "point": [36.635580876748, 138.195726872231],
+  "population2025": 270476,
+  "population2025k": 270.476,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Nagano City official cadastral map parcel GIS",
+        "result": "Found Nagano City's official administrative map portal and its open-data/specification pages. The official map catalog exposes urban-planning, roads, facilities and other maps, but no public cadastral parcel layer or parcel download was identified.",
+        "actualResultUrls": [
+          "https://www.city.nagano.nagano.jp/n023500/contents/p004998.html",
+          "https://www.city.nagano.nagano.jp/n023500/contents/p006304.html",
+          "https://www.city.nagano.nagano.jp/n023500/contents/p006172.html"
+        ]
+      },
+      {
+        "language": "Japanese",
+        "query": "長野市 地籍図 地番図 GIS 公開",
+        "result": "長野市公式の行政地図情報と共用空間データ仕様書を確認した。公式ポータルには都市計画図・道路台帳図等が公開されているが、匿名で利用できる地籍図・筆界ポリゴンの公開レイヤー/APIは確認できなかった。仕様資料は庁内統合GISの地番図データに言及するが、公開ダウンロードではない。",
+        "actualResultUrls": [
+          "https://www.city.nagano.nagano.jp/n023500/contents/p004998.html",
+          "https://www.city.nagano.nagano.jp/documents/19300/youkenteigi.pdf",
+          "https://www.city.nagano.nagano.jp/documents/14164/siyousyo-28.pdf"
+        ]
+      }
+    ]
+  },
+  "registry": {
+    "custodian": "Nagano City Information Systems Division / Nagano City administrative map information portal",
+    "evidence": "Nagano City's official page links to https://www2.wagmap.jp/nagano/ and lists the public map catalog. The service is local city map evidence, but the checked catalog and layer tree did not show a cadastral parcel layer.",
+    "scope": "Official Nagano City administrative maps and city GIS publication; cadastral parcel coverage and anonymous parcel geometry access remain unverified."
+  },
+  "source": {
+    "officialCityPage": "https://www.city.nagano.nagano.jp/n023500/contents/p004998.html",
+    "publicMapPortal": "https://www2.wagmap.jp/nagano/",
+    "openDataPage": "https://www.city.nagano.nagano.jp/n023500/contents/p006304.html",
+    "specificationEvidence": "https://www.city.nagano.nagano.jp/documents/19300/youkenteigi.pdf"
+  },
+  "runtimeReadiness": "held-pending-independent-serial-reviewer"
+}

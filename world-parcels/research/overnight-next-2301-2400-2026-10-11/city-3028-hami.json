@@ -1,0 +1,109 @@
+{
+  "cityCode": 3028,
+  "queueRank": 2307,
+  "name": "Hami",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [42.8345814493169, 93.5118555795376],
+  "population2025": 252377,
+  "population2025k": 252.377,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hami China official cadastral parcel map land resources GIS",
+        "result": "Search found Hami municipal government material identifying the Hami Natural Resources Bureau and land-space planning / information-platform work, but no public parcel viewer or feature API.",
+        "actualResultUrls": [
+          "https://www.hami.gov.cn/hami/c120403/202601/8803a7c776944073b50aefe86293a0fe.shtml?dept=hmszrzyj",
+          "https://www.hami.gov.cn/hami/c120044/202503/547bcca5678c4d38b11f8f2f9a328075.shtml"
+        ]
+      },
+      {
+        "language": "Chinese (native/local)",
+        "query": "哈密市 官方 不动产 登记 地图 地籍 查询",
+        "result": "Official Hami government results identified the local real-estate registration center and official statements that registration institutions provide online and on-site registration-information query services; no anonymous parcel geometry endpoint was exposed.",
+        "actualResultUrls": [
+          "https://www.hami.gov.cn/hami/c119978/202410/ee525f30c05047219aa2dbcec97541c4.shtml",
+          "https://www.hami.gov.cn/hami/c119999/202204/d45813ed4d6b46d0989aca3a19c993cc.shtml"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "geometryVerified": false,
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "runtimeEligible": false,
+  "runtimeReadiness": "held",
+  "discoveryMethod": "first-party English and Chinese discovery plus bounded official-site inspection",
+  "sourceReview": "Hami municipal government identifies the Hami Natural Resources Bureau as the local natural-resources custodian and identifies a Hami Real Estate Registration Center. Official local rules state that the registration institution provides online and on-site registration-information query services. The official material also documents a land-space basic information platform / one-map supervision system, but no public parcel viewer, current JavaScript configuration, feature service, safe parcel identity, CRS, or polygon response was found.",
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH",
+      "url": "https://www.hami.gov.cn/",
+      "httpStatus": 200,
+      "outcome": "Official Hami municipal government homepage loaded. Site navigation exposed government and natural-resources content but no public cadastral viewer link in the bounded inspection."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.hami.gov.cn/hami/c120403/202601/8803a7c776944073b50aefe86293a0fe.shtml?dept=hmszrzyj",
+      "httpStatus": 200,
+      "outcome": "Official Hami Natural Resources Bureau institutional page loaded; it identifies the bureau and local contact details. No viewer JavaScript, map configuration, or parcel API was exposed."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://www.hami.gov.cn/hami/c119978/202410/ee525f30c05047219aa2dbcec97541c4.shtml",
+      "httpStatus": 200,
+      "outcome": "Official government notice identifies the Hami Real Estate Registration Center at the Yizhou District Natural Resources branch registration hall. This is local registry/procedure evidence, not parcel geometry evidence."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://www.hami.gov.cn/hami/c119999/202204/d45813ed4d6b46d0989aca3a19c993cc.shtml",
+      "httpStatus": 200,
+      "outcome": "Official local regulation states that real-estate registration institutions should provide online and on-site registration-information query services. The page did not expose an anonymous map, feature endpoint, schema, or geometry response."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://www.hami.gov.cn/hami/c119978/202306/fae5979374c843ca80e7cfec54e00953/files/%E5%93%88%E5%AF%86%E5%B8%82%E5%9F%BA%E7%A1%80%E6%B5%8B%E7%BB%98%E2%80%9C%E5%8D%81%E5%9B%9B%E4%BA%94%E2%80%9D%E8%A7%84%E5%88%92.pdf",
+      "httpStatus": 200,
+      "outcome": "Official Hami surveying plan describes completion of a third national land-survey database management system and construction of a land-space information platform / one-map supervision system. It provides institutional and platform context, not a public anonymous parcel feature route."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://www.hami.gov.cn/hami/c120044/202503/547bcca5678c4d38b11f8f2f9a328075.shtml",
+      "httpStatus": 200,
+      "outcome": "Official 2021-2035 Hami spatial plan states that a unified digital spatial base map is maintained from land-survey data and that data sharing is being improved. It contains no public parcel geometry service."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "No public cadastral viewer or current JavaScript/configuration endpoint was found on the official Hami pages inspected.",
+    "geometryCrs": "Not observed.",
+    "nativeIdentity": "Not observed; no parcel feature response was obtained.",
+    "sourceFieldMapping": {},
+    "boundedAnonymousResponse": {
+      "requestScope": "Exact WUP point [42.8345814493169, 93.5118555795376] was preserved for qualification.",
+      "featureCount": null,
+      "geometryFeatureCount": 0,
+      "result": "No public feature-query route was exposed; no exact-point hit or miss was inferred."
+    }
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if later exposed and source-proven", "full parcel polygon geometry if later exposed", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "Local registry and natural-resources custodian evidence is real, but no public anonymous parcel geometry service, schema/CRS, or safe native ID-plus-polygon sample was qualified."
+  },
+  "scopeLimits": [
+    "The exact WUP point [42.8345814493169, 93.5118555795376] was preserved and not shifted.",
+    "No exact-point hit or miss was used as evidence of citywide cadastral absence.",
+    "Official statements about an online query service and spatial information platform do not establish anonymous public feature access.",
+    "No parcel polygon is retained because no unchanged polygon with a qualified native identity was obtained.",
+    "No citywide coverage, update cadence, service CRS, or stable parcel-identity semantics were verified.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained."
+  ],
+  "uncertainty": "Hami local registry/procedure and natural-resources custodianship are evidenced by official municipal sources. Current public map/API availability, parcel geometry coverage, schema, CRS, stable native identity semantics, and anonymous access remain unverified. Runtime/admission remains held."
+}

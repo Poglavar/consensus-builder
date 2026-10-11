@@ -1,0 +1,17 @@
+{
+  "taskId": "city:8763",
+  "decision": "held",
+  "checkedAt": "2026-10-11T01:02:00Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-8763-bijnor.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/bijnor-service-review.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/bijnor/geo-dashboard.html",
+    "tmp/valhalla-parcel-research/bijnor/geo-dashboard.headers",
+    "tmp/valhalla-parcel-research/bijnor/bhunaksha.html",
+    "tmp/valhalla-parcel-research/bijnor/bhunaksha.headers"
+  ],
+  "reason": "The official WUP source, immutable roster, queue, city packet and paired review agree on code 8763, rank 2189, India, point [29.3774594999608,78.1384036483459], and 266240 persons. English and Hindi searches and result URLs are recorded. The original first-party Uttar Pradesh dashboard response has Bijnor tehsil digitization counts (553 revenue villages, 527 linked villages, 526 georeferenced villages, 551 linked mapsheets and 550 georeferenced mapsheets), not parcel geometry. The BhuNaksha page exposes a login/CAPTCHA workflow. No anonymous native parcel ID or full polygon response, independent adapter qualification, or headed Details verification is present. A login wall or timed-out bootstrap route does not establish citywide absence."
+}

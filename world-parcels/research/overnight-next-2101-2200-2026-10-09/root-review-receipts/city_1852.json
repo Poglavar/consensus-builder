@@ -1,0 +1,19 @@
+{
+  "taskId": "city:1852",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-1852-bydgoszcz.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/bydgoszcz-service-review.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/bydgoszcz-parcel-sample.geojson",
+    "tmp/valhalla-parcel-research/bydgoszcz/uldk-exact-qualified.txt",
+    "tmp/valhalla-parcel-research/bydgoszcz/wms.xml"
+  ],
+  "checkedAt": "2026-10-11T00:57:15Z",
+  "reason": "The immutable WUP identity matches rank 2186, Poland, point [53.1261021859871,17.997811624784], and 266908 persons. English and Polish searches with URLs are recorded. The municipal cadastral-material page supports local custody (registryFound true). The cached first-party ULDK response contains native ID 046101_1.0128.268/2 and one full Polygon; the retained sample has only the id attribute and is metric GEOS valid (EPSG:2180), with no pairwise overlap possible for one polygon. The sample is not exactly unchanged: vertex 24 latitude is 53.1268440575289 versus source 53.126844057528. The WMS route returned a request-disabled exception, not citywide absence. Fresh adapter qualification with forced paging, 13 bounded cells, source binding, and headed Details verification is missing; no admission.",
+  "firstPartyPagesChecked": [
+    "https://um.bydgoszcz.pl/sprawa/204/udostepnienie-materialow-powiatowego-zasobu-geodezyjnego-i-kartograficznego/",
+    "https://uldk.gugik.gov.pl/opis.html"
+  ]
+}

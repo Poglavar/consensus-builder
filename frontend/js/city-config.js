@@ -459,6 +459,560 @@
             }
         }
         ,
+        // BEGIN qualification admission 2026-10-11
+        west_valley_city: {
+            id: 'west_valley_city',
+            wupCityCode: '5646',
+            label: translateCityText('city.labels.west_valley_city', 'West Valley City, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [40.65163559641750, -111.98751176472101], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [40.65163559641750, -111.98751176472101], fallbackDataset: [-111.98751176472101, 40.65163559641750]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-ut-salt-lake-city-parcels', idPrefix: 'US-UT-SALTLAKE-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://gis.utah.gov/products/sgid/cadastre/parcels/">Utah Geospatial Resource Center and local government. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        surrey: {
+            id: 'surrey',
+            wupCityCode: '632',
+            label: translateCityText('city.labels.surrey', 'Surrey, Canada'),
+            currency: { locale: 'en-CA', code: 'CAD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [49.15784119960070, -122.84221420213500], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [49.15784119960070, -122.84221420213500], fallbackDataset: [-122.84221420213500, 49.15784119960070]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'ca-bc-surrey-lots', idPrefix: 'CA-BC-SURREY-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.surrey.ca/services-payments/online-services/maps-cosmos">City of Surrey cadastral lots</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        bologna: {
+            id: 'bologna',
+            wupCityCode: '3342',
+            label: translateCityText('city.labels.bologna', 'Bologna, Italy'),
+            currency: { locale: 'it-IT', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [44.49425276469090, 11.33834693403270], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [44.49425276469090, 11.33834693403270], fallbackDataset: [11.33834693403270, 44.49425276469090]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'it-bologna-sit-parcels', idPrefix: 'IT-BOLOGNA-SIT-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://sitmappe.comune.bologna.it/arcgis/rest/services/CATASTO/CATASTO/MapServer">Comune di Bologna — Sistema Informativo Territoriale</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        geneva: {
+            id: 'geneva',
+            wupCityCode: '60',
+            label: translateCityText('city.labels.geneva', 'Geneva, Switzerland'),
+            currency: { locale: 'de-CH', code: 'CHF' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [46.20175209710790, 6.13622539632436], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [46.20175209710790, 6.13622539632436], fallbackDataset: [6.13622539632436, 46.20175209710790]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'ch-ge-sitg-cadastre-rdppf', idPrefix: 'CH-GE-SITG-EGRID-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://sitg.ge.ch/donnees/cad-parcelle-mensu">République et canton de Genève - Département du territoire / SITG</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        hamilton: {
+            id: 'hamilton',
+            wupCityCode: '2668',
+            label: translateCityText('city.labels.hamilton', 'Hamilton, Canada'),
+            currency: { locale: 'en-CA', code: 'CAD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [43.23353789189630, -79.85415871369750], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [43.23353789189630, -79.85415871369750], fallbackDataset: [-79.85415871369750, 43.23353789189630]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'ca-on-hamilton-assessment-parcel', idPrefix: 'CA-ON-HAMILTON-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.arcgis.com/sharing/rest/content/items/b18cec4690d241029935df1b02bb19db?f=json">City of Hamilton; Teranet data received February 9, 2024.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        nice: {
+            id: 'nice',
+            wupCityCode: '4796',
+            label: translateCityText('city.labels.nice', 'Nice, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [43.69871079052020, 7.23303214314509], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [43.69871079052020, 7.23303214314509], fallbackDataset: [7.23303214314509, 43.69871079052020]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'nice-cotedazur-cadastre-arcgis', idPrefix: 'FR-NCA-CADASTRE-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://opendata.nicecotedazur.org/data/dataset/parcelles-cadastrales-de-la-metropole-nice-cote-d-azur">Métropole Nice Côte d’Azur / Direction de l’Information Géographique; service attribution DGFIP 2025; layer attribution DGFIP 2020.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        escondido: {
+            id: 'escondido',
+            wupCityCode: '3039',
+            label: translateCityText('city.labels.escondido', 'Escondido, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [33.17850000000000, -117.16550000000001], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [33.17850000000000, -117.16550000000001], fallbackDataset: [-117.16550000000001, 33.17850000000000]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-ca-escondido-parcels', idPrefix: 'US-CA-ESCONDIDO-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 0.75,
+                attribution: '<a href="https://gis.escondido.gov/server/rest/services/Data/Parcels/FeatureServer/0">City of Escondido</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        stockton: {
+            id: 'stockton',
+            wupCityCode: '3536',
+            label: translateCityText('city.labels.stockton', 'Stockton, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [37.98382553747830, -121.30363247299000], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [37.98382553747830, -121.30363247299000], fallbackDataset: [-121.30363247299000, 37.98382553747830]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'san-joaquin-county-diesel-wfl1-parcels', idPrefix: 'US-CA-SAN-JOAQUIN-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://services3.arcgis.com/nUD9ady1mS8uVvoJ/ArcGIS/rest/services/Diesel_WFL1/FeatureServer/1">San Jouquin County CD/GIS & City of Stockton IT/GIS; Data Steward: San Joaquin County Assessor\'s Office</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        pittsburgh: {
+            id: 'pittsburgh',
+            wupCityCode: '8067',
+            label: translateCityText('city.labels.pittsburgh', 'Pittsburgh, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [40.41968784797190, -79.97032616470270], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [40.41968784797190, -79.97032616470270], fallbackDataset: [-79.97032616470270, 40.41968784797190]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-pa-allegheny-parcels', idPrefix: 'US-PA-ALLEGHENY-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://data.wprdc.org/dataset/allegheny-county-parcel-boundaries1">Allegheny County DCS-GIS parcel boundaries</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        pasto: {
+            id: 'pasto',
+            wupCityCode: '351',
+            label: translateCityText('city.labels.pasto', 'Pasto, Colombia'),
+            currency: { locale: 'es-CO', code: 'COP' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [1.20894437270640, -77.27726798642379], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [1.20894437270640, -77.27726798642379], fallbackDataset: [-77.27726798642379, 1.20894437270640]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'co-pasto-urban-parcels', idPrefix: 'CO-PASTO-URBAN-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://geoportal.pasto.gov.co/server/rest/services/Planeacion/Mapa_base_registro_de_descargas/MapServer/29">Instituto Geográfico Agustín Codazzi - IGAC; Alcaldía de Pasto Geoportal</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        riverside: {
+            id: 'riverside',
+            wupCityCode: '3430',
+            label: translateCityText('city.labels.riverside', 'Riverside, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [33.93519283447910, -117.44382199471600], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [33.93519283447910, -117.44382199471600], fallbackDataset: [-117.44382199471600, 33.93519283447910]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us.ca.riverside-city-parcels', idPrefix: 'us-ca-riverside-city:',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://mapriverside.riversideca.gov/server/rest/services/Cadastral/Cadastral_Public/MapServer/86">City of Riverside cadastral parcels</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        grenoble: {
+            id: 'grenoble',
+            wupCityCode: '4353',
+            label: translateCityText('city.labels.grenoble', 'Grenoble, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [45.18061565493560, 5.72378420259572], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [45.18061565493560, 5.72378420259572], fallbackDataset: [5.72378420259572, 45.18061565493560]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        longueuil: {
+            id: 'longueuil',
+            wupCityCode: '3792',
+            label: translateCityText('city.labels.longueuil', 'Longueuil, Canada'),
+            currency: { locale: 'fr-CA', code: 'CAD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [45.49950925363950, -73.46600805601641], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [45.49950925363950, -73.46600805601641], fallbackDataset: [-73.46600805601641, 45.49950925363950]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'ca-qc-longueuil-cadastre', idPrefix: 'CA-QC-LONGUEUIL-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://geohub.longueuil.quebec/">Ville de Longueuil · municipal Cadastre</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        wazirabad: {
+            id: 'wazirabad',
+            wupCityCode: '7979',
+            label: translateCityText('city.labels.wazirabad', 'Wazirabad, Pakistan'),
+            currency: { locale: 'ur-PK', code: 'PKR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [32.43555460899340, 74.12484853458390], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [32.43555460899340, 74.12484853458390], fallbackDataset: [74.12484853458390, 32.43555460899340]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'pk-pulse-wazirabad-parcels', idPrefix: 'PK-PULSE-WAZIRABAD-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/35">Punjab PULSE / Punjab Land Records Authority; indicative cadastral reference polygons</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        buffalo: {
+            id: 'buffalo',
+            wupCityCode: '8207',
+            label: translateCityText('city.labels.buffalo', 'Buffalo, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [42.93599285092330, -78.83904210082140], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [42.93599285092330, -78.83904210082140], fallbackDataset: [-78.83904210082140, 42.93599285092330]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-ny-erie-parcels', idPrefix: 'US-NY-ERIE-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www3.erie.gov/gis/internet-mapping">Erie County Office of GIS</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        oshawa: {
+            id: 'oshawa',
+            wupCityCode: '3218',
+            label: translateCityText('city.labels.oshawa', 'Oshawa, Canada'),
+            currency: { locale: 'en-CA', code: 'CAD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [43.90387939224220, -78.88264500917960], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [43.90387939224220, -78.88264500917960], fallbackDataset: [-78.88264500917960, 43.90387939224220]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'ca-on-oshawa-assessed-parcels', idPrefix: 'CA-ON-OSHAWA-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://map.oshawa.ca/OpenData/Metadata/Parcel%20Metadata.pdf">City of Oshawa GIS</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        arlington: {
+            id: 'arlington',
+            wupCityCode: '6413',
+            label: translateCityText('city.labels.arlington', 'Arlington, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [32.72350000000000, -97.06550000000000], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [32.72350000000000, -97.06550000000000], fallbackDataset: [-97.06550000000000, 32.72350000000000]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'arlington-tax-parcels', idPrefix: 'US-TX-ARLINGTON-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 0.75,
+                attribution: '<a href="https://gis2.arlingtontx.gov/agsext2/rest/services/OpenData/OD_Property/MapServer/2">City of Arlington, Texas GIS / OpenData</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        brno: {
+            id: 'brno',
+            wupCityCode: '1168',
+            label: translateCityText('city.labels.brno', 'Brno, Czechia'),
+            currency: { locale: 'cs-CZ', code: 'CZK' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [49.20321041395900, 16.60972759299960], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [49.20321041395900, 16.60972759299960], fallbackDataset: [16.60972759299960, 49.20321041395900]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'brno-city-gis-katastr-g-parcely', idPrefix: 'CZ-BRNO-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://gis.brno.cz/ags3/rest/services/PUBLIC/katastr_g/MapServer">GIS města Brna PUBLIC/katastr_g ArcGIS Feature Layer 5 Parcely</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        hammond: {
+            id: 'hammond',
+            wupCityCode: '7729',
+            label: translateCityText('city.labels.hammond', 'Hammond, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [41.58350000000000, -87.49850000000001], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [41.58350000000000, -87.49850000000001], fallbackDataset: [-87.49850000000001, 41.58350000000000]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-in-lake-hammond-parcels', idPrefix: 'US-IN-LAKE-HAMMOND-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 0.75,
+                attribution: '<a href="https://www.arcgis.com/home/item.html?id=18b6b08c8c7e403cbd9451360c8f5a61">Lake County Surveyor\'s Office; parcel fabric maintained by Lake County Auditor\'s Office.</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        takasaki: {
+            id: 'takasaki',
+            wupCityCode: '5785',
+            label: translateCityText('city.labels.takasaki', 'Takasaki, Japan'),
+            currency: { locale: 'ja-JP', code: 'JPY' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [36.36229386639790, 139.03883816222501], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [36.36229386639790, 139.03883816222501], fallbackDataset: [139.03883816222501, 36.36229386639790]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'jp-takasaki-parcel-map', idPrefix: 'JP-TAKASAKI-FUDEID-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.city.takasaki.gunma.jp/uploaded/attachment/42714.zip">Takasaki City parcel-number map polygons</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        wiesbaden: {
+            id: 'wiesbaden',
+            wupCityCode: '2998',
+            label: translateCityText('city.labels.wiesbaden', 'Wiesbaden, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [50.03241608752290, 8.24497585586087], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [50.03241608752290, 8.24497585586087], fallbackDataset: [8.24497585586087, 50.03241608752290]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'hessen-alkis-vereinfacht-wfs', idPrefix: 'DE-HE-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.gds.hessen.de/wfs2/aaa-suite/cgi-bin/alkis/vereinf/wfs">Hessen simplified ALKIS cadastral parcels</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        gdansk: {
+            id: 'gdansk',
+            wupCityCode: '2093',
+            label: translateCityText('city.labels.gdansk', 'Gdańsk, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [54.37291959618290, 18.61016516091930], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [54.37291959618290, 18.61016516091930], fallbackDataset: [18.61016516091930, 54.37291959618290]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'gdansk-gml-wfs', idPrefix: 'PL-GDANSK-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://ewid-wms.gdansk.gda.pl/iip/ows?service=WFS&amp;request=GetCapabilities&amp;version=2.0.0">Urząd Miejski w Gdańsku — EGiB</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        sosnowiec: {
+            id: 'sosnowiec',
+            wupCityCode: '3234',
+            label: translateCityText('city.labels.sosnowiec', 'Sosnowiec, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [50.29225744192920, 19.14602055224050], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [50.29225744192920, 19.14602055224050], fallbackDataset: [19.14602055224050, 50.29225744192920]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'sosnowiec-gml-wfs', idPrefix: 'PL-SOSNOWIEC-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.sosnowiec.pl/2023/07/aktualnosci/teraz-wniosek-o-dane-zgromadzone-w-zasobie-geodezyjnym-zlozysz-przez-profil-zaufany-lub-konto-bankowe/">Sosnowiec municipal EGiB parcel polygons</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        montpellier: {
+            id: 'montpellier',
+            wupCityCode: '3893',
+            label: translateCityText('city.labels.montpellier', 'Montpellier, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [43.61537014852960, 3.86647003777739], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                fallbackLatLng: [43.61537014852960, 3.86647003777739], fallbackDataset: [3.86647003777739, 43.61537014852960]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-mmm-montpellier-cadastre', idPrefix: 'FR-MMM-MONTPELLIER-CODEIDENT-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://data.montpellier3m.fr/dataset/cadastre-de-montpellier">Montpellier municipal PCI cadastral parcels</a>'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] }
+        },
+        // END qualification admission 2026-10-11
         new_york: {
             id: 'new_york',
             label: 'New York, USA',

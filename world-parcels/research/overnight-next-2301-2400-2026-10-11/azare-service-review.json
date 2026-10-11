@@ -1,0 +1,49 @@
+{
+  "cityRecord": "city-8714-azare.json",
+  "cityCode": 8714,
+  "queueRank": 2303,
+  "name": "Azare",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "point": [11.6726953788847, 10.1878056502206],
+  "population2025": 252755,
+  "population2025k": 252.755,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "geometryVerified": false,
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "runtimeEligible": false,
+  "runtimeReadiness": "held_quality_review",
+  "discoveryMethod": "first_party_english_and_hausa_discovery_plus_anonymous_service_probes",
+  "sourceReview": "Official Bauchi State pages identify BAGIS as the state land/GIS custodian and link the cofo.bauchistate.gov.ng C of O service. The service returned an Azare search result count but no safe parcel geometry. The result is therefore registry evidence only, not source integration/admission.",
+  "queryOutcomes": {
+    "english": "Official BAGIS, state application directory, and C of O service found; no safe public parcel API found.",
+    "hausa": "No Hausa-language first-party parcel viewer/API found; results were general land/legal material or the same official state service.",
+    "citySearch": "Azare returned 67 records; unsafe owner/title fields were not retained.",
+    "exactPoint": "11.6726953788847,10.1878056502206 returned 0; not treated as citywide absence.",
+    "mapRoutes": "cofo /maps and /public-maps both returned 404.",
+    "baugisLanding": "Landing page loaded, but current JS/configuration yielded no usable anonymous parcel endpoint."
+  },
+  "safeFieldAllowlist": ["native parcel/record identifier only when stable and source-proven", "parcel geometry"],
+  "excludedFields": ["owner names", "addresses", "contact details", "titleholder information", "tax/account data", "certificate details beyond safe source qualification"],
+  "scopeLimits": {
+    "retainedGeoJsonPolygons": 0,
+    "maxRetainedGeoJsonPolygons": 3,
+    "citywideCoverageProven": false,
+    "exactPointCoverageProven": false,
+    "localRegistryOfficeProven": false,
+    "stateCustodianProven": true
+  },
+  "attemptsRecordedInCityRecord": true,
+  "uncertainty": "A state land-record search result count is not cadastral geometry evidence; anonymous search may be partial and the exact point may lie outside indexed records. No integration/admission is recommended until an independent serial reviewer qualifies a real public geometry adapter.",
+  "reviewDecision": "held_no_verified_public_geometry",
+  "evidenceUrls": [
+    "https://home.bauchistate.gov.ng/mda-apps/",
+    "https://www.bauchistate.gov.ng/sdm_categories/bagis-reports/",
+    "https://cofo.bauchistate.gov.ng/",
+    "https://cofo.bauchistate.gov.ng/search?q=Azare",
+    "https://baugis.vercel.app/"
+  ]
+}

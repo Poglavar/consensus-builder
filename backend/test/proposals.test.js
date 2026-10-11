@@ -529,8 +529,7 @@ describe('POST /proposals', () => {
                 structureProposal: { floors: 3 },
                 reparcellization: { merge: true },
                 lens: ['planning', 'traffic'],
-                bounds: [1, 2, 3, 4],
-                onchain: { txHash: '0x1' }
+                bounds: [1, 2, 3, 4]
             }));
 
         expect(res.status).toBe(201);
@@ -550,7 +549,7 @@ describe('POST /proposals', () => {
         expect(insertParams[27]).toBe(JSON.stringify({ merge: true }));
         expect(insertParams[28]).toBe(JSON.stringify(['planning', 'traffic']));
         expect(insertParams[29]).toBe(JSON.stringify([1, 2, 3, 4]));
-        expect(insertParams[30]).toBe(JSON.stringify({ txHash: '0x1' }));
+        expect(insertParams[30]).toBeNull();
         expect(pool.getCalls()[0].sql).not.toMatch(/descendant_parcel_ids|parent_features|child_features|parent_proposal_ids|child_proposal_ids/);
     });
 
@@ -697,7 +696,7 @@ describe('POST /proposals', () => {
         expect(pool.getCalls()).toHaveLength(0);
     });
 
-    it('accepts numeric-typed identifiers and prefers onchain over onchainData aliases', async () => {
+    it('accepts numeric-typed identifiers outside the reserved integer namespace', async () => {
         pool.setResults([
             insertResult({ proposal_id: '17.5' }),
             updateResult(),
@@ -708,15 +707,13 @@ describe('POST /proposals', () => {
             .send({
                 id: 17.5,
                 type: 'parcel',
-                cadastreParcelIds: ['HR-1'],
-                onchainData: { contract: '0xabc' },
-                onchain: { contract: '0xdef' }
+                cadastreParcelIds: ['HR-1']
             });
 
         expect(res.status).toBe(201);
         const insertParams = pool.getCalls()[0].params;
         expect(insertParams[0]).toBe('17.5');
-        expect(insertParams[30]).toBe(JSON.stringify({ contract: '0xdef' }));
+        expect(insertParams[30]).toBeNull();
     });
 });
 

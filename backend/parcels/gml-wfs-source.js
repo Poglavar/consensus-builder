@@ -1,12 +1,47 @@
 // Strict bounded WFS2 reader for explicitly verified municipal cadastral profiles.
 import { bbox as geometryBbox, booleanIntersects, bboxPolygon, feature as geoFeature } from '@turf/turf';
 import proj4 from 'proj4';
+import { setTimeout as delay } from 'node:timers/promises';
 import { HttpError } from '../utils/helpers.js';
-import { MAPSERVER_GML_SCHEMA, SAXONY_GML_SCHEMA, POZNAN_GML_SCHEMA, NORWAY_TEIG_GML_SCHEMA, FINLAND_CP_GML_SCHEMA, parseGmlParcels } from './gml-parcel-reader.js';
+import { MAPSERVER_GML_SCHEMA, SAXONY_GML_SCHEMA, HESSEN_GML_SCHEMA, POZNAN_GML_SCHEMA, GDANSK_GML_SCHEMA, SOSNOWIEC_GML_SCHEMA, NORWAY_TEIG_GML_SCHEMA, FINLAND_CP_GML_SCHEMA, parseGmlParcels } from './gml-parcel-reader.js';
 import { canonicalParcelFeature, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
 
 const FES_NS = 'http://www.opengis.net/fes/2.0';
 const PROFILES = Object.freeze({
+    'gdansk-gml-wfs': Object.freeze({
+        endpoint: 'https://ewid-wms.gdansk.gda.pl/iip/ows',
+        typeName: 'ms:dzialki', idField: 'ID_DZIALKI', geometryField: 'geometry',
+        featureNamespace: GDANSK_GML_SCHEMA.featureNamespace, idPrefix: 'PL-GDANSK-',
+        responseCrs: 'EPSG:2177', responseCrsUrn: 'urn:ogc:def:crs:EPSG::2177',
+        propertyName: 'ms:ID_DZIALKI,ms:geometry', sortBy: 'ms:ID_DZIALKI', namespaces: undefined,
+        // Keep sequential requests below the publisher's observed burst limit.
+        // HTTP 429 still fails immediately; no automatic retry or alternate URL.
+        requestDelayMs: 1000, version: '2.0.0', schema: GDANSK_GML_SCHEMA,
+        verifiedUnknownEmptyHits: true
+    }),
+    // Independently inspected webEwid schema and source N,E coordinates. Empty
+    // hits report unknown; only two separately empty data probes prove absence.
+    'sosnowiec-gml-wfs': Object.freeze({
+        endpoint: 'https://sosnowiec.webewid.pl:9443/iip/ows',
+        typeName: 'ms:dzialki', idField: 'ID_DZIALKI', geometryField: 'geometry',
+        featureNamespace: SOSNOWIEC_GML_SCHEMA.featureNamespace, idPrefix: 'PL-SOSNOWIEC-',
+        responseCrs: 'EPSG:2177', responseCrsUrn: 'urn:ogc:def:crs:EPSG::2177',
+        propertyName: 'ms:ID_DZIALKI,ms:geometry', sortBy: 'ms:ID_DZIALKI', namespaces: undefined,
+        // Bounded qualification observed HTTP 429 on rapid sequential reads.
+        // Pace normal requests; any denial still fails without retrying.
+        requestDelayMs: 1000, version: '2.0.0', schema: SOSNOWIEC_GML_SCHEMA, verifiedUnknownEmptyHits: true
+    }),
+    // Official capabilities declare ImplementsResultPaging FALSE. Fetch the
+    // entire bounded match set once; never infer completeness from a short page.
+    'hessen-alkis-vereinfacht-wfs': Object.freeze({
+        endpoint: 'https://www.gds.hessen.de/wfs2/aaa-suite/cgi-bin/alkis/vereinf/wfs',
+        typeName: 'ave:Flurstueck', idField: 'oid', geometryField: 'geometrie',
+        featureNamespace: HESSEN_GML_SCHEMA.featureNamespace, idPrefix: 'DE-HE-',
+        responseCrs: 'EPSG:25832', responseCrsUrn: 'urn:ogc:def:crs:EPSG::25832',
+        propertyName: 'ave:oid,ave:geometrie', sortBy: undefined,
+        namespaces: `xmlns(ave,${HESSEN_GML_SCHEMA.featureNamespace})`,
+        unpaged: true, schema: HESSEN_GML_SCHEMA
+    }),
     'lodz-gml-wfs': Object.freeze({
         endpoint: 'https://igeodeta.log.lodz.pl/cgi-bin/lodz-egib',
         typeName: 'ms:dzialki', idField: 'ID_DZIALKI', geometryField: 'msGeometry',
@@ -70,13 +105,18 @@ function validateDescriptor(descriptor) {
         && descriptor.parcelNumberField === profile.idField
         && Array.isArray(descriptor.outFields) && descriptor.outFields.length === 1 && descriptor.outFields[0] === profile.idField
         && descriptor.responseCrs === profile.responseCrs
+        && (!profile.version || descriptor.version === profile.version)
+        && (!profile.unpaged || descriptor.version === '2.0.0')
         && (descriptor.maxBboxKm2 === undefined || (Number.isFinite(descriptor.maxBboxKm2) && descriptor.maxBboxKm2 > 0 && descriptor.maxBboxKm2 <= 25))
         && (descriptor.maxFeatures === undefined || (Number.isSafeInteger(descriptor.maxFeatures) && descriptor.maxFeatures > 0 && descriptor.maxFeatures <= 5000))
         && (descriptor.pageSize === undefined || (Number.isSafeInteger(descriptor.pageSize) && descriptor.pageSize > 0 && descriptor.pageSize <= 100))
         && (descriptor.maxResponseBytes === undefined || (Number.isSafeInteger(descriptor.maxResponseBytes) && descriptor.maxResponseBytes > 0 && descriptor.maxResponseBytes <= 2 * 1024 * 1024))
         && (descriptor.maxTotalResponseBytes === undefined || (Number.isSafeInteger(descriptor.maxTotalResponseBytes) && descriptor.maxTotalResponseBytes > 0 && descriptor.maxTotalResponseBytes <= 16 * 1024 * 1024))
         && (descriptor.timeoutMs === undefined || (Number.isSafeInteger(descriptor.timeoutMs) && descriptor.timeoutMs >= 100 && descriptor.timeoutMs <= 30000))
-        && Math.ceil((descriptor.maxFeatures ?? 1500) / (descriptor.pageSize ?? 50)) + 2 <= MAX_OPERATION_REQUESTS;
+        // Verified municipal hit counts determine the number of pages. Allow small
+        // page probes while retaining request()'s hard operation request cap.
+        && (profile.unpaged || profile.verifiedUnknownEmptyHits
+            || Math.ceil((descriptor.maxFeatures ?? 1500) / (descriptor.pageSize ?? 50)) + 2 <= MAX_OPERATION_REQUESTS);
 }
 
 function projectedBounds(wgs84Bounds, profile) {
@@ -113,8 +153,8 @@ function intersectsFilter([west, south, east, north], profile) {
     return `<fes:Filter xmlns:fes="${FES_NS}" xmlns:${prefix}="${profile.featureNamespace}" xmlns:${gmlPrefix}="${profile.schema.gmlNamespace}"><fes:Intersects><fes:ValueReference>${prefix}:${profile.geometryField}</fes:ValueReference><gml:Polygon srsName="${profile.responseCrsUrn}"><gml:exterior><gml:LinearRing><gml:posList srsDimension="2">${ring}</gml:posList></gml:LinearRing></gml:exterior></gml:Polygon></fes:Intersects></fes:Filter>`;
 }
 
-export function createGmlWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch } = {}) {
-    if (!validateDescriptor(descriptor) || typeof fetchImpl !== 'function') throw new Error('Invalid GML WFS parcel source descriptor.');
+export function createGmlWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch, waitImpl = delay } = {}) {
+    if (!validateDescriptor(descriptor) || typeof fetchImpl !== 'function' || typeof waitImpl !== 'function') throw new Error('Invalid GML WFS parcel source descriptor.');
     const pageSize = descriptor.pageSize ?? 50;
     const maxFeatures = descriptor.maxFeatures ?? 1500;
     const maxResponseBytes = descriptor.maxResponseBytes ?? 1024 * 1024;
@@ -177,9 +217,15 @@ export function createGmlWfsParcelSource(descriptor, { fetchImpl = globalThis.fe
     }
 
     async function request(params, budget) {
-        const remaining = budget.deadline - Date.now();
+        let remaining = budget.deadline - Date.now();
         if (remaining <= 0) fail('Parcel WFS operation timed out.', 504);
         if (++budget.requests > MAX_OPERATION_REQUESTS) fail('Parcel WFS operation exceeds the request limit.');
+        if (profile.requestDelayMs) {
+            if (remaining <= profile.requestDelayMs) fail('Parcel WFS operation timed out.', 504);
+            await waitImpl(profile.requestDelayMs);
+            remaining = budget.deadline - Date.now();
+            if (remaining <= 0) fail('Parcel WFS operation timed out.', 504);
+        }
         const signal = AbortSignal.timeout(Math.min(timeoutMs, remaining));
         try {
             const response = await fetchImpl(`${profile.endpoint}?${params}`, {
@@ -203,22 +249,47 @@ export function createGmlWfsParcelSource(descriptor, { fetchImpl = globalThis.fe
         const body = await request(makeParams({ ...spec, resultType: 'hits' }), budget);
         const parsed = await parseGmlParcels(body, { schema: profile.schema, maxBytes: maxResponseBytes, maxFeatures: 1 });
         if (Date.now() >= budget.deadline) fail('Parcel WFS operation timed out.', 504);
-        if (parsed.numberMatched === undefined || parsed.numberReturned !== 0 || parsed.featureCount !== 0) fail('Parcel WFS did not provide a complete hit count.');
-        return parsed.numberMatched;
+        if (parsed.numberReturned !== 0 || parsed.featureCount !== 0) fail('Parcel WFS did not provide a complete hit count.');
+        if (parsed.numberMatched === undefined) {
+            // Gdańsk and Sosnowiec report unknown for an empty hits response. That alone
+            // proves nothing: require a separately parsed count=1 data response
+            // with zero returned members. readComplete repeats this after the
+            // query, so absence always has two independent empty data probes.
+            if (!profile.verifiedUnknownEmptyHits || !parsed.numberMatchedUnknown) fail('Parcel WFS did not provide a complete hit count.');
+            const emptyBody = await request(makeParams({ ...spec, count: 1, startIndex: 0 }), budget);
+            const empty = await parseGmlParcels(emptyBody, { schema: profile.schema, maxBytes: maxResponseBytes, maxFeatures: 1 });
+            if (Date.now() >= budget.deadline) fail('Parcel WFS operation timed out.', 504);
+            if ((!empty.numberMatchedUnknown && empty.numberMatched !== 0) || empty.numberReturned !== 0 || empty.featureCount !== 0) {
+                fail('Parcel WFS unknown hit count was not verified by an empty data response.');
+            }
+            return { numberMatched: 0, emptyDataVerified: true };
+        }
+        return { numberMatched: parsed.numberMatched, emptyDataVerified: false };
     }
 
     async function readComplete(spec, exactIds = null, budget = newOperationBudget()) {
-        const matchedBefore = await hitCount(spec, budget);
+        const before = await hitCount(spec, budget);
+        const matchedBefore = before.numberMatched;
         const matched = matchedBefore;
         if (matched > maxFeatures) fail('Parcel WFS query exceeds the configured parcel limit.');
+        // Small municipal pages are valid, but known hits can prove that the
+        // remaining pages plus the final hit check cannot fit this operation.
+        // Reject before downloading any part of a set we cannot complete.
+        if (profile.verifiedUnknownEmptyHits
+            && budget.requests + Math.ceil(matched / pageSize) + 1 > MAX_OPERATION_REQUESTS) {
+            fail('Parcel WFS operation exceeds the request limit.');
+        }
         const byNativeId = new Map();
         let rows = 0, duplicateNativeCount = 0;
-        for (let startIndex = 0; startIndex < matched; startIndex += pageSize) {
-            const count = Math.min(pageSize, matched - startIndex);
-            const body = await request(makeParams({ ...spec, count, startIndex }), budget);
+        for (let startIndex = 0; startIndex < matched; startIndex += profile.unpaged ? matched : pageSize) {
+            const count = profile.unpaged ? matched : Math.min(pageSize, matched - startIndex);
+            const body = await request(makeParams({ ...spec, count, ...(profile.unpaged ? {} : { startIndex }) }), budget);
             const parsed = await parseGmlParcels(body, { schema: profile.schema, maxBytes: maxResponseBytes, maxFeatures: count });
             if (Date.now() >= budget.deadline) fail('Parcel WFS operation timed out.', 504);
-            const pageMatchCountValid = parsed.numberMatchedUnknown || (parsed.numberMatched !== undefined && parsed.numberMatched === matched);
+            // Hessen declares unknown on data responses. Actual returned/member
+            // counts must equal the independently observed pre/post hit count.
+            const pageMatchCountValid = parsed.numberMatchedUnknown
+                || (parsed.numberMatched !== undefined && parsed.numberMatched === matched);
             if (!pageMatchCountValid || parsed.numberReturned !== count || parsed.featureCount !== count) fail('Parcel WFS page counts do not match the complete query.');
             if (parsed.duplicateNativeCount) fail('Parcel WFS page repeated a native parcel identity.');
             rows += parsed.featureCount;
@@ -236,10 +307,16 @@ export function createGmlWfsParcelSource(descriptor, { fetchImpl = globalThis.fe
         }
         if (rows !== matched) fail('Parcel WFS query did not return its complete matched set.');
         if (byNativeId.size !== rows) fail('Parcel WFS query returned repeated native identities.');
-        const matchedAfter = await hitCount(spec, budget);
+        const after = await hitCount(spec, budget);
+        const matchedAfter = after.numberMatched;
         if (matchedAfter !== matchedBefore) fail('Parcel WFS match count changed during the query.');
         return { features: [...byNativeId.values()].map(feature => canonicalParcelFeature(descriptor, feature, feature.id)),
-            complete: true, sourceId: descriptor.id, returnsWGS84: true, numberMatched: matched, duplicateNativeCount };
+            complete: true, sourceId: descriptor.id, returnsWGS84: true, numberMatched: matched, duplicateNativeCount,
+            ...(profile.unpaged ? { completenessEvidence: { paging: false, matchedBefore, matchedAfter,
+                numberReturned: rows, parsedFeatureCount: rows, uniqueNativeCount: byNativeId.size } } : {}),
+            ...(profile.verifiedUnknownEmptyHits ? { completenessEvidence: { paging: true, matchedBefore, matchedAfter,
+                numberReturned: rows, parsedFeatureCount: rows, uniqueNativeCount: byNativeId.size,
+                verifiedEmptyDataProbes: Number(before.emptyDataVerified) + Number(after.emptyDataVerified) } } : {}) };
     }
 
     async function queryBounds(bounds) {
@@ -258,19 +335,26 @@ export function createGmlWfsParcelSource(descriptor, { fetchImpl = globalThis.fe
         const unique = [...new Set(ids)];
         if (unique.some(id => typeof id !== 'string' || !id.startsWith(descriptor.idPrefix)
             || !safeNativeId(id.slice(descriptor.idPrefix.length))
+            || ((profile.unpaged || profile.schema === SOSNOWIEC_GML_SCHEMA)
+                && !new RegExp(profile.schema.localIdPattern).test(id.slice(descriptor.idPrefix.length)))
             || (profile.resourceIdPrefix && !/^(?:0|[1-9]\d*)$/.test(id.slice(descriptor.idPrefix.length))))) {
             throw new HttpError(400, 'Invalid parcel ID or different source.');
         }
         const budget = newOperationBudget();
         const features = [], absentIds = [], foundNativeIds = new Set();
         let numberMatched = 0, duplicateNativeCount = 0;
-        for (let offset = 0; offset < unique.length; offset += MAX_ID_BATCH_SIZE) {
-            const batchIds = unique.slice(offset, offset + MAX_ID_BATCH_SIZE);
+        // Unpaged servers can still execute distinct singleton exact predicates.
+        // pageSize bounds ID batches only for this profile, never area responses.
+        const idBatchSize = profile.unpaged ? Math.min(pageSize, MAX_ID_BATCH_SIZE) : MAX_ID_BATCH_SIZE;
+        const completenessEvidence = [];
+        for (let offset = 0; offset < unique.length; offset += idBatchSize) {
+            const batchIds = unique.slice(offset, offset + idBatchSize);
             const nativeIds = batchIds.map(id => id.slice(descriptor.idPrefix.length));
             const spec = profile.resourceIdPrefix
                 ? { resourceIds: nativeIds.map(id => `${profile.resourceIdPrefix}${id}`) }
                 : { filter: exactIdFilter(nativeIds, profile) };
             const result = await readComplete(spec, new Set(nativeIds), budget);
+            if (result.completenessEvidence) completenessEvidence.push(result.completenessEvidence);
             const found = new Set(result.features.map(feature => feature.properties.sourceParcelId));
             for (const feature of result.features) {
                 const nativeId = feature.properties.sourceParcelId;
@@ -282,7 +366,8 @@ export function createGmlWfsParcelSource(descriptor, { fetchImpl = globalThis.fe
             numberMatched += result.numberMatched;
             duplicateNativeCount += result.duplicateNativeCount;
         }
-        return { features, absentIds, complete: true, sourceId: descriptor.id, returnsWGS84: true, numberMatched, duplicateNativeCount };
+        return { features, absentIds, complete: true, sourceId: descriptor.id, returnsWGS84: true, numberMatched, duplicateNativeCount,
+            ...(profile.unpaged || profile.verifiedUnknownEmptyHits ? { completenessEvidence } : {}) };
     }
 
     async function queryGeometry(geometry) {

@@ -1,0 +1,39 @@
+{
+  "cityCode": 8349,
+  "queueRank": 2270,
+  "name": "Otukpo",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "point": [7.19702002456641, 8.13276873135103],
+  "population2025": 257334,
+  "population2025k": 257.334,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Otukpo Nigeria cadastral parcel map official land registry GIS; Nigeria official cadastral map parcel land registry Benue Otukpo GIS; Otukpo Benue land registry map parcel official",
+        "result": "First-party discovery identified BENGIS, the Benue State Geographic Information System, as the official state geospatial-data and land-administration custodian, plus the Benue State Ministry of Lands and Survey Survey Department. BENGIS advertises digital mapping, land services, cadastral-unit processing and an Explore Map route, but no safe anonymous parcel ID-plus-geometry response was exposed.",
+        "actualResultUrls": [
+          "https://bengis.benuestate.gov.ng/",
+          "https://lands.benuestate.gov.ng/department/survey-department/",
+          "https://bengis.benuestate.gov.ng/application-guidelines/",
+          "https://ngsa.gov.ng/mgcp-topographic-maps-of-nigeria/"
+        ]
+      },
+      {
+        "language": "Idoma/local",
+        "query": "Otukpo Idoma cadastral map land registry BENGIS; Otukpo Idoma map ilẹ BENGIS Benue",
+        "result": "The local-language/Idoma-oriented discovery returned the same official BENGIS route and contextual Otukpo/Idoma results, but did not expose a public parcel API, safe native parcel identity, geometry, CRS or downloadable cadastral layer.",
+        "actualResultUrls": [
+          "https://bengis.benuestate.gov.ng/",
+          "https://lands.benuestate.gov.ng/department/survey-department/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "BENGIS and the Benue State Ministry of Lands and Survey are first-party local/state custodial evidence for Otukpo, including survey, mapping, land administration and cadastral-unit workflows. The public BENGIS portal is login-gated and the direct site request timed out; no anonymous parcel feature response was obtained. This packet is not source integration or runtime admission.",
+  "runtimeReadiness": "held"
+}

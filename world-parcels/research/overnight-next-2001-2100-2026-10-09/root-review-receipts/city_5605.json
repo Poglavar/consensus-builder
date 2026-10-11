@@ -1,0 +1,41 @@
+{
+  "taskId": "city:5605",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-5605-yoshkar-ola.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/yoshkar-ola-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-10T21:38:24Z",
+  "identity": {
+    "cityCode": 5605,
+    "rank": 2044,
+    "country": "Russian Federation",
+    "point": [
+      56.6369367494595,
+      47.8869750721061
+    ],
+    "populationPersons": 284892,
+    "queueAndRosterMatch": true
+  },
+  "searches": {
+    "englishAndLocalQueriesRecorded": true,
+    "actualResultUrlsRecorded": true
+  },
+  "sample": {
+    "retainedFullPolygonCount": 0,
+    "safeIdAttributesOnly": null
+  },
+  "qualification": {
+    "freshNativeIdAdapterReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "fullScopeMetricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "admitted": false
+  },
+  "decisionReason": "No anonymous parcel geometry response; official municipal registry is evidence of custody, and NSPD/Rosreestr timeouts leave geometry and city scope unresolved.",
+  "custodyAssessment": "First-party municipal-property registry cache includes land-parcel references; national public-map timeout has no absence implication."
+}

@@ -1,0 +1,56 @@
+{
+  "cityRecord": "city-11995-zakiganj.json",
+  "cityCode": 11995,
+  "queueRank": 2046,
+  "city": "Zakiganj",
+  "country": "India",
+  "countryCode": "IN",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "reviewedAt": "2026-10-10T21:40:00Z",
+  "discovery": {
+    "english": "Government of Assam first-party discovery found the Directorate of Land Records, ILRMS, and live Bhunaksha cadastral viewer. The exact locality was not separately confirmed in search results.",
+    "native": "Assamese/Bengali-local discovery found the same Assam land-record services and Assamese-transliterated Bhunaksha hierarchy; Bangladesh Zakiganj results were excluded as wrong country."
+  },
+  "custodian": {
+    "name": "Revenue and Disaster Management Department / Directorate of Land Records, Government of Assam; NIC Assam",
+    "role": "State/local cadastral-map and land-record service evidenced by the live Assam Bhunaksha hierarchy; exact Zakiganj parcel coverage remains unverified",
+    "evidenceUrls": ["https://bhunaksha.assam.gov.in/", "https://dlrs.assam.gov.in/", "https://ilrms.assam.gov.in/"]
+  },
+  "attemptedRoutes": [
+    {"route": "Assam Directorate of Land Records", "url": "https://dlrs.assam.gov.in/", "result": "First-party portal found; general custodian/service information, no parcel geometry response."},
+    {"route": "Assam ILRMS", "url": "https://ilrms.assam.gov.in/", "result": "First-party service directory found; links Bhunaksha and Jamabandi, no bounded parcel response."},
+    {"route": "Bhunaksha current HTML/JavaScript", "url": "https://bhunaksha.assam.gov.in/", "result": "HTTP 200; current bundle exposed backend https://bhunaksha.assam.gov.in/bhunakshaBackEnd and routes for hierarchy, coordinate click, parcel info, trace map and WMS capabilities."},
+    {"route": "Bhunaksha public hierarchy", "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/districts", "result": "HTTP 200; district 21 Sribhumi returned."},
+    {"route": "Bhunaksha coordinate lookup", "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/click_info", "result": "HTTP 200 with application error Failed to fetch districts for repeated candidate Karimganj Town village codes; no safe ID or geometry."}
+  ],
+  "sourceFieldMapping": {
+    "nativeFieldsObservedInBundle": ["TEXTPARCEL", "uniqueId", "locationCode", "area", "geom"],
+    "mapping": "The bundle indicates a parcel response may expose a native dag number/TEXTPARCEL and uniqueId plus geom, but no response containing these fields was obtained. No source-specific fields are copied into a sample because no sample exists.",
+    "compositeKeyProvenance": "Potential hierarchy key is district/circle/village code plus dag number, inferred only from public route payload names; not qualified as a native identity."
+  },
+  "fieldPolicy": {
+    "allowlist": ["safe stable native parcel identifier if publicly returned", "parcel polygon geometry", "source field names and mapping in metadata only", "CRS/format and request metadata"],
+    "notRequested": ["owner/right-holder", "address/contact", "titleholder/certificate", "tax/account/identity/application data", "encumbrances"]
+  },
+  "geometryReview": {
+    "publicGeometryFound": false,
+    "sampleFile": null,
+    "parcelCount": 0,
+    "reason": "No bounded anonymous ID-plus-geometry response was available after inspecting the current public viewer routes; no polygon is retained."
+  },
+  "scopeLimits": [
+    "Exact WUP point [24.8671030302612, 92.3602778356325] was preserved in latitude/longitude order and not shifted to force a parcel hit.",
+    "The failed coordinate route was not treated as evidence of citywide absence.",
+    "Search-result Bangladesh Zakiganj services were excluded because the queue record is India.",
+    "Authentication, CAPTCHA, private credentials and protected owner/property queries were not attempted.",
+    "No raw source attribute set or temporary token is retained in the cohort packet."
+  ],
+  "qualification": {
+    "registryFound": true,
+    "publicParcelGeometryFound": false,
+    "runtimeReadiness": "held",
+    "serialReviewerRequired": true,
+    "uncertainty": "The state/local viewer is evidenced, but exact Zakiganj coverage, safe native identity field, schema, CRS of a returned geometry, and citywide coverage remain unverified."
+  }
+}

@@ -1,0 +1,118 @@
+{
+  "cityCode": 1462,
+  "queueRank": 2330,
+  "name": "El Jadida",
+  "country": "Morocco",
+  "countryCode": "MA",
+  "point": [33.2380117808932, -8.5109382846164],
+  "population2025": 250271,
+  "population2025k": 250.271,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "El Jadida Morocco official cadastral map parcel service cadastre ANCFCC",
+        "result": "First-party discovery found ANCFCC's online cadastral-plan request service, its El Jadida external-office listing, and an official cartographic catalogue listing El Jadida products. No public anonymous parcel viewer or feature API was exposed.",
+        "actualResultUrls": [
+          "https://www.ancfcc.gov.ma/Plancadastralpage",
+          "https://ancfcc.gov.ma/présentation/réseau-des-blocs-fonciers/",
+          "https://www.ancfcc.gov.ma/Content/carto/PLAN-CATALOGUE-2022.pdf"
+        ]
+      },
+      {
+        "language": "French/Arabic (native/local)",
+        "query": "El Jadida Maroc carte cadastrale parcelles service officiel ANCFCC / الجديدة المغرب الخريطة العقارية المحافظة العقارية المسح العقاري الوكالة الوطنية للمحافظة العقارية",
+        "result": "First-party discovery found ANCFCC French and Arabic cadastre descriptions, the El Jadida cadastre/conservation contacts, and the official El Jadida urban-plan page. Direct requests currently return an ANCFCC maintenance/403 response; no parcel feature response was obtained.",
+        "actualResultUrls": [
+          "https://ancfcc.gov.ma/produits-et-formalités/produits/cadastre/",
+          "https://www.ancfcc.gov.ma/arproduits-et-formalités/produits/cadastre/",
+          "https://ancfcc.gov.ma/nos-métiers/cartographie/cartographie-urbaine/",
+          "https://ancfcc.gov.ma/présentation/réseau-des-blocs-fonciers/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "geometryVerified": false,
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "runtimeEligible": false,
+  "runtimeReadiness": "held",
+  "discoveryMethod": "first-party English and French/Arabic discovery plus bounded official-page inspection and ordinary HTTPS GET checks",
+  "sourceReview": "ANCFCC is the Moroccan national cadastre and land-conservation authority. Its official network page identifies an El Jadida Conservation Foncière office and Cadastre office. Official product pages describe cadastral plans and reference maps in Lambert and state that cadastral data can be supplied in digital or analogue form. The official catalogue and urban-cartography page identify El Jadida cartographic products, but these are not an anonymous parcel feature service. The online cadastral-plan request page is an application workflow requiring personal/professional information, title number, CAPTCHA, phone/SMS verification and payment; it was not used for parcel lookup.",
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH",
+      "url": "https://www.ancfcc.gov.ma/Plancadastralpage",
+      "httpStatus": 403,
+      "outcome": "Official ANCFCC cadastral-plan request route was discovered. Direct GET returned 403 and the returned HTML stated that the portal is under maintenance. The indexed form requires title/cadastre information plus personal data, CAPTCHA, phone/SMS and payment; no request was submitted."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://ancfcc.gov.ma/présentation/réseau-des-blocs-fonciers/",
+      "httpStatus": 403,
+      "outcome": "Official ANCFCC external-office listing was discovered. It identifies El Jadida Conservation Foncière and Cadastre offices and their public office contacts. No map/API configuration or parcel geometry was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://ancfcc.gov.ma/produits-et-formalités/produits/cadastre/",
+      "httpStatus": 403,
+      "outcome": "Official French cadastral-products page was discovered through first-party search. Direct GET returned 403. Indexed official content describes cadastral plans/reference maps and Lambert linkage, but no public feature endpoint or field schema."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.ancfcc.gov.ma/arproduits-et-formalités/produits/cadastre/",
+      "httpStatus": 403,
+      "outcome": "Official Arabic cadastral-products page was discovered. Direct GET returned 403. Indexed official content describes the cadastral plan and reference map; no anonymous parcel response was available."
+    },
+    {
+      "method": "GET",
+      "url": "https://ancfcc.gov.ma/nos-métiers/cartographie/cartographie-urbaine/",
+      "httpStatus": 403,
+      "outcome": "Official urban-cartography page was discovered. Direct GET returned 403. Indexed content identifies an El Jadida public urban plan at 1:15,000; this is generalized cartography, not parcel geometry."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.ancfcc.gov.ma/Content/carto/PLAN-CATALOGUE-2022.pdf",
+      "httpStatus": 403,
+      "outcome": "Official ANCFCC cartographic catalogue was discovered. Direct GET returned 403. Indexed content lists El Jadida products (1:10,000, 2015; 1:15,000, 2016), with no parcel feature schema or polygon response."
+    },
+    {
+      "method": "BOUNDED_ANONYMOUS_QUERY",
+      "url": "https://www.ancfcc.gov.ma/Plancadastralpage",
+      "httpStatus": null,
+      "outcome": "Not executed because the only discovered route is a maintenance-blocked application form requiring unsafe/personal fields, CAPTCHA, SMS and payment. No exact-point parcel hit or miss was inferred from this non-queryable route."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "No public cadastral viewer JavaScript/configuration or feature-service URL was exposed in the bounded inspection.",
+    "geometryCrs": "Official indexed product description says cadastral reference maps are tied to the Lambert system; exact service CRS and coordinate axis/order were not observed.",
+    "nativeIdentity": "Not observed; no parcel feature response was obtained.",
+    "sourceFieldMapping": {},
+    "boundedAnonymousResponse": {
+      "requestScope": "Exact WUP point [33.2380117808932, -8.5109382846164] was preserved for qualification.",
+      "featureCount": null,
+      "geometryFeatureCount": 0,
+      "result": "No safe anonymous feature-query route was exposed; no exact-point hit or miss was inferred."
+    }
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if later exposed and source-proven", "full parcel polygon geometry if later exposed", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "Local cadastre/conservation offices and official cadastral/cartographic products are evidenced, but no public anonymous parcel geometry, stable native identity, current service schema, or exact service CRS was qualified."
+  },
+  "scopeLimits": [
+    "Exact WUP point [33.2380117808932, -8.5109382846164] was preserved and not shifted.",
+    "No exact-point hit or miss, map extent, timeout, maintenance page, 403, login wall, or unusable UI was treated as citywide cadastral absence.",
+    "Official urban-plan/cartographic products are not parcel-feature evidence or source integration/admission.",
+    "No parcel polygon is retained because no unchanged polygon with a qualified native identity was obtained.",
+    "No citywide coverage, update cadence, current service endpoint, exact CRS, or stable parcel-identity semantics were verified.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, title, CAPTCHA, SMS or payment data was requested or retained."
+  ],
+  "uncertainty": "ANCFCC local custodianship and El Jadida-specific official cartographic/cadastral products are evidenced. Current anonymous parcel-map/API availability, geometry coverage, schema, exact CRS, stable identity semantics, and public feature access remain unverified. Runtime/admission remains held."
+}

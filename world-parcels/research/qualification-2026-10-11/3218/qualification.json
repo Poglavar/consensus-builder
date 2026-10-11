@@ -1,0 +1,291 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "3218",
+  "cityName": "Oshawa",
+  "sourceId": "ca-on-oshawa-assessed-parcels",
+  "candidateSha256": "c2caca86960c8c9be04bd2cbda174175fced5d926b3a4eb08f4eaaec3287ff0a",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 206,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 206,
+      "collectedUniqueCount": 206
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 508,
+      "sampleCentroidCell": {
+        "index": 4,
+        "dx": 0,
+        "dy": 0,
+        "bbox": [
+          -78.876,
+          43.893,
+          -78.875,
+          43.894
+        ],
+        "reason": "WUP point had no containing sampled parcel; sample centroid cell added.",
+        "complete": true,
+        "featureCount": 28
+      }
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "forcedComplete": true,
+      "pagingRequests": 10,
+      "observedPageLimits": [
+        1
+      ],
+      "singleIdRequests": 0,
+      "usesOffsetPaging": true,
+      "distinctOffsets": 2,
+      "pagedEvidence": true
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "inputSha256": "bbf18974cd14d45db7f256ffbe70aa2aae1d4281dc0c9f0d906cfb13604b15c4",
+      "featureCount": 206,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32617",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true,
+      "reportFile": "metric-report.json"
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "bbf18974cd14d45db7f256ffbe70aa2aae1d4281dc0c9f0d906cfb13604b15c4",
+  "featureCount": 206,
+  "sampleIds": [
+    "CA-ON-OSHAWA-PCL000001",
+    "CA-ON-OSHAWA-PCL000002",
+    "CA-ON-OSHAWA-PCL000003"
+  ],
+  "cellSizeDegrees": 0.001,
+  "requestCount": 46,
+  "requestLimit": 300,
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ],
+  "sampledCellsSummary": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        -78.884,
+        43.902,
+        -78.883,
+        43.903
+      ],
+      "complete": true,
+      "featureCount": 21
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        -78.883,
+        43.902,
+        -78.882,
+        43.903
+      ],
+      "complete": true,
+      "featureCount": 21
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        -78.882,
+        43.902,
+        -78.881,
+        43.903
+      ],
+      "complete": true,
+      "featureCount": 19
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        -78.884,
+        43.903,
+        -78.883,
+        43.904
+      ],
+      "complete": true,
+      "featureCount": 16
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        -78.883,
+        43.903,
+        -78.882,
+        43.904
+      ],
+      "complete": true,
+      "featureCount": 20
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        -78.882,
+        43.903,
+        -78.881,
+        43.904
+      ],
+      "complete": true,
+      "featureCount": 27
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        -78.884,
+        43.904,
+        -78.883,
+        43.905
+      ],
+      "complete": true,
+      "featureCount": 13
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        -78.883,
+        43.904,
+        -78.882,
+        43.905
+      ],
+      "complete": true,
+      "featureCount": 19
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        -78.882,
+        43.904,
+        -78.881,
+        43.905
+      ],
+      "complete": true,
+      "featureCount": 23
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        -78.883,
+        43.901,
+        -78.882,
+        43.902
+      ],
+      "complete": true,
+      "featureCount": 28
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        -78.883,
+        43.905,
+        -78.882,
+        43.906
+      ],
+      "complete": true,
+      "featureCount": 19
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        -78.885,
+        43.903,
+        -78.884,
+        43.904
+      ],
+      "complete": true,
+      "featureCount": 8
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        -78.881,
+        43.903,
+        -78.88,
+        43.904
+      ],
+      "complete": true,
+      "featureCount": 20
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        -78.876,
+        43.893,
+        -78.875,
+        43.894
+      ],
+      "complete": true,
+      "featureCount": 28
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "cityRecord": "city-2584-tebing-tinggi.json",
+  "cityCode": 2584,
+  "queueRank": 2297,
+  "name": "Tebing Tinggi",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "point": [3.33205141414238, 99.1596189659036],
+  "population2025": 253625,
+  "population2025k": 253.625,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryCustodian": {
+    "name": "Kantor Pertanahan Kota Tebing Tinggi, ATR/BPN",
+    "evidenceUrl": "https://kot-tebingtinggi.atrbpn.go.id/assets/7475b8da-12ee-4c3f-87cc-03d25a892eb2",
+    "scope": "Local custodian/procedure evidence only; the document lists cadastral measurement and mapping services. It does not expose parcel geometry or a public parcel API."
+  },
+  "attempts": [
+    {"stage":"English discovery","method":"web search","query":"Tebing Tinggi Indonesia official cadastral parcel map land registration GIS","outcome":"Found official BHUMI and ATLAS portals plus official Tebing Tinggi RDTR page; no indexed city parcel endpoint.","urls":["https://bhumi.atrbpn.go.id/","https://atlas.atrbpn.go.id/","https://jdih.atrbpn.go.id/peraturan/detail/1134/rencana-detail-tata-ruang-wilayah-perencanaan-kota-tebing-tinggi"]},
+    {"stage":"Indonesian discovery","method":"web search","query":"Tebing Tinggi peta bidang tanah kadaster resmi ATR BPN","outcome":"Found official BHUMI/ATLAS and local land-office portal; no anonymous city-bounded parcel response.","urls":["https://bhumi.atrbpn.go.id/","https://atlas.atrbpn.go.id/","https://kot-tebingtinggi.atrbpn.go.id/assets/7475b8da-12ee-4c3f-87cc-03d25a892eb2"]},
+    {"stage":"viewer wrapper","method":"GET","url":"https://bhumi.atrbpn.go.id/","outcome":"HTTP 200; nested iframe points to the official console."},
+    {"stage":"viewer console","method":"GET","url":"https://konsolbhumi.atrbpn.go.id/","outcome":"HTTP 200; fetched current HTML and hashed JavaScript bundles. Static inspection did not identify a safe anonymous parcel API, layer endpoint, or schema suitable for a bounded request."},
+    {"stage":"local custodian procedure","method":"GET","url":"https://kot-tebingtinggi.atrbpn.go.id/assets/7475b8da-12ee-4c3f-87cc-03d25a892eb2","outcome":"HTTP 200; official form names the local land office and cadastral measurement/mapping service; no parcel geometry."}
+  ],
+  "sourceAssessment": {
+    "nativeFieldNames": null,
+    "fieldMapping": null,
+    "compositeKeyProvenance": null,
+    "crs": null,
+    "safeFieldAllowlist": ["stable native parcel identifier if publicly exposed", "parcel geometry", "source CRS metadata"],
+    "unsafeFieldsExcluded": ["owner", "address", "contact", "titleholder", "tax/account", "personal data", "rights/status details beyond safe public parcel metadata"],
+    "scopeLimits": ["No citywide coverage established", "No exact-point parcel hit tested through a parcel API", "Public viewer route/API remained unresolved", "Search and viewer failure are not evidence of citywide parcel absence"],
+    "retainedSamples": 0,
+    "sampleFile": null
+  },
+  "runtimeReadiness": "held",
+  "uncertainty": "The official local custodian is evidenced, but parcel-service integration is unqualified. Keep runtime readiness held pending an independent serial adapter review."
+}

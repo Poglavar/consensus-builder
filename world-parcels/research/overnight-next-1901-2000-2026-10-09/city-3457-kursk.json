@@ -1,0 +1,45 @@
+{
+  "cityCode": 3457,
+  "queueRank": 1997,
+  "city": "Kursk",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso3": "RUS",
+  "point": [51.7381907570659, 36.1824765248315],
+  "population2025": 291098,
+  "population2025k": 291.098,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kursk official cadastral map public parcel map Rosreestr Kursk",
+        "result": "Found official Kursk regional/city pages and an official Kursk document referencing cadastral mapping; the current federal public-map successor NSPD was also identified. No safe anonymous parcel ID-plus-geometry response was found in bounded requests.",
+        "actualResultUrls": [
+          "https://kursk.ru/",
+          "https://kursk.ru/upload/iblock/6ad/dtjbaoqvvgv2x077o6vhtnul97a0bptg/Akt-GIKE-Kursk-Pavlunovskogo-10_ot-01-dek-24g.pdf",
+          "https://xn--80aalwda4bbgdho.xn--p1ai/",
+          "https://nspd.gov.ru/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "Курск официальная кадастровая карта публичная карта земельных участков Росреестр",
+        "result": "Found official Kursk government/regional cadastral-valuation material and official Russian-language references to the public cadastral-map route; no safe anonymous parcel feature response was obtained.",
+        "actualResultUrls": [
+          "https://kursk.ru/",
+          "https://adm2.rkursk.ru/region/control/documents/document-99646/",
+          "https://xn--80aalwda4bbgdho.xn--p1ai/",
+          "https://nspd.gov.ru/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "Official Kursk government material documents the cadastral/public-map context, and the official Kursk-region cadastral valuation institution publishes cadastral-property services and identifies a Kursk address/contact. This is local/regional procedural and custodial evidence, but it is not evidence of a verified parcel API or adapter.",
+  "serviceReview": "kursk-service-review.json",
+  "runtimeReadiness": "held_no_verified_public_geometry"
+}

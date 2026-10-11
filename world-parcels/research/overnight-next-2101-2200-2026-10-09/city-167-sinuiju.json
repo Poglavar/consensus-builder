@@ -1,0 +1,99 @@
+{
+  "schemaVersion": "1.0",
+  "cityCode": 167,
+  "queueRank": 2181,
+  "name": "Sinuiju",
+  "country": "Dem. People's Republic of Korea",
+  "countryCode": "KP",
+  "iso3": "PRK",
+  "locId": 408,
+  "point": [40.10039684487, 124.397834585144],
+  "population2025": 267218,
+  "population2025k": 267.218,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "checkedAt": "2026-10-11",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sinuiju DPRK official cadastral map parcel land registry GIS",
+        "result": "First-party discovery located Naenara material for the Sinuiju International Economic Zone with a regional map and administrative-area description. No Sinuiju-local cadastral registry, parcel viewer, public API, schema, CRS, or safe anonymous ID-plus-geometry response was found.",
+        "actualResultUrls": ["https://www.naenara.com.kp/images/trade/advertise/siniju_e.pdf"]
+      },
+      {
+        "language": "native/local",
+        "query": "신의주 조선민주주의인민공화국 지적도 토지등록 토지대장 지도 공식",
+        "result": "Korean-language discovery returned the first-party Naenara Sinuiju International Economic Zone PDF and general Korean references about North Korean land information, but no Sinuiju-local cadastral service or public parcel geometry endpoint. South Korean K-GeoP results were excluded as a different jurisdiction.",
+        "actualResultUrls": [
+          "https://www.naenara.com.kp/images/trade/advertise/siniju_e.pdf",
+          "https://www.kgeop.go.kr/info/infoMap.do?initMode=L"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryAssessment": "No Sinuiju-local registry office, cadastral map procedure, viewer, or parcel endpoint was evidenced. General DPRK cartographic/development-zone material is not treated as local registry evidence.",
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "sourceId": "dprk-naenara-sinuiju-development-zone-material",
+    "name": "Naenara DPRK public web material",
+    "operator": "DPRK public information site",
+    "scope": "Sinuiju development-zone and general cartographic material; parcel coverage and public vector access were not verified.",
+    "endpoint": "https://www.naenara.com.kp/",
+    "method": "GET",
+    "responseFormat": "HTML/PDF discovery material; no parcel service configuration exposed",
+    "crs": null,
+    "reuseStatus": "not qualified; no anonymous parcel geometry or stable parcel identity verified"
+  },
+  "officialSources": [
+    {
+      "url": "https://www.naenara.com.kp/images/trade/advertise/siniju_e.pdf",
+      "observation": "First-party Naenara PDF describes the Sinuiju International Economic Zone and shows regional cartographic context. It is not cadastral parcel geometry or a registry service."
+    },
+    {
+      "url": "https://www.naenara.com.kp/",
+      "observation": "First-party Naenara host was attempted directly, but TLS certificate verification failed in the research environment; no TLS exception was used."
+    },
+    {
+      "url": "https://www.kgeop.go.kr/info/infoMap.do?initMode=L",
+      "observation": "South Korean Ministry of Land, Infrastructure and Transport K-GeoP map page loaded, but it is a Republic of Korea service and was excluded from DPRK source evidence."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.naenara.com.kp/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "outcome": "TLS certificate verification failed. No certificate exception was authorized or used; no content was treated as retrieved."
+    },
+    {
+      "url": "https://www.naenara.com.kp/images/trade/advertise/siniju_e.pdf",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "outcome": "Direct request failed TLS certificate verification. No disabled-TLS retry, credentials, CAPTCHA bypass, or private token was attempted."
+    },
+    {
+      "url": "https://www.kgeop.go.kr/info/infoMap.do?initMode=L",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "outcome": "Public South Korean map page loaded and was inspected only as a jurisdiction comparison; no DPRK parcel request was made."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "English and Korean first-party discovery for Sinuiju/DPRK cadastral, land-registration, map, and GIS services.",
+    "verifiedOpenScope": "Only first-party development-zone/cartographic context was identified; no local open parcel geometry was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "The current DPRK land-registration custodian, Sinuiju local office workflow, parcel layer name, native ID field, CRS, anonymous access policy, and exact WUP-point coverage remain unknown. No exact-point hit or miss was obtained.",
+  "nextStep": "Serial reviewer should independently inspect any currently public DPRK or North Pyongan/Sinuiju map workflow and verify a bounded geometry-only response with a stable native parcel ID if an anonymous service becomes accessible.",
+  "runtimeReadiness": "held; no adapter qualification or source admission performed"
+}

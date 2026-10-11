@@ -1,0 +1,12 @@
+{
+  "taskId": "city:1773",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-1773-cherepovets.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/cherepovets-service-review.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/root-review-receipts/source-evidence/city_1773-root-review.json"
+  ],
+  "checkedAt": "2026-10-10T20:31:18.838420Z"
+}

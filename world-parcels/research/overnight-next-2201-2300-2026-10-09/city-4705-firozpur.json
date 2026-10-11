@@ -1,0 +1,80 @@
+{
+  "cityCode": 4705,
+  "queueRank": 2215,
+  "name": "Firozpur",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "point": [30.9408614876319, 74.6181641641679],
+  "population2025": 263304,
+  "population2025k": 263.304,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Firozpur Punjab official cadastral parcel map land records GIS portal site:gov.in",
+        "result": "Found Punjab Government's official Bhu-Naksha viewer, Punjab Land Records cadastral map, and DILRMP district status. The DILRMP page reports Firozpur district cadastral and parcel coverage, but is status evidence rather than a parcel API.",
+        "actualResultUrls": [
+          "https://gisbhunaksha.punjab.gov.in/",
+          "https://jamabandi.punjab.gov.in/CadastralMap.aspx",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/43"
+        ]
+      },
+      {
+        "language": "native/local (Punjabi)",
+        "query": "ਫਿਰੋਜ਼ਪੁਰ ਪੰਜਾਬ ਜ਼ਮੀਨ ਰਿਕਾਰਡ ਨਕਸ਼ਾ ਕੈਡਸਟ੍ਰਲ ਸਰਕਾਰੀ ਪੋਰਟਲ",
+        "result": "Found the Punjabi-language Punjab Land Records cadastral map and Punjabi Bhu-Naksha viewer. The official viewer exposed Punjabi administrative selectors including ਫਿਰੋਜਪੁਰ and ਫਿਰੋਜਪੁਰ ਸ਼ਹਿਰ.",
+        "actualResultUrls": [
+          "https://jamabandi.punjab.gov.in/CadastralMap.aspx",
+          "https://gisbhunaksha.punjab.gov.in/index.jsp",
+          "https://ferozepur.nic.in/pa/%E0%A8%88-%E0%A8%97%E0%A8%B5%E0%A8%B0%E0%A8%A8%E0%A9%88%E0%A8%82%E0%A8%B8/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "custodian": "Department of Revenue, Rehabilitation and Disaster Management, Government of Punjab, India; Director, Land Records, Punjab",
+    "service": "Punjab Bhu-Naksha public cadastral map viewer",
+    "viewerUrl": "https://gisbhunaksha.punjab.gov.in/index.jsp",
+    "scope": "State viewer with district, tehsil, kanungo, patwar and village map navigation; data is explicitly marked provisional and for viewing only.",
+    "resolvedAdministrativePath": {
+      "state": "03 Punjab",
+      "district": "07 Firozpur",
+      "tehsil": "070 Firozpur",
+      "kanungo": "009 Firozpur Shehar",
+      "patwar": "067 Khai",
+      "village": "34642 Meera Shah Noor",
+      "gisCode": "0707000906734642"
+    },
+    "extentRequest": {
+      "endpoint": "https://gisbhunaksha.punjab.gov.in/rest/MapInfo/getVVVVExtentGeoref",
+      "parameters": "state=03; gisLevels=07,070,009,067,34642,; srs=0",
+      "response": {
+        "xmin": 457368.2679,
+        "ymin": 3417669.5243,
+        "xmax": 458402.6992,
+        "ymax": 3418838.7267,
+        "gisCode": "0707000906734642"
+      },
+      "crs": "Not declared in response; coordinates are native projected viewer coordinates and were not transformed or used as WUP coordinates."
+    }
+  },
+  "parcelEvidence": {
+    "sampleFile": null,
+    "safeNativeIdentity": false,
+    "geometryRetained": false,
+    "reason": "The viewer route resolved a bounded village extent but no safe anonymous parcel ID-plus-geometry payload was obtained. No exact-point hit or citywide absence is inferred.",
+    "runtimeReadiness": "held",
+    "qualification": "Not admitted as a runtime parcel adapter; serial review required."
+  },
+  "researchNotes": [
+    "Official JavaScript/config inspection found rest/Levels/ListsAfterLevel, rest/MapInfo/getVVVVExtentGeoref, rest/MapInfo/getPlotAtXY, ScalarDatahandler, and WMS routes.",
+    "ListsAfterLevel successfully returned Punjabi administrative codes and labels; the bounded extent request returned HTTP 200 for the resolved path.",
+    "A shorter/incomplete extent path returned HTTP 500, and the WMS GetCapabilities request returned an empty response; these are recorded as route limitations, not absence evidence.",
+    "Only safe administrative and map metadata were requested. No owner, address, titleholder, contact, tax, account, or personal fields were requested."
+  ]
+}

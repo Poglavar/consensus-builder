@@ -1,0 +1,47 @@
+{
+  "cityRecord": "city-10528-laizhou.json",
+  "cityCode": 10528,
+  "wupCityCode": 10528,
+  "queueRank": 2136,
+  "rank": 2136,
+  "name": "Laizhou",
+  "cityName": "Laizhou",
+  "country": "China",
+  "iso2": "CN",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [37.1914620001621, 119.943051200759],
+  "population2025": 272386,
+  "population2025k": 272.386,
+  "populationUnit": "persons",
+  "status": "complete",
+  "runtimeEligible": false,
+  "registryFound": true,
+  "geometryVerified": false,
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "discoveryMethod": "first-party English and Simplified Chinese web discovery plus bounded HTTPS inspection of the official Shandong GIS portal",
+  "queryOutcomes": "Official Laizhou sources identify the local natural-resources and real-estate-registration custodians and cadastral duties. The official provincial GIS portal was reachable and its current JavaScript/configuration was inspected, but no public Laizhou cadastral feature service, schema/CRS, or anonymous parcel geometry response was exposed.",
+  "attempts": [
+    {"method": "web search", "language": "English", "query": "Laizhou China official cadastral parcel map land registry GIS map service", "outcome": "Official Laizhou bureau and Shandong GIS pages found; no public parcel geometry endpoint."},
+    {"method": "web search", "language": "Chinese (Simplified)", "query": "莱州市 官方 不动产登记 地籍图 地图 服务", "outcome": "Official Laizhou registration-center notice and bureau page found; no anonymous parcel-map API or bounded polygon response."},
+    {"method": "GET", "url": "https://www.sdmap.gov.cn/", "outcome": "HTTP 200 with official GIS homepage; current JS/configuration inspected; no cadastral parcel service identified."},
+    {"method": "GET", "url": "https://www.sdmap.gov.cn/Config_url.v002.js", "outcome": "HTTP 200 with current portal configuration; no Laizhou parcel layer or safe anonymous geometry route identified."}
+  ],
+  "sourceAssessment": {
+    "localCustodian": "Laizhou Municipal Natural Resources and Planning Bureau and Laizhou Real Estate Registration Center, evidenced by official Laizhou government pages.",
+    "publicService": "No public cadastral feature service or anonymous parcel geometry response verified.",
+    "nativeFieldsObserved": "No parcel API schema was retrieved. Registration notices were not treated as geometry-service schema and no source-specific attributes were retained.",
+    "safeFieldAllowlist": ["stable native parcel identifier only", "geometry"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account"]
+  },
+  "scopeLimits": [
+    "Exact WUP point is a locator only; no exact-point or map-extent result was used to infer citywide absence.",
+    "No city boundary or municipal cadastral coverage polygon was obtained.",
+    "No parcel polygons are retained; no GeoJSON sample is written.",
+    "Research completion does not constitute source integration, adapter admission, or runtime qualification."
+  ],
+  "sampleFile": null,
+  "runtimeReadiness": "held_pending_independent_serial_qualification",
+  "uncertainty": "The local registry custodian and cadastral workflow are evidenced, but the public viewer/API, schema, CRS, city coverage, and anonymous geometry access remain unresolved."
+}

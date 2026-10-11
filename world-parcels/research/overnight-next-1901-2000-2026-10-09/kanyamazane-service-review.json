@@ -1,0 +1,45 @@
+{
+  "cityRecord": "city-5368-kanyamazane.json",
+  "cityCode": 5368,
+  "queueRank": 1986,
+  "city": "Kanyamazane",
+  "country": "South Africa",
+  "countryCode": "ZA",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "Chief Surveyor-General / Department of Land Reform and Rural Development, with local jurisdiction evidence from City of Mbombela Local Municipality",
+  "serviceUrl": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer",
+  "scope": "Official national cadastral ArcGIS service with polygon layers; City of Mbombela confirms local GIS/spatial-planning custody and Kanyamazane jurisdiction, but local open parcel geometry was not verified.",
+  "schemaAndCrs": "Service metadata exposed Parent Farm, Farm Portions, Erven, Holdings and Public Places polygon layers. Erven schema exposed ID, PRCL_KEY, OBJECTID and other cadastral fields; layer spatial reference is WKID 4148. No target feature was returned in the tested envelope.",
+  "nativeIdentity": "ID is the preferred native identity field; OBJECTID is a source OID fallback. No synthetic identity or composite key was created.",
+  "fieldMapping": {
+    "safe native fields observed": ["ID", "OBJECTID", "geometry"],
+    "retained feature properties": "None; no GeoJSON sample because bounded Kanyamazane queries returned no features.",
+    "unsafe fields": "Owner, titleholder, address, contact, tax/account, valuation and legal/title fields were not requested or retained."
+  },
+  "requestOutcome": "Verified-TLS anonymous GETs succeeded for national service and Erven layer metadata. Five bounded GeoJSON envelope queries around the exact WUP point returned zero features. A separate first-party environment screening service timed out. No login, credentials, private token, CAPTCHA/Cloudflare bypass, or TLS exception was used.",
+  "attemptedRoutes": [
+    {"method": "GET", "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer?f=pjson", "outcome": "200; national cadastral service metadata and layer list."},
+    {"method": "GET", "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2?f=pjson", "outcome": "200; Erven polygon schema, native identity fields and WKID 4148."},
+    {"method": "GET", "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/{0,1,2,3,4}/query", "outcome": "200; bounded envelope queries returned zero features for every tested layer."},
+    {"method": "GET", "url": "https://portal.environment.gov.za/server/rest/services/ScreeningMaps/ScreeningSearch/MapServer/0?f=json", "outcome": "Timeout after 25 seconds."},
+    {"method": "GET", "url": "https://portal.environment.gov.za/server/rest/services/ScreeningMaps/ScreeningSearch/MapServer/0/query", "outcome": "Not accessible / timeout; no geometry obtained."},
+    {"method": "GET", "url": "https://www.mbombela.gov.za/organisational-structure/", "outcome": "200 via first-party discovery; municipal Spatial planning and GIS function evidenced, but no public parcel endpoint."}
+  ],
+  "officialCustodyEvidence": "The Chief Surveyor-General service metadata names the national cadastral custodian. City of Mbombela first-party material identifies Kanyamazane within the municipality and explicitly lists Spatial planning and GIS. This supports source and local custodial context, not source integration or adapter admission.",
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON retained because no full native parcel polygon was obtained.",
+  "safeFieldAllowlist": ["ID", "OBJECTID", "geometry"],
+  "unsafeDataPolicy": "No owner, address, contact, titleholder, tax/account, valuation, legal-description, rights/interests or other personal/property-record fields were requested or retained.",
+  "limits": [
+    "National cadastral schema and polygon service availability are not proof of local Kanyamazane feature coverage.",
+    "The bounded query miss and screening-service timeout are not evidence of citywide parcel absence.",
+    "No exact-point hit or full native geometry was obtained; no sample GeoJSON is retained.",
+    "The WUP coordinate remains exactly [-25.3932903572785, 31.1640581037001] in latitude/longitude order.",
+    "No raw source-specific attribute set is retained in repository artifacts.",
+    "runtimeReadiness remains held pending independent serial qualification."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "A current map viewer or a different service layer may expose local cadastral features not returned by the tested extent. Serial review must independently qualify coverage, stable identity, CRS behavior and geometry before adapter admission."
+}

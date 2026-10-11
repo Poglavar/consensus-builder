@@ -1,0 +1,142 @@
+{
+  "cityCode": 9743,
+  "queueRank": 2009,
+  "name": "Banda",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [25.4800002900874, 80.3378842408088],
+  "population2025": 289334,
+  "population2025k": 289.334,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10T20:50:00Z",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Banda Uttar Pradesh official cadastral parcel map GIS land records Banda district Bhulekh BhuNaksha",
+        "result": "Official Banda district and Uttar Pradesh sources found the district land-record service, the UP Bhulekh portal, and the UP cadastral-map digitization dashboard. The official BhuNaksha shell exposed a current login page and API route names, but no anonymous parcel ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://banda.nic.in/service/land-records/",
+          "https://upbhulekh.gov.in/bhulekh/",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=170",
+          "https://upbhunaksha.gov.in/login/"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "बांदा उत्तर प्रदेश आधिकारिक भू नक्शा भूलेख cadastral parcel map",
+        "result": "हिंदी खोज में आधिकारिक उत्तर प्रदेश भूलेख/भू-नक्शा और बाँदा जिला भूमि-अभिलेख सेवा मिली। बाँदा जिले का आधिकारिक कोड 170 और भू-नक्शा डिजिटाइजेशन/जियो-रेफरेंसिंग के आँकड़े मिले; अनाम स्थिर पार्सल-ID तथा ज्यामिति का सार्वजनिक उत्तर नहीं मिला।",
+        "actualResultUrls": [
+          "https://upbhulekh.gov.in/?Utm_source=chatgpt.Com",
+          "https://banda.nic.in/service/land-records/",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=170",
+          "https://upbhunaksha.gov.in/login/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official Banda district administration land-records page identifies the UP Bhulekh service as implemented in all tehsils and places the Bhulekh office at tehsil level in Banda. The UP GeoDashboard reports Banda district cadastral-map digitization and georeferencing counts. This evidences a local/district land-record custodian and cadastral program, not an open parcel geometry API.",
+  "registryEvidenceUrls": [
+    "https://banda.nic.in/service/land-records/",
+    "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=170"
+  ],
+  "requests": [
+    {
+      "url": "https://banda.nic.in/service/land-records/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official Banda district page fetched; confirms UP Bhulekh land-record service, tehsil-level office scope, and district administration ownership. No parcel geometry or feature schema present."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=170",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official dashboard fetched; Banda district rows show cadastral maps linked to Bhunaksha and georeferencing progress, including the Banda tehsil row. Dashboard is aggregate evidence only and returned no parcel IDs or polygons."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/bhulekh/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official UP Bhulekh landing page fetched; identifies Real Time Khatauni and Board of Revenue, but no anonymous bounded geometry response."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/login/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Current official BhuNaksha JavaScript shell fetched. It displayed a user-login form with district/tehsil selectors and CAPTCHA. The current bundle named public API routes including Levels/stateCode, Levels/levelLabels, MapInfo/getPlotAtXY, MapInfo/getPlotByPlotNo, and api/plots; no credentials or CAPTCHA bypass was attempted."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/stateCode",
+      "method": "GET",
+      "httpStatus": 0,
+      "outcome": "Anonymous request timed out after 8 seconds with no response bytes; treated as service/access limitation, not absence evidence."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/loginLevel",
+      "method": "GET",
+      "httpStatus": 0,
+      "outcome": "Anonymous request timed out after 8 seconds with no response bytes; treated as service/access limitation, not absence evidence."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/mapLevelCount",
+      "method": "GET",
+      "httpStatus": 0,
+      "outcome": "Anonymous request timed out after 8 seconds with no response bytes; treated as service/access limitation, not absence evidence."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/levelLabels",
+      "method": "GET",
+      "httpStatus": 0,
+      "outcome": "Anonymous request timed out after 8 seconds with no response bytes; treated as service/access limitation, not absence evidence."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+      "method": "POST",
+      "httpStatus": 0,
+      "requestBody": "level=1&codes=",
+      "outcome": "Anonymous bounded level-value probe timed out; no response schema or district/tehsil geometry obtained."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotAtXY",
+      "method": "POST",
+      "httpStatus": 0,
+      "outcome": "Route was identified from the current first-party JavaScript but not invoked with guessed coordinates or plot fields because the prerequisite anonymous level/session response was unavailable and a zero exact-point result would not establish absence."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/api/plots?gisCode=170&plotNo=1",
+      "method": "GET",
+      "httpStatus": 0,
+      "outcome": "Route was identified from the current first-party JavaScript; no guessed plot query was treated as evidence and no response was obtained."
+    }
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "verifiedParcelResponse": null,
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only when publicly returned",
+    "parcel polygon geometry",
+    "source service metadata",
+    "CRS and response-format metadata"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner or right-holder names",
+    "addresses or contact details",
+    "title or certificate details",
+    "tax, account, identity, or application fields"
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Banda district land-record service and UP state BhuNaksha/Bhulekh cadastral program.",
+    "verifiedOpenScope": "Local/district custodian and aggregate cadastral digitization evidence only; no anonymous ID-plus-geometry response verified.",
+    "countrywideVerified": false,
+    "citywideGeometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "Held pending independent serial qualification of a real public parcel adapter. This packet is not source integration or admission.",
+  "resultCategory": "local_registry_evidenced_no_public_geometry",
+  "remainingUncertainty": "The current viewer's anonymous API behavior, schema, CRS, safe native identity field, village-level coverage for the urban WUP point, and citywide parcel coverage remain unknown. Login/CAPTCHA boundaries were respected; no private token or protected land-record query was attempted."
+}

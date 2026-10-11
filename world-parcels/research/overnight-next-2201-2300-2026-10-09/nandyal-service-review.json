@@ -1,0 +1,44 @@
+{
+  "cityRecord": "city-10111-nandyal.json",
+  "cityCode": 10111,
+  "queueRank": 2291,
+  "name": "Nandyal",
+  "country": "India",
+  "countryCode": "IN",
+  "pointLatLon": [15.4766944751062, 78.4818568863371],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH","url":"https://nandyal.ap.gov.in/service/land-records/","httpStatus":"Discovery result available; official page readable","outcome":"Nandyal District official Land Records page identifies the MRO Office in Nandyal. This is local administrative custodian evidence, not a parcel feature endpoint."},
+    {"method":"SEARCH","url":"https://bhunaksha.ap.gov.in/","httpStatus":"Discovery result available; official page readable through indexed fetch","outcome":"Government of Andhra Pradesh BhuNaksha identifies itself as a cadastral mapping and geo-referenced spatial-data system integrated with land records and Meebhoomi."},
+    {"method":"GET","url":"https://bhunaksha.ap.gov.in/bhunakshalpm/28/index.jsp","httpStatus":"Direct curl timed out after 20 seconds with no response body","outcome":"Bounded anonymous public-viewer fetch did not complete. Timeout is a route limitation, not evidence of citywide or parcel absence. No login, token, CAPTCHA bypass, or TLS exception was used."},
+    {"method":"SEARCH","url":"https://apsac.ap.gov.in/","httpStatus":"Discovery result available; official page identified","outcome":"Andhra Pradesh Space Applications Centre official entry point exposes state GIS services including Cadastral Maps. No Nandyal parcel feature response was obtained."},
+    {"method":"SEARCH","url":"https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/809","httpStatus":"Discovery result available; official page identified","outcome":"Government of India DILRMP result identifies Nandyal district map digitization/geo-referencing and parcel-coverage reporting. Administrative coverage evidence only; it is not a municipal boundary inventory or parcel response."},
+    {"method":"SEARCH","url":"https://nandyal.ap.gov.in/mandal/","httpStatus":"Discovery result available; official page readable","outcome":"Nandyal District official administrative page lists Nandyal mandal and states that the Mandal Surveyor belongs to the Survey Settlement and Land Records Department. Administrative custodian context only."},
+    {"method":"SEARCH","url":"https://naksha.dolr.gov.in/NakshaPortal/","httpStatus":"Discovery result available; official page readable","outcome":"Department of Land Resources NAKSHA portal describes an urban GIS land-survey initiative and public property-map workflow. No Nandyal-specific feature response was requested or retained."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfiguration": "The current public BhuNaksha landing route is evidenced, but its JavaScript/configuration could not be retrieved in the bounded direct request.",
+    "geometryCrs": "Not observed.",
+    "nativeIdentity": "Not observed; no parcel response obtained.",
+    "sourceFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {"requestScope":"No Nandyal parcel query completed","featureCount":0,"nativeIdentity":null}
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if exposed by an official service", "full unchanged parcel polygon geometry", "source service URL", "source CRS", "retrieval date", "administrative coverage counts"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"Official Andhra Pradesh cadastral infrastructure and a Nandyal local land-record custodian are evidenced, but no bounded anonymous Nandyal parcel feature response, native identity, schema, CRS, or geometry was obtained."},
+  "scopeLimits": [
+    "The exact WUP point [15.4766944751062, 78.4818568863371] was preserved in latitude/longitude order and was not shifted.",
+    "A zero exact-point hit, map extent miss, or timeout was not used as evidence of citywide absence.",
+    "DILRMP results are district/tehsil administrative coverage evidence, not a municipal boundary or citywide parcel inventory.",
+    "The Nandyal MRO page establishes a local registry custodian route but does not expose parcel geometry.",
+    "No GeoJSON sample is retained because no safe native identity-plus-geometry response was obtained.",
+    "No owner, address, contact, titleholder, tax/account, certificate/title, or personal fields were requested or retained.",
+    "Packet completion is research bookkeeping only and is not source integration/admission."
+  ],
+  "uncertainty": "The official state cadastral viewer and local Nandyal land-records custodian are evidenced, but the current public API route, schema, CRS, stable native identity, exact-point coverage, and update cadence remain unverified. Runtime/admission remains held."
+}

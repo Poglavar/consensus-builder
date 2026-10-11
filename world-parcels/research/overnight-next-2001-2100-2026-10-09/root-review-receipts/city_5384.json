@@ -1,0 +1,17 @@
+{
+  "taskId": "city:5384",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-5384-tacloban.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/tacloban-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T21:32:40Z",
+  "reason": "Queue identity matches rank 2042, Philippines, [11.2161464939454, 124.999815316725], 285095 persons; English and Waray/Filipino searches are recorded and no polygon is retained. The first-party city report supports CASSO tax-map custody and 49625 mapped tax parcels, while LMB/NAMRIA pages show request-based map routes. None provides a public native-ID polygon response. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed Details verification are absent; held, with no citywide absence inferred.",
+  "firstPartyUrlsChecked": [
+    "https://new.tacloban.gov.ph/wp-content/uploads/2025/02/2023-ANNUAL-REPORT.pdf",
+    "https://www.foi.gov.ph/requests/cadastral-maps-of-tacloban-city-and-catbalogan-city/",
+    "https://www.foi.gov.ph/agencies/denrnamria/map-of-tacloban-city/"
+  ],
+  "admissionGatesVerified": false
+}

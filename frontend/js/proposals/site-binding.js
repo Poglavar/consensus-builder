@@ -339,6 +339,7 @@
         normalizeTolerance,
         isRoadDesignation,
         isParcelAct,
+        hasOwnFootprint,
         requiresParcels,
         siteOf,
         survivesInwardBuffer: (feature, radiusM, options) => survivesInwardBuffer(T(options), feature, radiusM),

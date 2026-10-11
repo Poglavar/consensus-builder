@@ -1,0 +1,13 @@
+{
+  "taskId": "city:1545",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-1545-la-ceiba.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/la-ceiba-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/root-review-receipts/source-evidence/city_1545-root-review.json",
+    "tmp/valhalla-parcel-research/la-ceiba/nacaome.json"
+  ],
+  "checkedAt": "2026-10-10T21:28:43Z"
+}

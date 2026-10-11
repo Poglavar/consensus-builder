@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "wupCityCode": 2798,
+  "queueRank": 2111,
+  "cityId": "wup2025:2798",
+  "name": "Pucallpa",
+  "country": "Peru",
+  "countryCode": "PE",
+  "iso3": "PER",
+  "locId": 604,
+  "capital": false,
+  "point": [-8.38183296816653, -74.5678176748697],
+  "centerLatLon": [-8.38183296816653, -74.5678176748697],
+  "population2025": 274639,
+  "population2025k": 274.639,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted",
+  "nativeIdReadiness": "not_ready_no_verified_anonymous_parcel_response",
+  "runtimeReadiness": "held",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pucallpa Peru official cadastral parcel map GIS Municipalidad Provincial de Coronel Portillo",
+        "result": "Found the official Municipalidad Provincial de Coronel Portillo organization page describing its Subgerencia de Catastro, official Plano Regulador/lote documents, and Peru's official IDEP geospatial-service catalog. No anonymous Pucallpa parcel geometry API was established.",
+        "actualResultUrls": [
+          "https://www.gob.pe/11721-municipalidad-provincial-de-coronel-portillo-organizacion-de-municipalidad-provincial-de-coronel-portillo",
+          "https://www.gob.pe/institucion/municoronelportillo/normas-legales/3593602-021-2022-mpcp",
+          "https://www.geoidep.gob.pe/catalogo-nacional-de-servicios-web/servicio-de-descarga-wfs"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Pucallpa Perú catastro mapa catastral parcelas SIG Municipalidad Provincial de Coronel Portillo",
+        "result": "Resultados oficiales identificaron la Subgerencia de Catastro de la Municipalidad Provincial de Coronel Portillo, documentos del Plano Regulador de Pucallpa, el catálogo IDEP y servicios de INGEMMET; no se verificó una respuesta pública anónima de parcelas con identidad nativa y geometría.",
+        "actualResultUrls": [
+          "https://www.gob.pe/11721-municipalidad-provincial-de-coronel-portillo-organizacion-de-municipalidad-provincial-de-coronel-portillo",
+          "https://www.gob.pe/institucion/municoronelportillo/normas-legales/3593602-021-2022-mpcp",
+          "https://geocatmin.ingemmet.gob.pe/arcgis/rest/services/WGS84/SERV_ZONAS_GEOWGS84/MapServer/2",
+          "https://www.geoidep.gob.pe/catalogo-nacional-de-servicios-web/servicio-de-visualizacion-wms"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.gob.pe/11721-municipalidad-provincial-de-coronel-portillo-organizacion-de-municipalidad-provincial-de-coronel-portillo",
+      "operator": "Municipalidad Provincial de Coronel Portillo",
+      "scope": "local provincial/district urban cadastral custodian",
+      "observation": "Official organization page assigns the Subgerencia de Catastro responsibility for organizing, updating and supervising provincial cadastral activities, including urban growth and habilitaciones urbanas. It does not expose a public parcel API."
+    },
+    {
+      "url": "https://www.gob.pe/institucion/municoronelportillo/normas-legales/3593602-021-2022-mpcp",
+      "operator": "Municipalidad Provincial de Coronel Portillo",
+      "scope": "local Plano Regulador / lot-adjudication documents",
+      "observation": "Official 2022 ordinance references direct adjudication of lots under Pucallpa's Plano Regulador; this is documentary evidence, not a machine-readable parcel layer."
+    },
+    {
+      "url": "https://www.geoidep.gob.pe/catalogo-nacional-de-servicios-web/servicio-de-descarga-wfs",
+      "operator": "Infraestructura de Datos Espaciales del Perú (IDEP)",
+      "scope": "national catalog of public geospatial services",
+      "observation": "Catalog documents WMS/WFS discovery, including public agency services, but no Pucallpa-specific parcel service was identified in this attempt."
+    },
+    {
+      "url": "https://geocatmin.ingemmet.gob.pe/arcgis/rest/services/WGS84/SERV_ZONAS_GEOWGS84/MapServer/2",
+      "operator": "INGEMMET",
+      "scope": "national mining/cadastral geospatial service",
+      "observation": "Search result identifies a public ArcGIS layer named Zona Catastral with JSON/GeoJSON support; it is not evidence of urban land parcels in Pucallpa and was not retained as parcel geometry."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {"url": "https://www.gob.pe/municoronelportillo", "method": "GET", "status": "HTTP 200", "summary": "Official municipal portal loaded; no parcel viewer or public parcel endpoint found in the page links inspected."},
+    {"url": "https://www.gob.pe/11721-municipalidad-provincial-de-coronel-portillo-organizacion-de-municipalidad-provincial-de-coronel-portillo", "method": "GET/search review", "status": "search result identified official page; direct web fetch HTTP 418", "summary": "Search evidence was used for the Subgerencia de Catastro scope; direct fetch was not retried or bypassed."},
+    {"url": "https://www.gob.pe/institucion/municoronelportillo/normas-legales/3593602-021-2022-mpcp", "method": "GET", "status": "HTTP 200", "summary": "Official ordinance page loaded; it references Pucallpa Plano Regulador lots but returned no parcel geometry."},
+    {"url": "https://www.geoidep.gob.pe/catalogo-nacional-de-servicios-web/servicio-de-descarga-wfs", "method": "GET", "status": "HTTP 200", "summary": "Official IDEP WFS catalog loaded; no Pucallpa urban parcel layer was verified."},
+    {"url": "https://www.geoidep.gob.pe/catalogo-nacional-de-servicios-web/servicio-de-visualizacion-wms", "method": "GET", "status": "HTTP 200 local curl / oversized web response", "summary": "Official IDEP WMS catalog was reached locally; web extraction exceeded its content limit. No parcel response was requested."},
+    {"url": "https://geocatmin.ingemmet.gob.pe/arcgis/rest/services/catastro?f=pjson", "method": "GET", "status": "TLS verification failure in local curl", "summary": "Request stopped at certificate validation; TLS was not disabled and no certificate exception was used."},
+    {"url": "https://geocatmin.ingemmet.gob.pe/arcgis/rest/services/WGS84/SERV_ZONAS_GEOWGS84/MapServer/2", "method": "GET/search review", "status": "search result; web fetch HTTP 502", "summary": "Public layer metadata was discovered, but the service did not provide a verified Pucallpa urban parcel response."},
+    {"url": "https://geocatminapp.ingemmet.gob.pe/arcgis/rest/services/catastro", "method": "GET/search review", "status": "web fetch timeout", "summary": "Service folder was discovered in official search results; timeout is route-specific and not evidence of absence."}
+  ],
+  "coverageAssessment": {
+    "claimedScope": "A local municipal cadastral custodian and national geospatial catalogs are evidenced; no anonymous citywide Pucallpa parcel geometry scope was verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier if publicly exposed", "geometry", "source layer name", "CRS", "service URL", "retrieval timestamp"],
+  "unsafeFieldsExcluded": ["owner", "address", "contact", "titleholder", "tax/account details", "personal identifiers"],
+  "sourceIds": [],
+  "blocker": "No safe anonymous Pucallpa parcel response containing native identity and geometry was verified. Municipal evidence is documentary/custodial only; IDEP and INGEMMET routes did not yield a qualified urban parcel response, and TLS/timeout/oversized responses were not bypassed.",
+  "remainingUncertainty": "The municipal cadastral base and Plano Regulador may exist in non-public or document-only systems. Route-specific errors and the absence of an exact-point hit were not used to infer citywide absence.",
+  "nextStep": "Retry the official municipal/IDEP catalog routes and inspect only public geometry-plus-ID responses; independently qualify any actual Pucallpa parcel adapter before runtime admission.",
+  "resultCategory": "official_local_registry_custody_no_verified_open_geometry",
+  "runtimeEligible": false
+}

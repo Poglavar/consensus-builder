@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "1.0",
+  "cityCode": 5910,
+  "queueRank": 2142,
+  "name": "Hpa-An",
+  "aliases": ["hpa an"],
+  "country": "Myanmar",
+  "countryCode": "MM",
+  "iso3": "MMR",
+  "locId": 104,
+  "point": [16.8771381453168, 97.6398520408478],
+  "population2025": 271474,
+  "population2025k": 271.474,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "checkedAt": "2026-10-11",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hpa-An Myanmar official cadastral map parcel land registry GIS site:gov.mm",
+        "result": "First-party discovery found Myanmar government land-administration and national land-record agency pages, plus an Hpa-an township report and a non-cadastral Hpa-an flood map. No Hpa-An-local public parcel viewer, parcel API, schema, CRS, or anonymous ID-plus-geometry response was found.",
+        "actualResultUrls": [
+          "https://slrd.gov.mm/en/branch-offices",
+          "https://gad.gov.mm/land-division",
+          "https://www.dop.gov.mm/en/publication/hpa-township-report",
+          "https://www.moezala.gov.mm/my/basic-page/1419"
+        ]
+      },
+      {
+        "language": "Burmese",
+        "query": "ဘားအံ မြေစာရင်း မြေပုံ အစိုးရ",
+        "result": "First-party discovery returned national SLRD material and general Myanmar land-administration pages. The Hpa-an reference found was a flood-hazard map, not cadastral parcel data; no local parcel viewer or public parcel geometry service was identified.",
+        "actualResultUrls": [
+          "https://slrd.gov.mm/en/branch-offices",
+          "https://gad.gov.mm/land-division",
+          "https://www.moezala.gov.mm/my/basic-page/1419"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryAssessment": "National SLRD and GAD land-administration custody is evidenced, but no Hpa-An-local registry office, map procedure, public viewer, or local parcel endpoint was evidenced. General national agency prose is not treated as local registry evidence.",
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "sourceId": "myanmar-slrd-gad-survey-department",
+    "name": "Myanmar Settlement and Land Records Department / GAD / Survey Department public sites",
+    "operator": "Government of Myanmar",
+    "scope": "National land-record, land-administration, and surveying agencies; Hpa-An parcel coverage and public vector access were not verified.",
+    "endpoint": "https://slrd.gov.mm/en/branch-offices",
+    "method": "GET",
+    "responseFormat": "HTML pages; no parcel service configuration exposed",
+    "crs": null,
+    "reuseStatus": "not qualified; no anonymous parcel geometry or stable parcel identity verified"
+  },
+  "officialSources": [
+    {"url": "https://slrd.gov.mm/en/branch-offices", "observation": "Official SLRD page identifies the national department and its Land Records, Survey and Print Division, but exposes no Hpa-An-local parcel viewer or API."},
+    {"url": "https://gad.gov.mm/land-division", "observation": "Official GAD page describes national/state/district/township land-administration duties and leases; it provides no Hpa-An parcel geometry or safe native parcel IDs."},
+    {"url": "https://www.dop.gov.mm/en/publication/hpa-township-report", "observation": "Official Department of Population Hpa-an Township Report is demographic/census material, not a cadastral parcel service."},
+    {"url": "https://www.moezala.gov.mm/my/basic-page/1419", "observation": "Official Burmese page lists an Hpa-an flood-hazard map; this is environmental mapping, not cadastral parcel geometry."}
+  ],
+  "requests": [
+    {"url": "https://slrd.gov.mm/en/branch-offices", "method": "GET", "httpStatus": 403, "contentType": "text/html; charset=UTF-8", "outcome": "Direct TLS request returned a Cloudflare challenge. No challenge defeat, credentials, CAPTCHA solving, or private token was used."},
+    {"url": "https://slrd.gov.mm/en", "method": "GET", "httpStatus": 403, "contentType": "text/html; charset=UTF-8", "outcome": "Direct TLS request returned a Cloudflare challenge; no service configuration or parcel response was obtained."},
+    {"url": "https://www.surveydepartment.gov.mm/", "method": "GET", "httpStatus": 0, "contentType": null, "outcome": "Anonymous TLS request timed out after 20 seconds; no retry escalation or TLS verification disablement was used."},
+    {"url": "https://gad.gov.mm/land-division", "method": "GET", "httpStatus": 200, "contentType": "text/html; charset=utf-8", "outcome": "Official land-administration prose reviewed; no parcel ID, geometry, viewer configuration, or API endpoint."},
+    {"url": "https://www.moezala.gov.mm/my/basic-page/1419", "method": "GET", "httpStatus": 200, "contentType": "text/html; charset=UTF-8", "outcome": "Official Hpa-an flood-map listing reviewed; no cadastral parcel response."}
+  ],
+  "coverageAssessment": {
+    "claimedScope": "National Myanmar land-record, land-administration, and surveying agency websites searched with Hpa-An English and Burmese terms.",
+    "verifiedOpenScope": "National agency identity and general land-administration information verified; no Hpa-An-local open parcel geometry verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "Current SLRD service routes, Kayin/Hpa-An local office workflow, parcel schema, native identity, CRS, anonymous access policy, and exact WUP-point coverage remain unknown. No exact-point hit or miss was obtained.",
+  "nextStep": "Serial reviewer should independently inspect any currently public SLRD or Kayin/Hpa-An municipal map workflow and verify a bounded geometry-only request with a stable native parcel ID if an anonymous service is published.",
+  "runtimeReadiness": "held; no adapter qualification or source admission performed"
+}

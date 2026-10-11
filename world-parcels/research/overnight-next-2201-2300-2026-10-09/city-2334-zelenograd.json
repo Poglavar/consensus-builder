@@ -1,0 +1,39 @@
+{
+  "cityCode": 2334,
+  "queueRank": 2251,
+  "name": "Zelenograd",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso3": "RUS",
+  "point": [55.988030386536, 37.1823335378749],
+  "population2025": 259528,
+  "population2025k": 259.528,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Zelenograd official cadastral map parcel viewer API Rosreestr Moscow",
+        "result": "Discovery identified the current official Russian public cadastral-map route as the National Spatial Data System (NSPD) map. Official Moscow material also contains cadastral-record evidence for Zelenograd, but no directly reachable official parcel API response was obtained.",
+        "actualResultUrls": [
+          "https://nspd.gov.ru/map?thematic=PKK",
+          "https://www.mos.ru/upload/documents/files/9856/021AKTGIKE528-21.pdf"
+        ]
+      },
+      {
+        "language": "Russian",
+        "query": "Зеленоград официальная публичная кадастровая карта земельные участки Росреестр НСПД Москва",
+        "result": "Поиск подтвердил официальный маршрут публичной кадастровой карты через ФГИС ЕЦП НСПД и нашёл официальный документ Москвы с кадастровыми сведениями по объекту в Зеленограде. Страница-агрегатор по Зеленограду не использовалась как реестр или геометрическое доказательство.",
+        "actualResultUrls": [
+          "https://nspd.gov.ru/map?thematic=PKK",
+          "https://www.mos.ru/upload/documents/files/9856/021AKTGIKE528-21.pdf",
+          "https://publichnaya-kadastrovaya-karta.com/map?obj=6820"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "researchNote": "The official Russian public cadastral-map route and official Moscow/Zelenograd cadastral context are evidenced. Direct anonymous GETs to NSPD, Rosreestr, and the legacy PKK host timed out from this research host; no parcel identity, schema, CRS metadata, or geometry is claimed. This packet is not source integration or runtime admission."
+}

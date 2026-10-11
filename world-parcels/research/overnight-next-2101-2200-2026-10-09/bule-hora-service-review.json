@@ -1,0 +1,39 @@
+{
+  "cityRecord": "city-6002-bule-hora.json",
+  "cityCode": 6002,
+  "queueRank": 2185,
+  "city": "Bule Hora",
+  "country": "Ethiopia",
+  "countryCode": "ET",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": null,
+  "attempts": [
+    {"method":"web search","language":"English","query":"Bule Hora Ethiopia official GIS cadastral parcel map land registry","outcome":"No Bule Hora-specific official public parcel viewer or downloadable parcel dataset found; official national e-Land and Ethio-NSDI sources identified.","actualResultUrls":["https://ethionsdi.gov.et/","https://eland.addiscadaster.gov.et/","https://eland.addiscadaster.gov.et/maps"]},
+    {"method":"web search","language":"Amharic (native/local-language route)","query":"ቡሌ ሆራ ካዳስተር መሬት ምዝገባ ካርታ","outcome":"Official Ethiopian urban land-registration guidance and e-Land were found, but no Bule Hora-specific public parcel source.","actualResultUrls":["https://www.hopr.gov.et/documents/portlet_file_entry/20181/%E1%8B%A8%E1%8A%A8%E1%89%B0%E1%88%9B%2B%E1%88%AC%E1%89%B5%2B%E1%8B%AD%E1%8B%9E%E1%89%B3%2B%E1%8A%93%2B%E1%88%AC%E1%89%B5%2B%E1%8A%AD%2B%E1%8A%95%E1%89%A5%E1%88%A8%E1%89%B5%2B%E1%88%9D%E1%8B%9D%E1%88%98%E1%89%A3%2B%E1%88%A8%2B%2B%2B.pdf/dedb22f0-3719-c9a8-ff1f-1df04f53ca8b?download=true","https://eland.addiscadaster.gov.et/"]},
+    {"method":"GET","url":"https://eland.addiscadaster.gov.et/","httpStatus":200,"outcome":"Public landing page loaded over verified TLS; current page references the e-Land cadastral service and public JavaScript assets."},
+    {"method":"GET","url":"https://eland.addiscadaster.gov.et/main.d3525dff4b9098d6.js","httpStatus":200,"outcome":"Current application bundle inspected. It references city-specific e-services and agency APIs, but no anonymous Bule Hora parcel geometry or safe native parcel-ID response was exposed in the inspected public bundle."},
+    {"method":"GET","url":"https://ethionsdi.gov.et/","httpStatus":null,"outcome":"TLS verification failed because the host presented a self-signed certificate. Request was not retried with verification disabled or a certificate exception."}
+  ],
+  "sourceAssessment": {
+    "localRegistryCustodian": null,
+    "nationalAgenciesObserved": ["Land Holding Registration and Information Agency (e-Land)", "Ethio-NSDI"],
+    "serviceOrDataset": "No Bule Hora-specific public service or dataset qualified.",
+    "nativeFieldNames": [],
+    "fieldMapping": null,
+    "compositeKeyProvenance": null,
+    "crs": {"source":null,"retainedSample":null},
+    "safeFieldAllowlist": ["native parcel identity if independently evidenced", "full parcel polygon geometry if independently evidenced"],
+    "unsafeFieldsNotRequestedOrRetained": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "valuation", "assessment", "legal/title records"]
+  },
+  "scopeLimits": [
+    "No parcel geometry or native parcel identity was retained.",
+    "General national agency prose and a general viewer do not establish Bule Hora local registry coverage.",
+    "A failed TLS verification for Ethio-NSDI is not evidence of citywide absence.",
+    "No exact-point parcel query was treated as an absence test, and the immutable point was not shifted.",
+    "No login, credentials, CAPTCHA/Cloudflare bypass, unsafe attribute request, or TLS exception was used.",
+    "No source integration/admission or runtime qualification is implied; runtime readiness remains held for independent serial review."
+  ],
+  "uncertainty": "The public e-Land page and bundle verify an official Ethiopian cadastral service exists, but this attempt did not evidence Bule Hora-specific anonymous map/API coverage, schema, CRS, native IDs, or geometry. A local Bule Hora municipal or zonal registry may exist outside the inspected public routes.",
+  "retainedSample": null
+}

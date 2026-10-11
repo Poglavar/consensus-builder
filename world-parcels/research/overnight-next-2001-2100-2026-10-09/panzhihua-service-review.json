@@ -1,0 +1,72 @@
+{
+  "cityRecord": "city-7020-panzhihua.json",
+  "cityCode": 7020,
+  "queueRank": 2051,
+  "city": "Panzhihua",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "reviewedAt": "2026-10-10T00:00:00Z",
+  "discovery": {
+    "english": "Official municipal service-catalog evidence identifies the Panzhihua Municipal Natural Resources and Planning Bureau as the local custodian for real-estate registration-material queries and public geographic-information/map services. No anonymous parcel geometry API was identified.",
+    "native": "官方中文资料确认攀枝花市自然资源和规划局负责不动产登记资料查询、地理信息公共服务平台、公益性地图服务和测绘成果目录服务；未确认公开匿名宗地要素接口。"
+  },
+  "custodian": {
+    "name": "攀枝花市自然资源和规划局",
+    "role": "Local natural-resources/planning custodian evidenced by the official Panzhihua municipal service catalog; public cadastral feature endpoint was not exposed.",
+    "evidenceUrls": [
+      "https://pzhs.sczwfw.gov.cn/module/download/downfile.jsp?classid=0&filename=65504f19bf774caaae998a58d641f199.pdf",
+      "https://www.panzhihua.gov.cn/zfxxgk1/fdzdgknr/zdmsxx/yjdt/ssqk/10289837.shtml"
+    ]
+  },
+  "attemptedRoutes": [
+    {
+      "route": "Official Panzhihua municipal service-catalog PDF",
+      "url": "https://pzhs.sczwfw.gov.cn/module/download/downfile.jsp?classid=0&filename=65504f19bf774caaae998a58d641f199.pdf",
+      "result": "HTTP/PDF fetch succeeded through the research search/open path. The catalog lists the local bureau's registration-material query, geographic-information public platform, public-interest map, and surveying-results catalog services. It exposes no parcel API URL, schema, CRS, or anonymous geometry response."
+    },
+    {
+      "route": "Official Panzhihua municipal government page sourced to the Natural Resources and Planning Bureau",
+      "url": "https://www.panzhihua.gov.cn/zfxxgk1/fdzdgknr/zdmsxx/yjdt/ssqk/10289837.shtml",
+      "result": "Search indexing confirmed the official page and source bureau, but direct HTTPS fetch and page open timed out. No JavaScript/configuration or service request was inspected."
+    },
+    {
+      "route": "Sichuan Provincial Natural Resources Department report on Panzhihua registration practice",
+      "url": "https://dnr.sc.gov.cn/scdnr/scszdt/2025/7/15/805e9ad1e6e94e8389930b6c41446ff1.shtml",
+      "result": "Official provincial report confirms Panzhihua's municipal real-estate registration activity and local institutional context; it contains no public parcel geometry endpoint."
+    }
+  ],
+  "requestOutcomes": {
+    "officialMunicipalPage": "timeout",
+    "officialServiceCatalog": "success_metadata_only",
+    "parcelFeatureRequest": "not_attempted_because_no_public_endpoint_was disclosed by the official routes inspected",
+    "schema": null,
+    "crs": null,
+    "boundedAnonymousIdGeometryResponse": false
+  },
+  "fieldPolicy": {
+    "allowlist": ["safe stable native parcel identity if publicly returned", "parcel polygon geometry", "source field names and mapping in metadata only", "CRS/format and request metadata"],
+    "notRequested": ["owner/right-holder", "address/contact", "titleholder/certificate", "tax/account/identity/application data"]
+  },
+  "sourceFieldMapping": null,
+  "geometryReview": {
+    "publicGeometryFound": false,
+    "sampleFile": null,
+    "parcelCount": 0,
+    "reason": "No bounded anonymous ID-plus-geometry response was available from the official routes inspected; no polygon is retained."
+  },
+  "scopeLimits": [
+    "Exact WUP point [26.5772619247194, 101.727451733487] was preserved and was not shifted to force a parcel hit.",
+    "No exact-point hit, map-extent miss, timeout, login wall, or unusable UI was used as evidence of citywide absence.",
+    "Authentication, CAPTCHA, private tokens, and protected owner/property queries were not attempted.",
+    "Source integration/admission was not performed; runtime readiness remains held."
+  ],
+  "qualification": {
+    "registryFound": true,
+    "publicParcelGeometryFound": false,
+    "runtimeReadiness": "held",
+    "serialReviewerRequired": true,
+    "uncertainty": "The official public map/geographic-information service URL, current JavaScript/configuration, parcel schema, CRS, safe native identity field, anonymous access behavior, and citywide coverage remain unknown."
+  }
+}

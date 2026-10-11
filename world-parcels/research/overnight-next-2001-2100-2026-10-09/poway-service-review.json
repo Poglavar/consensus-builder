@@ -1,0 +1,35 @@
+{
+  "cityRecord": "city-2793-poway.json",
+  "cityCode": 2793,
+  "queueRank": 2049,
+  "name": "Poway",
+  "country": "United States of America",
+  "countryCode": "US",
+  "attempt": 1,
+  "reviewedAt": "2026-10-10",
+  "serviceStatus": "held",
+  "registryFound": true,
+  "registryCustodian": "City of Poway public GIS services (PowGIS/GeoHUB), with the APN Basemap metadata crediting SanGIS and County Assessor/Recorder/County Clerk source data; no separate Poway cadastral office endpoint was evidenced.",
+  "queryAndRequestOutcome": "Separate English and local-language discovery found the official City of Poway Online Maps page, PowGIS, GeoHUB, and first-party ArcGIS parcel-layer metadata. The layer metadata exposed polygon schema, EPSG:102646/latestWkid 2230, and safe identity concepts. A bounded exact-point query using the unchanged WUP point and only OBJECTID/APN fields was attempted, but the direct request timed out after 8 seconds and the web fetch route refused the query endpoint. No parcel feature or geometry was claimed.",
+  "attemptedRoutes": [
+    {"route": "English first-party discovery", "url": "https://www.poway.org/784/Online-Maps", "result": "HTTP 200; official City page documents PowGIS parcel search/property reports and City GeoHUB GIS data."},
+    {"route": "Local-language first-party discovery", "url": "https://www.poway.org/784/Online-Maps", "result": "Spanish-language search wording found no distinct Spanish-language local cadastral source; official English City GIS route retained."},
+    {"route": "PowGIS layer metadata", "url": "https://powaygis.poway.org/powaygis/rest/services/Public/PowGIS_Main_Labels/MapServer/2?f=pjson", "result": "Indexed first-party metadata returned polygon schema, APN/PARCELID description, EPSG:102646/2230, and public GeoJSON support; direct shell request timed out."},
+    {"route": "Exact WUP point feature query", "url": "https://powaygis.poway.org/powaygis/rest/services/Public/PowGIS_Main_Labels/MapServer/2/query", "result": "Attempted with geometry=-117.105325998816,32.9554070237508, inSR=4326, intersects, outFields=OBJECTID,APN, returnGeometry=true, outSR=4326; direct request timed out after 8 seconds and no feature response was available."},
+    {"route": "PowHUB parcel metadata", "url": "https://powaygis.poway.org/powaygis/rest/services/Public/PowHUB_Landbase_Layers/MapServer/2", "result": "Indexed first-party metadata identifies Parcel Info as a polygon layer with native OBJECTID/APN fields and EPSG:102646/2230."}
+  ],
+  "scopeLimits": [
+    "No sample GeoJSON was retained because no bounded geometry response was obtained.",
+    "The exact WUP point [32.9554070237508, -117.105325998816] was preserved and not shifted.",
+    "A zero/timeout/unusable exact-point query is not evidence of citywide absence.",
+    "PowGIS metadata warns parcel data may lag official Assessor Parcel Maps and is not a substitute for a licensed surveyor.",
+    "Layer metadata and packet completion do not establish citywide completeness, current update cadence, production adapter quality, or source integration/admission."
+  ],
+  "sourceSpecificFields": "PowGIS metadata exposes OBJECTID, APN, Shape, and parcel identity descriptions including PARCELID; no raw source attribute set was retained and no feature response was obtained. If later qualified, canonical properties.id should use a stable native APN/PARCELID or independently verified native OBJECTID.",
+  "compositeKeyProvenance": null,
+  "safeFieldAllowlist": ["stable native parcel identifier", "parcel polygon geometry", "source CRS/format metadata", "non-personal layer metadata"],
+  "unsafeFieldsNotRequested": ["owner/right-holder", "address/contact", "titleholder/certificate", "tax/account/identity/application", "assessment/mortgage/restriction/historical/source-specific attributes"],
+  "qualification": "Not qualified for runtime integration or admission; serial reviewer must independently verify an anonymous feature response, native identity mapping, CRS transformation, and safe field selection.",
+  "uncertainty": "Local public service metadata is evidenced, but feature retrieval failed by timeout/refusal in this attempt. No successful query, geometry, or native parcel ID is invented.",
+  "status": "complete"
+}

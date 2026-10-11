@@ -1,0 +1,14 @@
+{
+  "taskId": "city:9549",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-9549-hosapete.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/hosapete-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T01:38:59.058950Z",
+  "reason": "WUP 2025 source, immutable roster, and queue match code 9549, rank 2211, India, point [15.2692732108993, 76.3882884313364], and 263965 persons. English and Kannada executed searches are recorded. Official district and Karnataka Bhoomi routes identify a land-record custodian, but the bounded anonymous requests timed out or failed TLS and yielded no safe native parcel ID or polygon. No sample was retained. Reachability failures are not citywide absence; public geometry and every adapter/UI admission gate remain unverified.",
+  "registryFound": null,
+  "admission": "held; no runtime/catalog/report change"
+}

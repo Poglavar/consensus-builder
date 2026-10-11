@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "city": {
+    "code": "60",
+    "name": "Geneva",
+    "point": [
+      6.13622539632436,
+      46.2017520971079
+    ]
+  },
+  "descriptor": {
+    "id": "ch-ge-sitg-cadastre-rdppf",
+    "name": "Geneva SITG cadastral survey parcels (EGRID)",
+    "adapter": "arcgis",
+    "endpoint": "https://thematic.sitg.ge.ch/arcgis/rest/services/CADASTRE_RDPPF/MapServer/4",
+    "idField": "EGRID",
+    "idType": "string",
+    "idPattern": "^CH[0-9]{12}$",
+    "objectIdField": "OBJECTID",
+    "idPrefix": "CH-GE-SITG-EGRID-",
+    "outFields": [
+      "EGRID",
+      "OBJECTID"
+    ],
+    "boundsQueryMode": "offset",
+    "idsQueryMode": "offset",
+    "queryFormat": "geojson",
+    "pageSize": 200,
+    "idBatchSize": 80,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 1,
+    "capabilities": {
+      "point": false,
+      "exactId": true,
+      "bbox": true,
+      "areaEnumeration": true,
+      "geometry": "full-wgs84"
+    },
+    "countryCode": "CH",
+    "cityIds": [
+      "60"
+    ],
+    "metricSrid": 32632,
+    "scope": "Official cantonal cadastral and official-survey map service for Geneva; the SITG catalog identifies the parcel data as official mensuration/cadastre data.",
+    "catalogueUrl": "https://sitg.ge.ch/donnees/cad-parcelle-mensu",
+    "attribution": "République et canton de Genève - Département du territoire / SITG",
+    "licenceNote": "The frozen packet supplies no licence annotation. Public anonymous access is verified separately; technical recommendation does not decide reuse rights or admission."
+  },
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Frozen city packet source.custodianScope and registryBasis identify the Canton of Geneva SITG official cadastral/official-survey parcel service and positive local parcel geometry around the unchanged WUP point; geographic scope is the Geneva canton, not Switzerland-wide or verified citywide completeness.",
+      "Frozen service review registryAssessment and geometryEvidence identify EGRID parcel polygons. The first-party layer 4 schema links CAD_PARCELLE_MENSU, whose official catalog describes current land-register parcels based on official survey and includes the Geneva municipality sections. See evidence/source-inspection.json."
+    ]
+  },
+  "sourceCandidateSha256": "d5d3c19e5fcecf3c970a1199b88b717a56d0f63cc8b436e969b81b687a74e238",
+  "qualificationRecordedSha256": "d5d3c19e5fcecf3c970a1199b88b717a56d0f63cc8b436e969b81b687a74e238",
+  "sourceCandidatePath": "qualification/evidence/cities/60/candidate.json",
+  "originalSeedSha256": "d5d3c19e5fcecf3c970a1199b88b717a56d0f63cc8b436e969b81b687a74e238",
+  "originalSeedPath": "qualification/evidence/cities/60/candidate.json"
+}

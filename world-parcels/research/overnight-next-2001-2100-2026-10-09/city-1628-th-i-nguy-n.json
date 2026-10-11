@@ -1,0 +1,109 @@
+{
+  "cityCode": 1628,
+  "queueRank": 2078,
+  "name": "Thái Nguyên",
+  "country": "Viet Nam",
+  "countryCode": "VN",
+  "point": [21.584154508289, 105.837347632185],
+  "population2025": 279416,
+  "population2025k": 279.416,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "aliases": ["thai nguyen"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Thai Nguyen Vietnam official cadastral map parcel land registration GIS",
+        "result": "First-party discovery identified the official Thái Nguyên provincial digital map, the provincial land-data procedure page, the national land-data map, and official provincial reports on cadastral mapping/database work. No anonymous parcel ID-plus-geometry API response was verified.",
+        "actualResultUrls": [
+          "https://chuyendoiso.thainguyen.gov.vn/thu-thuat-ung-dung-cong-nghe/huong-dan-cong-dan-su-dung-cac-tinh-nang-tren-ban-do-so-tinh-thai-nguyen-220120",
+          "https://hotropldn.thainguyen.gov.vn/chu-truong-chinh-sach/trinh-tu-thu-tuc-cung-cap-thong-tin-du-lieu-dat-dai-509.html",
+          "https://maps.gdla.gov.vn/"
+        ]
+      },
+      {
+        "language": "Vietnamese (native/local)",
+        "query": "Thái Nguyên bản đồ địa chính thửa đất cơ sở dữ liệu đất đai Văn phòng đăng ký đất đai",
+        "result": "First-party Vietnamese results describe the provincial digital map and land-data system, state that the local land-registration office provides land information, and document ongoing/complete cadastral mapping and database work. The public map shell did not expose a safely usable anonymous parcel schema or bounded ID-plus-geometry response.",
+        "actualResultUrls": [
+          "https://chuyendoiso.thainguyen.gov.vn/thu-thuat-ung-dung-cong-nghe/huong-dan-cong-dan-su-dung-cac-tinh-nang-tren-ban-do-so-tinh-thai-nguyen-220120",
+          "https://hotropldn.thainguyen.gov.vn/chu-truong-chinh-sach/trinh-tu-thu-tuc-cung-cap-thong-tin-du-lieu-dat-dai-509.html",
+          "https://sonnmt.thainguyen.gov.vn/tin-noi-bat/hoc-tap-suot-doi-nang-cao-chuan-ky-thuat-so-van-phong-dang-ky-dat-dai-cu-the-hoa-tinh-than-nghi-quyet-so-71-nq-tw-297525"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Văn phòng đăng ký đất đai (Land Registration Office), Thái Nguyên provincial land administration; national custodian is the land-data center under the national land-registration/data authority.",
+    "basis": "The official provincial legal-support page states that local land information is provided by the Văn phòng đăng ký đất đai, or commune authorities from cadastral records where a local database is not yet built. Official provincial material also documents Thái Nguyên's cadastral mapping and land-database work. This evidences the custodian/procedure, not an open parcel download or public geometry API.",
+    "urls": [
+      "https://hotropldn.thainguyen.gov.vn/chu-truong-chinh-sach/trinh-tu-thu-tuc-cung-cap-thong-tin-du-lieu-dat-dai-509.html",
+      "https://sonnmt.thainguyen.gov.vn/tin-noi-bat/hoc-tap-suot-doi-nang-cao-chuan-ky-thuat-so-van-phong-dang-ky-dat-dai-cu-the-hoa-tinh-than-nghi-quyet-so-71-nq-tw-297525"
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://bandoso.thainguyen.gov.vn",
+      "observation": "Official provincial instructions identify this as the Thái Nguyên digital map and describe selecting an administrative unit and viewing details; the article says land and other provincial data are being digitized and connected.",
+      "scope": "Public map viewer discovery only; no safe parcel ID/geometry response was verified."
+    },
+    {
+      "url": "https://hotropldn.thainguyen.gov.vn/chu-truong-chinh-sach/trinh-tu-thu-tuc-cung-cap-thong-tin-du-lieu-dat-dai-509.html",
+      "observation": "Official provincial legal-support page describes requests through national/provincial portals and identifies the local Văn phòng đăng ký đất đai as the local land-information provider.",
+      "scope": "Administrative procedure/custodian evidence; no public parcel geometry."
+    },
+    {
+      "url": "https://sonnmt.thainguyen.gov.vn/tin-noi-bat/hoc-tap-suot-doi-nang-cao-chuan-ky-thuat-so-van-phong-dang-ky-dat-dai-cu-the-hoa-tinh-than-nghi-quyet-so-71-nq-tw-297525",
+      "observation": "Official provincial report says cadastral surveying and mapping was completed across the province's 92 communes/wards and discusses land-database completion; it also notes sensitive user/owner data is part of the system.",
+      "scope": "Provincial program status, not an anonymous parcel endpoint; unsafe personal fields were not requested."
+    },
+    {
+      "url": "https://maps.gdla.gov.vn/",
+      "observation": "Official national land-inventory/map application was reachable through discovery, but its inspected public shell did not provide a bounded anonymous parcel ID-plus-geometry response suitable for retention.",
+      "scope": "National land-data map; no sample retained."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://bandoso.thainguyen.gov.vn/",
+      "method": "GET",
+      "httpStatus": "DNS resolution failed in local request environment",
+      "contentType": null,
+      "outcome": "The official instructions and link were verified by first-party discovery, but a direct local GET could not resolve the host. This is not evidence of citywide parcel absence."
+    },
+    {
+      "url": "https://maps.gdla.gov.vn/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Official national map shell opened; no safe anonymous parcel schema or bounded ID-plus-geometry response was exposed in the inspected response."
+    },
+    {
+      "url": "https://hotropldn.thainguyen.gov.vn/chu-truong-chinh-sach/trinh-tu-thu-tuc-cung-cap-thong-tin-du-lieu-dat-dai-509.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Official provincial procedure page opened and was used to identify the local land-registration-office custodian and request route; no parcel geometry was requested."
+    }
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sampleFile": null,
+  "source": "Thái Nguyên provincial digital-map/provincial land-administration sources and Vietnam national land-data map",
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Provincial cadastral mapping and land-data system with local land-registration-office procedure coverage.",
+    "verifiedOpenScope": "No public anonymous parcel ID-plus-geometry response, schema, or CRS was verified for Thái Nguyên city.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier", "parcel polygon geometry", "source CRS", "non-personal source layer metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax", "account", "personal identifiers", "encumbrances"],
+  "runtimeReadiness": "held_serial_qualification_required",
+  "resultCategory": "local_registry_custodian_and_provincial_cadastral_program_no_public_geometry_verified",
+  "remainingUncertainty": "The provincial/local custodian and public map initiative are evidenced, but the public viewer could not be inspected to a usable anonymous parcel response in this environment. No exact-point hit/miss or map extent miss is used as evidence of citywide absence.",
+  "researchFile": "research/overnight-next-2001-2100-2026-10-09/city-1628-th-i-nguy-n.json"
+}

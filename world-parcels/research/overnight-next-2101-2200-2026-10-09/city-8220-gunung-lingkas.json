@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 8220,
+  "wupCityCode": 8220,
+  "queueRank": 2139,
+  "cityId": "wup2025:8220",
+  "name": "Gunung Lingkas",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso3": "IDN",
+  "locId": 360,
+  "capital": false,
+  "point": [3.31095570915297, 117.593763237794],
+  "centerLatLon": [3.31095570915297, 117.593763237794],
+  "population2025": 271868,
+  "population2025k": 271.868,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted",
+  "nativeIdReadiness": "not_ready_no_verified_gunung_lingkas_parcel_response",
+  "runtimeReadiness": "held",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gunung Lingkas Indonesia official cadastral parcel map cadastre GIS Tarakan",
+        "result": "Found the official Tarakan open-data land-map record, official Tarakan district listing, and national ATR/BPN BHUMI map leads. No public Gunung Lingkas parcel geometry endpoint was established.",
+        "actualResultUrls": [
+          "https://portal.tarakankota.go.id/data/detil/959",
+          "https://ctt.tarakankota.go.id/daftar-kelurahan",
+          "https://bhumi.atrbpn.go.id/"
+        ]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Gunung Lingkas Indonesia peta bidang tanah resmi kadaster GIS tanah Tarakan",
+        "result": "Official Indonesian-language results identify Kelurahan Gunung Lingkas in Tarakan Timur and a Tarakan municipal Peta Bidang Tanah dataset produced by Dinas Perumahan, Kawasan Pemukiman dan Pertanahan. No downloadable parcel geometry or safe native parcel-ID response was exposed.",
+        "actualResultUrls": [
+          "https://portal.tarakankota.go.id/data/detil/959",
+          "https://portal.tarakankota.go.id/data/page/api",
+          "https://ctt.tarakankota.go.id/daftar-kelurahan",
+          "https://bhumi.atrbpn.go.id/"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://portal.tarakankota.go.id/data/detil/959",
+      "operator": "Kota Tarakan open-data portal; Dinas Perumahan, Kawasan Pemukiman dan Pertanahan",
+      "scope": "local municipal land-data custodian",
+      "observation": "Official record named PETA BIDANG TANAH / Peta Bidang Tanah, unit Dokumen. Metadata names the municipal land/housing agency as producer. Year cells and download content were empty; no parcel geometry or stable parcel ID was exposed."
+    },
+    {
+      "url": "https://portal.tarakankota.go.id/data/page/api",
+      "operator": "Kota Tarakan open-data portal",
+      "scope": "local municipal catalog API documentation",
+      "observation": "Official page documents GET catalog/search routes. Search for Peta Bidang Tanah returned the official record at /data/detil/959, not a machine-readable parcel layer."
+    },
+    {
+      "url": "https://ctt.tarakankota.go.id/daftar-kelurahan",
+      "operator": "Pemerintah Kota Tarakan / Tarakan Timur district portal",
+      "scope": "local administrative identity",
+      "observation": "Official page identifies Kelurahan Gunung Lingkas, Tarakan Timur, its address and local contact. It is not cadastral geometry coverage."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/",
+      "operator": "Kementerian ATR/BPN",
+      "scope": "national land-map viewer",
+      "observation": "Official BHUMI landing page and embedded public console were reachable anonymously. The inspected HTML/JavaScript exposed a viewer application but no safe anonymous parcel ID-plus-geometry response for the WUP point; no credentials or private fields were requested."
+    },
+    {
+      "url": "https://web-api.bps.go.id/download.php?f=oce5ebLBtGyNkerQYBEgfDZwNklCNnk3S3hLZFhaaGt0ZHA0Ri8zMFlVN1RFQmYvT2FnNDdHV3NvNFJEVE53c3JobEtkQmc4T0orZTNvV1I2eWxxelNHY2plT3dSbW14UERVclhCanhhQkUrWS93aFo2UC9tVXBlYklPQnF4L0NHQ0lSZjVReDEya3BzRGppUi9JVFd2SnpEWmkrWGhJTlNaYXFXa1lCLzNpK2lNejZMRWdyajRHdjVVd1YrTTE2MmVxQ05Hb2k4QXlUeHNNK1B1dmg3OVMybHRBWksydlEyeU5CMjIzalZDajZwZ3NHZmc0RmZIRWpsYVY3aVZOajE5U1V5SzM5V3RBTCtDcEJETzZKSjJ6anhON0ZFbG9UblJENllBPT0%3D",
+      "operator": "Badan Pusat Statistik / Kantor Pertanahan Kota Tarakan cited source",
+      "scope": "historical administrative reference",
+      "observation": "Official statistical publication records Gunung Lingkas and cites Kantor Pertanahan Kota Tarakan as source for area data. It is not a parcel geometry service."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://portal.tarakankota.go.id/data/detil/959",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official Peta Bidang Tanah metadata page loaded; producer and document unit recorded, but no file or geometry was present."
+    },
+    {
+      "url": "https://portal.tarakankota.go.id/data/page/api",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official catalog API documentation loaded."
+    },
+    {
+      "url": "https://portal.tarakankota.go.id/api/data/cari?txt=Peta%20Bidang%20Tanah",
+      "method": "GET",
+      "status": "HTTP 200; one catalog result",
+      "summary": "Returned the official record /data/detil/959; no parcel API or geometry response."
+    },
+    {
+      "url": "https://ctt.tarakankota.go.id/daftar-kelurahan",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official Tarakan Timur administrative page loaded and explicitly listed Kelurahan Gunung Lingkas."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official BHUMI shell loaded and pointed to the public konsolbhumi.atrbpn.go.id viewer."
+    },
+    {
+      "url": "https://konsolbhumi.atrbpn.go.id/",
+      "method": "GET",
+      "status": "HTTP 200; JavaScript application shell",
+      "summary": "Public viewer shell and current JavaScript/configuration entrypoint were inspected. No bounded anonymous parcel ID-plus-geometry response was obtained; no UI login bypass or unsafe query was attempted."
+    },
+    {
+      "url": "https://web-api.bps.go.id/download.php?f=oce5ebLBtGyNkerQYBEgfDZwNklCNnk3S3hLZFhaaGt0ZHA0Ri8zMFlVN1RFQmYvT2FnNDdHV3NvNFJEVE53c3JobEtkQmc4T0orZTNvV1I2eWxxelNHY2plT3dSbW14UERVclhCanhhQkUrWS93aFo2UC9tVXBlYklPQnF4L0NHQ0lSZjVReDEya3BzRGppUi9JVFd2SnpEWmkrWGhJTlNaYXFXa1lCLzNpK2lNejZMRWdyajRHdjVVd1YrTTE2MmVxQ05Hb2k4QXlUeHNNK1B1dmg3OVMybHRBWksydlEyeU5CMjIzalZDajZwZ3NHZmc0RmZIRWpsYVY3aVZOajE5U1V5SzM5V3RBTCtDcEJETzZKSjJ6anhON0ZFbG9UblJENllBPT0%3D",
+      "method": "GET",
+      "status": "HTTP/search result available",
+      "summary": "Historical official statistical publication inspected for local land-office provenance; no parcel geometry requested or retained."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Tarakan municipal Peta Bidang Tanah is officially catalogued and a local land-data producer is identified, but current open parcel geometry coverage for Gunung Lingkas is not verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier if publicly exposed", "geometry", "source layer name", "CRS", "service URL", "retrieval timestamp"],
+  "unsafeFieldsExcluded": ["owner", "address", "contact", "titleholder", "tax/account details", "personal identifiers", "mutation-party details"],
+  "sourceIds": [],
+  "blocker": "No safe anonymous Gunung Lingkas parcel response containing a stable native ID and geometry was verified. The official local record is metadata-only and the national viewer did not yield a bounded response.",
+  "remainingUncertainty": "The Tarakan land map may be maintained as a document, restricted layer, or interactive workflow not exposed by the catalog page. No exact-point hit or UI limitation is treated as evidence of citywide absence.",
+  "nextStep": "Retry only if the Tarakan municipal portal publishes a parcel document/layer or a current public ATR/BPN route yields a safe native-ID-plus-geometry response; qualify any adapter independently before runtime use.",
+  "resultCategory": "official_local_registry_evidence_no_verified_open_gunung_lingkas_geometry",
+  "runtimeEligible": false
+}

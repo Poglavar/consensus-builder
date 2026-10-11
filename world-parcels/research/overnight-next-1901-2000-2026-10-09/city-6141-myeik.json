@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 6141,
+  "wupCityCode": 6141,
+  "queueRank": 1993,
+  "name": "Myeik",
+  "country": "Myanmar",
+  "countryCode": "MM",
+  "iso3": "MMR",
+  "point": [12.4433845169715, 98.60611888729],
+  "centerLatLon": [12.4433845169715, 98.60611888729],
+  "population2025": 291218,
+  "population2025k": 291.218,
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted",
+  "nativeIdReadiness": "not_applicable_no_verified_parcel_response",
+  "registryFound": null,
+  "registryBasis": "Myanmar's official ministry directory identifies the Settlement and Land Records Department (SLRD) as a Ministry of Agriculture, Livestock and Irrigation department, and SLRD's official site identifies the department. This is national agency custody/procedure context only; no Myeik-local registry, cadastral viewer, map procedure, or open parcel service was verified.",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Myeik Myanmar official cadastral map parcel land registry Department of Agricultural Land Management and Statistics",
+        "result": "Found official SLRD department site and Myanmar Ministry of Information ministry directory linking SLRD. No Myeik-specific public parcel viewer/API or bounded anonymous parcel response was verified.",
+        "actualResultUrls": [
+          "https://slrd.gov.mm/en",
+          "https://www.moi.gov.mm/moi:eng/content/websites-ministries"
+        ]
+      },
+      {
+        "language": "Burmese",
+        "query": "မြိတ် မြန်မာ မြေစာရင်း မြေပုံ တရားဝင်",
+        "result": "Found an official Burmese Myanmar Digital News article describing Myeik township and its administrative extent, but no Myeik cadastral parcel viewer/API, parcel schema, native ID, or geometry response.",
+        "actualResultUrls": [
+          "https://mdn.gov.mm/my/mnmaaniungngn-tteaangbhkcnsiu",
+          "https://slrd.gov.mm/en"
+        ]
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Myanmar SLRD national land-records custody context and Myeik township geographic context.",
+    "verifiedOpenScope": "National agency reference only; anonymous parcel geometry access unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "resultCategory": "official_national_custodian_evidenced_no_anonymous_geometry",
+  "blocker": "The official SLRD homepage was requested with TLS verification enabled and returned HTTP 403 from this environment. No public JavaScript/configuration, map service, API, schema/CRS metadata, or bounded anonymous ID+geometry response could be inspected. No login, CAPTCHA bypass, token bypass, unsafe fields, or TLS-disabling workaround was used.",
+  "remainingUncertainty": "A Myeik-local office, staff-mediated service, public viewer, downloadable cadastral map, or separate government endpoint may exist. The exact WUP point was not shifted and was not used to infer absence; no exact-point or citywide parcel hit test was possible.",
+  "nextStep": "Retry official Myanmar land-records routes when reachable, identify any public Myeik service and follow its current JavaScript/configuration, then retain only safe native parcel IDs and geometry after geographic qualification. Keep runtime admission held pending independent serial review."
+}

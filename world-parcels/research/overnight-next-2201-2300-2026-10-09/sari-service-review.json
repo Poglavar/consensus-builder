@@ -1,0 +1,39 @@
+{
+  "cityRecord": "city-5905-sari.json",
+  "cityCode": 5905,
+  "queueRank": 2212,
+  "name": "Sari",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "pointLatLon": [36.5612105372209, 53.0634320073292],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": null,
+  "routes": [
+    {"method": "SEARCH", "url": "https://sari.ir", "httpStatus": 403, "outcome": "English discovery linked the official Sari municipal site; direct verified-TLS request failed certificate hostname validation, so no viewer/configuration was treated as usable."},
+    {"method": "SEARCH", "url": "https://mz.ssaa.ir", "httpStatus": 200, "outcome": "Search evidence identifies the Mazandaran provincial SSAA registry office/site in Sari; this is a custodian lead, not evidence of a public parcel API."},
+    {"method": "SEARCH", "url": "https://www.samisoft.ir/jam_location_finder/", "httpStatus": 200, "outcome": "Secondary Persian explanation of Iranian property-identity workflows; it directs users to authenticated title-verification fields and exposes no safe anonymous parcel layer."},
+    {"method": "SEARCH", "url": "https://amagestate.com/wiki/saqar-guide/", "httpStatus": 200, "outcome": "Secondary Persian guide describes Kateb real-estate/cadastre requests and UTM survey workflow; no anonymous parcel IDs or geometry."},
+    {"method": "SEARCH", "url": "https://t.me/s/mazandnotary_com?before=1951", "httpStatus": 200, "outcome": "Persian provincial notary-channel material names Mazandaran and Sari registration offices; it is administrative context, not a parcel service."},
+    {"method": "GET", "url": "https://mz.ssaa.ir", "httpStatus": 0, "outcome": "Verified-TLS connection timed out after 4 seconds; no JavaScript/configuration or API route obtained."},
+    {"method": "GET", "url": "https://my.ssaa.ir/portal", "httpStatus": 0, "outcome": "Verified-TLS connection timed out after 4 seconds; national portal was not usable anonymously and no response was obtained."},
+    {"method": "GET", "url": "https://shamim.ssaa.ir", "httpStatus": 0, "outcome": "Verified-TLS connection timed out after 4 seconds; no viewer/configuration or parcel response obtained."},
+    {"method": "GET", "url": "https://kateb.ir", "httpStatus": 0, "outcome": "Verified-TLS connection timed out after 4 seconds; no public viewer/API response obtained."},
+    {"method": "GET", "url": "https://sabt.ssaa.ir", "httpStatus": 0, "outcome": "DNS resolution failed; no request was sent."},
+    {"method": "GET", "url": "https://lands.moi.ir", "httpStatus": 0, "outcome": "DNS resolution failed; no request was sent."},
+    {"method": "GET", "url": "https://sari.ir", "httpStatus": 0, "outcome": "An initial diagnostic curl used TLS verification disabled and returned HTTP 403; this was not used as qualification evidence. A subsequent default verified-TLS request failed certificate hostname validation."}
+  ],
+  "schemaAndCrs": {"viewerConfig": null, "geometryCrs": null, "nativeIdentity": null, "boundedAnonymousResponse": null},
+  "safeFieldAllowlist": ["stable native parcel ID if independently verified", "polygon geometry", "source service URL", "CRS", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "A Sari/Mazandaran registry custodian is evidenced, but no public anonymous service returned a safe native parcel identity plus unchanged geometry."},
+  "scopeLimits": [
+    "The exact WUP point was preserved and was not shifted; no exact-point parcel hit was obtained.",
+    "Timeouts, DNS failure, certificate failure, HTTP 403, unavailable UI, or absence of a search hit are not evidence of citywide cadastral absence.",
+    "National Iranian registry/cadastre references and the Mazandaran office identify administrative custodians/workflows only; they do not establish a public local parcel endpoint.",
+    "No polygon is retained because no safe native identity and unchanged geometry were returned."
+  ],
+  "uncertainty": "Public cadastral coverage for Sari remains unresolved. All executed discovery and request attempts are recorded; this packet is complete as research documentation, not source integration or admission."
+}

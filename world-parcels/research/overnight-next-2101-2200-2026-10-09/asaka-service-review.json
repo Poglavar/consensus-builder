@@ -1,0 +1,30 @@
+{
+  "cityRecord": "city-4774-asaka.json",
+  "cityCode": 4774,
+  "queueRank": 2124,
+  "attempt": 1,
+  "reviewStatus": "complete_packet_held_for_serial_review",
+  "service": "Uzbekistan National Geoinformation Portal / Cadastre Agency and State Urban Cadastre geoportal",
+  "serviceUrl": "https://open.ngis.uz/",
+  "discovery": {"queries": [{"language": "English", "query": "Asaka Uzbekistan official cadastral map parcel geoportal Kadastr Agency", "result": "Official National GIS, State Urban Cadastre, Cadastre Agency, and Asaka district custodian sources identified.", "actualResultUrls": ["https://open.ngis.uz/", "https://dshk.uz/ru/", "https://govinfo.uz/uz/state/state-land-cadastre", "https://uzdkp.uz/"]}, {"language": "Uzbek/Russian", "query": "Asaka O'zbekiston rasmiy kadastr xaritasi geokadastr geoportal / Асака Узбекистан официальный кадастровый геопортал", "result": "Native-language discovery identified the same official map/cadastre routes and Asaka district office; no unsafe lookup was used.", "actualResultUrls": ["https://open.ngis.uz/", "https://dshk.uz/ru/main/", "https://uzdkp.uz/", "https://kadastr.uz/uz"]}]},
+  "officialSources": ["https://open.ngis.uz/", "https://dshk.uz/ru/main/", "https://govinfo.uz/uz/state/state-land-cadastre", "https://uzdkp.uz/", "https://dgov.uz/ru/solution/detail/52/"],
+  "requests": [
+    {"url": "https://open.ngis.uz/", "method": "GET", "outcome": "20-second anonymous timeout; viewer JavaScript/configuration and public service endpoint could not be inspected."},
+    {"url": "https://dshk.uz/ru/main/", "method": "GET", "httpStatus": 403, "outcome": "Anonymous access denied; no geometry request made."},
+    {"url": "https://www.arcgis.com/sharing/rest/content/items/639e417ede6e430b8d3f91fbc503e2c4?f=json", "method": "GET", "httpStatus": 200, "outcome": "Application-level 403 permission error; no metadata."},
+    {"url": "https://www.arcgis.com/sharing/rest/content/items/639e417ede6e430b8d3f91fbc503e2c4/data?f=json", "method": "GET", "httpStatus": 200, "outcome": "Application-level 403 permission error; no data."}
+  ],
+  "query": {"pointLatLon": [40.667172380046, 72.2323135809243], "exactPointChecked": false, "result": "not attempted because no usable public service endpoint was obtained"},
+  "registryFound": true,
+  "registryBasis": "Official State Cadastre Chamber page lists the Asaka district cadastral office; official national/state-urban cadastre portals establish the documented public-service route.",
+  "safeFieldAllowlist": ["stable native parcel identity if exposed", "full parcel polygon geometry if exposed", "geometry CRS/service metadata"],
+  "sourceFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometrySample": null,
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "scopeLimits": ["No exact-point hit or map-extent result was obtained; this is not evidence of citywide absence.", "No unsafe fields, credentials, private tokens, login, or anti-bot bypass were used.", "No raw source-specific attribute set or synthetic identity was retained.", "Packet completion does not admit the source into runtime."],
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Native schema, CRS, stable parcel identity, geometry availability, citywide coverage, and update/legal status could not be independently verified within the bounded anonymous attempts."
+}

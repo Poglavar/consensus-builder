@@ -1,0 +1,33 @@
+{
+  "taskId": "city:9961",
+  "decision": "held",
+  "checkedAt": "2026-10-11T00:52:33.038709Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-9961-pollachi.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pollachi-service-review.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json"
+  ],
+  "city": "Pollachi",
+  "reason": "Tamil Nadu land-record custody and Pollachi revenue scope are supported by official pages. The e-services route timed out in the packet; no native parcel ID, full polygon, or adapter qualification is evidenced.",
+  "identityValidated": {
+    "cityCode": 9961,
+    "rank": 2182,
+    "country": "India",
+    "pointLatLon": [
+      10.658330676877,
+      77.013629141109
+    ],
+    "populationPersons": 267200
+  },
+  "bilingualSearchesRecorded": [
+    "English",
+    "Tamil"
+  ],
+  "samplePolygonCount": 0,
+  "qualificationGates": "No fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed details-panel verification; city remains unenabled.",
+  "firstPartyPagesChecked": [
+    "https://tnglms.in/links.php",
+    "https://coimbatore.nic.in/revenue-administration/"
+  ]
+}

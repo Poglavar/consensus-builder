@@ -1,0 +1,62 @@
+{
+  "cityCode": 4774,
+  "queueRank": 2124,
+  "name": "Asaka",
+  "country": "Uzbekistan",
+  "countryCode": "UZ",
+  "iso3": "UZB",
+  "locId": 860,
+  "point": [40.667172380046, 72.2323135809243],
+  "population2025": 273582,
+  "population2025k": 273.582,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Asaka Uzbekistan official cadastral map parcel geoportal Kadastr Agency",
+        "result": "First-party discovery identified Uzbekistan's National Geoinformation Portal, the State Urban Cadastre geoportal, the Cadastre Agency, and a government description of the national geoinformation service. The search results also identify an official Asaka district cadastral office listing.",
+        "actualResultUrls": ["https://open.ngis.uz/", "https://dshk.uz/ru/", "https://govinfo.uz/uz/state/state-land-cadastre", "https://uzdkp.uz/"]
+      },
+      {
+        "language": "Uzbek/Russian",
+        "query": "Asaka O'zbekiston rasmiy kadastr xaritasi geokadastr geoportal / Асака Узбекистан официальный кадастровый геопортал",
+        "result": "Native-language discovery returned the official National GIS portal, State Urban Cadastre geoportal, Cadastre Agency material, and the official State Cadastre Chamber page naming the Asaka district office. No ownership or personal-record lookup was attempted.",
+        "actualResultUrls": ["https://open.ngis.uz/", "https://dshk.uz/ru/main/", "https://uzdkp.uz/", "https://kadastr.uz/uz"]
+      }
+    ]
+  },
+  "officialSources": [
+    {"url": "https://open.ngis.uz/", "observation": "Official National Geoinformation Portal of the Uzbekistan Cadastre Agency; search result exposes coordinate and cadastral-number inputs and identifies the portal as a public map interface."},
+    {"url": "https://dshk.uz/ru/main/", "observation": "Official State Urban Cadastre geoportal; public page exposes map layers and open-data entry, but also shows an unauthenticated state."},
+    {"url": "https://govinfo.uz/uz/state/state-land-cadastre", "observation": "Government information page identifies the Cadastre Agency's land, real-estate cadastre, geodesy and cartography responsibilities."},
+    {"url": "https://uzdkp.uz/", "observation": "Official State Cadastre Chamber page lists an Asaka district office at Kamolot MFY, Marg'iloniy ko'chasi, 7-uy; this is local custodian evidence, not parcel coverage evidence."},
+    {"url": "https://dgov.uz/ru/solution/detail/52/", "observation": "Government digital-service description says the National GIS provides open real-estate-rights information through the Cadastre Agency system; no rights or owner data were requested."}
+  ],
+  "registryFound": true,
+  "registryBasis": "An official Asaka district cadastral office is listed by the State Cadastre Chamber, and official national/state-urban-cadastre portals are publicly documented. This establishes a local custodian and public map/procedure route, but not citywide parcel completeness or legal-title access.",
+  "sourceCandidate": "uz-national-ngis-asaka-cadastre",
+  "service": "Uzbekistan National Geoinformation Portal / Cadastre Agency and State Urban Cadastre geoportal",
+  "serviceUrl": "https://open.ngis.uz/",
+  "requests": [
+    {"url": "https://open.ngis.uz/", "method": "GET", "outcome": "Timed out after 20 seconds in the anonymous curl attempt; no HTML, JavaScript, configuration, service endpoint, schema, CRS, or parcel response was obtained."},
+    {"url": "https://dshk.uz/ru/main/", "method": "GET", "httpStatus": 403, "outcome": "Server returned 403 Forbidden to the anonymous curl request; no API/configuration or geometry request was attempted."},
+    {"url": "https://www.arcgis.com/sharing/rest/content/items/639e417ede6e430b8d3f91fbc503e2c4?f=json", "method": "GET", "httpStatus": 200, "outcome": "ArcGIS REST response contained an application-level 403 permission error for the public-geoportal item; no service metadata or geometry was available."},
+    {"url": "https://www.arcgis.com/sharing/rest/content/items/639e417ede6e430b8d3f91fbc503e2c4/data?f=json", "method": "GET", "httpStatus": 200, "outcome": "ArcGIS REST response contained the same application-level 403 permission error; no data was retained."}
+  ],
+  "query": {"pointLatLon": [40.667172380046, 72.2323135809243], "exactPointAttempted": false, "reason": "Official viewer/service could not be reached or inspected anonymously; coordinate was not shifted and no substitute point was queried."},
+  "safeFieldAllowlist": ["stable native parcel identity if independently exposed", "full parcel polygon geometry if independently exposed", "geometry CRS/service metadata"],
+  "sourceFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometrySample": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {"claimedScope": "Official Uzbekistan national/state-urban cadastral portals and the Asaka district custodian listing.", "cityCoverage": "Unverified; no public parcel layer or bounded geometry response was obtained.", "exactPointChecked": false},
+  "scopeLimits": ["A timeout, 403, or ArcGIS permission error is not evidence of citywide parcel absence.", "No login, credentials, CAPTCHA/Cloudflare bypass, private token, or unsafe owner/address/titleholder/tax/account field was used.", "No parcel polygon was retained because no unchanged native geometry response was obtained.", "Packet completion is not source integration or admission."],
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The official map services may expose additional public layers through browser JavaScript/configuration, but the National GIS timed out and the State Urban Cadastre/ArcGIS item routes were inaccessible in the bounded anonymous requests. CRS, schema, native identity, update currency, citywide completeness, and legal status remain unverified."
+}

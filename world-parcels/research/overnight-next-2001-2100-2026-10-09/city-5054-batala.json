@@ -1,0 +1,104 @@
+{
+  "cityCode": 5054,
+  "queueRank": 2068,
+  "name": "Batala",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [31.8176384783392, 75.2046803289866],
+  "population2025": 281142,
+  "population2025k": 281.142,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "researchedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Batala Punjab official cadastral parcel map GIS land records Gurdaspur India",
+        "result": "First-party discovery found the Punjab Land Records Cadastral Map (village-wise) service, the Punjab OneMap GIS portal, and the official Batala municipal site. The cadastral page lists Gurdaspur district and identifies the Department of Revenue, Rehabilitation and Disaster Management, Government of Punjab, India. No public parcel feature response was verified from the anonymous landing/configuration route.",
+        "actualResultUrls": [
+          "https://jamabandi.punjab.gov.in/CadastralMap.aspx/AccessibilityOptions.aspx",
+          "https://onemap.punjab.gov.in/",
+          "https://mcbatala.punjab.gov.in/Home"
+        ]
+      },
+      {
+        "language": "Punjabi",
+        "query": "ਬਟਾਲਾ ਪੰਜਾਬ ਸਰਕਾਰੀ ਕੈਡਾਸਟਰਲ ਨਕਸ਼ਾ ਜ਼ਮੀਨ ਰਿਕਾਰਡ ਗੁਰਦਾਸਪੁਰ",
+        "result": "ਪੰਜਾਬੀ/ਦੋਭਾਸ਼ੀ ਅਧਿਕਾਰਤ ਸੇਵਾ ਵਿੱਚ ਪੰਜਾਬ ਲੈਂਡ ਰਿਕਾਰਡਜ਼ ਦਾ Cadastral Map (Village wise) ਮੋਡੀਊਲ ਮਿਲਿਆ। ਪੰਨੇ ਉੱਤੇ ਗੁਰਦਾਸਪੁਰ ਜ਼ਿਲ੍ਹਾ ਚੋਣ ਉਪਲਬਧ ਹੈ ਅਤੇ ਸੇਵਾ ਪੰਜਾਬ ਸਰਕਾਰ ਦੇ ਮਾਲ, ਮੁੜ ਵਸੇਬਾ ਅਤੇ ਆਪਦਾ ਪ੍ਰਬੰਧਨ ਵਿਭਾਗ ਨਾਲ ਜੋੜੀ ਹੈ। ਅਨਾਮ ID+ਜਿਆਮਿਤੀ ਪਾਰਸਲ ਉੱਤਰ ਨਹੀਂ ਮਿਲਿਆ।",
+        "actualResultUrls": [
+          "https://jamabandi.punjab.gov.in/CadastralMap.aspx/AccessibilityOptions.aspx",
+          "https://onemap.punjab.gov.in/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official Punjab Land Records cadastral-map page is a state land-record service under the Department of Revenue, Rehabilitation and Disaster Management and exposes Gurdaspur as a district choice. This evidences a relevant state/local administrative custodian for Batala's district, but not an open parcel API or citywide geometry feed.",
+  "registryEvidenceUrls": [
+    "https://jamabandi.punjab.gov.in/CadastralMap.aspx/AccessibilityOptions.aspx",
+    "https://onemap.punjab.gov.in/",
+    "https://mcbatala.punjab.gov.in/Home"
+  ],
+  "requests": [
+    {
+      "url": "https://jamabandi.punjab.gov.in/CadastralMap.aspx/AccessibilityOptions.aspx",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Current bilingual Cadastral Map HTML fetched over TLS. The form exposes current/previous Jamabandi period, district, tehsil, village, and year selectors; Gurdaspur is district value 14. The landing response contained no parcel feature schema, CRS, stable parcel identity, or geometry."
+    },
+    {
+      "url": "https://jamabandi.punjab.gov.in/ui-assets/Pgscript/masterpg.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Current page JavaScript fetched. No public ArcGIS/OGC/JSON parcel service URL or anonymous ID-plus-geometry contract was exposed in the inspected script/page shell."
+    },
+    {
+      "url": "https://onemap.punjab.gov.in/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official Punjab OneMap GIS portal shell fetched. It identifies a NIC-developed multi-layer GIS portal, but the public landing response did not expose a bounded parcel feature schema or safe parcel identity-plus-geometry response."
+    },
+    {
+      "url": "https://mcbatala.punjab.gov.in/Home",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official Batala municipal page fetched; confirms Batala municipal administration and location context but provides no parcel geometry service."
+    },
+    {
+      "url": "https://jamabandi.punjab.gov.in/CadastralMap.aspx/AccessibilityOptions.aspx with district=Gurdaspur form progression",
+      "method": "POST",
+      "httpStatus": null,
+      "outcome": "Not executed: the page requires ASP.NET stateful postbacks through tehsil and village selectors, and the anonymous landing response did not expose a direct public API contract. No guessed request or protected/unsafe field query was made."
+    }
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "verifiedParcelResponse": null,
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only when publicly returned",
+    "parcel polygon geometry",
+    "source service metadata",
+    "CRS and response-format metadata"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner or right-holder names",
+    "addresses or contact details",
+    "title or certificate details",
+    "tax, account, identity, or application fields"
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Punjab state cadastral-map service with district/tehsil/village selection, including Gurdaspur district relevant to Batala.",
+    "verifiedOpenScope": "Relevant first-party custodian and map workflow only; no anonymous ID-plus-geometry response verified.",
+    "countrywideVerified": false,
+    "citywideGeometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "Held pending independent serial qualification of a real public parcel adapter. This packet is research only and is not source integration or admission.",
+  "resultCategory": "local_registry_evidenced_no_public_geometry",
+  "remainingUncertainty": "The viewer's postback behavior, village coverage for the exact WUP point, response schema, CRS, safe native identity field, and citywide parcel coverage remain unknown. A zero exact-point hit, map extent miss, timeout, or unusable UI was not treated as citywide absence."
+}

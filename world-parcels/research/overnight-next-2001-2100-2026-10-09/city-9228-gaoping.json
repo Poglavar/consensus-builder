@@ -1,0 +1,48 @@
+{
+  "cityCode": 9228,
+  "queueRank": 2038,
+  "name": "Gaoping",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [35.78945448775, 112.930606499431],
+  "population2025": 285819,
+  "population2025k": 285.819,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gaoping Shanxi cadastral parcel map official land registry GIS service parcel geometry",
+        "result": "Search identified the official Gaoping government panorama map and the official Gaoping real-estate registration center. No public anonymous parcel feature service or parcel geometry endpoint was found in search results.",
+        "actualResultUrls": [
+          "https://www.sxgp.gov.cn/files/gaopingmap/map.html",
+          "https://bdc.sxgp.gov.cn/online/index"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "高平市 不动产登记 地籍图 GIS 官方 地图 服务",
+        "result": "Official Chinese results identified the Gaoping Natural Resources Bureau and Gaoping real-estate registration center, including a public service platform and a cadastral-map inquiry entry. The inquiry route requires ordinary user login; no anonymous parcel ID plus geometry response was exposed.",
+        "actualResultUrls": [
+          "https://bdc.sxgp.gov.cn/online/index",
+          "https://bdc.sxgp.gov.cn/online/public/search/jindu?type=jdcx",
+          "https://xxgk.sxgp.gov.cn/gzbm/gpzrzyj/fdzdgknr/zzjg/nsjg/202309/t20230904_1848791.shtml",
+          "https://www.sxgp.gov.cn/files/gaopingmap/map.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "The official Gaoping online service platform identifies the Gaoping Natural Resources Bureau as sponsor and the Gaoping Real-Estate Registration and Trading Center as operator. The official Natural Resources Bureau page describes responsibility for unified real-estate registration, cadastral survey, real-estate surveying, and registration-result application for Gaoping city.",
+  "sourceUrls": [
+    "https://bdc.sxgp.gov.cn/online/index",
+    "https://bdc.sxgp.gov.cn/online/public/search/jindu?type=jdcx",
+    "https://xxgk.sxgp.gov.cn/gzbm/gpzrzyj/fdzdgknr/zzjg/nsjg/202309/t20230904_1848791.shtml",
+    "https://www.sxgp.gov.cn/files/gaopingmap/map.html"
+  ],
+  "parcelService": null,
+  "geometrySample": null,
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter"
+}

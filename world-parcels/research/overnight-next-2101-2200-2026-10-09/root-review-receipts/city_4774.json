@@ -1,0 +1,15 @@
+{
+  "taskId": "city:4774",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-4774-asaka.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/asaka-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T23:43:12Z",
+  "reason": "WUP Asaka rank 2124, Uzbekistan, exact point, and 273582 persons match the immutable roster and queue. English and Uzbek/Russian executed searches and result URLs are recorded. The State Cadastre Chamber site lists an Asaka district office, supporting local custody. The national viewer timed out, the urban cadastre returned 403, and the ArcGIS item returned an application-level permission error; none proves citywide absence. No safe native-ID polygon response or sample exists. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are absent; runtime remains held.",
+  "firstPartyPagesChecked": [
+    "https://uzdkp.uz/"
+  ]
+}

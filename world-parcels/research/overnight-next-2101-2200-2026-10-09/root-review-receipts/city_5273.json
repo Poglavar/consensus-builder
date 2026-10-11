@@ -1,0 +1,28 @@
+{
+  "taskId": "city:5273",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-5273-nagano.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/nagano-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T00:22:34Z",
+  "reason": "Nagano City official page confirms the public administrative-map portal and lists map topics, but the paired evidence contains no anonymous cadastral ID-plus-polygon response. The map/address response at the WUP point is not a parcel response. Cadastral registry custody remains unresolved; an official administrative map alone does not prove public cadastral coverage or absence.",
+  "identityAudit": {
+    "source": "verified WUP 2025 archive, SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "result": "city code, rank, country, point and 2025 population persons agree with immutable queue and packet"
+  },
+  "bilingualSearchAudit": "complete: recorded English and Japanese queries with result URLs",
+  "custodyAssessment": "null",
+  "officialPageChecked": "https://www.city.nagano.nagano.jp/n023500/contents/p004998.html",
+  "retainedFullPolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdAndFullPolygon": "missing",
+    "forcedPaging": "missing",
+    "thirteenBoundedCells": "missing",
+    "metricGeosValidityOverlap": "missing",
+    "sourceBinding": "missing",
+    "headedDetailsPanel": "missing"
+  }
+}

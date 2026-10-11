@@ -169,49 +169,6 @@ async function fetchLensFromChain(proposal) {
     }
 }
 
-function buildGeometryMetadataPayload(sourceProposal) {
-    if (!sourceProposal || typeof sourceProposal !== 'object') return null;
-    const safeClone = (value) => {
-        try { return JSON.parse(JSON.stringify(value)); } catch (_) { return null; }
-    };
-
-    const boundary = typeof window !== 'undefined' ? window.__formationDepth : null;
-    if (!boundary || typeof boundary.preparePublishRecord !== 'function') {
-        throw new Error('Cannot build proposal metadata: authored-record boundary is unavailable.');
-    }
-    const prepared = boundary.preparePublishRecord(sourceProposal);
-    if (!prepared?.verdict?.flat) {
-        const violation = prepared?.verdict?.violations?.[0];
-        throw new Error(`Cannot build proposal metadata: ${violation?.field || violation?.code || 'proposal ground is not canonical'}.`);
-    }
-    const authoredProposal = prepared.proposal;
-
-    const payload = {};
-    const baseGeometry = safeClone(authoredProposal.geometry);
-    if (baseGeometry && Object.keys(baseGeometry).length > 0) {
-        payload.geometry = baseGeometry;
-    }
-
-    // Portable metadata carries authored instructions only. Live child features are one browser's
-    // materialization and cannot be used to reconstruct a proposal elsewhere.
-    ['roadProposal', 'buildingProposal', 'structureProposal', 'reparcellization'].forEach(key => {
-        const authored = safeClone(authoredProposal[key]);
-        if (authored && typeof authored === 'object' && !Array.isArray(authored)) {
-            payload[key] = authored;
-        }
-    });
-
-    if (!Object.keys(payload).length) {
-        return null;
-    }
-
-    try {
-        payload.hash = hashStringDeterministic(JSON.stringify(payload));
-    } catch (_) { /* best-effort */ }
-
-    return payload;
-}
-
 function normalizeChainIdForBoost(chainIdInput) {
     if (chainIdInput === undefined || chainIdInput === null) return null;
     try {

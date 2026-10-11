@@ -1,0 +1,41 @@
+{
+  "cityCode": 3021,
+  "queueRank": 2266,
+  "name": "Zahrat Laban",
+  "country": "Saudi Arabia",
+  "countryCode": "SA",
+  "point": [24.6320476798316, 46.5545842581718],
+  "population2025": 257467,
+  "population2025k": 257.467,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Saudi Arabia official cadastral parcel map Riyadh Zahrat Laban land parcels API",
+        "result": "First-party discovery found the Riyadh Municipality GIS Portal and its public mapservice route, which describes searching and inquiring about land-plot uses/status, plus the Real Estate General Authority geospatial real-estate portal, which describes maps and spatial inquiry for cities, neighborhoods, and land parcels. No anonymous parcel geometry-and-ID response was obtained.",
+        "actualResultUrls": [
+          "https://alriyadh.gov.sa/en/gis-portal",
+          "https://mapservice.alriyadh.gov.sa/geoportal/geomap",
+          "https://rega.gov.sa/rega-services/platforms/geospatial-real-estate-portal/",
+          "https://geoportal.geosa.gov.sa/Geoportal/pdf/Land%20Survey%20Technical%20Guideline.pdf"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "الخريطة العقارية الرسمية الرياض زهرة لبن قطع الأراضي منصة",
+        "result": "البحث الرسمي باللغة العربية أكد بوابة أمانة منطقة الرياض الجيومكانية، وخدمة الخرائط التي تعرض بيانات قطع الأراضي، وبوابة العقار الجيومكانية التابعة للهيئة العامة للعقار للاستعلام عن البيانات المكانية وقطع الأراضي. تعذر الحصول على استجابة عامة مجهولة تتضمن هوية قطعة وهندسة.",
+        "actualResultUrls": [
+          "https://alriyadh.gov.sa/",
+          "https://eservices.alriyadh.gov.sa/Pages/MapViewer.aspx",
+          "https://rega.gov.sa/rega-services/platforms/geospatial-real-estate-portal/",
+          "https://my.gov.sa/saml.authn/content/gis"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "researchNote": "Official Riyadh municipal and national real-estate geospatial portals were evidenced, but this attempt did not qualify an anonymous local parcel service or obtain safe parcel ID-plus-geometry data. This packet is not source integration or runtime admission.",
+  "runtimeReadiness": "held"
+}

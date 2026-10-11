@@ -1,0 +1,117 @@
+{
+  "cityCode": 915,
+  "queueRank": 2006,
+  "name": "Vigo",
+  "country": "Spain",
+  "countryCode": "ES",
+  "iso3": "ESP",
+  "point": [42.224541418296, -8.71898043282907],
+  "population2025": 289688,
+  "population2025k": 289.688,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10T20:42:00Z",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Vigo Spain official cadastral parcel map GIS API Dirección General del Catastro",
+        "result": "Official results identified the Concello de Vigo cadastral consultation service, the Dirección General del Catastro sede, the Vigo Catastro office, and Catastro INSPIRE parcel/WFS documentation. No anonymous Vigo parcel feature response was obtained.",
+        "actualResultUrls": [
+          "https://sede.vigo.org/expedientes/tramites/tramite.jsp?id_tramite=134&lang=es",
+          "https://www.sedecatastro.gob.es/",
+          "https://www.catastro.hacienda.gob.es/es-ES/gerencias.html",
+          "https://www.catastro.hacienda.gob.es/webinspire/index.html"
+        ]
+      },
+      {
+        "language": "Galician/Spanish",
+        "query": "Vigo cartografía catastral parcela GIS oficial visor Concello de Vigo parcelas catastro",
+        "result": "Official Vigo urban-planning documentation confirms the municipal viewer can search Catastro parcels by the first 14 cadastral-reference characters, while the Vigo municipal service says parcel information is obtained directly from the Oficina del Catastro. No public anonymous ID-plus-geometry response was verified.",
+        "actualResultUrls": [
+          "https://xmu.vigo.org/docs/PXOM_2025/Visor/manual_visor_pxom_2025_G.pdf",
+          "https://xmu.vigo.org/",
+          "https://sede.vigo.org/expedientes/tramites/tramite.jsp?id_tramite=134&lang=es"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official Concello de Vigo cadastral-information procedure states that parcel plans and cadastral information are obtained directly from the Oficina del Catastro; the official Catastro directory identifies the Gerencia Territorial de Pontevedra, Oficina de Vigo, as the local office. This evidences the local service/custodian, not an open citywide parcel API.",
+  "registryEvidenceUrls": [
+    "https://sede.vigo.org/expedientes/tramites/tramite.jsp?id_tramite=134&lang=es",
+    "https://www.catastro.hacienda.gob.es/es-ES/gerencias.html",
+    "https://xmu.vigo.org/docs/PXOM_2025/Visor/manual_visor_pxom_2025_G.pdf"
+  ],
+  "requests": [
+    {
+      "url": "https://sede.vigo.org/expedientes/tramites/tramite.jsp?id_tramite=134&lang=es",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official Vigo procedure fetched; confirms parcel plan/information lookup through the Catastro office. No feature schema or geometry response exposed in the public procedure page."
+    },
+    {
+      "url": "https://www.catastro.hacienda.gob.es/webinspire/index.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official Catastro INSPIRE page fetched; publishes the cadastral-parcel WFS endpoint, INSPIRE WMS endpoint, and parcel dataset documentation."
+    },
+    {
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?SERVICE=WFS&REQUEST=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 400,
+      "outcome": "Published parcel WFS capability request returned the service error page; no schema, CRS, or geometry response obtained. This is an endpoint/request failure, not evidence of cadastral absence."
+    },
+    {
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 400,
+      "outcome": "Published parcel WFS capability request with explicit version also returned HTTP 400; no schema or geometry obtained."
+    },
+    {
+      "url": "https://ovc.catastro.meh.es/Cartografia/INSPIRE/spadgcwms.aspx?SERVICE=WMS&REQUEST=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 400,
+      "outcome": "Published INSPIRE WMS capability request returned HTTP 400; no layer schema, CRS, or map response obtained."
+    },
+    {
+      "url": "http://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx?SERVICE=WMS&REQUEST=GetCapabilities",
+      "method": "GET",
+      "httpStatus": null,
+      "outcome": "Legacy documented WMS connection reset before an HTTP response; no TLS bypass or retry through credentials was attempted."
+    },
+    {
+      "url": "https://xmu.vigo.org/",
+      "method": "GET",
+      "httpStatus": null,
+      "outcome": "Anonymous request timed out after 20 seconds; the published viewer manual was used as documentation, not as evidence of a successful parcel API response."
+    }
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "verifiedParcelResponse": null,
+  "safeFieldAllowlist": [
+    "stable native cadastral parcel identifier only when publicly returned",
+    "parcel polygon geometry",
+    "source service metadata",
+    "CRS and response-format metadata"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner or right-holder names",
+    "addresses or contact details",
+    "title or certificate details",
+    "tax, account, identity, or application fields"
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Vigo municipal cadastral consultation plus Spain-wide Catastro INSPIRE parcel services in their stated national scope.",
+    "verifiedOpenScope": "Local cadastral consultation/custodian evidence only; no anonymous ID-plus-geometry response verified.",
+    "countrywideVerified": false,
+    "citywideGeometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "Held pending independent serial qualification of a real public parcel adapter. This packet is not source integration or admission.",
+  "resultCategory": "local_registry_evidenced_no_public_geometry",
+  "remainingUncertainty": "The published viewer/API's current runtime configuration, request parameters, feature schema, CRS, safe native identity field, authentication/rate-limit boundary, and citywide coverage remain unverified. The exact WUP point was preserved and not shifted to force a parcel hit."
+}

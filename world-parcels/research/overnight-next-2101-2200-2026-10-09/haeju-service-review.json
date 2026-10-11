@@ -1,0 +1,77 @@
+{
+  "cityRecord": "city-5184-haeju.json",
+  "cityCode": 5184,
+  "queueRank": 2190,
+  "city": "Haeju",
+  "country": "Dem. People's Republic of Korea",
+  "countryCode": "KP",
+  "iso3": "PRK",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": null,
+  "custodianAssessment": {
+    "localOrScopedEvidence": "No Haeju-local registry office, cadastral map procedure, viewer, or parcel endpoint was found. Naenara material is regional/development-zone cartographic context only.",
+    "generalAgencyEvidence": "General Korean and South Korean national spatial-information results were not treated as DPRK or Haeju registry evidence. The South Korean K-GeoP result is a different jurisdiction.",
+    "sourceUrls": [
+      "https://www.naenara.com.kp/",
+      "https://www.naenara.com.kp/images/trade/advertise/siniju_e.pdf"
+    ]
+  },
+  "discovery": {
+    "englishQuery": "Haeju DPRK official cadastral map parcel land registry GIS",
+    "nativeQuery": "해주 조선민주주의인민공화국 지적도 토지등록 토지대장 지도 공식",
+    "urls": [
+      "https://www.naenara.com.kp/images/trade/advertise/siniju_e.pdf",
+      "https://www.kgeop.go.kr/info/infoMap.do?initMode=L"
+    ]
+  },
+  "requests": [
+    {
+      "method": "GET",
+      "url": "https://www.naenara.com.kp/",
+      "outcome": "TLS certificate verification failed. No exception or disabled-TLS retry was used; no response schema or viewer configuration was accepted."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.naenara.com.kp/images/trade/advertise/siniju_e.pdf",
+      "outcome": "TLS certificate verification failed. The indexed first-party URL was recorded as discovery evidence only; no PDF or parcel data was retained."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.kgeop.go.kr/info/infoMap.do?initMode=L",
+      "outcome": "HTTP 200 HTML from South Korean K-GeoP; inspected only for jurisdiction comparison and not used as DPRK evidence."
+    }
+  ],
+  "responseEvidence": {
+    "geometry": "None retained or verified. No bounded anonymous ID-plus-geometry response was obtained.",
+    "nativeFieldsObserved": [],
+    "safeFieldAllowlist": [
+      "stable native parcel identity if a future public response exposes one",
+      "geometry",
+      "source URL",
+      "district/province/city/survey and map provenance"
+    ],
+    "unsafeFieldsExcluded": [
+      "owner names",
+      "addresses",
+      "contact details",
+      "titleholder information",
+      "tax/account data",
+      "personal land-register contents"
+    ]
+  },
+  "sample": {
+    "retained": false,
+    "reason": "No parcel geometry was obtained. No sample GeoJSON is retained.",
+    "exactPointHit": "not tested; no coordinate shift performed"
+  },
+  "scopeLimits": [
+    "Regional cartographic/development-zone material does not establish a Haeju citywide parcel dataset or local registry custodian.",
+    "TLS failure and inaccessible public material are not evidence of citywide cadastral absence.",
+    "No CRS, parcel schema, native identity, or geometry response was observed.",
+    "No authentication, credentials, private token, CAPTCHA bypass, unsafe owner field, or certificate exception was used.",
+    "No source integration, adapter admission, or runtime qualification is claimed."
+  ],
+  "runtimeReadiness": "held-pending-independent-serial-reviewer",
+  "uncertainty": "The current DPRK land-registration custodian, Haeju local workflow, parcel layer, native ID, CRS, anonymous access policy, and exact WUP-point coverage remain unknown."
+}

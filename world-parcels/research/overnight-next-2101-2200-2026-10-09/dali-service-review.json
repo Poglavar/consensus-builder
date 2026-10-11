@@ -1,0 +1,84 @@
+{
+  "cityRecord": "city-6214-dali.json",
+  "cityCode": 6214,
+  "queueRank": 2163,
+  "name": "Dali",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "summary": "Official local and prefecture government sources evidence Dali's natural-resources and real-estate-registration custodians and cadastral responsibilities, but no anonymous public parcel geometry response was obtained. Packet is complete for this attempt; it is not source integration or adapter admission.",
+  "queries": [
+    {
+      "language": "English",
+      "query": "Dali China cadastral parcel map official natural resources public map service GIS land registry",
+      "outcome": "Official prefecture bureau responsibilities found; no public parcel API or geometry endpoint verified.",
+      "urls": [
+        "https://www.dali.gov.cn/dlzrmzf/xxgkml/c105893/pc/content/1970057744017887232/content_1970057744017887232.html",
+        "https://www.yndali.gov.cn/dlsrmzf/c106722/pc/list.html"
+      ]
+    },
+    {
+      "language": "Chinese",
+      "query": "大理市 不动产登记 地图 查询 官方 自然资源 GIS",
+      "outcome": "Official Dali City registration section and planning/one-map reporting found; no anonymous parcel geometry, schema, CRS, or safe native ID response verified.",
+      "urls": [
+        "https://www.yndali.gov.cn/dlsrmzf/c106722/pc/list.html",
+        "https://www.yndali.gov.cn/dlsrmzf/c106732/pc/content/1983769810566221824/content_1983769810566221824.html",
+        "https://www.yndali.gov.cn/dlsrmzf/c106753/2018963559495536640/4PAIN2EJ.pdf"
+      ]
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.dali.gov.cn/dlzrmzf/xxgkml/c105893/pc/content/1970057744017887232/content_1970057744017887232.html",
+      "method": "GET",
+      "status": "HTTP 200 via web search/open",
+      "safeFields": ["bureau responsibilities", "local custodian", "registration/cadastral mandate"],
+      "summary": "Official prefecture bureau description; confirms unified real-estate registration, cadastral investigation, cadastral surveying, registration-information platform, and geospatial-result responsibilities; no parcel feature response."
+    },
+    {
+      "url": "https://www.yndali.gov.cn/dlsrmzf/c106722/pc/list.html",
+      "method": "GET",
+      "status": "HTTP 200; 60001 bytes",
+      "safeFields": ["registration-section metadata", "publisher names", "article URLs", "public site JavaScript references"],
+      "summary": "Official Dali City real-estate-registration section loaded anonymously. Current HTML exposed registration articles and site scripts but no cadastral viewer route, parcel layer, schema, CRS, safe native ID, or geometry response."
+    },
+    {
+      "url": "https://www.yndali.gov.cn/dlsrmzf/c106732/pc/content/1983769810566221824/content_1983769810566221824.html",
+      "method": "GET",
+      "status": "HTTP 200 via web search/open",
+      "safeFields": ["planning one-map reporting", "public administrative statements"],
+      "summary": "Official Dali natural-resources report references the land-space-planning one-map supervision system; it does not publish anonymous cadastral geometry or service schema."
+    },
+    {
+      "url": "https://www.yndali.gov.cn/dlsrmzf/c106753/2018963559495536640/4PAIN2EJ.pdf",
+      "method": "GET",
+      "status": "HTTP 200 via web search/open",
+      "safeFields": ["official planning map provenance", "CRS/datum statement"],
+      "summary": "Official planning PDF identifies Dali Natural Resources Bureau and CGCS 2000 context for the planning map; it is not a parcel service and yielded no parcel features or IDs."
+    }
+  ],
+  "schemaAndCrs": {
+    "schema": null,
+    "crs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier if publicly returned", "geometry", "source layer name", "CRS", "service URL", "request status"],
+  "unsafeFieldsExcluded": ["owner", "address", "contact", "titleholder", "personal identifiers", "tax/account data", "registration certificate details"],
+  "sampleGeoJSON": null,
+  "coverageLimits": [
+    "No parcel polygon was retained.",
+    "No exact-point hit or miss was treated as citywide evidence.",
+    "No map extent was inferred from the absence of a public viewer/API route.",
+    "Official registry/planning references do not establish an open anonymous geometry service."
+  ],
+  "uncertainty": "The local registry custodian and cadastral mandate are evidenced, but the public service's current endpoint, access mode, parcel schema, CRS, native identifiers, and geographic open coverage remain unknown.",
+  "adapterDecision": "hold",
+  "qualificationNote": "A serial reviewer must independently qualify a real adapter from a fresh bounded geometry-plus-safe-ID response; this packet does not claim source integration or runtime admission."
+}

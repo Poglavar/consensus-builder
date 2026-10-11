@@ -1,0 +1,54 @@
+{
+  "taskId": "city:9050",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-9050-nanchuan.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/nanchuan-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-10T22:47:43Z",
+  "identityCheck": {
+    "wupArchiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "cityCode": 9050,
+    "rank": 2090,
+    "country": "China",
+    "point": [
+      29.1611025892334,
+      107.106744758276
+    ],
+    "populationPersons": 277825,
+    "queueAndRosterMatch": true
+  },
+  "researchCheck": {
+    "englishAndLocalSearchRecorded": true,
+    "retainedFullPolygons": 0,
+    "safeIdGeometryResponseVerified": false,
+    "custodyFound": true,
+    "sourceAssessment": "Official local registration guide and service shells establish custody and inquiry context, without a bounded anonymous native-ID polygon response.",
+    "firstPartyCachesOpened": [
+      {
+        "path": "tmp/valhalla-parcel-research/nanchuan-9050/nanchuan-guide.html",
+        "sha256": "0cfb558ed00f438e4faae43e35f3e4b4184ec3de856557394032c404034107c5"
+      },
+      {
+        "path": "tmp/valhalla-parcel-research/nanchuan-9050/ykb2.html",
+        "sha256": "17b1678828e0ab403f5a954ee68ed21627ef8143bf5a97d0c37f678e48661292"
+      },
+      {
+        "path": "tmp/valhalla-parcel-research/nanchuan-9050/official-map.html",
+        "sha256": "1baa10daf557d604aa80620be26fcaafedf2c9fbc5a747671959e87469092a64"
+      }
+    ]
+  },
+  "admissionCheck": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "runtimeEnabled": false
+  },
+  "holdReason": "No independently evidenced anonymous city-scoped native-ID full-polygon adapter qualification. Viewer timeout, gateway failure, or unavailable route is unresolved access, not parcel absence."
+}

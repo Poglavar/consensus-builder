@@ -1,0 +1,115 @@
+{
+  "cityCode": 8513,
+  "queueRank": 2178,
+  "name": "Lafia",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "iso3": "NGA",
+  "point": [8.50418075269339, 8.52098837145698],
+  "population2025": 267580,
+  "population2025k": 267.58,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "kind": "city_parcel_source_research",
+  "schemaVersion": 1,
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Lafia Nasarawa cadastral parcel map official GIS land registry",
+        "result": "Found the official Nasarawa Geographic Information Service (NAGIS) site. It identifies NAGIS as the state’s official GIS data source for digital land administration, gives a head office on Jos Road in Lafia, and describes a land-administration/GIS repository. No public parcel feature service, viewer route, or downloadable parcel geometry was found.",
+        "actualResultUrls": ["https://nagis.na.gov.ng/", "https://nagis.na.gov.ng/how-to-register-land"]
+      },
+      {
+        "language": "Hausa",
+        "query": "Lafia Nasarawa taswirin fili rajista filaye",
+        "result": "The search returned the same official NAGIS land-administration lead and no Hausa-language public parcel API or bounded parcel geometry. English is the operative language on the official NAGIS site; no local-language result was treated as geometry evidence.",
+        "actualResultUrls": ["https://nagis.na.gov.ng/", "https://nagis.na.gov.ng/SRO-application"]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://nagis.na.gov.ng/",
+      "publisher": "Nasarawa Geographic Information Service (NAGIS)",
+      "observation": "Official state GIS agency site says NAGIS hosts digital land-administration matters, with a Land Administration System and GIS linked to a digital data repository. It describes 10 cm orthophotos for urban areas and lists the NAGIS head office at Jos Road, Lafia. This is custodian and claimed coverage evidence, not parcel geometry."
+    },
+    {
+      "url": "https://nagis.na.gov.ng/how-to-register-land",
+      "publisher": "Nasarawa Geographic Information Service (NAGIS)",
+      "observation": "Official property-registration procedure page was reachable and supports NAGIS/Ministry of Lands land-registration workflow. It did not expose a safe anonymous parcel-map response."
+    },
+    {
+      "url": "https://nagis.na.gov.ng/download/documents/rMjzcMKMI7lGjhhBHsOY4v78kTnQK4OnsGeCwrJI.pdf",
+      "publisher": "Nasarawa Geographic Information Service (NAGIS)",
+      "observation": "Official NAGIS procedure PDF identifies the Ministry of Lands and Urban Development and Office of the Surveyor-General in Lafia as part of title processing. It is procedure/custodian evidence only; no parcel geometry or owner/title data was retained."
+    }
+  ],
+  "requests": [
+    {
+      "checkedAt": "2026-10-11",
+      "method": "GET with normal TLS verification",
+      "url": "https://nagis.na.gov.ng/",
+      "httpStatus": 200,
+      "outcome": "Official NAGIS homepage retrieved. HTML and linked JavaScript were inspected; no map, WMS, WFS, ArcGIS, parcel, or geometry endpoint was exposed."
+    },
+    {
+      "checkedAt": "2026-10-11",
+      "method": "GET with normal TLS verification",
+      "url": "https://nagis.na.gov.ng/how-to-register-land",
+      "httpStatus": 200,
+      "outcome": "Official registration-procedure page retrieved. No public parcel viewer/API configuration or bounded geometry response was present."
+    },
+    {
+      "checkedAt": "2026-10-11",
+      "method": "GET with normal TLS verification",
+      "url": "https://nagis.na.gov.ng/SRO-application",
+      "httpStatus": 200,
+      "outcome": "Official property-registration route retrieved. It is an application workflow, not an anonymous parcel feature service; no login was attempted and no unsafe fields were requested."
+    },
+    {
+      "checkedAt": "2026-10-11",
+      "method": "GET with normal TLS verification",
+      "url": "https://nagis.na.gov.ng/robots.txt",
+      "httpStatus": 200,
+      "outcome": "Robots response retrieved; it did not reveal a public parcel data endpoint."
+    },
+    {
+      "checkedAt": "2026-10-11",
+      "method": "GET with normal TLS verification",
+      "url": "https://nagis.na.gov.ng/sitemap.xml",
+      "httpStatus": 404,
+      "outcome": "No sitemap was available. This is not evidence of parcel-source absence."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "NAGIS is a local/state-scoped GIS and land-administration custodian with a Lafia head office, and official procedure material names the Nasarawa Ministry of Lands and Urban Development/Office of the Surveyor-General in Lafia. This supports registryFound=true, but no public parcel geometry was verified.",
+  "registryEvidenceUrls": ["https://nagis.na.gov.ng/", "https://nagis.na.gov.ng/how-to-register-land", "https://nagis.na.gov.ng/download/documents/rMjzcMKMI7lGjhhBHsOY4v78kTnQK4OnsGeCwrJI.pdf"],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Nasarawa State digital land-administration/GIS repository, with NAGIS-described orthophoto coverage for urban areas.",
+    "verifiedOpenScope": "No anonymous city-bounded parcel polygon response or public parcel feature service was verified for Lafia.",
+    "countrywideVerified": false
+  },
+  "resultCategory": "city_registry_custodian_evidenced_no_public_geometry",
+  "safeFieldAllowlist": ["stable native parcel identifier only", "geometry", "source URL", "administrative/source provenance"],
+  "runtimeReadiness": "held_pending_independent_serial_qualification",
+  "runtimeAssessment": {"status": "held", "reason": "No safe bounded ID-plus-geometry response was obtained; packet research does not qualify runtime admission."},
+  "sample": {"retained": false, "reason": "No parcel geometry was obtained; no sample GeoJSON is retained.", "exactPointHit": "not tested; no coordinate shift performed"},
+  "scopeLimits": [
+    "NAGIS homepage claims state GIS and urban orthophoto coverage, but does not prove citywide cadastral polygon availability or anonymous access.",
+    "No CRS, parcel schema, native identity, map extent, or geometry response was observed.",
+    "No owner, address, contact, titleholder, tax/account, or other unsafe fields were requested or retained.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, or certificate exception was used.",
+    "An exact-point miss was not tested and would not imply citywide absence; the WUP point was preserved exactly.",
+    "No source integration or adapter admission is claimed."
+  ],
+  "remainingUncertainty": "The local custodian and land-registration workflow are evidenced, but the current public parcel viewer/API, schema, CRS, city coverage, and anonymous geometry access remain unknown.",
+  "pointBasis": "Immutable WUP queue point; retained exactly and not shifted to seek a parcel hit."
+}

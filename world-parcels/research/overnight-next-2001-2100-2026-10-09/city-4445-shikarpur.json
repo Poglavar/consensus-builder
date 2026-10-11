@@ -1,0 +1,55 @@
+{
+  "cityCode": 4445,
+  "queueRank": 2037,
+  "name": "Shikarpur",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "point": [27.9548901822907, 68.6387289092882],
+  "population2025": 285859,
+  "population2025k": 285.859,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10T21:22:00Z",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Shikarpur Pakistan official cadastral parcel map land records GIS Sindh",
+        "result": "First-party Board of Revenue, Government of Sindh land-record portal identified. It provides Shikarpur district/taluka/deh map navigation and public land-record services, but no anonymous machine-readable parcel feature response with safe native ID and geometry was found.",
+        "actualResultUrls": [
+          "https://sindhzameen.gos.pk/Default.aspx",
+          "https://sindhzameen.gos.pk/maps.aspx",
+          "https://sindhzameen.gos.pk/map/Sindh_Map.aspx",
+          "https://bor.sindh.gov.pk/land-administration-revenue-management-information-system-larmis"
+        ]
+      },
+      {
+        "language": "Sindhi/Urdu local",
+        "query": "سکھرپور سندھ سرکاری زمین ریکارڈ نقشہ کادستر اراضی ریکارڈ",
+        "result": "Discovery returned the same official Sindh Zameen / Board of Revenue portal and its multilingual public-service labels. The public map flow remains static/image and HTML navigation, without an anonymous parcel ID-plus-geometry API.",
+        "actualResultUrls": [
+          "https://sindhzameen.gos.pk/Default.aspx",
+          "https://sindhzameen.gos.pk/FAQs.aspx",
+          "https://sindhzameen.gos.pk/Centers.aspx"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official Board of Revenue, Government of Sindh portal is a land-record custodian and its public map flow explicitly exposes District Shikarpur, Shikarpur taluka, 26 available dehs, and a Shikarpur Peoples Service Center. This evidences a local/provincial registry custodian, not an open parcel-geometry API.",
+  "registryEvidenceUrls": [
+    "https://sindhzameen.gos.pk/Default.aspx",
+    "https://sindhzameen.gos.pk/map/Sindh_Map.aspx",
+    "https://sindhzameen.gos.pk/map/Taluka.aspx?district=Shikarpur",
+    "https://sindhzameen.gos.pk/Centers.aspx",
+    "https://bor.sindh.gov.pk/land-administration-revenue-management-information-system-larmis"
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "verifiedParcelResponse": null,
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "Held pending independent serial qualification of a real public parcel adapter. This packet is not source integration or admission."
+}

@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "city": {
+    "code": "2668",
+    "name": "Hamilton",
+    "point": [
+      -79.8541587136975,
+      43.2335378918963
+    ]
+  },
+  "descriptor": {
+    "id": "ca-on-hamilton-assessment-parcel",
+    "name": "City of Hamilton Assessment Parcel",
+    "adapter": "arcgis",
+    "endpoint": "https://services.arcgis.com/rYz782eMbySr2srL/arcgis/rest/services/Hamilton_Assessment_Parcel/FeatureServer/0",
+    "idField": "OBJECTID",
+    "idType": "integer",
+    "objectIdField": "OBJECTID",
+    "idPrefix": "CA-ON-HAMILTON-",
+    "outFields": [
+      "OBJECTID"
+    ],
+    "queryFormat": "geojson",
+    "boundsQueryMode": "offset",
+    "idsQueryMode": "offset",
+    "pageSize": 2000,
+    "idBatchSize": 80,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "countryCode": "CA",
+    "metricSrid": 32617,
+    "cityIds": [
+      "2668"
+    ],
+    "scope": "City of Hamilton assessment parcel mapping from Teranet; bounded technical review only.",
+    "catalogueUrl": "https://www.arcgis.com/sharing/rest/content/items/b18cec4690d241029935df1b02bb19db?f=json",
+    "attribution": "City of Hamilton; Teranet data received February 9, 2024.",
+    "capabilities": {
+      "areaEnumeration": true
+    }
+  },
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Frozen Hamilton packet and live first-party item https://www.arcgis.com/sharing/rest/content/items/b18cec4690d241029935df1b02bb19db?f=json identify the City of Hamilton assessment parcel polygon service, sourced from Teranet on February 9, 2024; item extent contains the unchanged Hamilton point.",
+      "Producer purpose corroboration: https://teranetcommercialsolutions.zendesk.com/hc/en-ca/articles/360001563451-What-do-the-different-colour-boundaries-represent-on-the-map explains assessment parcels as boundaries based on MPAC legal land descriptions; municipal Teranet PARCEL_ASSESSMENT explanation at https://services.arcgis.com/rYz782eMbySr2srL/ArcGIS/rest/services/Municipal_Land_Disposition_Parcels/FeatureServer states assessment mapping maps assessable parcels. See evidence/source-purpose.json."
+    ]
+  },
+  "sourceCandidateSha256": "9a395a85c296eed20f194815b1d0efa6acd8d3cec51000698ced8d0c46a56529",
+  "qualificationRecordedSha256": "9a395a85c296eed20f194815b1d0efa6acd8d3cec51000698ced8d0c46a56529",
+  "sourceCandidatePath": "qualification/evidence/cities/2668/candidate.json",
+  "originalSeedSha256": "9a395a85c296eed20f194815b1d0efa6acd8d3cec51000698ced8d0c46a56529",
+  "originalSeedPath": "qualification/evidence/cities/2668/candidate.json"
+}

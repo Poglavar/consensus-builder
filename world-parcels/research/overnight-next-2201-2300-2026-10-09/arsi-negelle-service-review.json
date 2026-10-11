@@ -1,0 +1,20 @@
+{
+  "cityRecord": "city-6517-arsi-negelle.json",
+  "cityCode": 6517,
+  "queueRank": 2209,
+  "name": "Arsi Negelle",
+  "country": "Ethiopia",
+  "countryCode": "ET",
+  "reviewStatus": "held_quality_review",
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "scope": "Official local Arsi Negelle town land-office evidence was found, but no anonymous local parcel vector service was verified. The inspected e-Land WFS is Addis-scoped.",
+  "queryOutcome": "English discovery found official e-Land and national spatial-data references. Afaan Oromoo discovery found an official Oromia publication naming Waajjira Lafa Magaalaa Nagellee Arsi and town map/registry records.",
+  "requestOutcome": "e-Land viewer and configuration loaded; GeoServer WFS capabilities and registered-parcel schema loaded. Exact WUP-point bounded WFS request returned zero features because the public layer extent is Addis-area. Ethio-NSDI connection failed from the research host.",
+  "schemaAndCrs": {"nativeIdentity": "uniqueparcelid (schema field observed, no Arsi Negelle value returned)", "geometryField": "geometry", "sourceCrs": "EPSG:20137", "requestedOutputCrs": "EPSG:4326", "sourceFieldMapping": {"uniqueparcelid": "candidate stable native parcel identity", "geometry": "parcel polygon/multipolygon", "citycode": "source city code"}},
+  "geometryDecision": "No GeoJSON retained: no safe Arsi Negelle parcel polygon and native identity were returned.",
+  "safeFieldAllowlist": ["stable native parcel ID", "polygon geometry", "source service URL", "source CRS", "requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "scopeLimits": ["Exact WUP point [7.35517698819713,38.6745407887271] was preserved in latitude/longitude order.", "A zero exact-point hit and Addis extent mismatch do not prove citywide absence.", "Local registry-office evidence does not prove public API coverage.", "No credentials or private tokens were used.", "This packet does not admit a runtime source adapter; serial reviewer qualification remains required."],
+  "uncertainty": "Local cadastral access for Arsi Negelle remains unresolved. The packet records every executed research route and bounded request without inventing a successful local geometry response."
+}

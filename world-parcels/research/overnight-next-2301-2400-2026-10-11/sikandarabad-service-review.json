@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-11",
+  "cityRecord": "city-8751-sikandarabad.json",
+  "cohort": "overnight-next-2301-2400-2026-10-11",
+  "purpose": "Document first-party Uttar Pradesh cadastral service discovery and bounded anonymous access review for Sikandarabad.",
+  "assessment": "Official Uttar Pradesh BhuNaksha/Bhulekh service custody was evidenced and the current public viewer/API configuration was inspected. Administrative lookup reached Bulandshahr district and Sikandrabad tehsil, but the returned map extent was zero and plot lookup returned no feature. No parcel geometry was retained; runtime remains held.",
+  "registryAssessment": "registryFound=true is supported by official Uttar Pradesh BhuNaksha/Bhulekh and Revenue Council service pages, plus the viewer's native Sikandrabad administrative entry. This evidences state cadastral-map/land-record service custody, not a qualified open parcel adapter.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "exactPointAbsenceInferred": false
+  },
+  "officialPrimarySources": [
+    {"url": "https://upbhunaksha.gov.in/", "operator": "Government of Uttar Pradesh", "scope": "Current public BhuNaksha cadastral map viewer."},
+    {"url": "https://upbhulekh.gov.in/", "operator": "Government of Uttar Pradesh", "scope": "Official Uttar Pradesh land-record portal."},
+    {"url": "https://upbhulekh.gov.in/GeoDashboard/public_report", "operator": "Government of Uttar Pradesh", "scope": "Official cadastral-map digitization/georeferencing dashboard."},
+    {"url": "https://bor.up.nic.in/", "operator": "Revenue Council, Uttar Pradesh", "scope": "Official service index describing Bhulekh and Bhu-Naksha/Shajra services."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Sikandarabad Uttar Pradesh official cadastral parcel map GIS Bhulekh BhuNaksha", "result": "Official UP BhuNaksha and Bhulekh sources found; public viewer reachable; no safe parcel feature response verified.", "resultUrls": ["https://upbhunaksha.gov.in/", "https://upbhulekh.gov.in/", "https://upbhulekh.gov.in/GeoDashboard/public_report"]},
+    {"language": "Hindi", "query": "सिकंदराबाद बुलंदशहर आधिकारिक भू नक्शा खतौनी कडेस्ट्रल", "result": "Official UP BhuNaksha/Bhulekh and Revenue Council sources found; Sikandrabad administrative entry resolved; no safe parcel geometry response verified.", "resultUrls": ["https://upbhunaksha.gov.in/", "https://upbhulekh.gov.in/bhulekh/", "https://bor.up.nic.in/"]}
+  ],
+  "attempts": [
+    {"url": "https://upbhunaksha.gov.in/", "method": "GET anonymous; TLS verified", "httpStatus": 200, "outcome": "Current viewer shell retrieved."},
+    {"url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue", "method": "POST anonymous; TLS verified", "httpStatus": 200, "outcome": "Resolved district 142 (Bulandshahr), tehsil 00745 (Sikandrabad), and village entries 217418/120515; both village entries reported hasData=false."},
+    {"url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/getGisCodeFromLevels?gisLevels=09%2C142%2C00745%2C217418", "method": "POST anonymous; TLS verified", "httpStatus": 200, "outcome": "Returned GIS code 0914200745."},
+    {"url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref", "method": "POST anonymous; TLS verified", "httpStatus": 200, "outcome": "Returned zero xmin/ymin/xmax/ymax and no usable CRS."},
+    {"url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotByPlotNo", "method": "POST anonymous; TLS verified", "httpStatus": 200, "outcome": "Empty JSON for plot number 1; no parcel feature."}
+  ],
+  "safeFieldAllowlist": ["native public parcel ID if available", "native geometry", "geometry type", "source CRS", "layer/schema metadata", "administrative codes"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not run against a verified parcel endpoint; exact point remains unchanged and no absence inference is made."},
+  "coverageAssessment": {"claimedScope": "Official UP BhuNaksha/Bhulekh service and bounded anonymous requests.", "verifiedOpenScope": "Administrative metadata only.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "A different village-level identifier, map availability state, or future viewer/API route may expose safe parcel geometry. The present response does not establish absence or completeness.",
+  "runtimeDecision": "held_not_enabled",
+  "integrationDecision": "not_integrated"
+}

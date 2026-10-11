@@ -1,0 +1,130 @@
+{
+  "cityCode": 1416,
+  "queueRank": 2155,
+  "city": "Ambano",
+  "country": "Madagascar",
+  "countryCode": "MG",
+  "point": [-19.7756773892909, 47.0571663836759],
+  "population2025": 270357,
+  "population2025k": 270.357,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Madagascar official cadastral parcel map viewer geoportal cadastre Ambano",
+        "result": "First-party discovery identified the official Ministry of Territorial Planning and Land Services (MATSF) as the national land/cadastre authority. The search did not identify an Ambano-specific public parcel viewer, anonymous parcel API, or safe feature response.",
+        "actualResultUrls": [
+          "https://www.matsf.gov.mg/",
+          "https://www.matsf.gov.mg/?page_id=398",
+          "https://minae.digital.gov.mg/wp-content/uploads/pdf/CASEF/EIES%20Piste%20Antsirabe%20-Ambano%20-%20AXE%20Ambatonikolahy.pdf"
+        ]
+      },
+      {
+        "language": "Malagasy",
+        "query": "Madagasikara sarintany kadasitra parcelle Ambano sampan-draharaha fananantany",
+        "result": "First-party/local-language discovery did not expose an Ambano parcel map or anonymous feature service. Malagasy cadastral terminology and the national land-services mandate were corroborated by official or land-sector material, but no city/local open parcel endpoint was verified.",
+        "actualResultUrls": [
+          "https://www.matsf.gov.mg/",
+          "https://sif-mada.org/wp-content/uploads/2023/05/SIF_Guide_foncier.pdf",
+          "https://minae.digital.gov.mg/wp-content/uploads/pdf/CASEF/EIES%20Piste%20Antsirabe%20-Ambano%20-%20AXE%20Ambatonikolahy.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryCustodian": "MATSF / Direction Générale des Services Fonciers is evidenced as the national land-services and cadastre authority; no Ambano-local registry/map/procedure endpoint was evidenced.",
+  "registryEvidence": {
+    "nationalAuthorityUrl": "https://www.matsf.gov.mg/",
+    "landServicesPageUrl": "https://www.matsf.gov.mg/?page_id=398",
+    "localContextUrl": "https://minae.digital.gov.mg/wp-content/uploads/pdf/CASEF/EIES%20Piste%20Antsirabe%20-Ambano%20-%20AXE%20Ambatonikolahy.pdf",
+    "evidence": "MATSF describes the national DGSF mandate, including land-domain management and cadastre modernization. The official CASEF study identifies Ambano as a commune in Antsirabe II, Vakinankaratra, but does not provide a public parcel service. This is national/general and contextual evidence, not proof of an open Ambano registry layer."
+  },
+  "sourceReview": {
+    "service": "Madagascar Ministry of Territorial Planning and Land Services (MATSF) national land/cadastre web presence; no Ambano-specific public map/API was verified.",
+    "baseUrls": [
+      "https://www.matsf.gov.mg/",
+      "https://www.matsf.gov.mg/?page_id=398",
+      "https://minae.digital.gov.mg/wp-content/uploads/pdf/CASEF/EIES%20Piste%20Antsirabe%20-Ambano%20-%20AXE%20Ambatonikolahy.pdf"
+    ],
+    "officialAssetsInspected": [
+      "MATSF current homepage HTML",
+      "MATSF Foncier page HTML",
+      "official CASEF Antsirabe-Ambano study PDF landing URL",
+      "official/local-language cadastral terminology reference URL"
+    ],
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "crs": null,
+    "safeFieldAllowlist": [
+      "stable native parcel identifier, only if feature-level stability is independently confirmed",
+      "full parcel polygon geometry",
+      "geometry CRS / coordinate reference metadata",
+      "public service, layer and coverage metadata"
+    ]
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://www.matsf.gov.mg/",
+      "outcome": "200/readable current ministry HTML. It identifies MATSF and describes national territorial/land-services responsibilities; no parcel layer, map configuration, or feature response was exposed in the inspected page."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.matsf.gov.mg/?page_id=398",
+      "outcome": "200/readable official Foncier page. General national land/cadastre mandate was available; no Ambano-specific local registry endpoint or anonymous parcel geometry was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://minae.digital.gov.mg/wp-content/uploads/pdf/CASEF/EIES%20Piste%20Antsirabe%20-Ambano%20-%20AXE%20Ambatonikolahy.pdf",
+      "outcome": "200/readable official CASEF study URL. It provides Ambano commune/district/regional context and land/infrastructure discussion, but no public parcel API or safe parcel feature response."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.matsf.gov.mg/index.php?rest_route=/",
+      "outcome": "200/readable WordPress REST index was linked by the current homepage; no parcel-layer endpoint was followed or guessed beyond the public ministry content."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.e-voary.mg/sige/carte",
+      "outcome": "200/readable public environmental map shell found during discovery. It is a general environmental map, not a cadastral parcel service; no parcel IDs or geometry were retained."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not completed against a public parcel layer because no anonymous Ambano parcel layer or feature endpoint was verified. Exact WUP point [-19.7756773892909, 47.0571663836759] was not shifted.",
+    "requestEvidence": [
+      "official national ministry pages readable",
+      "official Ambano context document readable",
+      "no anonymous parcel schema/CRS/native-ID-plus-geometry response found",
+      "no sample GeoJSON retained"
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "MATSF national land-services/cadastre mandate",
+    "verifiedOpenScope": "National ministry prose and Ambano contextual document only; no open city/local parcel layer",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": [
+    "The exact WUP point [-19.7756773892909, 47.0571663836759] and latitude/longitude order were preserved; no coordinate was shifted.",
+    "A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is not evidence of citywide cadastral absence.",
+    "National ministry responsibility is not evidence that an Ambano-local registry/map/procedure or citywide open coverage exists; registryFound remains null.",
+    "No owner, address, titleholder, contact, personal, tax/account, registration, or other unsafe fields were requested or retained.",
+    "No raw source-specific attribute set, parcel schema, native identity, CRS, or GeoJSON sample was retained because no anonymous feature geometry was verified.",
+    "Packet completion records executed attempts only; it does not qualify or admit a runtime adapter."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The national land/cadastre authority and Ambano administrative context are evidenced. A current public Ambano parcel viewer/API, native identity field, CRS, geometry, currentness, and citywide completeness remain unresolved.",
+  "retainedSample": null
+}

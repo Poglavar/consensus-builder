@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 1,
+  "attempted": [
+    {
+      "rank": 2128,
+      "cityCode": 1903,
+      "name": "Saskatoon",
+      "country": "Canada",
+      "iso2": "CA",
+      "pop2025k": 273.454,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/subnational/CA/SK.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2153,
+      "cityCode": 1025,
+      "name": "Saint-Louis",
+      "country": "Senegal",
+      "iso2": "SN",
+      "pop2025k": 270.413,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/africa-ws-city-1025.json",
+          "cityId": "wup2025:1025",
+          "cityName": "Saint-Louis",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ws-city-1025.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2156,
+      "cityCode": 2340,
+      "name": "Kapoeta",
+      "country": "South Sudan",
+      "iso2": "SS",
+      "pop2025k": 270.167,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/africa-ne-city-kapoeta.json",
+          "cityId": "wup2025:2340",
+          "cityName": "Kapoeta",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-city-kapoeta.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-followup-services.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2157,
+      "cityCode": 4216,
+      "name": "Saghatta",
+      "country": "Bangladesh",
+      "iso2": "BD",
+      "pop2025k": 270.148,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/growth-top20-integration-2026-10-07/bangladesh.json",
+          "cityId": "wup2025:4216",
+          "cityName": "Saghatta",
+          "parcelStatus": "no_verified_sample_candidate_citywide",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/growth-top20-2026-10-07/city-4216.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2159,
+      "cityCode": 11201,
+      "name": "Muriya",
+      "country": "India",
+      "iso2": "IN",
+      "pop2025k": 269.81,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/india-city-11201.json",
+          "cityId": "wup2025:11201",
+          "cityName": "Muriya",
+          "parcelStatus": "no_verified_sample_candidate_citywide",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2166,
+      "cityCode": 2954,
+      "name": "Dodoma",
+      "country": "United Republic of Tanzania",
+      "iso2": "TZ",
+      "pop2025k": 269.047,
+      "plausibility": "Low",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/africa-capitals-2026-10-08/city-dodoma.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    }
+  ],
+  "identityReviewRequired": []
+}

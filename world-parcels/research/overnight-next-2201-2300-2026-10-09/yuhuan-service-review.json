@@ -1,0 +1,23 @@
+{
+  "cityRecord": "city-12115-yuhuan.json",
+  "cityCode": 12115,
+  "queueRank": 2272,
+  "name": "Yuhuan",
+  "country": "China",
+  "countryCode": "CN",
+  "pointLatLon": [28.1147158074451, 121.248734273497],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": "See city-12115-yuhuan.json routes; all executed discovery and route attempts are recorded there with outcomes.",
+  "schemaAndCrs": {"geometryCrs": null, "nativeIdentity": null, "observedSchema": "No parcel feature schema, CRS, or ID+geometry response returned."},
+  "safeFieldAllowlist": ["stable native parcel ID if independently verified", "polygon geometry", "source service URL", "CRS", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "Local custodial evidence was found, but no bounded anonymous parcel ID+geometry response, source schema, or CRS was verified."},
+  "scopeLimits": ["Exact WUP point was preserved and not used to force a parcel hit.", "Local official pages establish Yuhuan natural-resources/geospatial custodial context but do not establish an open parcel feature API.", "National MNR material was treated as general agency/policy context, not city coverage.", "No sample GeoJSON was retained because no safe native parcel identity and unchanged full polygon were observed.", "403/timeout/access-boundary outcomes are not evidence of citywide absence.", "Packet completion records research attempts only and is not source integration or admission."],
+  "uncertainty": "Yuhuan has first-party local natural-resources and geographic-information service evidence plus historical unified-registration evidence, but anonymous parcel geometry, native identity, CRS, and current viewer/API configuration remain unresolved."
+}

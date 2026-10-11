@@ -1,7 +1,8 @@
-// Reads bounded public GeoJSON snapshots into a short-lived memory index; never writes parcels to disk or a database.
+// Reads complete bounded snapshots using memory or an explicitly verified safe disk index.
 import { bbox as geometryBbox, bboxPolygon, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
 import { canonicalParcelFeature, upstreamError, providerHttpError, validateBounds, validateGeometry } from './source-contract.js';
+import { createDiskGeojsonSnapshotParcelSource } from './disk-geojson-snapshot-source.js';
 import { retainParcel } from './parcel-components.js';
 import { CSV_GEOJSON_FIELDS, readCsvGeojsonParcelSnapshot } from './csv-geojson-parcel-reader.js';
 
@@ -97,6 +98,8 @@ export function decodeSnapshotNativeId(value, componentCount) {
 }
 
 export function createGeojsonSnapshotParcelSource(descriptor, { fetchImpl = fetch, now = Date.now } = {}) {
+    if (descriptor.snapshotStorage === 'disk') return createDiskGeojsonSnapshotParcelSource(descriptor, { fetchImpl, now });
+    if (descriptor.snapshotStorage !== undefined) throw new Error('Invalid GeoJSON snapshot storage.');
     if (descriptor.snapshots !== undefined) return createMultiSnapshotSource(descriptor, { fetchImpl, now });
     const { id, endpoint, idPrefix, idFields, outFields } = descriptor;
     const snapshotFormat = descriptor.snapshotFormat ?? 'geojson';

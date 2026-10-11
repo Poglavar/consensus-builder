@@ -1,0 +1,46 @@
+{
+  "cityRecord": "city-5217-hazel-dell.json",
+  "cityCode": 5217,
+  "queueRank": 2247,
+  "serviceReviewStatus": "held",
+  "custodian": {
+    "name": "Clark County, Washington GIS / Assessor",
+    "local": true,
+    "evidenceUrls": [
+      "https://gis.clark.wa.gov/mapsonline/",
+      "https://gis.clark.wa.gov/gishome/Property/?account=118257122&pid=findSN",
+      "https://gis.clark.wa.gov/arcgisfed/rest/services/ClarkView_Public/TaxlotsPublic/MapServer/0"
+    ]
+  },
+  "attempts": [
+    {
+      "route": "Clark County MapsOnline public viewer",
+      "request": "GET https://gis.clark.wa.gov/mapsonline/",
+      "outcome": "TLS/HTTP request timed out after 20 seconds from this workspace; no UI or configuration was retrieved.",
+      "safeFields": ["none retrieved"]
+    },
+    {
+      "route": "Clark County public ArcGIS REST layer metadata",
+      "request": "GET https://gis.clark.wa.gov/arcgisfed/rest/services/ClarkView_Public/TaxlotsPublic/MapServer/0",
+      "outcome": "First-party discovery exposed documented metadata: polygon Feature Layer, JSON/GeoJSON support, max 2000 records, spatial reference WKID 2286, and OBJECTID field. Direct retrieval from this workspace was not completed.",
+      "nativeFieldMapping": {"OBJECTID": "stable native ArcGIS object identity"},
+      "safeFields": ["OBJECTID", "geometry"]
+    },
+    {
+      "route": "Clark County public ArcGIS point intersection query",
+      "request": "GET https://gis.clark.wa.gov/arcgisfed/rest/services/ClarkView_Public/TaxlotsPublic/MapServer/0/query with point [-122.569426017328,45.6532383734832], inSR=4326, spatialRel=esriSpatialRelIntersects, outFields=OBJECTID, returnGeometry=true, outSR=4326, f=geojson",
+      "outcome": "Request timed out after 30 seconds; zero-result semantics cannot be inferred and no geometry was retained.",
+      "safeFields": ["OBJECTID", "geometry"]
+    }
+  ],
+  "schemaCrs": {"sourceCrs": "WKID 2286 (documented service layer CRS)", "requestedOutputCrs": "EPSG:4326", "coordinateOrder": "GeoJSON longitude,latitude; city packet point remains latitude,longitude"},
+  "sample": {"retained": false, "reason": "No unchanged native geometry response was obtained."},
+  "scopeLimits": [
+    "One exact-point query cannot establish citywide presence or absence.",
+    "Timeouts and the unavailable viewer do not indicate that Hazel Dell lacks parcels.",
+    "No owner, address, contact, titleholder, tax/account, or other unsafe fields were requested or retained.",
+    "No synthetic row number was used as an identity; no parcel identity was retained because no response arrived."
+  ],
+  "integrationDecision": "Do not admit or implement an adapter from this packet. runtimeReadiness remains held pending independent serial qualification of a real service and response.",
+  "uncertainty": "The official service is evidenced by first-party discovery metadata, but direct anonymous access was unavailable during this attempt. No parcel polygon sample is present."
+}

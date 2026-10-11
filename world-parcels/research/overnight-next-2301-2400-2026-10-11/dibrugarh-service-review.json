@@ -1,0 +1,129 @@
+{
+  "cityRecord": "city-12045-dibrugarh.json",
+  "cityCode": 12045,
+  "queueRank": 2339,
+  "name": "Dibrugarh",
+  "country": "India",
+  "countryCode": "IN",
+  "pointLatLon": [
+    27.4699695558401,
+    94.9162785046603
+  ],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {
+      "method": "SEARCH",
+      "url": "https://ilrms.assam.gov.in/",
+      "httpStatus": "official readable",
+      "outcome": "ILRMS links Bhunaksha as cadastral mapping software."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://ilrms.assam.gov.in/dhar/index.php/Welcome/SelectLOC",
+      "httpStatus": "official readable",
+      "outcome": "Dharitree lists Dibrugarh in Assamese/English district selector."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhunaksha.assam.gov.in/",
+      "httpStatus": "200",
+      "outcome": "Current app HTML loaded; JavaScript asset identified."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhunaksha.assam.gov.in/assets/index-qVUqnX9k.js",
+      "httpStatus": "200",
+      "outcome": "Current config inspected: backend, selector, parcel_info, WMS routes; parcel_info uses crs=32646."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/districts",
+      "httpStatus": "200",
+      "outcome": "Dibrugarh code 17 returned."
+    },
+    {
+      "method": "POST",
+      "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/circles",
+      "httpStatus": "200",
+      "requestBody": "{\"dist_code\":\"17\"}",
+      "outcome": "Dibrugarh East 170103 and West 170108 returned."
+    },
+    {
+      "method": "POST",
+      "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/villages",
+      "httpStatus": "200",
+      "requestBody": "{\"circle_code\":\"170103\"}",
+      "outcome": "Village 170103010210005 Barddhit Siring Gaon Ward returned."
+    },
+    {
+      "method": "POST",
+      "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/getAllDagsFromDharitree",
+      "httpStatus": "200",
+      "requestBody": "{\"location\":\"170103010210005\",\"dist_code\":\"17\"}",
+      "outcome": "1,702 dag records returned; only dag number used, unsafe fields not requested."
+    },
+    {
+      "method": "POST",
+      "url": "https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/parcel_info",
+      "httpStatus": "200",
+      "requestBody": "{\"village_code\":\"170103010210005\",\"layer_code\":\"ASSAM_PARCEL\",\"dag_no\":\"1\",\"crs\":\"32646\"}",
+      "outcome": "One MULTIPOLYGON WKT returned; native uniqueId 85EGR3E8S36FH0U retained as GeoJSON id."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/318",
+      "httpStatus": "official indexed page; direct cache miss",
+      "outcome": "DILRMP Dibrugarh map-status context only; not used for geometry."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "Public app HTML and current JavaScript inspected.",
+    "geometryCrs": "Source MULTIPOLYGON WKT EPSG:32646; retained GeoJSON EPSG:4326 after reprojection.",
+    "nativeIdentity": "Response exposed id UUID and uniqueId; canonical retained identity is uniqueId 85EGR3E8S36FH0U.",
+    "sourceFieldMapping": {
+      "uniqueId": "properties.id",
+      "id": "not retained",
+      "locationCode": "recorded here only",
+      "geom": "WKT EPSG:32646, reprojected"
+    },
+    "boundedAnonymousResponse": {
+      "requestScope": "One selected village/dag, not exact WUP point",
+      "featureCount": 1,
+      "nativeIdentity": "85EGR3E8S36FH0U",
+      "result": "Safe ID plus full polygon verified."
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel ID",
+    "full polygon geometry",
+    "source URL",
+    "source/output CRS",
+    "retrieval date",
+    "reproduction administrative codes"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "tax/account",
+    "certificate/title",
+    "personal data"
+  ],
+  "sampleGeoJSON": "dibrugarh-parcel-sample.geojson",
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "Official parcel geometry is verified, but point/extent matching, citywide completeness, adapter behavior, and identity admission require serial review."
+  },
+  "scopeLimits": [
+    "Exact WUP point preserved and not shifted.",
+    "Sampled village/dag is not claimed to contain the WUP point.",
+    "One polygon only; no citywide absence/completeness inference.",
+    "No unsafe fields requested or retained."
+  ],
+  "uncertainty": "Official Assam BhuNaksha route, selectors, source CRS, and one native identity-plus-geometry response verified; exact point membership, city extent, stable identity semantics, and runtime readiness remain held."
+}

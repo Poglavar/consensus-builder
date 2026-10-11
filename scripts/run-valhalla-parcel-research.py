@@ -26,6 +26,8 @@ from typing import Any
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 DEFAULT_ROOT = SCRIPT_DIR.parent
+sys.path.insert(0, str(SCRIPT_DIR / "lib"))
+import parcel_discovery_coordination as discovery_coord
 DEFAULT_QUEUE = Path("world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json")
 DEFAULT_SOURCE = Path("tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz")
 HANDOFF = Path("world-parcels/research/valhalla-handoff-2026-10-09.md")
@@ -64,13 +66,17 @@ ROOT_REVIEW_TASKS = [
 ]
 ROOT_TASK_PROMPTS = dict(ROOT_REVIEW_TASKS)
 ENGLISH_PRIMARY_COUNTRIES = {"US", "GB", "IE", "CA", "AU", "NZ"}
-SAFE_SAMPLE_ID_KEYS = {
-    "id", "fid", "objectid", "parcelid", "parcel_id", "parid", "lotid", "lot_id", "loteid",
-    "idlote", "lote", "parcelno", "parcelnumber", "parcel_ref", "refcat", "refcadastral",
-    "nationalcadastralref", "localid", "identifier", "gid", "globalid",
-}
+SAFE_SAMPLE_ID_KEYS = {"id", "objectid", "parcel_id"}
 SENSITIVE_KEY = re.compile(r"owner|titular|address|street|cpf|email|phone|person|birth|tax|account|titleholder|surveyornam", re.I)
-SYSTEMIC_ERROR = re.compile(r"\b(?:401|403|429)\b|rate.?limit|too many requests|unauthori[sz]ed|authentication|not logged in|token expired|account quota|billing quota", re.I)
+SYSTEMIC_ERROR = re.compile(
+    r"usage[_ -]limit[_ -]reached|usage limit reached|billing limit reached|"
+    r"invalid[_ -]api[_ -]key|authentication required|authentication failed|"
+    r"could not refresh (?:the )?(?:codex )?access token|codex auth token expired|"
+    r"codex (?:account )?quota exceeded",
+    re.I,
+)
+SYSTEMIC_ERROR_CODES = {"usage_limit_reached", "quota_exceeded", "billing_hard_limit", "auth_required",
+                        "authentication_failed", "invalid_api_key", "token_expired"}
 REVIEW_SCHEMA = {
     "type": "object", "additionalProperties": False,
     "properties": {
@@ -192,6 +198,8 @@ def validate_sample_file(path: Path) -> tuple[int, list[str]]:
         if not isinstance(props, dict) or not props:
             errors.append(f"sample feature {index} lacks a safe native ID: {path}")
             continue
+        if len(props) != 1:
+            errors.append(f"sample feature {index} must retain one canonical/native ID property only: {path}")
         keys = set()
         for key, val in props.items():
             normalized = re.sub(r"[^a-z0-9_]", "", str(key).lower())
@@ -203,6 +211,31 @@ def validate_sample_file(path: Path) -> tuple[int, list[str]]:
         if not keys:
             errors.append(f"sample feature {index} has no safe ID field: {path}")
     return len(polygons), errors
+
+
+def systemic_codex_failure(returncode: int | None, stdout_text: str, stderr_text: str) -> bool:
+    """Detect Codex authentication/usage failures, not source-server HTTP failures."""
+    if not returncode:
+        return False
+    if SYSTEMIC_ERROR.search(stderr_text):
+        return True
+    for line in stdout_text.splitlines():
+        try:
+            event = json.loads(line)
+        except (ValueError, TypeError):
+            continue
+        if not isinstance(event, dict) or event.get("type") not in {"turn.failed", "error"}:
+            continue
+        error = event.get("error", event)
+        if not isinstance(error, dict):
+            continue
+        code = str(error.get("codex_error_info", error.get("code", error.get("type", "")))).casefold()
+        if code in SYSTEMIC_ERROR_CODES:
+            return True
+        message = " ".join(str(error.get(key, "")) for key in ("message", "detail", "reason"))
+        if SYSTEMIC_ERROR.search(message):
+            return True
+    return False
 
 
 def validate_packet(root: Path, queue_city: dict[str, Any], cohort_dir: Path) -> dict[str, Any]:
@@ -255,18 +288,36 @@ def validate_packet(root: Path, queue_city: dict[str, Any], cohort_dir: Path) ->
     if city.get("registryFound") is False:
         errors.append("registryFound=false is not permitted for research packets; use true only with local evidence, otherwise null")
 
-    fresh = city.get("freshResearch") if isinstance(city.get("freshResearch"), dict) else {}
-    queries = fresh.get("queries") if isinstance(fresh.get("queries"), list) else []
-    executable = [q for q in queries if isinstance(q, dict) and isinstance(q.get("query"), str) and q["query"].strip()
-                  and isinstance(q.get("result"), str) and q["result"].strip()
-                  and isinstance(q.get("actualResultUrls"), list) and q["actualResultUrls"]]
-    unique_queries = {q["query"].strip().casefold() for q in executable}
-    languages = [str(q.get("language", "")).strip().casefold() for q in executable]
-    has_english = any(lang.startswith("english") for lang in languages)
-    has_native = expected_iso in ENGLISH_PRIMARY_COUNTRIES or any(lang and not lang.startswith("english") for lang in languages)
-    if len(unique_queries) < 2 or not has_english or not has_native:
-        errors.append("requires at least two executed English/native-language queries with result URLs and outcomes")
-
+    if city.get("discoveryMethod") == "provider-expansion":
+        reuse = city.get("providerReuse") or {}
+        query_evidence = reuse.get("queryEvidence") or []
+        good = [q for q in query_evidence if isinstance(q, dict)
+                and str(q.get("url", "")).startswith("https://") and q.get("httpStatus") == 200]
+        stages = {q.get("stage") for q in good}
+        evidence = reuse.get("sourceEvidenceFiles") or []
+        for item in evidence:
+            if not isinstance(item, dict) or item.get("root") != "shared" or not item.get("sha256"):
+                errors.append("provider evidence must be hashed in the shared repository")
+                continue
+            if not discovery_coord._safe_file(root, item.get("path", ""), item["sha256"]):
+                errors.append("provider source evidence changed or is missing")
+        if (not reuse.get("sourceId") or not (reuse.get("seedCityCodes") or reuse.get("seedCityIds")) or not evidence
+                or not {"bounded-city-probe", "independent-native-id-read"} <= stages
+                or city.get("verifiedSample") is not True or city.get("registryFound") is not True
+                or review.get("providerReuse") != reuse):
+            errors.append("provider reuse requires source provenance and independently reread local polygons")
+    else:
+        fresh = city.get("freshResearch") if isinstance(city.get("freshResearch"), dict) else {}
+        queries = fresh.get("queries") if isinstance(fresh.get("queries"), list) else []
+        executable = [q for q in queries if isinstance(q, dict) and isinstance(q.get("query"), str) and q["query"].strip()
+                      and isinstance(q.get("result"), str) and q["result"].strip()
+                      and isinstance(q.get("actualResultUrls"), list) and q["actualResultUrls"]]
+        unique_queries = {q["query"].strip().casefold() for q in executable}
+        languages = [str(q.get("language", "")).strip().casefold() for q in executable]
+        has_english = any(lang.startswith("english") for lang in languages)
+        has_native = expected_iso in ENGLISH_PRIMARY_COUNTRIES or any(lang and not lang.startswith("english") for lang in languages)
+        if len(unique_queries) < 2 or not has_english or not has_native:
+            errors.append("requires at least two executed English/native-language queries with result URLs and outcomes")
     if review and Path(str(review.get("cityRecord", ""))).name != city_path.name:
         errors.append("service-review points to a different city record")
     if review and review.get("registryFound") is False:
@@ -299,6 +350,8 @@ def validate_packet(root: Path, queue_city: dict[str, Any], cohort_dir: Path) ->
             errors.extend(sample_errors)
         except Exception as exc:
             errors.append(f"cannot read sample {sample_path}: {exc}")
+    if city.get("discoveryMethod") == "provider-expansion" and polygon_count < 1:
+        errors.append("provider reuse requires at least one retained native polygon")
     if polygon_count > 3:
         errors.append(f"packet retains {polygon_count} full polygons; maximum is three")
 
@@ -338,6 +391,8 @@ class Runner:
         self.active_processes: dict[int, dict[str, Any]] = {}
         self.codex = args.codex or "codex"
         self.state: dict[str, Any] = {}
+        self.discovery_claims = {}
+        self.discovery_waiting = False
 
     def log(self, message: str, **fields: Any) -> None:
         event = {"at": utc_now(), "message": message, **fields}
@@ -521,7 +576,7 @@ class Runner:
                         item["error"] = f"invalid last-message JSON: {exc}"
                 stderr_text = item.get("stderrPath").read_text(errors="replace") if item.get("stderrPath") and item["stderrPath"].exists() else item.get("error", "")
                 stdout_text = item.get("stdoutPath").read_text(errors="replace") if item.get("stdoutPath") and item["stdoutPath"].exists() else ""
-                systemic = bool(returncode and SYSTEMIC_ERROR.search(stderr_text + "\n" + stdout_text))
+                systemic = systemic_codex_failure(returncode, stdout_text, stderr_text)
                 result = {"call": item["call"], "returncode": returncode, "answer": answer,
                           "stdoutPath": str(item.get("stdoutPath", "")), "stderrPath": str(item.get("stderrPath", "")),
                           "answerPath": str(item.get("answerPath", "")), "timedOut": item.get("timedOut", False),
@@ -552,11 +607,19 @@ class Runner:
             self.state["cities"][code] = existing
         return existing
 
-    def _build_research_prompt(self, city: dict[str, Any], cohort_dir: Path, attempt: int) -> str:
+    def _build_research_prompt(self, city: dict[str, Any], cohort_dir: Path, attempt: int,
+                               previous_errors: list[str] | None = None) -> str:
         code = city["cityCode"]
         slug = city_slug(city["name"])
         city_file = f"city-{code}-{slug}.json"
         review_file = f"{slug}-service-review.json"
+        retry_block = ""
+        if previous_errors:
+            retry_block = """
+
+This is an artifact-validation retry. The previous validation errors are listed below. Correct only these packet/schema issues in your existing city and service-review files and the referenced sample file when the error explicitly names it. Do not repeat web searches, network/API requests, or source investigation. You may normalize each retained sample feature's properties to exactly `{{"id": <the same existing verified native identity>}}` and move source-field/composite-key provenance into city/service-review metadata. Preserve each geometry object byte-for-byte/coordinate-for-coordinate, feature count, and native identity value; do not drop, simplify, transform, or reconstruct polygon coordinates. If the evidence cannot support a correction, leave the source finding held and clearly state the limitation.
+Previous validator/turn errors:
+""" + "\n".join(f"- {error}" for error in previous_errors)
         return f"""You are one of three parallel anonymous cadastral-source researchers in a resumable WUP city queue.
 
 Your single immutable WUP queue record is:
@@ -569,6 +632,8 @@ Write only `{city_file}`, `{review_file}`, and at most one sample GeoJSON contai
 
 Preserve `cityCode={code}`, rank {city.get('rank')}, country `{city.get('country')}` / `{city.get('iso2')}`, exact WUP point `{city.get('point')}` in latitude/longitude order, `population2025={round(float(city.get('pop2025k')) * 1000)}` persons, `population2025k={city.get('pop2025k')}`, and `populationUnit="persons"`. Do not shift a coordinate to force a parcel hit. A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is not evidence of citywide absence.
 
+For retained GeoJSON samples, put exactly one canonical native identity in `properties`, preferably `{{"id": "<stable-native-identity>"}}`. Put native source field names, source-specific field mapping, and composite-key provenance in the city/service-review metadata, not in retained GeoJSON feature properties. Do not retain raw source-specific attribute sets. Existing legacy samples with only `OBJECTID` or `PARCEL_ID` remain valid. Never use an internal synthetic row number as the native identity unless source evidence proves that is the stable parcel identity.
+
 Required city JSON core schema example (include these fields with accurate evidence; additional established packet fields are welcome):
 ```json
 {{"cityCode": {code}, "queueRank": {city.get('rank')}, "country": {json.dumps(city.get('country'))}, "countryCode": {json.dumps(city.get('iso2'))}, "point": {json.dumps(city.get('point'))}, "population2025": {round(float(city.get('pop2025k')) * 1000)}, "population2025k": {city.get('pop2025k')}, "populationUnit": "persons", "status": "complete", "freshResearch": {{"queries": [{{"language": "English", "query": "...", "result": "...", "actualResultUrls": ["https://..."]}}, {{"language": "native/local", "query": "...", "result": "...", "actualResultUrls": ["https://..."]}}]}}, "registryFound": null}}
@@ -578,7 +643,7 @@ Perform separate first-party discovery queries in English and the country's loca
 
 Record every attempted route/request and distinguish a city/local registry custodian from general national agency prose. Use `registryFound=true` only when a local registry/cadastre/map/procedure is actually evidenced; otherwise use `null` (never `false`). Do not present packet completion as source integration/admission. Keep `runtimeReadiness` held unless the serial reviewer qualifies a real adapter independently.
 
-The paired service review MUST contain `"cityRecord": "{city_file}"` at the top level. Write and reread both named JSON files before returning. This report must document query and request outcomes, scope limits, safe field allowlist, and uncertainty. Mark the packet complete only after accurately recording all executed attempts. Never invent a successful query, registry, or geometry. End with a short machine-readable completion summary in your final response."""
+The paired service review MUST contain `"cityRecord": "{city_file}"` at the top level. Write and reread both named JSON files before returning. This report must document query and request outcomes, scope limits, safe field allowlist, and uncertainty. Mark the packet complete only after accurately recording all executed attempts. Never invent a successful query, registry, or geometry. End with a short machine-readable completion summary in your final response.{retry_block}"""
 
     def _build_review_prompt(self, city_items: list[dict[str, Any]], root_task_ids: list[str], identity_items: list[dict[str, Any]] | None = None) -> str:
         identities = identity_items or []
@@ -587,7 +652,7 @@ The paired service review MUST contain `"cityRecord": "{city_file}"` at the top 
         identity_text = "\n".join(f"- `identity:{item['cityCode']}` — resolve this held identity before any work on the next rank range." for item in identities)
         handoff = (self.root / HANDOFF).as_posix()
         receipt_dir = self._receipt_dir().relative_to(self.root).as_posix()
-        return f"""You are the one serial root reviewer for the persistent WUP parcel-research job. You own root review decisions and are the ONLY agent authorized in this job to edit `world-parcels/registry.json`, `backend/parcels/source-catalog.json`, `frontend/js/city-config.js`, and generated coverage/report artifacts. Research workers own only their named city packet/review/sample files. Do not commit, push, deploy, or contact anyone. Preserve the user's paused local-research goal and remote-job authorization; do not start any separate investigation outside these named tasks.
+        return f"""You are the one serial root reviewer for the persistent WUP parcel-research job. You own root review decisions and are the ONLY agent authorized in this job to edit `world-parcels/registry.json`, `backend/parcels/source-catalog.json`, `frontend/js/city-config.js`, and generated coverage/report artifacts. Research workers own only their named city packet/review/sample files. Provider-expansion paired city/review/sample files are immutable discovery evidence; put review decisions in separate receipts without rewriting those files. Do not commit, push, deploy, or contact anyone. Preserve the user's paused local-research goal and remote-job authorization; do not start any separate investigation outside these named tasks.
 
 Review at most three pending legacy/root items listed below in this turn, plus the new city batch. For each task, inspect the paired evidence and add only its exact ID to `reviewedIds` after a completed review; a hold is a completed review but must remain visibly held. Do not mark unreviewed tasks done. Use the handoff file when present: `{handoff}`.
 
@@ -648,7 +713,16 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
         self.save_state()
 
     def _packet(self, queue_city: dict[str, Any], cohort_dir: Path) -> dict[str, Any]:
-        return validate_packet(self.root, queue_city, cohort_dir)
+        packet = validate_packet(self.root, queue_city, cohort_dir)
+        if packet.get("valid"):
+            return packet
+        receipt = discovery_coord.validate_completion(self.root, queue_city["cityCode"])
+        if receipt:
+            provider_dir = (self.root / receipt["cityPacket"]["path"]).parent
+            provider_packet = validate_packet(self.root, queue_city, provider_dir)
+            if provider_packet.get("valid"):
+                return provider_packet
+        return packet
 
     def _ensure_root_tasks(self, cohort_dir: Path, cities: list[dict[str, Any]]) -> None:
         tasks = self.state.setdefault("rootReviewTasks", {})
@@ -721,6 +795,7 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
     def _select_batch(self, cities: list[dict[str, Any]], cohort_dir: Path) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
         research: list[dict[str, Any]] = []
         review_only: list[dict[str, Any]] = []
+        self.discovery_waiting = False
         for city in cities:
             entry = self._city_entry(city)
             if entry.get("status") == "failed-skipped":
@@ -730,12 +805,26 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                 continue
             if packet.get("valid"):
                 if len(review_only) < 3:
-                    review_only.append({**city, "cityPath": str(packet["cityPath"]), "cohortDir": str(cohort_dir)})
+                    review_only.append({**city, "cityPath": str(packet["cityPath"]), "cohortDir": str(packet["cityPath"].parent)})
             elif entry.get("attempts", 0) >= self.args.max_retries:
                 self._skip_item(f"city:{city['cityCode']}", entry, "research",
                                 "; ".join(packet.get("errors", [])))
             else:
-                research.append(city)
+                code = str(city["cityCode"])
+                try:
+                    self.discovery_claims[code] = discovery_coord.acquire(self.root, code, "web-search")
+                except discovery_coord.ClaimBusy:
+                    self.discovery_waiting = True
+                    continue
+                # Recheck after acquiring; another runner may have just completed publication.
+                packet = self._packet(city, cohort_dir)
+                if packet.get("valid"):
+                    discovery_coord.release(self.root, code, self.discovery_claims.pop(code)["token"])
+                    if len(review_only) < 3:
+                        review_only.append({**city, "cityPath": str(packet["cityPath"]),
+                                            "cohortDir": str(packet["cityPath"].parent)})
+                else:
+                    research.append(city)
             if len(research) >= self.args.workers:
                 break
         # Keep research-first order while allowing pre-existing complete packets in reviewer batch.
@@ -748,6 +837,17 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
 
     def _record_city_attempts(self, cities: list[dict[str, Any]], cohort_dir: Path,
                               parallel_reviewer: dict[str, Any] | None = None) -> tuple[list[dict[str, Any]], dict[str, Any] | None, bool]:
+        try:
+            return self._record_owned_city_attempts(cities, cohort_dir, parallel_reviewer)
+        finally:
+            for city in cities:
+                code = str(city["cityCode"])
+                claim = self.discovery_claims.pop(code, None)
+                if claim:
+                    discovery_coord.release(self.root, code, claim["token"])
+
+    def _record_owned_city_attempts(self, cities: list[dict[str, Any]], cohort_dir: Path,
+                                    parallel_reviewer: dict[str, Any] | None = None) -> tuple[list[dict[str, Any]], dict[str, Any] | None, bool]:
         pending = list(cities)
         review_result = None
         systemic_seen = False
@@ -762,7 +862,10 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                 entry["status"] = "running"
                 entry["lastAttemptAt"] = utc_now()
                 entry["lastError"] = None
-                calls.append(self._call("research", f"city:{code}", self._build_research_prompt(city, cohort_dir, entry["attempts"]), RESEARCH_MODEL, "low"))
+                calls.append(self._call("research", f"city:{code}",
+                                        self._build_research_prompt(city, cohort_dir, entry["attempts"],
+                                                                    entry.get("lastValidationErrors")),
+                                        RESEARCH_MODEL, "low"))
             if parallel_reviewer is not None and attempt_round == 0:
                 calls.append(parallel_reviewer)
             self.save_state()
@@ -782,12 +885,17 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                     entry["packetPath"] = str(packet["cityPath"])
                     entry["reviewPath"] = str(packet["reviewPath"])
                     entry["lastError"] = None
+                    entry.pop("lastValidationErrors", None)
                     entry["lastResearchAt"] = utc_now()
                     self.state["completedCount"] = int(self.state.get("completedCount", 0)) + 1
                 else:
                     error = result.get("error") or (
                         f"Codex exit {result['returncode']}" if result["returncode"] != 0
                         else "packet validation: " + "; ".join(packet.get("errors", [])))
+                    feedback = list(packet.get("errors", []))
+                    if result["returncode"] != 0:
+                        feedback.append(f"Codex turn exited {result['returncode']}: {error}")
+                    entry["lastValidationErrors"] = feedback or [error]
                     entry["lastError"] = error
                     entry["lastAttemptAt"] = utc_now()
                     entry["systemicFailure"] = result.get("systemic", False)
@@ -856,8 +964,6 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
             answer = self._read_review_answer(result) if result else None
             if result:
                 systemic = systemic or bool(result.get("systemic"))
-            if answer:
-                systemic = systemic or bool(answer.get("systemicFailure"))
             reviewed = set(answer.get("reviewedIds", [])) if answer else set()
             held_ids = set(answer.get("heldIds", [])) if answer else set()
             if answer and not (set(answer.get("reviewedIds", [])) <= required):
@@ -956,13 +1062,22 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
         return receipt
 
     def _write_queue_builder(self, start_rank: int, end_rank: int) -> Path:
-        output = self.root / "world-parcels" / "research" / f"overnight-next-{start_rank}-{end_rank}-{datetime.now(timezone.utc).date().isoformat()}"
-        queue_path = output / "pending-queue.json"
-        if output.exists():
-            if not queue_path.exists():
-                raise RuntimeError(f"refusing to overwrite existing range folder without pending queue: {output}")
-            self.log("reusing existing range queue; no artifacts are cleared", output=str(output))
+        research_root = self.root / "world-parcels" / "research"
+        output = research_root / f"overnight-next-{start_rank}-{end_rank}-{datetime.now(timezone.utc).date().isoformat()}"
+        matches = sorted(research_root.glob(f"overnight-next-{start_rank}-{end_rank}-*"))
+        if len(matches) > 1:
+            raise RuntimeError(f"multiple prebuilt cohort folders match ranks {start_rank}-{end_rank}; refusing ambiguous reuse: {matches}")
+        if matches:
+            existing = matches[0]
+            if not existing.is_dir():
+                raise RuntimeError(f"matching prebuilt cohort path is not a directory: {existing}")
+            queue_path = existing / "pending-queue.json"
+            if not queue_path.is_file():
+                raise RuntimeError(f"refusing to overwrite existing range folder without pending queue: {existing}")
+            self.log("reusing prebuilt range queue independent of cohort date; no artifacts are cleared", output=str(existing))
             return queue_path
+        if output.exists():
+            raise RuntimeError(f"refusing to overwrite existing range folder without pending queue: {output}")
         source = self.root / self.args.source
         if not source.exists():
             raise FileNotFoundError(f"cannot advance ranks without the WUP source file: {source}")
@@ -982,6 +1097,7 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
         free_bytes = shutil.disk_usage(self.root).free
         if free_bytes < 2 * 1024**3:
             raise RuntimeError(f"only {free_bytes} bytes free; refusing to build a new queue below the 2 GiB safety floor")
+        queue_path = output / "pending-queue.json"
         command = ["node", str(self.root / "scripts/build-overnight-city-queue.mjs"), "--run",
                    "--start-rank", str(start_rank), "--end-rank", str(end_rank),
                    "--source", str(source), "--output", str(output)]
@@ -1088,12 +1204,16 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
         while not self.stop_requested:
             research, review_only = self._select_batch(cities, cohort_dir)
             if not research and not review_only and not self._next_root_tasks(3):
+                if self.discovery_waiting:
+                    self.save_state()
+                    self.sleep(5)
+                    continue
                 break
             batch_number += 1
             root_tasks = self._next_root_tasks(3)
             preexisting_review_items = review_only
             for item in preexisting_review_items:
-                item["cohortDir"] = str(cohort_dir)
+                item.setdefault("cohortDir", str(cohort_dir))
             reviewer_call = self._review_call(preexisting_review_items, root_tasks) if preexisting_review_items or root_tasks else None
             self.log(f"batch {batch_number}: starting research and serial review", progressCityCount=validated_done,
                      total=len(cities), researchCodes=[str(city["cityCode"]) for city in research],
@@ -1118,7 +1238,7 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
             for city in research:
                 packet = self._packet(city, cohort_dir)
                 if packet.get("valid") and self._city_entry(city).get("status") == "research-complete":
-                    new_review_items.append({**city, "cityPath": str(packet["cityPath"]), "cohortDir": str(cohort_dir)})
+                    new_review_items.append({**city, "cityPath": str(packet["cityPath"]), "cohortDir": str(packet["cityPath"].parent)})
             if new_review_items:
                 new_reviewer = self._review_call(new_review_items, [])
                 result = self.run_calls([new_reviewer])[0]
@@ -1285,6 +1405,16 @@ def main(argv: list[str] | None = None) -> int:
                 except Exception:
                     command_line = ""
         identity_verified = bool(pid_alive and str(Path(__file__).resolve()) in command_line)
+        if pid_alive and not identity_verified:
+            # Detached wrappers may invoke the script relative to their recorded working directory.
+            try:
+                proc_dir = Path(f"/proc/{pid}")
+                cwd = (proc_dir / "cwd").resolve(strict=True)
+                argv = (proc_dir / "cmdline").read_bytes().split(b"\0")
+                identity_verified = any((cwd / arg.decode()).resolve() == Path(__file__).resolve()
+                                        for arg in argv[1:] if arg and not arg.startswith(b"-"))
+            except (OSError, ValueError, UnicodeError):
+                pass
         saved_start_identity = state.get("pidStartIdentity")
         current_start_identity = process_start_identity(pid) if pid_alive else None
         if saved_start_identity is not None:

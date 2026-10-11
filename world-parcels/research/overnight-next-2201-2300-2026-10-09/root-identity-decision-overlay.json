@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "kind": "root_identity_decision_overlay",
+  "cohort": "overnight-next-2201-2300",
+  "recordedAt": "2026-10-11T01:22:37.637Z",
+  "decisions": [
+    {
+      "wupCityCode": 409,
+      "rank": 2295,
+      "countryCode": "BA",
+      "name": "Sarajevo",
+      "decision": "confirmed_attempt",
+      "effectiveAttemptState": "attempted",
+      "candidatePointLatLon": [
+        43.8576941297522,
+        18.3731462143768
+      ],
+      "populationPersons": 253857,
+      "priorCityIds": [
+        "geonames:3191281",
+        "capital:BA:sarajevo"
+      ],
+      "priorPointLatLon": [
+        [
+          43.84864,
+          18.35644
+        ],
+        [
+          43.86666666666667,
+          18.416667
+        ]
+      ],
+      "reason": "The original UN WUP 2025 row identifies Sarajevo, Bosnia and Herzegovina, at 43.8576941297522 N, 18.3731462143768 E with 253857 persons. The earlier registry entry and capital roster both identify Sarajevo in the same country at nearby central-city locators. More decisively, the 2026-10-08 coverage recheck explicitly investigated Sarajevo: it inspected the FGU cadastral services and Sarajevo Canton WebCity, probed anonymous WFS capabilities and public viewers, and recorded restricted or unreachable access without a verified parcel response. Fresh first-party WebCity content still identifies Sarajevo cadastral data, while the anonymous WFS capabilities request returned HTTP 403. This is a confirmed prior investigation of the same city, so WUP409 stays excluded from pending research. The WUP rank, point and population remain unchanged. Service access walls and the absent verified sample leave parcel custody and public geometry unresolved; no live adapter or citywide absence is established.",
+      "evidence": [
+        {
+          "path": "world-parcels/research/overnight-next-2201-2300-2026-10-09/root-identity-409-first-party-evidence.json",
+          "observation": "Original UN archive SHA-256 and exact 2025 Sarajevo row; fresh first-party Canton WebCity HTTP 200 response and FGU anonymous WFS HTTP 403 response with hashes."
+        },
+        {
+          "path": "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+          "observation": "Immutable rank 2295, WUP code 409, BA, point and 253.857 thousand population."
+        },
+        {
+          "path": "world-parcels/research/coverage-recheck-2026-10-08.json",
+          "observation": "Prior Sarajevo-specific first-party service/viewer investigation with inconclusive access and no verified polygon sample."
+        },
+        {
+          "path": "world-parcels/research/world-capitals-2026-10-08/roster.json",
+          "observation": "Prior capital roster names Sarajevo, BA and links to the coverage recheck; manualCityEvidence is empty."
+        },
+        {
+          "path": "world-parcels/registry.json",
+          "observation": "Prior Sarajevo registry entry geonames:3191281 has a nearby locator and temporarily_unavailable status."
+        }
+      ]
+    }
+  ],
+  "scope": "Identity and prior-attempt classification only; no parcel absence, custody or runtime admission conclusion."
+}

@@ -1,0 +1,30 @@
+{
+  "cityRecord": "city-4258-bayannur.json",
+  "cityCode": 4258,
+  "city": "Bayannur",
+  "country": "China",
+  "countryCode": "CN",
+  "reviewedAt": "2026-10-10",
+  "attempt": 1,
+  "outcome": "held_no_verified_geometry",
+  "registryFound": true,
+  "custodian": "Bayannur Municipal Natural Resources Bureau / Bayannur Real Estate Registration Center",
+  "scope": "Local municipal cadastral-survey and real-estate-registration custody is evidenced, and an official public cadastral-map query page exists; no anonymous parcel geometry service was verified.",
+  "queries": [
+    {"language": "English", "query": "Bayannur cadastral parcel map official land registration GIS China", "outcome": "Official Bayannur municipal Natural Resources Bureau and Real Estate Registration Center pages found; no anonymous parcel feature service identified.", "urls": ["https://www.bynr.gov.cn/zfxxgk/fdzdgk/jgjj/202509/t20250930_24160.html", "http://zrzy.bynr.gov.cn/", "https://www.bynr.gov.cn/zfxxgk/fdzdgk/zcwj/202003/t20200318_44340.html"]},
+    {"language": "Chinese", "query": "巴彦淖尔 地籍图 地块 GIS 不动产登记 官方", "outcome": "Official cadastral-map query shell and Inner Mongolia registration-hall link found; no safe anonymous parcel geometry or native identity response was obtained.", "urls": ["http://zrzy.bynr.gov.cn/ywcx/bdcdjt/", "https://www.nmgbdcdj.cn/", "https://www.bynr.gov.cn/zfxxgk/fdzdgk/jgjj/202509/t20250930_24160.html"]}
+  ],
+  "requestOutcomes": [
+    {"url": "https://www.bynr.gov.cn/", "method": "GET", "outcome": "200; official municipal homepage retrieved."},
+    {"url": "http://zrzy.bynr.gov.cn/", "method": "GET", "outcome": "200; official Natural Resources Bureau homepage retrieved and cadastral query link followed."},
+    {"url": "http://zrzy.bynr.gov.cn/ywcx/bdcdjt/", "method": "GET", "outcome": "200; public cadastral-map query shell retrieved. HTML exposes /web/search/140854, but no map/API configuration, schema, CRS, or geometry."},
+    {"url": "http://zrzy.bynr.gov.cn/web/search/140854?content=%E5%B7%B4%E5%BD%A6%E6%B7%96%E5%B0%94", "method": "GET", "outcome": "20-second anonymous timeout; no parcel request result."},
+    {"url": "https://www.nmgbdcdj.cn/", "method": "GET", "outcome": "20-second anonymous timeout; no login or bypass attempted."}
+  ],
+  "safeFieldAllowlist": ["native parcel identifier", "geometry", "source CRS", "source layer/service identifier"],
+  "excludedFields": ["owner", "titleholder", "address", "contact", "personal", "tax", "account", "private credentials/tokens"],
+  "sampleGeoJSON": null,
+  "runtimeReadiness": "held",
+  "uncertainty": "The local custodian and public query entry are evidenced, but no usable anonymous geometry response was obtained. A timeout or unusable query shell is not evidence of citywide absence; no exact-point miss is being used. No login, CAPTCHA/Cloudflare bypass, private token, or TLS exception was used.",
+  "reviewDisposition": "Keep packet complete as a research record, but hold runtime integration pending independent serial qualification of a real public parcel adapter and safe field mapping."
+}

@@ -1,0 +1,14 @@
+{
+  "taskId": "city:6381",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-6381-the-woodlands.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/the-woodlands-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T02:12:42.850004Z",
+  "reason": "Official WUP 2025 archive (SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114), immutable roster, and queue agree on code 6381, rank 2238, United States of America, point [30.174927425283,-95.5060077599405], and 260732 persons. Two executed English searches cover the English local/native language. Fresh first-party Township ArcGIS layer metadata returned HTTP 200 with Polygon, PID and GlobalID; a fresh exact-point query returned one polygon with GlobalID {9D6F9C43-BBAA-45B3-B338-C9B033D73088}, matching the original ignored source cache. The ignored cache also contains a separate three-polygon bounded response, but no durable cohort sample was retained. Complete native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap/operation qualification, source binding, and headed Details verification have not been independently proved. Public geometry remains discovered and runtime admission held.",
+  "registryFound": true,
+  "admission": "held; no runtime/catalog/report change"
+}

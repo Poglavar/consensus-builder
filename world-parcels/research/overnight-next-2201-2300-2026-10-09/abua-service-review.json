@@ -1,0 +1,36 @@
+{
+  "cityRecord": "city-7226-abua.json",
+  "cityCode": 7226,
+  "queueRank": 2259,
+  "name": "Abua",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "pointLatLon": [4.85144627438892, 6.64793181724718],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH","url":"https://www.riversstate.gov.ng/public/","outcome":"Official Rivers State ministries portal was identified by first-party search as the state government service directory, but direct fetch returned HTTP 403 with a Cloudflare challenge. No challenge bypass was attempted."},
+    {"method":"SEARCH","url":"https://www.riversstate.gov.ng/wp-content/uploads/2024/03/PART-A-2024-Published-Budget-New.pdf","outcome":"Official Rivers State budget PDF identifies Ministry of Lands, Office of the Surveyor-General, land plot identification, surveying, and physical-planning activities. This supports state custodianship, not a public parcel API."},
+    {"method":"SEARCH","url":"https://rsipa.riversstateapps.ng/","outcome":"Official Rivers State Investment Promotion Agency portal lists the Ministry of Lands and Survey among state MDAs; no parcel map or safe geometry service was exposed."},
+    {"method":"GET","url":"https://urban.riversstateapps.ng/","outcome":"Public Rivers State Ministry of Physical Planning and Urban Development page was reachable. It exposes planning/layout/application and login-oriented flows, not an anonymous cadastral parcel layer or schema."},
+    {"method":"GET","url":"https://urban.riversstateapps.ng/login.html","outcome":"Public login route was observed as part of the planning portal. No login was attempted and no credentials, private tokens, or protected data were requested."},
+    {"method":"GET","url":"https://www.sgriv.com/","outcome":"Public SGRIV shell identifies itself as Rivers State Office of the Surveyor General land management and presents C-of-O/application/account flows. JavaScript inspection exposed a support endpoint and application shell, but no public map configuration, parcel endpoint, schema, CRS, or anonymous parcel response."},
+    {"method":"GET","url":"https://osgof.gov.ng/","outcome":"First-party Office of the Surveyor-General of the Federation site was reachable and describes general requests for maps, coordinates, and cadastral surveys. It is a national agency route, not a Rivers/Abua local parcel service, and no parcel response was requested."},
+    {"method":"SEARCH","url":"https://cvr.inecnigeria.org/locator/browse/33/","outcome":"Official INEC locator confirms Abua/Odual administrative context in Rivers State. It is an electoral-office locator, not a cadastral registry, and no parcel fields were requested."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "boundedAnonymousResponse": {"requestScope":"No safe anonymous parcel geometry endpoint was exposed after first-party discovery and public-shell inspection; no ID-plus-geometry request was made.","featureCount":null}
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if later exposed anonymously", "polygon geometry if later exposed anonymously", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"A Rivers State land/survey custodian and public land-management route are evidenced, but no safe anonymous native-ID polygon response, schema, CRS, or independent adapter behavior was exposed. Runtime qualification remains a separate serial review."},
+  "scopeLimits": ["The exact WUP point [4.85144627438892, 6.64793181724718] was preserved in latitude/longitude order; no coordinate shift or parcel-hit forcing was attempted.", "The Rivers State portal returned a Cloudflare challenge; no CAPTCHA/Cloudflare bypass was attempted. This, the login-oriented routes, and the lack of an exposed parcel response are not evidence of citywide parcel absence.", "The national OSGOF route was kept distinct from the Rivers State local/state custodian and was not treated as an Abua parcel service.", "No GeoJSON sample is retained because no safe anonymous native ID-plus-geometry response was available.", "No owner, address, contact, titleholder, tax/account, certificate/title, or personal fields were requested or retained.", "Request captures and scratch evidence belong under ignored tmp/valhalla-parcel-research/abua/."],
+  "uncertainty": "Rivers State publicly evidences land and survey administration and a digital SGRIV application route, and Abua is administratively within Rivers State. Public coverage of Abua, cadastral digitization extent, anonymous viewer/API availability, schema, CRS, native identity, update cadence, licensing, and runtime adapter behavior remain unverified. No citywide absence inference is made."
+}

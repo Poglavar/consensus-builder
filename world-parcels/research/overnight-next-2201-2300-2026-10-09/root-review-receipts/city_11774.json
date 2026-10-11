@@ -1,0 +1,42 @@
+{
+  "taskId": "city:11774",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-11774-sanming.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/sanming-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T03:28:37Z",
+  "identity": {
+    "queueRank": 2298,
+    "cityCode": 11774,
+    "name": "Sanming",
+    "country": "China",
+    "pointLatLon": [
+      26.2453255440308,
+      117.611365240127
+    ],
+    "populationPersons": 253572
+  },
+  "reviewFindings": {
+    "bilingualSearchesRecorded": [
+      "English",
+      "Chinese"
+    ],
+    "durableFullPolygonSamples": 0,
+    "safeNativeIdAndPolygonResponseVerified": false,
+    "independentLiveAdapterQualification": false,
+    "admissionGatesMissing": [
+      "fresh native-ID reads",
+      "forced paging",
+      "13 bounded cells",
+      "metric GEOS validity and overlap checks",
+      "source binding",
+      "headed details-panel verification"
+    ],
+    "reason": "Sanming municipal government identifies its registration center. The recorded Tianditu route attempts timed out; no city parcel schema, safe native ID, full polygon, or live adapter qualification exists.",
+    "absenceConclusion": false
+  }
+}

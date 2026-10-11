@@ -1,0 +1,15 @@
+{
+  "taskId": "city:1183",
+  "decision": "held",
+  "identity": "Queue and ranked roster agree: Chingola, Zambia, rank 1976, point [-12.5459298146707, 27.8723779018079], 294193 persons; packet agrees.",
+  "searches": "Packet records separate executed English and Bemba searches with results and official URLs.",
+  "custody": "The Chingola City Council departments page identifies its deeds register and land-application duties; its services page lists plot allocation and land distribution. The pages were corroborated in the official site's indexed content; direct fetch was unavailable during root review. The worker's true custody finding is retained separately from the national geometry source.",
+  "sourceObservations": "Original saved official Zambia NSDI Lots layer metadata gives polygon geometry, EPSG:32735, SDE.Lots.OBJECTID as an OID field, maxRecordCount 2000, and supportsPagination false. The saved corrected exact-point query has zero features. The bounded envelope response has 2000 features and exceededTransferLimit true, so it is incomplete. Its first three native IDs are 109239, 109240 and 109241; the retained sample has those complete source geometries and only canonical id properties. A fresh anonymous exact-ID read of 109239 returned HTTP 200, one polygon with matching geometry and native OID. The three samples are metric-valid and have zero pairwise area overlap; this limited check is not a source-wide validity or operation audit.",
+  "sourceUrls": [
+    "https://www.chingolacouncil.gov.zm/?page_id=770",
+    "https://www.chingolacouncil.gov.zm/?page_id=792",
+    "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0"
+  ],
+  "missingAdmissionGates": ["stable complete native-ID manifest", "forced paging or an independently qualified alternative read protocol", "13 aligned bounded cells", "full metric GEOS validity, duplicate, overlap and operation checks", "source binding", "headed details-panel verification"],
+  "absenceInterpretation": "Zero at the exact point does not establish citywide absence; the bounded positive result does not establish citywide coverage."
+}

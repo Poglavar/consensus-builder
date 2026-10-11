@@ -1,9 +1,10 @@
 // Official authority snapshots stay in transient memory; no ZIP, XML or parcel is written to disk.
-import { Unzip, UnzipInflate } from 'fflate';
+import { readGmlZipMember } from './gml-zip-reader.js';
 import { bbox as geometryBbox, booleanIntersects, bboxPolygon, feature as geoFeature } from '@turf/turf';
 import { parseGmlParcels } from './gml-parcel-reader.js';
 import { canonicalParcelFeature, upstreamError, providerHttpError, validateBounds, validateGeometry } from './source-contract.js';
 import { HttpError } from '../utils/helpers.js';
+import { catastroAtomProfile, CATASTRO_ATOM_GML_SCHEMA, fetchCatastroAtomArchive } from './catastro-atom-profile.js';
 
 const caches = new WeakMap();
 let coldLoadTail = Promise.resolve();
@@ -61,51 +62,11 @@ async function officialArchiveFetch(endpoint, { signal } = {}) {
     return follow(endpoint);
 }
 
-// Inspect central-directory sizes before decompressing; actual output is independently bounded below.
-async function* gmlMember(bytes, limit, signal) {
-    const view = new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
-    let end=-1;for(let i=bytes.length-22;i>=Math.max(0,bytes.length-65557);i--)if(view.getUint32(i,true)===0x06054b50){end=i;break;}
-    if(end<0||view.getUint16(end+4,true)!==0||view.getUint16(end+6,true)!==0)throw upstreamError('Invalid parcel ZIP archive.');
-    const entries=view.getUint16(end+10,true),directory=view.getUint32(end+16,true);let offset=directory,match=null,declaredTotal=0;
-    if(entries===65535||directory===0xffffffff||entries>20)throw upstreamError('Unsupported parcel ZIP archive.');
-    const decoder=new TextDecoder('utf-8',{fatal:true});
-    for(let i=0;i<entries;i++) {
-        if(offset+46>bytes.length||view.getUint32(offset,true)!==0x02014b50)throw upstreamError('Invalid parcel ZIP directory.');
-        const flags=view.getUint16(offset+8,true),size=view.getUint32(offset+24,true),nameLength=view.getUint16(offset+28,true),extra=view.getUint16(offset+30,true),comment=view.getUint16(offset+32,true);
-        const name=decoder.decode(bytes.subarray(offset+46,offset+46+nameLength));declaredTotal+=size;
-        if(flags&1||size===0xffffffff||declaredTotal>limit||name.includes('..')||name.startsWith('/'))throw upstreamError('Parcel ZIP exceeds limits or has unsafe members.');
-        if(name.toLowerCase().endsWith('.gml')){if(match)throw upstreamError('Parcel ZIP has ambiguous GML members.');match={name,size,crc:view.getUint32(offset+16,true)};}
-        offset+=46+nameLength+extra+comment;
-    }
-    if(!match)throw upstreamError('Parcel ZIP has no GML member.');
-    let chunks=[];let total=0,finished=false,failure=null,crc=0xffffffff;
-    const table=new Uint32Array(256);for(let i=0;i<256;i++){let c=i;for(let j=0;j<8;j++)c=c&1?0xedb88320^(c>>>1):c>>>1;table[i]=c>>>0;}
-    const unzip=new Unzip(file=>{
-        if(file.name!==match.name)return;
-        file.ondata=(error,data,final)=>{
-            if(error){failure=upstreamError('Invalid or incomplete parcel ZIP member.');return;}
-            total+=data.byteLength;
-            if(total>limit||total>match.size){failure=upstreamError('Parcel ZIP decompressed size exceeds limit.');file.terminate();return;}
-            for(const byte of data)crc=table[(crc^byte)&255]^(crc>>>8);
-            chunks.push(data);if(final)finished=true;
-        };
-        file.start();
-    });unzip.register(UnzipInflate);
-    try{
-        for(let offset=0;offset<bytes.length;offset+=65536){
-            if(signal?.aborted)throw upstreamError('Parcel archive load aborted.');
-            unzip.push(bytes.subarray(offset,offset+65536),offset+65536>=bytes.length);
-            if(failure)throw failure;
-            const ready=chunks;chunks=[];for(const chunk of ready)yield chunk;
-            await new Promise(resolve=>setImmediate(resolve));
-        }
-    }catch(error){if(error.status)throw error;throw upstreamError('Invalid or incomplete parcel ZIP member.');}
-    if(!finished||total!==match.size||((crc^0xffffffff)>>>0)!==match.crc)throw upstreamError('Parcel ZIP decompressed size or checksum is inconsistent.');
-
-}
-
-export function createGmlSnapshotParcelSource(descriptor, { fetchImpl = officialArchiveFetch, now = Date.now,
+// Central-directory and local metadata are verified before bounded member inflation.
+export function createGmlSnapshotParcelSource(descriptor, { fetchImpl, now = Date.now,
     cacheTtlMs = 5 * 60 * 1000 } = {}) {
+    const profile = catastroAtomProfile(descriptor);
+    if (fetchImpl === undefined) fetchImpl = profile ? fetchCatastroAtomArchive : officialArchiveFetch;
     const endpoint=new URL(descriptor.endpoint);
     const {id,idPrefix,idField='INSPIREID'}=descriptor;
     const maxBytes=descriptor.maxSnapshotBytes??DEFAULT_BYTES,maxXml=descriptor.maxDecompressedBytes??DEFAULT_XML;
@@ -131,7 +92,8 @@ export function createGmlSnapshotParcelSource(descriptor, { fetchImpl = official
             if(!response.ok||response.status!==200)throw providerHttpError(response);
             if(descriptor.expectedEtag!==undefined&&response.headers.get('etag')!==descriptor.expectedEtag)throw upstreamError('Parcel archive revision changed.');
             let compressed=await boundedBytes(response,maxBytes,signal);
-            const parsed=await parseGmlParcels(gmlMember(compressed,maxXml,signal),{idField,maxBytes:maxXml,maxFeatures:maxSnapshotFeatures,signal});compressed=null;
+            const parsed=await parseGmlParcels(readGmlZipMember(compressed,maxXml,signal,profile || undefined),{
+                ...(profile ? {schema:CATASTRO_ATOM_GML_SCHEMA} : {idField}),maxBytes:maxXml,maxFeatures:maxSnapshotFeatures,signal});compressed=null;
             if(!parsed.features.length)throw upstreamError('Parcel authority archive contains no verified polygons.');
             if(parsed.numberMatched!==undefined&&parsed.numberMatched!==parsed.featureCount)throw upstreamError('Parcel archive reports incomplete coverage.');
             const byId=new Map();
@@ -144,20 +106,24 @@ export function createGmlSnapshotParcelSource(descriptor, { fetchImpl = official
                 parsed.features[i]=null;
             }
             parsed.features.length=0;
-            const index={features,byId};state.index=index;state.expires=now()+cacheTtlMs;return index;
+            const index={features,byId,counts:profile ? {
+                featureCount:parsed.featureCount,uniqueFeatureCount:parsed.uniqueFeatureCount,
+                numberMatched:parsed.numberMatched,numberReturned:parsed.numberReturned,sourceCrs:parsed.sourceCrs
+            } : null};state.index=index;state.expires=now()+cacheTtlMs;return index;
         };
         const pending=coldLoadTail.then(work);coldLoadTail=pending.then(()=>undefined,()=>undefined);
         state.pending=pending;
         try{return await pending;}finally{state.pending=null;}
     }
-    const collection=features=>({type:'FeatureCollection',features:structuredClone(features),complete:true,sourceId:id,returnsWGS84:true});
+    const collection=(features,index)=>({type:'FeatureCollection',features:structuredClone(features),complete:true,sourceId:id,returnsWGS84:true,
+        ...(index?.counts ? {snapshotCounts:{...index.counts}} : {})});
     async function queryBounds(bounds){validateBounds(bounds,descriptor.maxBboxKm2??25,descriptor);const index=await load(),shape=bboxPolygon(bounds);
         const features=index.features.filter(row=>row.bbox[0]<=bounds[2]&&row.bbox[2]>=bounds[0]&&row.bbox[1]<=bounds[3]&&row.bbox[3]>=bounds[1]&&booleanIntersects(row.feature,shape)).map(row=>row.feature);
-        if(features.length>maxFeatures)throw upstreamError('Parcel snapshot query exceeds the parcel limit; use a smaller area.');return collection(features);}
+        if(features.length>maxFeatures)throw upstreamError('Parcel snapshot query exceeds the parcel limit; use a smaller area.');return collection(features,index);}
     async function queryIds(ids){
         if(!Array.isArray(ids)||!ids.length||ids.length>80)throw new HttpError(400,'Provide between 1 and 80 parcel IDs.');
-        const unique=[...new Set(ids)];if(unique.some(value=>typeof value!=='string'||!value.startsWith(idPrefix)||value.slice(idPrefix.length).length>256||!(idField==='INSPIREID'?/^[0-9]+$/:/^[A-Za-z0-9._/-]+$/).test(value.slice(idPrefix.length))))throw new HttpError(400,'Invalid parcel ID or different source.');
-        const index=await load();return{...collection(unique.filter(key=>index.byId.has(key)).map(key=>index.byId.get(key))),absentIds:unique.filter(key=>!index.byId.has(key))};}
+        const unique=[...new Set(ids)];if(unique.some(value=>typeof value!=='string'||!value.startsWith(idPrefix)||value.slice(idPrefix.length).length>256||!(profile ? /^[A-Z0-9]{14}$/ : idField==='INSPIREID'?/^[0-9]+$/:/^[A-Za-z0-9._/-]+$/).test(value.slice(idPrefix.length))))throw new HttpError(400,'Invalid parcel ID or different source.');
+        const index=await load();return{...collection(unique.filter(key=>index.byId.has(key)).map(key=>index.byId.get(key)),index),absentIds:unique.filter(key=>!index.byId.has(key))};}
     async function queryGeometry(geometry){if(!validateGeometry(geometry))throw new HttpError(400,'Provide valid polygon geometry.');
         const result=await queryBounds(geometryBbox(geometry));return{...result,features:result.features.filter(f=>booleanIntersects(f,geoFeature(geometry)))};}
     return Object.freeze({queryBounds,queryIds,queryGeometry});

@@ -1,0 +1,27 @@
+{
+  "taskId": "city:6815",
+  "checkedAt": "2026-10-10T21:24:21Z",
+  "originalResponse": "tmp/valhalla-parcel-research/metairie/point-query.geojson",
+  "responseSha256": "05cd4bce047e964db65b17ce4fe69a23ffe57cf326c73b0214e5d92bd8daa673",
+  "originalMetadata": "tmp/valhalla-parcel-research/metairie/layer.json",
+  "metadataSha256": "c274631414d4ac8dac825d308aad1aef2d0a4a5244907277af95ae56a0881ff6",
+  "sourceUrl": "https://jpgis.jeffparish.net/server/rest/services/Parcels/FeatureServer/0",
+  "observed": {
+    "originalFeatureCount": 1,
+    "originalIdField": "OBJECTID",
+    "originalId": 142783,
+    "originalGeometryType": "Polygon",
+    "sampleGeometryMatchesOriginal": true,
+    "samplePropertyKeys": [
+      "id"
+    ],
+    "sampleCount": 1,
+    "sampleMetricValid": true,
+    "sampleMetricAreaM2": 760.2007269182175,
+    "exactWupPointIntersectsSample": true,
+    "freshExactObjectIdReadCount": 1,
+    "freshExactObjectId": 142783,
+    "publisher": "Jefferson Parish Planning Dept."
+  },
+  "limits": "One point hit and one sample do not establish citywide completeness, object-ID stability across republishes, pagination, bounded-cell behavior, multi-parcel overlap or proposal operations."
+}

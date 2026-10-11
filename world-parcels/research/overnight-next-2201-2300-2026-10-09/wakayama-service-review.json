@@ -1,0 +1,63 @@
+{
+  "cityRecord": "city-5028-wakayama.json",
+  "cityCode": 5028,
+  "queueRank": 2282,
+  "service": {
+    "name": "Wakayama City Wagamachi Guide",
+    "portalUrl": "https://www2.wagmap.jp/wakayamacity/Portal",
+    "custodian": "Wakayama City",
+    "access": "Anonymous public guest access; no login, credentials, private token, CAPTCHA bypass, or unsafe property fields used."
+  },
+  "attempts": [
+    {
+      "route": "Official portal discovery",
+      "request": "GET https://www2.wagmap.jp/wakayamacity/Portal",
+      "outcome": "HTTP success; live JavaScript configuration was inspected.",
+      "evidence": "Map catalog included roads, sewer service areas, city-planning map (MapId 11015), white map, regulatory areas, landscape, ponds, designated roads, backgrounds, and aerial imagery. No parcel/cadastral layer was listed."
+    },
+    {
+      "route": "Official map agreement and map shell",
+      "request": "POST https://www2.wagmap.jp/wakayamacity/Agreement/Agree with MapId=11015, then GET https://www2.wagmap.jp/wakayamacity/Map?mid=11015",
+      "outcome": "Anonymous agreement returned an empty successful JSON result; map shell returned HTTP success.",
+      "schemaCrs": "The live config reported PROJECT_EPSG EPSG:4326 for geographic display, with Japanese local definitions EPSG:2448/EPSG:30166 and WGS84/JGD2000 conversion parameters. The map's SearchCoord entry used EPSG:2448_EPSG:30166.",
+      "apiRoutes": [
+        "../Map/GetMapImage",
+        "../Map/GetFeature",
+        "../Map/GetAttribute",
+        "../Map/ChangeAddress",
+        "../Map/GetFeatureList",
+        "../API/GetAPI"
+      ],
+      "outcomeDetail": "The exposed endpoints are generic map/feature tools for the selected city-planning map. No parcel layer, safe native parcel identity, or parcel geometry response was available from the inspected public configuration."
+    },
+    {
+      "route": "Official local custodian/procedure review",
+      "requests": [
+        "https://www.city.wakayama.wakayama.jp/kurashi/douro_kouen_machi/1007741/1005148/1002195.html",
+        "https://houmukyoku.moj.go.jp/wakayama/page000001_00500.html",
+        "https://www.city.wakayama.wakayama.jp/kurashi/douro_kouen_machi/1009501/1002220.html"
+      ],
+      "outcome": "Local cadastral-survey and Legal Affairs Bureau map-making responsibilities/procedures were evidenced. City map sales page links the public portal but describes city base/planning maps, not a downloadable parcel service."
+    }
+  ],
+  "scopeLimits": [
+    "The city portal catalog was checked as currently served on 2026-10-11; absence of a parcel layer there is not evidence of citywide cadastral absence.",
+    "No exact-point parcel hit, map extent miss, timeout, login wall, or unusable UI was used as an absence claim.",
+    "No owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested or retained.",
+    "No parcel polygon was retained because no safe native parcel ID plus unchanged native geometry was obtained."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identity only if directly exposed and safe",
+    "native parcel polygon geometry only if directly exposed and bounded",
+    "source URL, layer/map identifier, CRS, response status, and field mapping metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "sampleGeojson": null,
+  "qualification": {
+    "publicParcelGeometry": false,
+    "verifiedSafeNativeIdentity": false,
+    "runtimeReadiness": "held_serial_review_no_verified_public_parcel_geometry",
+    "uncertainty": "The official city and legal-affairs sources establish local cadastral/map custodians and current map-making activity, but do not expose a public anonymous parcel polygon API in the inspected route."
+  }
+}

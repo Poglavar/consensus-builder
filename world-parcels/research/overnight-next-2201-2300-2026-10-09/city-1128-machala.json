@@ -1,0 +1,41 @@
+{
+  "cityCode": 1128,
+  "queueRank": 2239,
+  "name": "Machala",
+  "country": "Ecuador",
+  "countryCode": "EC",
+  "point": [-3.26138075772121, -79.9567441994216],
+  "population2025": 260690,
+  "population2025k": 260.69,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Machala Ecuador cadastral map parcel viewer official municipal cadastre",
+        "result": "Official discovery found the Municipality of Machala, its Avalúos y Catastros service, the Registro Municipal de la Propiedad del Cantón Machala, and official municipal cadastral/planning documents. No anonymous parcel feature API was verified.",
+        "actualResultUrls": [
+          "https://www.machala.gob.ec/",
+          "https://machaladigital.machala.gob.ec/pages/public/urbanismo/tramites-requisitos-avaluos-y-catastro.xhtml?id=13",
+          "https://www.rpmachala.gob.ec/",
+          "https://www.machala.gob.ec/documentosGAD/PUGS_Definitivo/MapotecaPDFFaseIII/MapasA3Generales/MapaGeneral10EstructuraParcelariadelAreaRuralMachala.pdf"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Machala Ecuador catastro visor catastral mapa predios oficial municipio",
+        "result": "La búsqueda oficial/localizó la Subdirección de Avalúos y Catastros del GAD Municipal de Machala, el Registro Municipal de la Propiedad del cantón y cartografía catastral oficial. No se verificó una API pública anónima de predios con geometría.",
+        "actualResultUrls": [
+          "https://machaladigital.machala.gob.ec/pages/public/urbanismo/tramites-requisitos-avaluos-y-catastro.xhtml?id=13",
+          "https://www.rpmachala.gob.ec/",
+          "https://www.rpmachala.gob.ec/cuentas2024/PLA_DESARROLLO_TERRITORIAL.pdf",
+          "https://www.geoportaligm.gob.ec/visorAFC/composer/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "Machala municipal Avalúos y Catastros and the Registro Municipal de la Propiedad are evidenced local custodians/institutions. Direct anonymous parcel geometry and native parcel identity were not verified in this attempt. The unchanged WUP point was preserved and no point-level absence claim is made.",
+  "runtimeReadiness": "held"
+}

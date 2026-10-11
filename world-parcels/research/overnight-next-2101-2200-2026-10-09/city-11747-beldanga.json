@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "wupCityCode": 11747,
+  "cityCode": 11747,
+  "queueRank": 2165,
+  "rank": 2165,
+  "cityId": "wup2025:11747",
+  "name": "Beldanga",
+  "country": "India",
+  "countryCode": "IN",
+  "iso2": "IN",
+  "iso3": "IND",
+  "point": [23.9333597435084, 88.249545291731],
+  "pointBasis": "Exact immutable WUP 2025 settlement point in latitude/longitude order; not shifted to force a parcel hit.",
+  "population2025": 269051,
+  "population2025k": 269.051,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-2101-2200-2026-10-09",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official District Murshidabad land-records page identifies the local SDO Office in Berhampore and links the West Bengal Department of Land & Land Reforms BanglarBhumi service. The official DILRMP Murshidabad table separately lists Beldanga-I and Beldanga-II cadastral-map status. This establishes relevant local/state land-record custody and cadastral service evidence, not citywide open parcel coverage.",
+  "registryEvidenceUrls": [
+    "https://murshidabad.gov.in/service/land-records/",
+    "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/tehsil-level/333",
+    "https://municipalitybeldanga.org/"
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Beldanga Murshidabad West Bengal official cadastral map parcel land records Bhu Naksha",
+        "result": "Found the official District Murshidabad land-records page, the official DILRMP Murshidabad tehsil map-digitization table, the official Beldanga Municipality site, and the national Bhu-Naksha implementation material. The district page links BanglarBhumi; no anonymous parcel feature response was established.",
+        "actualResultUrls": [
+          "https://murshidabad.gov.in/service/land-records/",
+          "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/tehsil-level/333",
+          "https://municipalitybeldanga.org/",
+          "https://www.bhunaksha.nic.in/bhunaksha/customization.jsp"
+        ]
+      },
+      {
+        "language": "Bengali",
+        "query": "বেলডাঙ্গা মুর্শিদাবাদ সরকারি জমির মানচিত্র ভূমি রেকর্ড",
+        "result": "The official Bengali District Murshidabad land-records page was found and links the same BanglarBhumi land and land-reforms service. No safe parcel identity, schema, CRS, or polygon endpoint was verified.",
+        "actualResultUrls": [
+          "https://murshidabad.gov.in/bn/service/%E0%A6%9C%E0%A6%AE%E0%A6%BF-%E0%A6%B0%E0%A7%87%E0%A6%95%E0%A6%B0%E0%A7%8D%E0%A6%A1/",
+          "https://banglarbhumi.gov.in/",
+          "https://municipalitybeldanga.org/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://murshidabad.gov.in/service/land-records/",
+      "role": "District Murshidabad, Government of West Bengal official land-records service page",
+      "observation": "The page states that citizens can use the Department of Land & Land Reforms portal and links https://banglarbhumi.gov.in/. It lists the SDO Office in Berhampore. This is local administrative/service custody evidence, not a parcel feature response."
+    },
+    {
+      "url": "https://murshidabad.gov.in/bn/service/%E0%A6%9C%E0%A6%AE%E0%A6%BF-%E0%A6%B0%E0%A7%87%E0%A6%95%E0%A6%B0%E0%A7%8D%E0%A6%A1/",
+      "role": "District Murshidabad official Bengali land-records page",
+      "observation": "The Bengali page provides the same official BanglarBhumi land-record service link. No parcel geometry or safe native identifier is exposed in the page."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/tehsil-level/333",
+      "role": "Government of India Department of Land Resources DILRMP Murshidabad map-digitization status",
+      "observation": "The table lists Beldanga-I and Beldanga-II, including cadastral-map counts and geo-referenced/map-linkage status fields. It is aggregate progress evidence, not an individual parcel geometry service."
+    },
+    {
+      "url": "https://municipalitybeldanga.org/",
+      "role": "Official Beldanga Municipality website",
+      "observation": "The municipality site identifies Beldanga Municipality and describes its municipal area/mouza context. No cadastral feature service or safe parcel identity was exposed."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://murshidabad.gov.in/service/land-records/",
+      "method": "GET",
+      "access": "anonymous, normal TLS verification",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Loaded successfully; confirmed the official district land-record route and BanglarBhumi link. No parcel geometry or owner/address lookup was requested."
+    },
+    {
+      "url": "https://murshidabad.gov.in/bn/service/%E0%A6%9C%E0%A6%AE%E0%A6%BF-%E0%A6%B0%E0%A7%87%E0%A6%95%E0%A6%B0%E0%A7%8D%E0%A6%A1/",
+      "method": "GET via first-party discovery inspection",
+      "access": "anonymous, normal TLS verification",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Official Bengali counterpart identified in discovery; no separate parcel endpoint or geometry response was obtained."
+    },
+    {
+      "url": "https://banglarbhumi.gov.in/",
+      "method": "GET",
+      "access": "anonymous, normal TLS verification",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Bounded request timed out after 20 seconds. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field query, schema, CRS, native parcel ID, or geometry was obtained. Timeout is not evidence of citywide absence."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/tehsil-level/333",
+      "method": "GET via official first-party search inspection",
+      "access": "anonymous, normal TLS verification",
+      "httpStatus": null,
+      "contentType": "text/html",
+      "assessment": "Official result content was inspected and identifies Murshidabad plus Beldanga-I and Beldanga-II map-digitization rows. No individual parcel feature response was requested or retained."
+    }
+  ],
+  "source": {
+    "sourceId": "in-west-bengal-murshidabad-banglarbhumi",
+    "name": "West Bengal BanglarBhumi land-record service, as linked by District Murshidabad",
+    "operator": "Department of Land & Land Reforms, Government of West Bengal; local district SDO/revenue administration",
+    "url": "https://banglarbhumi.gov.in/",
+    "serviceType": "Official local/state land-record service route; no anonymously verified parcel geometry endpoint",
+    "nativeIdField": null,
+    "nativeIdFields": [],
+    "sourceFields": null,
+    "attributesRequested": [],
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "identityBasis": "No parcel feature response was obtained; no synthetic identity was created.",
+    "geometryStatus": "no_public_geometry_verified"
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No bounded anonymous response containing a safe native parcel identifier and full polygon was obtained. The exact WUP point was preserved and not shifted."
+  },
+  "coverageAssessment": {
+    "claimedScope": "District Murshidabad land-record service, Beldanga-I/II DILRMP cadastral-map status, and the official Beldanga municipal context.",
+    "verifiedOpenScope": "Official local/state service identity and aggregate cadastral-map status were verified; current anonymous parcel API contract, CRS, native identity, exact-point containment, and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["cityCode", "queueRank", "exact WUP point", "official service URLs", "HTTP status/content type", "public service metadata", "stable native parcel identifier if publicly exposed", "geometry", "source CRS"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax/account", "registration or encumbrance details"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "The official local/state service route was identified, but the linked BanglarBhumi host timed out during bounded anonymous retrieval and no safe public parcel geometry/schema response was verified.",
+  "remainingUncertainty": "A current BanglarBhumi map/API route may be available through an interactive workflow or a separately published endpoint. Its anonymous contract, safe native identity, CRS, geometry, and Beldanga urban coverage remain unverified."
+}

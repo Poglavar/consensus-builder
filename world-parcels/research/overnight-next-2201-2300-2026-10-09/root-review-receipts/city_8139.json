@@ -1,0 +1,39 @@
+{
+  "taskId": "city:8139",
+  "decision": "held",
+  "checkedAt": "2026-10-11T03:05:09Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-8139-abat.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/abat-service-review.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/8139-abat/land-search.html",
+    "tmp/valhalla-parcel-research/8139-abat/services.json",
+    "tmp/valhalla-parcel-research/8139-abat/services.headers"
+  ],
+  "reason": "Official AkwaGIS public search is a Land PIN or plan/COD lookup. Its captured service response is metadata, not a native parcel ID and polygon. Registry custody is supported; Abat parcel geometry and citywide coverage remain unresolved.",
+  "identityCheck": {
+    "queueRank": 2280,
+    "cityCode": 8139,
+    "country": "Nigeria",
+    "pointLatLon": [
+      4.63089312301126,
+      7.81643394598082
+    ],
+    "population2025Persons": 256126,
+    "officialWupRowChecked": true
+  },
+  "searchLanguages": [
+    "English",
+    "Ibibio/local"
+  ],
+  "samplePolygonCount": 0,
+  "admissionChecks": {
+    "freshNativeIdRead": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeometryAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

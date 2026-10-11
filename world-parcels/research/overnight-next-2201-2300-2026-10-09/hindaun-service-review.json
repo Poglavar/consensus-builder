@@ -1,0 +1,37 @@
+{
+  "cityRecord": "city-8790-hindaun.json",
+  "cityCode": 8790,
+  "queueRank": 2277,
+  "name": "Hindaun",
+  "country": "India",
+  "countryCode": "IN",
+  "pointLatLon": [26.7443161965217, 77.0305933411784],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH","url":"https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/107","httpStatus":"Discovery result available; official page readable","outcome":"Government of India DILRMP page for Rajasthan/Karauli lists Hindaun tehsil: 323 cadastral maps/FMBs, 323 villages, 323 digitized maps, 100% geo-referenced maps, 115899 total land parcels and 115899 geo-referenced parcels. This is administrative coverage evidence, not a parcel feature response."},
+    {"method":"SEARCH","url":"https://rajdharaa.rajasthan.gov.in/citizenudh/","httpStatus":"200","outcome":"Official Rajasthan Urban GIS Portal loaded. It exposes District, City/ULB, Khasra Search, View On Map, View Khasra Info and navigation controls, and identifies Settlement Department khasra/village boundaries as map inputs. Its disclaimer limits the data to viewing and says official local-body records control legal authentication."},
+    {"method":"GET","url":"https://rajdharaa.rajasthan.gov.in/citizenudh/js/Config.js","httpStatus":"200","outcome":"Current public viewer configuration was readable. The KHASARA layer is https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/0, a JDA-specific layer; no Hindaun/Karauli service URL was exposed in this configuration."},
+    {"method":"GET","url":"https://rajdharaa.rajasthan.gov.in/citizenudh/js/map.js","httpStatus":"200","outcome":"Current JavaScript confirms the Khasra layer uses ArcGIS FeatureLayer/queryFeatures with returnGeometry=true and outFields=*, and the viewer performs bounded spatial Khasra queries. No Hindaun parcel response was requested from the JDA-specific layer."},
+    {"method":"GET","url":"https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/0?f=pjson","httpStatus":"Timed out after 20 seconds with no response body","outcome":"Anonymous ArcGIS layer metadata attempt; no schema or CRS response obtained. Timeout is a route limitation, not evidence of absence."},
+    {"method":"GET","url":"https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/0/query?where=1%3D1&outFields=*&returnGeometry=false&resultRecordCount=1&f=pjson","httpStatus":"Timed out/unfinished in bounded request","outcome":"Anonymous bounded schema/query probe was not completed; no attributes or geometry retained. No login, private token, CAPTCHA bypass or TLS exception was used."},
+    {"method":"GET","url":"https://edharti.rajasthan.gov.in/","httpStatus":"Timed out after 20 seconds with no response body","outcome":"Official Rajasthan E-Dharti land-record route identified but not reachable in the bounded direct request. No parcel request was completed."},
+    {"method":"SEARCH","url":"https://landrevenue.rajasthan.gov.in/content/dam/landrevenue/revenuedepartment/Revenue-New/Notification/Revenue_2023/KT-1%20%E0%A4%95%E0%A5%8D%E0%A4%B0%E0%A4%AE%E0%A5%8B%E0%A4%A8%E0%A5%8D%E0%A4%A8%E0%A4%A4%20%E0%A4%A4%E0%A4%B9%E0%A4%B8%E0%A5%80%E0%A4%B2%20%E0%A4%B6%E0%A5%8D%E0%A4%B0%E0%A5%80%E0%A4%AE%E0%A4%B9%E0%A4%BE%E0%A4%B5%E0%A5%80%E0%A4%B0%20%E0%A4%9C%E0%A5%80%20%28%E0%A4%95%E0%A4%B0%E0%Aौ%E0%A4%Bली%29-merged002.pdf","httpStatus":"Discovery result available; official Rajasthan Revenue Department document","outcome":"Hindi revenue notification documents the administrative restructuring of Hindaun tehsil in Karauli district and identifies Hindaun revenue circles/patwar areas. Administrative custodian evidence only; no parcel geometry response."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfiguration": "Rajasthan Urban GIS current Config.js exposes ArcGIS FeatureLayer URL JDA/Settlement_JDA/MapServer/0 for KHASARA; map.js uses queryFeatures with returnGeometry=true. The configured layer is not evidenced as Hindaun coverage.",
+    "geometryCrs": "Not observed because the bounded ArcGIS metadata/query requests timed out.",
+    "nativeIdentity": "Not observed; no parcel response obtained.",
+    "sourceFieldMapping": {"observedViewerField":"KID (referenced by current map.js popup/query code)","mappingStatus":"Observed in code only; not accepted as Hindaun native identity without a returned feature."},
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {"requestScope":"No Hindaun parcel query completed","featureCount":0,"nativeIdentity":null}
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if exposed by an official service", "full unchanged parcel polygon geometry", "source service URL", "source CRS", "retrieval date", "administrative coverage counts"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"Official Hindaun/Karauli cadastral coverage and a public Rajasthan Khasra viewer are evidenced, but the current public configuration is JDA-specific and no safe anonymous Hindaun parcel ID-plus-geometry response was obtained."},
+  "scopeLimits": ["The exact WUP point [26.7443161965217, 77.0305933411784] was preserved in latitude/longitude order and was not shifted.", "A zero exact-point hit was not obtained and no citywide absence inference is made.", "DILRMP counts are tehsil/administrative coverage evidence, not a municipal boundary or citywide parcel inventory.", "The Urban GIS Portal disclaimer limits use to viewing and says official local-body records control legal authentication.", "The current viewer's KHASARA URL is JDA-specific; it was not treated as Hindaun parcel integration.", "Timeouts, inaccessible E-Dharti route and unavailable schema do not prove service or parcel absence.", "No GeoJSON sample is retained because no safe native identity-plus-geometry response was obtained.", "No owner, address, contact, titleholder, tax/account, certificate/title or personal fields were requested or retained.", "Packet completion is research bookkeeping only and is not source integration/admission."],
+  "uncertainty": "Rajasthan/Karauli/Hindaun cadastral coverage and official map workflow are evidenced, but the Hindaun-specific public endpoint, parcel schema, CRS, stable native identity, exact-point coverage and update cadence remain unverified. Runtime/admission remains held."
+}
