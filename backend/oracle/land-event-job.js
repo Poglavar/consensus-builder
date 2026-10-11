@@ -33,6 +33,7 @@ export function transactionSyncProblem(sync) {
 export async function runLandEventJob({
     pool,
     connection,
+    rpcCounter,
     dryRun = false,
     syncTransactionsFirst = true,
     transactionSync = options => runTransactionSync(options),
@@ -47,14 +48,14 @@ export async function runLandEventJob({
     } else {
         log('transaction sync: topping up consensus.solana_transaction before the land-event scan (writes the store even in a land-event dry run)');
         try {
-            const synced = await transactionSync({ pool, connection, log });
+            const synced = await transactionSync({ pool, connection, rpcCounter, jobName: 'land-oracle', log });
             transactionSyncSummary = {
                 scanned: Number(synced?.scanned || 0),
                 newSignatures: Number(synced?.newSignatures || 0),
                 fetched: Number(synced?.fetched || 0),
                 failed: Number(synced?.failed || 0),
                 error: synced?.error || null,
-                skipped: false
+                skipped: Boolean(synced?.skipped)
             };
         } catch (error) {
             // A database or personas failure here must not stop the scan: the store may already

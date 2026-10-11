@@ -53,13 +53,15 @@
         empty: 'No transactions yet.',
         emptyFiltered: 'No transactions match the filter.',
         loading: 'Loading…',
-        fetchedAt: 'Fetched',
+        fetchedAt: 'Store read',
         neverFetched: 'not fetched yet',
-        cachedNote: 'cached',
+        cachedNote: 'database only',
+        lastSuccessfulSync: 'last successful sync',
+        noSyncRecorded: 'no worker sync recorded',
+        syncInProgress: 'worker sync in progress',
         storedCount: 'stored',
-        syncNew: 'new since last sync',
+        syncNew: 'new on last sync',
         syncFailed: 'sync failed',
-        syncing: 'Syncing with devnet…',
         sampleActive: 'sample data (?sample=1) — the chain was not queried',
         errorPrefix: 'Could not load transactions',
         unknownTime: 'unknown time',
@@ -489,8 +491,6 @@
         payload: null,
         error: null,
         loading: false,
-        syncing: false,
-        syncError: null,
         sample: false,
         limit: DEFAULT_LIMIT,
         auto: false,
@@ -569,17 +569,20 @@
     function renderHeader() {
         const payload = state.payload;
         const bits = [];
-        if (state.loading) bits.push(state.syncing ? STRINGS.syncing : STRINGS.loading);
+        if (state.loading) bits.push(STRINGS.loading);
         else if (payload && payload.fetchedAt) {
             const when = formatTime(payload.fetchedAt);
             bits.push(`${STRINGS.fetchedAt} ${when.local}`);
-            if (payload.cached) bits.push(STRINGS.cachedNote);
+            if (payload.source === 'database') bits.push(STRINGS.cachedNote);
             if (Number.isFinite(payload.stored)) bits.push(`${payload.stored} ${STRINGS.storedCount}`);
             if (isObject(payload.sync)) {
                 if (payload.sync.error) bits.push(`${STRINGS.syncFailed}: ${payload.sync.error}`);
+                else if (payload.sync.status === 'running') bits.push(STRINGS.syncInProgress);
                 else if (Number.isFinite(payload.sync.newSignatures)) bits.push(`${payload.sync.newSignatures} ${STRINGS.syncNew}`);
-            }
-            if (state.syncError) bits.push(`${STRINGS.syncFailed}: ${state.syncError}`);
+                if (payload.sync.lastSuccessAt) {
+                    bits.push(`${STRINGS.lastSuccessfulSync} ${formatTime(payload.sync.lastSuccessAt).local}`);
+                }
+            } else bits.push(STRINGS.noSyncRecorded);
         } else if (!state.error) bits.push(STRINGS.neverFetched);
         if (state.sample) bits.push(STRINGS.sampleActive);
         dom.fetchedAt.textContent = bits.join(' · ');
@@ -829,36 +832,15 @@
         } catch (_) { /* the banner already says the load failed */ }
     }
 
-    // The backend keeps every decoded transaction in Postgres and only asks the chain for NEW
-    // signatures. A plain load lets the server decide whether a sync is due (it gates syncs by a
-    // TTL); the Refresh button forces one first, then reads the store without a second sync.
-    async function syncNow() {
-        try {
-            const response = await root.fetch(`${backendBase()}/transactions/sync`, { method: 'POST', headers: { accept: 'application/json' } });
-            if (!response.ok) throw new Error(await readError(response));
-            const body = await response.json();
-            state.syncError = null;
-            return isObject(body) ? body : null;
-        } catch (error) {
-            state.syncError = (error && error.message) ? error.message : String(error);
-            return null;
-        }
-    }
-
-    async function load({ sync = false } = {}) {
+    // The page reads the database mirror. The scheduled worker performs chain synchronization.
+    async function load() {
         if (state.loading) return;
         state.loading = true;
-        state.syncing = Boolean(sync) && !state.sample;
         renderHeader();
         try {
-            if (state.syncing) {
-                await syncNow();
-                state.syncing = false;
-                renderHeader();
-            }
             const url = state.sample
                 ? SAMPLE_URL
-                : `${backendBase()}/transactions?limit=${encodeURIComponent(state.limit)}${sync ? '&sync=0' : ''}`;
+                : `${backendBase()}/transactions?limit=${encodeURIComponent(state.limit)}`;
             const response = await root.fetch(url, { headers: { accept: 'application/json' } });
             if (!response.ok) throw new Error(await readError(response));
             const body = await response.json();
@@ -875,8 +857,7 @@
         }
     }
 
-    // Auto-refresh is chained off the COMPLETION of the previous load, never a blind setInterval:
-    // a slow RPC must not stack overlapping fetches on top of each other.
+    // Auto-refresh is chained off the completion of each database read to avoid overlapping loads.
     function scheduleAuto() {
         if (state.timer) { root.clearTimeout(state.timer); state.timer = null; }
         if (!state.auto) return;
@@ -906,7 +887,7 @@
     }
 
     function bind() {
-        dom.refresh.addEventListener('click', () => load({ sync: true }));
+        dom.refresh.addEventListener('click', () => load());
         dom.auto.addEventListener('change', () => {
             state.auto = !!dom.auto.checked;
             scheduleAuto();

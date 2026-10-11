@@ -11,7 +11,7 @@
 --
 --   local:  PGHOST=localhost psql -U zagreb_user -d geodata -f backend/routes/transactions-ddl.sql
 --   docker: docker exec -i consensus-builder-db-1 psql -U zagreb_user -d geodata < backend/routes/transactions-ddl.sql
---   server: ssh do "psql \"\$DATABASE_URL\" -f /root/code/consensus-builder/backend/routes/transactions-ddl.sql"
+--   server: apply this file from the server checkout after loading its PostgreSQL environment.
 --
 -- Idempotent: safe to re-run.
 
@@ -35,6 +35,33 @@ CREATE INDEX IF NOT EXISTS solana_transaction_recency_idx
 CREATE INDEX IF NOT EXISTS solana_transaction_touched_idx
     ON consensus.solana_transaction USING GIN (touched_addresses);
 
+-- Durable status for each scheduled or manual sync. A successful empty run still advances
+-- completed_at; failed attempts remain visible without making the prior success look fresh.
+CREATE TABLE IF NOT EXISTS consensus.transaction_sync_run (
+    run_id TEXT PRIMARY KEY,
+    job_name TEXT NOT NULL,
+    started_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    completed_at TIMESTAMPTZ,
+    status TEXT NOT NULL CHECK (status IN ('running', 'completed', 'failed')),
+    dry_run BOOLEAN NOT NULL DEFAULT FALSE,
+    scanned INTEGER NOT NULL DEFAULT 0,
+    new_signatures INTEGER NOT NULL DEFAULT 0,
+    fetched INTEGER NOT NULL DEFAULT 0,
+    failed INTEGER NOT NULL DEFAULT 0,
+    error TEXT,
+    error_stack TEXT,
+    rpc_counts JSONB NOT NULL DEFAULT '{}'::jsonb,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+ALTER TABLE consensus.transaction_sync_run
+    ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT now();
+
+CREATE INDEX IF NOT EXISTS transaction_sync_run_latest_idx
+    ON consensus.transaction_sync_run (job_name, started_at DESC);
+
 -- Every object in geodata is owned by geo_user (db/2026-08-08-unify-ownership-geo-user.sql); a table
 -- left owned by the connecting role aborts a later `CREATE INDEX IF NOT EXISTS` run by anyone else.
 -- Guarded so this file still applies on a database that has no geo_user role.
@@ -42,6 +69,7 @@ DO $$
 BEGIN
     IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'geo_user') THEN
         EXECUTE 'ALTER TABLE consensus.solana_transaction OWNER TO geo_user';
+        EXECUTE 'ALTER TABLE consensus.transaction_sync_run OWNER TO geo_user';
     END IF;
 END
 $$;

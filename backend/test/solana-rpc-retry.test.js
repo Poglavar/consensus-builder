@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { PublicKey } from '@solana/web3.js';
 import { createRetryingRpcFetch, createRpcConnection } from '../solana/rpc.js';
+import { createRpcMethodCounter } from '../solana/rpc-method-counts.js';
 
 const rpcUrl = 'https://rpc.example.test/provider-secret-key';
 const rpcRequest = (method, params = []) => JSON.stringify({ jsonrpc: '2.0', id: 7, method, params });
@@ -105,15 +106,35 @@ describe('bounded Solana RPC retries', () => {
         expect(logs.join('\n')).not.toContain('signed-transaction-bytes-secret');
     });
 
+    it('counts each JSON-RPC batch member at the transport boundary, including retries', async () => {
+        const rpcCounter = createRpcMethodCounter();
+        const body = JSON.stringify([
+            { jsonrpc: '2.0', id: 1, method: 'getTransaction', params: [] },
+            { jsonrpc: '2.0', id: 2, method: 'getBalance', params: [] }
+        ]);
+        const fetchImpl = vi.fn()
+            .mockResolvedValueOnce(new Response('busy', { status: 429 }))
+            .mockResolvedValueOnce(new Response(JSON.stringify([
+                { jsonrpc: '2.0', id: 1, result: null }, { jsonrpc: '2.0', id: 2, result: null }
+            ]), { status: 200, headers: { 'content-type': 'application/json' } }));
+        const retry = createRetryingRpcFetch({ fetchImpl, onRpcRequest: rpcCounter.onRequest, wait: async () => {}, log: vi.fn() });
+
+        await retry(rpcUrl, { method: 'POST', body });
+
+        expect(rpcCounter.snapshot()).toEqual({ getTransaction: 2, getBalance: 2 });
+    });
+
     it('uses the configured fetch through a real web3 Connection request', async () => {
         const fetchImpl = vi.fn(async (_input, init) => {
             const request = JSON.parse(init.body);
             expect(request.method).toBe('getBalance');
             return response({ jsonrpc: '2.0', id: request.id, result: { context: { slot: 1 }, value: 9876 } });
         });
-        const connection = createRpcConnection(rpcUrl, 'confirmed', { fetchImpl, wait: vi.fn(), log: vi.fn() });
+        const rpcCounter = createRpcMethodCounter();
+        const connection = createRpcConnection(rpcUrl, 'confirmed', { fetchImpl, onRpcRequest: rpcCounter.onRequest, wait: vi.fn(), log: vi.fn() });
 
         await expect(connection.getBalance(new PublicKey('11111111111111111111111111111111'))).resolves.toBe(9876);
         expect(fetchImpl).toHaveBeenCalledTimes(1);
+        expect(rpcCounter.snapshot()).toEqual({ getBalance: 1 });
     });
 });

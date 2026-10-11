@@ -124,6 +124,14 @@ describe('transactions-ddl.sql', () => {
     it('names the table the store writes to', () => {
         expect(TRANSACTION_TABLE).toBe('consensus.solana_transaction');
     });
+
+    it('declares durable sync attempts with timestamps, outcomes, errors, and wire RPC counts', () => {
+        expect(DDL).toMatch(/CREATE TABLE IF NOT EXISTS consensus\.transaction_sync_run/i);
+        for (const column of ['run_id TEXT PRIMARY KEY', 'job_name TEXT NOT NULL', 'started_at TIMESTAMPTZ', 'completed_at TIMESTAMPTZ', 'status TEXT NOT NULL', 'scanned INTEGER', 'new_signatures INTEGER', 'fetched INTEGER', 'failed INTEGER', 'error_stack TEXT', 'rpc_counts JSONB', 'created_at TIMESTAMPTZ', 'updated_at TIMESTAMPTZ']) {
+            expect(DDL).toMatch(new RegExp(column, 'i'));
+        }
+        expect(DDL).toMatch(/ADD COLUMN IF NOT EXISTS updated_at/i);
+    });
 });
 
 describe('extractTouchedAddresses', () => {
@@ -264,7 +272,7 @@ describe('syncTransactions', () => {
 
         const result = await syncTransactions({ pool, connection, watched: [TREASURY, TREASURY_USDC], ...syncOptions });
 
-        expect(result).toEqual({ scanned: 3, newSignatures: 2, fetched: 2, failed: 0, error: null });
+        expect(result).toEqual({ scanned: 3, newSignatures: 2, fetched: 2, failed: 0, error: null, errorStack: null });
         expect(connection.calls.parsedBatches).toHaveLength(1);
         expect(connection.calls.parsedBatches[0].signatures.sort()).toEqual([MINT_SIG, X402_SIG].sort());
         expect(pool.stored.map((row) => row.signature).sort()).toEqual([MINT_SIG, X402_SIG].sort());
@@ -276,7 +284,7 @@ describe('syncTransactions', () => {
 
         const result = await syncTransactions({ pool, connection, watched: [TREASURY], ...syncOptions });
 
-        expect(result).toEqual({ scanned: 2, newSignatures: 0, fetched: 0, failed: 0, error: null });
+        expect(result).toEqual({ scanned: 2, newSignatures: 0, fetched: 0, failed: 0, error: null, errorStack: null });
         expect(connection.calls.parsedBatches).toHaveLength(0);
         expect(pool.stored).toEqual([]);
     });
@@ -289,7 +297,7 @@ describe('syncTransactions', () => {
         const second = await syncTransactions({ pool, connection, watched: [TREASURY], ...syncOptions });
 
         expect(first.fetched).toBe(2);
-        expect(second).toEqual({ scanned: 2, newSignatures: 0, fetched: 0, failed: 0, error: null });
+        expect(second).toEqual({ scanned: 2, newSignatures: 0, fetched: 0, failed: 0, error: null, errorStack: null });
         expect(connection.calls.parsedBatches).toHaveLength(1);
         expect(pool.stored).toHaveLength(2);
     });
@@ -428,7 +436,7 @@ describe('syncTransactions', () => {
 
         const result = await syncTransactions({ pool, connection, watched: [TREASURY], dryRun: true, ...syncOptions });
 
-        expect(result).toEqual({ scanned: 2, newSignatures: 2, fetched: 0, failed: 0, error: null });
+        expect(result).toEqual({ scanned: 2, newSignatures: 2, fetched: 0, failed: 0, error: null, errorStack: null });
         expect(connection.calls.parsedBatches).toHaveLength(0);
         expect(pool.stored).toEqual([]);
     });

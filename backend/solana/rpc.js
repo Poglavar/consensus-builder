@@ -23,7 +23,7 @@ async function transientJsonRpcResponse(response) {
     } catch { return 'invalid RPC response'; }
 }
 
-export function createRetryingRpcFetch({ fetchImpl = globalThis.fetch, attempts = 4,
+export function createRetryingRpcFetch({ fetchImpl = globalThis.fetch, onRpcRequest = null, attempts = 4,
     firstDelayMs = 1000, maxDelayMs = 10000, timeoutMs = 15000, wait,
     log = message => console.warn(`[${new Date().toISOString()}] [solana-rpc] ${message}`) } = {}) {
     if (!Number.isInteger(attempts) || attempts < 1 || attempts > 6) throw new Error('RPC attempts must be between 1 and 6');
@@ -33,7 +33,8 @@ export function createRetryingRpcFetch({ fetchImpl = globalThis.fetch, attempts 
             return methods.length > 0 && methods.every(retryableMethod);
         },
         inspectResponse: transientJsonRpcResponse,
-        requestLabel: ({ init }) => [...new Set(requestMethods(init.body))].join(',') || 'request'
+        requestLabel: ({ init }) => [...new Set(requestMethods(init.body))].join(',') || 'request',
+        onAttempt: ({ init }) => onRpcRequest?.(requestMethods(init.body))
     });
 }
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // Backfill / top up consensus.solana_transaction from devnet, outside a web request.
 //
-// The explorer syncs a little on every page load, but the initial history has to be pulled slowly:
-// the public devnet RPC rate-limits hard, and a request cannot sit there backing off for minutes.
+// The explorer reads only the local mirror. This worker tops it up slowly because the public devnet
+// RPC rate-limits hard and a request cannot sit there backing off for minutes.
 // This runs the same sync once, so the pull can be repeated until it catches up.
 //
 // Restartable by construction: the table IS the checkpoint. A run killed by a rate limit keeps every
@@ -20,6 +20,7 @@
 import pkg from 'pg';
 import 'dotenv/config';
 import { createRpcConnection } from '../solana/rpc.js';
+import { createRpcMethodCounter } from '../solana/rpc-method-counts.js';
 import { DEFAULT_SIGNATURE_SCAN_LIMIT, FETCH_CHUNK_SPACING_MS } from '../solana/tx-store.js';
 import { runTransactionSync, readPersonasFile, timestampedLog as log } from '../solana/transaction-sync-job.js';
 
@@ -88,7 +89,8 @@ async function main() {
         password: process.env.PGPASSWORD,
         database: process.env.PGDATABASE
     });
-    const connection = createRpcConnection(process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
+    const rpcCounter = createRpcMethodCounter();
+    const connection = createRpcConnection(process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed', { onRpcRequest: rpcCounter.onRequest });
 
     try {
         const result = await runTransactionSync({
@@ -99,11 +101,12 @@ async function main() {
             limit: args.limit,
             spacing: args.spacing,
             dryRun: args.dryRun,
+            rpcCounter,
             log
         });
 
-        if (result.error) {
-            log(`INCOMPLETE — ${result.error}`);
+        if (result.status === 'failed' || result.failed > 0 || result.error) {
+            log(`INCOMPLETE — ${result.error || `${result.failed} signature(s) failed`}`);
             log('Everything fetched before the failure is stored; rerun to pick up the rest.');
             process.exitCode = 1;
         } else if (args.dryRun) {

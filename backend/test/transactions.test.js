@@ -35,7 +35,7 @@ const FIXTURES = {
  * spirit as test/helpers/mock-pool.js, but it has to answer four different statements.
  * `seed` pre-populates the table so a route can be tested without a successful sync.
  */
-function createStorePool({ seed = [], failOn = null, failWith = 'db offline' } = {}) {
+function createStorePool({ seed = [], failOn = null, failWith = 'db offline', syncRun = null } = {}) {
     const calls = [];
     const rows = new Map();
     const insert = (signature, extra = {}) => {
@@ -57,6 +57,8 @@ function createStorePool({ seed = [], failOn = null, failWith = 'db offline' } =
         async query(sql, params) {
             calls.push({ sql, params });
             if (failOn && sql.includes(failOn)) throw new Error(failWith);
+
+            if (sql.includes('FROM consensus.transaction_sync_run')) return { rows: syncRun ? [syncRun] : [] };
 
             if (sql.includes('WHERE signature = ANY($1)')) {
                 return { rows: (params[0] || []).filter((signature) => rows.has(signature)).map((signature) => ({ signature })) };
@@ -171,104 +173,86 @@ describe('GET /transactions/watched', () => {
 });
 
 describe('GET /transactions', () => {
-    it('syncs, then serves the store newest first with the full contract', async () => {
-        const pool = createStorePool();
-        const stub = createConnectionStub({
-            signaturesByAddress: { [TREASURY]: [FUNDING_SIG, MINT_SIG], [TREASURY_USDC]: [X402_SIG] }
+    it('reads the database and reports the durable worker status without RPC', async () => {
+        const pool = createStorePool({
+            seed: [X402_SIG, FUNDING_SIG, MINT_SIG],
+            syncRun: {
+                run_id: 'run-1', status: 'completed', started_at: new Date('2026-10-11T01:00:00Z'),
+                completed_at: new Date('2026-10-11T01:01:00Z'), last_success_at: new Date('2026-10-11T01:01:00Z'),
+                scanned: 3, new_signatures: 3, fetched: 3, failed: 0, error: null, error_stack: null, rpc_counts: { getSignaturesForAddress: 24 }
+            }
         });
+        const stub = { getSignaturesForAddress() { throw new Error('route must not access RPC'); } };
 
         const res = await request(createApp(stub, pool)).get('/transactions');
 
         expect(res.status).toBe(200);
         expect(res.body.cluster).toBe('devnet');
         expect(res.body.cached).toBe(false);
+        expect(res.body.source).toBe('database');
         expect(typeof res.body.fetchedAt).toBe('string');
         expect(res.body.explorer).toEqual(EXPLORER_LINKS);
         expect(res.body.count).toBe(3);
         expect(res.body.stored).toBe(3);
-        expect(res.body.sync).toMatchObject({ scanned: 3, newSignatures: 3, fetched: 3, failed: 0, error: null });
-        expect(typeof res.body.sync.at).toBe('string');
+        expect(res.body.sync).toMatchObject({ status: 'completed', scanned: 3, newSignatures: 3, fetched: 3, failed: 0, error: null });
+        expect(res.body.sync.rpcCounts).toEqual({ getSignaturesForAddress: 24 });
+        expect(res.body.sync.lastSuccessAt).toBe('2026-10-11T01:01:00.000Z');
         expect(res.body.transactions.map((tx) => tx.signature)).toEqual([X402_SIG, FUNDING_SIG, MINT_SIG]);
         expect(res.body.transactions[0].summary)
             .toBe('agent densifier-01 paid 0.05 USDC to treasury wallet (x402 settlement, fee paid by x402 facilitator)');
     });
 
-    it('serves a populated store with no rpc call at all when sync=0', async () => {
+    it('serves a populated store with no RPC regardless of legacy sync query parameters', async () => {
         const pool = createStorePool({ seed: [X402_SIG, MINT_SIG] });
-        const stub = createConnectionStub({ signaturesByAddress: { [TREASURY]: [FUNDING_SIG] } });
-
-        const res = await request(createApp(stub, pool)).get('/transactions?sync=0');
-
-        expect(res.status).toBe(200);
-        expect(stub.calls.signatures).toHaveLength(0);
-        expect(stub.calls.parsedBatches).toHaveLength(0);
-        expect(res.body.cached).toBe(true);
-        expect(res.body.count).toBe(2);
-        expect(res.body.stored).toBe(2);
-        expect(res.body.sync).toEqual({ at: null, scanned: 0, newSignatures: 0, fetched: 0, failed: 0, error: null });
-    });
-
-    it('gates the sync on a thirty second TTL, but always reads the store fresh', async () => {
-        vi.useFakeTimers();
-        const pool = createStorePool();
-        const stub = createConnectionStub({ signaturesByAddress: { [TREASURY]: [X402_SIG] } });
+        const stub = { getSignaturesForAddress() { throw new Error('route must not access RPC'); } };
         const app = createApp(stub, pool);
-
-        const first = await request(app).get('/transactions');
-        expect(first.body.cached).toBe(false);
-        const scansAfterFirst = stub.calls.signatures.length;
-
-        // A second row appears on chain, but inside the TTL the sync does not run.
-        stub.calls.signatures.length = 0;
-        const second = await request(app).get('/transactions');
-        expect(second.body.cached).toBe(true);
-        expect(stub.calls.signatures).toHaveLength(0);
-        expect(second.body.sync.at).toBe(first.body.sync.at);
-
-        vi.setSystemTime(Date.now() + 31_000);
-        const third = await request(app).get('/transactions');
-        expect(third.body.cached).toBe(false);
-        expect(stub.calls.signatures).toHaveLength(scansAfterFirst);
+        for (const suffix of ['', '?sync=0', '?sync=1', '?force=true']) {
+            const res = await request(app).get(`/transactions${suffix}`);
+            expect(res.status).toBe(200);
+            expect(res.body.source).toBe('database');
+            expect(res.body.count).toBe(2);
+            expect(res.body.stored).toBe(2);
+        }
     });
 
-    it('does not refetch a signature the store already holds', async () => {
-        const pool = createStorePool({ seed: [X402_SIG] });
-        const stub = createConnectionStub({ signaturesByAddress: { [TREASURY]: [X402_SIG, MINT_SIG] } });
-
-        const res = await request(createApp(stub, pool)).get('/transactions');
-
-        expect(stub.calls.parsedBatches).toHaveLength(1);
-        expect(stub.calls.parsedBatches[0].signatures).toEqual([MINT_SIG]);
-        expect(res.body.sync).toMatchObject({ scanned: 2, newSignatures: 1, fetched: 1 });
-        expect(res.body.stored).toBe(2);
-    });
-
-    it('makes no getParsedTransactions call when the store is already complete', async () => {
-        const pool = createStorePool({ seed: [X402_SIG, MINT_SIG] });
-        const stub = createConnectionStub({ signaturesByAddress: { [TREASURY]: [X402_SIG, MINT_SIG] } });
-
-        const res = await request(createApp(stub, pool)).get('/transactions');
-
-        expect(stub.calls.parsedBatches).toHaveLength(0);
-        expect(res.body.sync).toMatchObject({ newSignatures: 0, fetched: 0 });
-        expect(res.body.count).toBe(2);
+    it('renders failed last attempt separately from the last successful sync', async () => {
+        const pool = createStorePool({ seed: [X402_SIG], syncRun: {
+            run_id: 'run-2', job_name: 'land-oracle', status: 'failed', started_at: new Date('2026-10-11T02:00:00Z'),
+            completed_at: new Date('2026-10-11T02:01:00Z'), last_success_at: new Date('2026-10-11T01:01:00Z'),
+            scanned: 0, new_signatures: 0, fetched: 0, failed: 0, error: '429 rate limited', error_stack: 'Error: 429 rate limited', rpc_counts: { getSignaturesForAddress: 4 }
+        } });
+        const stub = { getSignaturesForAddress() { throw new Error('route must not access RPC'); } };
+        const app = createApp(stub, pool);
+        const res = await request(app).get('/transactions');
+        expect(res.body.sync.status).toBe('failed');
+        expect(res.body.sync.jobName).toBe('land-oracle');
+        expect(res.body.sync.error).toBe('429 rate limited');
+        expect(res.body.sync.errorStack).toContain('Error: 429');
+        expect(res.body.sync.at).toBe('2026-10-11T02:01:00.000Z');
+        expect(res.body.sync.lastSuccessAt).toBe('2026-10-11T01:01:00.000Z');
+        const syncStatusSql = pool.calls.find(call => call.sql.includes('FROM consensus.transaction_sync_run')).sql;
+        expect(syncStatusSql).toContain("job_name IN ('transaction-sync', 'land-oracle')");
+        expect(syncStatusSql).toContain('AND dry_run = FALSE');
+        expect(syncStatusSql.match(/AND dry_run = FALSE/g)).toHaveLength(2);
     });
 
     it('defaults the limit to 25 and caps it at 200', async () => {
         const pool = createStorePool({ seed: [X402_SIG] });
         const app = createApp(createConnectionStub(), pool);
 
+        const limitParam = () => pool.calls.filter(call => call.sql.includes('FROM consensus.solana_transaction') && call.sql.includes('LIMIT')).at(-1)?.params.at(-1);
+
         await request(app).get('/transactions?sync=0');
-        expect(pool.calls.at(-2).params.at(-1)).toBe(25);
+        expect(limitParam()).toBe(25);
 
         await request(app).get('/transactions?sync=0&limit=5');
-        expect(pool.calls.at(-2).params.at(-1)).toBe(5);
+        expect(limitParam()).toBe(5);
 
         await request(app).get('/transactions?sync=0&limit=5000');
-        expect(pool.calls.at(-2).params.at(-1)).toBe(200);
+        expect(limitParam()).toBe(200);
 
         await request(app).get('/transactions?sync=0&limit=not-a-number');
-        expect(pool.calls.at(-2).params.at(-1)).toBe(25);
+        expect(limitParam()).toBe(25);
     });
 
     it('applies the limit to the store read', async () => {
@@ -313,39 +297,18 @@ describe('GET /transactions', () => {
         expect(res.body.transactions).toEqual([]);
     });
 
-    it('still serves the store with 200 and sync.error when the rpc is rate limited', async () => {
-        vi.spyOn(console, 'error').mockImplementation(() => { });
+    it('serves the database snapshot even when an injected RPC stub would throw', async () => {
         const pool = createStorePool({ seed: [X402_SIG, MINT_SIG] });
-        const stub = createConnectionStub({ failSignatures: 'Too many requests for a specific RPC call' });
+        const stub = { getSignaturesForAddress() { throw new Error('no RPC is permitted'); } };
 
         const res = await request(createApp(stub, pool)).get('/transactions');
 
         expect(res.status).toBe(200);
         expect(res.body.count).toBe(2);
-        expect(res.body.sync.error).toContain('Too many requests');
+        expect(res.body.source).toBe('database');
+        expect(res.body.sync).toBeNull();
         expect(res.body.transactions[0].summary)
             .toBe('agent densifier-01 paid 0.05 USDC to treasury wallet (x402 settlement, fee paid by x402 facilitator)');
-    });
-
-    it('keeps the transactions a partially rate-limited sync managed to store', async () => {
-        vi.spyOn(console, 'error').mockImplementation(() => { });
-        const pool = createStorePool();
-        const stub = createConnectionStub({
-            signaturesByAddress: { [TREASURY]: [X402_SIG, FUNDING_SIG, MINT_SIG] }
-        });
-        let batches = 0;
-        const inner = stub.getParsedTransactions.bind(stub);
-        stub.getParsedTransactions = async (signatures, options) => {
-            batches += 1;
-            if (batches > 1) throw new Error('Too many requests for a specific RPC call');
-            return inner(signatures.slice(0, 2), options);
-        };
-
-        const res = await request(createApp(stub, pool, ENV, { syncTtlMs: 0 })).get('/transactions');
-
-        expect(res.status).toBe(200);
-        expect(res.body.stored).toBeGreaterThan(0);
-        expect(res.body.sync.fetched).toBeGreaterThan(0);
     });
 
     it('answers 502 only when the store itself is unreachable', async () => {
@@ -358,10 +321,10 @@ describe('GET /transactions', () => {
         expect(res.body.error).toBe('Transaction store unavailable: connection terminated');
     });
 
-    it('answers 502 when the missing-signature lookup cannot reach the store', async () => {
+    it('answers 502 when durable sync status cannot be read', async () => {
         vi.spyOn(console, 'error').mockImplementation(() => { });
-        const pool = createStorePool({ failOn: 'WHERE signature = ANY($1)', failWith: 'relation does not exist' });
-        const stub = createConnectionStub({ signaturesByAddress: { [TREASURY]: [X402_SIG] } });
+        const pool = createStorePool({ failOn: 'FROM consensus.transaction_sync_run', failWith: 'relation does not exist' });
+        const stub = { getSignaturesForAddress() { throw new Error('no RPC is permitted'); } };
 
         const res = await request(createApp(stub, pool)).get('/transactions');
 
@@ -371,55 +334,53 @@ describe('GET /transactions', () => {
 });
 
 describe('POST /transactions/sync', () => {
-    it('syncs immediately, ignoring the TTL', async () => {
-        const pool = createStorePool();
-        const stub = createConnectionStub({ signaturesByAddress: { [TREASURY]: [X402_SIG] } });
+    it('remains a DB-only refresh for old clients', async () => {
+        const pool = createStorePool({ seed: [X402_SIG] });
+        const stub = { getSignaturesForAddress() { throw new Error('old POST must not access RPC'); } };
         const app = createApp(stub, pool);
-
-        await request(app).get('/transactions');
-        const scansAfterGet = stub.calls.signatures.length;
 
         const res = await request(app).post('/transactions/sync');
 
         expect(res.status).toBe(200);
         expect(res.body.cluster).toBe('devnet');
         expect(res.body.stored).toBe(1);
-        expect(res.body.sync).toMatchObject({ scanned: 1, newSignatures: 0, fetched: 0, failed: 0, error: null });
-        expect(stub.calls.signatures.length).toBe(scansAfterGet * 2);
+        expect(res.body.sync).toBeNull();
+        expect(res.body.source).toBe('database');
     });
 
-    it('picks up a transaction that appeared inside the TTL window', async () => {
-        const pool = createStorePool();
-        const signatures = { [TREASURY]: [X402_SIG] };
-        const stub = createConnectionStub({ signaturesByAddress: signatures });
+    it('does not force a worker run when the old refresh request is repeated', async () => {
+        const pool = createStorePool({ seed: [X402_SIG] });
+        const stub = { getSignaturesForAddress() { throw new Error('old POST must not access RPC'); } };
         const app = createApp(stub, pool);
 
-        await request(app).get('/transactions');
-        signatures[TREASURY] = [X402_SIG, MINT_SIG];
-
-        const forced = await request(app).post('/transactions/sync');
-        expect(forced.body.sync).toMatchObject({ newSignatures: 1, fetched: 1 });
-
-        const page = await request(app).get('/transactions?sync=0');
-        expect(page.body.count).toBe(2);
+        const first = await request(app).post('/transactions/sync');
+        const second = await request(app).post('/transactions/sync');
+        expect(first.body.stored).toBe(second.body.stored);
+        expect(first.body.sync).toEqual(second.body.sync);
     });
 
-    it('reports a rate limit in sync.error instead of failing the request', async () => {
+    it('reports the durable failed worker outcome without attempting RPC', async () => {
         vi.spyOn(console, 'error').mockImplementation(() => { });
-        const pool = createStorePool({ seed: [X402_SIG] });
-        const stub = createConnectionStub({ failSignatures: '429 Too Many Requests' });
+        const pool = createStorePool({ seed: [X402_SIG], syncRun: {
+            run_id: 'failed-run', status: 'failed', started_at: new Date('2026-10-11T02:00:00Z'),
+            completed_at: new Date('2026-10-11T02:01:00Z'), last_success_at: null,
+            scanned: 0, new_signatures: 0, fetched: 0, failed: 0, error: '429 Too Many Requests',
+            error_stack: 'Error: 429 Too Many Requests', rpc_counts: { getSignaturesForAddress: 1 }
+        } });
+        const stub = { getSignaturesForAddress() { throw new Error('route must not access RPC'); } };
 
         const res = await request(createApp(stub, pool)).post('/transactions/sync');
 
         expect(res.status).toBe(200);
         expect(res.body.sync.error).toContain('429');
+        expect(res.body.sync.errorStack).toContain('Error: 429');
         expect(res.body.stored).toBe(1);
     });
 
     it('answers 502 when the store is unreachable', async () => {
         vi.spyOn(console, 'error').mockImplementation(() => { });
-        const pool = createStorePool({ failOn: 'WHERE signature = ANY($1)', failWith: 'db offline' });
-        const stub = createConnectionStub({ signaturesByAddress: { [TREASURY]: [X402_SIG] } });
+        const pool = createStorePool({ failOn: 'FROM consensus.transaction_sync_run', failWith: 'db offline' });
+        const stub = { getSignaturesForAddress() { throw new Error('route must not access RPC'); } };
 
         const res = await request(createApp(stub, pool)).post('/transactions/sync');
 
