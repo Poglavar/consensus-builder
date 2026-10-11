@@ -5,6 +5,9 @@
 // their keys exist) and the (inactive) notary-01 and lifecycle-01 lens members. Secrets stay in backend/.env
 // or protected key files; deploy-backend.sh deliberately restarts only the API app, so operators
 // activate these jobs separately.
+// The proposer now renders its immutable thumbnail before minting. Use the same
+// public basemap configuration as the API that rendered its old server-side post.
+const thumbnailKey = require('../ecosystem.config.cjs').apps.find(app => app.name === 'consensus-builder-api').env.MAPTILER_API_KEY;
 const lensEnv = {
   NODE_ENV: 'production',
   X402_NETWORK: 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1',
@@ -34,6 +37,7 @@ function proposerJob(name, persona, cron) {
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
+      MAPTILER_API_KEY: thumbnailKey,
       AGENT_DAILY_ACTION_CAP: '13',
       AGENT_DAILY_USDC_CAP: '0.35',
       AGENT_RETIRE_AFTER_DAYS: '3',
@@ -82,6 +86,7 @@ module.exports = {
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
+      MAPTILER_API_KEY: thumbnailKey,
       // 3 for the day's proposal (mint, market, stake) + 3 retirements × (cancel, resolve, claim).
       // Retirements spend no USDC; the USDC cap below still bounds the proposal.
       AGENT_DAILY_ACTION_CAP: '13',

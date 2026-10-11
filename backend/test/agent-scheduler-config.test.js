@@ -7,6 +7,13 @@ const apps = require('../agents/ecosystem.config.cjs').apps;
 const app = apps[0];
 
 describe('algorithmic agent schedule', () => {
+    it('provides every proposer the same public thumbnail basemap configuration as the API', () => {
+        const apiEnv = require('../ecosystem.config.cjs').apps.find(item => item.name === 'consensus-builder-api').env;
+        const proposers = apps.filter(item => item.script === 'agents/run.mjs');
+        expect(proposers).toHaveLength(3);
+        expect(apiEnv.MAPTILER_API_KEY).toBeTruthy();
+        for (const proposer of proposers) expect(proposer.env.MAPTILER_API_KEY).toBe(apiEnv.MAPTILER_API_KEY);
+    });
     it('checkpoints support and society runs before RPC reads and persists pre-action failures', () => {
         const supporter = fs.readFileSync(new URL('../agents/support-run.mjs', import.meta.url), 'utf8');
         const society = fs.readFileSync(new URL('../agents/society-run.mjs', import.meta.url), 'utf8');
