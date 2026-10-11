@@ -72,9 +72,17 @@
         if (connectionCache.has(clusterKey)) {
             return connectionCache.get(clusterKey);
         }
-        const rpc = clusters[clusterKey] || clusters.devnet;
+        const routing = globalScope.SolanaRpcRouting;
+        const endpoints = routing
+            ? routing.resolveEndpoints(clusterKey)
+            : {
+                primary: globalScope.SOLANA_RPC_URLS?.[clusterKey] || clusters[clusterKey] || clusters.devnet,
+                programAccounts: globalScope.SOLANA_PROGRAM_ACCOUNTS_RPC_URLS?.[clusterKey] || null
+            };
         if (!globalScope.solanaWeb3) throw new Error('Solana web3.js not loaded');
-        const connection = new globalScope.solanaWeb3.Connection(rpc, 'confirmed');
+        const options = { commitment: 'confirmed' };
+        if (routing) options.fetch = routing.createFetch(endpoints.primary, endpoints.programAccounts);
+        const connection = new globalScope.solanaWeb3.Connection(endpoints.primary, options);
         connectionCache.set(clusterKey, connection);
         return connection;
     }

@@ -14,9 +14,9 @@
     };
 
     const CLUSTERS = Object.freeze({
-        'mainnet-beta': { rpc: 'https://api.mainnet-beta.solana.com', name: 'Mainnet' },
-        devnet: { rpc: 'https://api.devnet.solana.com', name: 'Devnet' },
-        testnet: { rpc: 'https://api.testnet.solana.com', name: 'Testnet' }
+        'mainnet-beta': { name: 'Mainnet' },
+        devnet: { name: 'Devnet' },
+        testnet: { name: 'Testnet' }
     });
 
     const DEFAULT_CLUSTER = 'devnet';
@@ -161,10 +161,16 @@
             return activeProvider;
         },
         getConnection() {
-            const cluster = CLUSTERS[state.cluster] || CLUSTERS[DEFAULT_CLUSTER];
+            const clusterKey = CLUSTERS[state.cluster] ? state.cluster : DEFAULT_CLUSTER;
             if (!globalScope.solanaWeb3) return null;
             try {
-                return new globalScope.solanaWeb3.Connection(cluster.rpc);
+                const routing = globalScope.SolanaRpcRouting;
+                if (!routing) return null;
+                const endpoints = routing.resolveEndpoints(clusterKey);
+                return new globalScope.solanaWeb3.Connection(endpoints.primary, {
+                    commitment: 'confirmed',
+                    fetch: routing.createFetch(endpoints.primary, endpoints.programAccounts)
+                });
             } catch (_) {
                 return null;
             }

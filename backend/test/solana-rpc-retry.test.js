@@ -137,4 +137,126 @@ describe('bounded Solana RPC retries', () => {
         expect(fetchImpl).toHaveBeenCalledTimes(1);
         expect(rpcCounter.snapshot()).toEqual({ getBalance: 1 });
     });
+
+    it('routes only getProgramAccounts to the configured endpoint after verifying the network once', async () => {
+        const primary = 'https://primary.example.test/rpc';
+        const secondary = 'https://program-accounts.example.test/rpc';
+        const fetchImpl = vi.fn(async (endpoint, init) => {
+            const request = JSON.parse(init.body);
+            if (request.method === 'getGenesisHash') return response({ jsonrpc: '2.0', id: request.id, result: 'same-cluster' });
+            expect(request.method).toBe('getProgramAccounts');
+            return response({ jsonrpc: '2.0', id: request.id, result: [] });
+        });
+        vi.stubEnv('SOLANA_PROGRAM_ACCOUNTS_RPC_URL', secondary);
+        try {
+            const connection = createRpcConnection(primary, 'confirmed', { fetchImpl, wait: vi.fn(), log: vi.fn() });
+
+            await expect(connection.getProgramAccounts(new PublicKey('11111111111111111111111111111111'))).resolves.toEqual([]);
+            await expect(connection.getProgramAccounts(new PublicKey('11111111111111111111111111111111'))).resolves.toEqual([]);
+        } finally {
+            vi.unstubAllEnvs();
+        }
+        const dispatched = fetchImpl.mock.calls.map(([endpoint, init]) => [endpoint, JSON.parse(init.body).method]);
+        expect(dispatched).toEqual([
+            [primary, 'getGenesisHash'],
+            [secondary, 'getGenesisHash'],
+            [secondary, 'getProgramAccounts'],
+            [secondary, 'getProgramAccounts']
+        ]);
+    });
+
+    it('refuses to use a secondary program-accounts endpoint on a different network', async () => {
+        const primary = 'https://primary.example.test/rpc';
+        const secondary = 'https://program-accounts.example.test/rpc';
+        const fetchImpl = vi.fn(async (endpoint, init) => {
+            const request = JSON.parse(init.body);
+            const result = endpoint === primary ? 'cluster-a' : 'cluster-b';
+            return response({ jsonrpc: '2.0', id: request.id, result });
+        });
+        const retry = createRetryingRpcFetch({
+            fetchImpl,
+            primaryEndpoint: primary,
+            programAccountsEndpoint: secondary,
+            wait: vi.fn(),
+            log: vi.fn()
+        });
+
+        await expect(retry(primary, { method: 'POST', body: rpcRequest('getProgramAccounts') }))
+            .rejects.toThrow('different Solana network');
+        expect(fetchImpl).toHaveBeenCalledTimes(2);
+    });
+
+    it('retries secondary network verification after a transient genesis failure', async () => {
+        const primary = 'https://retry-primary.example.test/rpc';
+        const secondary = 'https://retry-program-accounts.example.test/rpc';
+        let failedPrimaryGenesis = false;
+        const fetchImpl = vi.fn(async (endpoint, init) => {
+            const request = JSON.parse(init.body);
+            if (request.method === 'getGenesisHash') {
+                if (endpoint === primary && !failedPrimaryGenesis) {
+                    failedPrimaryGenesis = true;
+                    throw new TypeError('temporary network reset');
+                }
+                return response({ jsonrpc: '2.0', id: request.id, result: 'same-cluster' });
+            }
+            if (request.method === 'getBalance') {
+                return response({ jsonrpc: '2.0', id: request.id, result: { context: { slot: 1 }, value: 321 } });
+            }
+            expect(request.method).toBe('getProgramAccounts');
+            return response({ jsonrpc: '2.0', id: request.id, result: [] });
+        });
+        const connection = createRpcConnection(primary, 'confirmed', {
+            programAccountsEndpoint: secondary,
+            fetchImpl,
+            attempts: 1,
+            wait: vi.fn(),
+            log: vi.fn()
+        });
+        const owner = new PublicKey('11111111111111111111111111111111');
+
+        await expect(connection.getProgramAccounts(owner)).rejects.toThrow('temporary network reset');
+        await expect(connection.getBalance(owner)).resolves.toBe(321);
+        await expect(connection.getProgramAccounts(owner)).resolves.toEqual([]);
+
+        const dispatched = fetchImpl.mock.calls.map(([endpoint, init]) => [endpoint, JSON.parse(init.body).method]);
+        expect(dispatched).toEqual([
+            [primary, 'getGenesisHash'],
+            [secondary, 'getGenesisHash'],
+            [primary, 'getBalance'],
+            [primary, 'getGenesisHash'],
+            [secondary, 'getGenesisHash'],
+            [secondary, 'getProgramAccounts']
+        ]);
+    });
+
+    it('splits a mixed JSON-RPC batch so only the list method reaches the secondary', async () => {
+        const primary = 'https://primary.example.test/rpc';
+        const secondary = 'https://program-accounts.example.test/rpc';
+        const body = JSON.stringify([
+            { jsonrpc: '2.0', id: 1, method: 'getBalance', params: [] },
+            { jsonrpc: '2.0', id: 2, method: 'getProgramAccounts', params: [] }
+        ]);
+        const fetchImpl = vi.fn(async (endpoint, init) => {
+            const payload = JSON.parse(init.body);
+            if (!Array.isArray(payload) && payload.method === 'getGenesisHash') {
+                return response({ jsonrpc: '2.0', id: payload.id, result: 'same-cluster' });
+            }
+            const rows = Array.isArray(payload) ? payload : [payload];
+            const replies = rows.map(row => ({ jsonrpc: '2.0', id: row.id, result: row.method === 'getBalance' ? 12 : [] }));
+            return response(Array.isArray(payload) ? replies : replies[0]);
+        });
+        const retry = createRetryingRpcFetch({ fetchImpl, primaryEndpoint: primary, programAccountsEndpoint: secondary, wait: vi.fn(), log: vi.fn() });
+
+        const result = await retry(primary, { method: 'POST', body });
+
+        expect(await result.json()).toEqual([
+            { jsonrpc: '2.0', id: 1, result: 12 },
+            { jsonrpc: '2.0', id: 2, result: [] }
+        ]);
+        const routed = fetchImpl.mock.calls.slice(2).map(([endpoint, init]) => [endpoint, JSON.parse(init.body).map(row => row.method)]);
+        expect(routed).toEqual([
+            [primary, ['getBalance']],
+            [secondary, ['getProgramAccounts']]
+        ]);
+    });
 });

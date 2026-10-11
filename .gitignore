@@ -28,6 +28,7 @@ __pycache__/
 /*.png
 .env
 frontend/carto-config.js
+frontend/rpc-config.js
 
 # Generated audiobook assets are local deliverables, not repository source.
 /data/metrocoalescence-chapter-*.mp3
