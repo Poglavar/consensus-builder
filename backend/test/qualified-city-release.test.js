@@ -9,7 +9,11 @@ const root = new URL('../../', import.meta.url);
 const read = file => readFileSync(new URL(file, root));
 const json = file => JSON.parse(read(file));
 const digest = file => createHash('sha256').update(read(file)).digest('hex');
-const manifest = json('world-parcels/research/qualification-admission-2026-10-11.json');
+const manifests = [
+    json('world-parcels/research/qualification-admission-2026-10-11.json'),
+    json('world-parcels/research/qualification-admission-2026-10-11-round2.json')
+];
+const admittedCities = manifests.flatMap(manifest => manifest.cities);
 const registry = json('world-parcels/registry.json');
 const context = { console, URL, URLSearchParams }; context.window = context;
 runInNewContext(read('frontend/js/city-config.js').toString(), context);
@@ -17,7 +21,15 @@ const blockers = ['invalidCount', 'duplicateIdCount', 'conflictingSameIdGeometry
     'exactGeometryDuplicateCount', 'overlapPairCount', 'operationErrorCount'];
 
 describe('qualified city production admission', () => {
-    it.each(manifest.cities)('$appCityId resolves the qualified source with reproducible, non-repaired evidence', city => {
+    it('keeps both admission cohorts complete and uniquely bound to app cities', () => {
+        for (const manifest of manifests) expect(manifest.cities.length).toBe(manifest.cityCount);
+        expect(new Set(admittedCities.map(city => city.appCityId)).size).toBe(admittedCities.length);
+        expect(new Set(admittedCities.map(city => city.cityCode)).size).toBe(admittedCities.length);
+        expect(manifests[1].cityCount).toBe(108);
+        expect(manifests[1].cities.every(city => city.primaryReview.status === 'admitted')).toBe(true);
+    });
+
+    it.each(admittedCities)('$appCityId resolves the qualified source with reproducible, non-repaired evidence', city => {
         const source = parcelSourceForCity(city.appCityId);
         expect(source?.descriptor.id).toBe(city.sourceId);
         expect(source.descriptor.metricSrid).toBe(Number(city.metric.metricCrs.split(':')[1]));
@@ -35,6 +47,23 @@ describe('qualified city production admission', () => {
             expect(digest(city.evidenceFiles[kind])).toBe(city[kind].evidenceExportSha256);
         }
         const qualification = json(city.evidenceFiles.qualification);
+        const candidate = json(city.evidenceFiles.candidate);
+        expect(candidate.city).toMatchObject({ code: city.cityCode, name: city.qualificationCityName });
+        expect(candidate.city.point).toEqual([city.wupPointLatLon[1], city.wupPointLatLon[0]]);
+        expect(source.descriptor.endpoint).toBe(candidate.descriptor.endpoint);
+        expect(source.descriptor.idPrefix).toBe(candidate.descriptor.idPrefix);
+        expect(source.descriptor.idField).toBe(candidate.descriptor.idField);
+        expect(source.descriptor.idFields).toEqual(candidate.descriptor.idFields);
+        expect(config.parcels.idPrefix).toBe(candidate.descriptor.idPrefix);
+        // Reused-provider admissions must execute the same query contract that was qualified.
+        if (city.primaryReview) {
+            for (const field of ['attributeFilters', 'attributeExclusions', 'attributeNotNull', 'attributeNull',
+                'featureType', 'boundsQueryMode', 'idsQueryMode', 'boundsSrid', 'boundsProjection']) {
+                expect(source.descriptor[field] ?? null).toEqual(candidate.descriptor[field] ?? null);
+            }
+        }
+        expect(qualification.sourceId).toBe(city.sourceId);
+        expect(qualification.cityCode).toBe(city.cityCode);
         expect(qualification.candidateSha256).toBe(city.candidate.qualificationRecordedSha256);
         expect(Object.values(qualification.checks).filter(gate => gate.passed).length).toBe(8);
         const metric = json(city.evidenceFiles.metric);

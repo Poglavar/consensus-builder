@@ -1,0 +1,61 @@
+{
+  "descriptor": {
+    "id": "zm-nsdi-zilmis-lots",
+    "name": "Zambia NSDI ZILMIS lot polygons",
+    "adapter": "arcgis",
+    "endpoint": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0",
+    "idField": "SDE.Lots.OBJECTID",
+    "idType": "integer",
+    "idPrefix": "ZM-NSDI-LOT-",
+    "objectIdField": "SDE.Lots.OBJECTID",
+    "outFields": [
+      "SDE.Lots.OBJECTID"
+    ],
+    "pageSize": 1000,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 1,
+    "countryCode": "ZM",
+    "metricSrid": 32735,
+    "cityIds": [
+      "kitwe",
+      "429"
+    ],
+    "maxConcurrentQueries": 6,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "boundsSrid": 32735,
+    "boundsProjection": "+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs",
+    "operator": "Government of Zambia National Spatial Data Infrastructure / ZILMIS",
+    "scope": "31 valid distinct public cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded manifest paging, forced three-row pages, all 31 fresh source-ID reads, explicit absence, footprint and source binding passed in 54 requests. Independent metric EPSG:32735 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Source-native SDE.Lots.OBJECTID is the unique GIS reference identity; the original UPID label is retained unchanged. The first UPID identity qualification is preserved as failed: one blank UPID matched 38,736 records and cannot serve as a unique native parcel key. A fresh run using source OIDs preserves all sampled geometry and passes every query check. Provider offset pagination is unsupported; complete count-checked object-ID manifests and bounded object-ID batches are used instead. Native source CRS is EPSG:32735. The exact WUP point returned no lot; all three original nearby UPID-labelled samples match fresh full source geometry exactly. Citywide completeness, legal title, survey accuracy, currentness and long-term GIS key continuity remain unverified.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/kitwe-zilmis-oid-root-acceptance.json",
+    "attribution": "Government of Zambia National Spatial Data Infrastructure / ZILMIS · cadastral-reference polygons · adapted",
+    "catalogueUrl": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer",
+    "licenceNote": "Anonymous bounded public geometry and publisher attribution verified. Publisher reuse/currentness/legal-coordinate conditions are informational. This reference geometry does not establish legal title or survey accuracy. Personal fields and reader token values are excluded."
+  },
+  "city": {
+    "code": "429",
+    "name": "Livingstone",
+    "point": [
+      25.8579818245686,
+      -17.8443175114028
+    ]
+  },
+  "sampleIds": [
+    "ZM-NSDI-LOT-64551",
+    "ZM-NSDI-LOT-65425",
+    "ZM-NSDI-LOT-64448"
+  ],
+  "absentId": "ZM-NSDI-LOT-999999999",
+  "metricEpsg": "EPSG:32735",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Zambia NSDI ZILMIS lot polygons",
+      "Executable parcel providers with cityIds for shared-provider city entries; research-only sources remain in registry.json until verified.; Zambia NSDI ZILMIS lot polygons; 31 valid distinct public cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded manifest paging, forced three-row pages, all 31 fresh source-ID reads, explicit absence, footprint and source binding passed in 54 requests. Independent metric EPSG:32735 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Source-native SDE.Lots.OBJECTID is the unique GIS reference identity; the original UPID label is retained unchanged. The first UPID identity qualification is preserved as failed: one blank UPID matched 38,736 records and cannot serve as a unique native parcel key. A fresh run using source OIDs preserves all sampled geometry and passes every query check. Provider offset pagination is unsupported; complete count-checked object-ID manifests and bounded object-ID batches are used instead. Native source CRS is EPSG:32735. The exact WUP point returned no lot; all three original nearby UPID-labelled samples match fresh full source geometry exactly. Citywide completeness, legal title, survey accuracy, currentness and long-term GIS key continuity remain unverified.; Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples."
+    ]
+  },
+  "cellSizeDegrees": 0.001,
+  "sourceCandidateSha256": "77b3280986bdc959d24d271287b4807217a993bcc66236f829616c88085d66b5",
+  "qualificationRecordedSha256": "4eb5b3df71b6c5541ccee88a317d7a4ab6a44bf4c8eb004bc71553b557dd5360",
+  "sourceCandidatePath": "tmp/parcel-qualification/cities/429/attempt-01/candidate.json"
+}

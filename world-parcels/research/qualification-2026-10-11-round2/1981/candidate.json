@@ -1,0 +1,57 @@
+{
+  "descriptor": {
+    "id": "au-nsw-six-cadastre-lot",
+    "endpoint": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9",
+    "idField": "cadid",
+    "objectIdField": "objectid",
+    "idPrefix": "AU-NSW-",
+    "idType": "integer",
+    "outFields": [
+      "cadid",
+      "objectid"
+    ],
+    "pageSize": 500,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "metricSrid": 32756,
+    "adapter": "arcgis",
+    "name": "NSW Spatial Services cadastral lots",
+    "countryCode": "AU",
+    "cityIds": [
+      "sydney",
+      "1981"
+    ],
+    "scope": "New South Wales cadastral lots; a bounded western Sydney metropolitan entry is enabled around the verified sample. This does not establish complete Sydney coverage or legal title.",
+    "evidenceFile": "research/sydney-live.json",
+    "licenceUrl": "https://www.spatial.nsw.gov.au/products_and_services/web_services/terms_and_conditions",
+    "catalogueUrl": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9",
+    "licenceNote": "NSW Spatial Services publishes attribution conditions and restrictions on automated retrieval; users are responsible for checking the publisher conditions for their intended use.",
+    "attribution": "NSW Spatial Services / Department of Customer Service, cadastral lots; adapted to WGS84. See publisher conditions."
+  },
+  "city": {
+    "code": "1981",
+    "name": "Campbelltown",
+    "point": [
+      150.818086470537,
+      -34.063620251064
+    ]
+  },
+  "sampleIds": [
+    "AU-NSW-101261871",
+    "AU-NSW-104664347",
+    "AU-NSW-104664349"
+  ],
+  "absentId": "AU-NSW-999999999",
+  "metricEpsg": "EPSG:32756",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "NSW Spatial Services cadastral lots",
+      "Executable parcel providers with cityIds for shared-provider city entries; research-only sources remain in registry.json until verified.; NSW Spatial Services cadastral lots; New South Wales cadastral lots; a bounded western Sydney metropolitan entry is enabled around the verified sample. This does not establish complete Sydney coverage or legal title.; Metadata-only complete viewport and exact-key source verification."
+    ]
+  },
+  "cellSizeDegrees": 0.001,
+  "sourceCandidateSha256": "55fb6055850558e3e3ad89a2482a2d14d1d3508ce772a7f49bba4fc093f6faf7",
+  "qualificationRecordedSha256": "b76b184627c4c4e34762d8d780fc952fffc46929c57884d1e45c548d0ce894c5",
+  "sourceCandidatePath": "tmp/parcel-qualification/cities/1981/attempt-01/candidate.json"
+}

@@ -1,0 +1,1091 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "4418",
+  "cityName": "Prairie Oaks",
+  "sourceId": "us-ca-sacramento-active-parcels",
+  "candidateSha256": "ef19d0bddc7ec297b8e28520dce4f6a297aa4930c1e5511328ac4ecfb89a1180",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 1,
+      "returnedCount": 1,
+      "freshCollectedIds": 41,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 41,
+      "collectedUniqueCount": 41
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 92
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "feature-queries",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "featurePageRequests": 10,
+      "distinctFeatureQueries": 10,
+      "duplicatePageRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 1
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "3ef1a7ebc9a02bb0b1af794c276ce755de7f121d1c5817139682ab48bca38900",
+      "featureCount": 41,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32610",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "3ef1a7ebc9a02bb0b1af794c276ce755de7f121d1c5817139682ab48bca38900",
+  "featureCount": 41,
+  "sampleIds": [
+    "US-CA-SACRAMENTO-07100401290000"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        -121.15,
+        38.671,
+        -121.149,
+        38.672
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "US-CA-SACRAMENTO-07100401290000"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        -121.149,
+        38.671,
+        -121.148,
+        38.672
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "ids": [
+        "US-CA-SACRAMENTO-07100401290000",
+        "US-CA-SACRAMENTO-07113900060000"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        -121.148,
+        38.671,
+        -121.147,
+        38.672
+      ],
+      "complete": true,
+      "featureCount": 6,
+      "ids": [
+        "US-CA-SACRAMENTO-07113900040000",
+        "US-CA-SACRAMENTO-07113900050000",
+        "US-CA-SACRAMENTO-07113900030000",
+        "US-CA-SACRAMENTO-07100401290000",
+        "US-CA-SACRAMENTO-07113900160000",
+        "US-CA-SACRAMENTO-07113900060000"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        -121.15,
+        38.672,
+        -121.149,
+        38.673
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "ids": [
+        "US-CA-SACRAMENTO-07100400750000",
+        "US-CA-SACRAMENTO-07100401290000"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        -121.149,
+        38.672,
+        -121.148,
+        38.673
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "ids": [
+        "US-CA-SACRAMENTO-07100400750000",
+        "US-CA-SACRAMENTO-07100401290000"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        -121.148,
+        38.672,
+        -121.147,
+        38.673
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "US-CA-SACRAMENTO-07100401290000"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        -121.15,
+        38.673,
+        -121.149,
+        38.674
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "ids": [
+        "US-CA-SACRAMENTO-07100400750000",
+        "US-CA-SACRAMENTO-07100400140000"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        -121.149,
+        38.673,
+        -121.148,
+        38.674
+      ],
+      "complete": true,
+      "featureCount": 3,
+      "ids": [
+        "US-CA-SACRAMENTO-07100400750000",
+        "US-CA-SACRAMENTO-07100401290000",
+        "US-CA-SACRAMENTO-07100400140000"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        -121.148,
+        38.673,
+        -121.147,
+        38.674
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "ids": [
+        "US-CA-SACRAMENTO-07100401290000",
+        "US-CA-SACRAMENTO-07100400140000"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        -121.149,
+        38.67,
+        -121.148,
+        38.671
+      ],
+      "complete": true,
+      "featureCount": 6,
+      "ids": [
+        "US-CA-SACRAMENTO-07100401290000",
+        "US-CA-SACRAMENTO-07100401610000",
+        "US-CA-SACRAMENTO-07113900060000",
+        "US-CA-SACRAMENTO-07113900010000",
+        "US-CA-SACRAMENTO-07200310540000",
+        "US-CA-SACRAMENTO-07113900020000"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        -121.149,
+        38.674,
+        -121.148,
+        38.675
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "US-CA-SACRAMENTO-07100400140000"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        -121.151,
+        38.672,
+        -121.15,
+        38.673
+      ],
+      "complete": true,
+      "featureCount": 12,
+      "ids": [
+        "US-CA-SACRAMENTO-07101730140000",
+        "US-CA-SACRAMENTO-07100400750000",
+        "US-CA-SACRAMENTO-07101730150000",
+        "US-CA-SACRAMENTO-07101710190000",
+        "US-CA-SACRAMENTO-07101720110000",
+        "US-CA-SACRAMENTO-07101710200000",
+        "US-CA-SACRAMENTO-07101710160000",
+        "US-CA-SACRAMENTO-07101710170000",
+        "US-CA-SACRAMENTO-07101710180000",
+        "US-CA-SACRAMENTO-07100400760000",
+        "US-CA-SACRAMENTO-07101730130000",
+        "US-CA-SACRAMENTO-07101720120000"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        -121.147,
+        38.672,
+        -121.146,
+        38.673
+      ],
+      "complete": true,
+      "featureCount": 6,
+      "ids": [
+        "US-CA-SACRAMENTO-07113900170000",
+        "US-CA-SACRAMENTO-07113900120000",
+        "US-CA-SACRAMENTO-07100401290000",
+        "US-CA-SACRAMENTO-07113900160000",
+        "US-CA-SACRAMENTO-07113900130000",
+        "US-CA-SACRAMENTO-07113900100000"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 42,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:16.235Z",
+      "queryHash": "c30abb7f49dd4ea963cdb5b3296ccbb100273b0106624d00a064ffc638749f39",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1968
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:18.209Z",
+      "queryHash": "c30abb7f49dd4ea963cdb5b3296ccbb100273b0106624d00a064ffc638749f39",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 205
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:18.416Z",
+      "queryHash": "31e85dc1cfd3dc664545e43adb94895d27b07e7704de43ed2973c6eac2f3ab07",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 204
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:18.623Z",
+      "queryHash": "9899ad0c7d5d8ad6e8fa4be6e54d087e921f206b6ac08fe66a6a396f2b8dcdd2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 757
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:19.382Z",
+      "queryHash": "9899ad0c7d5d8ad6e8fa4be6e54d087e921f206b6ac08fe66a6a396f2b8dcdd2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 686
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:20.069Z",
+      "queryHash": "9899ad0c7d5d8ad6e8fa4be6e54d087e921f206b6ac08fe66a6a396f2b8dcdd2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 659
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:20.730Z",
+      "queryHash": "9899ad0c7d5d8ad6e8fa4be6e54d087e921f206b6ac08fe66a6a396f2b8dcdd2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 666
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:21.397Z",
+      "queryHash": "9899ad0c7d5d8ad6e8fa4be6e54d087e921f206b6ac08fe66a6a396f2b8dcdd2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 674
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:22.072Z",
+      "queryHash": "9899ad0c7d5d8ad6e8fa4be6e54d087e921f206b6ac08fe66a6a396f2b8dcdd2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 668
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:22.742Z",
+      "queryHash": "9899ad0c7d5d8ad6e8fa4be6e54d087e921f206b6ac08fe66a6a396f2b8dcdd2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 684
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:23.428Z",
+      "queryHash": "9899ad0c7d5d8ad6e8fa4be6e54d087e921f206b6ac08fe66a6a396f2b8dcdd2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 672
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:24.102Z",
+      "queryHash": "9899ad0c7d5d8ad6e8fa4be6e54d087e921f206b6ac08fe66a6a396f2b8dcdd2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 664
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:24.767Z",
+      "queryHash": "9899ad0c7d5d8ad6e8fa4be6e54d087e921f206b6ac08fe66a6a396f2b8dcdd2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 685
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:25.453Z",
+      "queryHash": "9899ad0c7d5d8ad6e8fa4be6e54d087e921f206b6ac08fe66a6a396f2b8dcdd2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 673
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:26.126Z",
+      "queryHash": "9899ad0c7d5d8ad6e8fa4be6e54d087e921f206b6ac08fe66a6a396f2b8dcdd2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 668
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:26.796Z",
+      "queryHash": "9899ad0c7d5d8ad6e8fa4be6e54d087e921f206b6ac08fe66a6a396f2b8dcdd2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 669
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:27.467Z",
+      "queryHash": "9899ad0c7d5d8ad6e8fa4be6e54d087e921f206b6ac08fe66a6a396f2b8dcdd2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 680
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:28.150Z",
+      "queryHash": "9899ad0c7d5d8ad6e8fa4be6e54d087e921f206b6ac08fe66a6a396f2b8dcdd2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 670
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:28.821Z",
+      "queryHash": "9899ad0c7d5d8ad6e8fa4be6e54d087e921f206b6ac08fe66a6a396f2b8dcdd2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 677
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:29.500Z",
+      "queryHash": "9899ad0c7d5d8ad6e8fa4be6e54d087e921f206b6ac08fe66a6a396f2b8dcdd2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 693
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:30.194Z",
+      "queryHash": "9899ad0c7d5d8ad6e8fa4be6e54d087e921f206b6ac08fe66a6a396f2b8dcdd2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 684
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:30.880Z",
+      "queryHash": "9899ad0c7d5d8ad6e8fa4be6e54d087e921f206b6ac08fe66a6a396f2b8dcdd2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 649
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:31.530Z",
+      "queryHash": "9899ad0c7d5d8ad6e8fa4be6e54d087e921f206b6ac08fe66a6a396f2b8dcdd2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 695
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:32.225Z",
+      "queryHash": "9899ad0c7d5d8ad6e8fa4be6e54d087e921f206b6ac08fe66a6a396f2b8dcdd2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 662
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:32.889Z",
+      "queryHash": "9899ad0c7d5d8ad6e8fa4be6e54d087e921f206b6ac08fe66a6a396f2b8dcdd2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 699
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:33.589Z",
+      "queryHash": "9899ad0c7d5d8ad6e8fa4be6e54d087e921f206b6ac08fe66a6a396f2b8dcdd2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 672
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:34.265Z",
+      "queryHash": "9899ad0c7d5d8ad6e8fa4be6e54d087e921f206b6ac08fe66a6a396f2b8dcdd2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 682
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:34.948Z",
+      "queryHash": "9899ad0c7d5d8ad6e8fa4be6e54d087e921f206b6ac08fe66a6a396f2b8dcdd2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 710
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:35.659Z",
+      "queryHash": "9899ad0c7d5d8ad6e8fa4be6e54d087e921f206b6ac08fe66a6a396f2b8dcdd2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 736
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:36.398Z",
+      "queryHash": "175612da6d5b50f94dd8f79985dc96cabefa379c9baabcf45d38d729ba240b3f",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 200
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:36.598Z",
+      "queryHash": "ebf8e4daf68c3606f65560e953b9c101ccf2aa349894699e6bc7c163a565c399",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 195
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:36.794Z",
+      "queryHash": "cad5238f56c82c4a903f32de566e2522317d5b6d83b4175068a65bb86afbe9ee",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 195
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:36.990Z",
+      "queryHash": "73dc471ca3ef7db793b1cf2a94175622edc3f212db037e808e76cdb60e3da97c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 197
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:37.188Z",
+      "queryHash": "044bea8ca01a65870d1106d0fd8ac0062073464bc4f21f698c972374ce984af7",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 197
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:37.385Z",
+      "queryHash": "a07dd9d95de700aed9fc293f62474ad7a0259ca100ef8a2568bb9a53ac7ba923",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 195
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:37.581Z",
+      "queryHash": "8985e1537ac48b752137c7882ae12ee9dcbebc708cb6e17faca61292de7169b2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 196
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:37.779Z",
+      "queryHash": "bb708380220d639fc10b9341e701798214e9ddeb89b16beeed6d35fe8b2db02e",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 192
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:37.971Z",
+      "queryHash": "bd58199086e0e2019754e5c4e7ceed903da3d6f7ba7f9b214d50a5e50f64661f",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 196
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:38.167Z",
+      "queryHash": "9292ae0e7d7b09d58fab6843d19d15b60d1d6bbf323d3c3c5e078aeaa10cf7f8",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 196
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:38.366Z",
+      "queryHash": "c30abb7f49dd4ea963cdb5b3296ccbb100273b0106624d00a064ffc638749f39",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 194
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:38.563Z",
+      "queryHash": "9899ad0c7d5d8ad6e8fa4be6e54d087e921f206b6ac08fe66a6a396f2b8dcdd2",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 702
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "mapservices.gis.saccounty.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:53:39.494Z",
+      "queryHash": "026574ca228e3e9aebb1592c6b26aa6676347a57f2ea5fc2540cd784726c11fb",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 204
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

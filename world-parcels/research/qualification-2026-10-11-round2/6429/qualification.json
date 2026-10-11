@@ -1,0 +1,3251 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "6429",
+  "cityName": "Nassau Bay",
+  "sourceId": "us-tx-harris-hcad-parcels",
+  "candidateSha256": "17d0cbde480c57eff763d0432c480a204e87c53204a05a3eab1ac5bbe008f9f4",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 134,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 134,
+      "collectedUniqueCount": 134
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 422,
+      "sampleCentroidCell": {
+        "index": 4,
+        "dx": 0,
+        "dy": 0,
+        "bbox": [
+          -95.126,
+          29.571,
+          -95.125,
+          29.572
+        ],
+        "reason": "WUP point had no containing sampled parcel; sample centroid cell added.",
+        "complete": true,
+        "featureCount": 21,
+        "ids": [
+          "US-TX-HCAD-0964860000663",
+          "US-TX-HCAD-0964860000664",
+          "US-TX-HCAD-0964860000665",
+          "US-TX-HCAD-0964860000666",
+          "US-TX-HCAD-0964860000675",
+          "US-TX-HCAD-0964860000676",
+          "US-TX-HCAD-0964860000677",
+          "US-TX-HCAD-0964860000678",
+          "US-TX-HCAD-0964860000679",
+          "US-TX-HCAD-0964860000680",
+          "US-TX-HCAD-0964860000717",
+          "US-TX-HCAD-0964870000688",
+          "US-TX-HCAD-0964870000689",
+          "US-TX-HCAD-0964870000690",
+          "US-TX-HCAD-0964870000691",
+          "US-TX-HCAD-0964870000692",
+          "US-TX-HCAD-0964870000693",
+          "US-TX-HCAD-0964870000703",
+          "US-TX-HCAD-0964870000704",
+          "US-TX-HCAD-0964870000705",
+          "US-TX-HCAD-0964870000713"
+        ]
+      }
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "object-ids-manifest",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "singletonObjectIdRequests": 5,
+      "distinctSingletonObjectIdQueries": 5,
+      "duplicateObjectIdRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "723ff6a871ffaeee20929f170910b0508874890d76e456f7efd816dc67671484",
+      "featureCount": 134,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32615",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "723ff6a871ffaeee20929f170910b0508874890d76e456f7efd816dc67671484",
+  "featureCount": 134,
+  "sampleIds": [
+    "US-TX-HCAD-0964860000717",
+    "US-TX-HCAD-0964860000679",
+    "US-TX-HCAD-0964870000691"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        -95.127,
+        29.57,
+        -95.126,
+        29.571
+      ],
+      "complete": true,
+      "featureCount": 17,
+      "ids": [
+        "US-TX-HCAD-0964810000551",
+        "US-TX-HCAD-0964860000671",
+        "US-TX-HCAD-0964870000685",
+        "US-TX-HCAD-0964870000684",
+        "US-TX-HCAD-0964870000709",
+        "US-TX-HCAD-0966060000718",
+        "US-TX-HCAD-0966060000717",
+        "US-TX-HCAD-0964860000670",
+        "US-TX-HCAD-0964860000667",
+        "US-TX-HCAD-0964860000668",
+        "US-TX-HCAD-0964860000669",
+        "US-TX-HCAD-0964860000672",
+        "US-TX-HCAD-0964860000673",
+        "US-TX-HCAD-0964860000674",
+        "US-TX-HCAD-0964860000675",
+        "US-TX-HCAD-0964870000687",
+        "US-TX-HCAD-0964870000686"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        -95.126,
+        29.57,
+        -95.125,
+        29.571
+      ],
+      "complete": true,
+      "featureCount": 20,
+      "ids": [
+        "US-TX-HCAD-0964860000664",
+        "US-TX-HCAD-0964810000551",
+        "US-TX-HCAD-0964810000555",
+        "US-TX-HCAD-0964810000556",
+        "US-TX-HCAD-0964810000557",
+        "US-TX-HCAD-0964860000666",
+        "US-TX-HCAD-0964860000718",
+        "US-TX-HCAD-0964810000552",
+        "US-TX-HCAD-0964810000553",
+        "US-TX-HCAD-0964810000554",
+        "US-TX-HCAD-0964810000546",
+        "US-TX-HCAD-0964810000547",
+        "US-TX-HCAD-0964810000548",
+        "US-TX-HCAD-0964860000665",
+        "US-TX-HCAD-0964860000667",
+        "US-TX-HCAD-0964860000668",
+        "US-TX-HCAD-0964860000669",
+        "US-TX-HCAD-0964860000674",
+        "US-TX-HCAD-0964860000675",
+        "US-TX-HCAD-0964860000676"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        -95.125,
+        29.57,
+        -95.124,
+        29.571
+      ],
+      "complete": true,
+      "featureCount": 19,
+      "ids": [
+        "US-TX-HCAD-0964810000561",
+        "US-TX-HCAD-0964810000560",
+        "US-TX-HCAD-0964810000558",
+        "US-TX-HCAD-0964810000569",
+        "US-TX-HCAD-0964860000664",
+        "US-TX-HCAD-0964810000570",
+        "US-TX-HCAD-0964810000543",
+        "US-TX-HCAD-0964800000715",
+        "US-TX-HCAD-0964810000555",
+        "US-TX-HCAD-0964810000556",
+        "US-TX-HCAD-0964810000557",
+        "US-TX-HCAD-0964800000528",
+        "US-TX-HCAD-0964800000529",
+        "US-TX-HCAD-0964810000544",
+        "US-TX-HCAD-0964810000545",
+        "US-TX-HCAD-0964810000546",
+        "US-TX-HCAD-0964810000547",
+        "US-TX-HCAD-0964810000559",
+        "US-TX-HCAD-0964800000530"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        -95.127,
+        29.571,
+        -95.126,
+        29.572
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "ids": [
+        "US-TX-HCAD-1010530000010",
+        "US-TX-HCAD-0964870000704",
+        "US-TX-HCAD-0964870000685",
+        "US-TX-HCAD-0964870000709",
+        "US-TX-HCAD-0964860000674",
+        "US-TX-HCAD-0964860000675",
+        "US-TX-HCAD-0964870000690",
+        "US-TX-HCAD-0964870000689",
+        "US-TX-HCAD-0964870000688",
+        "US-TX-HCAD-0964870000687",
+        "US-TX-HCAD-0964870000686",
+        "US-TX-HCAD-0964870000705",
+        "US-TX-HCAD-0964870000708",
+        "US-TX-HCAD-0964870000707",
+        "US-TX-HCAD-0964870000706"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        -95.126,
+        29.571,
+        -95.125,
+        29.572
+      ],
+      "complete": true,
+      "featureCount": 21,
+      "ids": [
+        "US-TX-HCAD-0964860000664",
+        "US-TX-HCAD-0964860000678",
+        "US-TX-HCAD-0964860000717",
+        "US-TX-HCAD-0964860000679",
+        "US-TX-HCAD-0964870000691",
+        "US-TX-HCAD-0964870000692",
+        "US-TX-HCAD-0964870000704",
+        "US-TX-HCAD-0964860000666",
+        "US-TX-HCAD-0964860000677",
+        "US-TX-HCAD-0964870000713",
+        "US-TX-HCAD-0964870000693",
+        "US-TX-HCAD-0964870000703",
+        "US-TX-HCAD-0964860000665",
+        "US-TX-HCAD-0964860000675",
+        "US-TX-HCAD-0964860000676",
+        "US-TX-HCAD-0964870000690",
+        "US-TX-HCAD-0964870000689",
+        "US-TX-HCAD-0964870000688",
+        "US-TX-HCAD-0964870000705",
+        "US-TX-HCAD-0964860000663",
+        "US-TX-HCAD-0964860000680"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        -95.125,
+        29.571,
+        -95.124,
+        29.572
+      ],
+      "complete": true,
+      "featureCount": 19,
+      "ids": [
+        "US-TX-HCAD-0964810000561",
+        "US-TX-HCAD-0964810000560",
+        "US-TX-HCAD-0964810000558",
+        "US-TX-HCAD-0964860000661",
+        "US-TX-HCAD-0964860000664",
+        "US-TX-HCAD-0964810000570",
+        "US-TX-HCAD-0964860000717",
+        "US-TX-HCAD-0964860000679",
+        "US-TX-HCAD-0964860000712",
+        "US-TX-HCAD-0964860000681",
+        "US-TX-HCAD-0964860000682",
+        "US-TX-HCAD-0964810000559",
+        "US-TX-HCAD-0964860000719",
+        "US-TX-HCAD-0964860000662",
+        "US-TX-HCAD-0964860000659",
+        "US-TX-HCAD-0964860000660",
+        "US-TX-HCAD-0964860000663",
+        "US-TX-HCAD-0964860000680",
+        "US-TX-HCAD-0964810000562"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        -95.127,
+        29.572,
+        -95.126,
+        29.573
+      ],
+      "complete": true,
+      "featureCount": 16,
+      "ids": [
+        "US-TX-HCAD-1010530000009",
+        "US-TX-HCAD-1010530000010",
+        "US-TX-HCAD-1010530000011",
+        "US-TX-HCAD-0964870000704",
+        "US-TX-HCAD-1010550000008",
+        "US-TX-HCAD-1010550000007",
+        "US-TX-HCAD-1010550000006",
+        "US-TX-HCAD-1010550000013",
+        "US-TX-HCAD-1010550000012",
+        "US-TX-HCAD-1010550000011",
+        "US-TX-HCAD-1010550000010",
+        "US-TX-HCAD-1010530000008",
+        "US-TX-HCAD-1010530000007",
+        "US-TX-HCAD-1010530000006",
+        "US-TX-HCAD-1010550000009",
+        "US-TX-HCAD-0964870000705"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        -95.126,
+        29.572,
+        -95.125,
+        29.573
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "ids": [
+        "US-TX-HCAD-1010560000006",
+        "US-TX-HCAD-0964870000691",
+        "US-TX-HCAD-0964870000692",
+        "US-TX-HCAD-0964870000695",
+        "US-TX-HCAD-0964870000704",
+        "US-TX-HCAD-1010550000008",
+        "US-TX-HCAD-1010550000007",
+        "US-TX-HCAD-1010550000009",
+        "US-TX-HCAD-0964870000693",
+        "US-TX-HCAD-0964870000703",
+        "US-TX-HCAD-0964870000702",
+        "US-TX-HCAD-0964870000694",
+        "US-TX-HCAD-0964870000700",
+        "US-TX-HCAD-0964870000699",
+        "US-TX-HCAD-0964870000701"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        -95.125,
+        29.572,
+        -95.124,
+        29.573
+      ],
+      "complete": true,
+      "featureCount": 18,
+      "ids": [
+        "US-TX-HCAD-0964860000712",
+        "US-TX-HCAD-0964860000681",
+        "US-TX-HCAD-0964860000682",
+        "US-TX-HCAD-0964870000695",
+        "US-TX-HCAD-0964870000696",
+        "US-TX-HCAD-0964870000697",
+        "US-TX-HCAD-0964870000693",
+        "US-TX-HCAD-0964870000711",
+        "US-TX-HCAD-0964870000694",
+        "US-TX-HCAD-0964870000698",
+        "US-TX-HCAD-0964870000700",
+        "US-TX-HCAD-0964870000699",
+        "US-TX-HCAD-0964860000714",
+        "US-TX-HCAD-0964860000656",
+        "US-TX-HCAD-0964860000659",
+        "US-TX-HCAD-0964860000683",
+        "US-TX-HCAD-0964850000628",
+        "US-TX-HCAD-0964860000657"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        -95.126,
+        29.569,
+        -95.125,
+        29.57
+      ],
+      "complete": true,
+      "featureCount": 16,
+      "ids": [
+        "US-TX-HCAD-0966060000781",
+        "US-TX-HCAD-0964810000551",
+        "US-TX-HCAD-0966060000725",
+        "US-TX-HCAD-0966060000723",
+        "US-TX-HCAD-0966060000722",
+        "US-TX-HCAD-0966060000724",
+        "US-TX-HCAD-0964800000524",
+        "US-TX-HCAD-0964810000550",
+        "US-TX-HCAD-0964800000523",
+        "US-TX-HCAD-0964810000552",
+        "US-TX-HCAD-0964810000553",
+        "US-TX-HCAD-0964810000547",
+        "US-TX-HCAD-0964810000548",
+        "US-TX-HCAD-0964810000549",
+        "US-TX-HCAD-0964800000525",
+        "US-TX-HCAD-0964800000526"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        -95.126,
+        29.573,
+        -95.125,
+        29.574
+      ],
+      "complete": true,
+      "featureCount": 4,
+      "ids": [
+        "US-TX-HCAD-1010560000006",
+        "US-TX-HCAD-1010550000007",
+        "US-TX-HCAD-1010550000006",
+        "US-TX-HCAD-0964870000699"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        -95.128,
+        29.571,
+        -95.127,
+        29.572
+      ],
+      "complete": true,
+      "featureCount": 14,
+      "ids": [
+        "US-TX-HCAD-1010520000010",
+        "US-TX-HCAD-1010530000010",
+        "US-TX-HCAD-1010520000011",
+        "US-TX-HCAD-1010520000012",
+        "US-TX-HCAD-0964870000685",
+        "US-TX-HCAD-0964870000710",
+        "US-TX-HCAD-0964870000709",
+        "US-TX-HCAD-1010500000039",
+        "US-TX-HCAD-1010520000008",
+        "US-TX-HCAD-1010520000007",
+        "US-TX-HCAD-1010520000014",
+        "US-TX-HCAD-1010520000009",
+        "US-TX-HCAD-1010520000013",
+        "US-TX-HCAD-0964870000708"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        -95.124,
+        29.571,
+        -95.123,
+        29.572
+      ],
+      "complete": true,
+      "featureCount": 17,
+      "ids": [
+        "US-TX-HCAD-0964810000561",
+        "US-TX-HCAD-0964810000560",
+        "US-TX-HCAD-0964810000570",
+        "US-TX-HCAD-0964860000659",
+        "US-TX-HCAD-0964860000660",
+        "US-TX-HCAD-0964810000562",
+        "US-TX-HCAD-0964810000539",
+        "US-TX-HCAD-0964810000541",
+        "US-TX-HCAD-0964810000542",
+        "US-TX-HCAD-0964810000565",
+        "US-TX-HCAD-0964810000564",
+        "US-TX-HCAD-0964810000563",
+        "US-TX-HCAD-0964810000568",
+        "US-TX-HCAD-0964810000567",
+        "US-TX-HCAD-0964810000540",
+        "US-TX-HCAD-0964840000624",
+        "US-TX-HCAD-0964860000658"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        -95.126,
+        29.571,
+        -95.125,
+        29.572
+      ],
+      "complete": true,
+      "featureCount": 21,
+      "ids": [
+        "US-TX-HCAD-0964860000663",
+        "US-TX-HCAD-0964860000664",
+        "US-TX-HCAD-0964860000665",
+        "US-TX-HCAD-0964860000666",
+        "US-TX-HCAD-0964860000675",
+        "US-TX-HCAD-0964860000676",
+        "US-TX-HCAD-0964860000677",
+        "US-TX-HCAD-0964860000678",
+        "US-TX-HCAD-0964860000679",
+        "US-TX-HCAD-0964860000680",
+        "US-TX-HCAD-0964860000717",
+        "US-TX-HCAD-0964870000688",
+        "US-TX-HCAD-0964870000689",
+        "US-TX-HCAD-0964870000690",
+        "US-TX-HCAD-0964870000691",
+        "US-TX-HCAD-0964870000692",
+        "US-TX-HCAD-0964870000693",
+        "US-TX-HCAD-0964870000703",
+        "US-TX-HCAD-0964870000704",
+        "US-TX-HCAD-0964870000705",
+        "US-TX-HCAD-0964870000713"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 206,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:27.482Z",
+      "queryHash": "12d5b9225d66bf4c80be6a6f99b65e7e09ea8128b88f292a651333b9c32e5d2f",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 957
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:28.444Z",
+      "queryHash": "12d5b9225d66bf4c80be6a6f99b65e7e09ea8128b88f292a651333b9c32e5d2f",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 181
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:28.626Z",
+      "queryHash": "1f327dbca8544583c49bb8d17a29d2cb076f2ebc9d3b30bc8e287d96756fad88",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 199
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:28.827Z",
+      "queryHash": "12d5b9225d66bf4c80be6a6f99b65e7e09ea8128b88f292a651333b9c32e5d2f",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 906
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:29.734Z",
+      "queryHash": "12d5b9225d66bf4c80be6a6f99b65e7e09ea8128b88f292a651333b9c32e5d2f",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:29.912Z",
+      "queryHash": "1f327dbca8544583c49bb8d17a29d2cb076f2ebc9d3b30bc8e287d96756fad88",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 190
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:30.104Z",
+      "queryHash": "60b2e8bfef7dfe01ef1d31baa58018fd085f5032a7875b643575a5872ae63e40",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:30.279Z",
+      "queryHash": "60b2e8bfef7dfe01ef1d31baa58018fd085f5032a7875b643575a5872ae63e40",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 180
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:30.462Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 188
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:30.651Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 191
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:30.843Z",
+      "queryHash": "52b87b72e3601e6641ebb4e06cde7f26f2f34c0921e058768b953a2e3fa38e2d",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 17,
+      "httpStatus": 200,
+      "elapsedMs": 195
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:31.039Z",
+      "queryHash": "69635635bc87c1de8a88d02bb3a3a4e5d843a9c193af5d0f681ee3c50b390dd2",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 179
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:31.219Z",
+      "queryHash": "69635635bc87c1de8a88d02bb3a3a4e5d843a9c193af5d0f681ee3c50b390dd2",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 180
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:31.400Z",
+      "queryHash": "52b87b72e3601e6641ebb4e06cde7f26f2f34c0921e058768b953a2e3fa38e2d",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 17,
+      "httpStatus": 200,
+      "elapsedMs": 178
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:31.580Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 188
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:31.768Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 181
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:31.949Z",
+      "queryHash": "c7e5d58a38b18d0debb1c25a2b6dbda2c6a2225416149c3a75d6a1b814c4e695",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 20,
+      "httpStatus": 200,
+      "elapsedMs": 189
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:32.139Z",
+      "queryHash": "ed7fa36fc0161d6b0eeacd82bf166a1f87b265f632ed95bfb362b24003692006",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 197
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:32.337Z",
+      "queryHash": "ed7fa36fc0161d6b0eeacd82bf166a1f87b265f632ed95bfb362b24003692006",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 226
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:32.564Z",
+      "queryHash": "c7e5d58a38b18d0debb1c25a2b6dbda2c6a2225416149c3a75d6a1b814c4e695",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 20,
+      "httpStatus": 200,
+      "elapsedMs": 181
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:32.746Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 310
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:33.056Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 410
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:33.466Z",
+      "queryHash": "7d6c614be68e259e373405b5c5a9691a7f7a213ef0e82c48128beda590deaea0",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 19,
+      "httpStatus": 200,
+      "elapsedMs": 187
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:33.654Z",
+      "queryHash": "c614382fe2cd220e128bd12caf69c4f5ffe34f9f0f5c313e4bd87480d6ed63e9",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 185
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:33.840Z",
+      "queryHash": "c614382fe2cd220e128bd12caf69c4f5ffe34f9f0f5c313e4bd87480d6ed63e9",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 185
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:34.026Z",
+      "queryHash": "7d6c614be68e259e373405b5c5a9691a7f7a213ef0e82c48128beda590deaea0",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 19,
+      "httpStatus": 200,
+      "elapsedMs": 179
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:34.206Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 182
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:34.389Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 182
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:34.572Z",
+      "queryHash": "a97c2a44bcdb5fe4036bf5e1ec0f50ebb0e5fef89275a154a73fc04a425a8ed0",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 15,
+      "httpStatus": 200,
+      "elapsedMs": 180
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:34.753Z",
+      "queryHash": "923b12726b2e77a925a77640abfc636f1f4e0fe5c39d8cb487bb27efd182454a",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:34.928Z",
+      "queryHash": "923b12726b2e77a925a77640abfc636f1f4e0fe5c39d8cb487bb27efd182454a",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 186
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:35.115Z",
+      "queryHash": "a97c2a44bcdb5fe4036bf5e1ec0f50ebb0e5fef89275a154a73fc04a425a8ed0",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 15,
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:35.293Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 183
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:35.476Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 191
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:35.668Z",
+      "queryHash": "3c10d25c965968c71d921a07a5cbc49c33b81f849dc8533b2330554422859292",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 21,
+      "httpStatus": 200,
+      "elapsedMs": 191
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:35.860Z",
+      "queryHash": "70409b9437e2ffd5dd28531f9a82d47320092f47cfc377bde4c63eb16984780f",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 180
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:36.041Z",
+      "queryHash": "70409b9437e2ffd5dd28531f9a82d47320092f47cfc377bde4c63eb16984780f",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 180
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:36.222Z",
+      "queryHash": "3c10d25c965968c71d921a07a5cbc49c33b81f849dc8533b2330554422859292",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 21,
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:36.401Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 184
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:36.586Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 184
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:36.771Z",
+      "queryHash": "1321cf881c592276d41e4cbbb273ebf4a20444d0f4d865a10dce1e373bcbc376",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 19,
+      "httpStatus": 200,
+      "elapsedMs": 187
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:36.959Z",
+      "queryHash": "0fa4d0fac901fd89be793af98e4b10de9a3620c1c262a692bef5cd84bcacc007",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 180
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:37.140Z",
+      "queryHash": "0fa4d0fac901fd89be793af98e4b10de9a3620c1c262a692bef5cd84bcacc007",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 181
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:37.322Z",
+      "queryHash": "1321cf881c592276d41e4cbbb273ebf4a20444d0f4d865a10dce1e373bcbc376",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 19,
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:37.500Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 183
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:37.684Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 194
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:37.879Z",
+      "queryHash": "16a89bdd5fa7d546a0c99f4dbebd2f83ac828904b5407554d04aa981ffd5662a",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 16,
+      "httpStatus": 200,
+      "elapsedMs": 182
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:38.063Z",
+      "queryHash": "398fe1becee526198fa543ec9cecd5cf185b355cf2be478adefbd732c484d851",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 181
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:38.244Z",
+      "queryHash": "398fe1becee526198fa543ec9cecd5cf185b355cf2be478adefbd732c484d851",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 185
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:38.430Z",
+      "queryHash": "16a89bdd5fa7d546a0c99f4dbebd2f83ac828904b5407554d04aa981ffd5662a",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 16,
+      "httpStatus": 200,
+      "elapsedMs": 179
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:38.610Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 184
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:38.795Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 183
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:38.979Z",
+      "queryHash": "aa4543cad16792304636e4cd1f8cc807cef9b83f695942423c1cac43759ec6d2",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 15,
+      "httpStatus": 200,
+      "elapsedMs": 182
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:39.162Z",
+      "queryHash": "a863c4cdbd0ebe7590ada23ae4d0b2ad85081980fba386279e7f7d31b666d2fa",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 182
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:39.344Z",
+      "queryHash": "a863c4cdbd0ebe7590ada23ae4d0b2ad85081980fba386279e7f7d31b666d2fa",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:39.522Z",
+      "queryHash": "aa4543cad16792304636e4cd1f8cc807cef9b83f695942423c1cac43759ec6d2",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 15,
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:39.698Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 186
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:39.885Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 182
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:40.068Z",
+      "queryHash": "16a5ce4ff50039747647cb45348f787e1543acbfbe9e729b3c81258f8e785333",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 18,
+      "httpStatus": 200,
+      "elapsedMs": 184
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:40.253Z",
+      "queryHash": "51d22cb04f334e80e0441c8db46f09af49c2f3f5eeefb3c345dd868d107fdeb7",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:40.431Z",
+      "queryHash": "51d22cb04f334e80e0441c8db46f09af49c2f3f5eeefb3c345dd868d107fdeb7",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 181
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:40.613Z",
+      "queryHash": "16a5ce4ff50039747647cb45348f787e1543acbfbe9e729b3c81258f8e785333",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 18,
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:40.792Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 184
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:40.977Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 228
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:41.206Z",
+      "queryHash": "906c30999498affea136cb091a52cbaeaafd5ac4e5c31a0e86dc707834c0b3df",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 16,
+      "httpStatus": 200,
+      "elapsedMs": 188
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:41.395Z",
+      "queryHash": "10597a441754fe32571b344da0ea697a0a84f97a447f19636942fc81415069cf",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 181
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:41.577Z",
+      "queryHash": "10597a441754fe32571b344da0ea697a0a84f97a447f19636942fc81415069cf",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 179
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:41.756Z",
+      "queryHash": "906c30999498affea136cb091a52cbaeaafd5ac4e5c31a0e86dc707834c0b3df",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 16,
+      "httpStatus": 200,
+      "elapsedMs": 178
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:41.935Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 186
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:42.122Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 184
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:42.307Z",
+      "queryHash": "ab9368d1ddb88f826e93736771b64adc0425dfb7f54ec308034ff4c37f4920d0",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 4,
+      "httpStatus": 200,
+      "elapsedMs": 182
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:42.489Z",
+      "queryHash": "fbc306759554f19da46fc97f60757841f84b24a6dd643012e98515120fb27ba9",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 202
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:42.692Z",
+      "queryHash": "fbc306759554f19da46fc97f60757841f84b24a6dd643012e98515120fb27ba9",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 187
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:42.880Z",
+      "queryHash": "ab9368d1ddb88f826e93736771b64adc0425dfb7f54ec308034ff4c37f4920d0",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 4,
+      "httpStatus": 200,
+      "elapsedMs": 178
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:43.059Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 186
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:43.246Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 194
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:43.440Z",
+      "queryHash": "8211399ec3d52eff258b568bb1fd33bc39fb1257718d2c63c3b0ef78e74185ce",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 14,
+      "httpStatus": 200,
+      "elapsedMs": 191
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:43.633Z",
+      "queryHash": "da482a086353e0ce4be17533921bfb926445ef487f99b1b718939661e01b78f4",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 179
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:43.813Z",
+      "queryHash": "da482a086353e0ce4be17533921bfb926445ef487f99b1b718939661e01b78f4",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 180
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:43.993Z",
+      "queryHash": "8211399ec3d52eff258b568bb1fd33bc39fb1257718d2c63c3b0ef78e74185ce",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 14,
+      "httpStatus": 200,
+      "elapsedMs": 179
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:44.173Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 185
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:44.360Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 181
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:44.542Z",
+      "queryHash": "e2454b812a4b97dff32f718e61d59d78fc9dc878410788f17ff4463aceca3515",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 17,
+      "httpStatus": 200,
+      "elapsedMs": 182
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:44.726Z",
+      "queryHash": "bb742946e241c2223dd736942ff3ec988eead187e32acba1bbe21fb539460e2f",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 180
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:44.907Z",
+      "queryHash": "bb742946e241c2223dd736942ff3ec988eead187e32acba1bbe21fb539460e2f",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 182
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:45.090Z",
+      "queryHash": "e2454b812a4b97dff32f718e61d59d78fc9dc878410788f17ff4463aceca3515",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 17,
+      "httpStatus": 200,
+      "elapsedMs": 343
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:45.435Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 187
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:45.623Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 266
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:45.890Z",
+      "queryHash": "52b87b72e3601e6641ebb4e06cde7f26f2f34c0921e058768b953a2e3fa38e2d",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 17,
+      "httpStatus": 200,
+      "elapsedMs": 180
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:46.071Z",
+      "queryHash": "69635635bc87c1de8a88d02bb3a3a4e5d843a9c193af5d0f681ee3c50b390dd2",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:46.247Z",
+      "queryHash": "69635635bc87c1de8a88d02bb3a3a4e5d843a9c193af5d0f681ee3c50b390dd2",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:46.426Z",
+      "queryHash": "52b87b72e3601e6641ebb4e06cde7f26f2f34c0921e058768b953a2e3fa38e2d",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 17,
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:46.604Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 183
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:46.788Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 185
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:46.974Z",
+      "queryHash": "c7e5d58a38b18d0debb1c25a2b6dbda2c6a2225416149c3a75d6a1b814c4e695",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 20,
+      "httpStatus": 200,
+      "elapsedMs": 217
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:47.193Z",
+      "queryHash": "ed7fa36fc0161d6b0eeacd82bf166a1f87b265f632ed95bfb362b24003692006",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:47.370Z",
+      "queryHash": "ed7fa36fc0161d6b0eeacd82bf166a1f87b265f632ed95bfb362b24003692006",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:47.545Z",
+      "queryHash": "c7e5d58a38b18d0debb1c25a2b6dbda2c6a2225416149c3a75d6a1b814c4e695",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 20,
+      "httpStatus": 200,
+      "elapsedMs": 189
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:47.735Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 181
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:47.917Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 183
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:48.102Z",
+      "queryHash": "7d6c614be68e259e373405b5c5a9691a7f7a213ef0e82c48128beda590deaea0",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 19,
+      "httpStatus": 200,
+      "elapsedMs": 180
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:48.283Z",
+      "queryHash": "c614382fe2cd220e128bd12caf69c4f5ffe34f9f0f5c313e4bd87480d6ed63e9",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:48.460Z",
+      "queryHash": "c614382fe2cd220e128bd12caf69c4f5ffe34f9f0f5c313e4bd87480d6ed63e9",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 199
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:48.660Z",
+      "queryHash": "7d6c614be68e259e373405b5c5a9691a7f7a213ef0e82c48128beda590deaea0",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 19,
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:48.837Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 385
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:49.223Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 527
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:49.751Z",
+      "queryHash": "a97c2a44bcdb5fe4036bf5e1ec0f50ebb0e5fef89275a154a73fc04a425a8ed0",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 15,
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:49.927Z",
+      "queryHash": "923b12726b2e77a925a77640abfc636f1f4e0fe5c39d8cb487bb27efd182454a",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 180
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:50.108Z",
+      "queryHash": "923b12726b2e77a925a77640abfc636f1f4e0fe5c39d8cb487bb27efd182454a",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 181
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:50.290Z",
+      "queryHash": "a97c2a44bcdb5fe4036bf5e1ec0f50ebb0e5fef89275a154a73fc04a425a8ed0",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 15,
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:50.466Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 184
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:50.650Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 189
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:50.840Z",
+      "queryHash": "3c10d25c965968c71d921a07a5cbc49c33b81f849dc8533b2330554422859292",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 21,
+      "httpStatus": 200,
+      "elapsedMs": 187
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:51.027Z",
+      "queryHash": "70409b9437e2ffd5dd28531f9a82d47320092f47cfc377bde4c63eb16984780f",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 178
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:51.206Z",
+      "queryHash": "70409b9437e2ffd5dd28531f9a82d47320092f47cfc377bde4c63eb16984780f",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 178
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:51.385Z",
+      "queryHash": "3c10d25c965968c71d921a07a5cbc49c33b81f849dc8533b2330554422859292",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 21,
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:51.563Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 183
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:51.747Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 186
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:51.934Z",
+      "queryHash": "1321cf881c592276d41e4cbbb273ebf4a20444d0f4d865a10dce1e373bcbc376",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 19,
+      "httpStatus": 200,
+      "elapsedMs": 195
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:52.131Z",
+      "queryHash": "0fa4d0fac901fd89be793af98e4b10de9a3620c1c262a692bef5cd84bcacc007",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 212
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:52.345Z",
+      "queryHash": "0fa4d0fac901fd89be793af98e4b10de9a3620c1c262a692bef5cd84bcacc007",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 204
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:52.549Z",
+      "queryHash": "1321cf881c592276d41e4cbbb273ebf4a20444d0f4d865a10dce1e373bcbc376",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 19,
+      "httpStatus": 200,
+      "elapsedMs": 180
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:52.731Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 227
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:52.959Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 189
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:53.149Z",
+      "queryHash": "16a89bdd5fa7d546a0c99f4dbebd2f83ac828904b5407554d04aa981ffd5662a",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 16,
+      "httpStatus": 200,
+      "elapsedMs": 178
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:53.328Z",
+      "queryHash": "398fe1becee526198fa543ec9cecd5cf185b355cf2be478adefbd732c484d851",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:53.502Z",
+      "queryHash": "398fe1becee526198fa543ec9cecd5cf185b355cf2be478adefbd732c484d851",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 179
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:53.681Z",
+      "queryHash": "16a89bdd5fa7d546a0c99f4dbebd2f83ac828904b5407554d04aa981ffd5662a",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 16,
+      "httpStatus": 200,
+      "elapsedMs": 180
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:53.862Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 185
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:54.047Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 201
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:54.249Z",
+      "queryHash": "aa4543cad16792304636e4cd1f8cc807cef9b83f695942423c1cac43759ec6d2",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 15,
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:54.427Z",
+      "queryHash": "a863c4cdbd0ebe7590ada23ae4d0b2ad85081980fba386279e7f7d31b666d2fa",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 178
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:54.605Z",
+      "queryHash": "a863c4cdbd0ebe7590ada23ae4d0b2ad85081980fba386279e7f7d31b666d2fa",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:54.781Z",
+      "queryHash": "aa4543cad16792304636e4cd1f8cc807cef9b83f695942423c1cac43759ec6d2",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 15,
+      "httpStatus": 200,
+      "elapsedMs": 183
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:54.965Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 198
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:55.164Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 188
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:55.352Z",
+      "queryHash": "16a5ce4ff50039747647cb45348f787e1543acbfbe9e729b3c81258f8e785333",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 18,
+      "httpStatus": 200,
+      "elapsedMs": 178
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:55.531Z",
+      "queryHash": "51d22cb04f334e80e0441c8db46f09af49c2f3f5eeefb3c345dd868d107fdeb7",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 172
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:55.704Z",
+      "queryHash": "51d22cb04f334e80e0441c8db46f09af49c2f3f5eeefb3c345dd868d107fdeb7",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 200
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:55.904Z",
+      "queryHash": "16a5ce4ff50039747647cb45348f787e1543acbfbe9e729b3c81258f8e785333",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 18,
+      "httpStatus": 200,
+      "elapsedMs": 197
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:56.102Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 222
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:56.325Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 187
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:56.513Z",
+      "queryHash": "906c30999498affea136cb091a52cbaeaafd5ac4e5c31a0e86dc707834c0b3df",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 16,
+      "httpStatus": 200,
+      "elapsedMs": 188
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:56.702Z",
+      "queryHash": "10597a441754fe32571b344da0ea697a0a84f97a447f19636942fc81415069cf",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:56.878Z",
+      "queryHash": "10597a441754fe32571b344da0ea697a0a84f97a447f19636942fc81415069cf",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:57.053Z",
+      "queryHash": "906c30999498affea136cb091a52cbaeaafd5ac4e5c31a0e86dc707834c0b3df",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 16,
+      "httpStatus": 200,
+      "elapsedMs": 193
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:57.247Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 184
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:57.432Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 191
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:57.624Z",
+      "queryHash": "ab9368d1ddb88f826e93736771b64adc0425dfb7f54ec308034ff4c37f4920d0",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 4,
+      "httpStatus": 200,
+      "elapsedMs": 183
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:57.808Z",
+      "queryHash": "fbc306759554f19da46fc97f60757841f84b24a6dd643012e98515120fb27ba9",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 172
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:57.980Z",
+      "queryHash": "fbc306759554f19da46fc97f60757841f84b24a6dd643012e98515120fb27ba9",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:58.156Z",
+      "queryHash": "ab9368d1ddb88f826e93736771b64adc0425dfb7f54ec308034ff4c37f4920d0",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 4,
+      "httpStatus": 200,
+      "elapsedMs": 178
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:58.334Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 183
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:58.518Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 185
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:58.704Z",
+      "queryHash": "8211399ec3d52eff258b568bb1fd33bc39fb1257718d2c63c3b0ef78e74185ce",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 14,
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:58.880Z",
+      "queryHash": "da482a086353e0ce4be17533921bfb926445ef487f99b1b718939661e01b78f4",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:59.056Z",
+      "queryHash": "da482a086353e0ce4be17533921bfb926445ef487f99b1b718939661e01b78f4",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:59.233Z",
+      "queryHash": "8211399ec3d52eff258b568bb1fd33bc39fb1257718d2c63c3b0ef78e74185ce",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 14,
+      "httpStatus": 200,
+      "elapsedMs": 188
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:59.423Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 207
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:59.630Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 183
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:59.813Z",
+      "queryHash": "e2454b812a4b97dff32f718e61d59d78fc9dc878410788f17ff4463aceca3515",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 17,
+      "httpStatus": 200,
+      "elapsedMs": 180
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:59.994Z",
+      "queryHash": "bb742946e241c2223dd736942ff3ec988eead187e32acba1bbe21fb539460e2f",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:00.169Z",
+      "queryHash": "bb742946e241c2223dd736942ff3ec988eead187e32acba1bbe21fb539460e2f",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:00.347Z",
+      "queryHash": "e2454b812a4b97dff32f718e61d59d78fc9dc878410788f17ff4463aceca3515",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 17,
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "sample-centroid-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:00.529Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 185
+    },
+    {
+      "stage": "sample-centroid-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:00.715Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 183
+    },
+    {
+      "stage": "sample-centroid-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:00.899Z",
+      "queryHash": "3c10d25c965968c71d921a07a5cbc49c33b81f849dc8533b2330554422859292",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 21,
+      "httpStatus": 200,
+      "elapsedMs": 181
+    },
+    {
+      "stage": "sample-centroid-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:01.081Z",
+      "queryHash": "70409b9437e2ffd5dd28531f9a82d47320092f47cfc377bde4c63eb16984780f",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "sample-centroid-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:01.257Z",
+      "queryHash": "70409b9437e2ffd5dd28531f9a82d47320092f47cfc377bde4c63eb16984780f",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "sample-centroid-cell-pass-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:01.434Z",
+      "queryHash": "3c10d25c965968c71d921a07a5cbc49c33b81f849dc8533b2330554422859292",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 21,
+      "httpStatus": 200,
+      "elapsedMs": 181
+    },
+    {
+      "stage": "sample-centroid-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:01.616Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 183
+    },
+    {
+      "stage": "sample-centroid-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:01.800Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 194
+    },
+    {
+      "stage": "sample-centroid-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:01.994Z",
+      "queryHash": "3c10d25c965968c71d921a07a5cbc49c33b81f849dc8533b2330554422859292",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 21,
+      "httpStatus": 200,
+      "elapsedMs": 182
+    },
+    {
+      "stage": "sample-centroid-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:02.176Z",
+      "queryHash": "70409b9437e2ffd5dd28531f9a82d47320092f47cfc377bde4c63eb16984780f",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 172
+    },
+    {
+      "stage": "sample-centroid-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:02.349Z",
+      "queryHash": "70409b9437e2ffd5dd28531f9a82d47320092f47cfc377bde4c63eb16984780f",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "sample-centroid-cell-pass-two",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:02.524Z",
+      "queryHash": "3c10d25c965968c71d921a07a5cbc49c33b81f849dc8533b2330554422859292",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 21,
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:02.704Z",
+      "queryHash": "c0de16a7a8c0800879dd08b7e25e3fafc152db43af7622d7202086fd40e1c17f",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:02.881Z",
+      "queryHash": "c0de16a7a8c0800879dd08b7e25e3fafc152db43af7622d7202086fd40e1c17f",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:03.057Z",
+      "queryHash": "4a4284e8fbc16804c7ae054594e1154d66996b5968f326c8a9cbf3f73051fb53",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:03.234Z",
+      "queryHash": "82d91d9dcdf2442cf0c1f58ad3ca8b8d0509b1bc89251dd65744bd8c9fbfa2b1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 173
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:03.408Z",
+      "queryHash": "82d91d9dcdf2442cf0c1f58ad3ca8b8d0509b1bc89251dd65744bd8c9fbfa2b1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 173
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:03.581Z",
+      "queryHash": "8f3e0b143effdfe3bedacf4d21bf04c3ebe3b62ffc767f7d8fe318d1879e0a0d",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 180
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:03.761Z",
+      "queryHash": "0eda5e4f05a79dab5ecddc3fa64ae3afe6d5fafb4f6ee0f879256ebf240f2886",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 182
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:03.944Z",
+      "queryHash": "0eda5e4f05a79dab5ecddc3fa64ae3afe6d5fafb4f6ee0f879256ebf240f2886",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 203
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:04.148Z",
+      "queryHash": "9823d246619fac4e20c390235ee59e648af4600ca20ea5be37ed93f803ef9df0",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 198
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:04.346Z",
+      "queryHash": "0c880bc56b152eff454fd7550a81482fd2bdb5889afa3934235a62d05d7c3268",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 178
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:04.525Z",
+      "queryHash": "0c880bc56b152eff454fd7550a81482fd2bdb5889afa3934235a62d05d7c3268",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 184
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:04.710Z",
+      "queryHash": "b9dd4bcd35856efa75de8f1e9aed82bd35bddd03dc849af7db6c68077c936746",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:04.885Z",
+      "queryHash": "c718e9e9455d427ab3ae50f8ad57f93c9140cc59fd1fcc2c25923cf6d1b97026",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:05.059Z",
+      "queryHash": "c718e9e9455d427ab3ae50f8ad57f93c9140cc59fd1fcc2c25923cf6d1b97026",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:05.235Z",
+      "queryHash": "2722a124f92298939b8ab17e75db40a8ea2456f63c7f5999c2746ed8dd747063",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:05.414Z",
+      "queryHash": "12d5b9225d66bf4c80be6a6f99b65e7e09ea8128b88f292a651333b9c32e5d2f",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 182
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:05.597Z",
+      "queryHash": "12d5b9225d66bf4c80be6a6f99b65e7e09ea8128b88f292a651333b9c32e5d2f",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 178
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:05.776Z",
+      "queryHash": "1f327dbca8544583c49bb8d17a29d2cb076f2ebc9d3b30bc8e287d96756fad88",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 189
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:05.974Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 404
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:06.379Z",
+      "queryHash": "8ec0dad382ef26e097d4b7a05126ec3ec78adbf0d61a1ff902bb75b494aae271",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 198
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:06.579Z",
+      "queryHash": "23b70a02f3a56e13c3995928fc68ffc130c36deaf170fd444db9840e88f65387",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 5,
+      "httpStatus": 200,
+      "elapsedMs": 188
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:06.767Z",
+      "queryHash": "72284948ed3a913d7c76252d6e666a3e0220423234bf80d3fa12e8924176cc1e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 284
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:07.052Z",
+      "queryHash": "72284948ed3a913d7c76252d6e666a3e0220423234bf80d3fa12e8924176cc1e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 401
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:07.453Z",
+      "queryHash": "23b70a02f3a56e13c3995928fc68ffc130c36deaf170fd444db9840e88f65387",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 5,
+      "httpStatus": 200,
+      "elapsedMs": 249
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gis.hctx.net",
+      "method": "POST",
+      "startedAt": "2026-10-11T11:38:07.755Z",
+      "queryHash": "669dc117caeda9793143bb8c6b5d025fe4bc714639b3b20a99b5587b6ee6be99",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 274
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gis.hctx.net",
+      "method": "POST",
+      "startedAt": "2026-10-11T11:38:08.030Z",
+      "queryHash": "669dc117caeda9793143bb8c6b5d025fe4bc714639b3b20a99b5587b6ee6be99",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 278
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:08.309Z",
+      "queryHash": "801d3010bea04453284b2281e66db9772231c5eed82cb4f39a7d95ed315f6435",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 80,
+      "httpStatus": 200,
+      "elapsedMs": 271
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:08.583Z",
+      "queryHash": "8ab9335ba6619b2710bcdfa4cf69af6fc450d6b686568dc7f3a8ea965e858ab3",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 223
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:08.807Z",
+      "queryHash": "8ab9335ba6619b2710bcdfa4cf69af6fc450d6b686568dc7f3a8ea965e858ab3",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 257
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gis.hctx.net",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:38:09.065Z",
+      "queryHash": "1ed9273c9d520b28a3f2d924ef60e563f6706d4732ff5bd24641d7b6c36f72d2",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 54,
+      "httpStatus": 200,
+      "elapsedMs": 377
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

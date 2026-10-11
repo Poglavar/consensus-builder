@@ -1,0 +1,68 @@
+{
+  "descriptor": {
+    "id": "au-vic-vicmap-parcel",
+    "name": "Victoria Vicmap Parcel (PARCEL_MP)",
+    "adapter": "arcgis",
+    "endpoint": "https://services-ap1.arcgis.com/P744lA0wf4LlBZ84/arcgis/rest/services/Vicmap_Parcel/FeatureServer/0",
+    "idField": "parcel_pfi",
+    "idType": "string",
+    "idPattern": "^[0-9]{1,10}$",
+    "objectIdField": "OBJECTID",
+    "idPrefix": "AU-VIC-PARCEL-",
+    "outFields": [
+      "parcel_pfi",
+      "OBJECTID",
+      "parcel_status",
+      "parv_status",
+      "parv_z_level"
+    ],
+    "pageSize": 2000,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "countryCode": "AU",
+    "metricSrid": 32755,
+    "scope": "Victoria cadastral parcel map polygons; distinct from local-government property assessment units. Other Australian states use separate datasets. Only Approved (A) parcel and version records are ground; Proposed (P) records are excluded. Crown and government-road parcels remain included. Only G (unrestricted ground) and S (ground surface affected by strata) levels are ground; above/below strata are excluded.",
+    "evidenceFile": "research/melbourne-live.json",
+    "attribution": "State of Victoria, Department of Transport and Planning, Vicmap Parcel. CC BY 4.0. Adapted to WGS84.",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "catalogueUrl": "https://www.arcgis.com/home/item.html?id=b62e9a7b32fc49f090c2644b2a7ed871",
+    "attributeFilters": {
+      "parcel_status": "A",
+      "parv_status": "A",
+      "parv_z_level": [
+        "G",
+        "S"
+      ]
+    },
+    "cityIds": [
+      "melbourne",
+      "1541"
+    ]
+  },
+  "city": {
+    "code": "1541",
+    "name": "Melton",
+    "point": [
+      144.569508451494,
+      -37.6814071531491
+    ]
+  },
+  "sampleIds": [
+    "AU-VIC-PARCEL-1418933",
+    "AU-VIC-PARCEL-1418935",
+    "AU-VIC-PARCEL-1409354"
+  ],
+  "absentId": "AU-VIC-PARCEL-9999999",
+  "metricEpsg": "EPSG:32755",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Victoria Vicmap Parcel (PARCEL_MP)",
+      "Executable parcel providers with cityIds for shared-provider city entries; research-only sources remain in registry.json until verified.; Victoria Vicmap Parcel (PARCEL_MP); Victoria cadastral parcel map polygons; distinct from local-government property assessment units. Other Australian states use separate datasets. Only Approved (A) parcel and version records are ground; Proposed (P) records are excluded. Crown and government-road parcels remain included. Only G (unrestricted ground) and S (ground surface affected by strata) levels are ground; above/below strata are excluded.; Approved cadastral Vicmap Parcel source for Melbourne; distinct from Vicmap Property polygons."
+    ]
+  },
+  "cellSizeDegrees": 0.001,
+  "sourceCandidateSha256": "9018b878dd6588ac4f150a4091b1cdb8b0bed931f0e34391d19f375cd4083ae1",
+  "qualificationRecordedSha256": "6c352c3c094584aaa956db2a4f702aa01103e05c9ef052b909790469b94dce51",
+  "sourceCandidatePath": "tmp/parcel-qualification/cities/1541/attempt-01/candidate.json"
+}
