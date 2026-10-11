@@ -19,7 +19,7 @@ const LOGS = {
   time: true
 };
 
-// A proposer persona on the same runner and caps as densifier-01 (one proposal a run: mint, pay,
+// A proposer persona on the same runner and caps as densifier-01 (one proposal a run: mint,
 // market, stake; up to 3 retirements of its own stale proposals).
 function proposerJob(name, persona, cron) {
   return {
@@ -36,7 +36,6 @@ function proposerJob(name, persona, cron) {
       NODE_ENV: 'production',
       AGENT_DAILY_ACTION_CAP: '13',
       AGENT_DAILY_USDC_CAP: '0.35',
-      AGENT_PROPOSAL_FEE_USDC: '0.05',
       AGENT_RETIRE_AFTER_DAYS: '3',
       AGENT_LIFECYCLE_LENS_SERVICE_URL: 'http://127.0.0.1:3096',
       AGENT_API_BASE: 'https://api.urbangametheory.xyz'
@@ -83,11 +82,10 @@ module.exports = {
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
-      // 4 for the day's proposal (mint, pay, market, stake) + 3 retirements × (cancel, resolve, claim).
+      // 3 for the day's proposal (mint, market, stake) + 3 retirements × (cancel, resolve, claim).
       // Retirements spend no USDC; the USDC cap below still bounds the proposal.
       AGENT_DAILY_ACTION_CAP: '13',
       AGENT_DAILY_USDC_CAP: '0.35',
-      AGENT_PROPOSAL_FEE_USDC: '0.05',
       AGENT_RETIRE_AFTER_DAYS: '3',
       // The lifecycle member (consensus-builder-lifecycle-member) issues the retire phase's expiry
       // verdicts; AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN must be in backend/.env on the host, since a

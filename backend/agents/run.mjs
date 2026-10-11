@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 // Agent runner (design §WS3): for each persona, once per UTC day — plan candidate parcels, choose
 // with either the default deterministic controller or an explicitly requested LLM batch, mint each
-// pick on Solana devnet with the persona keypair, post it through the paid x402 route (mint first:
-// the record has no on-chain write path after creation), then stake on its market. Every stage is
-// checkpointed in consensus.agent_run so a rerun never redoes a mint, payment or stake.
+// pick on Solana devnet with complete immutable IPFS metadata, mirror the verified chain record
+// into the server index, then stake on its market. Every stage is
+// checkpointed in consensus.agent_run so a rerun never redoes a mint, upload or stake.
 // Before minting anything new, the retire phase closes the persona's own stale proposals (Active,
 // no acceptances, older than AGENT_RETIRE_AFTER_DAYS): cancel → resolve NO → claim the YES refund.
 // With a lifecycle lens member configured (AGENT_LIFECYCLE_LENS_SERVICE_URL + _OPERATOR_TOKEN) the
@@ -42,10 +42,10 @@ import * as turf from '@turf/turf';
 import { fetchCandidateParcels } from './parcel-source.js';
 import { chooseArea, contestParcels, parcelsFromSource, pickedParcelIds, runKeyFor, seedFor, slotLabel, windowIn } from './area-plan.js';
 import { planCandidates } from './planner.js';
-import { buildProposalRecord } from './record-builder.js';
+import { prepareAgentPublication, verifyPublicationReadable, mirrorAgentPublication } from './chain-publication.js';
+import { markAgentRunFailed, safeFailureDiagnostic } from './run-failure.js';
 import { hash32, selectAlgorithmicPicks } from './algorithmic-picker.js';
 import { buildPickRequests, parsePicks, estimateBatchCostUsd, runPickBatch, pickCustomId, createAgentLlm } from './llm-picker.js';
-import { createPaidClient, paymentIdForProposal, postAgentProposal } from './x402-client.js';
 import { mintProposal } from './minter.js';
 import { resolveLens, describeLensChoice } from './lens-directory-client.js';
 import { ensureMarketAndStake, usdcToAtomic } from './bettor.js';
@@ -71,7 +71,7 @@ const SIDE_YES = 1;
 
 function usage(exitCode) {
     console.log([
-        'Agent runner: plan → pick (algorithm by default, optional LLM) → mint → paid post → stake.',
+        'Agent runner: plan → pick (algorithm by default, optional LLM) → pin → mint → mirror → stake.',
         '',
         '  --dry-run            Plan and choose; write nothing, call no model, sign nothing',
         '  --live               Run for real, checkpointed in consensus.agent_run (rerun = resume)',
@@ -80,7 +80,7 @@ function usage(exitCode) {
         '  --day YYYY-MM-DD     The run day (default: today, UTC)',
         '  --candidates N       Candidates per persona offered to the controller (default 8)',
         '  --until STAGE        Stop after STAGE: planned | chosen | minted | posted | staked',
-        '  --api URL            Backend base for POST /agent/proposals (default AGENT_API_BASE or http://localhost:$API_PORT)',
+        '  --api URL            Backend base for POST /proposals/mirror (default AGENT_API_BASE or http://localhost:$API_PORT)',
         '  --lens KEY,KEY       Lens member keys for every mint (default: chosen from GET /agent/lenses/members;',
         '                       an empty directory refuses to mint; the persona\'s own key alone is refused)',
         '  --help               This text'
@@ -137,8 +137,7 @@ function stageIndex(stage) {
     return stage ? STAGES.indexOf(stage) : -1;
 }
 
-// summary.picks carry a deterministic proposalId. It also derives the x402 payment identifier, so
-// a retry of a completed post returns the original 201 without another settlement.
+// summary.picks carry a deterministic authored proposalId; a mirror is keyed by the chain location.
 function proposalIdFor(persona, day, index) {
     return `agent-${persona.name}-${day}-${index + 1}`;
 }
@@ -155,7 +154,7 @@ async function logLensPlan({ entries, picksFor, args, apiBase }) {
             );
             log(`${entry.persona.name} ${describeLensChoice(choice)}`);
         } catch (err) {
-            log(`${entry.persona.name} would REFUSE to mint: ${err.message}`);
+            log(`${entry.persona.name} would REFUSE to mint: ${safeFailureDiagnostic(err)}`);
         }
     }
 }
@@ -194,8 +193,8 @@ async function retireStage({ pool, connection, entries, day, dryRun, controller,
     try {
         lifecycle = await lifecycleMember();
     } catch (err) {
-        log(`retire: lifecycle lens member unavailable, nothing retired this run: ${err.message}`);
-        failures.push(`retire lifecycle member: ${err.message}`);
+        log(`retire: lifecycle lens member unavailable, nothing retired this run: ${safeFailureDiagnostic(err)}`);
+        failures.push(`retire lifecycle member: ${safeFailureDiagnostic(err)}`);
         return;
     }
     log(lifecycle
@@ -218,8 +217,8 @@ async function retireStage({ pool, connection, entries, day, dryRun, controller,
             try {
                 inspections.push(await inspectRetirement({ connection, owner, proposal, lifecycleMember: lifecycle }));
             } catch (err) {
-                log(`${persona.name} retire: could not read ${proposal.proposalId} ${proposal.proposalPda}: ${err.message}`);
-                failures.push(`${persona.name} retire inspect ${proposal.proposalId}: ${err.message}`);
+                log(`${persona.name} retire: could not read ${proposal.proposalId} ${proposal.proposalPda}: ${safeFailureDiagnostic(err)}`);
+                failures.push(`${persona.name} retire inspect ${proposal.proposalId}: ${safeFailureDiagnostic(err)}`);
             }
         }
         const plan = planRetirements(inspections, { policy: retire, runDay: day, actionBudget: budget, spent });
@@ -274,7 +273,7 @@ async function retireStage({ pool, connection, entries, day, dryRun, controller,
                 const done = retirements[item.proposalPda];
                 log(`${persona.name} retired ${item.proposalId}: ${done.expiry ? `expire ${done.expiry.signature ?? 'replayed'} (verdict ${done.expiry.verdictAttestation})` : `cancel ${done.cancel?.signature ?? '-'}`} · resolve ${done.resolution?.signature ?? '-'} (${done.resolution?.outcome ?? 'not needed'}) · claim ${done.claim?.signature ?? done.claim?.reason ?? '-'}`);
             } catch (err) {
-                failures.push(`${persona.name} retire ${item.proposalId}: ${err.message}`);
+                failures.push(`${persona.name} retire ${item.proposalId}: ${safeFailureDiagnostic(err)}`);
             }
         }
         report.push(`${persona.name}: retired ${retired}/${plan.selected.length}${plan.limited ? ` (${plan.limited} deferred)` : ''}`);
@@ -339,6 +338,7 @@ async function main() {
 
     const failures = [];
     const report = [];
+    const startedRuns = new Set();
     try {
         // ---- stage 1: plan (every persona) ----------------------------------------------------
         const entries = [];
@@ -346,6 +346,10 @@ async function main() {
         for (const [i, persona] of personas.entries()) {
             const runId = `${runKey}-${persona.name}`;
             const existing = args.live ? await getRun(pool, runId) : null;
+            if (args.live) {
+                await startRun(pool, { runId, persona: persona.name, day, mode });
+                startedRuns.add(runId);
+            }
             if (existing && stageIndex(existing.stage) >= stageIndex('planned') && existing.summary?.candidates?.length) {
                 log(`${persona.name} ${i + 1}/${personas.length} planned: resumed ${existing.summary.candidates.length} candidates from ${runId}`);
                 entries.push({ persona, runId, run: existing, candidates: existing.summary.candidates });
@@ -365,7 +369,6 @@ async function main() {
             }
             let run = null;
             if (args.live) {
-                await startRun(pool, { runId, persona: persona.name, day, mode });
                 run = await updateRun(pool, runId, { stage: 'planned', status: 'running', summaryPatch: {
                     candidates, city, area: where, slot, wallet: persona.wallet,
                     controller, ...(model ? { model } : {})
@@ -532,7 +535,9 @@ async function main() {
             const summary = e.run?.summary ?? {};
             const picks = summary.picks ?? [];
             if (!picks.length) continue;
-            const { secret, keypair } = loadKeypair(persona.keypairPath);
+            const { keypair } = loadKeypair(persona.keypairPath);
+            if (keypair.publicKey.toBase58() !== persona.wallet) throw new Error(`Wallet does not match persona ${persona.name}`);
+            const publications = { ...(summary.publications ?? {}) };
             const mints = { ...(summary.mints ?? {}) };
             const posts = { ...(summary.posts ?? {}) };
             const stakes = { ...(summary.stakes ?? {}) };
@@ -568,77 +573,55 @@ async function main() {
                     await updateRun(pool, e.runId, { status: 'running', summaryPatch: { lensChoice } });
                     log(`${persona.name} ${describeLensChoice(lensChoice)}`);
                 } catch (err) {
-                    failures.push(`${persona.name} lens: ${err.message}`);
+                    failures.push(`${persona.name} lens: ${safeFailureDiagnostic(err)}`);
                     personaFailed = true;
                 }
             }
 
             for (const [k, pick] of (personaFailed ? [] : picks.entries())) {
                 const candidate = e.candidates.find((c) => c.candidateId === pick.candidateId);
-                if (!candidate) { failures.push(`${persona.name}: pick ${pick.candidateId} has no candidate`); continue; }
+                if (!candidate) { failures.push(`${persona.name}: pick ${pick.candidateId} has no candidate`); personaFailed = true; break; }
                 const tag = `${persona.name} ${k + 1}/${picks.length} ${pick.proposalId}`;
 
                 // mint
                 if (!mints[pick.candidateId]) {
                     try {
+                        if (!publications[pick.candidateId]) {
+                            publications[pick.candidateId] = await prepareAgentPublication({
+                                pool, candidate, pick, persona: { ...persona, controller: runController },
+                                runId: e.runId, city, lens: lensChoice.lens
+                            });
+                            await updateRun(pool, e.runId, { status: 'running', summaryPatch: { publications } });
+                        }
+                        const publication = await verifyPublicationReadable(publications[pick.candidateId]);
+                        const record = publication.record;
                         const minted = await runAction(createAction({ proposalId: pick.proposalId, lens: lensChoice.lens }), () => mintProposal({
                             connection, programId: PROPOSAL_NFT_PROGRAM, ownerKeypair: keypair,
-                            parcelIds: [candidate.parcelId], isConditional: true,
-                            imageUri: `${apiBase}/proposals/${pick.proposalId}`, lamports: 0n, lens: lensChoice.lens,
+                            parcelIds: record.cadastreParcelIds, isConditional: record.isConditional,
+                            site: record.site, binding: record.binding,
+                            imageUri: publication.metadataUri, lamports: 0n, lens: record.lens,
                             sendAndConfirm: sendAndConfirmPolling
                         }));
-                        mints[pick.candidateId] = { ...minted, count: minted.count === undefined ? undefined : String(minted.count) };
+                        mints[pick.candidateId] = { ...minted, metadataUri: publication.metadataUri, count: minted.count === undefined ? undefined : String(minted.count) };
                         await updateRun(pool, e.runId, { stage: 'chosen', status: 'running', summaryPatch: { mints, activities } });
                         log(`${tag} minted: pda ${minted.proposalPda} tx ${minted.signature}`);
                     } catch (err) {
-                        failures.push(`${tag} mint: ${err.message}`);
+                        failures.push(`${tag} mint: ${safeFailureDiagnostic(err)}`);
                         personaFailed = true;
                         break;
                     }
                 }
                 if (stageIndex(args.until) < stageIndex('posted')) continue;
 
-                // post (paid)
+                // Optional server index: the server re-reads chain + IPFS, never this local record.
                 if (!posts[pick.candidateId]) {
                     try {
-                        const paymentId = paymentIdForProposal(pick.proposalId);
-                        // The minter reports the account as proposalPda; the record (and the app's
-                        // isProposalMinted) expects onchain.proposalId. Map explicitly — a null here
-                        // would store a record that looks minted and points nowhere.
-                        const res = await runAction({ type: 'publish', proposalId: pick.proposalId }, async () => {
-                            const mint = mints[pick.candidateId];
-                            const onchain = {
-                                transactionHash: mint.transactionHash ?? mint.signature,
-                                proposalId: mint.proposalPda,
-                                chainId: mint.chainId ?? 'solana-devnet',
-                                contractAddress: mint.contractAddress ?? PROPOSAL_NFT_PROGRAM
-                            };
-                            const body = buildProposalRecord({
-                                candidate, pick, persona: { ...persona, controller: runController },
-                                runId: e.runId, city, onchain, turf
-                            });
-                            const { paidFetch } = await createPaidClient({
-                                secretKey: secret,
-                                paymentId,
-                                rpcUrl
-                            });
-                            const response = await postAgentProposal({ baseUrl: apiBase, paidFetch, body });
-                            if (response.status !== 201) {
-                                throw new Error(`HTTP ${response.status}: ${typeof response.body === 'string' ? response.body : JSON.stringify(response.body)}`);
-                            }
-                            return response;
-                        });
-                        posts[pick.candidateId] = {
-                            id: res.body.id,
-                            proposalId: res.body.proposalId ?? pick.proposalId,
-                            paymentId,
-                            status: res.status,
-                            tx: res.receipt?.transaction ?? null
-                        };
+                        posts[pick.candidateId] = await runAction({ type: 'publish', proposalId: pick.proposalId }, () =>
+                            mirrorAgentPublication({ apiBase, mint: mints[pick.candidateId] }));
                         await updateRun(pool, e.runId, { stage: 'minted', status: 'running', summaryPatch: { posts, activities } });
-                        log(`${tag} posted: row ${res.body.id} (${res.status}) paid tx ${res.receipt?.transaction ?? '-'}`);
+                        log(`${tag} mirrored: row ${posts[pick.candidateId].id}`);
                     } catch (err) {
-                        failures.push(`${tag} post: ${err.message}`);
+                        failures.push(`${tag} mirror: ${safeFailureDiagnostic(err)}`);
                         personaFailed = true;
                         break;
                     }
@@ -657,7 +640,7 @@ async function main() {
                         await updateRun(pool, e.runId, { stage: 'posted', status: 'running', summaryPatch: { stakes, activities } });
                         log(`${tag} staked ${persona.stakeUsdc} USDC YES: market ${staked.marketPda}${staked.created ? ' (created)' : ''} tx ${staked.stakeSignature}`);
                     } catch (err) {
-                        failures.push(`${tag} stake: ${err.message}`);
+                        failures.push(`${tag} stake: ${safeFailureDiagnostic(err)}`);
                         personaFailed = true;
                         break;
                     }
@@ -672,11 +655,18 @@ async function main() {
                 status: personaFailed ? 'failed' : (done && untilStage === 'staked' ? 'done' : 'running'),
                 summaryPatch: {
                     mints, posts, stakes, activities,
+                    error: personaFailed ? failures.filter(value => value.startsWith(persona.name)).map(safeFailureDiagnostic).join('; ').slice(0, 500) : null,
                     outcome: personaFailed ? 'failed' : (done && untilStage === 'staked' ? 'completed' : 'partial')
                 }
             });
             report.push(`${persona.name}: ${picks.length} picks · ${Object.keys(mints).length} minted · ${Object.keys(posts).length} posted · ${Object.keys(stakes).length} staked · $${(summary.pickCostUsd ?? 0).toFixed(4)}`);
         }
+    } catch (error) {
+        for (const runId of startedRuns) {
+            const current = await getRun(pool, runId);
+            if (current?.status === 'running') await markAgentRunFailed(pool, runId, error);
+        }
+        throw error;
     } finally {
         await pool.end();
     }
@@ -696,7 +686,7 @@ async function main() {
 }
 
 main().catch(async (err) => {
-    console.error(`[${new Date().toISOString()}] FAILED:`, err);
-    await sendTelegram(`Agents runner FAILED: ${err.message}`);
+    console.error(`[${new Date().toISOString()}] FAILED:`, safeFailureDiagnostic(err));
+    await sendTelegram(`Agents runner FAILED: ${safeFailureDiagnostic(err)}`);
     process.exit(1);
 });

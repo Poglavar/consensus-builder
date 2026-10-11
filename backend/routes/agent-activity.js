@@ -605,9 +605,12 @@ export function setupAgentActivityRoute(app, pool, {
                             created_at, updated_at
                        FROM proposal
                       WHERE proposal_data ? 'agent'
-                        -- Only a paid x402 row may present itself as agent activity; the stamp in
-                        -- proposal_data is client-supplied on older free-route rows.
-                        AND agent_payment_id IS NOT NULL
+                        -- x402 settlement or a server-verified chain signer proves the agent.
+                        -- A metadata claim alone is never public agent provenance.
+                        AND (agent_payment_id IS NOT NULL OR (
+                            proposal_data #>> '{chainMirror,agent,wallet}' = onchain_data->>'owner'
+                            AND proposal_data #>> '{chainMirror,ref,tokenId}' = onchain_data->>'proposalId'
+                        ))
                       ORDER BY created_at DESC
                       LIMIT $1`,
                     [window]

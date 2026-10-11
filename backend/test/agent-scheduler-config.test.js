@@ -7,6 +7,16 @@ const apps = require('../agents/ecosystem.config.cjs').apps;
 const app = apps[0];
 
 describe('algorithmic agent schedule', () => {
+    it('checkpoints support and society runs before RPC reads and persists pre-action failures', () => {
+        const supporter = fs.readFileSync(new URL('../agents/support-run.mjs', import.meta.url), 'utf8');
+        const society = fs.readFileSync(new URL('../agents/society-run.mjs', import.meta.url), 'utf8');
+        expect(supporter.indexOf('await startRun')).toBeLessThan(supporter.indexOf('await discoverProposals'));
+        expect(supporter.indexOf('await startRun')).toBeLessThan(supporter.indexOf('await alreadySupportedProposalIds'));
+        expect(supporter).toContain('markAgentRunFailed(pool, runId, error');
+        expect(society.indexOf('await startRun')).toBeLessThan(society.indexOf('await gatherInputs'));
+        expect(society).toContain('markAgentRunFailed(pool, turn.runId, error');
+    });
+
     it('is one opt-in, non-restarting process every three hours with hard public limits per run', () => {
         expect(app).toMatchObject({
             name: 'consensus-builder-agents',

@@ -16,10 +16,59 @@ function rows() {
         run_id: '2026-09-22-densifier-01', persona: 'densifier-01', status: 'done', stage: 'staked',
         finished_at: '2026-09-22T02:05:00Z', updated_at: '2026-09-22T02:05:00Z',
         summary: { controller: 'algorithm', outcome: 'completed', posts: { first: { signature: 'proposal-tx' } } }
+    }, {
+        run_id: '2026-09-22-builder-02', persona: 'builder-02', status: 'done', stage: 'staked',
+        finished_at: '2026-09-22T02:04:00Z', updated_at: '2026-09-22T02:04:00Z',
+        summary: { controller: 'algorithm', outcome: 'completed', posts: { first: { signature: 'builder-tx' } } }
+    }, {
+        run_id: '2026-09-22-gentle-01', persona: 'gentle-01', status: 'done', stage: 'staked',
+        finished_at: '2026-09-22T02:03:00Z', updated_at: '2026-09-22T02:03:00Z',
+        summary: { controller: 'algorithm', outcome: 'completed', posts: { first: { signature: 'gentle-tx' } } }
     }];
 }
 
 describe('public hackathon operations status', () => {
+    it('lists each configured proposer and society persona, not only the first persona per role', () => {
+        const status = buildPublicOperationsStatus({ runs: rows(),
+            landOracle: buildLandOracleRunStats({ endedAt: '2026-09-22T02:30:02Z', result: { missingEvidence: [] } }),
+            now: NOW,
+            prospective: { resolver: { lastRun: { status: 'completed', endedAt: '2026-09-22T11:45:03Z' } } }
+        });
+        expect(status.agentRuns.map(job => job.persona)).toEqual(expect.arrayContaining([
+            'densifier-01', 'builder-02', 'gentle-01', 'preservationist-01', 'speculator-01', 'skeptic-02', 'backer-01'
+        ]));
+        expect(status.agentRuns.find(job => job.persona === 'builder-02')).toMatchObject({ role: 'proposer', status: 'completed' });
+    });
+
+    it('does not let another proposer\'s success hide a recent failed builder run', () => {
+        const runs = [{ ...rows()[1], updated_at: '2026-09-22T11:55:00Z', finished_at: '2026-09-22T11:55:00Z', status: 'done' },
+            { ...rows()[2], status: 'failed', stage: 'gathering', updated_at: '2026-09-22T11:50:00Z', finished_at: '2026-09-22T11:50:00Z', summary: { role: 'proposer', outcome: 'failed', error: 'parcel source unavailable' } },
+            ...rows().filter(row => row.persona === 'supporter-01' || row.persona === 'densifier-01')];
+        const status = buildPublicOperationsStatus({ runs, landOracle: {
+            runStatus: 'completed', endedAt: '2026-09-22T02:30:02Z'
+        }, now: NOW, prospective: { resolver: { lastRun: { status: 'completed', endedAt: '2026-09-22T11:45:03Z' } } } });
+        expect(status.status).toBe('attention');
+        expect(status.agentRuns.find(job => job.persona === 'builder-02')).toMatchObject({ role: 'proposer', status: 'failed' });
+    });
+
+    it('does not let another contrarian\'s success hide a recent failed society persona', () => {
+        const runs = [{
+            run_id: 'recent-preservationist', persona: 'preservationist-01', status: 'done', stage: 'acted',
+            finished_at: '2026-09-22T11:55:00Z', updated_at: '2026-09-22T11:55:00Z',
+            summary: { role: 'contrarian', outcome: 'completed', society: { execution: { stakeSignature: 'ok' } } }
+        }, {
+            run_id: 'failed-skeptic', persona: 'skeptic-02', status: 'failed', stage: 'gathering',
+            finished_at: '2026-09-22T11:50:00Z', updated_at: '2026-09-22T11:50:00Z',
+            summary: { role: 'contrarian', outcome: 'failed', error: 'RPC unavailable' }
+        }, ...rows()];
+        const status = buildPublicOperationsStatus({ runs, landOracle: {
+            runStatus: 'completed', endedAt: '2026-09-22T02:30:02Z'
+        }, now: NOW, prospective: { resolver: { lastRun: { status: 'completed', endedAt: '2026-09-22T11:45:03Z' } } } });
+        expect(status.optionalJobs.find(job => job.role === 'contrarian')).toMatchObject({ status: 'completed' });
+        expect(status.status).toBe('attention');
+        expect(status.agentRuns.find(job => job.persona === 'skeptic-02')).toMatchObject({ role: 'contrarian', status: 'failed' });
+    });
+
     it('treats a successful zero-work land-oracle run as healthy outcome evidence', () => {
         const landOracle = buildLandOracleRunStats({
             startedAt: '2026-09-22T02:30:00Z', endedAt: '2026-09-22T02:30:02Z',
@@ -112,7 +161,7 @@ describe('optional society roles in the public operations status', () => {
         ]);
     });
 
-    it('takes the newest finished turn as the outcome and never mistakes a society row for the proposer', () => {
+    it('keeps the role history but reports a newer running persona instead of its older success', () => {
         const runs = [
             societyRow('2026-09-22-preservationist-01-t3', 'contrarian', { status: 'running', at: '2026-09-22T02:23:00Z', turn: 3 }),
             societyRow('2026-09-22-preservationist-01-t2', 'contrarian', { outcome: 'cap-reached', execution: {}, at: '2026-09-22T02:22:00Z', turn: 2 }),
@@ -121,7 +170,8 @@ describe('optional society roles in the public operations status', () => {
             ...rows()
         ];
         const status = buildPublicOperationsStatus({ runs, ...healthyInputs() });
-        expect(status.status).toBe('healthy');
+        expect(status.status).toBe('attention');
+        expect(status.agentRuns.find(job => job.persona === 'preservationist-01').status).toBe('running');
         expect(status.jobs.find(job => job.role === 'proposer').lastRun.persona).toBe('densifier-01');
         expect(status.optionalJobs.find(job => job.role === 'contrarian')).toMatchObject({
             configured: true, status: 'completed', lastRun: { id: '2026-09-22-preservationist-01-t2', outcome: 'cap-reached', turn: 2, transaction: null }

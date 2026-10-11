@@ -5,7 +5,7 @@ import { normalizeChainRef, readChainProposal } from '../proposals/chain-reader.
 
 const SOL_PROGRAM = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
 const SOL_ADDRESS = '11111111111111111111111111111111';
-const DEVNET_GENESIS = 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1';
+const DEVNET_GENESIS = 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG';
 const accountDiscriminator = createHash('sha256').update('account:Proposal').digest().subarray(0, 8);
 const borshString = value => {
     const bytes = Buffer.from(value, 'utf8');
@@ -121,6 +121,8 @@ describe('readChainProposal (Solana)', () => {
         await expect(readChainProposal(ref, { solanaConnectionFactory: async () => connectionFor(SOL_ADDRESS) }))
             .rejects.toMatchObject({ status: 422, code: 'chain-proof-invalid' });
         await expect(readChainProposal(ref, { solanaConnectionFactory: async () => connectionFor(SOL_PROGRAM, valid.data, 'wrong') }))
+            .rejects.toMatchObject({ status: 422, code: 'chain-proof-invalid' });
+        await expect(readChainProposal(ref, { solanaConnectionFactory: async () => connectionFor(SOL_PROGRAM, valid.data, DEVNET_GENESIS.slice(0, 32)) }))
             .rejects.toMatchObject({ status: 422, code: 'chain-proof-invalid' });
         const wrongDiscriminator = Buffer.from(valid.data); wrongDiscriminator[0] ^= 0xff;
         await expect(readChainProposal(ref, { solanaConnectionFactory: async () => connectionFor(SOL_PROGRAM, wrongDiscriminator) }))

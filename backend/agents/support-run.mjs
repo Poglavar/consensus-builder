@@ -18,6 +18,7 @@ import { ensurePledgeBookAndSet } from './pledger.js';
 import { ensureDonationEscrowAndDonate } from './donor.js';
 import { ensureMarketAndStake, usdcToAtomic } from './bettor.js';
 import { getRun, startRun, updateRun } from './ledger.js';
+import { markAgentRunFailed, safeFailureDiagnostic } from './run-failure.js';
 import { sendAndConfirmPolling } from './solana-send.js';
 import { sendTelegram } from './telegram.js';
 import { runKeyFor, slotLabel } from './area-plan.js';
@@ -169,38 +170,45 @@ async function main() {
                 report.push(`${persona.name}: resumed ${existing.summary?.outcome || 'completed'}`);
                 continue;
             }
-            const keypair = args.live ? loadKeypair(persona) : null;
-            const wallet = keypair?.publicKey.toBase58() || persona.wallet || null;
-            const proposals = await discoverProposals(apiBase, persona);
-            const excludeProposalIds = await alreadySupportedProposalIds({ connection, wallet, persona, proposals });
-            const choice = selectSupportAction({ day: runKey, persona, proposals, wallet, excludeProposalIds });
-            console.log(`[${new Date().toISOString()}] ${persona.name}: ${choice.reason}`);
-            if (args.dryRun) {
-                if (choice.selected) console.log(JSON.stringify(choice.selected, null, 2));
-                continue;
-            }
-
-            await startRun(pool, { runId, persona: persona.name, day, mode: 'live' });
-            await updateRun(pool, runId, { stage: 'selected', status: choice.selected ? 'running' : 'done', summaryPatch: {
-                role: 'supporter', controller: 'algorithm', wallet,
-                decisionInput: { controller: 'algorithm', day, eligibleProposalIds: choice.eligibleProposalIds },
-                decisionResult: { controller: 'algorithm', costUsd: 0, rationale: choice.reason },
-                selection: choice.selected,
-                outcome: choice.selected ? 'selected' : 'no-eligible-proposal'
-            } });
-            if (!choice.selected) {
-                report.push(`${persona.name}: no eligible proposal`);
-                continue;
-            }
-
+            let runStarted = false;
             const activities = [];
-            const runtime = actionEngineApi.createEngine({
-                decisionProviders: { algorithm: (_actor, context) => context.action },
-                actionHandlers: { '*': (_actor, _action, context) => context.execute() },
-                onActivity: activity => activities.push({ ...activity, runId, rationale: choice.selected.rationale })
-            });
-            const actor = { id: persona.name, name: persona.name, controller: 'algorithm', wallet };
             try {
+                if (args.live) {
+                    await startRun(pool, { runId, persona: persona.name, day, mode: 'live' });
+                    runStarted = true;
+                    await updateRun(pool, runId, { stage: 'gathering', status: 'running', summaryPatch: {
+                        role: 'supporter', controller: 'algorithm', outcome: 'gathering'
+                    } });
+                }
+                const keypair = args.live ? loadKeypair(persona) : null;
+                const wallet = keypair?.publicKey.toBase58() || persona.wallet || null;
+                const proposals = await discoverProposals(apiBase, persona);
+                const excludeProposalIds = await alreadySupportedProposalIds({ connection, wallet, persona, proposals });
+                const choice = selectSupportAction({ day: runKey, persona, proposals, wallet, excludeProposalIds });
+                console.log(`[${new Date().toISOString()}] ${persona.name}: ${choice.reason}`);
+                if (args.dryRun) {
+                    if (choice.selected) console.log(JSON.stringify(choice.selected, null, 2));
+                    continue;
+                }
+
+                await updateRun(pool, runId, { stage: 'selected', status: choice.selected ? 'running' : 'done', summaryPatch: {
+                    role: 'supporter', controller: 'algorithm', wallet,
+                    decisionInput: { controller: 'algorithm', day, eligibleProposalIds: choice.eligibleProposalIds },
+                    decisionResult: { controller: 'algorithm', costUsd: 0, rationale: choice.reason },
+                    selection: choice.selected,
+                    outcome: choice.selected ? 'selected' : 'no-eligible-proposal'
+                } });
+                if (!choice.selected) {
+                    report.push(`${persona.name}: no eligible proposal`);
+                    continue;
+                }
+
+                const runtime = actionEngineApi.createEngine({
+                    decisionProviders: { algorithm: (_actor, context) => context.action },
+                    actionHandlers: { '*': (_actor, _action, context) => context.execute() },
+                    onActivity: activity => activities.push({ ...activity, runId, rationale: choice.selected.rationale })
+                });
+                const actor = { id: persona.name, name: persona.name, controller: 'algorithm', wallet };
                 const execution = await runtime.run(actor, {
                     source: 'live',
                     action: {
@@ -219,9 +227,13 @@ async function main() {
                     ? `${persona.name}: ${choice.selected.type} ${choice.selected.amount} USDC on ${choice.selected.proposalId}`
                     : `${persona.name}: ${choice.selected.proposalId} was already supported; no new transaction`);
             } catch (error) {
-                await updateRun(pool, runId, { stage: 'selected', status: 'failed', summaryPatch: {
-                    activities, outcome: 'failed', error: error.message
-                } });
+                if (runStarted) {
+                    try {
+                        await markAgentRunFailed(pool, runId, error, { summaryPatch: { role: 'supporter', activities } });
+                    } catch (recordError) {
+                        console.error(`[support-run] could not record failure for ${runId}: ${safeFailureDiagnostic(recordError)}`);
+                    }
+                }
                 throw error;
             }
         }
@@ -237,7 +249,8 @@ async function main() {
 }
 
 main().catch(async error => {
-    console.error(`[${new Date().toISOString()}] SUPPORTER FAILED:`, error);
-    await sendTelegram(`Supporter agent FAILED: ${error.message}`);
+    const diagnostic = safeFailureDiagnostic(error);
+    console.error(`[${new Date().toISOString()}] SUPPORTER FAILED: ${diagnostic}`);
+    await sendTelegram(`Supporter agent FAILED: ${diagnostic}`);
     process.exit(1);
 });

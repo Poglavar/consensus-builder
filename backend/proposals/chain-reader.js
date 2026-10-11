@@ -201,7 +201,8 @@ async function readSolanaProposal(ref, options) {
         if (options.solanaConnectionFactory) connection = await options.solanaConnectionFactory(endpoint, ref.chainId);
         else connection = new Connection(endpoint, { commitment: 'confirmed', fetch: boundedFetch(timeoutMs) });
         const genesisHash = await connection.getGenesisHash();
-        if (genesisHash !== 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1') throw chainProofError('RPC network does not match Solana devnet.');
+        // getGenesisHash returns the full base58 hash, not the shortened CAIP-2 chain reference.
+        if (genesisHash !== 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG') throw chainProofError('RPC network does not match Solana devnet.');
         const info = await connection.getAccountInfo(new PublicKey(ref.tokenId), 'confirmed');
         if (!info?.data) throw chainProofError('Solana Proposal account was not found.');
         const owner = info.owner?.toBase58 ? info.owner.toBase58() : String(info.owner || '');

@@ -14,9 +14,12 @@ function entry(picks = 1, stakeUsdc = '0.25') {
 }
 
 describe('live agent execution policy', () => {
-    it('defaults to one proposal worth of signed actions and USDC', () => {
-        expect(executionPolicy({})).toEqual({ maxActions: 4, maxUsdc: 0.35, proposalFeeUsdc: 0.05 });
-        expect(assertExecutionPlan(summarizeExecutionPlan([entry()]))).toMatchObject({ proposalCount: 1, actionCount: 4, maxUsdc: 0.3 });
+    it('defaults to four signed actions and counts only the per-proposal USDC stake', () => {
+        expect(executionPolicy({})).toEqual({ maxActions: 4, maxUsdc: 0.35 });
+        const plan = assertExecutionPlan(summarizeExecutionPlan([entry()]));
+        expect(plan).toMatchObject({ proposalCount: 1, actionCount: 3, maxUsdc: 0.25 });
+        expect(plan.proposals[0]).toEqual({ persona: 'densifier-01', proposalId: 'p-1', actions: 3, usdc: 0.25 });
+        expect(plan).not.toHaveProperty('proposalFeeUsdc');
     });
 
     it('refuses additional signed actions even if a persona is misconfigured', () => {

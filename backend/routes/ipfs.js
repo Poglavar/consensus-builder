@@ -15,7 +15,7 @@ function ensurePinataCredentials() {
     return { apiKey, apiSecret };
 }
 
-async function uploadImageToPinata({ buffer, fileName, contentType }) {
+export async function uploadImageToPinata({ buffer, fileName, contentType }) {
     const { apiKey, apiSecret } = ensurePinataCredentials();
     const blob = new Blob([buffer], { type: contentType || 'application/octet-stream' });
     const formData = new FormData();
@@ -48,7 +48,7 @@ async function uploadImageToPinata({ buffer, fileName, contentType }) {
     };
 }
 
-async function uploadMetadataToPinata(metadata, pinName) {
+export async function uploadMetadataToPinata(metadata, pinName) {
     const { apiKey, apiSecret } = ensurePinataCredentials();
 
     const body = {

@@ -19,7 +19,7 @@
         'ownershipTransferDirection', 'ownershipTransferRecipient', 'ownershipTransferProposal',
         'acquisitionMode', 'boundaryAdjustment', 'primaryType', 'typologyType', 'tags', 'facets',
         'isCorridor', 'copiedFromProposalId', 'copiedFromName', 'sourceProposalId',
-        'replacementOfProposalId', 'landFork'
+        'replacementOfProposalId', 'landFork', 'agent'
     ]);
     const clone = value => JSON.parse(JSON.stringify(value));
     const dependency = (name, path) => global[name] || (typeof require === 'function' ? require(path) : null);

@@ -1,7 +1,7 @@
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { createRequire } from 'node:module';
-import { loadChainMirror, metadataReadUrl, readChainMetadata, verifyCadastreSnapshot } from '../proposals/chain-mirror.js';
+import { loadChainMirror, metadataReadUrl, readChainMetadata, verifyCadastreSnapshot, chainAgentStamp } from '../proposals/chain-mirror.js';
 import { serializeProposalRow } from '../proposals/serializer.js';
 import { setupProposalsRoute } from '../routes/proposals.js';
 import { createMockPool } from './helpers/mock-pool.js';
@@ -67,6 +67,17 @@ afterEach(() => {
 afterAll(() => { delete globalThis.turf; });
 
 describe('chain mirror proof verification', () => {
+    it('binds a known agent claim to the actual chain signer without inventing a payment receipt', () => {
+        const personas = [{ name: 'test-agent', wallet: 'actual-owner' }];
+        const record = { author: 'actual-owner', agent: { persona: 'test-agent', run_id: 'run-1', controller: 'algorithm', paid: { tx: 'fake' } } };
+        const chain = { owner: 'actual-owner', ref: { chainType: 'solana', tokenId: 'account' } };
+        expect(chainAgentStamp(record, chain, personas)).toMatchObject({ persona: 'test-agent', wallet: 'actual-owner',
+            run_id: 'run-1', verified: { method: 'chain', chainRef: chain.ref } });
+        expect(chainAgentStamp(record, chain, personas)).not.toHaveProperty('paid');
+        expect(() => chainAgentStamp(record, { ...chain, owner: 'impostor' }, personas)).toThrow(/signer/);
+        expect(chainAgentStamp({ ...record, agent: { persona: 'unregistered' } }, chain, personas)).toBeNull();
+    });
+
     it('accepts a chain record whose consent parcels and cadastral snapshot agree', async () => {
         const record = await recordFor();
         await expect(verifyCadastreSnapshot(record)).resolves.toBeUndefined();

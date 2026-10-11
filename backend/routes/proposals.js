@@ -717,6 +717,7 @@ export function createProposalCreateHandler(pool) {
             const proposal = stripLocalProposalState(req.body);
             const paid = Boolean(req.x402Payment);
             const droppedClaims = dropUnprovableClaims(proposal, { paid, chainMirror: Boolean(req.chainMirror) });
+            if (req.chainMirror?.agent) proposal.agent = structuredClone(req.chainMirror.agent);
 
             // The city the site was placed in, not necessarily the one the request named (a Split
             // site published from Zagreb's view is Split's); stored in the record's own data too.

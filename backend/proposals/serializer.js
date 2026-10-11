@@ -267,6 +267,10 @@ export function serializeProposalRow(row, options = {}) {
         proposal.mirroredAt = iso(row.created_at, proposal.chainMirror.verifiedAt);
         for (const key of chainRecord.FIELDS) if (key !== 'proposalId') delete proposal[key];
         Object.assign(proposal, source, { proposalId: row.proposal_id });
+        // Authored metadata can claim an agent name; only the mirror's signer-verified stamp is
+        // activity provenance. Keep the exact claim in chainMirror.record for reconstruction.
+        delete proposal.agent;
+        if (proposal.chainMirror.agent) proposal.agent = structuredClone(proposal.chainMirror.agent);
     }
 
     return stripLocalProposalState(proposal);

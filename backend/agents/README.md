@@ -3,14 +3,15 @@
 Release status (2026-10-02): devnet ParcelNFT v2, ProposalMarket v2 and ProposalNFT v3 are byte-verified. An API deploy does not activate opt-in signing personas or lens-member services. Live member-service/schema setup and a real attested owner journey remain separate follow-ups; see [next steps](../../next-steps.md).
 
 Server-side personas that plan building proposals, choose and justify them with either a deterministic
-algorithm or an explicitly requested model, and post them through the paid `/agent/proposals` route.
+algorithm or an explicitly requested model, pin complete `proposal-chain/1` metadata to IPFS, mint it,
+and index it through the independently verified `/proposals/mirror` route.
 Design: `agents-functionality-for-ugt.md` §WS3.
 
 ## Data flow
 
 ```
-personas.json ──▶ parcel-source.js ──▶ planner.js ──▶ algorithmic-picker.js ──▶ record-builder.js ──▶ POST /agent/proposals
-  (who, where)      parcels + rules      candidates       picks + text ($0)      stored record          (x402, binds author)
+personas.json ──▶ parcel-source.js ──▶ planner.js ──▶ algorithmic-picker.js ──▶ record-builder.js ──▶ chain-publication.js ──▶ mint ──▶ mirror
+  (who, where)      parcels + rules      candidates       picks + text ($0)      authored record      cadastre + IPFS          chain proof
                                                     └──▶ llm-picker.js (explicit optional controller)
 ```
 
@@ -37,7 +38,7 @@ The daily schedule is intentionally algorithmic: SQL and the deterministic plann
 feasible, then `algorithmic-picker.js` accepts only urban-rule-backed positive-uplift candidates and
 uses a stable day/persona hash to vary among the top three candidates within 90% of the best score.
 It has zero model spend and is reproducible for a given day. An LLM can still be demonstrated by
-passing `--controller llm`; deterministic adapters validate, pay, mint and stake in both modes.
+passing `--controller llm`; deterministic adapters validate, pin, mint, mirror and stake in both modes.
 `donor.js` funds refundable proposal escrow
 with an idempotent receipt, while `pledger.js` records an updateable commitment without moving USDC
 and can later fulfil it after execution.
@@ -238,9 +239,10 @@ plan should prefer `source: 'urban-rule'` or lower the default.
 (local proposal 660): `type: 'building'`, `goal/typologyType: 'single'`, `primaryType: 'Urban Rule'`,
 `facets`, `buildingProposal.parameters` (with the rule the massing came from), one
 `geometry.buildings[0]` feature, `bounds` from `turf.bbox`, `cadastreParcelIds`, `offer` /
-`offerCurrency`, and the `agent` stamp. It deliberately writes **no `author`** — the paid route binds
-that to the wallet the facilitator verified, and a body naming a different one is refused before any
-USDC moves. With an `onchain` argument it also writes `onchain`, `nft`, `isMinted` and `tokenId`,
+`offerCurrency`, and an authored `agent` claim. `chain-publication.js` adds the signing wallet as
+`author`, the resolving lens, the complete binding and a snapshot of every touched source geometry.
+The mirror issues an agent activity stamp only when the chain signer matches that configured persona;
+it never invents an x402 payment receipt. The pure builder also serves the separate paid-write tools. With an `onchain` argument it also writes `onchain`, `nft`, `isMinted` and `tokenId`,
 which is what `frontend/js/proposals/chain.js` reads to show a proposal as minted.
 
 ## Optional LLM cost
@@ -268,9 +270,8 @@ A batch that has not finished inside `awaitMs` is not an error — `runPickBatch
 |---|---|---|
 | `ANTHROPIC_API_KEY` | explicit `--controller llm` only | the optional Batches API key; not needed by the scheduled agent |
 | `AGENT_LLM_DAILY_CAP_USD` | `ledger.js` | hard metered-model ceiling; safe default 0.25 |
-| `AGENT_DAILY_ACTION_CAP` | `run-policy.js` | maximum signed mint/x402/market-create/stake actions; safe default 4 |
-| `AGENT_DAILY_USDC_CAP` | `run-policy.js` | maximum x402 plus stake spend; safe default 0.35 USDC |
-| `AGENT_PROPOSAL_FEE_USDC` | `run-policy.js` | conservative x402 fee used in the pre-signing plan; default 0.05 USDC |
+| `AGENT_DAILY_ACTION_CAP` | `run-policy.js` | maximum signed mint/market-create/stake actions; safe default 4; a new proposal needs at most 3 |
+| `AGENT_DAILY_USDC_CAP` | `run-policy.js` | maximum stake spend; safe default 0.35 USDC; the chain mirror is free |
 | `AGENT_SUPPORT_USDC_CAP` | `support-run.mjs` | maximum amount of its one daily support action; safe default 0.25 USDC |
 | `AGENT_SOCIETY_ACTION_CAP` / `AGENT_SOCIETY_USDC_CAP` | `society-run.mjs` | signed actions / USDC per invocation across all turns; defaults 4 / 0.05 |
 | `PGHOST` / `PGPORT` / `PGUSER` / `PGPASSWORD` / `PGDATABASE` | `parcel-source.js` (via the pool the caller passes) | the shared `geodata` database |
@@ -340,12 +341,15 @@ terminal Solana account state that has matching transaction evidence in the shar
 
 One `consensus.agent_run` row per persona per UTC day is the checkpoint (`stage`, `summary` with
 candidates, controller input/result, picks and rationales, execution policy,
-mint records, x402 payment ids/transactions, posts, stakes and activity); a rerun resumes at the
+immutable publication records, mint receipts, verified mirror receipts, stakes and activity); a rerun resumes at the
 first unfinished stage and a finished day is a no-op. A valid zero-pick answer is terminal and is
 stored as `outcome: "no-picks"`, rather than leaving a permanently-running row. In explicit LLM
 mode, the complete prompt/model/batch/usage/cost is also stored and calls are refused when the day's
 `agent_cost` total plus the estimate would exceed `AGENT_LLM_DAILY_CAP_USD` (safe default 0.25).
-Mint happens BEFORE the paid post because a stored record has no on-chain write path after creation.
+The complete source snapshot and binding are checked, rendered, pinned and read back before mint.
+The mirror accepts only the chain location and verifies its committed IPFS record. An older mint
+with a mutable HTTP metadata URL cannot be upgraded by publishing different metadata; it stays
+visible in the ledger and can follow the existing stale-proposal retirement policy.
 Confirmation polls `getSignatureStatuses` (`solana-send.js`): Alchemy's devnet RPC has no
 `signatureSubscribe`, and web3's default confirm then reports a landed transaction as expired.
 Env: `AGENT_API_BASE`, `SOLANA_RPC_URL`, `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` (optional; one

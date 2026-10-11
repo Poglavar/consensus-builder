@@ -11,8 +11,7 @@ function finiteNonNegative(value, fallback, label) {
 export function executionPolicy(env = {}) {
     return {
         maxActions: Math.floor(finiteNonNegative(env.AGENT_DAILY_ACTION_CAP, 4, 'AGENT_DAILY_ACTION_CAP')),
-        maxUsdc: finiteNonNegative(env.AGENT_DAILY_USDC_CAP, 0.35, 'AGENT_DAILY_USDC_CAP'),
-        proposalFeeUsdc: finiteNonNegative(env.AGENT_PROPOSAL_FEE_USDC, 0.05, 'AGENT_PROPOSAL_FEE_USDC')
+        maxUsdc: finiteNonNegative(env.AGENT_DAILY_USDC_CAP, 0.35, 'AGENT_DAILY_USDC_CAP')
     };
 }
 
@@ -25,10 +24,10 @@ export function summarizeExecutionPlan(entries, policy = executionPolicy()) {
             plans.push({
                 persona: entry.persona.name,
                 proposalId: pick.proposalId,
-                // Worst case: proposal mint, x402 settlement, market creation and YES stake. A
+                // Worst case: proposal mint, market creation and YES stake. A
                 // pre-existing market removes one signature, but the pre-flight cap is conservative.
-                actions: 4,
-                usdc: policy.proposalFeeUsdc + stakeUsdc
+                actions: 3,
+                usdc: stakeUsdc
             });
         }
     }

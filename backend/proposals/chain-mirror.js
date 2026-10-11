@@ -2,6 +2,7 @@
 // The mirror's caller supplies only a location; neither client geometry nor a server signature is proof.
 import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
 import { readChainProposal, chainProofError } from './chain-reader.js';
 import { validateSiteGeometry } from './binding.js';
 import { MAX_METADATA_BYTES } from '../utils/nft-asset-upload.js';
@@ -9,6 +10,23 @@ import { MAX_METADATA_BYTES } from '../utils/nft-asset-upload.js';
 const require = createRequire(import.meta.url);
 const chainRecord = require('../../frontend/js/proposals/chain-record.js');
 const siteHash = require('../../frontend/js/proposals/site-hash.js');
+const agentPersonas = JSON.parse(readFileSync(new URL('../agents/personas.json', import.meta.url), 'utf8')).personas;
+
+// A persona label in metadata is only a claim. Our known agents get a public activity stamp
+// when the account's actual signer is that persona's configured wallet. This is not an x402 receipt.
+export function chainAgentStamp(record, chain, personas = agentPersonas) {
+    if (!record.agent) return null;
+    const persona = personas.find(item => item.name === record.agent.persona);
+    if (!persona) return null;
+    if (chain.ref.chainType !== 'solana' || persona.wallet !== chain.owner || record.author !== chain.owner) {
+        throw chainProofError('The agent identity does not match the proposal signer.');
+    }
+    return { persona: persona.name, wallet: chain.owner,
+        rationale: String(record.agent.rationale || record.description || '').slice(0, 10000),
+        run_id: String(record.agent.run_id || '').slice(0, 255),
+        ...(['algorithm', 'llm'].includes(record.agent.controller) ? { controller: record.agent.controller } : {}),
+        verified: { method: 'chain', chainRef: chain.ref } };
+}
 
 export function metadataReadUrl(uri, env = process.env) {
     // Only content identifiers enter these configured origins. A token cannot turn this API into
@@ -84,6 +102,7 @@ export async function loadChainMirror(ref, { readChain = readChainProposal, read
     await chainRecord.verifyAgainstChain(record, chain);
     await verifyCadastreSnapshot(record);
     const canonicalRef = chain.ref;
+    const agent = chainAgentStamp(record, chain);
     const key = createHash('sha256').update(JSON.stringify(canonicalRef)).digest('hex');
     return {
         record,
@@ -92,7 +111,7 @@ export async function loadChainMirror(ref, { readChain = readChainProposal, read
             contractAddress: canonicalRef.contract, proposalId: canonicalRef.tokenId,
             metadataUri: chain.metadataUri, owner: chain.owner },
         evidence: { protocol: chainRecord.PROTOCOL, ref: canonicalRef, metadataUri: chain.metadataUri,
-            verifiedAt: now().toISOString(), record }
+            verifiedAt: now().toISOString(), record, ...(agent ? { agent } : {}) }
     };
 }
 

@@ -24,6 +24,7 @@ import { ensurePledgeBookAndSet } from './pledger.js';
 import { ensureMarketAndStake, usdcToAtomic } from './bettor.js';
 import { claimProposalMarket, decodeProposalState, resolveProposalMarket, revokePledge } from './lifecycle-actions.js';
 import { assertUnderCap, dailyCapUsd, dailySpendUsd, getRun, listPersonaRuns, recordCosts, startRun, updateRun } from './ledger.js';
+import { markAgentRunFailed, safeFailureDiagnostic } from './run-failure.js';
 import { createAgentLlm, estimateBatchCostUsd, runPickBatch } from './llm-picker.js';
 import { buildChoiceRequest, optionId, parseChoice } from './society-llm.js';
 import { sendAndConfirmPolling } from './solana-send.js';
@@ -350,12 +351,12 @@ async function main() {
     if (typeof policy.decide !== 'function' || !policy.NEEDS) throw new Error(`agents/policies/${persona.role}.js must export decide() and NEEDS`);
     const turns = societyTurns({ day, personaName: persona.name, turns: args.turns ?? null, slot: args.slot });
     const caps = societyPolicy(process.env);
-    const keypair = live ? loadKeypair(persona) : null;
-    const wallet = keypair?.publicKey.toBase58() || persona.wallet || null;
     const pool = live ? new pg.Pool({
         host: process.env.PGHOST, port: process.env.PGPORT, user: process.env.PGUSER,
         password: process.env.PGPASSWORD, database: process.env.PGDATABASE
     }) : null;
+    let keypair = null;
+    let wallet = persona.wallet || null;
     log(`${live ? 'LIVE' : 'dry run'} · ${persona.name} (${persona.role}) · day ${day}${args.slot ? ` · slot ${args.slot}` : ''} · ${turns.length} turn(s) · controller ${args.controller} · caps ${caps.maxActions} signed action(s), ${caps.maxUsdc} USDC per invocation · api ${apiBase}`);
 
     const spent = { actions: 0, usdc: 0 };
@@ -371,78 +372,88 @@ async function main() {
                 report.push(`${label}: resumed ${existing.summary?.outcome || 'done'}`);
                 continue;
             }
-            const budget = societyBudget(caps, spent);
-            let action = existing?.status === 'running' ? existing.summary?.society?.action || null : null;
-            let decisionResult = existing?.summary?.decisionResult || null;
-            let decision = null;
-            if (!action) {
-                const inputs = await gatherInputs({ apiBase, persona, needs: policy.NEEDS, connection, wallet });
-                const runs = live ? await listPersonaRuns(pool, persona.name) : [];
-                const history = societyHistory({ runs, chain: inputs.chain, simulated });
-                // A claim the persona is owed comes first; otherwise the role's own policy decides.
-                decision = decideTurn(policy.decide, {
-                    persona, seed: turn.seed, now: Date.now(), wallet,
-                    proposals: inputs.proposals, markets: inputs.markets, positions: inputs.positions,
-                    proposalStatuses: inputs.proposalStatuses, history, budget
-                });
-                log(`${label}: ${decision.reason}`);
+            let runStarted = false;
+            const activities = [];
+            try {
                 if (live) {
                     await startRun(pool, { runId: turn.runId, persona: persona.name, day, mode: 'live' });
-                    await updateRun(pool, turn.runId, { summaryPatch: {
+                    runStarted = true;
+                    await updateRun(pool, turn.runId, { stage: 'gathering', status: 'running', summaryPatch: {
                         role: persona.role, controller: args.controller, wallet, turn: turn.turn, seed: turn.seed,
+                        outcome: 'gathering'
+                    } });
+                    if (!keypair) {
+                        keypair = loadKeypair(persona);
+                        wallet = keypair.publicKey.toBase58();
+                        await updateRun(pool, turn.runId, { summaryPatch: { wallet } });
+                    }
+                }
+                const budget = societyBudget(caps, spent);
+                let action = existing?.status === 'running' ? existing.summary?.society?.action || null : null;
+                let decisionResult = existing?.summary?.decisionResult || null;
+                let decision = null;
+                if (!action) {
+                    const inputs = await gatherInputs({ apiBase, persona, needs: policy.NEEDS, connection, wallet });
+                    const runs = live ? await listPersonaRuns(pool, persona.name) : [];
+                    const history = societyHistory({ runs, chain: inputs.chain, simulated });
+                    // A claim the persona is owed comes first; otherwise the role's own policy decides.
+                    decision = decideTurn(policy.decide, {
+                        persona, seed: turn.seed, now: Date.now(), wallet,
+                        proposals: inputs.proposals, markets: inputs.markets, positions: inputs.positions,
+                        proposalStatuses: inputs.proposalStatuses, history, budget
+                    });
+                    log(`${label}: ${decision.reason}`);
+                    if (live) await updateRun(pool, turn.runId, { summaryPatch: {
                         decisionInput: { controller: args.controller, seed: turn.seed, step: decision.step, budget, eligibleProposalIds: decision.eligibleProposalIds, recordFailures: inputs.recordFailures }
                     } });
-                }
-                // Collecting what the persona is owed is mechanical; the model only chooses among role options.
-                if (args.controller === 'llm' && decision.step === 'role') {
-                    const chosen = await llmChoose({ pool, persona, turn, decision, budget, day, dryRun: !live, existing });
-                    if (chosen.pending) {
-                        log(`${label}: batch ${chosen.pending} still processing — checkpointed; rerun to continue`);
-                        report.push(`${label}: awaiting model batch`);
-                        break;
+                    // Collecting what the persona is owed is mechanical; the model only chooses among role options.
+                    if (args.controller === 'llm' && decision.step === 'role') {
+                        const chosen = await llmChoose({ pool, persona, turn, decision, budget, day, dryRun: !live, existing });
+                        if (chosen.pending) {
+                            log(`${label}: batch ${chosen.pending} still processing — checkpointed; rerun to continue`);
+                            report.push(`${label}: awaiting model batch`);
+                            break;
+                        }
+                        action = chosen.action;
+                        decisionResult = chosen.decisionResult;
+                    } else {
+                        action = decision.action;
+                        decisionResult = { controller: decision.step === 'collect' ? 'collect' : 'algorithm', costUsd: 0, rationale: decision.reason };
                     }
-                    action = chosen.action;
-                    decisionResult = chosen.decisionResult;
-                } else {
-                    action = decision.action;
-                    decisionResult = { controller: decision.step === 'collect' ? 'collect' : 'algorithm', costUsd: 0, rationale: decision.reason };
                 }
-            }
-            if (!live) {
-                if (action) {
-                    console.log(JSON.stringify(action, null, 2));
-                    simulated.push(action);
-                    spent.actions += action.signedActions; spent.usdc += action.usdc;
-                    report.push(`${label}: would ${action.type}${action.side ? ` ${action.side.toUpperCase()}` : ''}${action.resolveFirst ? ' (resolve first)' : ''} ${action.proposalId}`);
-                } else {
-                    report.push(`${label}: ${decision?.capped ? 'cap reached' : 'no action'}`);
+                if (!live) {
+                    if (action) {
+                        console.log(JSON.stringify(action, null, 2));
+                        simulated.push(action);
+                        spent.actions += action.signedActions; spent.usdc += action.usdc;
+                        report.push(`${label}: would ${action.type}${action.side ? ` ${action.side.toUpperCase()}` : ''}${action.resolveFirst ? ' (resolve first)' : ''} ${action.proposalId}`);
+                    } else {
+                        report.push(`${label}: ${decision?.capped ? 'cap reached' : 'no action'}`);
+                        if (decision?.capped) break;
+                    }
+                    continue;
+                }
+
+                const options = (decision?.options || []).slice(0, 5).map(option => ({ proposalId: option.proposalId, type: option.action.type, rationale: option.action.rationale }));
+                if (!action) {
+                    const outcome = decision?.capped ? 'cap-reached' : 'no-action';
+                    await updateRun(pool, turn.runId, { stage: 'selected', status: 'done', summaryPatch: {
+                        decisionResult, society: { action: null, acted: false, options }, outcome
+                    } });
+                    report.push(`${label}: ${outcome}`);
                     if (decision?.capped) break;
+                    continue;
                 }
-                continue;
-            }
-
-            const options = (decision?.options || []).slice(0, 5).map(option => ({ proposalId: option.proposalId, type: option.action.type, rationale: option.action.rationale }));
-            if (!action) {
-                const outcome = decision?.capped ? 'cap-reached' : 'no-action';
-                await updateRun(pool, turn.runId, { stage: 'selected', status: 'done', summaryPatch: {
-                    decisionResult, society: { action: null, acted: false, options }, outcome
+                await updateRun(pool, turn.runId, { stage: 'selected', status: 'running', summaryPatch: {
+                    decisionResult, society: { action, acted: false, options }, outcome: 'selected'
                 } });
-                report.push(`${label}: ${outcome}`);
-                if (decision?.capped) break;
-                continue;
-            }
-            await updateRun(pool, turn.runId, { stage: 'selected', status: 'running', summaryPatch: {
-                decisionResult, society: { action, acted: false, options }, outcome: 'selected'
-            } });
 
-            const activities = [];
-            const runtime = actionEngineApi.createEngine({
-                decisionProviders: { algorithm: (_actor, context) => context.action, llm: (_actor, context) => context.action },
-                actionHandlers: { '*': (_actor, _action, context) => context.execute() },
-                onActivity: activity => activities.push({ ...activity, runId: turn.runId, rationale: action.rationale })
-            });
-            const actor = { id: persona.name, name: persona.name, controller: args.controller, wallet };
-            try {
+                const runtime = actionEngineApi.createEngine({
+                    decisionProviders: { algorithm: (_actor, context) => context.action, llm: (_actor, context) => context.action },
+                    actionHandlers: { '*': (_actor, _action, context) => context.execute() },
+                    onActivity: activity => activities.push({ ...activity, runId: turn.runId, rationale: action.rationale })
+                });
+                const actor = { id: persona.name, name: persona.name, controller: args.controller, wallet };
                 const execution = await runtime.run(actor, {
                     source: 'live',
                     action: { type: action.type, proposalId: action.proposalId, amount: action.amount, side: action.side || null },
@@ -458,7 +469,13 @@ async function main() {
                     ? `${label}: ${action.type}${action.side ? ` ${action.side.toUpperCase()}` : ''}${action.amount ? ` ${action.amount} USDC` : ''}${action.payout ? ` (${action.payout} USDC back)` : ''} on ${action.proposalId}`
                     : `${label}: ${action.proposalId} already in that state on-chain; no new transaction`);
             } catch (error) {
-                await updateRun(pool, turn.runId, { stage: 'selected', status: 'failed', summaryPatch: { activities, outcome: 'failed', error: error.message } });
+                if (runStarted) {
+                    try {
+                        await markAgentRunFailed(pool, turn.runId, error, { summaryPatch: { role: persona.role, activities } });
+                    } catch (recordError) {
+                        console.error(`[society-run] could not record failure for ${turn.runId}: ${safeFailureDiagnostic(recordError)}`);
+                    }
+                }
                 throw error;
             }
         }
@@ -475,8 +492,9 @@ async function main() {
 
 if (isEntrypoint(import.meta.url)) {
     main().catch(async error => {
-        console.error(`[${new Date().toISOString()}] SOCIETY AGENT FAILED:`, error);
-        if (process.argv.includes('--live')) await sendTelegram(`Society agent FAILED: ${error.message}`);
+        const diagnostic = safeFailureDiagnostic(error);
+        console.error(`[${new Date().toISOString()}] SOCIETY AGENT FAILED: ${diagnostic}`);
+        if (process.argv.includes('--live')) await sendTelegram(`Society agent FAILED: ${diagnostic}`);
         process.exit(1);
     });
 }
