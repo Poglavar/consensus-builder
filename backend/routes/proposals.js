@@ -30,7 +30,7 @@ import {
 import { footprintParts, hasFootprint } from '../proposals/footprint.js';
 import { verifyPreparation, isConstructedCorridor, PREPARED_TABLE, PREPARED_INSERT_COLUMNS, preparedRowValues } from '../proposals/prepare.js';
 import { recomputeCorridorStats } from './road-corridor.js';
-import { validateReparcellizationShares, readjustmentDealFingerprint } from './reparcellization.js';
+import { validateReparcellizationShares, readjustmentDealFingerprint, validateReadjustmentProposal } from './reparcellization.js';
 import { attachProposalFloorModels } from '../buildings/floor-models.js';
 import { resolveChainMirror } from '../proposals/chain-mirror.js';
 
@@ -551,6 +551,14 @@ export function precheckProposalCreate(req) {
     // validated, normalised values on top.
     const record = { ...stripLocalProposalState(body), ...validated };
 
+    if (!req.chainMirror && (record.reparcellization || record.goal === 'reparcellization')) {
+        const validation = validateReadjustmentProposal({ ...record,
+            offerCurrency: validated.offerCurrency ?? validated.offer_currency ?? null });
+        if (!validation.valid) return { ok: false, status: 422, code: 'invalid-readjustment-deal',
+            error: validation.errors[0].message,
+            validation: { errors: validation.errors, metrics: validation.metrics } };
+    }
+
     const siteError = validated.site ? validateSiteGeometry(validated.site) : null;
     if (siteError) return fail(siteError, BINDING_CODES.invalidSite);
     const site = validated.site ? normalizeSiteGeometry(validated.site) : null;
@@ -604,7 +612,8 @@ export function precheckProposalCreate(req) {
     };
 }
 
-const precheckRefusalBody = result => ({ error: result.error, ...(result.code ? { code: result.code } : {}) });
+const precheckRefusalBody = result => ({ error: result.error, ...(result.code ? { code: result.code } : {}),
+    ...(result.validation ? { validation: result.validation } : {}) });
 
 export function proposalCreatePrecheck(req, res, next) {
     const result = precheckProposalCreate(req);
@@ -813,11 +822,12 @@ export function createProposalCreateHandler(pool) {
                 }
             }
 
-            // Reparcellization land shares are recomputed from the stored child geometry (percents
-            // must match the polygons, sum to ~100). The geometry-truth overwrites the client numbers
-            // and validated:false flags a mismatch. Soft: a bad plan is still stored, just marked.
+            // Precheck rejects invalid LR designs before binding/payment. Recompute display areas
+            // from the same validator; uploaded percentages never establish parcel title shares.
             if (reparcellization && !req.chainMirror) {
-                const validatedReparcellization = validateReparcellizationShares(reparcellization);
+                const validatedReparcellization = validateReparcellizationShares(reparcellization, {
+                    ...proposal, offer, offerCurrency, approvalConfig: validated.approvalConfig ?? proposal.approvalConfig
+                });
                 if (validatedReparcellization) {
                     reparcellization = validatedReparcellization;
                     proposal.reparcellization = validatedReparcellization;

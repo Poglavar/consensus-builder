@@ -1,4 +1,4 @@
-// Resize the phone version of the parcel/proposal/road dock without giving each panel its own
+// Resize the phone version of the parcel/road dock without giving each panel its own
 // touch implementation. The geometry helpers are deliberately DOM-free so they can be tested in
 // Node; the rest is only event wiring around one CSS custom property.
 (function (global, factory) {
@@ -10,7 +10,7 @@
 
     // The drill stack also shares the desktop dock width, but it stays a compact top-row card on
     // phones. Only the actual info panels become bottom sheets.
-    const PANEL_SELECTOR = '.info-panel.right-dock-panel';
+    const PANEL_SELECTOR = '.info-panel.right-dock-panel:not(#proposal-details-panel)';
     const HANDLE_CLASS = 'mobile-dock-sheet-handle';
     const DEFAULT_RATIO = 0.66;
     const MIN_RATIO = 0.42;
@@ -103,7 +103,7 @@
     }
 
     function wirePanel(win, panel) {
-        if (!panel || panel.querySelector(`:scope > .${HANDLE_CLASS}`)) return;
+        if (!panel || panel.id === 'proposal-details-panel' || panel.querySelector(`:scope > .${HANDLE_CLASS}`)) return;
         const handle = makeHandle(win, panel);
         let drag = null;
 

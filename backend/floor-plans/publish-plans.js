@@ -1,8 +1,9 @@
 // Only complete floors with independently verified scale and orientation enter the map registry.
 import * as turf from '@turf/turf';
 import { canonicalJson,fingerprint,saveFloorModel,buildingSourceId } from '../buildings/floor-models.js';
-import { currentTaskContext } from './interpret-plans.js';
+import { currentTaskListing } from './interpret-plans.js';
 import { closeRing,geometryIssues } from './geometry-quality.js';
+import { locatedListingSql } from './building-location.js';
 
 const SCHEMA='consensus-builder.building-floor-plans.v2';
 function verifiedRegistration(source) {
@@ -76,25 +77,46 @@ async function liveFootprint(db,row) {
 
 export async function publishProcessedPlans(db,{limit=100,deadline=Infinity,log=console.log}={}) {
     const rows=(await db.query(`SELECT p.*,t.source_url,t.listing_url,t.context FROM floor_plan.processed_plan p
-        JOIN floor_plan.plan_task t ON t.id=p.task_id WHERE p.status='ready' AND p.model->>'scope'='floor'
-        AND p.publication='{}'::jsonb ORDER BY p.created_at,p.id LIMIT $1`,[limit])).rows;
+        JOIN floor_plan.plan_task t ON t.id=p.task_id
+        JOIN floor_plan.listing l ON l.url=t.listing_url
+        WHERE p.status='ready' AND p.model->>'scope'='floor' AND p.publication='{}'::jsonb
+        AND l.match_status='verified' AND l.building_city IS NOT NULL
+        AND l.building_source IS NOT NULL AND l.building_id IS NOT NULL
+        AND l.facts->>'sourceEvidenceStatus' IS DISTINCT FROM 'not-a-listing'
+        AND ${locatedListingSql()}
+        ORDER BY p.created_at,p.id LIMIT $1`,[limit])).rows;
     const result={published:0,needsReview:0,deferred:0};
     for(const row of rows) {
         if(Date.now()>=deadline) {result.deferred++;continue;}
         await db.query('BEGIN');
         try {
-            await db.query('SELECT pg_advisory_xact_lock(hashtextextended($1,0))',[canonicalJson([row.city,row.source,row.owner_id,row.building_id])]);
-            if(!await currentTaskContext(db,row,{lock:true})) throw new Error('Source or building association changed.');
-            const footprint=await liveFootprint(db,row);
-            if(fingerprint(footprint)!==fingerprint(row.model.building.footprint)) throw new Error('The building footprint changed since interpretation.');
+            const listing=await currentTaskListing(db,row,{lock:true,requireLocation:true});
+            if(!listing)throw new Error('Source or listing association changed.');
+            if(listing.match_status!=='verified'||!listing.building_city||!listing.building_source||!listing.building_id)
+                throw new Error('A current verified building association is required.');
+            const association={city:listing.building_city,source:listing.building_source,
+                owner_id:listing.building_owner_id||'',building_id:listing.building_id};
+            const sourceOnly=row.city==null&&row.source==null&&row.building_id==null;
+            if(!sourceOnly&&(row.city!==association.city||row.source!==association.source
+                ||(row.owner_id||'')!==association.owner_id||row.building_id!==association.building_id))
+                throw new Error('Historical building association changed.');
+            await db.query('SELECT pg_advisory_xact_lock(hashtextextended($1,0))',
+                [canonicalJson([association.city,association.source,association.owner_id,association.building_id])]);
+            const footprint=await liveFootprint(db,association);
+            if(!listing.building_evidence?.footprint||fingerprint(footprint)!==fingerprint(listing.building_evidence.footprint))
+                throw new Error('The current verified building footprint is missing or changed.');
+            if(!sourceOnly&&fingerprint(footprint)!==fingerprint(row.model.building?.footprint))
+                throw new Error('The historical building footprint changed since interpretation.');
             const registration=registerFullFloor(row.model,footprint);
             const existing=(await db.query(`SELECT floor_plans FROM consensus.building_floor_model
                 WHERE city=$1 AND source=$2 AND owner_id=$3 AND building_id=$4 AND current FOR UPDATE`,
-            [row.city,row.source,row.owner_id,row.building_id])).rows[0]?.floor_plans;
+            [association.city,association.source,association.owner_id,association.building_id])).rows[0]?.floor_plans;
             const floorPlans=mergeRegisteredFloor(existing,row,registration);
-            const saved=await saveFloorModel(db,{city:row.city,source:row.source,ownerId:row.owner_id,buildingId:row.building_id,footprint,floorPlans},{apply:true});
+            const saved=await saveFloorModel(db,{city:association.city,source:association.source,
+                ownerId:association.owner_id,buildingId:association.building_id,footprint,floorPlans},{apply:true});
             await db.query(`UPDATE floor_plan.processed_plan SET status='published',published_version=$2,publication=$3,updated_at=now() WHERE id=$1`,
-                [row.id,saved.version,JSON.stringify({registration,verifiedAt:new Date().toISOString()})]);
+                [row.id,saved.version,JSON.stringify({registration,association:{...association,
+                    listingUrl:row.listing_url,footprintHash:fingerprint(footprint)},verifiedAt:new Date().toISOString()})]);
             const check=(await db.query('SELECT status,published_version FROM floor_plan.processed_plan WHERE id=$1',[row.id])).rows[0];
             if(check?.status!=='published'||check.published_version!==saved.version) throw new Error('Publication artifact read-back failed.');
             await db.query('COMMIT');result.published++;

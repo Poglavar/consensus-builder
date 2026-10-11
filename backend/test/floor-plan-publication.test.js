@@ -83,6 +83,54 @@ describe('geometry and publishing evidence',()=>{
         expect(saved[0]).toContain("status='needs_review'");
         expect(JSON.parse(saved[1][1]).needsReview).toMatch(/association changed/);
     });
+    it('does not select an unknown building for publication or demote its geometry',async()=>{
+        const db={query:vi.fn(async()=>({rows:[]}))};
+        expect(await publishProcessedPlans(db,{log:()=>{}})).toMatchObject({published:0,needsReview:0});
+        const sql=db.query.mock.calls[0][0];
+        expect(sql).toContain("l.match_status='verified'");
+        expect(sql).toContain('l.building_id IS NOT NULL');
+        expect(sql).toContain("sourceEvidenceStatus' IS DISTINCT FROM 'not-a-listing'");
+        expect(sql).toContain("building_evidence->>'locationPolicy'='explicit-address-v1'");
+        expect(db.query).toHaveBeenCalledTimes(1);
+    });
+    it('publishes source-only geometry after a current verified match and records that identity',async()=>{
+        const shape=footprint(10),plan={...model(),building:null};
+        const sourceOnly={...row,city:null,source:null,building_id:null,source_sha256:'a'.repeat(64),
+            source_url:'https://agency.test/plan.png',listing_url:'https://agency.test/listing/1',
+            context:{listingUrl:'https://agency.test/listing/1',facts:{floor:null,unitId:null,areaM2:null}},model:plan};
+        let registry=null,publication=null;
+        const db={query:vi.fn(async(sql,args=[])=>{
+            if(sql.startsWith('SELECT p.*'))return {rows:[sourceOnly]};
+            if(sql.startsWith('SELECT l.*'))return {rows:[{url:sourceOnly.listing_url,match_status:'verified',building_city:'zagreb',
+                building_source:'zagreb-3d',building_owner_id:'',building_id:'42',building_located:true,
+                building_evidence:{footprint:shape,locationPolicy:'explicit-address-v1'},facts:{}}]};
+            if(sql.includes('FROM public.gdi_building_3d'))return {rows:[{footprint:shape}]};
+            if(sql.startsWith('SELECT floor_plans'))return {rows:[]};
+            if(sql.startsWith('SELECT version, current'))return {rows:[]};
+            if(sql.startsWith('INSERT INTO consensus.building_floor_model')){registry={footprint:JSON.parse(args[5]),floor_plans:JSON.parse(args[8])};return {rows:[],rowCount:1};}
+            if(sql.startsWith('SELECT footprint, floor_plans'))return {rows:[registry]};
+            if(sql.startsWith("UPDATE floor_plan.processed_plan SET status='published'")){publication=JSON.parse(args[2]);return {rows:[],rowCount:1};}
+            if(sql.startsWith('SELECT status,published_version'))return {rows:[{status:'published',published_version:1}]};
+            return {rows:[],rowCount:1};
+        })};
+        expect(await publishProcessedPlans(db,{log:()=>{}})).toMatchObject({published:1,needsReview:0});
+        expect(publication.association).toMatchObject({city:'zagreb',source:'zagreb-3d',building_id:'42',listingUrl:sourceOnly.listing_url});
+        expect(plan.building).toBeNull();
+    });
+    it('withdraws ready geometry when a formerly verified listing loses its location policy',async()=>{
+        const source={...row,source_sha256:'a'.repeat(64),source_url:'https://agency.test/plan.png',
+            listing_url:'https://agency.test/listing/1',context:{listingUrl:'https://agency.test/listing/1',facts:{}},model:model()};
+        const db={query:vi.fn(async sql=>{
+            if(sql.startsWith('SELECT p.*'))return {rows:[source]};
+            if(sql.startsWith('SELECT l.*'))return {rows:[{url:source.listing_url,match_status:'verified',
+                building_city:'zagreb',building_source:'zagreb-3d',building_id:'42',
+                building_evidence:{footprint:footprint(10)},building_located:false,facts:{}}]};
+            return {rows:[],rowCount:1};
+        })};
+        expect(await publishProcessedPlans(db,{log:()=>{}})).toMatchObject({published:0,needsReview:1});
+        expect(db.query.mock.calls.some(([sql])=>sql.startsWith('INSERT INTO consensus.building_floor_model'))).toBe(false);
+        expect(db.query.mock.calls.find(([sql])=>sql.startsWith('UPDATE floor_plan.processed_plan'))[0]).toContain("status='needs_review'");
+    });
     it('does not start publication work beyond the job deadline',async()=>{
         const db={query:vi.fn(async()=>({rows:[{...row,model:model()}]}))};
         expect(await publishProcessedPlans(db,{deadline:0})).toMatchObject({published:0,deferred:1});

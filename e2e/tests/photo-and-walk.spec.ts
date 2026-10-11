@@ -61,8 +61,31 @@ test('Photo view enters the actual tiles renderer and returning to 2D releases i
     while (object) { if (!object.visible) return false; object = object.parent; }
     return true;
   }), { timeout: 20000 }).toBe(true);
+  // Open the generated-scene editor from this real photo-mode session and close it through its
+  // visible control; photo rendering remains active after dismissing the dialog.
+  await page.locator('#mode-ai-toggle').click();
+  const aiScene = page.locator('#ai-scene-overlay');
+  await expect(aiScene).toBeVisible();
+  await aiScene.locator('.ai-scene-close').click();
+  await expect(aiScene).toBeHidden();
+  await expect(page.locator('body')).toHaveClass(/realistic-mode-active/);
   await page.locator('#mode-2d-toggle').click();
   await expect(page.locator('body')).not.toHaveClass(/realistic-mode-active/);
   await expect(page.locator('#three-container')).toBeHidden();
   await expect(page.locator('#map')).toBeVisible();
+});
+
+test('photo seating diagnostics can be copied from their accessible button', async ({ mockApi: page }) => {
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+  await page.addInitScript(() => sessionStorage.setItem('cbSeatDebug', '1'));
+  await mockBuildingScene(page);
+  await mockPhotoTiles(page);
+  await openCity(page);
+  await page.locator('#mode-realistic-toggle').click();
+  await expect(page.locator('#three-container canvas')).toBeVisible({ timeout: 15000 });
+  const diagnostics = page.getByRole('button', { name: 'Copy to clipboard', exact: true });
+  await expect(diagnostics).toBeVisible({ timeout: 20000 });
+  await expect(diagnostics).toContainText(/seat grounded=.*tiles=/);
+  await diagnostics.click();
+  await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toContain('seat grounded=');
 });

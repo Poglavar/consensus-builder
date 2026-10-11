@@ -6,7 +6,8 @@ export const PARCEL_ID = sampleParcels.features[0].properties.parcelId;
 export const PARCEL_GEOMETRY = sampleParcels.features[0].geometry;
 
 export async function openCity(page: Page): Promise<void> {
-  await page.goto('/?city=zg&reduceMotion=1');
+  // Readiness is the map/repository below; slow external basemap tiles must not hold navigation open.
+  await page.goto('/?city=zg&reduceMotion=1', { waitUntil: 'domcontentloaded' });
   await waitForMapReady(page);
   await page.waitForFunction(() => {
     const w = window as any;

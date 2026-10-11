@@ -42,6 +42,24 @@
             return false;
         }
 
+        // Validate the authored pool before later roads carve a private preview copy. Those roads
+        // legitimately leave runtime gaps in the original pool; they do not change the agreed deal.
+        const validationApi = (typeof window !== 'undefined' && window.ReparcellizationValidation)
+            || (typeof require === 'function' ? require('../../reparcellization-validation.js') : null);
+        if (!validationApi) throw new Error('Readjustment validation is unavailable.');
+        const validation = validationApi.validate(proposalData, {
+            turf: typeof turf !== 'undefined' ? turf : (typeof window !== 'undefined' ? window.turf : null)
+        });
+        if (!validation.valid) {
+            const message = validation.errors.map(item => item.message).join(' ');
+            this._setLastApplyFailure?.(idLabel, { code: 'invalid-readjustment-deal', message, validation });
+            if (typeof updateStatus === 'function') updateStatus(message);
+            const error = new Error(message);
+            error.code = 'invalid-readjustment-deal';
+            error.validation = validation;
+            throw error;
+        }
+
         // Skip overlay rendering: add child parcels directly with existing parcel styling
         console.debug(`[_applyReparcellizationProposal] Skipping overlay rendering for ${plan.polygons.length} slice(s); will add child parcels directly.`);
 
@@ -173,35 +191,8 @@
             // below), exactly as it is for a road.
         }
 
-        // Two plots may not cover the same ground. The take IS the union of the plots, so a gap or
-        // an excess against it cannot happen — but an overlap can, and it is the one failure that
-        // corrupts the result silently: the pool measures the union correctly while the plots hand
-        // the same square metre to two people.
-        //
-        // The draft editor already refuses this, and that is not enough. A plan can arrive from a
-        // shared link, an import or any other route that never passed through the editor, and this
-        // is the last point before ground changes hands.
-        {
-            const contributionsApi = (typeof window !== 'undefined') ? window.__readjustmentContributions : null;
-            if (contributionsApi && typeof contributionsApi.overlappingPlots === 'function') {
-                const overlaps = contributionsApi.overlappingPlots(plan.polygons);
-                if (overlaps.length) {
-                    const worst = overlaps.slice().sort((x, y) => y.areaM2 - x.areaM2)[0];
-                    const pairs = overlaps.map(o => `${o.a + 1}&${o.b + 1}`).join(', ');
-                    const message = `A land readjustment cannot give the same ground to two plots: ${overlaps.length} overlapping pair(s) (${pairs}), the largest ${Math.round(worst.areaM2)} m². Redraw the plots so they meet without covering each other.`;
-                    if (typeof updateStatus === 'function') updateStatus(message);
-                    console.warn(`[_applyReparcellizationProposal] ${idLabel}: overlapping plots —`, overlaps);
-                    try {
-                        this._setLastApplyFailure(idLabel, {
-                            code: 'readjustment-overlapping-plots',
-                            message,
-                            overlaps
-                        });
-                    } catch (_) { }
-                    return false;
-                }
-            }
-        }
+        // The shared authored-plan check above rejects duplicate ground, uncovered declared
+        // pools and out-of-pool plots even when a shared record bypassed the design editor.
 
         // Validate and normalize every authored ownership declaration before creating children,
         // mutating the map or writing transactional agent/storage state. A plot's owners[] vector

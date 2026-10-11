@@ -276,11 +276,11 @@ describe('carried into the applied plan', () => {
 
     it('is off in 3D until the toggle is ticked — the 2D map always shows them', () => {
         expect(threeMode).toContain('let showIneligibleParcels = false;');
-        expect(threeMode).toContain('if (showIneligibleParcels) buildIneligibleParcels3D(buildingGroup);');
+        expect(threeMode).toContain('if (showIneligibleParcels && rebuildProposed) buildIneligibleParcels3D(ineligibleBuildingsGroup);');
         expect(threeMode).toContain("threeI18n('threeMode.controls.ineligibleParcels', 'Non-buildable plots')");
         // Its own full-width row: sharing one with a dropdown squeezed the label into two lines.
         expect(threeMode).toContain('three-mode-trees-row three-mode-wide-row');
-        expect(mapCss).toContain('#three-container .three-mode-wide-toggle {');
+        expect(mapCss).toContain('#model-layer-controls .three-mode-wide-toggle {');
     });
 
     it.each(locales)('%s names the toggle', locale => {

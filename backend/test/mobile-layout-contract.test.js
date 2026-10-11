@@ -14,6 +14,7 @@ const photorealCss = read('css/photoreal-mode.css');
 const grainCss = read('css/grain-score.css');
 const mapShellCss = read('css/map-shell.css');
 const proposalsCss = read('css/proposals.css');
+const proposalDetailsCss = read('css/proposal-details.css');
 const drillUi = read('js/proposals/drill-ui.js');
 const threeMode = read('js/three-mode.js');
 const parcelBlocks = read('js/parcel-blocks.js');
@@ -64,9 +65,23 @@ describe('the left-edge mode strip is never covered on phones', () => {
     it('runs the docked bottom sheets edge to edge', () => {
         const [block] = mediaBlocksContaining(utilitiesCss, '(max-width: 767.98px)', '.info-panel.right-dock-panel');
         expect(block).toBeTruthy();
-        expect(ruleBody(block, '\\.info-panel\\.right-dock-panel')).toMatch(/left:\s*0 !important/);
+        expect(ruleBody(block, '\\.info-panel\\.right-dock-panel:not\\(#proposal-details-panel\\)')).toContain('left: var(--info-panel-mobile-inset, 0) !important;');
         // With left AND right set, a 100% width would push the sheet off the right edge.
         expect(mediaBlock(panelsCss, '(max-width: 767.98px)')).toMatch(/--right-dock-width:\s*auto/);
+    });
+
+    it('keeps the mobile road editor clear of the mode strip despite the full-bleed panel rule', () => {
+        const [block] = mediaBlocksContaining(mapShellCss, '(max-width: 767.98px)', 'body.corridor-drawing-active #road-info-panel');
+        expect(ruleBody(block, 'body\\.corridor-drawing-active #road-info-panel')).toContain('--info-panel-mobile-inset: var(--map-mode-strip);');
+    });
+
+    it('wraps the corridor road header so its fixed actions and cross-section control stay visible', () => {
+        const [block] = mediaBlocksContaining(mapShellCss, '(max-width: 767.98px)', 'body.corridor-drawing-active #road-info-panel .road-panel-header');
+        expect(ruleBody(block, 'body\\.corridor-drawing-active #road-info-panel \.road-panel-header')).toMatch(/flex-wrap:\s*wrap/);
+        const crossSection = ruleBody(block, 'body\\.corridor-drawing-active #road-info-panel #editRoadCrossSectionButton');
+        expect(crossSection).toMatch(/order:\s*1/);
+        expect(crossSection).toMatch(/flex:\s*1 0 100%/);
+        expect(crossSection).toMatch(/white-space:\s*normal/);
     });
 
     it('starts the 3D parcel panel right of the strip, not with a gap on the right', () => {
@@ -77,10 +92,15 @@ describe('the left-edge mode strip is never covered on phones', () => {
     });
 });
 
-describe('the top row (menu button, Guest pill, gear) belongs to nothing else on phones', () => {
-    it('keeps a collapsed proposal card at the bottom: releasing `bottom` is desktop-only', () => {
-        const minimizedBase = ruleBody(utilitiesCss, '#proposal-details-panel\\.is-minimized,\\s*#proposal-details-panel\\.visible\\.is-minimized');
-        expect(minimizedBase).not.toMatch(/bottom:\s*auto/);
+describe('proposal details and compact card on phones', () => {
+    it('allows a compact proposal card as well as a full-screen details reader', () => {
+        const [mobile] = mediaBlocksContaining(proposalDetailsCss, '(max-width: 767.98px)', '#proposal-details-panel.right-dock-panel');
+        const reader = ruleBody(mobile, '#proposal-details-panel\\.right-dock-panel:not\\(\\.is-minimized\\)');
+        expect(reader).toMatch(/inset:\s*0/);
+        expect(reader).toMatch(/height:\s*100dvh/);
+        expect(mobile).toContain('#proposal-details-panel.right-dock-panel.is-minimized');
+        expect(mobile).toMatch(/inset:\s*auto\s+0\s+var\(--map-shell-bottom-clearance\)\s+0/);
+        expect(mobile).not.toMatch(/\.proposal-details-toggle[^}]*display:\s*none/);
         const [desktop] = mediaBlocksContaining(utilitiesCss, '(min-width: 768px)', '#proposal-details-panel.is-minimized');
         expect(desktop).toMatch(/bottom:\s*auto\s*!important/);
     });

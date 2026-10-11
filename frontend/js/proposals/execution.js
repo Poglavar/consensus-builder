@@ -1240,7 +1240,10 @@ async function recordAbstractProposalDecision(proposal, parcelId, ownerId, actor
             'The selected lens has not established these rights and your authority to act for this owner.'));
         return null;
     }
-    const canExecute = !withdraw && result.passed && proposal.funded !== false
+    const lrValidation = proposalRequiresDealConsent(proposal)
+        ? window.ReparcellizationValidation?.validate(proposal, { turf: window.turf }) : null;
+    const canExecute = !withdraw && result.passed
+        && (proposalRequiresDealConsent(proposal) ? lrValidation?.readyForApproval && lrValidation.fundingReady : proposal.funded !== false)
         && !(typeof isVoteProposal === 'function' && isVoteProposal(proposal))
         && proposalRecipientConsentSatisfied(proposal);
     if (canExecute) {
@@ -1276,7 +1279,10 @@ function currentProposalOwnerAcceptanceKeys(proposal, entry) {
 
 function currentConsentBindingHash(proposal) {
     if (proposalRequiresDealConsent(proposal)) {
-        try { return window.ReparcellizationDeal?.fingerprint(proposal) || null; }
+        try {
+            const validation = window.ReparcellizationValidation?.validate(proposal, { turf: window.turf });
+            return validation?.valid ? window.ReparcellizationDeal?.fingerprint(proposal) || null : null;
+        }
         catch (_) { return null; } // Invalid LR terms must never fall back to a weaker footprint hash.
     }
     if (proposal.approvalConfig != null) {

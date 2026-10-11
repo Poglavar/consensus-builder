@@ -24,7 +24,7 @@
         'showParcelCoverageButton', 'refreshParcelDataButton',
         'debugModeCheckbox',
         // Activity sheet: the explorer buttons and the Simulation section
-        'activity-explorer-button',
+        'activity-explorer-button', 'activity-agents-button',
         'gameCheckbox', 'game-datetime', 'game-turns', 'turn-interval-slider', 'turn-interval-value',
         'turn-progress-fill', 'turn-progress-time', 'game-play-pause-btn',
         // Proposals sheet
@@ -401,6 +401,8 @@
         // config hiding the game section takes the simulation commands with it, not the explorer) ----
         { id: 'activity.explorer', group: 'activity', surfaces: ['activity'], run: callGlobal('showGameLogDialog'),
             labelKey: 'mapShell.commands.activityExplorer', fallbackLabel: 'Open activity explorer', icon: 'fas fa-wave-square' },
+        { id: 'activity.agents', group: 'activity', surfaces: ['activity'], run: callGlobal('showGameLogDialog', { view: 'actors' }),
+            labelKey: 'sidebar.game.showAgents', fallbackLabel: 'Actors', icon: 'fas fa-robot' },
         control('gameCheckbox', { id: 'game.enable', group: 'game', kind: 'toggle', surfaces: ['activity'],
             labelKey: 'sidebar.game.enable', fallbackLabel: 'Enable game mode', icon: 'fas fa-gamepad' }),
         { id: 'game.playPause', group: 'game', surfaces: ['activity'], run: callGlobal('toggleGamePlayPause'),

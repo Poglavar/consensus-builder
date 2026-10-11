@@ -140,8 +140,36 @@ const count = value => {
     return Number(value);
 };
 
+function isoTimestamp(value) {
+    if (value === undefined) return undefined;
+    const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d{1,3})?(Z|[+-](\d{2}):(\d{2}))$/.exec(value);
+    if (!match || !Number.isFinite(Date.parse(value))) throw upstreamError('Invalid parcel GML collection timestamp.');
+    const [, yearText, monthText, dayText, hourText, minuteText, secondText, , offsetHourText, offsetMinuteText] = match;
+    const year = Number(yearText), month = Number(monthText), day = Number(dayText);
+    const hour = Number(hourText), minute = Number(minuteText), second = Number(secondText);
+    const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+    const days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    if (month < 1 || month > 12 || day < 1 || day > days[month - 1]
+        || hour > 23 || minute > 59 || second > 59
+        || (offsetHourText !== undefined && (Number(offsetHourText) > 23 || Number(offsetMinuteText) > 59))) {
+        throw upstreamError('Invalid parcel GML collection timestamp.');
+    }
+    return value;
+}
+
+function validNativeGeometry(geometry) {
+    if (!geometry || !['Polygon', 'MultiPolygon'].includes(geometry.type) || !Array.isArray(geometry.coordinates)) return false;
+    const polygons = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates;
+    return polygons.length > 0 && polygons.every(polygon => Array.isArray(polygon) && polygon.length > 0
+        && polygon.every(ring => Array.isArray(ring) && ring.length >= 4
+            && ring.every(point => Array.isArray(point) && point.length === 2
+                && point.every(value => typeof value === 'number' && Number.isFinite(value)))
+            && ring[0][0] === ring.at(-1)[0] && ring[0][1] === ring.at(-1)[1]));
+}
+
 export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes = 160 * 1024 * 1024,
-    maxFeatures = 150000, signal, featureNamespace, featureName, schema } = {}) {
+    maxFeatures = 150000, signal, featureNamespace, featureName, schema,
+    coordinateMode = 'wgs84', onFeature } = {}) {
     const hasCustomSchema = schema !== undefined;
     const customSchema = hasCustomSchema ? schema : null;
     const canonicalCustomSchema = customSchema && typeof customSchema === 'object' && !Array.isArray(customSchema)
@@ -151,8 +179,16 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
     if ((hasCustomSchema && !validCustomSchema) || (customSchema && (idField !== 'INSPIREID'
         || featureNamespace !== undefined || featureName !== undefined))
         || (!customSchema && !['INSPIREID','nationalCadastralReference'].includes(idField))
+        || !['wgs84', 'native'].includes(coordinateMode)
+        || (coordinateMode === 'native' && (customSchema || idField !== 'INSPIREID'
+            || featureNamespace !== undefined || featureName !== undefined))
+        || (onFeature !== undefined && typeof onFeature !== 'function')
         || !Number.isSafeInteger(maxBytes) || maxBytes < 1
         || !Number.isSafeInteger(maxFeatures) || maxFeatures < 1) throw new Error('Invalid parcel GML reader options.');
+    // Native coordinates are importer-only. A streaming callback may run before final
+    // document count checks, so callers must stage writes and roll them back on rejection.
+    const streaming = onFeature !== undefined;
+    const nativeCoordinates = coordinateMode === 'native';
     const activeIdField = customSchema ? customSchema.idField : idField;
     const activeFeatureNamespace = customSchema ? customSchema.featureNamespace : featureNamespace;
     const activeFeatureName = customSchema ? customSchema.featureName : featureName;
@@ -165,12 +201,14 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
     const strictFlatFields = isHessen || isMunicipalGeometry || isCatastroAtom;
     const geometryChildren = isMunicipalGeometry || isCatastroAtom ? GDANSK_GEOMETRY_CHILDREN : HESSEN_GEOMETRY_CHILDREN;
     const isGmlTag = tag => customSchema ? tag.uri === customSchema.gmlNamespace : GML.has(tag.uri);
-    const isFeatureTag = tag => customSchema
-        ? tag.uri === customSchema.featureNamespace && tag.local === customSchema.featureName : featureTag(tag);
+    const isFeatureTag = tag => nativeCoordinates
+        ? tag.uri === LR && tag.local === 'PREDEFINED'
+        : customSchema ? tag.uri === customSchema.featureNamespace && tag.local === customSchema.featureName : featureTag(tag);
     const parser = new SaxesParser({ xmlns: true });
-    const stack = [], byId = new Map();
+    const stack = [], byId = streaming ? null : new Map();
     let current = null, polygon = null, ringKind = null, collection = false, closedCollection = false;
-    let geometryDepth = null, sourceCrs = null, numberMatched, numberMatchedUnknown = false, numberReturned, featureCount = 0, duplicateNativeCount = 0;
+    let geometryDepth = null, sourceCrs = null, sourceTimestamp, numberMatched, numberMatchedUnknown = false, numberReturned, featureCount = 0, duplicateNativeCount = 0;
+    let streamedExtent = null;
     const projections = new Map();
     const fail = message => { throw upstreamError(message); };
     parser.on('doctype', () => fail('Parcel GML document types and external entities are forbidden.'));
@@ -180,6 +218,9 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
             if (!collectionTag(tag) || (customSchema && tag.uri !== 'http://www.opengis.net/wfs/2.0')) fail('Parcel GML must be a FeatureCollection.');
             collection = true;
             const matchedAttribute = attr(tag,'numberMatched');
+            // Only the native HMLR import contract records and validates collection
+            // timeStamp. Other WFS publishers use this optional attribute differently.
+            if (nativeCoordinates) sourceTimestamp = isoTimestamp(attr(tag, 'timeStamp'));
             numberMatchedUnknown = matchedAttribute === 'unknown';
             numberMatched = count(matchedAttribute); numberReturned = count(attr(tag,'numberReturned'));
             if (isCatastroAtom && (numberMatched === undefined || numberReturned !== numberMatched)) {
@@ -221,6 +262,7 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
         if (srs !== undefined) {
             const resolved = crsName(srs, customSchema);
             if (customSchema && resolved !== customSchema.sourceCrs) fail('Parcel GML response coordinate system does not match the configured schema.');
+            if (nativeCoordinates && resolved !== 'EPSG:27700') fail('Native HMLR coordinates require EPSG:27700.');
             if (sourceCrs && sourceCrs !== resolved) fail('Parcel GML mixes coordinate systems.');
             sourceCrs = resolved;
         }
@@ -362,8 +404,8 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
             if (tag.local === 'posList') {
                 if (isCatastroAtom && !frame.crs) fail('Parcel GML coordinates have no inherited coordinate system.');
                 if(!sourceCrs) fail('Parcel GML coordinates have no coordinate system.');
-                if(!projections.has(sourceCrs)) projections.set(sourceCrs,proj4(sourceCrs,'EPSG:4326'));
-                const projection=projections.get(sourceCrs), ring=[];
+                if (!nativeCoordinates && !projections.has(sourceCrs)) projections.set(sourceCrs, proj4(sourceCrs, 'EPSG:4326'));
+                const projection = nativeCoordinates ? null : projections.get(sourceCrs), ring=[];
                 let x=null,firstX,lastX,firstY,lastY;
                 for(const match of frame.text.matchAll(/\S+/g)) {
                     const token=match[0];
@@ -372,7 +414,8 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
                     if(x===null)x=value;
                     else{
                         if(!ring.length){firstX=x;firstY=value;}lastX=x;lastY=value;
-                        ring.push(projection.forward(customSchema?.axisOrder === 'northing-easting' ? [value,x] : [x,value]));x=null;
+                        const point = customSchema?.axisOrder === 'northing-easting' ? [value, x] : [x, value];
+                        ring.push(nativeCoordinates ? point : projection.forward(point));x=null;
                     }
                 }
                 if(x!==null||ring.length<4||firstX!==lastX||firstY!==lastY) fail('Parcel GML polygon ring is invalid or not closed.');
@@ -400,17 +443,29 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
             }
             const geometry = { type: current.polygons.length === 1 ? 'Polygon' : 'MultiPolygon',
                 coordinates: current.polygons.length === 1 ? current.polygons[0] : current.polygons };
-            if (!validateGeometry(geometry)) fail('Invalid projected parcel GML polygon.');
+            if (nativeCoordinates ? !validNativeGeometry(geometry) : !validateGeometry(geometry)) {
+                fail(nativeCoordinates ? 'Invalid native parcel GML polygon.' : 'Invalid projected parcel GML polygon.');
+            }
             const bbox = [Infinity,Infinity,-Infinity,-Infinity];
             for (const poly of current.polygons) for (const ring of poly) for (const [x,y] of ring) {
                 bbox[0]=Math.min(bbox[0],x);bbox[1]=Math.min(bbox[1],y);bbox[2]=Math.max(bbox[2],x);bbox[3]=Math.max(bbox[3],y);
             }
+            if (streaming) streamedExtent = streamedExtent
+                ? [Math.min(streamedExtent[0],bbox[0]),Math.min(streamedExtent[1],bbox[1]),Math.max(streamedExtent[2],bbox[2]),Math.max(streamedExtent[3],bbox[3])]
+                : bbox.slice();
             featureCount++; if (featureCount > maxFeatures) fail('Parcel GML exceeds feature limit.');
-            const previous = byId.get(current.id);
-            if (previous) {
-                if (JSON.stringify(previous.geometry) !== JSON.stringify(geometry)) fail('Parcel GML has conflicting geometry for one native identifier.');
-                duplicateNativeCount++;
-            } else byId.set(current.id,{ type:'Feature',id:current.id,properties:{[activeIdField]:current.id},geometry,bbox });
+            const feature = { type:'Feature',id:current.id,properties:{[activeIdField]:current.id},geometry,bbox };
+            if (streaming) {
+                const callbackResult = onFeature(feature);
+                if (callbackResult && (typeof callbackResult === 'object' || typeof callbackResult === 'function')
+                    && typeof callbackResult.then === 'function') fail('GML onFeature callback must be synchronous.');
+            } else {
+                const previous = byId.get(current.id);
+                if (previous) {
+                    if (JSON.stringify(previous.geometry) !== JSON.stringify(geometry)) fail('Parcel GML has conflicting geometry for one native identifier.');
+                    duplicateNativeCount++;
+                } else byId.set(current.id, feature);
+            }
             current = null;
         }
         if (!stack.length && collectionTag(tag)) closedCollection = true;
@@ -423,19 +478,30 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
         else fail('Invalid parcel GML byte input.');
     }
     let totalBytes=0;
+    let bytesUntilYield=0;
     try {
         for await(const bytes of chunks()) {
             if(!(bytes instanceof Uint8Array))fail('Invalid parcel GML byte chunk.');
             totalBytes+=bytes.byteLength;if(totalBytes>maxBytes)fail('Parcel GML exceeds byte limit.');
             for(let offset=0;offset<bytes.byteLength;offset+=65536){
                 if(signal?.aborted)fail('Parcel GML load aborted.');
-                parser.write(decoder.decode(bytes.subarray(offset,offset+65536),{stream:true}));
-                await new Promise(resolve=>setImmediate(resolve));
+                const length=Math.min(65536,bytes.byteLength-offset);
+                parser.write(decoder.decode(bytes.subarray(offset,offset+length),{stream:true}));
+                bytesUntilYield+=length;
+                if(bytesUntilYield>=65536){
+                    bytesUntilYield=0;
+                    if(typeof globalThis.scheduler?.yield==='function')await globalThis.scheduler.yield();
+                    else if(typeof globalThis.setImmediate==='function')await new Promise(resolve=>globalThis.setImmediate(resolve));
+                    else await new Promise(resolve=>globalThis.setTimeout(resolve,0));
+                }
             }
+            if(signal?.aborted)fail('Parcel GML load aborted.');
         }
+        if(signal?.aborted)fail('Parcel GML load aborted.');
         parser.write(decoder.decode()).close();
     } catch (error) { if (error.status) throw error; fail('Malformed parcel GML or coordinate transformation.'); }
     const declaredNumberReturned = numberReturned;
+    if (nativeCoordinates && sourceCrs !== 'EPSG:27700') fail('Native HMLR coordinates require EPSG:27700.');
     let numberReturnedNormalized = false;
     let numberReturnedProtocolException = null;
     if (numberReturned !== undefined && numberReturned !== featureCount) {
@@ -450,8 +516,11 @@ export async function parseGmlParcels(input, { idField = 'INSPIREID', maxBytes =
     if (isCatastroAtom && (numberMatched !== featureCount || numberReturned !== featureCount || duplicateNativeCount)) {
         fail('Spanish ATOM parcel archive is not a complete unique declared parcel set.');
     }
-    const features = [...byId.values()];
-    const extent = features.length ? features.reduce((out,f)=>[Math.min(out[0],f.bbox[0]),Math.min(out[1],f.bbox[1]),Math.max(out[2],f.bbox[2]),Math.max(out[3],f.bbox[3])],[Infinity,Infinity,-Infinity,-Infinity]) : null;
-    return { features,featureCount,uniqueFeatureCount:features.length,numberMatched,numberMatchedUnknown,numberReturned,
-        declaredNumberReturned,numberReturnedNormalized,numberReturnedProtocolException,sourceCrs,extent,duplicateNativeCount };
+    const features = streaming ? [] : [...byId.values()];
+    const extent = streaming ? streamedExtent : features.length
+        ? features.reduce((out,f)=>[Math.min(out[0],f.bbox[0]),Math.min(out[1],f.bbox[1]),Math.max(out[2],f.bbox[2]),Math.max(out[3],f.bbox[3])],[Infinity,Infinity,-Infinity,-Infinity]) : null;
+    return { features,featureCount,uniqueFeatureCount:streaming ? null : features.length,numberMatched,numberMatchedUnknown,numberReturned,
+        declaredNumberReturned,numberReturnedNormalized,numberReturnedProtocolException,sourceCrs,extent,
+        duplicateNativeCount:streaming ? null : duplicateNativeCount,
+        ...(sourceTimestamp !== undefined ? { sourceTimestamp } : {}) };
 }

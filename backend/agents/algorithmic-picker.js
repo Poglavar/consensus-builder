@@ -6,6 +6,7 @@
 const COMPETITIVE_RATIO = 0.9;
 const MAX_COMPETITIVE_CANDIDATES = 3;
 const MAX_NAME_CHARS = 60;
+const GEOMETRY_IDENTITY_KIND = 'geometry-sha256-v1';
 
 function finite(value) {
     const number = Number(value);
@@ -41,8 +42,23 @@ function placeName(value) {
     return text.toLowerCase().replace(/(^|[\s-])(\p{L})/gu, (_, gap, letter) => gap + letter.toUpperCase());
 }
 
-// The parcel number people know: "1754/1" from HR-335614-1754/1, "3513080" from US-CA-SF-3513080.
-function parcelNumberOf(candidate) {
+function geometryDisplayLabel(candidate) {
+    const parcelId = String(candidate?.parcelId || '');
+    // A canonical ID is sufficient to identify persisted geometry-derived candidates even when
+    // their optional presentation metadata predates this field. The full ID remains authoritative.
+    const parcelIdHash = parcelId.match(/^[a-z0-9]+(?:-[a-z0-9]+)*-g1~-?(?:0|[1-9]\d*)~-?(?:0|[1-9]\d*)~([0-9a-f]{64})$/i)?.[1];
+    if (parcelIdHash) return `G1-${parcelIdHash.slice(0, 8).toLowerCase()}`;
+    if (candidate?.parcelIdentityKind === GEOMETRY_IDENTITY_KIND) {
+        return parcelId || 'Geometry-derived parcel unavailable';
+    }
+    return null;
+}
+
+// Prefer a native parcel number; geometry-derived identities have no registry number, so use
+// their source-provided display label instead of leaking encoded coordinates and a content hash.
+function parcelLabelOf(candidate) {
+    const geometryLabel = geometryDisplayLabel(candidate);
+    if (geometryLabel) return geometryLabel;
     if (candidate.parcelNumber) return String(candidate.parcelNumber);
     const segments = String(candidate.parcelId || '').split('-');
     const last = segments[segments.length - 1];
@@ -55,15 +71,16 @@ function titleFor(candidate) {
     const floors = round(candidate.plannedFloors ?? candidate.allowedFloors);
     const kind = candidate.rival ? 'alternative' : 'infill';
     const place = placeName(candidate.koName);
-    return `${floors}-storey ${kind} on parcel ${parcelNumberOf(candidate)}${place ? `, ${place}` : ''}`.slice(0, MAX_NAME_CHARS);
+    return `${floors}-storey ${kind} on parcel ${parcelLabelOf(candidate)}${place ? `, ${place}` : ''}`.slice(0, MAX_NAME_CHARS);
 }
 
 function rationaleFor(candidate) {
     const planned = round(candidate.plannedFloors ?? candidate.allowedFloors);
     const allowed = round(candidate.allowedFloors);
+    const parcelLabel = geometryDisplayLabel(candidate) || String(candidate.parcelId || '');
     const ceiling = candidate.rule?.source === 'urban-rule'
-        ? `The mapped urban rule allows ${allowed} floors on parcel ${candidate.parcelId}`
-        : `No zoning rule is mapped for parcel ${candidate.parcelId}, so the platform's default envelope applies (${allowed} floors, setbacks from every boundary)`;
+        ? `The mapped urban rule allows ${allowed} floors on parcel ${parcelLabel}`
+        : `No zoning rule is mapped for parcel ${parcelLabel}, so the platform's default envelope applies (${allowed} floors, setbacks from every boundary)`;
     const builds = planned < allowed ? `; this proposal builds ${planned}.` : '.';
     const existing = candidate.builtKnown === false
         ? `Existing buildings are not measured in this city's data, so the build-out of ${formatInteger(candidate.proposedGfaM2)} m² is counted against an empty plot, with a calculated owner offer of €${formatInteger(candidate.offerEur)}.`

@@ -29,7 +29,7 @@
 }
 
 .proposal-editor-approval-status.is-ready {
-    color: #166534;
+    color: var(--cb-success-soft-ink);
     background: #f0fdf4;
 }
 
@@ -38,7 +38,7 @@
     padding: 9px 11px;
     border: 1px solid #fecaca;
     border-radius: 10px;
-    color: #991b1b;
+    color: var(--cb-danger-soft-ink);
     background: #fef2f2;
     font-size: 12px;
 }
@@ -98,7 +98,7 @@
 
 .proposal-editor-eyebrow {
     margin: 0 0 3px;
-    color: #2563eb;
+    color: var(--cb-primary);
     font-size: 11px;
     font-weight: 800;
     letter-spacing: 0.08em;
@@ -203,8 +203,8 @@
 .proposal-editor-comparison button.is-active,
 .proposal-editor-tabs button.is-active {
     color: #fff;
-    background: #2563eb;
-    border-color: #2563eb;
+    background: var(--cb-primary);
+    border-color: var(--cb-primary);
 }
 
 .proposal-editor-tabs {
@@ -282,7 +282,7 @@
 .proposal-editor-field input:focus,
 .proposal-editor-field textarea:focus,
 .proposal-editor-field select:focus {
-    border-color: #2563eb;
+    border-color: var(--cb-primary);
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.13);
     outline: 0;
 }
@@ -353,8 +353,8 @@
 
 .proposal-editor-primary {
     color: #fff;
-    background: #2563eb;
-    border: 1px solid #2563eb;
+    background: var(--cb-primary);
+    border: 1px solid var(--cb-primary);
 }
 
 .proposal-editor-primary:disabled {
@@ -390,13 +390,13 @@
 }
 
 .proposal-editor-validation.is-valid {
-    color: #166534;
+    color: var(--cb-success-soft-ink);
     background: #f0fdf4;
     border: 1px solid #bbf7d0;
 }
 
 .proposal-editor-validation.has-errors {
-    color: #991b1b;
+    color: var(--cb-danger-soft-ink);
     background: #fef2f2;
     border: 1px solid #fecaca;
 }
@@ -563,7 +563,7 @@ body.proposal-editor-open #proposal-details-panel.visible {
 .road-node-handle {
     cursor: grab;
     background: #ffffff;
-    border: 3px solid #166534;
+    border: 3px solid var(--cb-success-soft-ink);
     border-radius: 50%;
     box-shadow: 0 1px 4px rgba(15, 23, 42, 0.4);
 }
@@ -598,7 +598,7 @@ body.proposal-editor-open #proposal-details-panel.visible {
 
 .road-edge-add {
     cursor: pointer;
-    color: #166534;
+    color: var(--cb-success-soft-ink);
     background: #dcfce7;
     border: 2px solid #15803d;
     border-radius: 50%;
@@ -621,7 +621,7 @@ body.proposal-editor-open #proposal-details-panel.visible {
 
 .road-edge-bulldoze {
     cursor: pointer;
-    color: #991b1b;
+    color: var(--cb-danger-soft-ink);
     background: #fee2e2;
     border: 2px solid #b91c1c;
     border-radius: 3px;

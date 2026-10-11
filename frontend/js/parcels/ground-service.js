@@ -36,10 +36,11 @@
                 // cadastral ground is already represented by the committed partition. This check
                 // is an integration concern at the repository/fabric adapter — never a cache or
                 // renderer fallback.
-                const unpublished = features.filter(feature => {
-                    const id = fabric.featureId(feature);
-                    return id && !fabric.hasCadastreEntries([id], { includeCorridors: true });
-                });
+                const ids = features.map(feature => fabric.featureId(feature));
+                const absent = fabric.absentCadastreIds(ids, { includeCorridors: true });
+                if (!absent.length) return;
+                const absentIds = new Set(absent);
+                const unpublished = features.filter(feature => absentIds.has(fabric.featureId(feature)));
                 if (!unpublished.length) return;
                 if (global.ProposalManager && typeof global.ProposalManager.integrateCadastralGround === 'function') {
                     const integrated = await global.ProposalManager.integrateCadastralGround(unpublished);

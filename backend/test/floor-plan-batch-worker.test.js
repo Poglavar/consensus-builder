@@ -12,6 +12,7 @@ const ledgerDir=vi.hoisted(()=>{
 });
 
 import {interpretPlans} from '../floor-plans/interpret-plans.js';
+import {runBatchStage} from '../floor-plans/batch-worker.js';
 import {PROCESSOR,MAX_OUTPUT_TOKENS} from '../floor-plans/plan-reading.js';
 import {DEFAULTS} from '../../../agents/lib/llm-cost/llm.mjs';
 import {LEDGER,computeCost} from '../../../agents/lib/llm-cost/index.mjs';
@@ -20,15 +21,14 @@ import {LEDGER,computeCost} from '../../../agents/lib/llm-cost/index.mjs';
 const LAYER_MODEL=DEFAULTS.providers.anthropic.model,LAYER_EFFORT=DEFAULTS.providers.anthropic.effort;
 const ledgerRows=()=>fs.existsSync(LEDGER)?fs.readFileSync(LEDGER,'utf8').trim().split('\n').filter(Boolean).map(JSON.parse):[];
 
-const context={building:{city:'test-city',source:'survey',ownerId:'',buildingId:'42',name:'Test building',footprint:null},
- facts:{sourceId:'7',floor:'1',unitId:'A1',areaM2:60}};
+const context={listingUrl:'https://agency.test/listing/1',facts:{floor:'1',unitId:'A1',areaM2:60}};
 const baseTask=()=>({id:'a'.repeat(64),source_sha256:'b'.repeat(64),source_url:'https://agency.test/plan.pdf',
  page:1,listing_url:'https://agency.test/listing/1',context,processor:PROCESSOR,status:'queued',batch_id:null,
  result:{},cost_usd:null,created_at:new Date().toISOString()});
 const notPlan={schema:'floor-plan-reading.v3',notPlan:true,issues:[],plans:[]};
 
 function makeDb({queued=[],batches=[],tasks=[],used=0}={}) {
- const state={batches:structuredClone(batches),tasks:structuredClone(tasks.length?tasks:queued),calls:[]};
+ const state={batches:structuredClone(batches).map(row=>({stage:'plans',...row})),tasks:structuredClone(tasks.length?tasks:queued),calls:[]};
  const query=vi.fn(async(sql,args=[])=>{
   state.calls.push({sql,args});
   if(sql.includes('pg_try_advisory_lock')) return {rows:[{locked:true}]};
@@ -37,24 +37,28 @@ function makeDb({queued=[],batches=[],tasks=[],used=0}={}) {
    for(const batch of state.batches) if(batch.status==='submitting') batch.status='unknown';
    return {rows:[],rowCount:1};
   }
-  if(sql.includes("FROM floor_plan.ai_batch WHERE status='submitted'")) return {rows:state.batches.filter(row=>row.status==='submitted')};
+  if(sql.includes("FROM floor_plan.ai_batch WHERE status='submitted'")&&sql.includes('count(*)'))
+   return {rows:[{n:state.batches.filter(row=>row.status==='submitted'&&row.stage==='plans').length}]};
+  if(sql.includes("FROM floor_plan.ai_batch WHERE status='submitted'")) return {rows:state.batches.filter(row=>row.status==='submitted'&&row.stage==='plans')};
   if(sql.includes("FROM floor_plan.ai_batch WHERE status IN ('submitted','unknown')"))
    return {rows:[{n:state.batches.filter(row=>['submitted','unknown'].includes(row.status)).length}]};
   if(sql.includes("FROM floor_plan.ai_batch WHERE status='unknown'")) return {rows:[{n:state.batches.filter(row=>row.status==='unknown').length}]};
   if(sql.includes('COALESCE(sum(CASE WHEN b.status')) return {rows:[{usd:used}]};
+  if(sql.includes('count(*) AS n FROM floor_plan.plan_task')&&sql.includes('AND NOT EXISTS'))
+   return {rows:[{n:state.tasks.filter(row=>row.status==='queued'&&row.processor===args[0]&&row.located===false).length}]};
   if(sql.includes("count(*) AS n FROM floor_plan.plan_task WHERE status='queued'"))
    return {rows:[{n:state.tasks.filter(row=>row.status==='queued'&&row.processor===args[0]).length}]};
   if(sql.includes("count(*) AS n FROM floor_plan.plan_task WHERE status='error'"))
    return {rows:[{n:state.tasks.filter(row=>row.status==='error'&&row.processor===args[0]).length}]};
   if(sql.includes("FROM floor_plan.plan_task WHERE status='queued'"))
-   return {rows:state.tasks.filter(row=>row.status==='queued').slice(0,Number(args[0])||20)};
-  if(sql.includes('SELECT l.* FROM floor_plan.listing')) return {rows:[{
-   url:context.facts.listingUrl||'https://agency.test/listing/1',match_status:'verified',asset_urls:[{url:'https://agency.test/plan.pdf',listingOwned:true}],
-   building_city:context.building.city,building_source:context.building.source,building_owner_id:context.building.ownerId,
-   building_id:context.building.buildingId,building_evidence:{name:context.building.name,footprint:context.building.footprint},facts:context.facts
-  }]};
+   return {rows:state.tasks.filter(row=>row.status==='queued'&&(row.selectable??row.located!==false)).slice(0,Number(args[0])||20)};
+  if(sql.includes('FROM floor_plan.listing l JOIN floor_plan.target t')) {
+   const task=state.tasks.find(row=>row.listing_url===args[0]);
+   return {rows:task?[{url:task.listing_url,match_status:'candidate',building_located:task.located!==false,
+    asset_urls:[{url:task.source_url,listingOwned:true}],facts:task.context.facts}]:[]};
+  }
   if(sql.startsWith('INSERT INTO floor_plan.ai_batch')) {
-   state.batches.push({id:args[0],model:args[1],status:'submitting',reserved_usd:args[2],created_at:new Date().toISOString()});
+   state.batches.push({id:args[0],model:args[1],status:'submitting',reserved_usd:args[2],stage:args[3],created_at:new Date().toISOString()});
    return {rows:[],rowCount:1};
   }
   if(sql.startsWith('UPDATE floor_plan.plan_task SET batch_id=$1,status=\'submitted\'')) {
@@ -67,9 +71,16 @@ function makeDb({queued=[],batches=[],tasks=[],used=0}={}) {
   }
   if(sql.includes('SELECT * FROM floor_plan.plan_task WHERE id=$1 AND batch_id=$2'))
    return {rows:state.tasks.filter(row=>row.id===args[0]&&row.batch_id===args[1])};
+  if(sql.includes("SELECT * FROM floor_plan.plan_task WHERE batch_id=$1 AND status='submitted'"))
+   return {rows:state.tasks.filter(row=>row.batch_id===args[0]&&row.status==='submitted'&&row.result?.paidResponse)};
+  if(sql.includes("SELECT id FROM floor_plan.plan_task WHERE batch_id=$1 AND status<>'submitted'"))
+   return {rows:state.tasks.filter(row=>row.batch_id===args[0]&&row.status!=='submitted').map(row=>({id:row.id}))};
   if(sql.includes('UPDATE floor_plan.plan_task SET usage=$2,cost_usd=$3')) {
    const task=state.tasks.find(row=>row.id===args[0]);Object.assign(task,{usage:JSON.parse(args[1]),cost_usd:args[2],result:{...task.result,...JSON.parse(args[3])}});
    return {rows:[],rowCount:1};
+  }
+  if(sql.startsWith('UPDATE floor_plan.plan_task SET result=result||$2')) {
+   const task=state.tasks.find(row=>row.id===args[0]);task.result={...task.result,...JSON.parse(args[1])};return {rows:[],rowCount:1};
   }
   if(sql.startsWith('UPDATE floor_plan.plan_task SET status=$2,result=result||$3')) {
    const task=state.tasks.find(row=>row.id===args[0]);Object.assign(task,{status:args[1],result:{...task.result,...JSON.parse(args[2])},error:null});
@@ -101,7 +112,9 @@ function fakeClient({response=notPlan,processingStatus='ended',answeredBy=LAYER_
  return {client:{withOptions(){return this;},messages:{create:online,countTokens,batches:{create,retrieve,results}}},create,retrieve,results,countTokens,online};
 }
 
-const evidence={version:'source-geometry-v1',widthPx:100,heightPx:100,issues:[],wallCandidates:[],openingCandidates:[],scaleCandidates:[],outlineCorners:[]};
+const evidence={version:'source-geometry-v1',widthPx:100,heightPx:100,issues:[],
+ wallCandidates:[{id:'W1',a:[10,10],b:[90,10],widthPx:3}],openingCandidates:[],
+ scaleCandidates:[{id:'S1',a:[10,95],b:[90,95],intervals:5}],outlineCorners:[]};
 const render=vi.fn(async()=>({data:Buffer.from('png'),annotation:Buffer.from('marks'),width:100,height:100,evidence}));
 const price=vi.fn((_model,usage)=>usage.output_tokens===MAX_OUTPUT_TOKENS?0.25:0.02);
 
@@ -136,6 +149,44 @@ describe('floor-plan paid batch worker',()=>{
   expect(db.state.tasks[0].status).toBe('queued');
   expect(db.state.batches).toHaveLength(0);
   expect(db.state.calls.some(({sql})=>sql.startsWith('UPDATE floor_plan.plan_task SET batch_id=')||sql.startsWith('INSERT INTO floor_plan.ai_batch'))).toBe(false);
+ });
+
+ it('leaves an older unlocated task queued while an eligible sibling submits',async()=>{
+  const blocked={...baseTask(),id:'c'.repeat(64),listing_url:'https://agency.test/listing/2',
+   context:{...context,listingUrl:'https://agency.test/listing/2'},located:false};
+  const eligible=baseTask(),db=makeDb({queued:[blocked,eligible]}),remote=fakeClient();
+  render.mockClear();
+  const result=await interpretPlans(db,{dailyBudgetUsd:1,client:remote.client,render,price,log:()=>{}});
+  expect(result).toMatchObject({status:'partial',submitted:1,deferredLocation:1,failed:0,errors:0});
+  expect(db.state.tasks.map(task=>task.status)).toEqual(['queued','submitted']);
+  expect(db.state.calls.find(({sql})=>sql.includes("SELECT * FROM floor_plan.plan_task WHERE status='queued'")).sql)
+   .toContain('plan_task.listing_url');
+  expect(remote.create.mock.calls[0][0].requests.map(request=>request.custom_id)).toEqual([eligible.id]);
+  expect(render).toHaveBeenCalledOnce();
+  expect(remote.countTokens).toHaveBeenCalledOnce();
+ });
+
+ it('rechecks a location lost after queue selection before rendering or token counting',async()=>{
+  const task={...baseTask(),selectable:true,located:false},db=makeDb({queued:[task]}),remote=fakeClient();
+  render.mockClear();
+  const result=await interpretPlans(db,{dailyBudgetUsd:1,client:remote.client,render,price,log:()=>{}});
+  expect(result).toMatchObject({status:'partial',submitted:0,deferredLocation:1,failed:0,errors:0});
+  expect(db.state.tasks[0].status).toBe('queued');
+  expect(render).not.toHaveBeenCalled();
+  expect(remote.countTokens).not.toHaveBeenCalled();
+  expect(remote.create).not.toHaveBeenCalled();
+ });
+
+ it.each(['wallCandidates','scaleCandidates'])('keeps missing %s for local review without a provider call or ledger entry',async field=>{
+  const task=baseTask(),db=makeDb({queued:[task]}),remote=fakeClient(),before=ledgerRows().length;
+  const incompleteRender=async()=>({data:Buffer.from('png'),width:100,height:100,evidence:{...evidence,[field]:[]}});
+  const result=await interpretPlans(db,{dailyBudgetUsd:1,client:remote.client,render:incompleteRender,price,log:()=>{}});
+  expect(result).toMatchObject({submitted:0,costUsd:0,preflightNeedsReview:1,queued:0});
+  expect(db.state.tasks[0]).toMatchObject({status:'needs_review',batch_id:null,cost_usd:null,
+   result:{reading:{method:'local-evidence-check',plans:[],issues:[expect.any(String)]}}});
+  expect(remote.countTokens).not.toHaveBeenCalled();
+  expect(remote.create).not.toHaveBeenCalled();
+  expect(ledgerRows().length).toBe(before);
  });
 
  it('does not submit duplicate paid work while any provider batch is unresolved or unknown',async()=>{
@@ -174,6 +225,26 @@ describe('floor-plan paid batch worker',()=>{
   expect(db.state.tasks[0].cost_usd).toBe(cost);
  });
 
+ it('accounts for a paid response once but makes no geometry after location is lost',async()=>{
+  const task={...baseTask(),status:'submitted',located:false,batch_id:'local-batch',result:{image:{width:100,height:100}}};
+  const db=makeDb({tasks:[task],batches:[{id:'local-batch',provider_id:'provider-batch-1',model:LAYER_MODEL,
+   status:'submitted',reserved_usd:0.25,created_at:new Date().toISOString()}]});
+  const remote=fakeClient(),before=ledgerRows().length,cost=computeCost(LAYER_MODEL,USAGE,{batch:true});
+  render.mockClear();
+  const options={dailyBudgetUsd:0,client:remote.client,render,log:()=>{}};
+  const first=await interpretPlans(db,options);
+  expect(first).toMatchObject({status:'partial',collected:1,costUsd:cost,locationReview:1,needsReview:1});
+  expect(db.state.tasks[0]).toMatchObject({status:'needs_review',cost_usd:cost,
+   result:{reading:{method:'location-gate'},paidResponse:{model:LAYER_MODEL}}});
+  expect(db.state.calls.some(({sql})=>sql.includes('INSERT INTO floor_plan.processed_plan'))).toBe(false);
+  expect(render).not.toHaveBeenCalled();
+  expect(ledgerRows().length).toBe(before+1);
+  const resumed=await interpretPlans(db,options);
+  expect(resumed.collected).toBe(0);
+  expect(remote.results).toHaveBeenCalledOnce();
+  expect(ledgerRows().length).toBe(before+1);
+ });
+
  it('records the cost of a truncated answer and fails its task instead of storing an empty reading',async()=>{
   const task={...baseTask(),status:'submitted',batch_id:'local-batch',result:{image:{width:100,height:100}}};
   const db=makeDb({tasks:[task],batches:[{id:'local-batch',provider_id:'provider-batch-1',model:LAYER_MODEL,status:'submitted',reserved_usd:0.25,created_at:new Date().toISOString()}]});
@@ -193,5 +264,70 @@ describe('floor-plan paid batch worker',()=>{
   expect(render).not.toHaveBeenCalled();
   expect(db.state.tasks[0].status).toBe('queued');
   expect(db.state.batches).toHaveLength(0);
+ });
+});
+
+describe('bounded image batch preparation',()=>{
+ const adapter=stage=>({stage,processor:'test-processor',counters:{},schema:{type:'object',properties:{ok:{type:'boolean'}},required:['ok'],additionalProperties:false},
+  prepare:async(_db,task,llm)=>({request:llm.batchRequest(task.id,{system:'Classify.',content:task.payload||'image',
+   schema:{type:'object',properties:{ok:{type:'boolean'}},required:['ok'],additionalProperties:false},maxTokens:512})})});
+ const noDb={query:vi.fn(async()=>{throw new Error('Validation must precede DB work.');})};
+
+ it('requires explicit opt-in for an image chunk above 20, and always caps plans and buildings at 20',async()=>{
+  noDb.query.mockClear();
+  for(const stage of ['images','plans','buildings']) {
+   await expect(runBatchStage(noDb,adapter(stage),{chunkSize:21,dailyBudgetUsd:1})).rejects.toThrow(/chunk size/);
+  }
+  for(const stage of ['plans','buildings']) {
+   await expect(runBatchStage(noDb,adapter(stage),{chunkSize:500,allowLargeImageBatch:true,dailyBudgetUsd:1})).rejects.toThrow(/1\.\.20/);
+  }
+  await expect(runBatchStage(noDb,adapter('images'),{chunkSize:501,allowLargeImageBatch:true,dailyBudgetUsd:1})).rejects.toThrow(/1\.\.500/);
+  await expect(runBatchStage(noDb,adapter('images'),{maxPayloadBytes:200000001})).rejects.toThrow(/payload byte limit/);
+  expect(noDb.query).not.toHaveBeenCalled();
+ });
+
+ it.each([[],['not-a-task-id'],['a'.repeat(64),'a'.repeat(64)],Array(501).fill('a'.repeat(64))].map(taskIds=>[taskIds]))
+  ('rejects malformed or empty task allowlists before DB or provider work',async taskIds=>{
+   noDb.query.mockClear();
+   const remote=fakeClient();
+   await expect(runBatchStage(noDb,adapter('images'),{taskIds,client:remote.client,dailyBudgetUsd:1})).rejects.toThrow(/taskIds/);
+   expect(noDb.query).not.toHaveBeenCalled();
+   expect(remote.create).not.toHaveBeenCalled();
+  });
+
+ it('excludes other queued images and leaves a second oversized request unpaid',async()=>{
+  const allowed='a'.repeat(64),large='c'.repeat(64),other='b'.repeat(64);
+  const tasks=[{id:allowed,status:'queued',processor:'test-processor'},
+   {id:large,status:'queued',processor:'test-processor',payload:'x'.repeat(2000)},
+   {id:other,status:'queued',processor:'test-processor'}];
+  const calls=[],remote=fakeClient();
+  const db={query:vi.fn(async(sql,args=[])=>{
+   calls.push({sql,args});
+   if(sql.includes('pg_try_advisory_lock'))return {rows:[{locked:true}]};
+   if(sql.includes("SELECT * FROM floor_plan.ai_batch WHERE status='submitted'"))return {rows:[]};
+   if(sql.includes("count(*) AS n FROM floor_plan.ai_batch WHERE status='unknown'"))return {rows:[{n:0}]};
+   if(sql.includes("count(*) AS n FROM floor_plan.ai_batch WHERE status='submitted'"))return {rows:[{n:0}]};
+   if(sql.includes('COALESCE(sum(CASE WHEN b.status'))return {rows:[{usd:0}]};
+   if(sql.includes("SELECT * FROM floor_plan.image_task WHERE status='queued'"))
+    return {rows:tasks.filter(task=>task.status==='queued'&&args[2].includes(task.id))};
+   if(sql.startsWith('UPDATE floor_plan.image_task SET batch_id=')) {
+    for(const task of tasks)if(args[1].includes(task.id))task.status='submitted';
+    return {rows:[],rowCount:args[1].length};
+   }
+   if(sql.includes('count(*) AS n FROM floor_plan.image_task'))return {rows:[{n:tasks.filter(task=>task.status==='queued').length}]};
+   return {rows:[],rowCount:1};
+  })};
+  const result=await runBatchStage(db,adapter('images'),{chunkSize:500,allowLargeImageBatch:true,
+   taskIds:[allowed,large],maxPayloadBytes:1200,dailyBudgetUsd:1,client:remote.client,price:()=>0.01,log:()=>{}});
+  expect(result).toMatchObject({submitted:1,payloadDeferred:1,status:'partial'});
+  expect(result.payloadBytes).toBeGreaterThan(0);
+  expect(result.payloadBytes).toBeLessThanOrEqual(1200);
+  expect(tasks.map(task=>task.status)).toEqual(['submitted','queued','queued']);
+  const selection=calls.find(({sql})=>sql.includes("SELECT * FROM floor_plan.image_task WHERE status='queued'"));
+  expect(selection.sql).toContain('id=ANY($3::text[])');
+  expect(selection.args).toEqual([500,'test-processor',[allowed,large]]);
+  expect(remote.create.mock.calls[0][0].requests.map(request=>request.custom_id)).toEqual([allowed]);
+  expect(result.payloadBytes).toBe(Buffer.byteLength(JSON.stringify(remote.create.mock.calls[0][0])));
+  expect(remote.countTokens).toHaveBeenCalledOnce();
  });
 });

@@ -1,6 +1,6 @@
 import { test, expect } from '../helpers/fixtures';
 import { openCity, openParcel, PARCEL_ID } from '../helpers/runtime';
-import { connectWalletByConnectorId, injectMockSolanaWallet } from '../helpers/blockchain';
+import { connectWalletByConnectorId, injectMockSolanaWallet, injectMockEvmWallet } from '../helpers/blockchain';
 
 const WALLET = '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT';
 const MEMBER = '3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg';
@@ -15,6 +15,68 @@ async function establishLocalProfile(page: import('@playwright/test').Page): Pro
 }
 
 test.describe('Proposal Lens picker @features', () => {
+  test('the EVM lens adds and removes trusted addresses, opens both address links, and profile language buttons change app language', async ({ mockApi: page }) => {
+    await injectMockEvmWallet(page, { chainIdHex: '0xaa36a7' });
+    await openCity(page);
+    await establishLocalProfile(page);
+    await connectWalletByConnectorId(page, 'metamask');
+    await page.locator('#username-display').click();
+    const profile = page.locator('.agent-dialog-modal');
+    await expect(profile).toBeVisible();
+    for (const language of ['es', 'sr', 'hr', 'en']) {
+      await profile.locator('[data-language-toggle]').click();
+      await profile.locator(`[data-language="${language}"]`).click();
+      await expect.poll(() => page.evaluate(() => (window as any).i18n.getLanguage())).toBe(language);
+      await expect(profile.locator('[data-language-toggle]')).toHaveAttribute('aria-expanded', 'false');
+    }
+    await profile.locator('[data-lens-pattern]').click();
+    const lens = page.locator('.lens-modal-overlay');
+    await expect(lens).toBeVisible();
+    const initialRows = await lens.locator('.lens-address-input').count();
+    await lens.locator('#lens-add-btn').click();
+    await expect(lens.locator('.lens-address-input')).toHaveCount(initialRows + 1);
+    const address = '0x1111111111111111111111111111111111111111';
+    await lens.locator('.lens-address-input').last().fill(address);
+    await lens.locator('.lens-name-input').last().fill('Test lens member');
+    await expect.poll(() => page.evaluate(() => (window as any).getLensEntries().at(-1))).toMatchObject({ address, name: 'Test lens member' });
+
+    const etherscanUrl = `https://sepolia.etherscan.io/address/${address}`;
+    const attestifyUrl = `http://localhost:3000/address/${address}`;
+    const newEntry = lens.locator('.lens-row').nth(initialRows);
+    const etherscan = newEntry.locator('.lens-link-btn').nth(0);
+    const attestify = newEntry.locator('.lens-link-btn').nth(1);
+    await expect(etherscan).toHaveAttribute('href', etherscanUrl);
+    await expect(attestify).toHaveAttribute('href', attestifyUrl);
+    await page.context().route('https://sepolia.etherscan.io/address/**', route => route.fulfill({
+      status: 200, contentType: 'text/html', body: '<title>Etherscan navigation boundary</title>',
+    }));
+    await page.context().route('http://localhost:3000/address/**', route => route.fulfill({
+      status: 200, contentType: 'text/html', body: '<title>Attestify navigation boundary</title>',
+    }));
+
+    const etherscanPopup = page.waitForEvent('popup').then(async popup => {
+      await expect(popup).toHaveURL(etherscanUrl);
+      expect(new URL(popup.url()).hostname).toBe('sepolia.etherscan.io');
+      expect(new URL(popup.url()).pathname).toBe(`/address/${address}`);
+      await popup.close();
+    });
+    await Promise.all([etherscanPopup, etherscan.click()]);
+    const attestifyPopup = page.waitForEvent('popup').then(async popup => {
+      await expect(popup).toHaveURL(attestifyUrl);
+      expect(new URL(popup.url()).hostname).toBe('localhost');
+      expect(new URL(popup.url()).pathname).toBe(`/address/${address}`);
+      await popup.close();
+    });
+    await Promise.all([attestifyPopup, attestify.click()]);
+
+    await lens.locator('.lens-remove-btn').last().click();
+    await expect(lens.locator('.lens-address-input')).toHaveCount(initialRows);
+    await expect.poll(() => page.evaluate(key => (window as any).getLensEntries().some((entry: any) => entry.address === key), address)).toBe(false);
+    await lens.locator('.lens-close-btn').click();
+    await expect(lens).toHaveCount(0);
+    await expect(profile).toBeVisible();
+  });
+
   test('selects directory members, adds and removes a pasted key, filters parcel coverage, and blocks an unattested owner offer', async ({ mockApi: page }) => {
     await page.route('**/lenses/members', route => route.fulfill({
       status: 200,

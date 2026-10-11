@@ -22,9 +22,10 @@ async function personalizeProfile(page: Page, name: string): Promise<void> {
 async function receivingDevice(
   browser: Browser,
   shareUrl: string,
-  server: ReturnType<typeof createSharedProposalServer>
+  server: ReturnType<typeof createSharedProposalServer>,
+  baseURL: string | undefined
 ): Promise<{ context: BrowserContext; page: Page; errors: string[] }> {
-  const context = await browser.newContext({ baseURL: process.env.BASE_URL || 'http://localhost:8080' });
+  const context = await browser.newContext({ baseURL });
   await context.addInitScript(() => {
     try {
       localStorage.setItem('cb_current_city', 'new_york');
@@ -36,7 +37,7 @@ async function receivingDevice(
   await attachSharedProposalServer(page, server);
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
-  await page.goto(shareUrl);
+  await page.goto(shareUrl, { waitUntil: 'domcontentloaded' });
   await waitForMapReady(page);
   return { context, page, errors };
 }
@@ -60,7 +61,7 @@ async function expectAppliedOnFabric(page: Page, proposalId: string): Promise<vo
 }
 
 test.describe('Proposal sharing @core', () => {
-  test('individual share UI publishes an applied proposal that imports and replays on another device', async ({ mockApi: sender, browser }) => {
+  test('individual share UI publishes an applied proposal that imports and replays on another device', async ({ mockApi: sender, browser, baseURL }) => {
     const server = createSharedProposalServer();
     await attachSharedProposalServer(sender, server);
     await openCity(sender);
@@ -88,12 +89,12 @@ test.describe('Proposal sharing @core', () => {
     expect(publishedRecord).not.toHaveProperty('applied');
     const publishedProposalId = String(publishedRecord.proposalId);
 
-    const receiver = await receivingDevice(browser, shareUrl, server);
+    const receiver = await receivingDevice(browser, shareUrl, server, baseURL);
     try {
       await expectAppliedOnFabric(receiver.page, publishedProposalId);
       const state = await proposalState(receiver.page, publishedProposalId);
       expect(state.applied).toBe(true);
-      await receiver.page.reload();
+      await receiver.page.reload({ waitUntil: 'domcontentloaded' });
       await waitForMapReady(receiver.page);
       await expectAppliedOnFabric(receiver.page, publishedProposalId);
       const afterReload = await receiver.page.evaluate((id) => {
@@ -108,7 +109,7 @@ test.describe('Proposal sharing @core', () => {
     }
   });
 
-  test('whole applied plan UI publishes selected members and a fresh device applies the plan once', async ({ mockApi: sender, browser }) => {
+  test('whole applied plan UI publishes selected members and a fresh device applies the plan once', async ({ mockApi: sender, browser, baseURL }) => {
     const server = createSharedProposalServer();
     await attachSharedProposalServer(sender, server);
     await openCity(sender);
@@ -154,11 +155,11 @@ test.describe('Proposal sharing @core', () => {
     expect(publishedParkId).toMatch(/^c2-/);
     expect(publishedSquareId).toMatch(/^c2-/);
 
-    const receiver = await receivingDevice(browser, shareUrl, server);
+    const receiver = await receivingDevice(browser, shareUrl, server, baseURL);
     try {
       await expectAppliedOnFabric(receiver.page, publishedParkId!);
       await expectAppliedOnFabric(receiver.page, publishedSquareId!);
-      await receiver.page.reload();
+      await receiver.page.reload({ waitUntil: 'domcontentloaded' });
       await waitForMapReady(receiver.page);
       await expectAppliedOnFabric(receiver.page, publishedParkId!);
       await expectAppliedOnFabric(receiver.page, publishedSquareId!);
@@ -172,9 +173,9 @@ test.describe('Proposal sharing @core', () => {
     }
   });
 
-  test('invalid and missing share links show recoverable errors', async ({ browser }) => {
+  test('invalid and missing share links show recoverable errors', async ({ browser, baseURL }) => {
     const server = createSharedProposalServer();
-    const invalid = await receivingDevice(browser, '/?city=zg&proposalShare=not-valid-base64!!!', server);
+    const invalid = await receivingDevice(browser, '/?city=zg&proposalShare=not-valid-base64!!!', server, baseURL);
     try {
       await expect(invalid.page.locator('.share-modal-overlay')).toContainText(/Invalid Share Link/i);
       expect(invalid.errors).toEqual([]);
@@ -182,7 +183,7 @@ test.describe('Proposal sharing @core', () => {
       await invalid.context.close();
     }
 
-    const missing = await receivingDevice(browser, '/proposals/7999?city=zg', server);
+    const missing = await receivingDevice(browser, '/proposals/7999?city=zg', server, baseURL);
     try {
       await expect(missing.page.locator('.share-modal-overlay')).toContainText(/not found on server/i, { timeout: 30_000 });
       expect(missing.errors).toEqual([]);

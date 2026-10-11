@@ -23,7 +23,8 @@
         "sync:land-events": "node scripts/sync-land-events.mjs",
         "lens:member": "node lens/run.mjs",
         "smoke:prod:parcels": "node scripts/smoke-production-bbox.mjs",
-        "plan-yield": "PGHOST=${PGHOST:-localhost} node scripts/plan-yield.js"
+        "plan-yield": "PGHOST=${PGHOST:-localhost} node scripts/plan-yield.js",
+        "build:parcels:browser": "node scripts/build-browser-parcels.mjs"
     },
     "dependencies": {
         "@anthropic-ai/sdk": "^0.126.0",
@@ -48,6 +49,7 @@
         "express": "^4.22.3",
         "express-rate-limit": "^8.7.0",
         "fflate": "^0.8.3",
+        "geos-wasm": "3.1.1",
         "helmet": "^8.3.0",
         "marked": "^16.4.2",
         "pbf": "^5.1.2",

@@ -6,6 +6,7 @@ import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '
 import { HttpError } from '../utils/helpers.js';
 import { canonicalParcelFeature, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
 import { parseGmlParcels } from './gml-parcel-reader.js';
+import { concatBytes } from './byte-utils.js';
 
 const ENDPOINT = 'https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx';
 const ID_FIELD = 'nationalCadastralReference';
@@ -84,12 +85,12 @@ export function createCatastroWfsParcelSource(descriptor, { fetchImpl = globalTh
                 if (chunk.done) break;
                 size += chunk.value.byteLength;
                 if (size > maxBytes) throw upstreamError('Cadastral WFS response exceeds byte limit; use a smaller area.');
-                chunks.push(Buffer.from(chunk.value));
+                chunks.push(chunk.value);
             }
             if (declared && !response.headers.get('content-encoding') && Number(declared) !== size) {
                 throw upstreamError('Cadastral WFS response body is incomplete.');
             }
-            const bytes = Buffer.concat(chunks, size);
+            const bytes = concatBytes(chunks, size);
             if (explicitMissingReference(bytes, params)) return [];
             const parsed = await parseGmlParcels(bytes, { idField: ID_FIELD,
                 maxBytes, maxFeatures, signal });

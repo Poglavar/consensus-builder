@@ -64,8 +64,10 @@ function deferred() {
 }
 
 function bootPointTransport(fetchImpl) {
+    const browserParcelSources = { queryPoint: vi.fn() };
     const window = {
         fetch: fetchImpl,
+        BrowserParcelSources: browserParcelSources,
         CityConfigManager: {
             getCityConfig: city => city === 'tbilisi' ? { parcels: {
                 strategy: 'point', source: 'parcel-source', sourceId: descriptor.id
@@ -77,7 +79,7 @@ function bootPointTransport(fetchImpl) {
     };
     const context = vm.createContext({ window, fetch: fetchImpl, URL, URLSearchParams, console, setTimeout });
     vm.runInContext(fetchTransportSource, context);
-    return window.__cadastralGroundTransport;
+    return { transport: window.__cadastralGroundTransport, browserParcelSources };
 }
 
 describe('point parcel lookup integration', () => {
@@ -125,25 +127,24 @@ describe('point parcel lookup integration', () => {
         expect(fetchImpl).not.toHaveBeenCalled();
     });
 
-    it('sends point lookups through the frontend transport and rejects an incomplete gateway reply', async () => {
-        const fetchImpl = vi.fn()
-            .mockResolvedValueOnce({ ok: true, status: 200, json: async () => ({
+    it('sends point lookups through the browser adapter and rejects an incomplete adapter reply', async () => {
+        const fetchImpl = vi.fn();
+        const { transport, browserParcelSources } = bootPointTransport(fetchImpl);
+        browserParcelSources.queryPoint
+            .mockResolvedValueOnce({
                 complete: true, queryType: 'point', sourceId: descriptor.id, features: [fixtureFeature]
-            }) })
-            .mockResolvedValueOnce({ ok: true, status: 200, json: async () => ({
+            })
+            .mockResolvedValueOnce({
                 complete: false, queryType: 'point', sourceId: descriptor.id, features: []
-            }) });
-        const transport = bootPointTransport(fetchImpl);
+            });
 
         await expect(transport.fetchPoint(point, { city: 'tbilisi' })).resolves.toMatchObject({
             status: 'ready', complete: true, queryType: 'point', features: [fixtureFeature], absentIds: [], returnsWGS84: true
         });
-        expect(fetchImpl.mock.calls[0][0]).toBe(
-            `https://api.example.test/parcel-sources/${descriptor.id}?point=${point.join('%2C')}`
-        );
-        expect(fetchImpl.mock.calls[0][1]).toMatchObject({ cache: 'no-store', headers: { Accept: 'application/json' } });
+        expect(browserParcelSources.queryPoint).toHaveBeenNthCalledWith(1, descriptor.id, point, { city: 'tbilisi' });
         await expect(transport.fetchPoint(point, { city: 'tbilisi' })).rejects.toThrow(/incomplete point response/);
-        expect(fetchImpl).toHaveBeenCalledTimes(2);
+        expect(browserParcelSources.queryPoint).toHaveBeenCalledTimes(2);
+        expect(fetchImpl).not.toHaveBeenCalled();
     });
 
     it('keeps point calls inside shared concurrency and cooldown wrappers', async () => {

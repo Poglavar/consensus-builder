@@ -65,6 +65,28 @@ describe('live parcel fabric', () => {
         expect(fabric.get('HR-A').geometry.coordinates[0][0][0]).toBe(0);
     });
 
+    it('exposes immutable draft peeks to prepared participants while keeping get defensive', async () => {
+        const fabric = createLiveParcelFabric();
+        let peeked;
+        let copied;
+        fabric.addCommitParticipant({
+            prepare: (_delta, view) => {
+                peeked = view.peek('HR-A');
+                copied = view.get('HR-A');
+                return null;
+            }
+        });
+        await mutate(fabric, mutation => mutation.seedCadastre([polygon('HR-A')]));
+
+        expect(peeked).not.toBeNull();
+        expect(Object.isFrozen(peeked)).toBe(true);
+        expect(Object.isFrozen(peeked.geometry.coordinates[0])).toBe(true);
+        expect(copied).not.toBe(peeked);
+        copied.properties.parcelId = 'CORRUPTED';
+        expect(peeked.properties.parcelId).toBe('HR-A');
+        expect(fabric.get('HR-A').properties.parcelId).toBe('HR-A');
+    });
+
     it('checks cadastral presence from its index without cloning parcel geometry', async () => {
         const fabric = createLiveParcelFabric();
         await mutate(fabric, mutation => mutation.seedCadastre([polygon('HR-A')]));
@@ -73,6 +95,49 @@ describe('live parcel fabric', () => {
         try {
             expect(fabric.hasCadastreEntries(['HR-A'])).toBe(true);
             expect(fabric.hasCadastreEntries(['HR-MISSING'])).toBe(false);
+            expect(cloneSpy).not.toHaveBeenCalled();
+        } finally {
+            cloneSpy.mockRestore();
+        }
+    });
+
+    it('returns normalized absent cadastral IDs in one clone-free batch and can count corridor representation', async () => {
+        const fabric = createLiveParcelFabric();
+        await mutate(fabric, mutation => {
+            mutation.seedCadastre([polygon('HR-A')]);
+            mutation.upsertFeatures([polygon('road:HR-C', 2, {
+                cadastreParcelIds: ['HR-C'], producedByProposalId: 'road', isCorridor: true
+            })]);
+        });
+        const cloneSpy = vi.spyOn(globalThis, 'structuredClone');
+        try {
+            expect(fabric.absentCadastreIds([' HR-A ', ' HR-C ', 'HR-MISSING', 'HR-MISSING']))
+                .toEqual(['HR-C', 'HR-MISSING']);
+            expect(fabric.absentCadastreIds([' HR-A ', ' HR-C ', 'HR-MISSING'], { includeCorridors: true }))
+                .toEqual(['HR-MISSING']);
+            expect(cloneSpy).not.toHaveBeenCalled();
+        } finally {
+            cloneSpy.mockRestore();
+        }
+    });
+
+    it('counts bounds with queryBounds corridor semantics without cloning geometries', async () => {
+        const fabric = createLiveParcelFabric();
+        await mutate(fabric, mutation => {
+            mutation.seedCadastre([polygon('HR-A'), polygon('HR-B', 4)]);
+            mutation.upsertFeatures([polygon('road:HR-C', 2, {
+                cadastreParcelIds: ['HR-C'], producedByProposalId: 'road', isCorridor: true
+            })]);
+        });
+
+        const defaultCount = fabric.countBounds([-1, -1, 5, 2]);
+        expect(defaultCount).toBe(fabric.queryBounds([-1, -1, 5, 2]).length);
+        const inclusiveCount = fabric.countBounds([-1, -1, 5, 2], { includeCorridors: true });
+        expect(inclusiveCount).toBe(fabric.queryBounds([-1, -1, 5, 2], { includeCorridors: true }).length);
+
+        const cloneSpy = vi.spyOn(globalThis, 'structuredClone');
+        try {
+            expect(fabric.countBounds([-1, -1, 5, 2])).toBe(defaultCount);
             expect(cloneSpy).not.toHaveBeenCalled();
         } finally {
             cloneSpy.mockRestore();

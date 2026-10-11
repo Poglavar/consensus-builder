@@ -126,9 +126,11 @@ if [ -d "$DOCROOT" ] && [ -n "$(ls -A "$DOCROOT" 2>/dev/null)" ]; then
 fi
 
 # Sync frontend/ -> docroot (server-local rsync). Keep dev/deploy artefacts out of the docroot.
+# HMLR routing releases are published by the separate metadata job and must survive frontend deploys.
 mkdir -p "$DOCROOT"
 rsync -a --delete \
     --exclude='.git' --exclude='.gitignore' --exclude='node_modules' --exclude='.DS_Store' \
+    --exclude='/data/hmlr/' \
     --exclude='deploy-frontend.sh' --exclude='rollback-frontend.sh' \
     --exclude='Dockerfile' --exclude='.env' --exclude='.deploy-build-counter' \
     "$STAGING_DIR/" "$DOCROOT/"

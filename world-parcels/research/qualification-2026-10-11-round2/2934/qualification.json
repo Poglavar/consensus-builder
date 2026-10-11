@@ -1,0 +1,1006 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "2934",
+  "cityName": "Poissy",
+  "sourceId": "fr-ign-parcellaire-express",
+  "candidateSha256": "171aeb64ebfd4ccc27b5a5b0c8c763e15edb957780edabb4ee71dff063748935",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 49,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 49,
+      "collectedUniqueCount": 49
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 152
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "feature-queries",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "featurePageRequests": 5,
+      "distinctFeatureQueries": 5,
+      "duplicatePageRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "0be6cd86a3e553cbdc636b58666d03d6e1427d7f8cbadb8eab68aa1da08a468c",
+      "featureCount": 49,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32631",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "0be6cd86a3e553cbdc636b58666d03d6e1427d7f8cbadb8eab68aa1da08a468c",
+  "featureCount": 49,
+  "sampleIds": [
+    "FR-PCI-78498000AX0174",
+    "FR-PCI-78498000AX0324",
+    "FR-PCI-78498000AX0405"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        2.043,
+        48.936,
+        2.044,
+        48.937
+      ],
+      "complete": true,
+      "featureCount": 7,
+      "ids": [
+        "FR-PCI-78498000AX0174",
+        "FR-PCI-78498000AX0324",
+        "FR-PCI-78498000AX0327",
+        "FR-PCI-78498000AX0328",
+        "FR-PCI-78498000AX0331",
+        "FR-PCI-78498000AX0335",
+        "FR-PCI-78498000AX0405"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        2.044,
+        48.936,
+        2.045,
+        48.937
+      ],
+      "complete": true,
+      "featureCount": 7,
+      "ids": [
+        "FR-PCI-78498000AX0174",
+        "FR-PCI-78498000AX0324",
+        "FR-PCI-78498000AX0331",
+        "FR-PCI-78498000AX0335",
+        "FR-PCI-78498000AX0340",
+        "FR-PCI-78498000AX0342",
+        "FR-PCI-78498000AX0405"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        2.045,
+        48.936,
+        2.046,
+        48.937
+      ],
+      "complete": true,
+      "featureCount": 10,
+      "ids": [
+        "FR-PCI-78498000AX0097",
+        "FR-PCI-78498000AX0174",
+        "FR-PCI-78498000AX0248",
+        "FR-PCI-78498000AX0324",
+        "FR-PCI-78498000AX0331",
+        "FR-PCI-78498000AX0335",
+        "FR-PCI-78498000AX0340",
+        "FR-PCI-78498000AX0342",
+        "FR-PCI-78498000AX0345",
+        "FR-PCI-78498000AX0405"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        2.043,
+        48.937,
+        2.044,
+        48.938
+      ],
+      "complete": true,
+      "featureCount": 5,
+      "ids": [
+        "FR-PCI-78498000AX0174",
+        "FR-PCI-78498000AX0324",
+        "FR-PCI-78498000AX0331",
+        "FR-PCI-78498000AX0335",
+        "FR-PCI-78498000AX0405"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        2.044,
+        48.937,
+        2.045,
+        48.938
+      ],
+      "complete": true,
+      "featureCount": 5,
+      "ids": [
+        "FR-PCI-78498000AX0174",
+        "FR-PCI-78498000AX0324",
+        "FR-PCI-78498000AX0331",
+        "FR-PCI-78498000AX0335",
+        "FR-PCI-78498000AX0405"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        2.045,
+        48.937,
+        2.046,
+        48.938
+      ],
+      "complete": true,
+      "featureCount": 6,
+      "ids": [
+        "FR-PCI-78498000AX0174",
+        "FR-PCI-78498000AX0324",
+        "FR-PCI-78498000AX0331",
+        "FR-PCI-78498000AX0335",
+        "FR-PCI-78498000AX0345",
+        "FR-PCI-78498000AX0405"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        2.043,
+        48.938,
+        2.044,
+        48.939
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "ids": [
+        "FR-PCI-78498000AX0174",
+        "FR-PCI-78498000AX0405"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        2.044,
+        48.938,
+        2.045,
+        48.939
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "ids": [
+        "FR-PCI-78498000AX0174",
+        "FR-PCI-78498000AX0405"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        2.045,
+        48.938,
+        2.046,
+        48.939
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "ids": [
+        "FR-PCI-78498000AX0174",
+        "FR-PCI-78498000AX0405"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        2.044,
+        48.935,
+        2.045,
+        48.936
+      ],
+      "complete": true,
+      "featureCount": 22,
+      "ids": [
+        "FR-PCI-78498000AX0008",
+        "FR-PCI-78498000AX0174",
+        "FR-PCI-78498000AX0186",
+        "FR-PCI-78498000AX0188",
+        "FR-PCI-78498000AX0190",
+        "FR-PCI-78498000AX0236",
+        "FR-PCI-78498000AX0240",
+        "FR-PCI-78498000AX0242",
+        "FR-PCI-78498000AX0244",
+        "FR-PCI-78498000AX0246",
+        "FR-PCI-78498000AX0274",
+        "FR-PCI-78498000AX0279",
+        "FR-PCI-78498000AX0324",
+        "FR-PCI-78498000AX0331",
+        "FR-PCI-78498000AX0334",
+        "FR-PCI-78498000AX0335",
+        "FR-PCI-78498000AX0337",
+        "FR-PCI-78498000AX0338",
+        "FR-PCI-78498000AX0339",
+        "FR-PCI-78498000AX0340",
+        "FR-PCI-78498000AX0342",
+        "FR-PCI-78498000AX0405"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        2.044,
+        48.939,
+        2.045,
+        48.94
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "ids": [
+        "FR-PCI-78498000AX0174",
+        "FR-PCI-78498000AX0405"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        2.042,
+        48.937,
+        2.043,
+        48.938
+      ],
+      "complete": true,
+      "featureCount": 3,
+      "ids": [
+        "FR-PCI-78498000AX0174",
+        "FR-PCI-78498000AX0324",
+        "FR-PCI-78498000AX0405"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        2.046,
+        48.937,
+        2.047,
+        48.938
+      ],
+      "complete": true,
+      "featureCount": 3,
+      "ids": [
+        "FR-PCI-78498000AX0174",
+        "FR-PCI-78498000AX0345",
+        "FR-PCI-78498000AX0405"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 37,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:22.071Z",
+      "queryHash": "925759ba83edd926b59331dba4c3a6756980f820aec1d7530c8c035ee8a9a0a3",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 222
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:22.303Z",
+      "queryHash": "925759ba83edd926b59331dba4c3a6756980f820aec1d7530c8c035ee8a9a0a3",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 54
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:22.362Z",
+      "queryHash": "8dbacbbf1c6d1d1e08620005387cc7b4a20a1e0f32a62e7b874c6c893d7a8160",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 49
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:22.414Z",
+      "queryHash": "d2bc8e97b1f80c3138b72b68a32ee4710011c6f2f6817c66f9b7edf634fb9cf5",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 59
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:22.476Z",
+      "queryHash": "d2bc8e97b1f80c3138b72b68a32ee4710011c6f2f6817c66f9b7edf634fb9cf5",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 51
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:22.530Z",
+      "queryHash": "d2bc8e97b1f80c3138b72b68a32ee4710011c6f2f6817c66f9b7edf634fb9cf5",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 48
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:22.582Z",
+      "queryHash": "d2bc8e97b1f80c3138b72b68a32ee4710011c6f2f6817c66f9b7edf634fb9cf5",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 50
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:22.634Z",
+      "queryHash": "d2bc8e97b1f80c3138b72b68a32ee4710011c6f2f6817c66f9b7edf634fb9cf5",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 56
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:22.693Z",
+      "queryHash": "d2bc8e97b1f80c3138b72b68a32ee4710011c6f2f6817c66f9b7edf634fb9cf5",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 98
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:22.795Z",
+      "queryHash": "d2bc8e97b1f80c3138b72b68a32ee4710011c6f2f6817c66f9b7edf634fb9cf5",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 48
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:22.846Z",
+      "queryHash": "d2bc8e97b1f80c3138b72b68a32ee4710011c6f2f6817c66f9b7edf634fb9cf5",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 51
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:22.900Z",
+      "queryHash": "d2bc8e97b1f80c3138b72b68a32ee4710011c6f2f6817c66f9b7edf634fb9cf5",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 43
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:22.945Z",
+      "queryHash": "d2bc8e97b1f80c3138b72b68a32ee4710011c6f2f6817c66f9b7edf634fb9cf5",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 60
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:23.009Z",
+      "queryHash": "d2bc8e97b1f80c3138b72b68a32ee4710011c6f2f6817c66f9b7edf634fb9cf5",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 56
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:23.067Z",
+      "queryHash": "d2bc8e97b1f80c3138b72b68a32ee4710011c6f2f6817c66f9b7edf634fb9cf5",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 107
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:23.176Z",
+      "queryHash": "d2bc8e97b1f80c3138b72b68a32ee4710011c6f2f6817c66f9b7edf634fb9cf5",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 48
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:23.225Z",
+      "queryHash": "d2bc8e97b1f80c3138b72b68a32ee4710011c6f2f6817c66f9b7edf634fb9cf5",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 45
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:23.272Z",
+      "queryHash": "d2bc8e97b1f80c3138b72b68a32ee4710011c6f2f6817c66f9b7edf634fb9cf5",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 49
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:23.323Z",
+      "queryHash": "d2bc8e97b1f80c3138b72b68a32ee4710011c6f2f6817c66f9b7edf634fb9cf5",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 89
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:23.414Z",
+      "queryHash": "d2bc8e97b1f80c3138b72b68a32ee4710011c6f2f6817c66f9b7edf634fb9cf5",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 45
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:23.460Z",
+      "queryHash": "d2bc8e97b1f80c3138b72b68a32ee4710011c6f2f6817c66f9b7edf634fb9cf5",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 51
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:23.518Z",
+      "queryHash": "d2bc8e97b1f80c3138b72b68a32ee4710011c6f2f6817c66f9b7edf634fb9cf5",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 45
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:23.564Z",
+      "queryHash": "d2bc8e97b1f80c3138b72b68a32ee4710011c6f2f6817c66f9b7edf634fb9cf5",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 44
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:23.609Z",
+      "queryHash": "d2bc8e97b1f80c3138b72b68a32ee4710011c6f2f6817c66f9b7edf634fb9cf5",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 43
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:23.653Z",
+      "queryHash": "d2bc8e97b1f80c3138b72b68a32ee4710011c6f2f6817c66f9b7edf634fb9cf5",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 48
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:23.702Z",
+      "queryHash": "d2bc8e97b1f80c3138b72b68a32ee4710011c6f2f6817c66f9b7edf634fb9cf5",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 60
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:23.764Z",
+      "queryHash": "d2bc8e97b1f80c3138b72b68a32ee4710011c6f2f6817c66f9b7edf634fb9cf5",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 49
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:23.815Z",
+      "queryHash": "d2bc8e97b1f80c3138b72b68a32ee4710011c6f2f6817c66f9b7edf634fb9cf5",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 45
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:23.862Z",
+      "queryHash": "d2bc8e97b1f80c3138b72b68a32ee4710011c6f2f6817c66f9b7edf634fb9cf5",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 46
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:23.911Z",
+      "queryHash": "6b772c8444c3d6f9920076904f5d196f7d8a1ec20bee6dc7c93ea41b179e476b",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 55
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:23.966Z",
+      "queryHash": "09d64bde3b0e0d2f27ec9f8328143fbff98684cb40fdb192135d0806193e1be5",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 51
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:24.018Z",
+      "queryHash": "8d87ff6fbc8e9a401ac8e85ef9bc3057529e4bb9a4e413efff0b63438b2c5a3c",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 47
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:24.066Z",
+      "queryHash": "be8beff695359ea4ce325ca958b8958824fca73b15c301a07bf19f537b2000e1",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 50
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:24.116Z",
+      "queryHash": "0942d0fd452e508a765e6f9d07727bc364ae2570e367359d2c487e7d40eca285",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 49
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:24.167Z",
+      "queryHash": "925759ba83edd926b59331dba4c3a6756980f820aec1d7530c8c035ee8a9a0a3",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 40
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:24.227Z",
+      "queryHash": "d2bc8e97b1f80c3138b72b68a32ee4710011c6f2f6817c66f9b7edf634fb9cf5",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 295
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "data.geopf.fr",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:37:24.854Z",
+      "queryHash": "c1beb8a9f1edba3cbb8b031f6ecc7ce85de906a6bd123ebc0b657a66a3c06763",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 99
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

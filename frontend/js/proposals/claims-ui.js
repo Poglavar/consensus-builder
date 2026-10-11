@@ -89,8 +89,10 @@
             ids.forEach(id => {
                 const link = document.createElement('button');
                 link.type = 'button';
-                link.className = 'claim-breadcrumb-link';
-                link.textContent = api ? api.shortParcelLabel(id) : String(id);
+                link.className = 'claim-breadcrumb-link parcel-id-text';
+                const readableLabel = global.ProposalDisplayText?.parcelLabel(id);
+                link.textContent = readableLabel && readableLabel !== String(id)
+                    ? readableLabel : (api ? api.shortParcelLabel(id) : String(id));
                 link.title = String(id);
                 link.addEventListener('click', (event) => {
                     event.preventDefault();

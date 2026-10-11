@@ -1003,8 +1003,7 @@
         applyParcelTranslations(global.document.getElementById('parcel-info-panel'));
 
         const panelEl = global.document.getElementById('parcel-info-panel');
-        // One-shot flag (same idiom as __openProposalDetailsCollapsed): a proposal selection opens
-        // its own parcel collapsed, every other caller opens the panel in full.
+        // A proposal selection opens its own parcel collapsed; every other caller opens the panel in full.
         const startCollapsed = global.__openParcelInfoCollapsed === true;
         global.__openParcelInfoCollapsed = false;
         setParcelInfoPanelMinimized(panelEl, startCollapsed);

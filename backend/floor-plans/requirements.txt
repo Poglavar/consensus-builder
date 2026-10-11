@@ -1,4 +1,4 @@
 # Isolated dependencies for the floor-plan OCR/vision extractor.
-numpy==2.2.3
+numpy==2.3.5
 opencv-python-headless==4.11.0.86
-Pillow==11.1.0
+Pillow==12.0.0

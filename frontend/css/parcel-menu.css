@@ -45,6 +45,32 @@
     line-height: 1.3;
 }
 
+/* Display-only parcel identifiers keep their canonical text in the DOM, so copy/navigation code
+   can still use the complete value while narrow surfaces show a dense two-line preview. */
+.parcel-menu__title,
+.parcel-id-text,
+#parcel-info-panel .parcel-title-id-value {
+    display: -webkit-box;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-all;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+}
+
+/* Parcel ids can contain opaque source and chain suffixes. Let the id use the available header
+   width, pack characters tightly across at most two rows, then let WebKit show its clamp ellipsis.
+   The DOM text and the parcel panel's copy action remain the complete canonical id. */
+#parcel-info-panel .parcel-title-id {
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 100%;
+}
+
 .parcel-menu:focus {
     outline: none;
 }

@@ -130,9 +130,7 @@
         if (source === 'none') return null;
         if (source === 'parcel-source') {
             if (!cityParcelsConfig.sourceId) throw new Error('Parcel source ID is missing.');
-            const path = `/parcel-sources/${encodeURIComponent(cityParcelsConfig.sourceId)}`;
-            const params = new URLSearchParams({ bbox: options.latLonBbox || bbox });
-            return { url: `${getBackendBase()}${path}?${params}`, source, returnsWGS84: true,
+            return { source, sourceId: cityParcelsConfig.sourceId, browserAdapter: true, returnsWGS84: true,
                 completeResponse: true, disablePagination: true };
         }
         const importedSources = {

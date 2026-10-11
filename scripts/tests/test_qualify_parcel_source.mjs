@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { addCanonicalFeature, assessForcedQueryEvidence, canonicalSafeFeature, cellsForPoint } from '../qualify-parcel-source.mjs';
+import { addCanonicalFeature, assessForcedQueryEvidence, assessHmlrBrowserCompletenessEvidence,
+    canonicalSafeFeature, cellsForPoint } from '../qualify-parcel-source.mjs';
 
 const geometry = { type:'Polygon', coordinates:[[[0,0],[1,0],[1,1],[0,1],[0,0]]] };
 const feature = (id, extra = {}) => ({ type:'Feature', id, properties:{ parcelId:id, sourceId:'public-test', sourceParcelId:id.slice(5), owner:'omit', ...extra }, geometry });
@@ -63,4 +64,35 @@ test('accepts ArcGIS singleton object-ID requests only with a complete manifest 
     assert.equal(evidence.distinctSingletonObjectIdQueries, 2);
     assert.equal(assessForcedQueryEvidence({ requests, expectedIds:['SRC-123','SRC-456'],
         returnedIds:['SRC-123','SRC-456'], complete:false, mode:'object-ids' }).passed, false);
+});
+
+test('accepts HMLR immutable snapshot completeness only when release, date, IDs, absence and repeated cells bind', () => {
+    const snapshotId = 'a'.repeat(64), sourceDate = '2026-10-04';
+    const sampleIds = ['GB-HMLR-BROWSER-v1-12', 'GB-HMLR-BROWSER-v1-34'];
+    const exact = Object.assign(new Map(sampleIds.map(id => [id, { id }])), { snapshotId, sourceDate });
+    const absent = { complete:true, features:[], absentIds:['GB-HMLR-BROWSER-v1-99'], snapshotId, sourceDate };
+    const cell = ids => ({ complete:true, ids, snapshotId, sourceDate });
+    const firstPass = [cell(sampleIds), cell([])];
+    const secondPass = [cell([...sampleIds].reverse()), cell([])];
+    const evidence = assessHmlrBrowserCompletenessEvidence({ expectedSnapshotId:snapshotId, sampleIds,
+        firstExact:exact, secondExact:exact, absenceResult:absent, firstPass, secondPass,
+        absentId:'GB-HMLR-BROWSER-v1-99' });
+    assert.equal(evidence.passed, true);
+    assert.equal(evidence.snapshotBound, true);
+    assert.equal(evidence.sourceDateBound, true);
+    assert.equal(evidence.exactSampleIdsRepeated, true);
+    assert.equal(evidence.completeSampleQueries, true);
+
+    assert.equal(assessHmlrBrowserCompletenessEvidence({ expectedSnapshotId:'b'.repeat(64), sampleIds,
+        firstExact:exact, secondExact:exact, absenceResult:absent, firstPass, secondPass,
+        absentId:'GB-HMLR-BROWSER-v1-99' }).passed, false);
+    assert.equal(assessHmlrBrowserCompletenessEvidence({ expectedSnapshotId:snapshotId, sampleIds,
+        firstExact:exact, secondExact:Object.assign(new Map(exact), { snapshotId, sourceDate:'2026-10-05' }),
+        absenceResult:absent, firstPass, secondPass, absentId:'GB-HMLR-BROWSER-v1-99' }).sourceDateBound, false);
+    assert.equal(assessHmlrBrowserCompletenessEvidence({ expectedSnapshotId:snapshotId, sampleIds,
+        firstExact:exact, secondExact:new Map([[sampleIds[0], exact.get(sampleIds[0])]]), absenceResult:absent,
+        firstPass, secondPass, absentId:'GB-HMLR-BROWSER-v1-99' }).exactSampleIdsRepeated, false);
+    assert.equal(assessHmlrBrowserCompletenessEvidence({ expectedSnapshotId:snapshotId, sampleIds,
+        firstExact:exact, secondExact:exact, absenceResult:absent, firstPass:[cell(sampleIds), { ...cell([]), complete:false }],
+        secondPass, absentId:'GB-HMLR-BROWSER-v1-99' }).completeSampleQueries, false);
 });

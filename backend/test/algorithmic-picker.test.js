@@ -65,6 +65,34 @@ describe('algorithmic proposal picker', () => {
         expect(result.picks[0].rationale).toContain('The mapped urban rule allows 4 floors on parcel 2178.');
     });
 
+    it('uses the short geometry display label even when a parcel number is accidentally present', () => {
+        const id = `KE-NAIROBI-NM-g1~368402797~-12643572~${'b'.repeat(64)}`;
+        const result = selectAlgorithmicPicks({ day: '2026-09-20', persona, candidates: [candidate(id, 1, {
+            parcelIdentityKind: 'geometry-sha256-v1', geometryDisplayId: `G1-${'b'.repeat(12)}`,
+            parcelNumber: '12643572'
+        })] });
+        expect(result.picks[0].name).toBe(`4-storey infill on parcel G1-${'b'.repeat(8)}, Rudeš`);
+        expect(result.picks[0].rationale).toContain(`parcel G1-${'b'.repeat(8)}`);
+        expect(result.picks[0].name).not.toContain('12643572');
+    });
+
+    it('recognizes persisted canonical geometry IDs without display metadata', () => {
+        const id = `KE-NAIROBI-NM-g1~368402797~-12643572~${'d'.repeat(64)}`;
+        const result = selectAlgorithmicPicks({ day: '2026-09-20', persona, candidates: [candidate(id, 1)] });
+        expect(result.picks[0].name).toBe(`4-storey infill on parcel G1-${'d'.repeat(8)}, Rudeš`);
+        expect(result.picks[0].rationale).toContain(`parcel G1-${'d'.repeat(8)}`);
+    });
+
+    it('does not invent a geometry label when its kind metadata has a malformed ID', () => {
+        const id = 'KE-NAIROBI-NM-g1~broken';
+        const result = selectAlgorithmicPicks({ day: '2026-09-20', persona, candidates: [candidate(id, 1, {
+            parcelIdentityKind: 'geometry-sha256-v1', geometryDisplayId: 'G1-not-a-hash', parcelNumber: '12643572'
+        })] });
+        expect(result.picks[0].name).toBe(`4-storey infill on parcel ${id}, Rudeš`);
+        expect(result.picks[0].rationale).toContain(`parcel ${id}`);
+        expect(result.picks[0].name).not.toContain('G1-unknown');
+    });
+
     it('names a rival build-out as an alternative that answers the proposal on the same land', () => {
         const result = selectAlgorithmicPicks({ day: '2026-09-20', persona, candidates: [candidate('HR-335614-1754/1', 1, {
             plannedFloors: 2, rival: { proposalId: 'agent-densifier-01-2026-10-11-h02-1', persona: 'densifier-01', name: '4-storey infill on parcel 1754/1, Rudeš' }

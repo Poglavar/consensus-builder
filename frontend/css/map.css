@@ -607,29 +607,25 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
     }
 }
 
-#model-layer-controls .three-mode-radius-row,
-#model-rendering-settings .three-mode-radius-row {
+#model-layer-controls .three-mode-radius-row {
     display: flex;
     flex-direction: column;
     gap: 4px;
 }
 
-#model-layer-controls .three-mode-radius-header,
-#model-rendering-settings .three-mode-radius-header {
+#model-layer-controls .three-mode-radius-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-#model-layer-controls .three-mode-radius-value,
-#model-rendering-settings .three-mode-radius-value {
+#model-layer-controls .three-mode-radius-value {
     font-size: 12px;
     font-weight: 600;
     color: #2c6cb0;
 }
 
-#model-layer-controls .three-mode-radius-slider,
-#model-rendering-settings .three-mode-radius-slider {
+#model-layer-controls .three-mode-radius-slider {
     width: 100%;
     margin: 0;
     accent-color: #2c6cb0;

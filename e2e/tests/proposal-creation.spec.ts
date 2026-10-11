@@ -78,7 +78,7 @@ test.describe('Proposal creation and map lifecycle @features', () => {
     await modal.locator('[data-reparcel-plots-tab="old"]').click();
     await expect(modal.locator('[data-reparcel-oldplots-table]')).toContainText('1234');
     await modal.locator('[data-reparcel-plots-tab="new"]').click();
-    await expect(modal.locator('[data-reparcel-owners-table]')).toContainText('Private owner');
+    await expect(modal.locator('[data-reparcel-owners-table]')).toContainText('Owner A');
     await expect(modal.locator('[data-reparcel-owners-table]')).not.toContainText('Privatni vlasnik');
     await expect(modal.locator('[data-reparcel-commit]')).toBeEnabled();
     await modal.locator('[data-reparcel-commit]').click();

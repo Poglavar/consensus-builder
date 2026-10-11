@@ -567,10 +567,10 @@
                 status(t('modal.roadWidth.proposalList.downloadError', 'Failed to download proposal'));
                 return;
             }
-            // A freshly downloaded proposal opens collapsed, as from the list.
-            win.__openProposalDetailsCollapsed = true;
         }
-        if (!win.openProposalFromList(win.getProposalKey(proposal) || serverId, { proposal, closeSheets: true })) return;
+        if (!win.openProposalFromList(win.getProposalKey(proposal) || serverId, {
+            proposal, closeSheets: true, presentation: 'compact'
+        })) return;
         state.notes.delete(key);
         clearQuery();
         close({ blur: true });

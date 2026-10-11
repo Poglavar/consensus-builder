@@ -1,4 +1,5 @@
 // Feature-at-a-time JSON parsing: the full source and its private attributes are never retained.
+import { utf8ByteLength } from './byte-utils.js';
 import { upstreamError } from './source-contract.js';
 
 const whitespace = c => c === ' ' || c === '\t' || c === '\r' || c === '\n';
@@ -43,7 +44,7 @@ export async function readGeojsonFeatureStream(chunks, { maxRecordBytes, onFeatu
     }
     function finish() {
         const text = buffer.slice(position, scan);
-        if (Buffer.byteLength(text) > maxRecordBytes) throw upstreamError('GeoJSON record exceeds memory limit.');
+        if (utf8ByteLength(text) > maxRecordBytes) throw upstreamError('GeoJSON record exceeds memory limit.');
         let value; try { value = JSON.parse(text); } catch { fail(); }
         position = scan; started = false;
         return { ready: true, value };
@@ -70,7 +71,7 @@ export async function readGeojsonFeatureStream(chunks, { maxRecordBytes, onFeatu
                         || key === 'name' && (typeof t.value !== 'string' || t.value.length > 1024)
                         || ['complete', 'exceededTransferLimit'].includes(key) && typeof t.value !== 'boolean') fail();
                     if (['type', 'name', 'crs', 'complete', 'exceededTransferLimit'].includes(key)) {
-                        if (Buffer.byteLength(JSON.stringify(t.value)) > 8192) throw upstreamError('GeoJSON metadata exceeds memory limit.');
+                        if (utf8ByteLength(JSON.stringify(t.value)) > 8192) throw upstreamError('GeoJSON metadata exceeds memory limit.');
                         metadata[key] = t.value;
                     }
                     state = 'member-end';

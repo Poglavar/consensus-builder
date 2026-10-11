@@ -2,6 +2,14 @@
 import { readFile } from 'node:fs/promises';
 import { fingerprint, validateModelIdentity } from '../buildings/floor-models.js';
 import { normalizeUrl } from './page-evidence.js';
+import { eligibleListingSql,LOCATION_POLICY } from './source-policy.js';
+
+function explicitAddress(facts={}) {
+    const location=facts.explicitLocation;
+    if(location?.schema!=='explicit-listing-location.v1'
+        ||typeof location.street!=='string'||typeof location.houseNumber!=='string') return null;
+    return addressKey(`${location.street} ${location.houseNumber}`);
+}
 
 export function addressKey(value) {
     if (typeof value !== 'string' || !value.trim()) return null;
@@ -19,6 +27,45 @@ export function addressKey(value) {
         return `${street} ${number}`;
     }
     return null;
+}
+
+function cityKey(value) {
+    if (typeof value !== 'string' || !value.trim()) return null;
+    const city = value.normalize('NFKD').replace(/\p{M}/gu, '').replace(/đ/gi, 'd')
+        .toLowerCase().trim().split(/[,;|]/, 1)[0].replace(/^(?:city of|grad)\s+/i, '')
+        .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    return city || null;
+}
+
+const TITLE_CITY_PREFIXES = [
+    'Zagreb', 'Split', 'Rijeka', 'Osijek', 'Zadar', 'Pula', 'Dubrovnik', 'Varaždin', 'Šibenik',
+    'Karlovac', 'Sisak', 'Bjelovar', 'Čakovec', 'Koprivnica', 'Vinkovci', 'Samobor', 'Velika Gorica', 'Zaprešić'
+];
+
+// Locality must come from a structured listing field or an unambiguous city-leading title.
+// A street address alone is never used to infer the city.
+export function sourceLocality(facts={}) {
+    const direct = [facts.explicitLocation?.locality, facts.locality].map(cityKey).filter(Boolean);
+    const distinct = [...new Set(direct)];
+    if (distinct.length > 1) return null;
+    const title = typeof facts.title === 'string' ? facts.title : '';
+    const titlePrefix = title.trim().split(/[,:|–—-]/, 1)[0];
+    const titleCity = TITLE_CITY_PREFIXES.find(city => cityKey(titlePrefix) === cityKey(city));
+    const fromTitle = titleCity ? cityKey(titleCity) : null;
+    if (distinct.length && fromTitle && distinct[0] !== fromTitle) return null;
+    return distinct[0] || fromTitle || null;
+}
+
+export function indexAddressedBuildings(rows=[]) {
+    const index=new Map();
+    for(const row of rows) {
+        const key=addressKey(row.address);
+        if(!key) continue;
+        const matches=index.get(key)||[];
+        matches.push(row);
+        index.set(key,matches);
+    }
+    return index;
 }
 
 export function prepareBinding(input) {
@@ -85,6 +132,7 @@ export async function augmentReviewedUnitAssets(db, units) {
                 ELSE COALESCE(l.asset_urls,'[]'::jsonb) || $3::jsonb END,
                 updated_at=now()
             WHERE l.url=$1 AND l.source_id=$2 AND l.facts->>'sourceId'=$2
+              AND ${eligibleListingSql('l')}
               AND EXISTS(SELECT 1 FROM floor_plan.target t WHERE t.url=$4 AND t.kind='asset' AND t.current_sha256=$5)
               AND NOT (COALESCE(l.asset_urls,'[]'::jsonb) @> $3::jsonb)
             RETURNING l.url`, [listingUrl,sourceId,JSON.stringify([asset]),sourceUrl,unit.sha256.toLowerCase()]);
@@ -96,65 +144,59 @@ export async function augmentReviewedUnitAssets(db, units) {
 
 function identityKey(row) { return JSON.stringify([row.city,row.source,row.owner_id||'',String(row.building_id)]); }
 
-export function chooseBinding(listing, bindings, projectUrls = []) {
-    const keys = {listing:normalizeUrl(listing.url),address:addressKey(listing.facts?.address)};
-    const projects = new Set([listing.facts?.projectUrl,...projectUrls].map(url=>normalizeUrl(url)).filter(Boolean));
-    const found = bindings.filter(binding => binding.match_kind === 'project' ? projects.has(binding.match_value)
-        : keys[binding.match_kind] && keys[binding.match_kind] === binding.match_value);
-    // An exact source URL can still refer to a multi-building project; ambiguity is retained.
+export function chooseBinding(listing, bindings) {
+    const address=explicitAddress(listing.facts);
+    const locality=sourceLocality(listing.facts);
+    if(!address||!locality) return null;
+    const found = bindings.filter(binding => binding.match_kind==='address'
+        &&binding.match_value===address&&cityKey(binding.city)===locality);
     const identities = new Set(found.map(identityKey));
     return identities.size === 1 ? found[0] : null;
 }
 
-async function addressedBuildings(db) {
+export async function addressedBuildings(db) {
     const relations=(await db.query(`SELECT to_regclass('buildings.dating_building') AS addresses,
         to_regclass('public.dgu_gdi_building_match') AS matches,to_regclass('public.gdi_building_3d') AS buildings`)).rows[0];
-    if(!relations.addresses || !relations.matches || !relations.buildings) return [];
-    return (await db.query(`SELECT d.id,d.address,d.lat,d.lng,m.object_id::text AS building_id,
+    if(!relations.addresses || !relations.matches || !relations.buildings) return new Map();
+    const rows=(await db.query(`SELECT d.id,d.address,m.object_id::text AS building_id,
         ST_AsGeoJSON(ST_Transform(b.geom2d_3765,4326))::jsonb AS footprint
         FROM buildings.dating_building d JOIN public.dgu_gdi_building_match m USING(zgrada_id)
         JOIN public.gdi_building_3d b ON b.object_id=m.object_id
         WHERE d.zgrada_id IS NOT NULL AND m.building_overlap_ratio>=0.9 AND m.footprint_overlap_ratio>=0.9`)).rows;
+    return indexAddressedBuildings(rows);
 }
 
 export function chooseAddressedBuilding(listing, rows) {
-    const key=addressKey(listing.facts?.address),c=listing.facts?.coordinates;
-    if(!key || !Number.isFinite(c?.lat) || !Number.isFinite(c?.lng)) return null;
-    const candidates=rows.filter(row=>addressKey(row.address)===key && Number.isFinite(row.lat) && Number.isFinite(row.lng)
-        && Math.hypot((row.lng-c.lng)*111320*Math.cos(c.lat*Math.PI/180),(row.lat-c.lat)*111320)<=100);
+    const key=explicitAddress(listing.facts);
+    if(!key||sourceLocality(listing.facts)!=='zagreb') return null;
+    const candidates=rows instanceof Map ? rows.get(key)||[] : rows.filter(row=>addressKey(row.address)===key);
     if(new Set(candidates.map(r=>r.building_id)).size!==1) return null;
     const row=candidates[0];
     return {city:'zagreb',source:'zagreb-3d',owner_id:'',building_id:row.building_id,name:row.address,footprint:row.footprint,
-        evidence:{basis:'Exact street and house number in building address inventory; source map corroborates; cadastral/survey overlap >=90% in both directions',
+        evidence:{basis:'Explicit listing street and house number match the building address inventory; cadastral/survey overlap >=90% in both directions',
             address:row.address,addressRecordId:row.id,sourceUrl:listing.url}};
 }
 
 export async function resolveBuildingLinks(db,{limit=10000,deadline=Infinity,log=console.log}={}) {
     const bindings=(await db.query('SELECT * FROM floor_plan.building_binding')).rows;
-    const addresses=await addressedBuildings(db);
-    const memberships=(await db.query(`SELECT t.url,o.evidence->'projectListings' AS listings
-        FROM floor_plan.target t JOIN floor_plan.observation o ON (o.url,o.sha256)=(t.url,t.current_sha256)
-        WHERE o.evidence ? 'projectListings' AND EXISTS(SELECT 1 FROM floor_plan.building_binding b WHERE b.match_kind='project' AND b.match_value=t.url)`)).rows;
-    const projectsByListing=new Map();
-    for(const row of memberships) for(const listing of row.listings || []) {
-        const url=normalizeUrl(listing.url);if(!url) continue;
-        projectsByListing.set(url,[...(projectsByListing.get(url)||[]),row.url]);
-    }
-    const rows=(await db.query(`SELECT url,facts,match_status,building_id,building_source FROM floor_plan.listing
-        WHERE (match_status<>'verified' OR building_city IS NULL)
-        AND facts->>'sourceEvidenceStatus' IS DISTINCT FROM 'not-a-listing'
+    const rows=(await db.query(`SELECT url,facts,match_status,building_id,building_source,building_evidence FROM floor_plan.listing l
+        WHERE (match_status<>'verified' OR building_city IS NULL OR building_evidence->>'locationPolicy' IS DISTINCT FROM '${LOCATION_POLICY}')
+        AND ${eligibleListingSql('l')}
         AND (match_checked_at IS NULL OR match_checked_at<=now()-interval '1 day')
         ORDER BY match_checked_at NULLS FIRST,match_checked_at,updated_at,url LIMIT $1`,[limit])).rows;
+    const needsZagrebInventory=rows.some(listing=>sourceLocality(listing.facts)==='zagreb');
+    const addresses=needsZagrebInventory ? await addressedBuildings(db) : new Map();
     const result={processed:0,verified:0,unresolved:0,deferred:0};
     for(const listing of rows) {
         if(Date.now()>=deadline) { result.deferred=rows.length-result.processed; break; }
-        const binding=chooseBinding(listing,bindings,projectsByListing.get(normalizeUrl(listing.url))||[])
+        const binding=chooseBinding(listing,bindings)
             || chooseAddressedBuilding(listing,addresses);
-        if(binding && (listing.match_status!=='verified' || (binding.building_id===listing.building_id && binding.source===listing.building_source))) {
+        if(binding && (listing.match_status!=='verified' || listing.building_evidence?.locationPolicy!==LOCATION_POLICY
+            || (binding.building_id===listing.building_id && binding.source===listing.building_source))) {
             await db.query(`UPDATE floor_plan.listing SET match_status='verified',building_city=$2,building_source=$3,
                 building_owner_id=$4,building_id=$5,building_evidence=$6,match_checked_at=now(),updated_at=now() WHERE url=$1`,
             [listing.url,binding.city,binding.source,binding.owner_id||'',binding.building_id,
-                JSON.stringify({...binding.evidence,bindingId:binding.id||null,name:binding.name,footprint:binding.footprint,automatic:true})]);
+                JSON.stringify({...binding.evidence,bindingId:binding.id||null,name:binding.name,footprint:binding.footprint,automatic:true,locationPolicy:LOCATION_POLICY})]);
             result.verified++;
         } else {
             await db.query(`UPDATE floor_plan.listing SET match_checked_at=now(),updated_at=now() WHERE url=$1`,[listing.url]);

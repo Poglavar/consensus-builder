@@ -61,6 +61,13 @@ describe('parcel history card builders', () => {
         expect(html).toContain('data-parcel-history="HR-2"');
     });
 
+    it('clamps only the visible parcel id and keeps the full escaped id in the summary title', () => {
+        const parcelUid = 'KE-NAIROBI-NM-g1~368402797~-12643572~hash#chain_0123456789abcdef-2&x';
+        const html = card.buildCardHtml([parcelUid]);
+        expect(html).toContain('<span class="parcel-id-text">History: KE-NAIROBI-NM-g1~368402797~-12643572~hash#chain_0123456789abcdef-2&amp;x</span>');
+        expect(html).toContain('<summary title="KE-NAIROBI-NM-g1~368402797~-12643572~hash#chain_0123456789abcdef-2&amp;x">');
+    });
+
     it('has every UI string in en, hr, es and sr', () => {
         const keysOf = (obj, prefix = '') => Object.entries(obj).flatMap(([k, v]) => (typeof v === 'object' ? keysOf(v, `${prefix}${k}.`) : [`${prefix}${k}`]));
         const en = keysOf(require('../../frontend/i18n/en.json').panel.proposal.parcelHistory).sort();

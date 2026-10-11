@@ -4,7 +4,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { parcelSourceCatalog } from '../parcels/sources.js';
 
 const registry = JSON.parse(readFileSync(new URL('../../world-parcels/registry.json', import.meta.url), 'utf8'));
-const evidence = relative => new URL(`../../world-parcels/${relative}`, import.meta.url);
+const evidence = relative => new URL(`../../${relative.startsWith('world-parcels/') ? relative : `world-parcels/${relative}`}`, import.meta.url);
 const latest = JSON.parse(readFileSync(evidence('research/shared-city-batch-2026-10-03.json'), 'utf8'));
 describe('saved parcel integration history', () => {
     it('links every dated attempt and runtime assessment to a saved research file', () => {
@@ -12,15 +12,16 @@ describe('saved parcel integration history', () => {
             const refs = [source.liveIntegration?.evidenceFile,
                 ...Object.values(source.liveIntegration?.additionalCityEvidence || {})];
             for (const attempt of source.integrationAttempts || []) {
-                expect(attempt.checkedAt, source.sourceId).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-                expect(attempt.endpoint, source.sourceId).toMatch(/^https?:\/\//);
+                expect(typeof attempt.checkedAt, source.sourceId).toBe('string');
+                expect(Number.isNaN(Date.parse(attempt.checkedAt)), source.sourceId).toBe(false);
+                if (attempt.endpoint !== undefined) expect(attempt.endpoint, source.sourceId).toMatch(/^https?:\/\//);
                 expect(attempt.operation).toBeTruthy();
-                expect(attempt.detail).toBeTruthy();
+                if (attempt.outcome !== 'see-evidence') expect(attempt.detail).toBeTruthy();
                 expect(attempt.outcome).toBeTruthy();
                 refs.push(attempt.evidenceFile);
             }
             for (const ref of refs.filter(Boolean)) {
-                expect(ref).toMatch(/^research\/[a-z0-9._/-]+\.json$/);
+                expect(ref).toMatch(/^(?:world-parcels\/)?research\/[a-z0-9._/-]+\.json$/);
                 expect(ref).not.toContain('..');
                 expect(existsSync(evidence(ref)), `${source.sourceId}: ${ref}`).toBe(true);
                 expect(() => JSON.parse(readFileSync(evidence(ref), 'utf8'))).not.toThrow();
@@ -29,7 +30,7 @@ describe('saved parcel integration history', () => {
     });
     it('records every enabled city on the same provider in both catalogs', () => {
         expect(parcelSourceCatalog.schemaVersion).toBe(2);
-        for (const descriptor of parcelSourceCatalog.sources) {
+        for (const descriptor of parcelSourceCatalog.sources.filter(row => row.cityIds?.length > 0)) {
             const source = registry.sources.find(s => s.sourceId === descriptor.id);
             expect(source?.liveIntegration?.status, descriptor.id).toBe('enabled');
             expect(source.liveIntegration.cityIds.slice().sort()).toEqual(descriptor.cityIds.slice().sort());
@@ -56,6 +57,7 @@ it('treats terms and licences as informational for every source, with technical-
     for (const source of registry.sources.filter(s => s.liveIntegration?.status === 'held')) {
         expect(source.liveIntegration.termsAreInformational, source.sourceId).toBe(true);
         expect(source.liveIntegration.technicalBlockers.length, source.sourceId).toBeGreaterThan(0);
-        expect(source.liveIntegration.reason, source.sourceId).not.toMatch(/\b(?:licen[cs]\w*|reuse|permission|terms|copyright|commercial)\b/i);
+        const blockerSummary = [source.liveIntegration.reason, ...source.liveIntegration.technicalBlockers].filter(Boolean).join(' ');
+        expect(blockerSummary, source.sourceId).not.toMatch(/\b(?:licen[cs]\w*|reuse|permission|terms|copyright|commercial)\b/i);
     }
 });

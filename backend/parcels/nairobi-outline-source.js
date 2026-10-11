@@ -1,4 +1,5 @@
 // Streams public Nairobi Maps outlines with explicit geometry identities and fresh spatial re-reads.
+import { concatBytes } from './byte-utils.js';
 import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
 import { upstreamError, providerHttpError, validateBounds, validateGeometry } from './source-contract.js';
@@ -31,7 +32,7 @@ export function createNairobiOutlineSource(descriptor, { fetchImpl = globalThis.
                 if (size > maxBytes) throw upstreamError('Outline response exceeds byte limit.');
                 chunks.push(chunk.value);
             }
-            return JSON.parse(Buffer.concat(chunks).toString('utf8'));
+            return JSON.parse(new TextDecoder('utf-8').decode(concatBytes(chunks, size)));
         } catch (error) {
             try { await reader.cancel(); } catch { /* The failed stream may already be closed. */ }
             throw error;

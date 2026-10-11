@@ -586,6 +586,30 @@
             return false;
         }
 
+        // Return only the requested cadastral IDs that have no matching fabric entries. This is
+        // the batched, clone-free counterpart to hasCadastreEntries for repository integration.
+        function absentCadastreIdsFrom(data, ids, query = {}) {
+            const absent = [];
+            const seen = new Set();
+            for (const raw of ids || []) {
+                const id = normalizeId(raw);
+                if (!id || seen.has(id)) continue;
+                seen.add(id);
+                const parcelIds = data.byCadastreId.get(id);
+                let represented = false;
+                if (parcelIds?.size) {
+                    if (query.includeCorridors === true) represented = true;
+                    else {
+                        for (const parcelId of parcelIds) {
+                            if (!isCorridor(data.byId.get(parcelId))) { represented = true; break; }
+                        }
+                    }
+                }
+                if (!represented) absent.push(id);
+            }
+            return absent;
+        }
+
         function queryBoundsFrom(data, bounds, query = {}) {
             const box = boundsArray(bounds);
             if (!box) return [];
@@ -596,6 +620,18 @@
                 result.push(clone(feature));
             });
             return result;
+        }
+
+        function countBoundsFrom(data, bounds, query = {}) {
+            const box = boundsArray(bounds);
+            if (!box) return 0;
+            let count = 0;
+            data.byId.forEach((feature, id) => {
+                if (!intersects(box, data.bboxById.get(id))) return;
+                if (query.includeCorridors !== true && isCorridor(feature)) return;
+                count += 1;
+            });
+            return count;
         }
 
         function cadastreIdsForParcelIdsFrom(data, ids, query = {}) {
@@ -647,6 +683,7 @@
         function participantView(draft) {
             return Object.freeze({
                 get: id => readFrom(draft.data, id),
+                peek: id => peekFrom(draft.data, id),
                 getMany: (ids, query) => getManyFrom(draft.data, ids, query),
                 list: () => Array.from(draft.data.byId.values(), clone),
                 snapshot: () => ({ revision: committed.revision + 1, parcelIds: Array.from(draft.data.byId.keys()) })
@@ -765,12 +802,14 @@
                 list: () => (assertActive(draft), Array.from(draft.data.byId.values(), clone)),
                 entriesForCadastre: (ids, query) => (assertActive(draft), entriesForCadastreFrom(draft.data, ids, query)),
                 hasCadastreEntries: (ids, query) => (assertActive(draft), hasCadastreEntriesFrom(draft.data, ids, query)),
+                absentCadastreIds: (ids, query) => (assertActive(draft), absentCadastreIdsFrom(draft.data, ids, query)),
                 producedBy(proposalId) {
                     assertActive(draft);
                     const ids = draft.data.byProducerId.get(normalizeId(proposalId));
                     return ids ? Array.from(ids, id => clone(draft.data.byId.get(id))) : [];
                 },
                 queryBounds: (bounds, query) => (assertActive(draft), queryBoundsFrom(draft.data, bounds, query)),
+                countBounds: (bounds, query) => (assertActive(draft), countBoundsFrom(draft.data, bounds, query)),
                 cadastreIdsForParcelIds: (ids, query) => (assertActive(draft), cadastreIdsForParcelIdsFrom(draft.data, ids, query)),
                 snapshot: () => (assertActive(draft), {
                     revision: draft.data.revision,
@@ -849,11 +888,13 @@
         function list() { return Array.from(committed.byId.values(), clone); }
         function entriesForCadastre(ids, query) { return entriesForCadastreFrom(committed, ids, query); }
         function hasCadastreEntries(ids, query) { return hasCadastreEntriesFrom(committed, ids, query); }
+        function absentCadastreIds(ids, query) { return absentCadastreIdsFrom(committed, ids, query); }
         function producedBy(proposalId) {
             const ids = committed.byProducerId.get(normalizeId(proposalId));
             return ids ? Array.from(ids, id => clone(committed.byId.get(id))) : [];
         }
         function queryBounds(bounds, query) { return queryBoundsFrom(committed, bounds, query); }
+        function countBounds(bounds, query) { return countBoundsFrom(committed, bounds, query); }
         function cadastreIdsForParcelIds(ids, query) { return cadastreIdsForParcelIdsFrom(committed, ids, query); }
         function claimedCadastreIds() {
             const claimed = new Set();
@@ -893,8 +934,10 @@
             list,
             entriesForCadastre,
             hasCadastreEntries,
+            absentCadastreIds,
             producedBy,
             queryBounds,
+            countBounds,
             claimedCadastreIds,
             cadastreIdsForParcelIds,
             subscribe,

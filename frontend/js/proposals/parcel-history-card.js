@@ -121,7 +121,7 @@
     function buildCardHtml(parcelIds, t = plainT) {
         const rows = parcelIds.map(parcelUid => `
             <details class="parcel-history-parcel" data-parcel-history="${escapeText(parcelUid)}">
-                <summary>${escapeText(t('panel.proposal.parcelHistory.summary', 'History: {{parcel}}', { parcel: parcelUid }))}</summary>
+                <summary title="${escapeText(parcelUid)}"><span class="parcel-id-text">${escapeText(t('panel.proposal.parcelHistory.summary', 'History: {{parcel}}', { parcel: parcelUid }))}</span></summary>
                 <div class="parcel-history-content" aria-live="polite"></div>
             </details>`).join('');
         return `

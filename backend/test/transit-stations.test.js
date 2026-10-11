@@ -412,7 +412,7 @@ describe('applied station selection hit targets', () => {
             'transitStations', 'roadDrawingMode', 'transitStationPlacementMode',
             'isTransitStationPlacementActive', 'isStructureGeometryEditorActive',
             'isTransitStationGeometryEditorActive', 'areaMonitorDrawingMode',
-            'isAreaMonitorDrawingActive', '__openProposalDetailsCollapsed'
+            'isAreaMonitorDrawingActive'
         ];
         const originals = new Map(keys.map(key => [key, globalThis[key]]));
         const geometryLayers = [];

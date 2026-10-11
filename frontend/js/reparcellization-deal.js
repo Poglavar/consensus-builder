@@ -92,8 +92,8 @@
             const key = String(owner?.ownerKey || '').trim();
             if (!key || keys.has(key)) throw new Error('Owner ledger needs unique, non-empty owner keys.');
             keys.add(key);
-            const cashCents = moneyCents(owner.cashOffer === undefined ? 0 : owner.cashOffer);
             const noOwner = owner.noOwner === true || key === OPEN_GROUND_OWNER_KEY;
+            const cashCents = moneyCents(owner.cashOffer === undefined || (noOwner && owner.cashOffer === null) ? 0 : owner.cashOffer);
             if (noOwner && cashCents) throw new Error('Ownerless ground cannot receive cash.');
             return {
                 ownerKey: key, noOwner, cashCents,

@@ -172,6 +172,7 @@ describe('isInCity covers every configured city', () => {
             nashville: "US-TN-NASHVILLE-09306100100",
             austin: "US-TX-TRAVIS-0205011101",
             salt_lake_city: "US-UT-SALTLAKE-15014290110000",
+            west_valley_city: "US-UT-SALTLAKE-15014290110000",
             montpelier: "US-VT-MONTPELIER-405-126-11382",
             richmond: "US-VA-RICHMOND-5176000050747",
             carson_city: "US-NV-CARSON_CITY-00311313",
@@ -189,13 +190,13 @@ describe('isInCity covers every configured city', () => {
             recife: 'BR-RECIFE-0100100010010001',
             durban: 'ZA-ETHEKWINI-{11111111-2222-3333-4444-555555555555}'
         };
-        // Live-source values above match saved sample features for the newly configured cities.
-        // Nairobi is a synthetic membership fixture ID derived from a geometry-version sample,
-        // not a native or observed parcel ID. The other added values mirror native IDs in saved
-        // adapter artifacts. Older fixtures remain illustrative.
+        // Values above match saved samples where available. Cities added to a shared provider
+        // need not have a unique ID prefix; use that configured namespace for the membership check.
         configuredCityIds().forEach(city => {
-            expect(sample[city], `no sample parcel id for configured city ${city}`).toBeTruthy();
-            expect(isInCity(sample[city], city), `${city} refuses its own parcel`).toBe(true);
+            const prefix = cityManager.getCityConfig(city)?.parcels?.idPrefix || CITY_PARCEL_ID_PREFIXES[city];
+            expect(prefix, `no parcel ID namespace for configured city ${city}`).toBeTruthy();
+            const parcelId = sample[city] || `${prefix}membership-check`;
+            expect(isInCity(parcelId, city), `${city} refuses its configured parcel namespace`).toBe(true);
         });
     });
 

@@ -205,8 +205,11 @@ describe.each(samples)('$city capital batch-four runtime',s=>{
         const {binding}=await computeBinding(db,{city:s.city,site:f.geometry});
         expect(db.query).not.toHaveBeenCalled();expect(binding).toMatchObject({coverage:'complete',source:'server:'+s.sourceId});
         expect(binding.parcels.map(row=>row.parcelId)).toEqual([f.id]);
-        const previous=globalThis.CityConfigManager;globalThis.CityConfigManager=cities;
-        try{expect(route.parcelIdToCityId(f.id)).toBe(s.city);}finally{globalThis.CityConfigManager=previous;}
+        const previousCity=globalThis.CityConfigManager, previousGround=globalThis.CadastralParcelRepository;
+        globalThis.CityConfigManager=cities;
+        if(route.parcelIdToCityId(f.id)===null) globalThis.CadastralParcelRepository={locateIds:vi.fn(async()=>({status:'ready',features:[{id:f.id,geometry:f.geometry}]}))};
+        try{await expect(route.resolveCityIdForParcel(f.id)).resolves.toBe(s.city);}
+        finally{if(previousCity===undefined)delete globalThis.CityConfigManager;else globalThis.CityConfigManager=previousCity;if(previousGround===undefined)delete globalThis.CadastralParcelRepository;else globalThis.CadastralParcelRepository=previousGround;}
         const city=cities.getCityConfig(s.city);expect(city.parcels.sourceId).toBe(s.sourceId);expect(city.buildings.source).toBe('osm');
         expect(city.projection.metricDefinition).toBeUndefined();
         for(const locale of ['en','es','hr','sr'])expect(JSON.parse(read('../../frontend/i18n/'+locale+'.json')).city.labels[s.city]).toBeTruthy();

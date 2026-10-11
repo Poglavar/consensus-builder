@@ -103,17 +103,14 @@ test.describe('Minted proposals modal @features', () => {
       };
     });
 
-    await page.evaluate(async () => {
-      const openModal = (window as typeof window & {
-        openMintedProposalsModal?: () => Promise<void>;
-      }).openMintedProposalsModal;
-
-      if (typeof openModal !== 'function') {
-        throw new Error('openMintedProposalsModal is not available');
-      }
-
-      await openModal();
-    });
+    await page.locator('#proposals-button').click();
+    const mintedProposalsButton = page.locator('#mintedProposalsButton');
+    const planActions = page.locator('#proposal-list-actions');
+    if (!(await planActions.evaluate((element) => (element as HTMLDetailsElement).open))) {
+      await planActions.locator('summary').click();
+    }
+    await expect(mintedProposalsButton).toBeVisible();
+    await mintedProposalsButton.click();
 
     await expect(page.locator('.minted-proposals-overlay')).toBeVisible();
     await expect(page.locator('.minted-proposal-card')).toHaveCount(2);

@@ -253,4 +253,25 @@ describe('globe city renderer orchestration', () => {
         h.api.pickAt(603, 450);
         expect(h.state.selections).toEqual([{ kind: 'live-city', lat: 41, lon: 29 }]);
     });
+
+    it('routes each shared-provider city marker to that city’s coordinates', () => {
+        const sourceId = 'gb-hmlr-england-wales';
+        const cities = [
+            { id: 'london', name: 'London', lat: 51.515, lon: -0.09, population2025: 10_000_000, sourceId },
+            { id: 'manchester', name: 'Manchester', lat: 53.4808, lon: -2.2426, population2025: 2_600_000, sourceId }
+        ];
+        const catalog = CityDisplay.rankCities({ liveCities: cities, cities: [] }).map((entry, index) => {
+            const vec = [index / 1000, 0, 1];
+            vec.screen = entry.city.id === 'london' ? { x: 300, y: 350 } : { x: 700, y: 350 };
+            return { ...entry, vec, color: [0.2, 0.5, 0.8], labelWidth: 58, labelHeight: 16 };
+        });
+        const h = displayHarness(catalog, { altitudeKm: 20_000 });
+        h.api.updateCityDisplay(1000);
+
+        expect(h.api.state().visibleMarkers.map(marker => marker.entry.key)).toEqual(['live:london', 'live:manchester']);
+        h.api.pickAt(700, 350);
+        expect(h.state.selections).toEqual([{ kind: 'live-city', lat: 53.4808, lon: -2.2426 }]);
+        h.api.pickAt(300, 350);
+        expect(h.state.selections[1]).toEqual({ kind: 'live-city', lat: 51.515, lon: -0.09 });
+    });
 });

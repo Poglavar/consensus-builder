@@ -96,8 +96,15 @@ test.describe('Government plan and road analysis controls @features', () => {
     await page.getByRole('button', { name: 'Focus View' }).click();
     await expect.poll(() => page.evaluate(() => map.getBounds().contains(roadAnalysisLayers.centerline.getBounds()))).toBe(true);
 
+    await page.locator('.tab-btn[onclick="switchTab(this, \'segments-tab\')"]').click();
+    await expect(page.locator('#segments-tab')).toBeVisible();
+    await expect(page.locator('#visualization-tab')).toBeHidden();
+    await page.locator('.tab-btn[onclick="switchTab(this, \'visualization-tab\')"]').click();
+
     await page.getByRole('button', { name: 'Clear All' }).click();
     await expect.poll(paths).toBeLessThan(initialPaths);
     await expect(page.locator('#road-analysis-panel')).toHaveClass(/visible/);
+    await page.locator('#road-analysis-panel .close-button').click();
+    await expect(page.locator('#road-analysis-panel')).not.toHaveClass(/visible/);
   });
 });

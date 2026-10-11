@@ -1,0 +1,887 @@
+{
+  "observedAt": "2026-10-11",
+  "scope": "All Zagreb-locality entries extracted from the two cited national MPGI professional spatial-planning approval PDFs, plus one separately sourced HKA/official-site candidate.",
+  "scope_complete": false,
+  "pdf_subset_complete": true,
+  "source_pdfs": [
+    {
+      "key": "upu_2026-03-20",
+      "url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_SP_UPU_20_03_2026.pdf",
+      "date": "2026-03-20",
+      "scope": "Approval to draft urban development plans (UPU)"
+    },
+    {
+      "key": "all_spatial_2026-06-05",
+      "url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+      "date": "2026-06-05",
+      "scope": "Approval for all professional spatial-planning work"
+    }
+  ],
+  "extraction_summary": {
+    "upu_pdf_zagreb_legal_entity_seats": 22,
+    "all_spatial_pdf_zagreb_legal_entity_seats": 37,
+    "deduplicated_pdf_legal_name_and_seat_pairs": 59,
+    "verified_pdf_seed_candidates": 10,
+    "verified_external_hka_candidate_count": 1,
+    "unresolved_or_excluded_pdf_leads": 49
+  },
+  "leads": [
+    {
+      "legal_name_as_listed": "2K ARHITEKTONSKI URED d.o.o.",
+      "registered_address_as_listed": "Britanski trg 5",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "upu_2026-03-20",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_SP_UPU_20_03_2026.pdf",
+          "pdf_date": "2026-03-20",
+          "approval_scope": "Approval to draft urban development plans (UPU)",
+          "entry_number": 1,
+          "approval_date": "16.01.2017"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "3E PROJEKTI d.o.o.",
+      "registered_address_as_listed": "Maksimirska 81",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 1,
+          "approval_date": "28.09.2017"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "AG PLANUM d.o.o.",
+      "registered_address_as_listed": "Ulica sv. Mateja 85",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "upu_2026-03-20",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_SP_UPU_20_03_2026.pdf",
+          "pdf_date": "2026-03-20",
+          "approval_scope": "Approval to draft urban development plans (UPU)",
+          "entry_number": 3,
+          "approval_date": "06.06.2025"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "AKTERACIJA d.o.o.",
+      "registered_address_as_listed": "Matije Divkovića 67",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 29,
+          "approval_date": "30.08.2016"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "AKTIS PROJEKT d.o.o.",
+      "registered_address_as_listed": "Istarska 42",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "upu_2026-03-20",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_SP_UPU_20_03_2026.pdf",
+          "pdf_date": "2026-03-20",
+          "approval_scope": "Approval to draft urban development plans (UPU)",
+          "entry_number": 5,
+          "approval_date": "14.09.2018"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "APE d.o.o.",
+      "registered_address_as_listed": "Ozaljska 61",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 4,
+          "approval_date": "01.02.2016"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "APE d.o.o.",
+      "registered_address_as_listed": "Kutnjački put 11",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 4,
+          "approval_date": "01.02.2016"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "ARHEO d.o.o.",
+      "registered_address_as_listed": "Vinogradi, I. odvojak 6",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 6,
+          "approval_date": "21.07.2017"
+        }
+      ],
+      "status": "address_mismatch_lead",
+      "website": "https://www.arheo.hr/",
+      "website_evidence_url": "https://www.arheo.hr/arheo_kontakt.html",
+      "reason": "The firm’s own site confirms architecture/planning and legal identity but lists Tomislavova 11; MPGI lists Vinogradi, I. odvojak 6. Confirm current legal seat."
+    },
+    {
+      "legal_name_as_listed": "ARHINGTRADE d.o.o.",
+      "registered_address_as_listed": "Gajeva 47",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 8,
+          "approval_date": "28.09.2017"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "ARHITEKTONSKI ATELIER DESET d.o.o.",
+      "registered_address_as_listed": "Kneza Mislava 15",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 10,
+          "approval_date": "30.05.2017"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "ARHITEKTONSKI FAKULTET SVEUČILIŠTA U ZAGREBU",
+      "registered_address_as_listed": "Kačićeva 26",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 11,
+          "approval_date": "15.11.2017"
+        }
+      ],
+      "status": "excluded_nonstudio_or_public_planning_institute",
+      "reason": "The listed entity is a faculty or public/private planning institute rather than an architecture studio; retained as a source lead for completeness."
+    },
+    {
+      "legal_name_as_listed": "ARHITEKTURA I GRADITELJSTVO MATAS d.o.o.",
+      "registered_address_as_listed": "III. Cvjetno naselje 23",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "upu_2026-03-20",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_SP_UPU_20_03_2026.pdf",
+          "pdf_date": "2026-03-20",
+          "approval_scope": "Approval to draft urban development plans (UPU)",
+          "entry_number": 16,
+          "approval_date": "06.03.2018"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "DIA POZITIVA d.o.o.",
+      "registered_address_as_listed": "IV. Trnjanske ledine 3",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "upu_2026-03-20",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_SP_UPU_20_03_2026.pdf",
+          "pdf_date": "2026-03-20",
+          "approval_scope": "Approval to draft urban development plans (UPU)",
+          "entry_number": 24,
+          "approval_date": "02.12.2021"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "DIV CONSULT d.o.o.",
+      "registered_address_as_listed": "Jadranska ulica 8",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 20,
+          "approval_date": "05.02.2019"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "EKOMENA d.o.o.",
+      "registered_address_as_listed": "Krajiška ulica 30",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 21,
+          "approval_date": "09.03.2023"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "FORMA STUDIO d.o.o.",
+      "registered_address_as_listed": "Tina Ujevića 24",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "upu_2026-03-20",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_SP_UPU_20_03_2026.pdf",
+          "pdf_date": "2026-03-20",
+          "approval_scope": "Approval to draft urban development plans (UPU)",
+          "entry_number": 25,
+          "approval_date": "12.07.2017"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "GLOBAL CONNECT d.o.o.",
+      "registered_address_as_listed": "Srebrnjak 126",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 27,
+          "approval_date": "08.09.2022"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "GORAN KARLOVIĆ j.d.o.o.",
+      "registered_address_as_listed": "Grada Chicaga 28",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 29,
+          "approval_date": "30.08.2016"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "GRAĐEVINSKI FAKULTET SVEUČILIŠTA U ZAGREBU",
+      "registered_address_as_listed": "Kačićeva 26",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 30,
+          "approval_date": "19.12.2017"
+        }
+      ],
+      "status": "excluded_nonstudio_or_public_planning_institute",
+      "reason": "The listed entity is a faculty or public/private planning institute rather than an architecture studio; retained as a source lead for completeness."
+    },
+    {
+      "legal_name_as_listed": "GRGUREVIĆ & PARTNERI d.o.o.",
+      "registered_address_as_listed": "Čanićeva 6",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 31,
+          "approval_date": "18.07.2017"
+        }
+      ],
+      "status": "identity_and_practice_secondary_lead",
+      "website": "https://www.grgurevic.com/",
+      "reason": "An official government supplier page advertises this firm’s architecture/planning practice and address, but the firm’s own site could not be verified as accessible."
+    },
+    {
+      "legal_name_as_listed": "HB format d.o.o.",
+      "registered_address_as_listed": "Ulica kneza Trpimira 11",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "upu_2026-03-20",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_SP_UPU_20_03_2026.pdf",
+          "pdf_date": "2026-03-20",
+          "approval_scope": "Approval to draft urban development plans (UPU)",
+          "entry_number": 29,
+          "approval_date": "10.02.2021"
+        }
+      ],
+      "status": "address_mismatch_lead",
+      "website": "https://hbformat.hr/",
+      "website_evidence_url": "https://hbformat.hr/",
+      "reason": "The firm’s own site confirms HB format d.o.o. but gives Vrbik 8a as office, while the MPGI list gives Ulica kneza Trpimira 11."
+    },
+    {
+      "legal_name_as_listed": "HRVATSKI ZAVOD ZA PROSTORNI RAZVOJ",
+      "registered_address_as_listed": "Ulica Republike Austrije 20",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 32,
+          "approval_date": "01.02.2016"
+        }
+      ],
+      "status": "excluded_nonstudio_or_public_planning_institute",
+      "reason": "The listed entity is a faculty or public/private planning institute rather than an architecture studio; retained as a source lead for completeness."
+    },
+    {
+      "legal_name_as_listed": "HUMAN DESIGN j.d.o.o.",
+      "registered_address_as_listed": "Vinkovačka ulica 30/1",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "upu_2026-03-20",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_SP_UPU_20_03_2026.pdf",
+          "pdf_date": "2026-03-20",
+          "approval_scope": "Approval to draft urban development plans (UPU)",
+          "entry_number": 30,
+          "approval_date": "16.10.2025"
+        }
+      ],
+      "status": "identity_conflict_lead",
+      "reason": "The same named company/address is classified in public company data as temporary employment / installation activity, despite this planning approval and an HKA-associated member listing. Verify OIB and entity identity before inclusion.",
+      "conflict_evidence_url": "https://www.companywall.hr/tvrtka/human-design-jdoo/MMT5GtA0"
+    },
+    {
+      "legal_name_as_listed": "INSTITUT IGH d.d.",
+      "registered_address_as_listed": "Janka Rakuše 1",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 35,
+          "approval_date": "20.09.2016"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "INTERDIS d.o.o.",
+      "registered_address_as_listed": "Ulica grada Vukovara 237",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 36,
+          "approval_date": "17.02.2025"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "JURCON PROJEKT d.o.o.",
+      "registered_address_as_listed": "Gotalovečka 4a",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 40,
+          "approval_date": "05.07.2017"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "LIPOVAC I PARTNERI d.o.o.",
+      "registered_address_as_listed": "Zagrebačka cesta 143A",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 43,
+          "approval_date": "11.10.2024"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "LOG-URBIS d.o.o.",
+      "registered_address_as_listed": "Ilica 104/2",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 44,
+          "approval_date": "13.12.2023"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "MOBILITA EVOLVA d.o.o.",
+      "registered_address_as_listed": "Froudeova 5",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "upu_2026-03-20",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_SP_UPU_20_03_2026.pdf",
+          "pdf_date": "2026-03-20",
+          "approval_scope": "Approval to draft urban development plans (UPU)",
+          "entry_number": 37,
+          "approval_date": "31.05.2019"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "PLANOTEKA d.o.o.",
+      "registered_address_as_listed": "Petrovaradinska 1b",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "upu_2026-03-20",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_SP_UPU_20_03_2026.pdf",
+          "pdf_date": "2026-03-20",
+          "approval_scope": "Approval to draft urban development plans (UPU)",
+          "entry_number": 42,
+          "approval_date": "15.11.2017"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "SPACEBOOK j.d.o.o.",
+      "registered_address_as_listed": "Krajiška 10",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 55,
+          "approval_date": "30.11.2018"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "Studio Ad modum d.o.o.",
+      "registered_address_as_listed": "Papova ulica 10",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "upu_2026-03-20",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_SP_UPU_20_03_2026.pdf",
+          "pdf_date": "2026-03-20",
+          "approval_scope": "Approval to draft urban development plans (UPU)",
+          "entry_number": 46,
+          "approval_date": "11.09.2025"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "STUDIO FM ARHITEKTURA d.o.o.",
+      "registered_address_as_listed": "Nova cesta 119",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "upu_2026-03-20",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_SP_UPU_20_03_2026.pdf",
+          "pdf_date": "2026-03-20",
+          "approval_scope": "Approval to draft urban development plans (UPU)",
+          "entry_number": 49,
+          "approval_date": "01.03.2021"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "STUDIO GRRR d.o.o.",
+      "registered_address_as_listed": "Čazmanska 6",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "upu_2026-03-20",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_SP_UPU_20_03_2026.pdf",
+          "pdf_date": "2026-03-20",
+          "approval_scope": "Approval to draft urban development plans (UPU)",
+          "entry_number": 50,
+          "approval_date": "09.03.2018"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "STUDIO OWL d.o.o.",
+      "registered_address_as_listed": "Vlaška 81A",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "upu_2026-03-20",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_SP_UPU_20_03_2026.pdf",
+          "pdf_date": "2026-03-20",
+          "approval_scope": "Approval to draft urban development plans (UPU)",
+          "entry_number": 52,
+          "approval_date": "22.01.2021"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "TEH – GRADNJA d.o.o.",
+      "registered_address_as_listed": "Ulica Ksenije Kantoci 3",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "upu_2026-03-20",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_SP_UPU_20_03_2026.pdf",
+          "pdf_date": "2026-03-20",
+          "approval_scope": "Approval to draft urban development plans (UPU)",
+          "entry_number": 53,
+          "approval_date": "10.02.2023"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "URBAN DESIGN d.o.o.",
+      "registered_address_as_listed": "Kneza Mislava 12",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 60,
+          "approval_date": "29.09.2017"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "URBANE TEHNIKE d.o.o.",
+      "registered_address_as_listed": "Vrbik 8a",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 62,
+          "approval_date": "06.09.2017"
+        }
+      ],
+      "status": "architecture_practice_address_unverified",
+      "website": "https://www.u-t.hr/site2/index.html",
+      "website_evidence_url": "https://www.u-t.hr/site2/index.html",
+      "reason": "The firm’s own site confirms architecture and spatial planning but the site did not expose a public address/legal entity block in accessible content; an official/financial listing separately gives Vrbik 8a."
+    },
+    {
+      "legal_name_as_listed": "URBANISTICA d.o.o.",
+      "registered_address_as_listed": "Đorđićeva 5",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 64,
+          "approval_date": "30.08.2016"
+        }
+      ],
+      "status": "address_mismatch_lead",
+      "website": "https://www.urbanistica.hr/",
+      "website_evidence_url": "https://www.urbanistica.hr/kontakt.php",
+      "reason": "The company’s own site/HKA evidence show Gajeva 2a while the MPGI list says Đorđićeva 5; confirm current legal address."
+    },
+    {
+      "legal_name_as_listed": "URBANISTIČKI INSTITUT HRVATSKE d.o.o.",
+      "registered_address_as_listed": "Frane Petrića 4",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 65,
+          "approval_date": "03.02.2017"
+        }
+      ],
+      "status": "excluded_nonstudio_or_public_planning_institute",
+      "reason": "The listed entity is a faculty or public/private planning institute rather than an architecture studio; retained as a source lead for completeness."
+    },
+    {
+      "legal_name_as_listed": "URBING d.o.o.",
+      "registered_address_as_listed": "Gomboševa 34",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 69,
+          "approval_date": "17.07.2017"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "URBING d.o.o.",
+      "registered_address_as_listed": "Ulica Mije Sinkovića 3",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 69,
+          "approval_date": "17.07.2017"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "XYZ ARHITEKTURA d.o.o.",
+      "registered_address_as_listed": "Knežija 7",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "upu_2026-03-20",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_SP_UPU_20_03_2026.pdf",
+          "pdf_date": "2026-03-20",
+          "approval_scope": "Approval to draft urban development plans (UPU)",
+          "entry_number": 60,
+          "approval_date": "15.07.2024"
+        }
+      ],
+      "status": "inactive_bankruptcy_lead",
+      "reason": "Current public business-status search indicates the company is in bankruptcy; do not treat as an active studio without a current register check.",
+      "status_evidence_url": "https://www.reputacija.hr/tvrtka/xyz-arhitektura"
+    },
+    {
+      "legal_name_as_listed": "ZAVOD ZA PROSTORNO UREĐENJE GRADA ZAGREBA",
+      "registered_address_as_listed": "Ulica Republike Austrije 18",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 77,
+          "approval_date": "02.02.2016"
+        }
+      ],
+      "status": "excluded_nonstudio_or_public_planning_institute",
+      "reason": "The listed entity is a faculty or public/private planning institute rather than an architecture studio; retained as a source lead for completeness."
+    },
+    {
+      "legal_name_as_listed": "ZAVOD ZA PROSTORNO UREĐENJE ZAGREBAČKE ŽUPANIJE",
+      "registered_address_as_listed": "Ulica grada Vukovara 72",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 92,
+          "approval_date": "31.03.2017"
+        }
+      ],
+      "status": "excluded_nonstudio_or_public_planning_institute",
+      "reason": "The listed entity is a faculty or public/private planning institute rather than an architecture studio; retained as a source lead for completeness."
+    },
+    {
+      "legal_name_as_listed": "ZG-PROJEKT d.o.o.",
+      "registered_address_as_listed": "Đorđićeva 24",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 94,
+          "approval_date": "07.03.2019"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "ZONA KVADRAT d.o.o.",
+      "registered_address_as_listed": "Prilaz zagrebačkoj cesti 5",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 95,
+          "approval_date": "21.03.2018"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "ZONA KVADRAT j.d.o.o.",
+      "registered_address_as_listed": "Veliko polje, Prilaz zagrebačkoj cesti 5",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "upu_2026-03-20",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_SP_UPU_20_03_2026.pdf",
+          "pdf_date": "2026-03-20",
+          "approval_scope": "Approval to draft urban development plans (UPU)",
+          "entry_number": 61,
+          "approval_date": "24.10.2016"
+        }
+      ],
+      "status": "unverified_lead"
+    },
+    {
+      "legal_name_as_listed": "ZONA STO d.o.o.",
+      "registered_address_as_listed": "Frana Petrića 4",
+      "city_scope": "Zagreb City per PDF locality label; district/locality detail retained as listed",
+      "source_entries": [
+        {
+          "authority": "MPGI",
+          "pdf_key": "all_spatial_2026-06-05",
+          "pdf_url": "https://mpgi.gov.hr/UserDocsImages/dokumenti/Prostorno/Popisi/Popis_svi_SP_PU_05_06_2026.pdf",
+          "pdf_date": "2026-06-05",
+          "approval_scope": "Approval for all professional spatial-planning work",
+          "entry_number": 96,
+          "approval_date": "03.02.2017"
+        }
+      ],
+      "status": "unverified_lead"
+    }
+  ]
+}

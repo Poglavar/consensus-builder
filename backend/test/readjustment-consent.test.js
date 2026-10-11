@@ -9,12 +9,15 @@ import { createContext, runInContext } from 'node:vm';
 const require = createRequire(import.meta.url);
 const deal = require('../../frontend/js/reparcellization-deal.js');
 const approval = require('../../frontend/js/proposals/approval.js');
+const ownership = require('../../frontend/js/reparcellization-ownership.js');
+const turf = require('@turf/turf');
 const source = readFileSync(new URL('../../frontend/js/proposals/execution.js', import.meta.url), 'utf8');
 const coreSource = readFileSync(new URL('../../frontend/js/proposals/core.js', import.meta.url), 'utf8');
 const approvalSource = readFileSync(new URL('../../frontend/js/proposals/approval.js', import.meta.url), 'utf8');
 const providerSource = readFileSync(new URL('../../frontend/js/proposals/approval-providers.js', import.meta.url), 'utf8');
 const runtimeSource = readFileSync(new URL('../../frontend/js/proposals/approval-runtime.js', import.meta.url), 'utf8');
 const shaSource = readFileSync(new URL('../../frontend/vendor/noble-hashes-1.8.0/sha256.js', import.meta.url), 'utf8');
+const validationSource = readFileSync(new URL('../../frontend/js/reparcellization-validation.js', import.meta.url), 'utf8');
 const geometry = { type: 'Polygon', coordinates: [[[1, 1], [2, 1], [2, 2], [1, 2], [1, 1]]] };
 const signingSecret = 'test-only owner decision key';
 
@@ -60,6 +63,7 @@ function fixture() {
         getProposalI18nHelper: () => (_key, fallback) => fallback,
         getCurrentUserAgent: () => currentActor,
         getProposalNftInfo: () => nftInfo,
+        turf,
         getLifecycleStatus: proposalValue => proposalValue.lifecycleStatus,
         isProposalExpired: () => false,
         proposalStorage: {
@@ -82,6 +86,9 @@ function fixture() {
     context.window = context;
     runInContext(shaSource, context);
     runInContext(approvalSource, context);
+    context.ReparcellizationOwnership = ownership;
+    context.ReparcellizationDeal = deal;
+    runInContext(validationSource, context);
     runInContext(providerSource, context);
     runInContext(runtimeSource, context);
     context.ReparcellizationDeal = deal;
@@ -92,6 +99,7 @@ function fixture() {
 
     const sign = statement => createHmac('sha256', signingSecret)
         .update(approval.stableStringify(statement), 'utf8').digest('hex');
+    const signDecision = vi.fn(async ({ statement }) => sign(statement));
     context.ProposalApprovalAuthorities.register('test-lens-signer', {
         authorize: ({ ownerId, actor, contextHash }) => {
             if (actor?.id !== ownerId) return null;
@@ -100,11 +108,11 @@ function fixture() {
                 authority: { contextHash, member: 'court-member-a', evidenceRef: `authority:${ownerId}`, ownerId, actorId: actor.id }
             };
         },
-        signDecision: async ({ statement }) => sign(statement),
+        signDecision,
         verifyReceipt: ({ receipt, statement }) => receipt.decisionProof === sign(statement)
     });
     return {
-        context, proposal, saves, showAlert, bridge,
+        context, proposal, saves, showAlert, bridge, signDecision,
         setActor(actor) { currentActor = actor; },
         setNft(value) { nftInfo = value; }
     };
@@ -207,5 +215,36 @@ describe('fixed readjustment consent', () => {
         expect(showAlert).toHaveBeenCalledWith(expect.stringContaining('Complete and correct'), expect.anything());
         expect(bridge.acceptProposal).not.toHaveBeenCalled();
         expect(proposal.ownerApprovals).toBeUndefined();
+    });
+
+    it('rejects invalid geometry before invoking an approval signer', async () => {
+        const { context, proposal, signDecision, showAlert, setActor } = fixture();
+        setActor({ id: 'owner-a', name: 'Alice Example' });
+        proposal.reparcellization.polygons[0].geometry = {
+            type: 'Polygon', coordinates: [[[1, 1], [2, 2], [2, 1], [1, 2], [1, 1]]]
+        };
+
+        await context.handleUserAcceptProposal(proposal.proposalId, 'base-a', 'owner-a');
+
+        expect(signDecision).not.toHaveBeenCalled();
+        expect(proposal.ownerApprovals).toBeUndefined();
+        expect(showAlert).toHaveBeenCalledWith(expect.stringContaining('Complete and correct'), expect.anything());
+    });
+
+    it('records valid positive-cash approvals but does not execute while funding is unspecified', async () => {
+        const { context, proposal, setActor } = fixture();
+        delete proposal.funded;
+
+        setActor({ id: 'owner-a', name: 'Alice Example' });
+        const first = await context.acceptProposal(proposal.proposalId, 'base-a', 'owner-a');
+        expect(first).toMatchObject({ ownerAccepted: true, proposalExecuted: false });
+
+        setActor({ id: 'owner-b', name: 'Bob Example' });
+        const final = await context.acceptProposal(proposal.proposalId, 'base-b', 'owner-b');
+
+        expect(final).toMatchObject({ ownerAccepted: true, proposalExecuted: false });
+        expect(proposal.lifecycleStatus).toBe('Active');
+        expect(proposal.executedAt).toBeUndefined();
+        expect(context.autoApplyExecutedProposalToMap).not.toHaveBeenCalled();
     });
 });

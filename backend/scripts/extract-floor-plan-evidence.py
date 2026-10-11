@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Find deterministic wall and alternating scale-bar candidates in a clean plan raster."""
+"""Find deterministic wall and printed scale-bar candidates in a clean plan raster."""
 import argparse
 import json
 from pathlib import Path
@@ -75,7 +75,7 @@ def scale_candidates(gray):
     bars = []
     for x, y, w, h, area, _ in components(opened, min_area=8):
         if h <= 3 and w >= 8:
-            bars.append((x, y + (h-1)/2, w))
+            bars.append((x, y + (h-1)/2, w, y, h))
     bars.sort(key=lambda b: (b[1], b[0]))
     groups = []
     used = set()
@@ -104,6 +104,30 @@ def scale_candidates(gray):
         results.append({'a': [int(start), round(float(np.median([b[1] for b in group])), 2)],
                         'b': [int(end), round(float(np.median([b[1] for b in group])), 2)],
                         'intervals': len(group)*2-1})
+    # A connected thin baseline with regular printed ticks is another common
+    # scale-bar form. The raster may alternate dark and pale intervals on one
+    # connected line, so the disconnected-bar search above cannot see it.
+    for x, _, w, y, h in bars:
+        if w < 80 or h > 3:
+            continue
+        end = x+w-1
+        for strip in (gray[max(0, y-4):y, x:x+w], gray[y+h:min(gray.shape[0], y+h+4), x:x+w]):
+            if strip.shape[0] < 2:
+                continue
+            profile = np.count_nonzero(strip < 180, axis=0) >= 2
+            edges = np.diff(np.r_[False, profile, False].astype(np.int8))
+            starts, stops = np.flatnonzero(edges == 1), np.flatnonzero(edges == -1)
+            ticks = [x + (int(a)+int(b)-1)/2 for a, b in zip(starts, stops) if b-a <= 5]
+            if not (5 <= len(ticks) <= 16):
+                continue
+            spacings = np.diff(ticks)
+            if (ticks[0]-x > 3 or end-ticks[-1] > 3 or
+                    spacings.min() < 12 or spacings.max() > spacings.min()*1.15):
+                continue
+            center = round(y+(h-1)/2, 2)
+            results.append({'a': [int(x), center], 'b': [int(end), center],
+                            'intervals': len(ticks)-1})
+            break
     # Equal endpoints from overlapping runs are one candidate.
     unique = {}
     for item in results:

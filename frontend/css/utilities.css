@@ -2295,7 +2295,6 @@ button.status-log-message {
     position: fixed;
     right: 10px;
     bottom: var(--map-shell-bottom-clearance);
-    background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(3px);
     border: 1px solid #ccc;
     border-radius: 12px;
@@ -2314,10 +2313,7 @@ button.status-log-message {
     flex-direction: column;
 }
 
-/* Desktop: nearly full screen height. Declared ONLY here, so on mobile the panel keeps the shared
-   bottom-sheet policy (half the screen, collapsible) instead of overriding it back to full height.
-   769px rather than 768px: the mobile block below is `max-width: 768px`, and the two used to both
-   match at exactly 768px. */
+/* Desktop details share the map dock. Phones use the full viewport in proposal-details.css. */
 @media (min-width: 768px) {
     #proposal-details-panel {
         top: var(--map-shell-top-clearance);
@@ -2444,8 +2440,8 @@ button.status-log-message {
 
 /* Mobile panel as bottom sheet */
 @media (max-width: 767.98px) {
-    .info-panel {
-        left: 0 !important;
+    .info-panel:not(#proposal-details-panel) {
+        left: var(--info-panel-mobile-inset, 0) !important;
         right: 0 !important;
         top: auto !important;
         /* Above the bottom bar (Proposals · Tools · Activity), so the bar stays reachable while a
@@ -2459,11 +2455,10 @@ button.status-log-message {
         box-sizing: border-box;
     }
 
-    /* The docked sheets (parcel, proposal, road) run edge to edge. The mode strip now sits at the
-       top-left under the search box (it used to be bottom-left), so a half-height sheet no longer
-       covers it; the inset it needed is gone. */
-    .info-panel.right-dock-panel {
-        left: 0 !important;
+    /* Docked sheets run edge to edge by default. An active editor can reserve the view strip
+       through --info-panel-mobile-inset without fighting these shared positioning rules. */
+    .info-panel.right-dock-panel:not(#proposal-details-panel) {
+        left: var(--info-panel-mobile-inset, 0) !important;
         border-radius: 12px;
     }
 
@@ -2476,10 +2471,6 @@ button.status-log-message {
         max-width: 100% !important;
     }
     
-    /* Proposal details follows the same bottom-sheet policy as every other right-dock panel on
-       mobile — full width, half the screen, collapsible — instead of staying a 400px right-docked
-       column. Handled entirely by .info-panel + .right-dock-panel; nothing to override here. */
-
     .info-panel .close-button {
         top: 12px;
         right: 12px;
@@ -2827,6 +2818,13 @@ input:checked+.slider:before {
 .ens-name-chip:hover { background: #4f46e5; }
 .ens-name-chip:visited { color: #fff; }
 .ens-name-value {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+    text-align: left;
+    cursor: pointer;
     flex: 1 1 auto;
     min-width: 0;
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;

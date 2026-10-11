@@ -83,6 +83,28 @@ test.describe('Layers sheet behavior @features', () => {
     await page.locator('#showAdParcelsCheckbox').check();
     await expect.poll(() => page.evaluate(() => (window as any).ParcelsAdParcels.getAdParcelIds().has('HR-335754-1234'))).toBe(true);
     await expect.poll(() => page.evaluate(id => (window as any).ParcelPresenter.getLayer(id).options.fillColor, PARCEL_ID)).not.toBe(parcelStyleBeforeAd);
+
+    await page.locator('#layers-sheet [data-sheet-close]').click();
+    await openParcel(page);
+    await page.locator('.parcel-ad-link-btn').click();
+    const adActions = page.locator('#parcel-ad-dialog');
+    await expect(adActions).toBeVisible();
+    const adUrl = 'https://example.invalid/fixture-ad';
+    const builderUrl = await page.evaluate(() => (window as any).CityConfigManager.getParcelBuilderConfig().url);
+    for (const [name, url] of [['Marketplace', adUrl], ['Parcel builder', builderUrl]]) {
+      // Returning from an external tab can refresh the parcel panel and close its popover.
+      if (!(await adActions.isVisible())) await page.locator('.parcel-ad-link-btn').click();
+      await page.context().route(`${url}**`, route => route.fulfill({ contentType: 'text/html', body: '<title>External destination fixture</title>' }));
+      const opened = page.context().waitForEvent('page');
+      await adActions.getByRole('button', { name, exact: true }).click();
+      const child = await opened;
+      await child.waitForURL(actual => actual.href.startsWith(url));
+      if (name === 'Parcel builder') expect(new URL(child.url()).searchParams.get('parcel_identifier')).toBe('1234-335754');
+      await child.close();
+    }
+    if (!(await adActions.isVisible())) await page.locator('.parcel-ad-link-btn').click();
+    await page.locator('.parcel-ad-link-btn').click();
+    await expect(adActions).toBeHidden();
   });
 
   test('building and road reference layers load real features on checkbox clicks', async ({ mockApi: page }) => {

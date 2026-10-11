@@ -69,6 +69,20 @@ describe('LR publication commitment', () => {
         expect(pool.getCalls()).toEqual([]);
     });
 
+    it('rejects geometry outside the declared take before writing a publication row', async () => {
+        const { pool, app } = appFixture();
+        const body = proposal();
+        body.reparcellization.poolGeometry = {
+            type: 'Polygon', coordinates: [[[1, 1], [1.0005, 1], [1.0005, 1.001], [1, 1.001], [1, 1]]]
+        };
+
+        const res = await request(app).post('/proposals').send(body);
+
+        expect(res.status).toBe(422);
+        expect(res.body.code).toBe('invalid-readjustment-deal');
+        expect(pool.getCalls()).toEqual([]);
+    });
+
     it('uses normalized EUR aliases and expiry consistently in the stored commitment', async () => {
         const { pool, app } = appFixture();
         const body = proposal();

@@ -105,8 +105,10 @@ function makeManager() {
 // The plan: plot 1 = west half of HR-A (unchanged), plot 2 = east HR-A + all HR-B (spans both).
 function planPolygons() {
     return [
-        { geometry: rect(0, 0, 1, 2), ownerKey: null, displayName: 'One' },
-        { geometry: rect(1, 0, 4, 2), ownerKey: null, displayName: 'Two' }
+        // Application validates a complete ownership allocation before replaying a plan.
+        // These characterization fixtures use the same owner; geometry/provenance is the subject.
+        { geometry: rect(0, 0, 1, 2), ownerKey: 'owner-a', displayName: 'One' },
+        { geometry: rect(1, 0, 4, 2), ownerKey: 'owner-a', displayName: 'Two' }
     ];
 }
 

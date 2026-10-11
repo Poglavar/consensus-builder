@@ -186,7 +186,8 @@
         const replacementIds = [...(change.addedIds || []), ...(change.updatedIds || [])];
         let sliceStarted = clock();
         for (const requestedId of replacementIds) {
-            const feature = draftView?.get?.(requestedId);
+            // buildLayer makes the presenter's owned copy; reading the frozen draft avoids a second copy.
+            const feature = draftView.peek(requestedId);
             if (!feature) throw new Error(`Fabric draft has no feature for presenter replacement ${requestedId}.`);
             const id = featureId(feature);
             replacements.set(id, buildLayer(feature));

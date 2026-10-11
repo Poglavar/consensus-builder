@@ -2,6 +2,7 @@
 import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import proj4 from 'proj4';
 import { HttpError } from '../utils/helpers.js';
+import { concatBytes } from './byte-utils.js';
 import { upstreamError, providerHttpError, validateBounds, validateGeometry, canonicalParcelFeature, createParcelAttributeFilter } from './source-contract.js';
 
 const sourceRequestQueues = new Map();
@@ -124,7 +125,7 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
                 if (bytes > maxResponseBytes) throw upstreamError('WFS provider exceeded the response byte limit.');
                 chunks.push(value);
             }
-            return JSON.parse(Buffer.concat(chunks).toString('utf8'));
+            return JSON.parse(new TextDecoder('utf-8').decode(concatBytes(chunks)));
         } finally {
             await reader.cancel().catch(() => {});
             reader.releaseLock();

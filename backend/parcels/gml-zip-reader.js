@@ -1,6 +1,5 @@
 // Select GML by verified ZIP offsets, never by signatures inside compressed publisher data.
-import { Readable } from 'node:stream';
-import { createInflateRaw } from 'node:zlib';
+import { Inflate } from 'fflate';
 import { upstreamError } from './source-contract.js';
 import { CATASTRO_ATOM_PROFILE } from './catastro-atom-profile.js';
 
@@ -97,24 +96,43 @@ export async function* readGmlZipMember(bytes, limit, signal, profile) {
             yield bytes.subarray(i, Math.min(i + 65536, member.start + member.compressed));
         }
     }
-    const input = member.method === 8 ? Readable.from(compressedChunks()) : null;
-    const inflate = member.method === 8 ? createInflateRaw({ chunkSize: 65536 }) : null;
-    const output = inflate ? input.pipe(inflate) : compressedChunks();
     let total = 0, crc = 0xffffffff;
-    try {
-        for await (const data of output) {
+    if (member.method === 0) {
+        for (const data of compressedChunks()) {
             if (signal?.aborted) fail('Parcel archive load aborted.');
             total += data.byteLength;
             if (total > limit || total > member.size) fail('Parcel ZIP decompressed size exceeds limit.');
             for (const byte of data) crc = crcTable[(crc ^ byte) & 255] ^ (crc >>> 8);
             yield data;
         }
-        if (inflate && inflate.bytesWritten !== member.compressed) fail('Parcel ZIP compressed member has trailing bytes.');
-        if (total !== member.size || ((crc ^ 0xffffffff) >>> 0) !== member.crc) fail('Parcel ZIP decompressed size or checksum is inconsistent.');
-    } catch (error) {
-        if (error.status) throw error;
-        fail('Invalid or incomplete parcel ZIP member.');
-    } finally {
-        input?.destroy(); inflate?.destroy();
+    } else {
+        let queued = [], completed = false;
+        const inflate = new Inflate((data, final) => {
+            if (completed) fail('Parcel ZIP compressed member has trailing bytes.');
+            total += data.byteLength;
+            if (total > limit || total > member.size) fail('Parcel ZIP decompressed size exceeds limit.');
+            for (const byte of data) crc = crcTable[(crc ^ byte) & 255] ^ (crc >>> 8);
+            queued.push(data);
+            completed = final;
+        });
+        try {
+            for (const chunk of compressedChunks()) {
+                if (signal?.aborted) fail('Parcel archive load aborted.');
+                // Small input steps bound queued output while preserving streaming to the caller.
+                for (let i = 0; i < chunk.length; i += 1024) {
+                    inflate.push(chunk.subarray(i, Math.min(i + 1024, chunk.length)), false);
+                    for (const data of queued) yield data;
+                    queued = [];
+                }
+            }
+            inflate.push(new Uint8Array(0), true);
+            for (const data of queued) yield data;
+            // fflate retains unconsumed input in p; completed streams must consume the full member.
+            if (!completed || inflate.p.length !== (inflate.s.p ? 1 : 0)) fail('Parcel ZIP compressed member has trailing bytes or is incomplete.');
+        } catch (error) {
+            if (error.status) throw error;
+            fail('Invalid or incomplete parcel ZIP member.');
+        }
     }
+    if (total !== member.size || ((crc ^ 0xffffffff) >>> 0) !== member.crc) fail('Parcel ZIP decompressed size or checksum is inconsistent.');
 }

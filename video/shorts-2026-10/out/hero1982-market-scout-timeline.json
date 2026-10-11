@@ -1,0 +1,240 @@
+{
+  "id": "hero1982-market-scout",
+  "title": "hero1982: The Information Edge",
+  "format": "9:16",
+  "voiceName": "Chris - Charming, Down-to-Earth (stock voice)",
+  "targetSeconds": [
+    90,
+    120
+  ],
+  "disclosure": "Illustrative devnet walkthrough. Election and council-document scenarios are hypothetical. No investment returns are guaranteed.",
+  "wordCount": 248,
+  "scenes": [
+    {
+      "id": "planet",
+      "startSeconds": 0,
+      "audioSeconds": 9.102,
+      "durationSeconds": 9.652,
+      "narration": "Hero nineteen eighty-two is an AI bot. His job is to find opportunities for his owner. He crawls the web, looking for information the market has missed.",
+      "visual": "Actual UGT planet or global map view. Start wide, then move toward a city; do not add fake proposal markers."
+    },
+    {
+      "id": "proposal-list",
+      "startSeconds": 9.652,
+      "audioSeconds": 10.635,
+      "durationSeconds": 11.185,
+      "narration": "His hunting ground is Urban Game Theory: proposals to build, buy, and transform real places. Each proposal has its own YES and NO betting pool.",
+      "visual": "Actual proposal list and a real proposal card. Keep title, lifecycle, and parcel count legible; do not substitute invented proposal data."
+    },
+    {
+      "id": "three-d",
+      "startSeconds": 20.837,
+      "audioSeconds": 8.499,
+      "durationSeconds": 9.049,
+      "narration": "He opens a proposed apartment block and inspects its site, design, and location. Then he reads planning documents, budgets, and the conditions needed for execution.",
+      "visual": "Actual 3D parcel/block view of the proposed apartment block. Center the selected parcels and include enough surrounding street context to orient the viewer."
+    },
+    {
+      "id": "election-signal",
+      "startSeconds": 29.885,
+      "audioSeconds": 10.031,
+      "durationSeconds": 10.581,
+      "narration": "In our example, most of the stake backs YES. But a newly published council document signals a major delay. The pool still reflects yesterday's optimism.",
+      "visual": "Use the supplied code-drawn concept clip labeled 'ILLUSTRATIVE SCENARIO'. It depicts only a generic council-delay scenario and a research-to-NO decision flow; it is not a source or real council document, and it does not claim any specific proposal is delayed. Do not add a fake source or news card."
+    },
+    {
+      "id": "due-diligence",
+      "startSeconds": 40.466,
+      "audioSeconds": 9.427,
+      "durationSeconds": 9.977,
+      "narration": "Before acting, Hero checks the resolving lens, the deadline, funding, and owner consent. A press release is a lead. He wants evidence tied to this exact proposal.",
+      "visual": "Actual proposal panel showing its resolution lens/evidence and available owner-consent, funds, pledges, or donation information. Show only data the app actually displays."
+    },
+    {
+      "id": "pool-choice",
+      "startSeconds": 50.444,
+      "audioSeconds": 9.752,
+      "durationSeconds": 10.302,
+      "narration": "He estimates the chance of NO, then calculates the potential payout from both pools, including his own stake. He bets only when that expected return is worth the risk.",
+      "visual": "Actual proposal market with YES/NO pools. Keep pool amounts readable; any payout estimate must be clearly a calculation, not a guaranteed return or probability."
+    },
+    {
+      "id": "stake-risk",
+      "startSeconds": 60.746,
+      "audioSeconds": 13.328,
+      "durationSeconds": 13.878,
+      "narration": "Hero takes a small NO position. If the project is cancelled or recorded expired, NO wins. Winners share the pool in proportion to their stakes. If it executes, his bet loses.",
+      "visual": "Actual market stake form or an already existing devnet position. No new wallet transaction is required for capture; do not show a fabricated confirmation."
+    },
+    {
+      "id": "separate-markets",
+      "startSeconds": 74.624,
+      "audioSeconds": 10.867,
+      "durationSeconds": 11.417,
+      "narration": "This is an information edge, not guaranteed arbitrage. Later bets change the payout, and money stays locked until resolution. He limits each position and passes when the evidence is weak.",
+      "visual": "Show the actual proposal market and its current pool information while the narration explains research and risk. Do not imply arbitrage, a shared contract, or guaranteed returns."
+    },
+    {
+      "id": "globe-close",
+      "startSeconds": 86.041,
+      "audioSeconds": 16.161,
+      "durationSeconds": 16.711,
+      "narration": "Then he moves on: another neighbourhood, another proposal, another overlooked signal. The city is changing. Hero nineteen eighty-two is watching. Urban Game Theory. Research the world. Back your prediction.",
+      "visual": "Return to the actual UGT globe or global map and pull back to a broad view. No fabricated data layers."
+    }
+  ],
+  "captions": [
+    {
+      "text": "Hero nineteen eighty-two is an AI bot.",
+      "start": 0,
+      "end": 2.719
+    },
+    {
+      "text": "His job is to find opportunities for his owner.",
+      "start": 2.961,
+      "end": 5.483
+    },
+    {
+      "text": "He crawls the web, looking for information the market has missed.",
+      "start": 5.666,
+      "end": 9.302
+    },
+    {
+      "text": "His hunting ground is Urban Game Theory:",
+      "start": 9.652,
+      "end": 12.128
+    },
+    {
+      "text": "proposals to build, buy, and transform real places.",
+      "start": 12.438,
+      "end": 15.947
+    },
+    {
+      "text": "Each proposal has its own YES and NO betting pool.",
+      "start": 16.444,
+      "end": 20.487
+    },
+    {
+      "text": "He opens a proposed apartment block and inspects its site, design, and location.",
+      "start": 20.837,
+      "end": 24.88
+    },
+    {
+      "text": "Then he reads planning documents, budgets, and the conditions needed for execution.",
+      "start": 25.121,
+      "end": 29.536
+    },
+    {
+      "text": "In our example, most of the stake backs YES.",
+      "start": 29.885,
+      "end": 33.301
+    },
+    {
+      "text": "But a newly published council document signals a major delay.",
+      "start": 33.798,
+      "end": 36.888
+    },
+    {
+      "text": "The pool still reflects yesterday's optimism.",
+      "start": 37.292,
+      "end": 40.116
+    },
+    {
+      "text": "Before acting, Hero checks the resolving lens, the deadline, funding, and owner consent.",
+      "start": 40.466,
+      "end": 45.298
+    },
+    {
+      "text": "A press release is a lead.",
+      "start": 45.609,
+      "end": 47.051
+    },
+    {
+      "text": "He wants evidence tied to this exact proposal.",
+      "start": 47.177,
+      "end": 50.093
+    },
+    {
+      "text": "He estimates the chance of NO, then calculates the potential payout from both pools, including his own stake.",
+      "start": 50.444,
+      "end": 56.646
+    },
+    {
+      "text": "He bets only when that expected return is worth the risk.",
+      "start": 57.143,
+      "end": 60.396
+    },
+    {
+      "text": "Hero takes a small NO position.",
+      "start": 60.746,
+      "end": 63.001
+    },
+    {
+      "text": "If the project is cancelled or recorded expired, NO wins.",
+      "start": 63.312,
+      "end": 67.32
+    },
+    {
+      "text": "Winners share the pool in proportion to their stakes.",
+      "start": 67.724,
+      "end": 70.884
+    },
+    {
+      "text": "If it executes, his bet loses.",
+      "start": 71.195,
+      "end": 74.274
+    },
+    {
+      "text": "This is an information edge, not guaranteed arbitrage.",
+      "start": 74.624,
+      "end": 77.889
+    },
+    {
+      "text": "Later bets change the payout, and money stays locked until resolution.",
+      "start": 78.293,
+      "end": 82.034
+    },
+    {
+      "text": "He limits each position and passes when the evidence is weak.",
+      "start": 82.438,
+      "end": 85.691
+    },
+    {
+      "text": "Then he moves on:",
+      "start": 86.041,
+      "end": 87.123
+    },
+    {
+      "text": "another neighbourhood, another proposal, another overlooked signal.",
+      "start": 87.527,
+      "end": 91.651
+    },
+    {
+      "text": "The city is changing.",
+      "start": 92.148,
+      "end": 93.625
+    },
+    {
+      "text": "Hero nineteen eighty-two is watching.",
+      "start": 94.122,
+      "end": 96.469
+    },
+    {
+      "text": "Urban Game Theory.",
+      "start": 96.966,
+      "end": 98.478
+    },
+    {
+      "text": "Research the world.",
+      "start": 98.975,
+      "end": 100.452
+    },
+    {
+      "text": "Back your prediction.",
+      "start": 100.948,
+      "end": 102.402
+    }
+  ],
+  "durationSeconds": 102.752,
+  "audioFile": "out/hero1982-market-scout-narration.mp3"
+}

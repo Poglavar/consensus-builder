@@ -4,6 +4,7 @@ import importlib.util
 import json
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -54,6 +55,111 @@ def write_valid_artifacts(root: Path, code="10000"):
 
 
 class QualificationRunnerTests(unittest.TestCase):
+    def test_direct_worker_does_not_invoke_llm(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            request = root / "worker-request.json"
+            request.write_text(json.dumps({"phase": "direct"}))
+            with patch.object(runner, "_direct_worker_main", return_value=0) as direct, \
+                    patch.object(runner, "_llm_worker_main", side_effect=AssertionError("LLM must not run")):
+                self.assertEqual(runner._worker_main(request, root / "answer.json"), 0)
+            direct.assert_called_once()
+
+    def test_direct_subprocess_failure_routes_to_exception_work_without_losing_city(self):
+        with tempfile.TemporaryDirectory() as temp:
+            attempt = Path(temp) / "attempt-01"
+            attempt.mkdir()
+            request, answer = attempt / "worker-request.json", attempt / "worker-answer.json"
+            request.write_text(json.dumps({"phase": "direct", "cityCode": "10000"}))
+            with patch.object(runner, "_direct_worker_main", side_effect=TimeoutError):
+                self.assertEqual(runner._worker_main(request, answer), 0)
+            output = json.loads(answer.read_text())
+            self.assertEqual(output["data"]["status"], "needs-llm")
+            self.assertEqual(output["data"]["cityCode"], "10000")
+            self.assertTrue((attempt / "direct-error.json").is_file())
+
+    def test_successful_subprocess_exit_without_verified_artifacts_never_qualifies(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            attempt = root / "attempt-01"
+            attempt.mkdir()
+            request, answer = attempt / "worker-request.json", attempt / "worker-answer.json"
+            request.write_text(json.dumps({"phase": "direct", "cityCode": "10000", "repoRoot": str(root)}))
+            with patch.object(runner.subprocess, "run", return_value=SimpleNamespace(returncode=0)):
+                self.assertEqual(runner._direct_worker_main(request, answer), 0)
+            self.assertEqual(json.loads(answer.read_text())["data"]["status"], "needs-llm")
+
+    def test_failed_direct_check_queues_llm_and_retains_evidence(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            queue = root / "queue.json"
+            queue.write_text(json.dumps(queue_records(1)))
+            args = SimpleNamespace(repo_root=str(root), queue=str(queue), source_root=str(root),
+                                   state_dir="state", workers=3, llm_workers=1, max_retries=2)
+            job = runner.Runner(args)
+            job.initialize()
+            city = job.records[0]
+            attempt = job.city_dir(city["cityCode"]) / "attempt-01"
+            attempt.mkdir(parents=True)
+            (attempt / "direct.log").write_text("Exact-ID gate did not pass")
+            answer = attempt / "worker-answer.json"
+            answer.write_text(json.dumps({"executionMode": "direct", "data": {
+                "cityCode": city["cityCode"], "status": "needs-llm", "summary": "Exact-ID gate needs investigation",
+                "evidenceFiles": ["attempt-01/direct.log"]}}))
+            entry = job.state["cities"][city["cityCode"]]
+            entry.update(status="running", phase="direct", attempts=1, phaseAttempts=1)
+            item = {"city": city, "cityDir": attempt.parent, "attemptDir": attempt, "answerPath": answer,
+                    "attempt": 1, "phase": "direct", "process": SimpleNamespace(pid=7)}
+            job._finish_item(item)
+            self.assertEqual(entry["status"], "pending")
+            self.assertEqual(entry["phase"], "llm")
+            self.assertEqual(entry["phaseAttempts"], 0)
+            self.assertEqual(entry["directAttemptDir"], str(attempt))
+            self.assertTrue((attempt / "direct.log").exists())
+            item["phase"] = "llm"
+            with self.assertRaisesRegex(ValueError, "allowed status"):
+                job._verify_worker_answer(item)
+
+    def test_continuous_pool_replaces_fast_direct_worker_while_llm_is_busy(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            queue = root / "queue.json"
+            queue.write_text(json.dumps(queue_records(5)))
+            args = SimpleNamespace(repo_root=str(root), queue=str(queue), source_root=str(root),
+                                   state_dir="state", workers=2, llm_workers=1, max_retries=2, once=False,
+                                   max_turn_minutes=45)
+            ticks = [0]
+            job = runner.Runner(args, clock=lambda: ticks[0], sleep=lambda _seconds: ticks.__setitem__(0, ticks[0]+1))
+            job.initialize()
+            job.state["cities"]["10000"]["phase"] = "llm"
+            started, finished = [], []
+            def start(city):
+                code = city["cityCode"]
+                entry = job.state["cities"][code]
+                phase = entry.get("phase", "direct")
+                end = ticks[0] + (5 if phase == "llm" else 1)
+                process = SimpleNamespace(pid=int(code), returncode=0, poll=lambda: 0 if ticks[0] >= end else None)
+                attempt = job.city_dir(code) / "attempt-01"
+                item = {"city": city, "phase": phase, "process": process, "cityDir": attempt.parent,
+                        "attemptDir": attempt, "started": ticks[0], "resourceHeld": False,
+                        "timedOut": False, "termAt": None}
+                entry.update(status="running", pid=process.pid)
+                job.active[process.pid] = item
+                started.append((code,ticks[0]))
+                return item
+            def finish(item, error=None):
+                self.assertIsNone(error)
+                code = item["city"]["cityCode"]
+                job.state["cities"][code]["status"] = "held"
+                job.active.pop(item["process"].pid)
+                finished.append((code,ticks[0]))
+            job._start, job._finish_item = start, finish
+            job.run_batch()
+            self.assertEqual(len(started), 5)
+            self.assertLess(dict(started)["10003"], dict(finished)["10000"])
+            self.assertLess(dict(started)["10004"], dict(finished)["10000"])
+            self.assertFalse(job.active)
+
     def test_metric_and_nested_check_schema_are_independently_verified(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)

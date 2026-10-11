@@ -1,10 +1,25 @@
 // Strict bounded WFS2 reader for explicitly verified municipal cadastral profiles.
 import { bbox as geometryBbox, booleanIntersects, bboxPolygon, feature as geoFeature } from '@turf/turf';
 import proj4 from 'proj4';
-import { setTimeout as delay } from 'node:timers/promises';
 import { HttpError } from '../utils/helpers.js';
 import { MAPSERVER_GML_SCHEMA, SAXONY_GML_SCHEMA, HESSEN_GML_SCHEMA, POZNAN_GML_SCHEMA, GDANSK_GML_SCHEMA, SOSNOWIEC_GML_SCHEMA, NORWAY_TEIG_GML_SCHEMA, FINLAND_CP_GML_SCHEMA, parseGmlParcels } from './gml-parcel-reader.js';
 import { canonicalParcelFeature, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
+
+function delay(ms, { signal } = {}) {
+    return new Promise((resolve, reject) => {
+        if (signal?.aborted) return reject(signal.reason ?? new DOMException('The operation was aborted.', 'AbortError'));
+        const timer = setTimeout(() => {
+            signal?.removeEventListener('abort', abort);
+            resolve();
+        }, ms);
+        function abort() {
+            clearTimeout(timer);
+            signal.removeEventListener('abort', abort);
+            reject(signal.reason ?? new DOMException('The operation was aborted.', 'AbortError'));
+        }
+        signal?.addEventListener('abort', abort, { once: true });
+    });
+}
 
 const FES_NS = 'http://www.opengis.net/fes/2.0';
 const PROFILES = Object.freeze({

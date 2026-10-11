@@ -28,9 +28,10 @@ test.describe('Data source switching @features', () => {
     });
 
     expect(result.backendBase).toMatch(/^https?:\/\//);
-    // In dev/test environment served from localhost, should point to localhost
+    // Both loopback host forms are supported by the development server.
     if (result.environment === 'development') {
-      expect(result.backendBase).toContain('localhost');
+      expect(['localhost', '127.0.0.1']).toContain(new URL(result.backendBase).hostname);
+      expect(new URL(result.backendBase).port).toBe('3000');
     }
   });
 });

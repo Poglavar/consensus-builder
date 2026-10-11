@@ -1,6 +1,7 @@
 // Bounded WFS 2.0 adapter for Hamburg's simplified ALKIS parcel layer.
 // Match counts are checked before and after paging so a changing service cannot
 // be mistaken for a complete collection.
+import { concatBytes } from './byte-utils.js';
 import { bbox as geometryBbox, bboxPolygon, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import { SaxesParser } from 'saxes';
 import { HttpError } from '../utils/helpers.js';
@@ -79,10 +80,10 @@ export function createHamburgAlkisParcelSource(descriptor, { fetchImpl = globalT
                 if (part.done) break;
                 size += part.value.byteLength;
                 if (size > maxBytes) throw upstreamError('Hamburg ALKIS response exceeds byte limit.');
-                chunks.push(Buffer.from(part.value));
+                chunks.push(part.value);
             }
             if (declared && !response.headers.get('content-encoding') && Number(declared) !== size) throw upstreamError('Hamburg ALKIS response body is incomplete.');
-            const body = Buffer.concat(chunks, size).toString('utf8');
+            const body = new TextDecoder('utf-8').decode(concatBytes(chunks, size));
             if (!wantJson) return parseMatched(body);
             let payload;
             try { payload = JSON.parse(body); } catch { throw upstreamError('Hamburg ALKIS returned invalid GeoJSON.'); }

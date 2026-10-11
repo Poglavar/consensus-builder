@@ -74,8 +74,8 @@
     // ?parcel= (parcels/route.js), /monitors/<id> (area-monitor/routing.js), ?proposalShare= and
     // ?shared= (proposals/sharing-routes.js), ?activity= (game.js), ?scene= (ai-scene-follow.js),
     // /bets/<account> and ?bets= (bets/bets-link.js) and the view-mode params (?model/?mode3d/?3d,
-    // ?photo/?real/?rl/?rw: is3DModeRequestedFromUrl).
-    const SHARED_PATHS = [/^\/proposals\/./i, /^\/plans\/./i, /^\/parcel\/./i, /^\/bets\/./i, /\/monitors\/\d+\/?$/];
+    // ?photo/?real/?rl/?rw: is3DModeRequestedFromUrl), or a valid shared map view (?at=).
+    const SHARED_PATHS = [/^\/proposals(?:\/|$)/i, /^\/plans\/./i, /^\/parcel\/./i, /^\/bets\/./i, /\/monitors\/\d+\/?$/];
     const SHARED_PARAMS = ['parcel', 'proposalShare', 'focusProposal', 'shared', 'activity', 'scene', 'bets', 'model', 'mode3d', '3d', 'photo', 'real', 'rl', 'rw'];
 
     // A user zooming out through the map scale opens the globe at the last map centre. Keep the
@@ -93,7 +93,7 @@
         if (SHARED_PATHS.some(pattern => pattern.test(pathname))) return true;
         let params;
         try { params = new URLSearchParams((loc && loc.search) || ''); } catch (_) { return false; }
-        return SHARED_PARAMS.some(name => params.has(name));
+        return SHARED_PARAMS.some(name => params.has(name)) || parseAt(params.get('at')) !== null;
     }
 
     // First visit = no stored city, no ?city=, no shared route. ?world=1 forces the globe for anyone;

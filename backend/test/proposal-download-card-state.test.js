@@ -212,7 +212,9 @@ describe('the renderer shows it in both tabs', () => {
 
 describe('both download paths use it', () => {
     it('the row-click path marks the card after importing', () => {
-        const download = listUiSource.slice(listUiSource.indexOf('let justDownloaded = false;'));
+        const handlerStart = listUiSource.indexOf('async function handleProposalListItemClick(');
+        expect(handlerStart, 'row click handler not found').toBeGreaterThan(-1);
+        const download = listUiSource.slice(handlerStart);
         const block = download.slice(0, download.indexOf('if (!proposal) return;'));
         expect(block).toMatch(/markProposalCardDownloaded\(/);
     });

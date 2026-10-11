@@ -2,8 +2,8 @@
 // Compiles world parcel research, optional UN WUP 2025 city demographics, and the app's configured
 // cities (frontend/js/city-config.js, read as TEXT, never imported) into the compact
 // frontend/data/world-coverage.json that the globe (frontend/js/world/) paints and queries.
-// Population joins use exact report IDs only; WUP values describe settlements and need not match
-// administrative city boundaries.
+// Population joins use exact app-city or explicitly configured WUP identities only; WUP values
+// describe settlements and need not match administrative city boundaries.
 //
 // Operational tiers (city routing), strongest first. Country fills use a separate coverage axis:
 //   full     A dated national-scope review, backed by a verified parcel source and official scope
@@ -157,8 +157,17 @@ export function parseCityConfigs(source) {
         const queryMode = /\bstrategy:\s*'point'/.test(defaultText) ? 'point' : undefined;
         const dataVersion = /\bdataVersion:\s*'([^']+)'/.exec(text)?.[1];
         const radius = /\bliveRadiusKm:\s*(\d+(?:\.\d+)?)/.exec(text)?.[1];
+        const wupCityCodeField = /\bwupCityCode\s*:\s*([^,}\n]+)/.exec(text);
+        const rawWupCityCode = wupCityCodeField?.[1]?.trim();
+        // Configs may express IDs as numeric literals or quoted digit strings. Accept only
+        // those static forms; expressions and other strings remain explicitly invalid.
+        const wupCodeLiteral = rawWupCityCode?.match(/^(?:([0-9]+)|['"]([0-9]+)['"])$/);
+        const parsedWupCityCode = wupCodeLiteral ? Number(wupCodeLiteral[1] ?? wupCodeLiteral[2]) : null;
+        const wupCityCode = Number.isSafeInteger(parsedWupCityCode) && parsedWupCityCode > 0
+            ? parsedWupCityCode : null;
         return { id, name: label.split(',')[0].trim(), label, lat: Number(center[1]), lon: Number(center[2]),
-            ...(sourceId ? { sourceId } : {}), ...(queryMode ? { queryMode } : {}), ...(dataVersion ? { dataVersion } : {}), ...(radius ? { radiusKm: Number(radius) } : {}) };
+            ...(sourceId ? { sourceId } : {}), ...(queryMode ? { queryMode } : {}), ...(dataVersion ? { dataVersion } : {}), ...(radius ? { radiusKm: Number(radius) } : {}),
+            ...(wupCityCodeField ? { wupCityCode } : {}) };
     });
 }
 
@@ -234,6 +243,14 @@ function demographicPopulation(demographics, cityId, countryCode, idField) {
     if (matches.length !== 1 || !countryCode || matches[0].countryCode !== countryCode) return null;
     const population = matches[0].population2025;
     return Number.isFinite(population) && population > 0 ? population : null;
+}
+
+function liveCityPopulation(demographics, city, countryCode) {
+    if (Object.prototype.hasOwnProperty.call(city, 'wupCityCode')) {
+        if (!Number.isSafeInteger(city.wupCityCode) || city.wupCityCode <= 0) return null;
+        return demographicPopulation(demographics, city.wupCityCode, countryCode, 'wupCityCode');
+    }
+    return demographicPopulation(demographics, city.id, countryCode, 'appCityIds');
 }
 
 function demographicSourceMetadata(demographics) {
@@ -351,7 +368,7 @@ export function buildCoverage({ registry, countries, cityConfigSource, countryRe
             && source.liveIntegration.cityIds?.includes(city.id)).map(row => row.countryCode).filter(Boolean));
         const cc = cityCountries.size === 1 ? [...cityCountries][0] : source?.countryCode || country?.cc || null;
         return { id: city.id, name: city.name, label: city.label, cc, lat: city.lat, lon: city.lon,
-            population2025: demographicPopulation(demographics, city.id, cc, 'appCityIds'),
+            population2025: liveCityPopulation(demographics, city, cc),
             ...(city.sourceId ? { sourceId: city.sourceId } : {}), ...(city.dataVersion ? { dataVersion: city.dataVersion } : {}),
             ...(city.queryMode ? { queryMode: city.queryMode } : {}),
             ...(city.radiusKm ? { radiusKm: city.radiusKm } : {}) };

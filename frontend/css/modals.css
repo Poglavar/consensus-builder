@@ -1020,6 +1020,7 @@ body.site-intro-open { overflow: hidden; }
 
 .reparcel-map-panel {
     grid-area: map;
+    align-self: start;
     background: var(--cb-surface-2);
     border: 1px solid var(--cb-line);
     border-radius: var(--cb-radius-lg);
@@ -1115,6 +1116,7 @@ body.site-intro-open { overflow: hidden; }
 
 .reparcel-legend-panel {
     grid-area: legend;
+    container: reparcel-legend / inline-size;
     background: var(--cb-surface-2);
     border: 1px solid var(--cb-line);
     border-radius: var(--cb-radius-lg);
@@ -1267,8 +1269,8 @@ body.site-intro-open { overflow: hidden; }
     }
 }
 
-/* Narrow phones (≈300–480px): tighten paddings, shrink map/tables, let the
-   5-column ledger scroll horizontally instead of overflowing the screen. */
+/* Narrow phones: tighten paddings and shrink the map. The ledger's own container
+   query below also handles a narrow desktop sidebar. */
 @media (max-width: 480px) {
     .reparcel-subtitle {
         font-size: var(--cb-text-sm);
@@ -1799,8 +1801,8 @@ body.site-intro-open { overflow: hidden; }
 .reparcel-ledger-table td.bal-due { color: var(--cb-success-soft-ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .reparcel-ledger-table td.bal-even { color: var(--cb-text-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 
-/* Keep every owner's figures and cash input visible without horizontal scrolling on phones. */
-@media (max-width: 580px) {
+/* Keep every owner's figures and cash input visible in phones and narrow desktop sidebars. */
+@container reparcel-legend (max-width: 520px) {
     .reparcel-legend-list { max-height: none; overflow: visible; padding-right: 0; }
     .reparcel-ledger-table thead {
         position: absolute;
@@ -1963,6 +1965,29 @@ body.site-intro-open { overflow: hidden; }
     border-radius: 3px;
     flex-shrink: 0;
 }
+
+.reparcel-owner-popup {
+    max-height: min(65vh, var(--reparcel-owner-editor-height, 420px));
+    overflow-y: auto;
+}
+
+.reparcel-share-editor { border-top: 1px solid var(--cb-line); margin-top: 8px; padding-top: 8px; }
+.reparcel-share-mode, .reparcel-share-total { font-size: 12px; margin: 6px 0; }
+.reparcel-share-total[data-state="warn"] { color: var(--cb-warning-soft-ink); }
+.reparcel-share-row { display: flex; align-items: center; gap: 5px; margin: 5px 0; }
+.reparcel-share-row > span:first-child { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.reparcel-share-row input { width: 78px; min-height: 36px; padding: 4px; }
+.reparcel-apply-shares { width: 100%; min-height: 40px; }
+.reparcel-edit-shares { display: block; font-size: 12px; margin-top: 4px; padding: 4px 8px; min-height: 30px; }
+
+.reparcel-owner-review { border-top: 1px solid var(--cb-line); padding-top: 10px; font-size: 13px; }
+.reparcel-owner-review > label { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-weight: var(--cb-weight-semibold); }
+.reparcel-owner-review select { flex: 1; min-width: 100px; max-width: 100%; padding: 6px; min-height: 36px; }
+.reparcel-owner-review dl { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 5px 10px; margin: 12px 0; }
+.reparcel-owner-review dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+.reparcel-owner-review p { margin: 8px 0; overflow-wrap: anywhere; }
+.reparcel-owner-review ul { padding-left: 18px; margin: 8px 0; }
+.reparcel-owner-review__hint { color: var(--cb-text-muted); font-size: 12px; }
 
 /* Reparcellization: slice tooltip */
 .reparcel-slice-tooltip {
@@ -6100,7 +6125,9 @@ body.site-intro-open { overflow: hidden; }
    geometry tool has a visible undo, not just the keyboard shortcut. */
 .geom-undo-button {
     position: absolute;
-    top: 12px;
+    /* The map search occupies that corner (10px + 44px), making this visible button impossible
+       to click during polygon edits. Keep it just below the shell's top row on desktop and mobile. */
+    top: calc(var(--map-shell-top-clearance, 58px) + 4px);
     left: 12px;
     z-index: 1000;
     width: 34px;

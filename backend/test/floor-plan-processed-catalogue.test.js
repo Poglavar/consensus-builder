@@ -5,6 +5,7 @@ import {
     processedPlanView, selectCurrentProcessedRows
 } from '../floor-plan-archive/processed-catalogue.js';
 import { setupFloorPlanArchiveRoute } from '../routes/floor-plan-archive.js';
+import { fingerprint } from '../buildings/floor-models.js';
 
 const footprint={type:'Polygon',coordinates:[[[15,45],[15.01,45],[15.01,45.01],[15,45.01],[15,45]]]};
 function row(overrides={}) {
@@ -20,8 +21,47 @@ function row(overrides={}) {
         listing_owner_id:'',listing_building_id:'b-7',listing_owns_asset:true,task_city:'zagreb',task_source:'survey',
         task_owner_id:'',task_building_id:'b-7',updated_at:'2026-10-08T10:00:00Z',task_updated_at:'2026-10-08T10:00:00Z',...overrides};
 }
+function sourceOnly(overrides={}) {
+    const base=row();
+    return {...base,city:null,source:null,building_id:null,task_city:null,task_source:null,task_building_id:null,
+        task_listing_url:base.listing_url,task_floor:null,listing_floor:null,task_unit_id:null,listing_unit_id:null,
+        task_area_m2:null,listing_area_m2:null,listing_title:'Apartment listing',
+        listing_match_status:'candidate',listing_city:null,listing_source:null,listing_building_id:null,
+        model:{...base.model,building:null},...overrides};
+}
 
 describe('processed floor-plan catalogue',()=>{
+    it('keeps source-only review geometry under a stable listing group before verification',()=>{
+        const first=sourceOnly(),second=sourceOnly({id:'e'.repeat(64),region_id:'unit-b'});
+        const rows=selectCurrentProcessedRows([first,second]);
+        expect(rows).toHaveLength(2);
+        const building=processedBuildingView(rows);
+        expect(building).toMatchObject({name:'Apartment listing',planCount:2,footprint:null,location:null,locationAvailable:false});
+        expect(building.id).toBe(processedBuildingId(first));
+        expect(building.id).toBe(processedBuildingId(sourceOnly({listing_title:'Renamed'})));
+        expect(selectCurrentProcessedRows([sourceOnly({task_listing_url:null})])).toEqual([]);
+        expect(selectCurrentProcessedRows([sourceOnly({listing_source_evidence_status:'not-a-listing'})])).toEqual([]);
+    });
+    it('attaches a later verified listing at read time without changing the stored model',()=>{
+        const current=sourceOnly({listing_match_status:'verified',listing_city:'zagreb',listing_source:'survey',
+            listing_building_id:'b-7',listing_building_name:'Park House',listing_footprint:footprint});
+        const before=structuredClone(current.model);
+        expect(processedBuildingView([current])).toMatchObject({name:'Park House',footprint,locationAvailable:true});
+        expect(processedBuildingId(current)).toBe(processedBuildingId(row()));
+        expect(current.model).toEqual(before);
+        expect(selectCurrentProcessedRows([{...current,listing_owns_asset:false}])).toEqual([]);
+        expect(selectCurrentProcessedRows([{...current,task_floor:'2',listing_floor:'3'}])).toEqual([]);
+    });
+    it('hides a published source-only plan if its recorded publication identity is rebound',()=>{
+        const verified=sourceOnly({status:'published',listing_match_status:'verified',listing_city:'zagreb',
+            listing_source:'survey',listing_building_id:'b-7',listing_footprint:footprint});
+        verified.publication={association:{city:'zagreb',source:'survey',owner_id:'',building_id:'b-7',
+            listingUrl:verified.listing_url,footprintHash:'wrong'}};
+        expect(selectCurrentProcessedRows([verified])).toEqual([]);
+        verified.publication.association.footprintHash=fingerprint(footprint);
+        expect(selectCurrentProcessedRows([verified])).toHaveLength(1);
+        expect(selectCurrentProcessedRows([{...verified,listing_building_id:'b-8'}])).toEqual([]);
+    });
     it('groups current plans under a stable review building and preserves review evidence',()=>{
         const first=row(),second=row({id:'e'.repeat(64),region_id:'unit-b',model:{...row().model,unitId:'unit-b',label:'Apartment B'}});
         const building=processedBuildingView([first,second]);

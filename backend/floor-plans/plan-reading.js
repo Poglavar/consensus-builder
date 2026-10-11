@@ -5,7 +5,7 @@ import {READING_SCHEMA} from './reading-schema.js';
 import {DEFAULT_MAX_TOKENS} from '../../../agents/lib/llm-cost/llm.mjs';
 import {wallCorners,candidateFrame,selectedCandidates} from './source-geometry.js';
 const {validateArchitecture}=createRequire(import.meta.url)('../../frontend/js/building-floor-plans.js');
-export const PROCESSOR='floor-plan-vision-v10';
+export const PROCESSOR='floor-plan-vision-v11';
 // The model and its reasoning effort come from the shared layer (agents/lib/llm-cost/defaults.json),
 // never from here. Its output cap also bounds the reasoning the model always does first, so a
 // reading is not paid for and then truncated; the daily budget reserves this full allowance.
@@ -128,7 +128,7 @@ export function parseReading(text,task,{width,height,evidence,model}={}) {
         issues.push(...geometryIssues(architecture,{rooms}));
         return {schema:'consensus-builder.processed-floor-plan.v1',unitId:plan.id,label:plan.label||plan.id,scope:plan.scope,
             floor:plan.floor,elevationM:documentedElevation?plan.elevationM:null,elevationBasis:documentedElevation?'documented':null,
-            rooms,architecture,building:task.context.building,source:{url:task.source_url,listingUrl:task.listing_url,sha256:task.source_sha256,page:task.page,
+            rooms,architecture,building:null,source:{url:task.source_url,listingUrl:task.listing_url,sha256:task.source_sha256,page:task.page,
                 framePx:frame,imagePx:[width,height],scale,metersPerPixel:mPerPixel,northPx:north,northEvidence:north?plan.northEvidence:null,
                 candidateVersion:evidence.version,wallIds:plan.wallIds,railingIds:plan.railingIds,
                 openingIds:plan.openings.filter(o=>!omittedOpenings.some(x=>x.candidateId===o.candidateId)).map(o=>o.candidateId),omittedOpenings},

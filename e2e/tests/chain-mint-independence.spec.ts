@@ -1,7 +1,7 @@
 // Minting commits the complete proposal record to chain metadata first. The optional server row
 // mirrors that immutable chain location; no signed /proposals/prepare step gates the mint.
 import { test, expect } from '../helpers/fixtures';
-import { openCity, createSpace, showProposal } from '../helpers/runtime';
+import { openCity, showProposal, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
 import { connectWalletByConnectorId, injectMockEvmWallet } from '../helpers/blockchain';
 
 const WALLET = '0x1234567890abcdef1234567890abcdef12345678';
@@ -26,14 +26,20 @@ async function prepareShareMint(page: import('@playwright/test').Page, uploadFai
   await page.locator('#welcome-submit-btn').click();
   await expect(page.locator('#welcome-modal')).toBeHidden();
   await connectWalletByConnectorId(page, 'metamask');
-  const proposalId = await createSpace(page, 'park');
-  await page.evaluate(({ id, wallet, fails, metadataUri, contract }) => {
+  const proposalId = await page.evaluate(({ parcelId, geometry, wallet }) => (window as any).proposalStorage.addProposal({
+    proposalId: 'chain-mint-independence-legacy-source', title: 'Chain mint independence proposal',
+    description: 'A legacy parcel proposal used to exercise the chain mint path.', goal: 'park', lifecycleStatus: 'Active',
+    city: 'zagreb', cadastreParcelIds: [parcelId], geometry,
+    structureProposal: { kind: 'park', geometry, applied: true },
+    lens: [{ address: wallet }], screenshotDataUrl: 'data:image/png;base64,iVBORw0KGgo=',
+  }), { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY, wallet: WALLET });
+  await page.evaluate(({ id, fails, metadataUri, contract }) => {
     const w = window as any;
     const proposal = w.proposalStorage.getProposal(id);
     if (!proposal) throw new Error(`Missing test proposal ${id}`);
-    proposal.lens = [{ address: wallet }];
-    proposal.screenshotDataUrl = 'data:image/png;base64,iVBORw0KGgo=';
-    w.proposalStorage.save();
+    if (proposal.approvalConfig != null || w.ProposalApprovalRuntime?.uses(proposal)) {
+      throw new Error('Mint fixture must remain a legacy proposal without abstract approval configuration.');
+    }
     w.__chainMintE2e = { uploadCalls: [], mintCalls: [] };
     w.AssetService = {
       uploadProposalAssets: async (args: any) => {
@@ -54,7 +60,7 @@ async function prepareShareMint(page: import('@playwright/test').Page, uploadFai
         return { transactionHash: '0xfake-mint', proposalId: '77', chainId: '84532', contractAddress: contract };
       }
     };
-  }, { id: proposalId, wallet: WALLET, fails: uploadFails, metadataUri: METADATA_URI, contract: CONTRACT });
+  }, { id: proposalId, fails: uploadFails, metadataUri: METADATA_URI, contract: CONTRACT });
   await showProposal(page, proposalId);
   await page.locator('.btn-share-proposal').click();
   await expect(page.locator('.share-modal-overlay')).toBeVisible();

@@ -91,12 +91,28 @@ describe('ground menu and site commands', () => {
         expect(UiCommands.commandsFor('parcel-menu', ctx({ parcel })).map(c => c.id)).toContain('parcel.useAsSite');
 
         const startFromSelection = vi.fn();
-        const global = { SiteTool: { isActive: () => false, startFromSelection } };
+        const selectedParcels = new Set(['parcel-1', 'parcel-2']);
+        let siteToolActive = false;
+        const global = {
+            document: { body: { classList: { contains: () => false } }, getElementById: () => null, querySelectorAll: () => [] },
+            SiteTool: { isActive: () => siteToolActive, startFromSelection }
+        };
+        global.multiParcelSelection = { isActive: true, selectedParcels };
+        const context = UiCommands.createBrowserContext(global, { mode: '2d' });
         expect(UiCommands.commandsFor('selection-tray', ctx({ global, selection: { active: true, count: 2 } })).map(c => c.id))
             .toContain('selection.useAsSite');
         expect(UiCommands.commandsFor('selection-tray', ctx({ global, selection: { active: true, count: 0 } })).map(c => c.id))
             .not.toContain('selection.useAsSite');
-        UiCommands.runCommand('selection.useAsSite', { global });
+        UiCommands.runCommand('selection.useAsSite', context);
+        expect(startFromSelection).toHaveBeenCalledOnce();
+
+        selectedParcels.clear();
+        expect(UiCommands.runCommand('selection.useAsSite', context)).toBe(false);
+        expect(startFromSelection).toHaveBeenCalledOnce();
+
+        selectedParcels.add('parcel-1');
+        siteToolActive = true;
+        expect(UiCommands.runCommand('selection.useAsSite', context)).toBe(false);
         expect(startFromSelection).toHaveBeenCalledOnce();
     });
 });

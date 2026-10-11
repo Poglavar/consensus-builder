@@ -36,6 +36,13 @@ async function chooseLocalProposal(page: import('@playwright/test').Page): Promi
 }
 
 async function installMarketRpcFixture(page: import('@playwright/test').Page, resolved: boolean): Promise<void> {
+  // The bet dialog first asks the sheet for a city row, then falls back to this chain summary when
+  // the proposal is not listed there. Keep that API boundary local so the test reaches the fallback.
+  await page.route('**/markets?*', route => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({ contests: [] }),
+  }));
   await page.evaluate(({ proposal, wallet, resolved: marketResolved }) => {
     const w = window as any;
     const client = w.SolanaMarketClient;
@@ -104,6 +111,12 @@ async function expandProposalDetails(page: import('@playwright/test').Page): Pro
   if (await expand.isVisible()) await expand.click();
 }
 
+async function openProposalSection(page: import('@playwright/test').Page, section: 'land' | 'market'): Promise<void> {
+  const details = page.locator(`#proposal-details-panel details[data-proposal-section="${section}"]`);
+  await details.locator(':scope > summary').click();
+  await expect(details).toHaveJSProperty('open', true);
+}
+
 test.describe('Proposal actions @features', () => {
   test('parcel owner can accept and then withdraw an unexecuted proposal from its details panel', async ({ mockApi: page }) => {
     await openCity(page);
@@ -133,6 +146,7 @@ test.describe('Proposal actions @features', () => {
     }, PARCEL_ID);
     await showProposal(page, proposalId);
     await expandProposalDetails(page);
+    await openProposalSection(page, 'land');
 
     const ownShare = page.locator('.owner-acceptance-row').first();
     const ownerKey = await page.evaluate(parcelId => (window as any).getOwnerSlotsForParcel(parcelId)[0].key, PARCEL_ID);
@@ -162,6 +176,7 @@ test.describe('Proposal actions @features', () => {
     }), PARCEL_ID);
     await showProposal(page, proposalId);
     await expandProposalDetails(page);
+    await openProposalSection(page, 'land');
 
     const ownerRow = page.locator('.owner-acceptance-row').first();
     await expect(ownerRow.getByRole('button', { name: 'Accept' })).toBeVisible();
@@ -314,12 +329,19 @@ test.describe('Proposal actions @features', () => {
     await mint.click();
     const mintDialog = page.locator('.parcel-mint-modal');
     await expect(mintDialog).toBeVisible();
+    await mintDialog.locator('.parcel-mint-close').click();
+    await expect(mintDialog).toBeHidden();
+    await expect(mint).toBeEnabled();
+    await mint.click();
+    await expect(mintDialog).toBeVisible();
     await mintDialog.getByRole('button', { name: 'Mint', exact: true }).click();
 
     const success = page.locator('#parcel-mint-success-modal');
     await expect(success).toBeVisible({ timeout: 15000 });
     await expect(success).toContainText('Parcel has been minted');
     await expect(success.locator('a[href*="explorer.solana.com/tx/"]')).toBeVisible();
+    await success.getByRole('button', { name: 'OK', exact: true }).click();
+    await expect(success).toBeHidden();
   });
 
   for (const [side, label, sideValue] of [[1, 'yes', 1], [0, 'no', 0]] as const) {
@@ -335,6 +357,7 @@ test.describe('Proposal actions @features', () => {
     }), { parcelId: PARCEL_ID, program: PARCEL_PROGRAM, account: PROPOSAL_ACCOUNT });
     await showProposal(page, proposalId);
     await expandProposalDetails(page);
+    await openProposalSection(page, 'market');
 
     const market = page.locator('.proposal-market-summary');
     const stakeButton = market.getByRole('button', { name: `Bet ${label}`, exact: true });
@@ -369,6 +392,7 @@ test.describe('Proposal actions @features', () => {
     }), { parcelId: PARCEL_ID, program: PARCEL_PROGRAM, account: PROPOSAL_ACCOUNT });
     await showProposal(page, proposalId);
     await expandProposalDetails(page);
+    await openProposalSection(page, 'market');
 
     const market = page.locator('.proposal-market-summary');
     await market.getByRole('button', { name: 'Collect yes winnings' }).click({ timeout: 10000 });

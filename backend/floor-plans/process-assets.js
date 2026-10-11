@@ -1,4 +1,4 @@
-// Checkpoint OCR and source linework for current, optionally building-matched assets.
+// Checkpoint OCR and source linework only after locating a listing's building.
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { mkdtemp,writeFile,rm } from 'node:fs/promises';
@@ -6,13 +6,19 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { fingerprint } from '../buildings/floor-models.js';
-import { MATCHED_ASSET_SQL } from './crawl-queue.js';
+import { LOCATED_ASSET_SQL } from './building-location.js';
+import { readBlobRow } from './blob-store.js';
 
 const exec=promisify(execFile);
-const MATCHED_ASSET_EXISTS=`EXISTS (SELECT 1 FROM floor_plan.target t WHERE t.current_sha256=e.sha256
- AND t.kind='asset' AND ${MATCHED_ASSET_SQL})`;
+// Located documents can enter extraction; raster images also need triage or an explicit source plan label.
+export const IMAGE_EXTRACTION_READY_SQL=`(lower(b.media_type) NOT LIKE 'image/%' OR EXISTS (
+ SELECT 1 FROM floor_plan.target image_target WHERE image_target.kind='asset' AND image_target.current_sha256=e.sha256
+ AND ((image_target.image_classified_sha256=e.sha256 AND image_target.image_kind IN ('floor_plan','uncertain'))
+  OR EXISTS(SELECT 1 FROM floor_plan.listing image_listing
+   WHERE image_listing.facts->>'sourceEvidenceStatus' IS DISTINCT FROM 'not-a-listing'
+   AND image_listing.asset_urls @> jsonb_build_array(jsonb_build_object('url',image_target.url,'listingOwned',true,'kind','floor-plan'))))))`;
 
-export async function processAssets(db,{maxAssets=100,maxMinutes=45,matchedOnly=false,
+export async function processAssets(db,{maxAssets=100,maxMinutes=45,
  python=process.env.FLOOR_PLAN_PYTHON || 'python3',log=console.log,now=Date.now,
  extractor=({python,path,mediaType,timeout})=>exec(python,[fileURLToPath(new URL('../scripts/extract-floor-plan-draft.py',import.meta.url)),path,'--media-type',mediaType],{timeout,maxBuffer:16*1024*1024})}={}) {
  if(!Number.isInteger(maxAssets)||maxAssets<1) throw new Error('maxAssets must be a positive integer.');
@@ -20,17 +26,20 @@ export async function processAssets(db,{maxAssets=100,maxMinutes=45,matchedOnly=
  const locked=(await db.query(`SELECT pg_try_advisory_lock(hashtext('floor-plan-extraction')) AS locked`)).rows[0].locked;
  if(!locked) throw new Error('Another floor-plan extraction is running.');
  const started=now(),deadline=started+maxMinutes*60000;
- const result={selected:0,processed:0,needsReview:0,notPlan:0,failed:0,unprocessed:0,pending:0,deferredUnmatched:0};
+ const result={selected:0,processed:0,needsReview:0,notPlan:0,failed:0,unprocessed:0,pending:0,deferredUnmatched:0,awaitingImageClassification:0};
  try {
-  const rows=(await db.query(`SELECT e.sha256,b.media_type,b.data FROM floor_plan.extraction e JOIN floor_plan.blob b USING(sha256)
-   WHERE e.status='pending' AND (NOT $2::boolean OR ${MATCHED_ASSET_EXISTS}) ORDER BY e.created_at,e.sha256 LIMIT $1`,[maxAssets,matchedOnly])).rows;
+  const rows=(await db.query(`SELECT e.sha256,b.media_type,b.storage_path,b.byte_count,b.bytes_available FROM floor_plan.extraction e JOIN floor_plan.blob b USING(sha256)
+   WHERE e.status='pending' AND b.bytes_available AND ${IMAGE_EXTRACTION_READY_SQL}
+   AND ${LOCATED_ASSET_SQL} ORDER BY e.created_at,e.sha256 LIMIT $1`,[maxAssets])).rows;
   result.selected=rows.length;
   for(const row of rows) {
    if(now()>=deadline) {result.unprocessed=rows.length-result.processed;break;}
    let directory;
    try {
     directory=await mkdtemp(join(tmpdir(),'floor-plan-asset-'));
-    const path=join(directory,'source');await writeFile(path,row.data);
+    const bytes=await readBlobRow(row);
+    if(!bytes) throw new Error('Archived source bytes are missing.');
+    const path=join(directory,'source');await writeFile(path,bytes);
     const remaining=Math.max(1000,Math.min(600000,deadline-now()));
     const {stdout}=await extractor({python,path,mediaType:row.media_type.split(';')[0],timeout:remaining});
     const model=JSON.parse(stdout);model.source={sha256:row.sha256};
@@ -49,11 +58,16 @@ export async function processAssets(db,{maxAssets=100,maxMinutes=45,matchedOnly=
    result.processed++;log(JSON.stringify({at:new Date().toISOString(),stage:'extract',...result,total:rows.length,sha256:row.sha256}));
   }
   if(!result.unprocessed) result.unprocessed=rows.length-result.processed;
-  result.pending=Number((await db.query(`SELECT count(*) AS n FROM floor_plan.extraction e WHERE e.status='pending'
-   AND (NOT $1::boolean OR ${MATCHED_ASSET_EXISTS})`,[matchedOnly])).rows[0].n);
-  if(matchedOnly) result.deferredUnmatched=Number((await db.query(`SELECT count(*) AS n FROM floor_plan.extraction e
-   WHERE e.status='pending' AND NOT ${MATCHED_ASSET_EXISTS}`)).rows[0].n);
+  result.pending=Number((await db.query(`SELECT count(*) AS n FROM floor_plan.extraction e JOIN floor_plan.blob b USING(sha256)
+   WHERE e.status='pending' AND b.bytes_available AND ${IMAGE_EXTRACTION_READY_SQL}
+   AND ${LOCATED_ASSET_SQL}`)).rows[0].n);
+  result.awaitingImageClassification=Number((await db.query(`SELECT count(*) AS n FROM floor_plan.extraction e
+   JOIN floor_plan.blob b USING(sha256) WHERE e.status='pending' AND b.bytes_available
+   AND NOT ${IMAGE_EXTRACTION_READY_SQL} AND ${LOCATED_ASSET_SQL}`)).rows[0].n);
+  result.deferredUnmatched=Number((await db.query(`SELECT count(*) AS n FROM floor_plan.extraction e
+   JOIN floor_plan.blob b USING(sha256) WHERE e.status='pending' AND b.bytes_available
+   AND NOT ${LOCATED_ASSET_SQL}`)).rows[0].n);
   result.elapsedMs=now()-started;
-  result.status=result.failed||result.pending||result.unprocessed?'partial':'complete';return result;
+  result.status=result.failed||result.pending||result.unprocessed||result.awaitingImageClassification||result.deferredUnmatched?'partial':'complete';return result;
  } finally {await db.query(`SELECT pg_advisory_unlock(hashtext('floor-plan-extraction'))`);}
 }

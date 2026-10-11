@@ -8,7 +8,7 @@ import { createShenzhenLandCertainSource } from './shenzhen-source.js';
 import { createSocrataParcelSource } from './socrata-source.js';
 import { createOgcApiParcelSource } from './ogc-api-source.js';
 import { createGeojsonSnapshotParcelSource } from './geojson-snapshot-source.js';
-import { createGmlSnapshotParcelSource } from './gml-snapshot-source.js';
+import { officialArchiveFetch, createGmlSnapshotParcelSource } from './gml-snapshot-source.js';
 import { createShapefileSnapshotParcelSource } from './shapefile-snapshot-source.js';
 import { createCatastroWfsParcelSource } from './catastro-wfs-source.js';
 import { createDlrsSheetParcelSource } from './dlrs-sheet-source.js';
@@ -26,71 +26,15 @@ import { createHttpsJsonFetch } from './https-json-fetch.js';
 import { HttpError } from '../utils/helpers.js';
 import { decodeCustomSource } from './custom-source-config.js';
 import { createPublicSourceFetch } from './public-source-fetch.js';
+import { withSourceCooldown, withSourceConcurrency, withSourceControls } from './source-controls.js';
+
+export { withSourceCooldown, withSourceConcurrency } from './source-controls.js';
 
 export const parcelSourceCatalog = JSON.parse(readFileSync(new URL('./source-catalog.json', import.meta.url), 'utf8'));
 const certificateFetches = new Map();
 const customFetch = createPublicSourceFetch();
 const runtimeSources = new Map();
 export function clearParcelSourceRuntimeCache() { runtimeSources.clear(); }
-
-// Source failures pause new traffic across viewport cells and binding calls. No failure is absence.
-export function withSourceCooldown(adapter, { now = Date.now } = {}) {
-    let failure = null, until = 0;
-    const invoke = method => async (...args) => {
-        if (failure && now() < until) throw Object.assign(new Error(failure.message), failure,
-            { retryAfterSeconds: Math.ceil((until - now()) / 1000) });
-        const previousFailure = failure;
-        try {
-            const result = await adapter[method](...args);
-            if (failure === previousFailure) { failure = null; until = 0; }
-            return result;
-        }
-        catch (error) {
-            if (['parcel-source-blocked', 'parcel-source-rate-limited', 'parcel-source-unavailable'].includes(error.code)) {
-                failure = error;
-                until = now() + Math.max(1, Math.min(3600, error.retryAfterSeconds || (error.code === 'parcel-source-blocked' ? 60 : 30))) * 1000;
-                error.retryAfterSeconds = Math.ceil((until - now()) / 1000);
-            }
-            throw error;
-        }
-    };
-    return Object.freeze({ queryBounds: invoke('queryBounds'), queryIds: invoke('queryIds'), queryGeometry: invoke('queryGeometry'),
-        ...(typeof adapter.queryPoint === 'function' ? { queryPoint: invoke('queryPoint') } : {}) });
-}
-
-// Share a FIFO request budget across every query method used for one provider. A released slot is
-// handed to its waiter directly, so new calls cannot jump the queue or oversubscribe the limit.
-export function withSourceConcurrency(adapter, { limit = 2 } = {}) {
-    if (!Number.isInteger(limit) || limit < 1 || limit > 16) {
-        throw new TypeError('Parcel source concurrency limit must be an integer from 1 to 16.');
-    }
-    let active = 0;
-    const waiting = [];
-    const acquire = () => {
-        if (active < limit) {
-            active++;
-            return Promise.resolve(makeRelease());
-        }
-        return new Promise(resolve => waiting.push(resolve));
-    };
-    const makeRelease = () => {
-        let released = false;
-        return () => {
-            if (released) return;
-            released = true;
-            const next = waiting.shift();
-            if (next) next(makeRelease());
-            else active--;
-        };
-    };
-    const invoke = method => async (...args) => {
-        const release = await acquire();
-        try { return await adapter[method](...args); }
-        finally { release(); }
-    };
-    return Object.freeze({ queryBounds: invoke('queryBounds'), queryIds: invoke('queryIds'), queryGeometry: invoke('queryGeometry'),
-        ...(typeof adapter.queryPoint === 'function' ? { queryPoint: invoke('queryPoint') } : {}) });
-}
 
 function validateCityMetrics(descriptor) {
     const metrics = descriptor.metricSridByCity;
@@ -115,6 +59,18 @@ export function createParcelSource(descriptor, options = {}) {
             ? createShapefileSnapshotParcelSource(source, opts) : createGeojsonSnapshotParcelSource(source, opts),
         'shapefile-snapshot': createShapefileSnapshotParcelSource, 'shapefile-zip': createShapefileSnapshotParcelSource,
         'gml-snapshot': createGmlSnapshotParcelSource,
+        'hmlr-browser': (source, opts) => {
+            let adapter;
+            const get = () => adapter ||= (async () => {
+                const featureStore = opts.featureStore || (await import('./node-hmlr-feature-store.js'))
+                    .getSharedNodeHmlrFeatureStore(source.manifestUrl, source.snapshotId);
+                const module = await import('./hmlr-browser-source.js');
+                return module.createHmlrBrowserParcelSource(source, { ...opts, featureStore,
+                    fetchImpl: (url, options) => new URL(url).hostname === 'use-land-property-data.service.gov.uk'
+                        ? officialArchiveFetch(url, options) : (opts.fetchImpl || globalThis.fetch)(url, options) });
+            })();
+            return Object.fromEntries(['queryBounds', 'queryIds', 'queryGeometry'].map(method => [method, async (...args) => (await get())[method](...args)]));
+        },
         'catastro-wfs': createCatastroWfsParcelSource, 'dlrs-sheet': createDlrsSheetParcelSource,
         'kerala-entebhoomi': createKeralaParcelSource,
         'nairobi-outlines': createNairobiOutlineSource,
@@ -148,9 +104,7 @@ export function runtimeParcelSource(descriptor) {
         if (runtimeSources.size >= 160) runtimeSources.delete(runtimeSources.keys().next().value);
         const adapter = createParcelSource(descriptor, descriptor.id.startsWith('custom.') || descriptor.caCertificate || descriptor.adapter === 'gml-snapshot'
             ? {} : { fetchImpl: (...args) => globalThis.fetch(...args) });
-        const cooled = withSourceCooldown(adapter);
-        runtimeSources.set(descriptor.id, descriptor.maxConcurrentQueries === undefined
-            ? cooled : withSourceConcurrency(cooled, { limit: descriptor.maxConcurrentQueries }));
+        runtimeSources.set(descriptor.id, withSourceControls(adapter, { maxConcurrentQueries: descriptor.maxConcurrentQueries }));
     }
     return runtimeSources.get(descriptor.id);
 }
@@ -169,8 +123,12 @@ export function parcelSourceForCity(city, sourceId = null) {
 }
 
 export function parcelSourceForIds(ids) {
-    const descriptor = parcelSourceCatalog.sources.filter(source => source.defaultForCity !== false
-        && ids.some(id => String(id).startsWith(source.idPrefix)))
+    // Retired city defaults can still resolve immutable proposal references in their
+    // original namespace; opt-in/unqualified sources need an explicit historical grant.
+    // Resolve the most specific namespace before checking eligibility. An unavailable
+    // GB-HMLR-BROWSER-v1 ID must not be interpreted through the older GB-HMLR prefix.
+    const descriptor = parcelSourceCatalog.sources.filter(source => ids.some(id => String(id).startsWith(source.idPrefix)))
         .sort((a, b) => b.idPrefix.length - a.idPrefix.length)[0];
-    return descriptor ? { descriptor, adapter: runtimeParcelSource(descriptor) } : null;
+    return descriptor && (descriptor.defaultForCity !== false || descriptor.historicalForIds === true)
+        ? { descriptor, adapter: runtimeParcelSource(descriptor) } : null;
 }

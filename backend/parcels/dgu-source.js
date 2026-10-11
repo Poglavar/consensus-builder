@@ -5,7 +5,7 @@ import { upstreamError } from './source-contract.js';
 const KEY = /^[0-9]{6}-[0-9]+(?:\/[0-9]+)?$/;
 
 export function createDguParcelSource(descriptor, { fetchImpl = globalThis.fetch,
-    token = process.env.OSS_PUBLIC_ACCESS_TOKEN || process.env.OSS_TOKEN } = {}) {
+    token = typeof process === 'undefined' ? undefined : process.env.OSS_PUBLIC_ACCESS_TOKEN || process.env.OSS_TOKEN } = {}) {
     if (descriptor.endpoint !== 'https://oss.uredjenazemlja.hr/OssWebServices/wfs') {
         throw new Error('Invalid DGU parcel endpoint.');
     }

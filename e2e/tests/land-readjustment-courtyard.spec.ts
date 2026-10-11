@@ -327,3 +327,117 @@ test('courtyard amendment can be reviewed and saved on a 390px viewport', async 
   expect(saved.reparcellization.polygons.find((plot: any) => plot.jointPool).owners).toHaveLength(2);
   expect(saved.reparcellization.ownerShares[0].cashOffer).toBe(12.34);
 });
+
+for (const size of [{ name: 'desktop', width: 1280, height: 900 }, { name: 'mobile', width: 390, height: 844 }]) {
+  test(`custom shares and per-owner before/after review survive save and reopen on ${size.name}`, async ({ mockApi: page }, testInfo) => {
+    await page.setViewportSize({ width: size.width, height: size.height });
+    const modal = await openCourtyard(page);
+    await modal.locator('[data-reparcel-courtyard-building]').click();
+    await modal.locator('.reparcel-newplot-row').last().getByRole('button', { name: 'Edit shares' }).click();
+    const popup = modal.locator('.reparcel-owner-popup');
+    await expect(popup).toBeVisible();
+    await expect(popup.locator('.reparcel-share-mode')).toContainText('private-land proportions');
+    await popup.getByRole('spinbutton', { name: 'Owner A share (%)', exact: true }).fill('70');
+    await popup.getByRole('spinbutton', { name: 'Owner B share (%)', exact: true }).fill('20');
+    await expect(popup.locator('.reparcel-share-total')).toContainText('100%');
+    await expect(popup.getByRole('button', { name: 'Apply shares', exact: true })).toBeDisabled();
+    await expect(modal.locator('[data-reparcel-commit]')).toBeDisabled();
+    await popup.getByRole('spinbutton', { name: 'Owner B share (%)', exact: true }).fill('30');
+    await expect(popup.getByRole('button', { name: 'Apply shares', exact: true })).toBeEnabled();
+    await popup.getByRole('button', { name: 'Apply shares', exact: true }).click();
+    await expect(popup).toBeHidden();
+    await expect(modal.locator('.reparcel-newplot-row').last()).toContainText(/70(?:\.0)?%/);
+
+    const review = modal.locator('[data-reparcel-owner-review]');
+    await review.getByRole('combobox').selectOption({ label: 'Owner A' });
+    await expect(review.locator('li')).toHaveCount(2);
+    await expect(review).toContainText('Input parcels: 1234');
+    await expect(review).toContainText(/70(?:\.0)?%/);
+    await expect(modal.locator('#reparcel-map path.reparcel-owner-input')).toHaveCount(1);
+    await expect(modal.locator('#reparcel-map path.reparcel-owner-output')).toHaveCount(2);
+    const cash = modal.locator('[data-reparcel-owners-table] tr').filter({ hasText: 'Owner A' }).locator('.cash-offer-input');
+    await cash.fill('-1');
+    await expect(modal.locator('[data-reparcel-commit]')).toBeDisabled();
+    await cash.fill('12.345');
+    await expect(modal.locator('[data-reparcel-commit]')).toBeDisabled();
+    await cash.fill('');
+    await expect(modal.locator('[data-reparcel-commit]')).toBeDisabled();
+    await cash.fill('12.34');
+    await expect(review.locator('[data-impact="cash"]')).toContainText('12.34');
+    await expect(modal.locator('[data-reparcel-commit]')).toBeEnabled();
+    await review.scrollIntoViewIfNeeded();
+    await page.screenshot({ path: testInfo.outputPath(`${size.name}-owner-review.png`), fullPage: true });
+
+    // The review isolates this owner's old parcels on one side and fractional outputs on the other.
+    await modal.locator('[data-reparcel-compare]').click();
+    await expect(modal.locator('.reparcel-before-map path.reparcel-owner-input')).toHaveCount(1);
+    await expect(modal.locator('#reparcel-map > .leaflet-pane path.reparcel-owner-output')).toHaveCount(2);
+    await modal.locator('#reparcel-map').scrollIntoViewIfNeeded();
+    await expect.poll(() => modal.locator('#reparcel-map').evaluate(map => {
+      const before = map.querySelector('.reparcel-before-map path[stroke="#111"]')?.getBoundingClientRect();
+      const after = map.querySelector(':scope > .leaflet-pane path[stroke="#dc2626"]')?.getBoundingClientRect();
+      return before && after ? Math.max(...['x', 'y', 'width', 'height'].map(key =>
+        Math.abs((before as any)[key] - (after as any)[key]))) : Infinity;
+    }), { message: 'Before and after must use the same projection, including half-step zoom above level 19' }).toBeLessThan(2);
+    const visibleOutputs = await modal.locator('#reparcel-map').evaluate(map => {
+      const box = map.getBoundingClientRect();
+      return [...map.querySelectorAll('path.reparcel-owner-output')].every(path => {
+        const plot = path.getBoundingClientRect();
+        return plot.width > 0 && plot.height > 0 && plot.left >= box.left && plot.right <= box.right
+          && plot.top >= box.top && plot.bottom <= box.bottom;
+      });
+    });
+    expect(visibleOutputs, 'Closing the share popup must restore the parcels inside the map').toBe(true);
+    await page.screenshot({ path: testInfo.outputPath(`${size.name}-owner-comparison.png`), fullPage: true });
+    await modal.locator('[data-reparcel-compare]').click();
+
+    if (size.name === 'desktop') {
+      // Splitting a custom joint plot preserves its shares; undo restores the original plot.
+      await review.getByRole('combobox').selectOption('');
+      await modal.locator('[data-reparcel-assign]').click();
+      await modal.locator('#reparcel-map').scrollIntoViewIfNeeded();
+      await modal.locator('[data-reparcel-line]').click();
+      const pool = await modal.locator('#reparcel-map .leaflet-overlay-pane path').evaluateAll(paths =>
+        paths.map(path => path.getBoundingClientRect()).sort((a, b) => b.width - a.width)
+          .map(box => ({ x: box.x, y: box.y, width: box.width, height: box.height }))[0]);
+      await page.mouse.click(pool.x, pool.y + pool.height * 0.5);
+      await page.mouse.click(pool.x + pool.width, pool.y + pool.height * 0.5);
+      await modal.locator('[data-reparcel-finish]').click();
+      await expect.poll(() => modal.locator('.reparcel-newplot-row').count()).toBeGreaterThan(3);
+      const jointRows = modal.locator('.reparcel-newplot-row').filter({ hasText: /70(?:\.0)?%/ });
+      await expect(jointRows).toHaveCount(2);
+      await modal.locator('[data-reparcel-undo-edit]').click();
+      await expect(modal.locator('.reparcel-newplot-row')).toHaveCount(3);
+      await expect(modal.locator('.reparcel-newplot-row').last()).toContainText(/70(?:\.0)?%/);
+    }
+    await finishCourtyard(page, 'single');
+    const [saved] = await appliedPlans(page);
+    const shared = saved.reparcellization.polygons.find((plot: any) => plot.jointPool);
+    expect(shared.jointShareMode).toBe('manual');
+    expect(shared.owners.map((owner: any) => owner.share)).toHaveLength(2);
+    expect(shared.owners[0].share).toBeCloseTo(0.7, 12);
+    expect(shared.owners[1].share).toBeCloseTo(0.3, 12);
+    const validation = await page.evaluate(proposal => (window as any).ReparcellizationValidation.validate(proposal), saved);
+    expect(validation.valid).toBe(true);
+
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => (window as any).ProposalManager?._initialReapplyDone === true);
+    await showProposal(page, saved.proposalId);
+    const panel = page.locator('#proposal-details-panel');
+    const expand = panel.getByRole('button', { name: 'Expand', exact: true });
+    if (await expand.isVisible()) await expand.click();
+    const more = panel.locator('summary').filter({ hasText: 'More actions' });
+    if (await more.isVisible()) await more.click();
+    await panel.locator('.btn-edit-geometry').click();
+    await expect(modal).toBeVisible();
+    await expect(modal.locator('.reparcel-newplot-row').last()).toContainText(/70(?:\.0)?%/);
+    await modal.locator('.reparcel-newplot-row').last().getByRole('button', { name: 'Edit shares' }).click();
+    await expect(popup.locator('.reparcel-share-mode')).toContainText('stay fixed');
+    await expect(popup.getByRole('spinbutton', { name: 'Owner A share (%)', exact: true })).toHaveValue('70');
+    await popup.getByRole('spinbutton', { name: 'Owner A share (%)', exact: true }).scrollIntoViewIfNeeded();
+    const popupBox = await popup.boundingBox();
+    expect(popupBox?.x).toBeGreaterThanOrEqual(0);
+    expect((popupBox?.x || 0) + (popupBox?.width || 0)).toBeLessThanOrEqual(size.width);
+    await page.screenshot({ path: testInfo.outputPath(`${size.name}-custom-shares.png`), fullPage: true });
+  });
+}

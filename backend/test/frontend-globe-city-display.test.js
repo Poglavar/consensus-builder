@@ -4,6 +4,7 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const CityDisplay = require('../../frontend/js/world/globe-city-display.js');
+const WorldCoverage = require('../../frontend/js/world/world-coverage.js');
 
 function freezeDeep(value) {
     if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
@@ -80,6 +81,42 @@ describe('globe city detail selection', () => {
         expect(closeLabels.has('live:small')).toBe(true);
         expect(closeLabels.has('live:unknown')).toBe(true);
         expect(coverage.liveCities[2].population2025).toBeUndefined();
+    });
+
+    it('ranks regional-provider cities by their own populations and resolves zoom collisions per city', () => {
+        const coverage = WorldCoverage.create({
+            countries: [],
+            cities: [],
+            liveCities: [
+                { id: 'london', name: 'London', cc: 'GB', lat: 51.515, lon: -0.09, population2025: 10_000_000, sourceId: 'gb-hmlr-england-wales' },
+                { id: 'birmingham', name: 'Birmingham', cc: 'GB', lat: 52.4975, lon: -1.978, population2025: 2_600_000, sourceId: 'gb-hmlr-england-wales' },
+                { id: 'manchester', name: 'Manchester', cc: 'GB', lat: 53.4808, lon: -2.2426, population2025: 2_600_000, sourceId: 'gb-hmlr-england-wales' },
+                { id: 'newcastle', name: 'Newcastle upon Tyne', cc: 'GB', lat: 54.9873, lon: -1.5538, population2025: 760_000, sourceId: 'gb-hmlr-england-wales' },
+                { id: 'unknown', name: 'Unknown', cc: 'GB', lat: 53, lon: -1, sourceId: 'gb-hmlr-england-wales' }
+            ]
+        });
+        const ranked = CityDisplay.rankCities(coverage);
+        expect(ranked.map(entry => entry.key)).toEqual([
+            'live:london', 'live:birmingham', 'live:manchester', 'live:newcastle', 'live:unknown'
+        ]);
+        expect(ranked.filter(entry => entry.city.sourceId === 'gb-hmlr-england-wales')).toHaveLength(5);
+        expect(ranked.find(entry => entry.key === 'live:unknown').population).toBeNull();
+
+        const lowZoomCandidates = candidatesFor(ranked, entry => ({
+            'live:london': [250, 300], 'live:birmingham': [278, 300], 'live:manchester': [600, 300],
+            'live:newcastle': [900, 300], 'live:unknown': [1050, 300]
+        }[entry.key]), { labelWidth: 80 });
+        const lowZoom = CityDisplay.layout(lowZoomCandidates, { width: 1200, height: 800, altitudeKm: 20_000 });
+        expect(lowZoom.labels.map(label => label.entry.key)).toEqual(['live:london', 'live:manchester']);
+
+        const closeCandidates = candidatesFor(ranked, entry => ({
+            'live:london': [150, 300], 'live:birmingham': [370, 300], 'live:manchester': [590, 300],
+            'live:newcastle': [810, 300], 'live:unknown': [1030, 300]
+        }[entry.key]), { labelWidth: 80 });
+        const close = CityDisplay.layout(closeCandidates, { width: 1200, height: 800, altitudeKm: 500 });
+        expect(close.labels.map(label => label.entry.key)).toEqual([
+            'live:london', 'live:birmingham', 'live:manchester', 'live:newcastle', 'live:unknown'
+        ]);
     });
 
     it('keeps marker and label counts bounded as a synthetic catalog grows from 1,000 to 2,000 cities', () => {

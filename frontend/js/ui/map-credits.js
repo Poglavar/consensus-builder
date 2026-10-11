@@ -110,7 +110,7 @@
             heading.scrollIntoView({ block: 'start' });
             heading.focus({ preventScroll: true });
         }
-        const control = root.L.control({ position: 'bottomright' });
+        const control = root.L.control({ position: 'bottomleft' });
         let container;
         function renderControl() {
             if (!container) return;

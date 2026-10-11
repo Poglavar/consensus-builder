@@ -1,4 +1,5 @@
 // Public, category-scoped WFS adapter for the Bishkek ENI_AREA cadastre layer.
+import { concatBytes } from './byte-utils.js';
 import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
 import { canonicalParcelFeature, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
@@ -82,13 +83,13 @@ export function createBishkekCadastreSource(descriptor, { fetchImpl = globalThis
                 if (size > limit || state.totalBytes > maxTotalResponseBytes) {
                     throw upstreamError('Bishkek WFS response exceeds the byte limit.');
                 }
-                chunks.push(Buffer.from(value));
+                chunks.push(value);
             }
         } catch (error) {
             try { await reader.cancel(); } catch { /* The stream may already be closed. */ }
             throw error;
         } finally { reader.releaseLock(); }
-        return Buffer.concat(chunks, size);
+        return concatBytes(chunks, size);
     }
 
     async function readJson(response, state, signal) {
@@ -99,7 +100,7 @@ export function createBishkekCadastreSource(descriptor, { fetchImpl = globalThis
             if (signal.aborted || ['AbortError', 'TimeoutError'].includes(error?.name)) throw upstreamError('Bishkek WFS request timed out.', 504);
             throw upstreamError('Bishkek WFS response was interrupted.');
         }
-        try { return JSON.parse(bytes.toString('utf8')); }
+        try { return JSON.parse(new TextDecoder('utf-8').decode(bytes)); }
         catch { throw upstreamError('Bishkek WFS returned invalid GeoJSON.'); }
     }
 

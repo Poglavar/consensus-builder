@@ -2,14 +2,14 @@
 
 # Land readjustment: audit and next steps
 
-Audit and follow-up review date: **2026-10-11**. Filename follows the requested `land-readjustmend.md` spelling.
+Audit and follow-up review dates: **2026-10-11–12**. Filename follows the requested `land-readjustmend.md` spelling.
 The old implementation was selectively integrated and its local branch/worktree deleted.
-**§16 records the implemented pluggable rights and approval setup; §15 records the agreed ownership
+**§17 records shared validation, custom allocations and owner review; §16 records the implemented pluggable rights and approval setup; §15 records the agreed ownership
 abstraction; §14 the earlier consent/review increment; §13 the integration and §12 the review.**
 
 This is the working reference for land readjustment (LR): what exists, what is broken, prior
 decisions, international schemes, and the proposed path forward. Recommendations below are
-**proposed changes** unless explicitly marked implemented. The October 11 work in §§13–16 is
+**proposed changes** unless explicitly marked implemented. The October 11–12 work in §§13–17 is
 implemented locally within the limits stated in each section.
 Broader settlement and jurisdiction recommendations remain proposals.
 
@@ -42,7 +42,9 @@ The current editor now includes **Keep existing parcels**, courtyard drawing/der
 building footprint, pro-rata joint ownership and separate original-parcel agreements. The reusable
 comparison controller supports pointer/touch, keyboard and resize. Small-screen owner cards expose
 cash fields without horizontal scrolling. Source-building geometry is saved as derivation
-provenance; it does not confer building permission. See §13 for scope and verification.
+provenance; it does not confer building permission. Custom percentage shares, owner-specific
+before/after review and one validation result across design/publication/apply/consent are now
+implemented (§17). See §13 for the earlier integration scope and verification.
 
 ### Audit scope and confidence
 
@@ -72,9 +74,10 @@ provenance; it does not confer building permission. See §13 for scope and verif
 | Import a recognized geometry format | **Present, geometry only** | GeoJSON FeatureCollection, Feature, Polygon and MultiPolygon accepted around lines 2150–2226. The import replaces the working arrangement, clips to the pool and resolves overlap by subtraction. Imported owner attributes are ignored; assignment currently follows feature order modulo the owner list. This is not a faithful ownership round trip. |
 | Before/after vertical divider moving horizontally | **Present inside LR, accessible controller extracted** | [MapCompareControl](frontend/js/ui/map-compare-control.js) handles pointer/touch, arrows, Home/End, PageUp/PageDown, percentage-preserving resize and listener disposal. Headed desktop/390px/touch/keyboard checks pass. The map renderer remains LR-specific. |
 | General proposal comparison | **Reusable control available; other types not wired** | The shared editor still has source/draft/overlay buttons. Other proposal types can reuse the new divider controller, but need their own before/after rendering adapters. |
-| Pool contributions and allocation ledger | **Present, approximate economics** | Designer `buildOwnerShares`, `computeOwnerLedger`, `persistResult`: area/value contributions, entitlements, assigned area/value, balance, per-owner cash offer, aggregate offer. Output value uses a pool unit value, not a full independent valuation of each serviced plot. |
+| Pool contributions and allocation ledger | **Present, with per-owner review; approximate economics** | Owner review lists contributed area, area assigned by title share, land change, output plots and exact cash offer, and highlights input/output geometry. Unknown contribution stays unknown. Output valuation still uses a uniform pool unit value. |
 | Several recipients on one new parcel | **Preserved through apply/reload** | Exact `owners[]` values survive locally with normalized parcel title percentages; multiple recipients use a deterministic joint custody agent. Identity/signature semantics remain separate. |
-| Unequal joint shares | **Pro-rata courtyard shares present** | Shares follow remaining private allocation value (area under the uniform pool valuation). Manual checkboxes still assign equal shares; there is no arbitrary-share editor. |
+| Unequal joint shares | **Custom and pro-rata shares present** | Edit positive percentages totalling 100%. Custom courtyard shares remain fixed through geometry changes, undo and reopening. “Use private-land proportions” explicitly restores automatic shares. Adding/removing recipients with checkboxes deliberately gives the selected recipients equal shares; percentages can then be edited. |
+| Shared LR validation | **Implemented for design and local admission** | One pure validator checks geometry, pool coverage, overlap, output ownership and cash terms in the editor, publication, apply and consent paths. Missing input rights is a separate approval warning. Funding remains a local simulation flag; solvency and authoritative title/provenance verification are not implemented (§17). |
 | Some owners receive land, others cash, others both | **Can describe part of the deal** | Allocation plus positive per-owner cash offers can be entered. Owner payments into the pool, funded settlement, arbitrary payees and chain reconciliation are not implemented as an LR settlement. |
 | Counterproposals / forks | **Present** | Shared drafts produce a new proposal without prior acceptances. The saved pool is checked through the newer site flow; zero-cash exchanges and exact cash cents are supported. |
 | Approval of the exact LR deal | **Local/server commitment implemented; chain signing pending** | Versioned SHA-256 covers internal plots, full ownership vectors, ledger and terms. Changed or unbound local approvals stop counting and can be renewed. Server publication recomputes the hash and rejects malformed ownership/cash declarations. The approval panel shows the explicit per-owner EUR offers. See §14. |
@@ -91,6 +94,8 @@ provenance; it does not confer building permission. See §13 for scope and verif
   [slice helpers](frontend/js/reparcellization-slice.js),
   [input shares](frontend/js/reparcellization-shares.js),
   [UI state](frontend/js/reparcellization-ui-state.js),
+  [shared validation](frontend/js/reparcellization-validation.js),
+  [allocation arithmetic](frontend/js/reparcellization-allocation.js),
   [contribution arithmetic](frontend/js/proposals/readjustment-contributions.js).
 - Server normalization: [reparcellization route](backend/routes/reparcellization.js),
   called by [proposal creation](backend/routes/proposals.js), around lines 798–807.
@@ -138,28 +143,24 @@ Use unambiguous fields such as `poolAreaFraction` for geometric statistics and
 regardless of its fraction of the pool. Define a deliberate migration for stored plans and their
 materialized ownership; changing the display alone cannot fix the underlying semantics.
 
-### P0 before settlement — Validate a complete LR plan at the trust boundary
+### Resolved locally — Shared plan validation; settlement verification remains open
 
-The server validator recomputes area totals and checks percentage drift. It can return
-`validated: false` and proposal creation still stores the result. It does not validate pool
-containment, overlap, allocation completeness, ownership-share sums or cash solvency. Duplicate
-polygons can therefore have arithmetically consistent percentages without forming a valid plan.
+The initial audit found a percentage-only server check and inconsistent editor/apply gates. The
+October 12 increment replaces them with one explicit result across editor, ordinary publication,
+apply and consent. Invalid geometry, overlaps, incomplete declared pools, malformed output shares
+and cash-ledger inconsistencies are rejected before publication payment or map mutation. Area
+percentages are derived display values and no longer determine validity. See §17.
 
-The normal modal blocks Done when a plot has no owner. Import starts from an unassigned pool and
-leaves omitted land unassigned. The shared draft topology validator checks geometry; the newly integrated apply validator rejects
-invalid owner vectors, unassigned labels and contradictory ownerless declarations before forming
-children. Server publication, draft and apply gates are still not one unified settlement validator.
-
-Implement one explicit validation result used by the editor, publication and execution paths.
-Validate polygon geometry and provenance, allocation identities and exact shares, topology,
-conservation and settlement balance. Unknown ownership may remain an explicitly labelled draft
-condition; it cannot silently become verified ownership at execution.
+Missing **source** ownership remains an approval warning; abstract output recipients can still be
+assigned and saved. Unassigned outputs block Done/publication. Source verification, real funding,
+economic fairness, legal validity and contract settlement remain separate unresolved boundaries.
 
 **Coverage nuance:** current LR can take only part of a cadastral parcel and leave the rest with
 its owner. Validate coverage of the **declared pool/site**, then conserve untouched remainders
 across the enclosing cadastral scope. Do not reinstate the obsolete “LR must tile every whole
 source cadastral parcel” rule. The live fabric's closed-scope guard is stricter than the editor's
-older tolerances; use consistent geometry semantics rather than adding another percentage gate.
+older tolerances; the shared validator now uses the fabric's absolute-plus-relative conservation
+budget rather than a percentage gate.
 
 ### P1 — Make compensation a settlement schedule
 
@@ -661,12 +662,13 @@ record is not by itself a registered legal title.
 | **F — Built-form derivation and separate agreements** | Integrate reviewed courtyard/preserve-parcels work, then party-wall/frontage/access suggestions and independently feasible agreements. | Source version pinned, no false derivation for gapped blocks, private remainders preserved, joint shares stable, partial batch failure/resumption and severability demonstrated. |
 | **G — Bounded choices, then ranked negotiation** | Acceptable option sets, deterministic feasibility/selection, later preference-based proposal generation. | Oversubscribed plot, all-cash demand, tied rankings, missing choice, timeout, price change and re-consent scenarios. No settlement outside a signed acceptable set. |
 
-**Progress:** Phase A's ownership materialization and Phase B's accessible comparison/mobile ledger
-are implemented. Phase F's courtyard derivation and local agreement recovery are implemented with
+**Progress:** Phase A's ownership materialization and shared geometry/allocation validation and
+Phase B's accessible comparison, owner review and custom shares are implemented. Phase F's courtyard derivation and local agreement recovery are implemented with
 source-footprint snapshots. Phase C now has a shared local/server SHA-256 deal commitment and
-fresh-approval behavior (§14). These phases are not wholly complete: full topology/funding validation,
-faithful import, stable owner identity and executable settlement remain open. Next, finish the
-fixed-deal consent/settlement contract before adding country presets or ranked choices.
+fresh-approval behavior (§14) and stable abstract owner IDs with a separate approval setup (§16).
+These phases are not wholly complete: verified funding/title, faithful ownership import, production
+authority providers and executable settlement remain open. Next, connect one real authority provider
+and finish the fixed-deal settlement contract before adding country presets or ranked choices.
 
 ### Initial headless audit baseline
 
@@ -1152,3 +1154,78 @@ be expressed and checked together; a named collection alone does not make them a
   verify the plugin contract, not a live registry or owner-wallet integration.
 - Locale keys are present in English, Croatian, Spanish and Serbian. Syntax and scoped whitespace
   checks pass. No production data, chain schema or deployed application was changed.
+
+## 17. Shared validation and owner allocation review (2026-10-12)
+
+### Implemented
+
+[`ReparcellizationValidation`](frontend/js/reparcellization-validation.js) is the common pure
+validation entry point. It returns structured errors/warnings, measured coverage/overlap, normalized
+output ownership, exact ledger cents, source-rights readiness and local funding readiness. The
+specialist designer, shared draft adapter, server publication, map apply and consent binding use it.
+
+- Polygon checks cover finite closed rings, distinct vertices, positive area, self-intersections,
+  invalid/overlapping holes and overlapping MultiPolygon parts. Geometry failures stop admission.
+- The intended take is the saved pool, or the explicit site for a site subdivision. Without either,
+  the authored output union defines the take. Whole cadastral parents are never silently substituted
+  for a partial take. Site subdivisions must tile their declared site; cadastral land outside an LR
+  pool remains with its source owner through the existing fabric remainder path.
+- Gaps and outside land use the fabric's `1 m² + 1 ppm` budget. Overlap is checked independently,
+  with `max(0.01 m², 1 ppm of the plot)` tolerance, so equal-sized holes and overlaps cannot cancel.
+  Disconnected pools require separate proposals. The bounds are 1,000 outputs and 100,000 vertices
+  per polygonal geometry; this is admission validation, not survey certification.
+- Existing shared ownership and deal helpers check output recipients/shares and the per-owner EUR
+  ledger. Server area/percent fields are recomputed metadata; stale claimed percentages no longer
+  invalidate sound geometry. Unmeasurable totals stay null. Ordinary server publication refuses
+  invalid layouts before payment/database writes; the optional validation endpoint returns the
+  full report so a client can explain the refusal.
+- Input rights are separate. An abstract allocation remains designable with unresolved source
+  rights; complete rights and any threshold-required areas are needed for approval readiness.
+  Missing owners are not invented as a zero-owner passing electorate. Output assignments remain
+  required to save a finished allocation; an explicitly ownerless open-ground output is distinct
+  from unknown ownership.
+- Apply validates the original authored deal before later roads carve a private preview copy.
+  Invalid layouts cannot reach fabric/ownership mutation. Invalid terms cannot produce a consent
+  commitment or reach the signer. A positive cash obligation requires `funded === true` for local
+  execution; an absent funding flag is not treated as funded. This flag does not prove escrow.
+
+The editor adds **Edit shares** on every output and **Review one owner** above the owner ledger.
+Shares must be positive decimal percentages totalling 100%; invalid or unapplied edits block Done.
+Custom courtyard allocations persist as `jointShareMode: 'manual'`, including through splitting,
+carving, undo, save and reopening. **Use private-land proportions** explicitly switches a courtyard
+back to automatic allocation. The mode controls future editing; the resulting exact output share
+vector remains the consent-bound deal. Checkbox recipient changes deliberately redistribute equally
+and can then be adjusted. Private co-ownership does not turn a plot into a courtyard.
+
+Owner review lists contributed land, share-weighted assigned land, net land change, source parcels,
+each output share and the explicit cash offer. Unknown contributions stay unknown. Dashed amber
+marks source parcels and solid blue marks assigned outputs, including in the before/after view.
+Cash fields reject invalid amounts rather than substituting zero. These are proposals and allocation
+estimates, not proof of ownership or settlement; owner payments into the pool remain unimplemented.
+
+Screenshot review also found and fixed two map problems: a large share popup could leave the map
+panned away from the plots, and the before-map tile layer capped zoom at 19 while the editor allowed
+23 and half-step zoom. Popups now fit the map and restore the previous view; both comparison maps
+use the same zoom limits and increments. Owner ledger cards respond to sidebar width on desktop as
+well as phone width. All new messages have English, Croatian, Spanish and Serbian translations.
+
+### Verification and remaining work
+
+- Focused fast suite: **292 tests passed in 25 files**, including geometry failure/coverage cases,
+  partial takes, allocation arithmetic, source-rights warnings, pre-publication refusal, signer
+  gating, unknown funding, no mutation on failed apply, ownership/approval regressions and duplicate
+  browser globals. Logs: ignored `tmp/lr-polish/fast.log`.
+- **21 headed scenarios passed** across the complete LR audit, courtyard, consent and Approval
+  suites, one Chrome worker, no retries, with uncaught page errors treated as failures. New desktop
+  and 390px tests cover invalid percentage totals, 70/30 custom ownership, a geometric split and
+  undo, save/reload/reopen, owner highlights and both maps' actual projected boundary alignment.
+  The two new scenarios passed again after final parcel-label and cash-entry checks (negative,
+  empty and sub-cent inputs cannot be saved). Desktop/mobile screenshots were inspected; evidence
+  is under `/tmp/lr-polish/full-headed/` and `/tmp/lr-polish/final-owner-review/`. Tests use synthetic
+  parcels and authenticated test providers, not real ownership evidence or transactions.
+- Test browsers are closed. The pre-existing preview at `http://localhost:8481/` still serves this
+  checkout with verified `no-store, no-cache` headers. Changes remain uncommitted in this increment.
+- Next priorities remain a real lens authority provider, an explicit funded settlement schedule
+  and matching chain support. Jurisdiction templates, binding LR-plus-zoning packages, faithful
+  allocation import and negotiated/ranked alternatives remain separate work. No deployment,
+  contract change or production data change is part of this increment.

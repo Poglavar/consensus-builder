@@ -1,0 +1,76 @@
+{
+  "descriptor": {
+    "id": "us-tx-harris-hcad-parcels",
+    "endpoint": "https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0",
+    "idField": "HCAD_NUM",
+    "idType": "string",
+    "objectIdField": "OBJECTID",
+    "idPrefix": "US-TX-HCAD-",
+    "outFields": [
+      "HCAD_NUM",
+      "OBJECTID",
+      "acct_num"
+    ],
+    "nativeGeometryMode": "parts",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "disjointParts": true,
+    "partMatchFields": [
+      "acct_num"
+    ],
+    "attributeNotNull": [
+      "HCAD_NUM"
+    ],
+    "scope": "Identified HCAD account parcels in Harris County, Texas; Houston portions outside Harris County are not covered.",
+    "adapter": "arcgis",
+    "name": "Harris County HCAD account parcels",
+    "cityIds": [
+      "houston",
+      "6541"
+    ],
+    "countryCode": "US",
+    "metricSrid": 32615,
+    "pageSize": 100,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "maxConcurrentQueries": 2,
+    "partsCoordinatePrecision": 9,
+    "operator": "Harris County Appraisal District / Harris County GIS",
+    "catalogueUrl": "https://www.gis.hctx.net/arcgis/rest/services/HCAD/Parcels/MapServer/0",
+    "coverageNote": "Harris County identified account parcels; other Houston counties excluded",
+    "caveats": [
+      "Two source rows without an HCAD account number are excluded.",
+      "All rows for an account are read; exact duplicate polygons are collapsed and separate components are combined. Non-identical overlapping components or inconsistent acct_num references fail visibly."
+    ],
+    "evidenceFile": "research/same-country-expansion-2026-10-07/houston-acceptance.json",
+    "attribution": "Harris County Appraisal District / Harris County GIS. Adapted to WGS84.",
+    "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+    "stateCode": "TX"
+  },
+  "city": {
+    "code": "6541",
+    "name": "Pittsville",
+    "point": [
+      -95.1971592355123,
+      30.0640585361082
+    ]
+  },
+  "sampleIds": [
+    "US-TX-HCAD-1135540000105",
+    "US-TX-HCAD-1135540000103",
+    "US-TX-HCAD-1135540000102"
+  ],
+  "absentId": "US-TX-HCAD-9999999999999",
+  "metricEpsg": "EPSG:32615",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Harris County HCAD account parcels",
+      "Executable parcel providers with cityIds for shared-provider city entries; research-only sources remain in registry.json until verified.; Harris County HCAD account parcels; Identified HCAD account parcels in Harris County, Texas; Houston portions outside Harris County are not covered.; Real configured adapter acceptance; no parcel imports or raw geometry retained."
+    ]
+  },
+  "cellSizeDegrees": 0.001,
+  "sourceCandidateSha256": "8c958f4a25e24db90d376e54711d6618ab8f455a2244bace863a52f221609526",
+  "qualificationRecordedSha256": "2ccf5b8137162bfd3dd9ebf2cf47f2fb5a403392575ed9100cfccf409cd34f8b",
+  "sourceCandidatePath": "tmp/parcel-qualification/cities/6541/attempt-01/candidate.json"
+}

@@ -266,16 +266,21 @@ describe('subdivision on bare ground (empty binding)', () => {
         expect(fabric.list().map(piece => [piece.properties.parcelId, JSON.stringify(piece.geometry)]).sort()).toEqual(applied);
     });
 
-    it('mints nothing for open ground its plots leave uncovered (open ground has no remainder)', async () => {
+    it('refuses a subdivision whose plots leave its declared site uncovered, before changing the fabric', async () => {
         const record = subdivisionRecord('sub-part', BARE_SITE, { binding: { parcels: [], coverage: 'none' } });
-        // Keep only the first three plots: the rest of the site stays open ground.
+        // A subdivision partitions its declared site, including open ground; a missing plot is a gap.
         record.reparcellization.polygons = record.reparcellization.polygons.slice(0, 3);
-        const planned = record.reparcellization.polygons.reduce((sum, polygon) => sum + area(polygon.geometry), 0);
         const { manager, fabric } = await harness({ records: [record] });
-        installOwnershipSpies();
-        await expect(manager.applyProposal('sub-part')).resolves.toBe(true);
-        expect(fabric.list()).toHaveLength(3);
-        expect(fabric.list().reduce((sum, piece) => sum + area(piece), 0)).toBeCloseTo(planned, 0);
+        const spies = installOwnershipSpies();
+
+        await expect(manager.applyProposal('sub-part')).resolves.toBe(false);
+
+        expect(manager.getLastApplyFailureInfo('sub-part')).toMatchObject({ code: 'invalid-readjustment-deal' });
+        expect(fabric.list()).toEqual([]);
+        expect(spies.transferParcelOwnership).not.toHaveBeenCalled();
+        expect(spies.getOrCreateCityAgent).not.toHaveBeenCalled();
+        expect(spies.getOrCreateAgentForRecipient).not.toHaveBeenCalled();
+        expect(globalThis.proposalStorage.getProposal('sub-part').applied).toBe(false);
     });
 
     it('refuses to re-divide ground another proposal formed on the same open ground', async () => {

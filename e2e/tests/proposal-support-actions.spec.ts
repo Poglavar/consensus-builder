@@ -120,19 +120,23 @@ test.describe('Proposal support settlement @features', () => {
       }), { parcelId: PARCEL_ID, account: PROPOSAL, lifecycle: row.lifecycle, program: PROPOSAL_NFT_PROGRAM });
       await installSupportRpcFixture(page, row.action);
       await showProposal(page, proposalId);
-      const expand = page.locator('#proposal-details-panel').getByRole('button', { name: 'Expand', exact: true });
-      if (await expand.isVisible()) await expand.click();
-
-      const actionArea = page.locator('.proposal-support-actions');
-      const button = actionArea.getByRole('button', { name: new RegExp(row.button) });
-      await expect(button).toBeVisible({ timeout: 10000 });
+      const panel = page.locator('#proposal-details-panel');
+      const panelToggle = panel.locator('#proposal-details-minimize');
+      if (await panelToggle.getAttribute('aria-expanded') === 'true') await panelToggle.click();
+      await expect(panel).toHaveClass(/is-minimized/);
+      const compactAction = panel.locator('#proposal-details-footer .proposal-support-actions')
+        .getByRole('button', { name: new RegExp(row.button) });
+      await expect(compactAction).toBeVisible({ timeout: 10000 });
+      await expect(compactAction).toBeInViewport();
+      // Exercise the real compact-footer action; the transaction assertions below verify its
+      // instruction and confirmation path.
       if (row.action === 'pledge') {
-        await button.click();
+        await compactAction.click();
         const dialog = page.locator('#proposalBoostOverlay');
         await dialog.locator('#proposalBoostAmount').fill('1');
         await dialog.locator('[data-support-submit]').click();
       } else {
-        await button.click();
+        await compactAction.click();
       }
 
       const alert = page.locator('.cb-confirm-overlay');

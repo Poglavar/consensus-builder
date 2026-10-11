@@ -938,7 +938,6 @@ async function runLocalCorridorGeometryUpdate(proposalIdOrHash, mutateDefinition
         ProposalManager._refreshUIAfterProposalChange?.(storedReplacement);
         if (wasSelected && typeof selectAndHighlightProposal === 'function') {
             try { if (typeof clearProposalHighlights === 'function') clearProposalHighlights(); } catch (_) { }
-            window.__openProposalDetailsCollapsed = true;
             selectAndHighlightProposal(primaryId, null, false, true);
         }
     });
@@ -1353,13 +1352,15 @@ function rebuildRoadGeometryFromSegments() {
         }).addTo(map);
     }
 
-    const updatedPolygon = buildRoadUnionPolygonWithWidths(
+    // Before the second point (or after undoing back to it), there is no footprint or metric frame
+    // to build. Profile edits still update the tool and clear any old polygon below.
+    const updatedPolygon = hasDrawableCorridor() ? buildRoadUnionPolygonWithWidths(
         centerlinePoints,
         centerlinePoints.map((_, index) => roadDrawingWidthForSegmentIndex(index)),
         roadWidth,
         roadSegmentIds,
         roadSessionFrame()
-    );
+    ) : null;
     cachedCommittedPolygon = updatedPolygon;
     if (updatedPolygon) {
         roadPolygon = updatedPolygon;

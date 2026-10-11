@@ -1,0 +1,844 @@
+{
+  "schemaVersion": 1,
+  "provider": "ElevenLabs",
+  "endpoint": "POST /v1/text-to-speech/{voice_id}/with-timestamps",
+  "currency": "USD",
+  "costUsd": null,
+  "costNote": "No provider billing response or persisted cost header exists for the historical responses. No USD amounts are estimated or inferred.",
+  "characterCountDefinitions": {
+    "submittedCharacters": "Unicode code point count of the local narration string for the current cache key. It is the exact current request-text payload size, not an independent billing record; historical transmission evidence comes from the matching content hash and successful-output cache pair.",
+    "alignmentCharacters": "Length of the saved provider alignment.characters array. ElevenLabs documents this field as per-character timing for the original text. For superseded hashes, old submitted text was not retained; only this alignment count remains.",
+    "summation": "Current submitted characters and alignment character counts are reported separately. Summing alignmentCharacters across current and superseded entries counts multiple versions of the same scene and is not a unique-script or billed-character total."
+  },
+  "responseCountEvidence": {
+    "savedResponsePairsObserved": 36,
+    "currentPairs": 18,
+    "supersededPairs": 18,
+    "pairsPerScene": {
+      "hero1982-market-scout/due-diligence": 2,
+      "hero1982-market-scout/election-signal": 2,
+      "hero1982-market-scout/globe-close": 2,
+      "hero1982-market-scout/planet": 2,
+      "hero1982-market-scout/pool-choice": 2,
+      "hero1982-market-scout/proposal-list": 2,
+      "hero1982-market-scout/separate-markets": 2,
+      "hero1982-market-scout/stake-risk": 2,
+      "hero1982-market-scout/three-d": 2,
+      "jane-park-support/election-signal": 2,
+      "jane-park-support/expiry-refund": 2,
+      "jane-park-support/fifty-donation": 2,
+      "jane-park-support/globe-close": 2,
+      "jane-park-support/no-bet": 2,
+      "jane-park-support/planet": 2,
+      "jane-park-support/proposal-checks": 2,
+      "jane-park-support/proposal-list": 2,
+      "jane-park-support/three-d": 2
+    },
+    "interpretation": "Each pair is one saved response artifact for a unique scene/cache key; under the historical generator this pair is written only after an HTTP success and valid audio/alignment payload. It represents 36 successful response outcomes in the saved cache, but is not a log of all network attempts, retries, or billable events.",
+    "totalHttpAttempts": null,
+    "httpResponseRecordsObserved": 0
+  },
+  "summary": {
+    "currentSubmittedCharacters": 2990,
+    "currentAlignmentCharacters": 2990,
+    "supersededAlignmentCharacters": 3249,
+    "allSavedAlignmentCharacters": 6239,
+    "reportedUsdCost": null
+  },
+  "entries": [
+    {
+      "filmId": "hero1982-market-scout",
+      "sceneId": "due-diligence",
+      "cacheKey": "a12fa5a80af5",
+      "versionStatus": "current",
+      "cacheArtifacts": {
+        "audio": "audio/hero1982-market-scout/due-diligence-a12fa5a80af5.mp3",
+        "alignment": "audio/hero1982-market-scout/due-diligence-a12fa5a80af5.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": 162,
+      "alignmentCharacters": 162,
+      "submissionTextRetained": true,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "hero1982-market-scout",
+      "sceneId": "due-diligence",
+      "cacheKey": "9babafc17a4c",
+      "versionStatus": "superseded",
+      "cacheArtifacts": {
+        "audio": "audio/hero1982-market-scout/due-diligence-9babafc17a4c.mp3",
+        "alignment": "audio/hero1982-market-scout/due-diligence-9babafc17a4c.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": null,
+      "alignmentCharacters": 170,
+      "submissionTextRetained": false,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "hero1982-market-scout",
+      "sceneId": "election-signal",
+      "cacheKey": "112aeadfb273",
+      "versionStatus": "current",
+      "cacheArtifacts": {
+        "audio": "audio/hero1982-market-scout/election-signal-112aeadfb273.mp3",
+        "alignment": "audio/hero1982-market-scout/election-signal-112aeadfb273.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": 152,
+      "alignmentCharacters": 152,
+      "submissionTextRetained": true,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "hero1982-market-scout",
+      "sceneId": "election-signal",
+      "cacheKey": "8efc4dc4774d",
+      "versionStatus": "superseded",
+      "cacheArtifacts": {
+        "audio": "audio/hero1982-market-scout/election-signal-8efc4dc4774d.mp3",
+        "alignment": "audio/hero1982-market-scout/election-signal-8efc4dc4774d.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": null,
+      "alignmentCharacters": 167,
+      "submissionTextRetained": false,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "hero1982-market-scout",
+      "sceneId": "globe-close",
+      "cacheKey": "fbd0bd6a6697",
+      "versionStatus": "current",
+      "cacheArtifacts": {
+        "audio": "audio/hero1982-market-scout/globe-close-fbd0bd6a6697.mp3",
+        "alignment": "audio/hero1982-market-scout/globe-close-fbd0bd6a6697.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": 206,
+      "alignmentCharacters": 206,
+      "submissionTextRetained": true,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "hero1982-market-scout",
+      "sceneId": "globe-close",
+      "cacheKey": "46a676c61379",
+      "versionStatus": "superseded",
+      "cacheArtifacts": {
+        "audio": "audio/hero1982-market-scout/globe-close-46a676c61379.mp3",
+        "alignment": "audio/hero1982-market-scout/globe-close-46a676c61379.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": null,
+      "alignmentCharacters": 204,
+      "submissionTextRetained": false,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "hero1982-market-scout",
+      "sceneId": "planet",
+      "cacheKey": "82487d682f10",
+      "versionStatus": "current",
+      "cacheArtifacts": {
+        "audio": "audio/hero1982-market-scout/planet-82487d682f10.mp3",
+        "alignment": "audio/hero1982-market-scout/planet-82487d682f10.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": 152,
+      "alignmentCharacters": 152,
+      "submissionTextRetained": true,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "hero1982-market-scout",
+      "sceneId": "planet",
+      "cacheKey": "697d2ae7fe22",
+      "versionStatus": "superseded",
+      "cacheArtifacts": {
+        "audio": "audio/hero1982-market-scout/planet-697d2ae7fe22.mp3",
+        "alignment": "audio/hero1982-market-scout/planet-697d2ae7fe22.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": null,
+      "alignmentCharacters": 146,
+      "submissionTextRetained": false,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "hero1982-market-scout",
+      "sceneId": "pool-choice",
+      "cacheKey": "486f769a0b42",
+      "versionStatus": "current",
+      "cacheArtifacts": {
+        "audio": "audio/hero1982-market-scout/pool-choice-486f769a0b42.mp3",
+        "alignment": "audio/hero1982-market-scout/pool-choice-486f769a0b42.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": 167,
+      "alignmentCharacters": 167,
+      "submissionTextRetained": true,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "hero1982-market-scout",
+      "sceneId": "pool-choice",
+      "cacheKey": "f3f817152020",
+      "versionStatus": "superseded",
+      "cacheArtifacts": {
+        "audio": "audio/hero1982-market-scout/pool-choice-f3f817152020.mp3",
+        "alignment": "audio/hero1982-market-scout/pool-choice-f3f817152020.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": null,
+      "alignmentCharacters": 238,
+      "submissionTextRetained": false,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "hero1982-market-scout",
+      "sceneId": "proposal-list",
+      "cacheKey": "e3e256cd005e",
+      "versionStatus": "current",
+      "cacheArtifacts": {
+        "audio": "audio/hero1982-market-scout/proposal-list-e3e256cd005e.mp3",
+        "alignment": "audio/hero1982-market-scout/proposal-list-e3e256cd005e.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": 143,
+      "alignmentCharacters": 143,
+      "submissionTextRetained": true,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "hero1982-market-scout",
+      "sceneId": "proposal-list",
+      "cacheKey": "5190f547baf2",
+      "versionStatus": "superseded",
+      "cacheArtifacts": {
+        "audio": "audio/hero1982-market-scout/proposal-list-5190f547baf2.mp3",
+        "alignment": "audio/hero1982-market-scout/proposal-list-5190f547baf2.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": null,
+      "alignmentCharacters": 190,
+      "submissionTextRetained": false,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "hero1982-market-scout",
+      "sceneId": "separate-markets",
+      "cacheKey": "d1c35e32bda8",
+      "versionStatus": "current",
+      "cacheArtifacts": {
+        "audio": "audio/hero1982-market-scout/separate-markets-d1c35e32bda8.mp3",
+        "alignment": "audio/hero1982-market-scout/separate-markets-d1c35e32bda8.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": 187,
+      "alignmentCharacters": 187,
+      "submissionTextRetained": true,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "hero1982-market-scout",
+      "sceneId": "separate-markets",
+      "cacheKey": "bc6353b0030f",
+      "versionStatus": "superseded",
+      "cacheArtifacts": {
+        "audio": "audio/hero1982-market-scout/separate-markets-bc6353b0030f.mp3",
+        "alignment": "audio/hero1982-market-scout/separate-markets-bc6353b0030f.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": null,
+      "alignmentCharacters": 190,
+      "submissionTextRetained": false,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "hero1982-market-scout",
+      "sceneId": "stake-risk",
+      "cacheKey": "8fe6b8f082dd",
+      "versionStatus": "current",
+      "cacheArtifacts": {
+        "audio": "audio/hero1982-market-scout/stake-risk-8fe6b8f082dd.mp3",
+        "alignment": "audio/hero1982-market-scout/stake-risk-8fe6b8f082dd.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": 174,
+      "alignmentCharacters": 174,
+      "submissionTextRetained": true,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "hero1982-market-scout",
+      "sceneId": "stake-risk",
+      "cacheKey": "c92c596566af",
+      "versionStatus": "superseded",
+      "cacheArtifacts": {
+        "audio": "audio/hero1982-market-scout/stake-risk-c92c596566af.mp3",
+        "alignment": "audio/hero1982-market-scout/stake-risk-c92c596566af.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": null,
+      "alignmentCharacters": 177,
+      "submissionTextRetained": false,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "hero1982-market-scout",
+      "sceneId": "three-d",
+      "cacheKey": "3b1a09b9ff9f",
+      "versionStatus": "current",
+      "cacheArtifacts": {
+        "audio": "audio/hero1982-market-scout/three-d-3b1a09b9ff9f.mp3",
+        "alignment": "audio/hero1982-market-scout/three-d-3b1a09b9ff9f.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": 164,
+      "alignmentCharacters": 164,
+      "submissionTextRetained": true,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "hero1982-market-scout",
+      "sceneId": "three-d",
+      "cacheKey": "1adb091c8dde",
+      "versionStatus": "superseded",
+      "cacheArtifacts": {
+        "audio": "audio/hero1982-market-scout/three-d-1adb091c8dde.mp3",
+        "alignment": "audio/hero1982-market-scout/three-d-1adb091c8dde.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": null,
+      "alignmentCharacters": 153,
+      "submissionTextRetained": false,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "jane-park-support",
+      "sceneId": "election-signal",
+      "cacheKey": "760acad935d4",
+      "versionStatus": "current",
+      "cacheArtifacts": {
+        "audio": "audio/jane-park-support/election-signal-760acad935d4.mp3",
+        "alignment": "audio/jane-park-support/election-signal-760acad935d4.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": 146,
+      "alignmentCharacters": 146,
+      "submissionTextRetained": true,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "jane-park-support",
+      "sceneId": "election-signal",
+      "cacheKey": "ea8ded23451b",
+      "versionStatus": "superseded",
+      "cacheArtifacts": {
+        "audio": "audio/jane-park-support/election-signal-ea8ded23451b.mp3",
+        "alignment": "audio/jane-park-support/election-signal-ea8ded23451b.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": null,
+      "alignmentCharacters": 160,
+      "submissionTextRetained": false,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "jane-park-support",
+      "sceneId": "expiry-refund",
+      "cacheKey": "6d61f526ce3e",
+      "versionStatus": "current",
+      "cacheArtifacts": {
+        "audio": "audio/jane-park-support/expiry-refund-6d61f526ce3e.mp3",
+        "alignment": "audio/jane-park-support/expiry-refund-6d61f526ce3e.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": 177,
+      "alignmentCharacters": 177,
+      "submissionTextRetained": true,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "jane-park-support",
+      "sceneId": "expiry-refund",
+      "cacheKey": "b2e6f82af6f2",
+      "versionStatus": "superseded",
+      "cacheArtifacts": {
+        "audio": "audio/jane-park-support/expiry-refund-b2e6f82af6f2.mp3",
+        "alignment": "audio/jane-park-support/expiry-refund-b2e6f82af6f2.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": null,
+      "alignmentCharacters": 207,
+      "submissionTextRetained": false,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "jane-park-support",
+      "sceneId": "fifty-donation",
+      "cacheKey": "96aff32a2ad1",
+      "versionStatus": "current",
+      "cacheArtifacts": {
+        "audio": "audio/jane-park-support/fifty-donation-96aff32a2ad1.mp3",
+        "alignment": "audio/jane-park-support/fifty-donation-96aff32a2ad1.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": 148,
+      "alignmentCharacters": 148,
+      "submissionTextRetained": true,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "jane-park-support",
+      "sceneId": "fifty-donation",
+      "cacheKey": "9105dcbec8f3",
+      "versionStatus": "superseded",
+      "cacheArtifacts": {
+        "audio": "audio/jane-park-support/fifty-donation-9105dcbec8f3.mp3",
+        "alignment": "audio/jane-park-support/fifty-donation-9105dcbec8f3.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": null,
+      "alignmentCharacters": 230,
+      "submissionTextRetained": false,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "jane-park-support",
+      "sceneId": "globe-close",
+      "cacheKey": "9fbbc9fc640a",
+      "versionStatus": "current",
+      "cacheArtifacts": {
+        "audio": "audio/jane-park-support/globe-close-9fbbc9fc640a.mp3",
+        "alignment": "audio/jane-park-support/globe-close-9fbbc9fc640a.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": 184,
+      "alignmentCharacters": 184,
+      "submissionTextRetained": true,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "jane-park-support",
+      "sceneId": "globe-close",
+      "cacheKey": "3e4a7a60cf5f",
+      "versionStatus": "superseded",
+      "cacheArtifacts": {
+        "audio": "audio/jane-park-support/globe-close-3e4a7a60cf5f.mp3",
+        "alignment": "audio/jane-park-support/globe-close-3e4a7a60cf5f.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": null,
+      "alignmentCharacters": 192,
+      "submissionTextRetained": false,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "jane-park-support",
+      "sceneId": "no-bet",
+      "cacheKey": "f6568917dddb",
+      "versionStatus": "current",
+      "cacheArtifacts": {
+        "audio": "audio/jane-park-support/no-bet-f6568917dddb.mp3",
+        "alignment": "audio/jane-park-support/no-bet-f6568917dddb.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": 173,
+      "alignmentCharacters": 173,
+      "submissionTextRetained": true,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "jane-park-support",
+      "sceneId": "no-bet",
+      "cacheKey": "0ddba14c1be7",
+      "versionStatus": "superseded",
+      "cacheArtifacts": {
+        "audio": "audio/jane-park-support/no-bet-0ddba14c1be7.mp3",
+        "alignment": "audio/jane-park-support/no-bet-0ddba14c1be7.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": null,
+      "alignmentCharacters": 204,
+      "submissionTextRetained": false,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "jane-park-support",
+      "sceneId": "planet",
+      "cacheKey": "d82a5ace6d03",
+      "versionStatus": "current",
+      "cacheArtifacts": {
+        "audio": "audio/jane-park-support/planet-d82a5ace6d03.mp3",
+        "alignment": "audio/jane-park-support/planet-d82a5ace6d03.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": 156,
+      "alignmentCharacters": 156,
+      "submissionTextRetained": true,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "jane-park-support",
+      "sceneId": "planet",
+      "cacheKey": "99d695390bd7",
+      "versionStatus": "superseded",
+      "cacheArtifacts": {
+        "audio": "audio/jane-park-support/planet-99d695390bd7.mp3",
+        "alignment": "audio/jane-park-support/planet-99d695390bd7.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": null,
+      "alignmentCharacters": 125,
+      "submissionTextRetained": false,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "jane-park-support",
+      "sceneId": "proposal-checks",
+      "cacheKey": "97fa0a6bda34",
+      "versionStatus": "current",
+      "cacheArtifacts": {
+        "audio": "audio/jane-park-support/proposal-checks-97fa0a6bda34.mp3",
+        "alignment": "audio/jane-park-support/proposal-checks-97fa0a6bda34.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": 192,
+      "alignmentCharacters": 192,
+      "submissionTextRetained": true,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "jane-park-support",
+      "sceneId": "proposal-checks",
+      "cacheKey": "3c2dc03028d9",
+      "versionStatus": "superseded",
+      "cacheArtifacts": {
+        "audio": "audio/jane-park-support/proposal-checks-3c2dc03028d9.mp3",
+        "alignment": "audio/jane-park-support/proposal-checks-3c2dc03028d9.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": null,
+      "alignmentCharacters": 185,
+      "submissionTextRetained": false,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "jane-park-support",
+      "sceneId": "proposal-list",
+      "cacheKey": "7f1168bb4fae",
+      "versionStatus": "current",
+      "cacheArtifacts": {
+        "audio": "audio/jane-park-support/proposal-list-7f1168bb4fae.mp3",
+        "alignment": "audio/jane-park-support/proposal-list-7f1168bb4fae.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": 141,
+      "alignmentCharacters": 141,
+      "submissionTextRetained": true,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "jane-park-support",
+      "sceneId": "proposal-list",
+      "cacheKey": "4032b5200082",
+      "versionStatus": "superseded",
+      "cacheArtifacts": {
+        "audio": "audio/jane-park-support/proposal-list-4032b5200082.mp3",
+        "alignment": "audio/jane-park-support/proposal-list-4032b5200082.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": null,
+      "alignmentCharacters": 161,
+      "submissionTextRetained": false,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "jane-park-support",
+      "sceneId": "three-d",
+      "cacheKey": "d0f53eee383f",
+      "versionStatus": "current",
+      "cacheArtifacts": {
+        "audio": "audio/jane-park-support/three-d-d0f53eee383f.mp3",
+        "alignment": "audio/jane-park-support/three-d-d0f53eee383f.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": 166,
+      "alignmentCharacters": 166,
+      "submissionTextRetained": true,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    },
+    {
+      "filmId": "jane-park-support",
+      "sceneId": "three-d",
+      "cacheKey": "2d904f52ca60",
+      "versionStatus": "superseded",
+      "cacheArtifacts": {
+        "audio": "audio/jane-park-support/three-d-2d904f52ca60.mp3",
+        "alignment": "audio/jane-park-support/three-d-2d904f52ca60.alignment.json",
+        "pairPresent": true
+      },
+      "submittedCharacters": null,
+      "alignmentCharacters": 150,
+      "submissionTextRetained": false,
+      "providerHeaders": {
+        "requestId": null,
+        "traceId": null,
+        "characterCost": null
+      },
+      "usdCost": null,
+      "responseArtifactEvidence": "One MP3 plus alignment JSON for this unique scene/cache key. The historical pipeline writes this pair only after an HTTP success and payload validation; historical transport attempts, request IDs, and billing records were not saved.",
+      "httpResponsesObserved": 0
+    }
+  ],
+  "historicalLimitations": "The old cache files contain audio and alignment JSON but no saved raw response headers or usage report. requestId, traceId, characterCost and USD cost are therefore null; failed requests and retries cannot be reconstructed.",
+  "httpResponses": []
+}

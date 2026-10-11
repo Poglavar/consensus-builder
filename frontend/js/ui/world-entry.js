@@ -6,14 +6,16 @@
 //
 // API (window.WorldEntry)
 //   open(opts) -> Promise    opts: { closable?: false, focus: { lat, lon, zoom? } | Place }
-//   ownsBoot() -> boolean    true while a first-visit globe is (about to be) open; the site intro
-//                            waits for the 'worldview:landed' event instead of stacking on it
+//   ownsBoot() -> boolean    true while a first-visit globe is (about to be) open; an explicitly
+//                            requested intro waits for 'worldview:landed' instead of stacking on it
 //   explorePlaceName() -> string   the explored place for the city chip ('' until known)
 (function (global) {
     'use strict';
 
     const Model = global.WorldEntryModel;
     const doc = global.document;
+    // Keep the arrival separate from map-core's later ?at= updates to the address bar.
+    const entryLocation = { pathname: global.location.pathname, search: global.location.search };
     const BANNER_DISMISSED_KEY = 'cb_explore_banner_dismissed';
     const state = {
         opening: null,
@@ -49,7 +51,7 @@
     // The app's own route detectors, on top of the model's list: a link they recognise is never
     // covered by a first-visit globe.
     function sharedRouteNow() {
-        if (Model.isSharedRoute(global.location)) return true;
+        if (Model.isSharedRoute(entryLocation)) return true;
         try { if (typeof global.isProposalDeepLink === 'function' && global.isProposalDeepLink()) return true; } catch (_) { /* fall through */ }
         try {
             const routing = global.AreaMonitorRouting;
@@ -228,8 +230,8 @@
         const m = manager();
         const decision = Model.bootDecision({
             cityChosen: m.wasCityChosenAtBoot(),
-            sharedRoute: Model.isSharedRoute(global.location),
-            search: global.location.search
+            sharedRoute: Model.isSharedRoute(entryLocation),
+            search: entryLocation.search
         });
         if (!decision.open) return;
         state.bootOpen = true;

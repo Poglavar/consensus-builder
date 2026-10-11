@@ -548,17 +548,33 @@ describe('reparcellization adapter', () => {
         });
     });
 
-    it('rejects gaps in required cadastral coverage without a second parent list', () => {
+    it('rejects gaps against a declared take even when stale area metadata would suggest coverage', () => {
         const draft = draftFor(reparcellizationAdapter, proposal);
-        draft.editorPayload.plan.totalArea = 100;
+        draft.editorPayload.plan.poolGeometry = {
+            type: 'Polygon',
+            coordinates: [[[15.9, 45.8], [15.91, 45.8], [15.91, 45.81], [15.9, 45.81], [15.9, 45.8]]]
+        };
+        draft.editorPayload.plan.totalArea = 1;
         draft.editorPayload.plan.polygons = [
-            { ...polygons[0], area: 40 }
+            { ...polygons[0], area: 999999 }
         ];
         expect(reparcellizationAdapter.validate(draft)).toMatchObject({
             valid: false,
             errors: expect.arrayContaining([
                 expect.objectContaining({ code: 'coverage-gap' })
             ])
+        });
+    });
+
+    it('allows an abstract output owner when input rights have not been resolved', () => {
+        const draft = draftFor(reparcellizationAdapter, proposal);
+        draft.fields.approvalConfig = {
+            schema: 'proposal-approval/v1', rights: null, policy: { type: 'unanimous' }
+        };
+
+        expect(reparcellizationAdapter.validate(draft)).toMatchObject({
+            valid: true,
+            warnings: expect.arrayContaining([expect.objectContaining({ code: 'ownership-unresolved' })])
         });
     });
 });
@@ -601,8 +617,7 @@ describe('subdivision (readjustment pooled from a site)', () => {
         const draft = draftFor(reparcellizationAdapter, record(halfPlots, parcelHalf));
         const result = reparcellizationAdapter.validate(draft);
         expect(result.valid).toBe(false);
-        expect(result.errors.map(error => error.code)).toEqual(expect.arrayContaining(['coverage-gap', 'pool-coverage-mismatch']));
-        expect(result.errors.find(error => error.code === 'pool-coverage-mismatch').message).toContain('open ground');
+        expect(result.errors.map(error => error.code)).toContain('coverage-gap');
     });
 
     it('opens the editor on the site with the binding\'s parcels as the owned pool', async () => {

@@ -1,0 +1,69 @@
+{
+  "id": "jane-park-support",
+  "title": "Jane the Superpredictor",
+  "format": "9:16",
+  "targetSeconds": [
+    90,
+    120
+  ],
+  "disclosure": "Illustrative devnet walkthrough. Election and council-document scenarios are hypothetical. No investment returns are guaranteed.",
+  "voice": {
+    "id": "iP95p4xoKVk53GoZ742B",
+    "name": "Chris - Charming, Down-to-Earth (stock voice)",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.55,
+      "similarity_boost": 0.78,
+      "style": 0.15,
+      "speed": 1.0
+    }
+  },
+  "padSeconds": 0.65,
+  "scenes": [
+    {
+      "id": "planet",
+      "visual": "Actual UGT planet or global map view, moving toward a city. Do not add fake markers.",
+      "narration": "Jane is a planet surfer. She loves exploring our blue marble. Opinionated, well informed, and always monitoring the situation. We call her a Superpredictor."
+    },
+    {
+      "id": "proposal-list",
+      "visual": "Actual proposal list and a real apartment-block proposal in Zagreb if available. Keep its lifecycle and parcel details legible; retain the subtle illustrative-devnet label.",
+      "narration": "On a typical day, Jane opens Urban Game Theory and scrolls the latest proposals. A new apartment block in Zagreb catches her eye. She clicks."
+    },
+    {
+      "id": "three-d",
+      "visual": "Show the actual 3D view and design of the apartment-block proposal with surrounding streets. Do not add or imply a park footprint.",
+      "narration": "The three-dimensional view brings it to life. New homes, on these parcels, in this neighbourhood. It looks good. But Jane knows something the picture cannot tell her."
+    },
+    {
+      "id": "election-signal",
+      "visual": "Use the supplied code-drawn concept clip labeled 'ILLUSTRATIVE SCENARIO'. It shows only the hypothetical possibility that an opposing party may win; it contains no poll, result, number, source, or app card. Do not present it as real election evidence.",
+      "narration": "In this example, the party promising to block the project is leading the next election. Jane thinks execution is unlikely. That suggests a NO bet."
+    },
+    {
+      "id": "proposal-checks",
+      "visual": "Actual apartment-block proposal details: resolution lens/evidence, funds, pledges, donations, and owner acceptance progress. Show only visible real values.",
+      "narration": "First, she checks who will resolve the outcome. Does she trust that lens? Then the details: money committed, pledges, donations, and parcel-owner acceptances. Every signal can change her view."
+    },
+    {
+      "id": "no-bet",
+      "visual": "Actual YES/NO market and stake flow, or an already existing devnet position. No new stake transaction is needed; do not fabricate a wallet receipt.",
+      "narration": "Her conclusion holds. Jane selects NO, chooses her stake, and confirms. The stake stays locked until resolution. Cancellation or recorded expiry pays NO; execution pays YES."
+    },
+    {
+      "id": "fifty-donation",
+      "visual": "Use the real public park proposal list only to establish the identity and nearby two-parcel context for UPU Borovje – javni park Z1-3 (published and unminted). Follow it with the supplied separate illustrative donation concept. The public proposal has no shown completed donation or conditional funds; do not imply it received Jane's hypothetical donation. No wallet flow, receipt, success state, or transaction.",
+      "narration": "Then she spots another proposal nearby: buy two parcels and make a public park. Jane wants that to happen. She donates fifty dollars in devnet USDC."
+    },
+    {
+      "id": "expiry-refund",
+      "visual": "Use the supplied code-drawn conditional refund diagram. It explains a one-year path only; it does not depict a real proposal already Expired or a completed transaction/claim. In an actual case, expiry must be recorded on-chain before a donor can claim.",
+      "narration": "The donation sits in escrow. This plan needs all parcel owners to accept. If it has not executed after a year, and expiry is recorded on-chain, Jane can claim her donation back."
+    },
+    {
+      "id": "globe-close",
+      "visual": "Return to the actual UGT globe or global map. Keep a genuine proposal/lifecycle marker visible if one is part of the application.",
+      "narration": "A forecast on one project. Support for another. Jane returns to happily surfing the planet. Urban Game Theory. Explore your world, predict what changes, and help shape what comes next."
+    }
+  ]
+}

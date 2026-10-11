@@ -368,6 +368,12 @@
       ]
     },
     {
+      "id": "activity.agents",
+      "specs": [
+        "tests/activity-controls.spec.ts"
+      ]
+    },
+    {
       "id": "game.enable",
       "specs": [
         "tests/activity-controls.spec.ts"

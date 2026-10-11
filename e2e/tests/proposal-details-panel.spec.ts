@@ -13,23 +13,14 @@ test.describe('Proposal details panel @features', () => {
         cadastreParcelIds: [parcelId],
       });
     }, PARCEL_ID);
-    const opened = await page.evaluate(id => (window as any).openProposalFromList(id, {
-      closeProposalList: true,
-      closeParcelInfo: true,
-      centerOnProposal: false,
-      showDetails: true,
-      showSelection: false,
-    }), proposalId);
-    expect(opened).toBe(true);
+    await page.locator('#proposals-button').click();
+    await page.locator(`.proposal-list-item[data-proposal-id="${proposalId}"] .proposal-list-details-btn`).click();
 
     const panel = page.locator('#proposal-details-panel');
     const minimizeButton = panel.locator('#proposal-details-minimize');
     const body = panel.locator('.panel-body');
     await expect(panel).toBeVisible();
-    // Opening from the proposals list deliberately presents this secondary panel collapsed.
-    await expect(panel).toHaveClass(/is-minimized/);
-    await expect(minimizeButton).toHaveAttribute('aria-expanded', 'false');
-    await minimizeButton.click();
+    // The list's Details action opens the reader; minimizing is the user's explicit choice.
     await expect(panel).not.toHaveClass(/is-minimized/);
     await expect(body).toBeVisible();
     await minimizeButton.click();

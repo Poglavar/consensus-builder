@@ -151,7 +151,7 @@ describe('proposal list navigation', () => {
         expect(calls.map(([kind]) => kind)).toEqual(['mode', 'details']);
         expect(calls[0]).toEqual(['mode', '2d']);
         expect(calls[1][1]).toBe('proposal-17');
-        expect(calls[1][2]).toMatchObject({ centerOnProposal: false, closeSheets: true });
+        expect(calls[1][2]).toMatchObject({ centerOnProposal: false, closeSheets: true, presentation: 'details' });
         expect(context.openProposalFromList).toHaveBeenCalledTimes(1);
     });
 });

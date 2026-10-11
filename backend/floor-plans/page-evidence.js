@@ -1,10 +1,14 @@
 // Conservative, source-backed HTML evidence extraction; never invents property facts.
 import * as cheerio from 'cheerio';
+import { extractExplicitLocation, propertyDetailId } from './explicit-location.js';
 
 const TRACKING = /^(utm_|fbclid$|gclid$|mc_cid$|mc_eid$|ref$|source$)/i;
-const PLAN_WORD = /(tlocrt|floor[._ -]?plans?|ground[._ -]?plans?|blueprints?|etažni|etazni|tlocrti)/i;
+const PLAN_WORD = /(tlocrt|floor[._ -]?plans?|ground[._ -]?plans?|blueprints?|etažni|etazni|tlocrti|\bgrundriss(?:e)?\b)/i;
 const PLAN_LABEL = /\b(?:plan|tlocrt)\b/i;
+const GALLERY_SELECTOR = '[class*=gallery],[class*=Gallery],[class*=carousel],[class*=Carousel],[class*=swiper],[class*=Swiper],[class*=slider],[class*=Slider],[data-slot="carousel"],[aria-roledescription="carousel"]';
+const SEMANTIC_CAROUSEL_SELECTOR = '[data-slot="carousel"],[aria-roledescription="carousel"]';
 const BLOCKED = /(captcha|cloudflare|access denied|verify you are human|robot check|too many requests|temporarily blocked|just a moment|checking your browser)/i;
+const LEGAL_ARTIFACT = /\b(?:privacy(?: policy)?|privatnost\w*|datenschutz\w*|gdpr|cookie(?: policy)?|izjav\w* (?:o )?obrad\w* osobn\w* podatk\w*|obrad\w* osobn\w* podatk\w*|uvjet\w* (?:poslovanj\w*|koristenj\w*)|opci uvjet\w* poslovanj\w*|terms (?:conditions?|of (?:service|use|business))|brokerage (?:agreement|terms|disclosure)|ugovor\w* o posredovanj\w*|posredovanj\w* (?:ugovor\w*|uvjet\w*)|posrednick\w* (?:ugovor\w*|uvjet\w*)|legal (?:notice|terms))\b/i;
 const first = (...values) => values.find(value => value !== undefined && value !== null && String(value).trim() !== '') ?? null;
 const number = value => { if (value === null || value === undefined || value === '') return null; const match = String(value).replace(',', '.').match(/-?\d+(?:\.\d+)?/); return match ? Number(match[0]) : null; };
 const absolute = (raw, base) => { try { const url = new URL(raw, base); if (!['http:', 'https:'].includes(url.protocol)) return null; return url; } catch (_) { return null; } };
@@ -30,9 +34,109 @@ function sameDocumentUrl(a, b, base) {
     return key(a) !== null && key(a) === key(b);
 }
 
+function operetaPropertyId(raw, base) {
+    try {
+        const url = new URL(raw, base);
+        if (url.hostname.toLowerCase().replace(/^www\./, '') !== 'opereta.hr') return null;
+        return url.pathname.match(/^\/(?:nekretnina|de\/immobilie)\/[^/]+\/(\d+)(?:-[^/]*)?\/?$/i)?.[1] || null;
+    } catch (_) { return null; }
+}
+
+function sameOperetaProperty(a, b) {
+    const aId = operetaPropertyId(a, b), bId = operetaPropertyId(b, b);
+    return Boolean(aId && bId && aId === bId);
+}
+
+function isLegalArtifact(url, label, element) {
+    const link = element.closest('a');
+    const source = [url, label, link.attr('rel'), link.attr('title'), link.attr('aria-label'), element.attr('title')]
+        .filter(Boolean).join(' ').normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase()
+        .replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
+    return LEGAL_ARTIFACT.test(source);
+}
+
+function galleryMembership(element, mainCarousel) {
+    const gallery = element.closest(GALLERY_SELECTOR).length > 0;
+    const semanticCarousel = element.closest(SEMANTIC_CAROUSEL_SELECTOR);
+    const otherCarousel = Boolean(mainCarousel && semanticCarousel.length && semanticCarousel[0] !== mainCarousel);
+    return { gallery: gallery && !otherCarousel, otherCarousel };
+}
+
+function architectureLocality($, pageUrl) {
+    const main = $('main').first().length ? $('main').first() : $('article').first().length ? $('article').first()
+        : new URL(pageUrl).hostname.replace(/^www\./i, '') === 'radionica-arhitekture.hr' ? $('body').first() : $('article').first();
+    if (!main.length) return null;
+    const facts = main.find('.section-project-title,.project-data').clone();
+    facts.find('header,footer,nav,aside,[class*="contact" i],[class*="office" i],[class*="related" i]').remove();
+    for (const label of facts.find('div,p,span').toArray()) {
+        if (!/^(?:city|grad)\s*:?$/i.test($(label).text().replace(/\s+/g, ' ').trim())) continue;
+        const next = $(label).next();
+        if (!next.length || next[0].tagName !== label.tagName) continue;
+        const city = next.text().replace(/\s+/g, ' ').trim();
+        if (/^[\p{L}][\p{L}\p{M} .'-]{1,59}$/u.test(city)) return city;
+    }
+    if (new URL(pageUrl).hostname.replace(/^www\./i, '') === 'radionica-arhitekture.hr') {
+        const ownContent = main.clone();
+        ownContent.find('header,footer,nav,aside,[class*="contact" i],[class*="office" i],[class*="related" i]').remove();
+        for (const el of ownContent.find('p').toArray()) {
+            const lines = $(el).clone();
+            lines.find('br').replaceWith('\n');
+            const parts = lines.text().split(/\n/).map(value=>value.replace(/\s+/g,' ').trim());
+            if (parts.length < 2 || !/^[\p{L}\p{M} .'-]+\s+\d{1,4}[a-z]?$/iu.test(parts[0])) continue;
+            const match = parts[1].match(/^(?:Location|Mjesto):\s*([\p{L}\p{M} .'-]+?)(?:,\s*[\p{L}\p{M} .'-]+)?$/iu);
+            if (match && match[1].length <= 60) return match[1].trim();
+        }
+    }
+    const heading = main.find('.section-project-title h2').first().text().replace(/\s+/g, ' ').trim();
+    return /^[\p{L}][\p{L}\p{M} .'-]{1,59}$/u.test(heading) && !/^(?:project|projects|projekt|projekti|architecture|arhitektura|portfolio)$/i.test(heading)
+        ? heading : null;
+}
+
+function architectureDetailRoute(rawUrl, $) {
+    const url = new URL(rawUrl), host = url.hostname.replace(/^www\./i, '').toLowerCase(), path = url.pathname;
+    if (host === 'hiperprostor.hr' && /^\/projekti\/[^/]+\/\d+\/?$/i.test(path)) return 'hiperprostor';
+    if (host === 'ivaarch.hr' || host === 'unifika.hr') {
+        const localized = path.match(/^\/(?:hrvatski|english)\/([^/]+)_\d+\/?$/i);
+        const nonProject = /^(?:prostorno-uredjenje|architecture|arhitektura|projekti|projects|portfolio|reference|references|o-nama|about|about-us|kontakt|contact|studio|home|naslovnica|pocetna)$/i;
+        if (localized && !nonProject.test(localized[1])) return 'localized-project';
+    }
+    if (host === 'interkonzalting.hr' && /^\/(?:EN\/)?[^/]+\/?$/i.test(path)
+        && $('main .project-section-content').find('strong').toArray().some(el => /^Projekt:\s*$/i.test($(el).text().trim()))) return 'interkonzalting';
+    if (host === 'gin.hr' && /^\/(?:projektiranje-stambeno-poslovne-zgrade|projektiranje-savjetovanje-i-projektantski-nadzor)\/?$/i.test(path)) return 'gin-project';
+    if (host === 'radionica-arhitekture.hr' && /^\/(?:project|projekt)\/\d+\/[^/]+\/?$/i.test(path)) return 'radionica';
+    if (host === 'njiric.com' && path.toLowerCase() === '/handlers/project.ashx'
+        && /^p\d+$/i.test(url.searchParams.get('id') || '')
+        && [...url.searchParams.keys()].every(key => key.toLowerCase() === 'id')) return 'njiric-fragment';
+    if (host === 'njiric.com' && /^\/work\/all-projects\/[^/]+\/\d+\/?$/i.test(path)) return 'njiric';
+    if (host === 'sza.hr' && path.toLowerCase() === '/project_variable.php' && /^\d+$/.test(url.searchParams.get('id') || '')) return 'sza';
+    if (/^\/(?:en\/|hr\/)?(?:project|projects|projekt|projekti)\/[^/]+\/?$/i.test(path)) return 'generic';
+    return null;
+}
+
+function architectureProjectStatus($, pageUrl) {
+    const host = new URL(pageUrl).hostname.replace(/^www\./i, '');
+    if (host === 'radionica-arhitekture.hr') {
+        for (const el of $('main p').toArray()) {
+            const copy = $(el).clone(); copy.find('br').replaceWith('\n');
+            const lines = copy.text().split(/\n/).map(value=>value.replace(/\s+/g,' ').trim());
+            if (!/^[\p{L}\p{M} .'-]+\s+\d{1,4}[a-z]?$/iu.test(lines[0] || '') || !/^(?:Location|Mjesto):/i.test(lines[1] || '')) continue;
+            const type = lines.find(line=>/^(?:Type|Vrsta):\s*\S/i.test(line));
+            if (type) return { value:type.replace(/^(?:Type|Vrsta):\s*/i,''), quote:type, basis:'project-fact-block-type' };
+        }
+    }
+    const roots = $('.project-data,.project-details,main,article,.node-project').clone();
+    roots.find('header,footer,nav,aside,[class*="contact" i],[class*="related" i]').remove();
+    for (const label of roots.find('p,h3,dt,th').toArray()) {
+        if (!/^status\s*:?$/i.test($(label).text().replace(/\s+/g,' ').trim())) continue;
+        const value = $(label).next('p,dd,td').first().text().replace(/\s+/g,' ').trim();
+        if (/^[\p{L}\p{M}0-9 /-]{2,80}$/u.test(value)) return {value,quote:value,basis:'project-status-field'};
+    }
+    return null;
+}
+
 // A page may embed whole project tables and recommendation cards. Discovery is
 // page-wide, but a plan belongs to the main listing only when its local owner agrees.
-function assetOwnership($, el, listing, pageUrl, url, label, forcedKind = null) {
+function assetOwnership($, el, listing, pageUrl, url, label, forcedKind = null, mainCarousel = null) {
     const element = $(el), row = element.closest('#property-project-items-table tr');
     let ownerSourceId = null, ownerListingUrl = null;
     if (row.length) {
@@ -56,51 +160,119 @@ function assetOwnership($, el, listing, pageUrl, url, label, forcedKind = null) 
         .agent,.agent-card,.agent-profile,.agent-photo,.agent-portrait,.broker-card,.advisor-card,
         .consultant-card,.avatar,.portrait,.staff-card,.privacy-policy,.cookie-banner`).length > 0
         || /(?:^|\/)(?:regionalphotos?|regional-photos?|agent-photos?|agents?|staff-photos?|team-photos?|avatars?|portraits?)(?:\/|$)/i.test(new URL(url).pathname)
-        || /(?:privacy|privatnost|datenschutz|gdpr|cookie|osobni-podaci)/i.test(context);
+        || isLegalArtifact(url, label, element);
     const recommendation = element.closest(`.item-wrap,.property-project-items-table tr,
         [class*="related-property" i],[class*="similar-property" i],[class*="recommendation" i]`).length > 0;
-    const gallery = element.closest(`[class*=gallery],[class*=Gallery],[class*=carousel],[class*=Carousel],
-        [class*=swiper],[class*=Swiper],[class*=slider],[class*=Slider]`).length > 0;
+    const { gallery, otherCarousel } = galleryMembership(element, mainCarousel);
     const floorPlan = forcedKind === 'floor-plan' || PLAN_WORD.test(context) || PLAN_LABEL.test(context);
     const explicitMatch = ownerSourceId ? String(ownerSourceId) === String(listing?.sourceId)
         : ownerListingUrl ? sameDocumentUrl(ownerListingUrl, pageUrl, pageUrl)
             : false;
     const hasConflictingOwner = Boolean(ownerSourceId || ownerListingUrl) && !explicitMatch;
-    const listingOwned = Boolean(listing) && !globalArtifact && !hasConflictingOwner
+    if (listing?.sourceType === 'architecture-project') {
+        const inMain = element.closest('main,article').length > 0
+            || (new URL(pageUrl).hostname.replace(/^www\./i, '') === 'njiric.com'
+                && element.closest('.tekst .project_details').length > 0);
+        const otherProjectCard = element.closest('[class*="other-project" i],[class*="more-project" i],[class*="project-card" i]').length > 0;
+        const linkedProject = element.closest('a[href]').attr('href');
+        const linkedIdentity = linkedProject && normalizeUrl(linkedProject, pageUrl);
+        const otherProjectLink = linkedIdentity && /\/(?:projects?|projekti?)\//i.test(new URL(linkedIdentity).pathname)
+            && !sameDocumentUrl(linkedIdentity, pageUrl, pageUrl);
+        return { listingOwned: Boolean(inMain && !globalArtifact && !recommendation && !otherProjectCard && !hasConflictingOwner && !otherProjectLink) };
+    }
+    const listingOwned = Boolean(listing) && !globalArtifact && !hasConflictingOwner && !otherCarousel
         && (explicitMatch || (!recommendation && !row.length && (gallery || floorPlan)));
     return { listingOwned, ...(ownerSourceId ? { ownerSourceId } : {}), ...(ownerListingUrl ? { ownerListingUrl } : {}) };
 }
 
-export function extractPageEvidence(html, pageUrl) {
-    const $ = cheerio.load(String(html || ''));
+export function extractPageEvidence(html, pageUrl, { sourceKind = null, discovery = true, document = null } = {}) {
+    const $ = document || cheerio.load(String(html || ''));
     const visible = $('body').clone(); visible.find('script,style,noscript,nav,footer,form').remove();
     const bodyText = visible.text().replace(/\s+/g, ' ').trim();
     if (BLOCKED.test(`${$('title').text()} ${bodyText}`)) return { title: first($('title').text()), canonicalUrl: normalizeUrl($('link[rel="canonical"]').attr('href'), pageUrl) || normalizeUrl(pageUrl, pageUrl), text: bodyText, links: [], assets: [], listing: null, blocked: true, blockedReason: 'challenge-or-access-block' };
     const canonicalUrl = normalizeUrl($('link[rel="canonical"]').attr('href'), pageUrl) || normalizeUrl(pageUrl, pageUrl);
     const scripts = jsonScripts($), records = scripts.flatMap(item => item?.['@graph'] || item);
-    const record = records.find(item => { const types = Array.isArray(item?.['@type']) ? item['@type'] : [item?.['@type']]; return types.some(type => ['Product', 'Apartment', 'RealEstateListing', 'Residence'].includes(type)) && (!item.url || sameDocumentUrl(item.url, canonicalUrl, pageUrl) || sameDocumentUrl(item.url, pageUrl, pageUrl)); }) || {};
-    const address = record.address && typeof record.address === 'object' ? first(record.address.streetAddress, record.address.name) : null;
+    const acceptedRecord = item => {
+        const types = Array.isArray(item?.['@type']) ? item['@type'] : [item?.['@type']];
+        return types.some(type => ['Product', 'Apartment', 'RealEstateListing', 'Residence'].includes(type));
+    };
+    const record = records.find(item => acceptedRecord(item)
+        && (!item.url || sameDocumentUrl(item.url, canonicalUrl, pageUrl) || sameDocumentUrl(item.url, pageUrl, pageUrl)))
+        || records.find(item => acceptedRecord(item)
+            && (Array.isArray(item?.['@type']) ? item['@type'] : [item?.['@type']]).includes('RealEstateListing')
+            && sameOperetaProperty(item.url, pageUrl)) || {};
+    const operetaListing = /^(?:www\.)?opereta\.hr$/i.test(new URL(pageUrl).hostname)
+        && (Array.isArray(record['@type']) ? record['@type'] : [record['@type']]).includes('RealEstateListing');
+    const operetaLabel = label => {
+        const heading = $('main p').filter((_, el) => $(el).text().trim() === label).first();
+        return heading.length ? heading.parent().parent().children('p').last().text().trim() : null;
+    };
+    const operetaId = operetaListing ? $('main p').map((_, el) => $(el).text().trim().match(/^ID\s+(I\d+)$/i)?.[1]).get()[0] || null : null;
+    const operetaFloor = operetaListing ? operetaLabel('Etage') : null;
+    const operetaArea = operetaListing ? operetaLabel('Größe') : null;
+    const operetaAddress = operetaListing ? $('main h1').first().next('p').text().trim() || null : null;
+    const mainCarousel = operetaListing ? $('main [data-slot="carousel"],main [aria-roledescription="carousel"]').first()[0] : null;
+    const address = first(record.address && typeof record.address === 'object' ? first(record.address.streetAddress, record.address.name) : null, operetaAddress);
     const geo = record.geo || record.location?.geo;
     const propertyMap = $('#property-map[data-lat][data-lng]').first();
     const lat = number(first(geo?.latitude, propertyMap.attr('data-lat'))), lng = number(first(geo?.longitude, propertyMap.attr('data-lng')));
     const text = `${bodyText} ${$('meta[name="description"]').attr('content') || ''}`;
     const listingTitle = first(record.name, $('meta[property="og:title"]').attr('content'), $('h1').first().text());
-    const floor = first(record.floorLevel, record.floor, $('[data-floor]').first().attr('data-floor'));
-    const recordId = first(record.identifier?.value, typeof record.identifier === 'object' ? null : record.identifier, record.sku);
+    const floor = first(record.floorLevel, record.floor, $('[data-floor]').first().attr('data-floor'), /^\d+(?:\/\d+)?$/.test(operetaFloor || '') ? operetaFloor : null);
+    const recordId = operetaListing
+        ? first(operetaId, record.identifier?.value, typeof record.identifier === 'object' ? null : record.identifier, record.sku)
+        : first(record.identifier?.value, typeof record.identifier === 'object' ? null : record.identifier, record.sku, operetaId);
     const propertyElement = $('#property-view[data-propertyid], #property-view[data-property-id]').first();
     const wordpressPropertyId = $('body.single-property').attr('class')?.match(/(?:^|\s)postid-(\d+)(?:\s|$)/)?.[1] || null;
-    const listing = (record['@type'] || record.url || address || record.identifier || propertyElement.length || wordpressPropertyId) ? {
+    const routePropertyId = sourceKind !== 'architecture' ? propertyDetailId(pageUrl) : null;
+    let listing = (record['@type'] || record.url || address || record.identifier || propertyElement.length || wordpressPropertyId || routePropertyId) ? {
         title: listingTitle, sourceId: first(recordId, propertyElement.attr('data-propertyid'), propertyElement.attr('data-property-id'), wordpressPropertyId),
         address, coordinates: lat !== null && lng !== null ? { lat, lng } : null, floor,
         unitId: first(record.unitId, record.unitNumber, $('[data-unit-id]').first().attr('data-unit-id')),
-        areaM2: number(first(record.floorSize?.value, record.floorSize, record.floorArea, record.size, record.floorSpace, $('[data-area]').first().attr('data-area'))),
+        areaM2: number(first(record.floorSize?.value, record.floorSize, record.floorArea, record.size, record.floorSpace, $('[data-area]').first().attr('data-area'), /^\d+(?:[.,]\d+)?\s*m(?:2|²)$/i.test(operetaArea || '') ? operetaArea : null)),
         newBuild: /novograd|new\s*build|new\s*construction/i.test(`${listingTitle || ''} ${$('meta[name=description]').attr('content') || ''}`) ? true : null,
         projectName: first(record.isPartOf?.name, record.projectName, $('[data-project-name]').first().attr('data-project-name')),
         projectUrl: normalizeUrl(record.isPartOf?.url, pageUrl),
         locality: first(record.address?.addressLocality, record.address?.addressRegion)
     } : null;
+    if (sourceKind === 'architecture') {
+        const route = architectureDetailRoute(pageUrl, $);
+        const fragmentId = route === 'njiric-fragment' ? new URL(pageUrl).searchParams.get('id') : null;
+        const fragmentTitle = fragmentId ? $(`.tekst .projectlinkclose[name="${fragmentId}"]`).first().text().replace(/\s+/g, ' ').trim() : '';
+        const architectureTitle = fragmentTitle || $('main h1,article h1,.section-project-title h1,.node-project h1.title,.node-project h1').first().text().replace(/\s+/g, ' ').trim();
+        // An exact handler URL is still a project when its expected title is
+        // missing or mismatched. Its absent location remains ineligible for
+        // retention, rather than falling through as a generic HTML page.
+        const projectDetail = route && (route === 'njiric-fragment' || !/^(?:projects?|projekti?|architecture|arhitektura|portfolio)$/i.test(architectureTitle));
+        if (projectDetail) {
+            const explicit = extractExplicitLocation(html, pageUrl, null, { document: $ });
+            const title = architectureTitle || first($('meta[property="og:title"]').attr('content'), $('title').text())?.replace(/\s+/g, ' ').trim() || null;
+            listing = { sourceType: 'architecture-project', title, sourceId: normalizeUrl(pageUrl),
+                projectUrl: normalizeUrl(pageUrl), address: explicit?.address || null,
+                addressEvidence: explicit || null, coordinates: null, floor: null, unitId: null,
+                areaM2: null, newBuild: null, projectName: title, locality: architectureLocality($, pageUrl),
+                projectStatus: architectureProjectStatus($, pageUrl) };
+        } else listing = null;
+    }
+    // A retention audit still identifies every object, but generic pages do
+    // not need their directory links and images enumerated again.
+    if (!discovery && (!listing || !extractExplicitLocation(html, pageUrl, listing, { document: $ })))
+        return { title: first($('title').text(), listingTitle), canonicalUrl,
+            text: bodyText, links: [], assets: [], listing, blocked: false, blockedReason: null };
     const links = [], assets = [];
-    $('a[href]').each((_, el) => { const url = normalizeUrl($(el).attr('href'), pageUrl); if (url) links.push({ url, text: $(el).text().replace(/\s+/g, ' ').trim(), kind: kindFor(url, $(el).text()) }); });
+    if (discovery) $('a[href]').each((_, el) => { const url = normalizeUrl($(el).attr('href'), pageUrl); if (url) links.push({ url, text: $(el).text().replace(/\s+/g, ' ').trim(), kind: kindFor(url, $(el).text()) }); });
+    // Njirić's own index script loads these named project cards from this exact
+    // endpoint. The cards have empty hrefs, so ordinary link discovery misses them.
+    if (discovery && sourceKind === 'architecture' && new URL(pageUrl).hostname.replace(/^www\./i, '') === 'njiric.com'
+        && /^\/work\/all-projects\/?$/i.test(new URL(pageUrl).pathname)
+        && $('script:not([src])').toArray().some(el => /\/Handlers\/Project\.ashx\?id=/i.test($(el).html() || ''))) {
+        $('a.projectlink[name]').each((_, el) => {
+            const id = $(el).attr('name');
+            if (!/^p\d+$/i.test(id || '')) return;
+            const url = normalizeUrl(`/Handlers/Project.ashx?id=${id}`, pageUrl);
+            if (url) links.push({ url, text: $(el).text().replace(/\s+/g, ' ').trim(), kind: 'project' });
+        });
+    }
     const assetsByUrl = new Map();
     const addAsset = (el, raw, forcedKind = null) => {
         const url = normalizeUrl(raw, pageUrl), element = $(el);
@@ -108,11 +280,11 @@ export function extractPageEvidence(html, pageUrl) {
         const label = `${element.attr('alt') || ''} ${element.text()}`.trim();
         if (!forcedKind && !/\.(?:pdf|png|jpe?g|webp|avif)(?:$|[?#])/i.test(url) && !PLAN_WORD.test(`${url} ${label}`)) return;
         const pdf = /\.pdf(?:$|[?#])/i.test(url);
-        const gallery = element.closest('[class*=gallery],[class*=Gallery],[class*=carousel],[class*=swiper],[class*=slider]').length > 0;
+        const { gallery } = galleryMembership(element, mainCarousel);
         const planAsset = PLAN_WORD.test(`${url} ${label}`) || PLAN_LABEL.test(`${url} ${label}`);
         const kind = forcedKind || (pdf ? (planAsset ? 'floor-plan' : 'document') : imageKind(url, label));
         const asset = { url, kind, evidence: label || null,
-            ...assetOwnership($, el, listing, pageUrl, url, label, forcedKind), ...(gallery ? { listingGallery: true } : {}) };
+            ...assetOwnership($, el, listing, pageUrl, url, label, forcedKind, mainCarousel), ...(gallery ? { listingGallery: true } : {}) };
         const previous = assetsByUrl.get(url);
         // The same image can appear in both a card and the main gallery.
         if (!previous || asset.listingOwned && !previous.listingOwned) assetsByUrl.set(url, asset);

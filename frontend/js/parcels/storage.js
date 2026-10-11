@@ -21,48 +21,77 @@
     function getRequiredGridCells(bounds, extraRadius = 0) {
         const size = parcelGridSize();
         const cells = new Set();
-        if (!bounds || typeof bounds.getSouthWest !== 'function' || !(size > 0)
+        if (!bounds || typeof bounds.getSouthWest !== 'function' || typeof bounds.getNorthEast !== 'function'
+            || !Number.isFinite(size) || !(size > 0)
             || typeof global.wgs84ToDataset !== 'function') return cells;
         const sw = bounds.getSouthWest();
         const ne = bounds.getNorthEast();
-        const center = typeof bounds.getCenter === 'function' ? bounds.getCenter() : {
-            lat: (sw.lat + ne.lat) / 2,
-            lng: (sw.lng + ne.lng) / 2
+        if (sw?.lat === null || sw?.lat === undefined || ne?.lat === null || ne?.lat === undefined
+            || sw?.lng === null || sw?.lng === undefined || ne?.lng === null || ne?.lng === undefined) return cells;
+        const south = Number(sw?.lat);
+        const north = Number(ne?.lat);
+        const west = Number(sw?.lng);
+        const east = Number(ne?.lng);
+        if (![south, north, west, east].every(Number.isFinite) || south > north || west > east) return cells;
+
+        // Project the whole perimeter, not just SW and NE. Native projections can rotate or curve
+        // a geographic rectangle, so those two diagonal points alone need not define its extent.
+        // Sampling each edge also captures the curvature of common local projected CRSs while
+        // keeping the fetched cells limited to the viewport's rectangular dataset-space envelope.
+        const projected = [];
+        const edgeSamples = 16;
+        const project = (lat, lng) => {
+            const value = global.wgs84ToDataset(lat, lng);
+            if (!Array.isArray(value) || value.length < 2
+                || value[0] === null || value[0] === undefined
+                || value[1] === null || value[1] === undefined) return false;
+            const easting = Number(value[0]);
+            const northing = Number(value[1]);
+            if (!Number.isFinite(easting) || !Number.isFinite(northing)) return false;
+            projected.push([easting, northing]);
+            return true;
         };
-        const [centerE, centerN] = global.wgs84ToDataset(center.lat, center.lng);
-        const [swE, swN] = global.wgs84ToDataset(sw.lat, sw.lng);
-        const [neE, neN] = global.wgs84ToDataset(ne.lat, ne.lng);
-        if (![centerE, centerN, swE, swN, neE, neN].every(Number.isFinite)) return cells;
+        for (let i = 0; i <= edgeSamples; i += 1) {
+            const fraction = i / edgeSamples;
+            const lat = south + (north - south) * fraction;
+            const lng = west + (east - west) * fraction;
+            if (!project(south, lng) || !project(north, lng)
+                || !project(lat, west) || !project(lat, east)) return cells;
+        }
+        if (!projected.length) return cells;
+        const minE = Math.min(...projected.map(point => point[0]));
+        const maxE = Math.max(...projected.map(point => point[0]));
+        const minN = Math.min(...projected.map(point => point[1]));
+        const maxN = Math.max(...projected.map(point => point[1]));
+        if (![minE, maxE, minN, maxN].every(Number.isFinite)) return cells;
 
         // CURRENT_CITY_CONFIG is map-core.js's top-level const, never on window: the check never ran.
         // Only the Croatian cities declare datasetBounds (the country, in HTRS96/TM).
         const currentConfig = global.CityConfigManager && typeof global.CityConfigManager.getCurrentCityConfig === 'function'
             ? global.CityConfigManager.getCurrentCityConfig() : null;
         const datasetBounds = currentConfig && currentConfig.projection && currentConfig.projection.datasetBounds;
-        const minE = Math.min(swE, neE);
-        const maxE = Math.max(swE, neE);
-        const minN = Math.min(swN, neN);
-        const maxN = Math.max(swN, neN);
         if (datasetBounds && (maxE < datasetBounds.minX || minE > datasetBounds.maxX
             || maxN < datasetBounds.minY || minN > datasetBounds.maxY)) return cells;
 
-        const centerGridE = Math.floor(centerE / size);
-        const centerGridN = Math.floor(centerN / size);
-        const epsilon = 1e-6;
-        const minGridE = Math.floor(minE / size);
-        const maxGridE = Math.max(minGridE, Math.floor((maxE - epsilon) / size));
-        const minGridN = Math.floor(minN / size);
-        const maxGridN = Math.max(minGridN, Math.floor((maxN - epsilon) / size));
+        // Snap numerical noise at cell edges using a tolerance scaled to the grid and coordinate
+        // magnitude rather than assuming metres/degrees. Lower bounds are inclusive; upper bounds
+        // are exclusive at an exact grid line.
+        const boundaryEpsilon = value => Math.max(size * 1e-10, Number.EPSILON * Math.max(1, Math.abs(value)) * 8);
+        const inclusiveLowerCell = value => Math.floor((value + boundaryEpsilon(value)) / size);
+        const exclusiveUpperCell = value => {
+            return Math.floor((value - boundaryEpsilon(value)) / size);
+        };
+        const minGridE = inclusiveLowerCell(minE);
+        const minGridN = inclusiveLowerCell(minN);
+        const maxGridE = exclusiveUpperCell(maxE);
+        const maxGridN = exclusiveUpperCell(maxN);
         const requestedRadius = Number.isFinite(Number(extraRadius)) ? Math.max(0, Math.floor(Number(extraRadius))) : 0;
-        const radius = Math.max(
-            requestedRadius,
-            centerGridE - minGridE,
-            maxGridE - centerGridE,
-            centerGridN - minGridN,
-            maxGridN - centerGridN
-        );
-        for (let e = centerGridE - radius; e <= centerGridE + radius; e += 1) {
-            for (let n = centerGridN - radius; n <= centerGridN + radius; n += 1) cells.add(`${e},${n}`);
+        const firstE = minGridE - requestedRadius;
+        const lastE = Math.max(minGridE, maxGridE) + requestedRadius;
+        const firstN = minGridN - requestedRadius;
+        const lastN = Math.max(minGridN, maxGridN) + requestedRadius;
+        for (let e = firstE; e <= lastE; e += 1) {
+            for (let n = firstN; n <= lastN; n += 1) cells.add(`${e},${n}`);
         }
         return cells;
     }

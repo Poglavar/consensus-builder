@@ -2,6 +2,7 @@
 import { coverage } from '../floor-plans/archive.js';
 import { buildingSummary, buildingView, catalogueCounts, sourceView } from '../floor-plan-archive/review-catalogue.js';
 import { currentProcessedCatalogueRows, currentProcessedPlan, currentProcessedPlans, processedBuildingId, processedBuildingView, processedPlanView, processedBuildingSummary } from '../floor-plan-archive/processed-catalogue.js';
+import { readBlobRow } from '../floor-plans/blob-store.js';
 export function setupFloorPlanArchiveRoute(app,pool) {
  const route=(path,handler)=>app.get(`/floor-plan-archive${path}`,async(req,res,next)=>{
   res.set('Cache-Control','no-store');
@@ -19,11 +20,14 @@ export function setupFloorPlanArchiveRoute(app,pool) {
  });
  route('/asset/:sha256',async(req,res)=>{
   if(!/^[a-f0-9]{64}$/.test(req.params.sha256)) return res.status(400).json({error:'Invalid source hash.'});
-  const row=(await pool.query(`SELECT b.media_type,b.data FROM floor_plan.blob b JOIN floor_plan.extraction e USING(sha256) WHERE sha256=$1`,[req.params.sha256])).rows[0];
+  const row=(await pool.query(`SELECT b.sha256,b.media_type,b.storage_path,b.byte_count,b.bytes_available,b.discarded_at FROM floor_plan.blob b JOIN floor_plan.extraction e USING(sha256) WHERE sha256=$1`,[req.params.sha256])).rows[0];
   if(!row) return res.status(404).json({error:'Source not found.'});
+  if(!row.bytes_available) return res.status(410).json({error:'Source bytes were discarded after non-plan classification.'});
   const media=row.media_type.split(';')[0].toLowerCase();
   if(!['image/jpeg','image/png','image/webp','application/pdf'].includes(media)) return res.status(415).json({error:'Source is not a displayable plan image or PDF.'});
-  res.set('Content-Type',media).set('X-Content-Type-Options','nosniff').send(row.data);
+  const bytes=await readBlobRow(row);
+  if(!bytes) throw new Error(`Retained floor-plan source ${row.sha256} is missing from storage.`);
+  res.set('Content-Type',media).set('X-Content-Type-Options','nosniff').send(bytes);
  });
  route('/catalogue',async(_req,res)=>{
   const buildings=(await pool.query(`SELECT id,owner_id, floor_plans#>>'{floors,0,id}' AS first_floor,
@@ -40,7 +44,7 @@ export function setupFloorPlanArchiveRoute(app,pool) {
    e.model->'source'->>'label' AS label,b.media_type
    FROM floor_plan.extraction e JOIN floor_plan.blob b USING(sha256)
    JOIN floor_plan.target t ON t.current_sha256=e.sha256 AND t.kind='asset'
-   WHERE lower(split_part(b.media_type,';',1)) IN ('image/jpeg','image/png','image/webp','application/pdf')
+   WHERE b.bytes_available AND lower(split_part(b.media_type,';',1)) IN ('image/jpeg','image/png','image/webp','application/pdf')
    ORDER BY e.sha256,t.updated_at DESC`)).rows;
   const sources=sourceRows.map(row=>({...sourceView(row),architectureAvailable:Boolean(row.architecture_available)}))
    .sort((a,b)=>a.label.localeCompare(b.label)||a.sha256.localeCompare(b.sha256));
@@ -96,8 +100,8 @@ export function setupFloorPlanArchiveRoute(app,pool) {
  });
  route('/source/:sha256',async(req,res)=>{
   if(!/^[a-f0-9]{64}$/.test(req.params.sha256)) return res.status(400).json({error:'Invalid source hash.'});
-  const row=(await pool.query(`SELECT e.sha256,e.status,e.model,b.media_type,t.url AS source_url FROM floor_plan.extraction e JOIN floor_plan.blob b USING(sha256) LEFT JOIN floor_plan.target t ON t.current_sha256=e.sha256 AND t.kind='asset' WHERE e.sha256=$1 LIMIT 1`,[req.params.sha256])).rows[0];
+  const row=(await pool.query(`SELECT e.sha256,e.status,e.model,b.media_type,b.bytes_available,t.url AS source_url FROM floor_plan.extraction e JOIN floor_plan.blob b USING(sha256) LEFT JOIN floor_plan.target t ON t.current_sha256=e.sha256 AND t.kind='asset' WHERE e.sha256=$1 LIMIT 1`,[req.params.sha256])).rows[0];
   if(!row) return res.status(404).json({error:'Source not found.'});
-  res.json({...sourceView(row),model:row.model || null});
+  res.json({...sourceView(row),bytesAvailable:row.bytes_available,model:row.model || null});
  });
 }

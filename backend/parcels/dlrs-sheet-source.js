@@ -1,6 +1,7 @@
 // DLRS publishes one complete, small BDS survey sheet per anonymous form request.
 // Survey, district, mouza and sheet belong to the configured source namespace; Dag_No is the plot key.
-import { createHash } from 'node:crypto';
+import { concatBytes } from './byte-utils.js';
+import { sha256Hex } from './portable-hash.js';
 import { createGeojsonSnapshotParcelSource } from './geojson-snapshot-source.js';
 import { upstreamError, providerHttpError } from './source-contract.js';
 
@@ -52,7 +53,7 @@ export function createDlrsSheetParcelSource(descriptor, { fetchImpl = globalThis
         if (declared && !response.headers.get('content-encoding') && Number(declared) !== length) {
             throw upstreamError('DLRS survey sheet has an incomplete response body.');
         }
-        const bytes = Buffer.concat(chunks.map(chunk => Buffer.from(chunk)), length);
+        const bytes = concatBytes(chunks, length);
         let collection;
         try { collection = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes)); }
         catch { throw upstreamError('DLRS returned an invalid survey sheet.'); }
@@ -70,7 +71,7 @@ export function createDlrsSheetParcelSource(descriptor, { fetchImpl = globalThis
         });
         // The fixed whole-sheet operation and its independently verified feature count establish
         // completeness. This proxy ETag identifies the bytes read; it is not an upstream validator.
-        const etag = `"${createHash('sha256').update(bytes).digest('hex')}"`;
+        const etag = `"${sha256Hex(bytes)}"`;
         return new Response(JSON.stringify({ type: collection.type, crs: collection.crs, features,
             complete: true, numberMatched: features.length }), { status: 200, headers: { ETag: etag } });
     };

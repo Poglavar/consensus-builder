@@ -1,11 +1,30 @@
 // ZIP and dBASE metadata are inspected before decoding only configured native IDs and polygons.
-import { inflateRawSync } from 'node:zlib';
+import { Inflate } from 'fflate';
 import proj4 from 'proj4';
 import { upstreamError, validateGeometry } from './source-contract.js';
 import { encodeSnapshotNativeId } from './geojson-snapshot-source.js';
 
 const fail = message => { throw upstreamError(message); };
 const viewOf = bytes => new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+const equalBytes = (a, b) => a.length === b.length && a.every((value, index) => value === b[index]);
+function inflateRawBounded(data, expected) {
+    if (!Number.isSafeInteger(expected) || expected < 0) fail('Invalid parcel ZIP member size.');
+    const chunks = []; let total = 0, completed = false;
+    const inflate = new Inflate((chunk, final) => {
+        total += chunk.length;
+        if (total > expected) throw new Error('Parcel ZIP member exceeds declared size.');
+        chunks.push(chunk); completed = final;
+    });
+    // Small pushes cap temporary output if a malformed member expands far beyond its declaration.
+    for (let offset = 0; offset < data.length; offset += 1024) {
+        inflate.push(data.subarray(offset, Math.min(offset + 1024, data.length)), false);
+    }
+    inflate.push(new Uint8Array(0), true);
+    if (!completed || inflate.p.length !== (inflate.s.p ? 1 : 0) || total !== expected) fail('Parcel ZIP compressed member size or trailing bytes disagree.');
+    const output = new Uint8Array(total); let offset = 0;
+    for (const chunk of chunks) { output.set(chunk, offset); offset += chunk.length; }
+    return output;
+}
 const crcTable = Uint32Array.from({ length: 256 }, (_, i) => {
     let n = i; for (let j = 0; j < 8; j++) n = n & 1 ? 0xedb88320 ^ (n >>> 1) : n >>> 1; return n >>> 0;
 });
@@ -49,7 +68,7 @@ export function readShapefileZipMembers(bytes, descriptor) {
         const localNameSize = v.getUint16(local + 26, true), localExtra = v.getUint16(local + 28, true);
         const dataStart = local + 30 + localNameSize + localExtra, dataEnd = dataStart + compressed;
         if (dataEnd > start || localNameSize !== nameSize
-            || !Buffer.from(nameBytes).equals(Buffer.from(bytes.subarray(local + 30, local + 30 + localNameSize)))) fail('Parcel ZIP member selection disagrees.');
+            || !equalBytes(nameBytes, bytes.subarray(local + 30, local + 30 + localNameSize))) fail('Parcel ZIP member selection disagrees.');
         const crc = v.getUint32(cursor + 16, true);
         if (!(flags & 8) && (v.getUint32(local + 14, true) !== crc || v.getUint32(local + 18, true) !== compressed
             || v.getUint32(local + 22, true) !== size)) fail('Parcel ZIP local sizes disagree.');
@@ -76,9 +95,8 @@ export function readShapefileZipMembers(bytes, descriptor) {
         try {
             if (m.method === 0) output = data;
             else {
-                const inflated = inflateRawSync(data, { maxOutputLength: m.size + 1, info: true });
-                if (inflated.engine.bytesWritten !== data.length) fail('Parcel ZIP compressed member has trailing bytes.');
-                output = inflated.buffer;
+                if (!Number.isSafeInteger(m.size) || m.size > descriptor.maxDecompressedBytes) fail('Parcel ZIP member exceeds decompressed byte limit.');
+                output = inflateRawBounded(data, m.size);
             }
         }
         catch { fail('Invalid compressed parcel ZIP member.'); }
@@ -122,7 +140,7 @@ export function readShapefileDbf(bytes, descriptor, cpg) {
     for (let cursor = 32; cursor < header - 1; cursor += 32) {
         const nameBytes = bytes.subarray(cursor, cursor + 11);
         if (nameBytes.some(byte => byte > 127)) fail('Invalid parcel DBF field name encoding.');
-        const field = Buffer.from(nameBytes).toString('ascii').split('\0')[0];
+        const field = new TextDecoder('ascii').decode(nameBytes).split('\0')[0];
         const length = bytes[cursor + 16], type = String.fromCharCode(bytes[cursor + 11]), decimals = bytes[cursor + 17];
         if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(field) || schema.has(field) || !length) fail('Invalid parcel DBF schema.');
         schema.set(field, { offset, length, type, decimals }); offset += length;
@@ -230,7 +248,7 @@ export async function indexShapefileSnapshot(members, descriptor, signal) {
         if (totalPoints > descriptor.maxSnapshotPoints) fail('Parcel snapshot exceeds coordinate limit.');
         if (descriptor.bbox && parsed.bbox.some((n, j) => j < 2 ? n < descriptor.bbox[j] : n > descriptor.bbox[j])) fail('Parcel lies outside verified snapshot extent.');
         extents.set(parsed.bbox, i * 4); byId.set(nativeId, i); offset += 8 + size;
-        if (i % 1000 === 0) await new Promise(resolve => setImmediate(resolve));
+        if (i % 1000 === 0) await new Promise(resolve => setTimeout(resolve, 0));
     }
     if (offset !== members.shp.length) fail('Parcel SHP contains unindexed trailing records.');
     return { byId, extents, count: dbf.count, feature(index) {

@@ -6,6 +6,28 @@
 
     const PARCELS_PARENT = 'parcels.urbangametheory.eth';
     const PROPOSALS_PARENT = 'proposals.urbangametheory.eth';
+    const MAX_COMPACT_NAME_LENGTH = 36;
+
+    function escapeHtml(value) {
+        if (typeof global.escapeHtml === 'function') return global.escapeHtml(value);
+        if (value === null || value === undefined) return '';
+        return String(value).replace(/[&<>"']/g, char => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        })[char]);
+    }
+
+    function inlineJsArg(value) {
+        if (typeof global.inlineJsArg === 'function') return global.inlineJsArg(value);
+        return escapeHtml(JSON.stringify(String(value ?? '')));
+    }
+
+    function t(key, fallback) {
+        try {
+            const translated = global.i18n?.t?.(key);
+            if (translated && translated !== key) return translated;
+        } catch (_) { /* use the English fallback */ }
+        return fallback;
+    }
 
     // ENSIP-15-safe label, same transform as the backend slug.
     function parcelToSlug(parcelId) {
@@ -33,13 +55,35 @@
         return match ? `chain-${match[1].slice(0, 48).toLowerCase()}.${PROPOSALS_PARENT}` : '';
     }
 
+    // Display-only shortening. The canonical name remains untouched for links and copying.
+    function compactEnsName(name) {
+        const full = (name === undefined || name === null) ? '' : String(name);
+        if (full.length <= MAX_COMPACT_NAME_LENGTH) return full;
+        const chain = full.match(/^chain-([0-9a-f]{48})\.proposals\.urbangametheory\.eth$/i);
+        if (chain) return `chain-${chain[1].slice(0, 8).toLowerCase()}…proposals…eth`;
+
+        const labels = full.split('.');
+        if (labels.length < 2) return `${full.slice(0, MAX_COMPACT_NAME_LENGTH - 1)}…`;
+        const suffixTail = labels.length >= 3
+            ? `…${labels[1]}…${labels[labels.length - 1]}`
+            : `…${labels[labels.length - 1]}`;
+        const firstLabelRoom = Math.max(1, MAX_COMPACT_NAME_LENGTH - suffixTail.length);
+        const firstIsTruncated = labels[0].length > firstLabelRoom;
+        const firstLabel = firstIsTruncated ? `${labels[0].slice(0, firstLabelRoom - 1)}…` : labels[0];
+        const tail = firstIsTruncated ? suffixTail.slice(1) : suffixTail;
+        const compact = `${firstLabel}${tail}`;
+        return compact.length <= MAX_COMPACT_NAME_LENGTH
+            ? compact
+            : `${compact.slice(0, MAX_COMPACT_NAME_LENGTH - 1)}…`;
+    }
+
     // The ENS manager app page for a name (view/manage its records).
     function ensAppUrl(name) {
         return name ? `https://app.ens.domains/${encodeURIComponent(name)}` : '';
     }
 
     // Copy the full name; briefly flip the chip to a check for feedback. `el` is
-    // the value span, so reach the chip via the shared `.ens-name-line` parent.
+    // the value button, so reach the chip via the shared `.ens-name-line` parent.
     function copyEnsName(name, el) {
         if (!name) return;
         const flip = () => {
@@ -55,20 +99,24 @@
         }
     }
 
-    // Compact one-liner: the "ENS" chip links to the ENS app (new tab), the name
-    // value is click-to-copy. (HTML string; click handler is the global below.)
+    // The ENS chip links to the manager; the accessible value button copies the full name.
     function ensNameLineHtml(name) {
         if (!name) return '';
+        const fullName = escapeHtml(name);
+        const viewLabel = escapeHtml(t('ens.viewName', 'View ENS name'));
+        const copyLabel = escapeHtml(t('ens.copyName', 'Copy ENS name'));
         return '<div class="ens-name-line">'
-            + `<a class="ens-name-chip" href="${ensAppUrl(name)}" target="_blank"`
-            + ` rel="noopener noreferrer" title="View ${name} on the ENS app">ENS ↗</a>`
-            + `<span class="ens-name-value" title="${name} — click to copy"`
-            + ` onclick="copyEnsName(${inlineJsArg(name)}, this)">${name}</span></div>`;
+            + `<a class="ens-name-chip" href="${escapeHtml(ensAppUrl(name))}" target="_blank"`
+            + ` rel="noopener noreferrer" title="${viewLabel}: ${fullName}">ENS ↗</a>`
+            + `<button type="button" class="ens-name-value" title="${copyLabel}: ${fullName}"`
+            + ` aria-label="${copyLabel}: ${fullName}"`
+            + ` onclick="copyEnsName(${inlineJsArg(name)}, this)">${escapeHtml(compactEnsName(name))}</button></div>`;
     }
 
     global.parcelToSlug = parcelToSlug;
     global.parcelEnsName = parcelEnsName;
     global.proposalEnsName = proposalEnsName;
+    global.compactEnsName = compactEnsName;
     global.ensAppUrl = ensAppUrl;
     global.copyEnsName = copyEnsName;
     global.ensNameLineHtml = ensNameLineHtml;

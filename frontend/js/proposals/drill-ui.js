@@ -111,7 +111,6 @@
 
     function selectProposalEntry(entry, contextParcelId) {
         if (typeof global.selectAndHighlightProposal !== 'function') return;
-        global.__openProposalDetailsCollapsed = true;
         global.selectAndHighlightProposal(entry.key, contextParcelId || null, false, true);
     }
 

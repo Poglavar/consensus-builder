@@ -1,31 +1,24 @@
-// Unit coverage for the first-visit decision without requiring a browser DOM.
+// The introduction is requested explicitly; arriving at the app never requires a tour.
 import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { STORAGE_KEY, shouldShowSiteIntro } = require('../../frontend/js/site-intro.js');
+const { shouldShowSiteIntro } = require('../../frontend/js/site-intro.js');
 
-describe('site intro first-visit policy', () => {
-    it('shows once before the versioned seen flag is stored', () => {
-        expect(STORAGE_KEY).toBe('cb_site_intro_seen_v1');
-        expect(shouldShowSiteIntro('', null)).toBe(true);
-        expect(shouldShowSiteIntro('', '1')).toBe(false);
+describe('site intro opt-in policy', () => {
+    it.each(['', '?city=nairobi', '?lang=hr', '?at=-1.264,36.840,17'])('does not interrupt an arrival at %s', search => {
+        expect(shouldShowSiteIntro(search)).toBe(false);
     });
 
-    it('opens activity links directly even on a first visit', () => {
-        expect(shouldShowSiteIntro('?activity=proposal%3Apark-1', null)).toBe(false);
-        expect(shouldShowSiteIntro('?focusProposal=park-1', null)).toBe(false);
-        expect(shouldShowSiteIntro('?activity=proposal%3Apark-1&intro=1', null)).toBe(true);
+    it.each(['activity', 'focusProposal', 'bets', 'parcel', 'proposalShare', 'shared', 'scene', 'model', 'mode3d', 'photo'])('leaves %s links uninterrupted', name => {
+        expect(shouldShowSiteIntro(`?${name}=destination`)).toBe(false);
     });
 
-    it('opens bet links directly, in both their forms', () => {
-        expect(shouldShowSiteIntro('?city=zg&bets=Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR', null)).toBe(false);
-        expect(shouldShowSiteIntro('?city=zg', null, '/bets/Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR')).toBe(false);
-        expect(shouldShowSiteIntro('?city=zg', null, '/')).toBe(true);
+    it.each(['?intro', '?intro=1', '?city=nairobi&intro=1'])('honors an explicit tour request at %s', search => {
+        expect(shouldShowSiteIntro(search)).toBe(true);
     });
 
-    it('supports an explicit preview query after the intro has been seen', () => {
-        expect(shouldShowSiteIntro('?city=zg&intro=1', '1')).toBe(true);
-        expect(shouldShowSiteIntro('?city=zg&intro', '1')).toBe(true);
+    it.each(['?intro=0', '?intro=false', '?intro=invalid'])('does not mistake %s for a tour request', search => {
+        expect(shouldShowSiteIntro(search)).toBe(false);
     });
 });

@@ -1,11 +1,12 @@
 // Entering the app through the world view: the pure decisions (frontend/js/world/world-entry-model.js),
 // the explore city in the REAL city-config.js, the parcel fetch guard for a city without cadastre,
-// and the site intro waiting for a first-visit globe.
+// and the optional site intro waiting for a first-visit globe only when requested.
 import { describe, it, expect, vi, beforeAll, afterEach } from 'vitest';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import vm from 'node:vm';
 
 const require = createRequire(import.meta.url);
 const REPO = path.resolve(fileURLToPath(new URL('.', import.meta.url)), '../..');
@@ -44,17 +45,19 @@ describe('?at= parsing', () => {
 
 describe('shared routes and first visit', () => {
     const shared = [
+        { pathname: '/proposals' }, { pathname: '/proposals/' },
         { pathname: '/proposals/12' }, { pathname: '/proposals/1,2,3' }, { pathname: '/proposals/my-plan' },
         { pathname: '/plans/my-plan/score' }, { pathname: '/parcel/HR-335240-1323/2' }, { pathname: '/monitors/4' },
         { pathname: '/', search: '?parcel=HR-1' }, { pathname: '/', search: '?proposalShare=abc' },
         { pathname: '/', search: '?shared=abc' }, { pathname: '/', search: '?focusProposal=abc' }, { pathname: '/', search: '?activity=agent:7' },
         { pathname: '/', search: '?scene=slug' }, { pathname: '/', search: '?photo' }, { pathname: '/', search: '?model=1' },
+        { pathname: '/', search: '?at=-1.264,36.840,17' }, { pathname: '/', search: '?at=51.5,-0.1' },
         { pathname: '/bets/Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR', search: '?city=zg' },
         { pathname: '/', search: '?city=zg&bets=Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR' }
     ];
     const plain = [
         { pathname: '/', search: '' }, { pathname: '/', search: '?city=zg' }, { pathname: '/', search: '?lang=hr&reduceMotion=1' },
-        { pathname: '/', search: '?world=1' }, { pathname: '/', search: '?at=45,15,12' }, { pathname: '/index.html' }
+        { pathname: '/', search: '?world=1' }, { pathname: '/', search: '?at=bad' }, { pathname: '/', search: '?at=91,15,12' }, { pathname: '/index.html' }
     ];
 
     it('recognises every link form that names what to show', () => {
@@ -83,6 +86,63 @@ describe('shared routes and first visit', () => {
             .toEqual({ open: true, closable: false, firstVisit: false, forced: true });
         expect(Model.bootDecision({ cityChosen: false, sharedRoute: false, search: '?world=1' }).closable).toBe(false);
         expect(Model.bootDecision({ cityChosen: true, sharedRoute: false, search: '?world=0' }).open).toBe(false);
+    });
+
+    it('opens a shared map position directly without needing a remembered city', () => {
+        const location = { pathname: '/', search: '?at=-1.264,36.840,17' };
+        expect(Model.bootDecision({ cityChosen: false, sharedRoute: Model.isSharedRoute(location), search: location.search }).open).toBe(false);
+    });
+});
+
+describe('globe boot uses the arrival URL', () => {
+    function boot(search = '', pathname = '/') {
+        const callbacks = [];
+        const classes = new Set();
+        const window = {
+            location: new URL(`${pathname}${search}`, 'http://localhost:8107'),
+            document: {
+                readyState: 'loading', getElementById: () => null,
+                body: { classList: { add: name => classes.add(name), remove: name => classes.delete(name) } },
+                addEventListener: (event, callback) => { if (event === 'DOMContentLoaded') callbacks.push(callback); }
+            },
+            WorldEntryModel: Model,
+            CityConfigManager: { wasCityChosenAtBoot: () => false, isExplore: () => false, getCurrentCityId: () => 'new_york' },
+            WorldView: { isOpen: () => false, open: vi.fn(async () => {}) },
+            history: { replaceState: vi.fn() },
+            whenAppBooted: () => new Promise(() => {}),
+            addEventListener: vi.fn(), dispatchEvent: vi.fn()
+        };
+        vm.runInNewContext(read('frontend/js/ui/world-entry.js'), {
+            window, URL, URLSearchParams, CustomEvent, console: { log() {}, warn() {}, error() {} }
+        });
+        return { window, classes, ready: () => callbacks.forEach(callback => callback()) };
+    }
+
+    it('opens a copied map position without a first-visit globe', () => {
+        const app = boot('?at=-1.264,36.840,17');
+        expect(app.window.WorldEntry.ownsBoot()).toBe(false);
+        app.ready();
+        expect(app.window.WorldView.open).not.toHaveBeenCalled();
+        expect(app.classes.has('world-view-pending')).toBe(false);
+    });
+
+    it('still offers the city picker on a plain first visit after map boot writes its default view', () => {
+        const app = boot();
+        app.window.location.search = '?at=40.7128,-74.006,12';
+        app.ready();
+        expect(app.window.WorldView.open).toHaveBeenCalledOnce();
+        expect(app.window.WorldView.open).toHaveBeenCalledWith(expect.objectContaining({ closable: false }));
+    });
+
+    it.each([
+        ['?proposalShare=encoded', '/'], ['?shared=encoded', '/'], ['', '/proposals/851'], ['', '/proposals'], ['', '/proposals/'],
+        ['', '/plans/garden-plan/score'], ['', '/parcel/HR-335240-1323/2'], ['', '/bets/market-account']
+    ])('does not hijack %s %s when another boot handler consumes its query', (search, pathname) => {
+        const app = boot(search, pathname);
+        app.window.location.search = '';
+        app.ready();
+        expect(app.window.WorldView.open).not.toHaveBeenCalled();
+        expect(app.classes.has('world-view-pending')).toBe(false);
     });
 });
 
@@ -364,7 +424,7 @@ describe('the site intro and a first-visit globe', () => {
         }
     });
 
-    function fakePage(ownsBoot) {
+    function fakePage(ownsBoot, search = '') {
         for (const key of keys) if (key in globalThis) saved[key] = globalThis[key];
         const events = new EventTarget();
         const modal = {
@@ -385,23 +445,39 @@ describe('the site intro and a first-visit globe', () => {
         globalThis.localStorage = { getItem: () => null, setItem() {} };
         globalThis.addEventListener = events.addEventListener.bind(events);
         globalThis.dispatchEvent = events.dispatchEvent.bind(events);
-        globalThis.location = { search: '' };
+        globalThis.location = { search };
         delete globalThis.__siteIntroInitialized;
         return modal;
     }
 
-    it('waits for the visitor to land before showing', () => {
+    it('does not put an automatic introduction over a globe landing', () => {
         const { initSiteIntro } = require(path.join(REPO, 'frontend/js/site-intro.js'));
         const modal = fakePage(true);
+        initSiteIntro();
+        expect(modal.hidden).toBe(true);
+        globalThis.dispatchEvent(new Event('worldview:landed'));
+        expect(modal.hidden).toBe(true);
+    });
+
+    it('leaves a direct arrival unobstructed', () => {
+        const { initSiteIntro } = require(path.join(REPO, 'frontend/js/site-intro.js'));
+        const modal = fakePage(false);
+        initSiteIntro();
+        expect(modal.hidden).toBe(true);
+    });
+
+    it('waits for the visitor to land when the introduction was explicitly requested', () => {
+        const { initSiteIntro } = require(path.join(REPO, 'frontend/js/site-intro.js'));
+        const modal = fakePage(true, '?intro=1');
         initSiteIntro();
         expect(modal.hidden).toBe(true);
         globalThis.dispatchEvent(new Event('worldview:landed'));
         expect(modal.hidden).toBe(false);
     });
 
-    it('shows at once when no globe owns the boot', () => {
+    it('shows a requested introduction at once when no globe owns the boot', () => {
         const { initSiteIntro } = require(path.join(REPO, 'frontend/js/site-intro.js'));
-        const modal = fakePage(false);
+        const modal = fakePage(false, '?intro=1');
         initSiteIntro();
         expect(modal.hidden).toBe(false);
     });
@@ -424,7 +500,10 @@ describe('wiring', () => {
 
     it('drops the commands of a section the city config hid, with the reason', () => {
         const UiCommands = require(path.join(REPO, 'frontend/js/ui/commands.js'));
-        const ctx = hidden => ({ global: {}, isControlAvailable: () => true, isSectionHidden: section => hidden.includes(section) });
+        const ctx = hidden => ({
+            global: { startTransitStationPlacement() {} }, parcel: { parcelId: 'parcel-1' },
+            isControlAvailable: () => true, isSectionHidden: section => hidden.includes(section)
+        });
         const ids = hidden => UiCommands.commandsFor('palette', ctx(hidden)).map(c => c.id);
         expect(ids([])).toEqual(expect.arrayContaining(['blocks.reform', 'stations.bus', 'proposals.list', 'game.new']));
         const explore = ids(['parcels', 'blocks', 'stations', 'roads', 'proposals', 'game', 'areaMonitor']);

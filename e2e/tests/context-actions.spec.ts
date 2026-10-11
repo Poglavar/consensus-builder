@@ -118,65 +118,62 @@ test.describe('Map context actions @features', () => {
     await expect.poll(() => page.evaluate(() => (window as any).transitStationPlacementMode)).toBe(false);
   });
 
-  test('fork with changed land keeps the source intact and saves a clone on the selected parcel', async ({ mockApi: page }) => {
+  test('editing a proposal forks its geometry on the ground beneath it', async ({ mockApi: page }) => {
     await openCity(page);
-    await ensureSecondParcel(page);
     const sourceId = await createSpace(page, 'park');
     const sourceBefore = await proposalState(page, sourceId);
     await showProposal(page, sourceId);
-    const expand = page.locator('#proposal-details-panel').getByRole('button', { name: 'Expand', exact: true });
-    if (await expand.isVisible()) await expand.click();
-    await page.locator('.btn-fork-changed-land').click();
-    await expect(page.locator('.land-fork-bar')).toBeVisible();
-    // An applied site-backed park opens the fork on its authored site with no seeded parcel
-    // selection. Select a different live parcel through the map; this is the supported empty-bar
-    // state for changing the land declaration of a site-first proposal.
-    const selectedLiveIds = () => page.evaluate(() => (window as any).getCurrentParcelSelectionContext().ids as string[]);
-    await expect.poll(selectedLiveIds).toEqual([]);
-    await clickMapPoint(page, 15.9829, 45.80025);
-    await expect(page.locator('#parcel-menu')).toBeVisible();
-    await page.locator('#parcel-menu').getByRole('menuitem', { name: 'Select more', exact: true }).click();
-    await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.isActive)).toBe(true);
-    await expect.poll(selectedLiveIds).toContain(SECOND_PARCEL_ID);
-    const forkCadastreIds: string[] = await page.evaluate(() => {
-      const w = window as any;
-      return w.LiveParcelFabric.cadastreIdsForParcelIds(w.getCurrentParcelSelectionContext().ids);
-    });
-    const selectedTargetFeature = await page.evaluate(id => JSON.parse(JSON.stringify((window as any).LiveParcelFabric.get(id))), SECOND_PARCEL_ID);
-    await page.locator('.land-fork-bar [data-land-fork-action="continue"]').click();
-    await expect(page.locator('.create-proposal-modal')).toBeVisible();
-    await expect(page.locator('.land-fork-notice')).toContainText('Fork of');
-    await page.locator('#proposalName').fill('Park moved to adjacent parcel');
-    await page.locator('#proposalDescription').fill('A changed-land fork created through the proposal details UI.');
-    await page.locator('#createProposalSubmitButton').click();
-    await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
-      .some((proposal: any) => proposal.title === 'Park moved to adjacent parcel'))).toBe(true);
+    const panel = page.locator('#proposal-details-panel');
+    await panel.locator('#proposal-details-footer .btn-edit-geometry').click();
+    const editor = page.locator('.structure-geometry-editor');
+    await expect(editor).toBeVisible();
 
-    const result = await page.evaluate(({ sourceId, selectedTargetFeature }) => {
-      const w = window as any;
-      const proposals = w.proposalStorage.getAllProposals();
-      const fork = proposals.find((proposal: any) => proposal.title === 'Park moved to adjacent parcel'
-        || proposal.name === 'Park moved to adjacent parcel');
-      const source = w.getProposalByIdOrHash(sourceId);
-      const targetIntersection = fork?.site ? w.turf.intersect(fork.site, selectedTargetFeature) : null;
-      const structureIntersection = fork?.structureProposal?.geometry
-        ? w.turf.intersect(fork.structureProposal.geometry, selectedTargetFeature) : null;
-      const targetIntersectionArea = targetIntersection ? w.turf.area(targetIntersection) : 0;
-      const structureIntersectionArea = structureIntersection ? w.turf.area(structureIntersection) : 0;
+    // The geometry editor starts from the source design. Changing it creates a local fork on the
+    // same authored footprint; land membership follows that geometry without a separate parcel picker.
+    const center = await page.evaluate(geometry => {
+      const polygon = geometry.type === 'Polygon' ? geometry.coordinates[0] : geometry.coordinates[0][0];
+      const vertices = polygon.slice(0, -1);
       return {
-        fork: fork && JSON.parse(JSON.stringify(fork)), source: JSON.parse(JSON.stringify(source)),
-        targetIntersectionArea, structureIntersectionArea,
+        lng: vertices.reduce((sum: number, point: number[]) => sum + point[0], 0) / vertices.length,
+        lat: vertices.reduce((sum: number, point: number[]) => sum + point[1], 0) / vertices.length,
       };
-    }, { sourceId, selectedTargetFeature });
+    }, sourceBefore.structureProposal.geometry);
+    await editor.locator('[data-tool="tree"]').click();
+    await clickMapPoint(page, center.lng, center.lat);
+    await editor.locator('[data-action="save"]').click();
+    await expect(editor).toBeHidden();
+
+    await expect.poll(() => page.evaluate(sourceId => {
+      const w = window as any;
+      const source = w.proposalStorage.getProposal(sourceId);
+      const sourceTrees = source?.structureProposal?.decorations?.trees || [];
+      const fork = w.proposalStorage.getAllProposals().find((proposal: any) =>
+        proposal.proposalId !== sourceId
+        && proposal.structureProposal?.kind === 'park'
+        && (proposal.structureProposal?.decorations?.trees || []).length > sourceTrees.length
+      );
+      if (!fork) return null;
+      return JSON.parse(JSON.stringify(fork));
+    }, sourceId), { timeout: 10000 }).toBeTruthy();
+
+    const result = await page.evaluate(({ sourceId, sourceBefore }) => {
+      const w = window as any;
+      const source = w.proposalStorage.getProposal(sourceId);
+      const fork = w.proposalStorage.getAllProposals().find((proposal: any) =>
+        proposal.proposalId !== sourceId
+        && proposal.structureProposal?.kind === 'park'
+        && (proposal.structureProposal?.decorations?.trees || []).length
+          > (sourceBefore.structureProposal?.decorations?.trees || []).length
+      );
+      return { source, fork };
+    }, { sourceId, sourceBefore });
     expect(result.fork).toBeTruthy();
-    expect(result.fork.sourceProposalId).toBe(sourceId);
-    expect(result.fork.replacementOfProposalId).toBe(sourceId);
-    expect(result.fork.landFork).toBeTruthy();
-    expect(result.fork.cadastreParcelIds).toEqual(forkCadastreIds);
-    expect(result.fork.cadastreParcelIds).toContain(SECOND_PARCEL_ID);
-    expect(result.fork.cadastreParcelIds).not.toContain(PARCEL_ID);
-    expect(result.targetIntersectionArea).toBeGreaterThan(0.25);
-    expect(result.structureIntersectionArea).toBeGreaterThan(0.25);
-    expect(result.source).toEqual(sourceBefore);
+    expect(result.fork.cadastreParcelIds).toEqual(sourceBefore.cadastreParcelIds);
+    expect(result.fork.site).toEqual(sourceBefore.site);
+    expect(result.fork.structureProposal.geometry).toEqual(sourceBefore.structureProposal.geometry);
+    expect(result.fork.structureProposal.decorations.trees.length)
+      .toBeGreaterThan(sourceBefore.structureProposal?.decorations?.trees?.length || 0);
+    expect(result.source.title).toBe(sourceBefore.title);
+    expect(result.source.structureProposal).toEqual(sourceBefore.structureProposal);
   });
 });

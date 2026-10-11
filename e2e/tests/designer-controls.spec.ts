@@ -360,12 +360,12 @@ test.describe('Designer controls persist their edits @features', () => {
     await modal.locator('[data-reparcel-plots-tab="new"]').click();
     await expect(modal.locator('[data-reparcel-newplots-table]')).not.toBeEmpty();
 
-    await modal.locator('input[name="reparcel-algorithm"][value="manual"]').check();
+    await modal.locator('label.reparcel-alg-option:has(input[value="manual"])').click();
     await expect(modal.locator('[data-reparcel-nodes]')).toHaveAttribute('aria-pressed', 'true');
-    await expect(modal.locator('.reparcel-subtitle')).toContainText('Manual');
+    await expect(modal.locator('.reparcel-subtitle')).toContainText('Draw freely');
     await expect(modal.locator('[data-reparcel-newplots-table]')).toContainText('Unassigned');
-    await modal.locator('input[name="reparcel-algorithm"][value="sweep-line"]').check();
-    await expect(modal.locator('.reparcel-subtitle')).toContainText('Sweep');
+    await modal.locator('label.reparcel-alg-option:has(input[value="sweep-line"])').click();
+    await expect(modal.locator('.reparcel-subtitle')).toContainText('Automatic');
 
     await modal.locator('[data-reparcel-assign]').click();
     await expect(modal.locator('[data-reparcel-assign]')).toHaveAttribute('aria-pressed', 'true');
@@ -397,7 +397,7 @@ test.describe('Designer controls persist their edits @features', () => {
     await page.locator('.parcel-build-btn--reparcellization').click();
     const modal = page.locator('.reparcel-modal-overlay');
     await expect(modal.locator('[data-reparcel-commit]')).toBeEnabled({ timeout: 15_000 });
-    await modal.locator('input[name="reparcel-algorithm"][value="manual"]').check();
+    await modal.locator('label.reparcel-alg-option:has(input[value="manual"])').click();
     await expect(modal.locator('[data-reparcel-nodes]')).toHaveAttribute('aria-pressed', 'true');
 
     const rows = modal.locator('[data-reparcel-newplots-table] .reparcel-newplot-row');

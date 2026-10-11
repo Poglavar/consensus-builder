@@ -4,9 +4,11 @@ import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
 
 const require = createRequire(import.meta.url);
+const turf = require('@turf/turf');
 const {
     captureSceneLoadAnchor,
     resolveSceneLoadGeometry,
+    buildLoadRadiusPreview,
     configurePannableOrbitControls,
     resolveExitMapCenter
 } = require('../../frontend/js/three-snapshot-navigation.js');
@@ -51,6 +53,33 @@ describe('3D snapshot navigation', () => {
         expect(resolveSceneLoadGeometry({ proposalGeometry: proposal, appliedWorkGeometry: applied, entryAnchorGeometry: anchor })).toBe(proposal);
         expect(resolveSceneLoadGeometry({ appliedWorkGeometry: applied, entryAnchorGeometry: anchor })).toBe(applied);
         expect(resolveSceneLoadGeometry({ entryAnchorGeometry: anchor })).toBe(anchor);
+    });
+
+    it.each([0, 45, 70])('draws the selected metre radius around a frozen anchor at latitude %s', lat => {
+        const anchor = { type: 'Point', coordinates: [12, lat] };
+        const original = structuredClone(anchor);
+        for (const radius of [100, 300, 500]) {
+            const preview = buildLoadRadiusPreview(anchor, radius, turf);
+            expect(preview.center).toEqual({ lng: 12, lat });
+            expect(preview.ring).toHaveLength(97);
+            expect(preview.ring[0]).toEqual(preview.ring.at(-1));
+            for (const point of preview.ring) {
+                expect(turf.distance(anchor.coordinates, point, { units: 'meters' })).toBeCloseTo(radius, 5);
+            }
+            for (const point of preview.innerRing) {
+                expect(turf.distance(anchor.coordinates, point, { units: 'meters' })).toBeLessThan(radius);
+            }
+        }
+        expect(anchor).toEqual(original);
+    });
+
+    it('centers a focused proposal circle on the frozen bounds and rejects absent or invalid radii', () => {
+        const geometry = turf.bboxPolygon([12, 45, 12.01, 45.02]).geometry;
+        const center = buildLoadRadiusPreview(geometry, 300, turf).center;
+        expect(center.lng).toBeCloseTo(12.005, 10);
+        expect(center.lat).toBeCloseTo(45.01, 10);
+        for (const radius of [0, -1, NaN, Infinity]) expect(buildLoadRadiusPreview(geometry, radius, turf)).toBeNull();
+        expect(buildLoadRadiusPreview(null, 300, turf)).toBeNull();
     });
 
     it('returns the geographic center represented by the current 3D target', () => {

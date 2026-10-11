@@ -29,10 +29,28 @@ test.describe('Parcel inspector @core', () => {
     // line under the shell's button row instead of being lifted behind the panel.
     await expect(page.locator('#parcel-info-panel .mobile-dock-sheet-handle')).toBeHidden();
     // The provider credit is MapCredits' control since adf27515 (it replaced Leaflet's attribution).
-    const credit = await page.locator('.map-credits-control').boundingBox();
-    const panel = await page.locator('#parcel-info-panel').boundingBox();
+    const creditsControl = page.locator('.map-credits-control');
+    const panelControl = page.locator('#parcel-info-panel');
+    await expect(creditsControl).toBeVisible();
+    await expect(panelControl).toBeVisible();
+    const credit = await creditsControl.boundingBox();
+    const panel = await panelControl.boundingBox();
     const bottomRow = await page.locator('#map-shell-bottom-right').boundingBox();
-    expect(credit!.y).toBeGreaterThanOrEqual(panel!.y + panel!.height);
+    const viewport = page.viewportSize();
+    expect(viewport).not.toBeNull();
+    expect(credit!.x).toBeGreaterThanOrEqual(0);
+    expect(credit!.y).toBeGreaterThanOrEqual(0);
+    expect(credit!.x + credit!.width).toBeLessThanOrEqual(viewport!.width);
+    expect(credit!.y + credit!.height).toBeLessThanOrEqual(viewport!.height);
+    expect(panel!.x).toBeGreaterThanOrEqual(0);
+    expect(panel!.y).toBeGreaterThanOrEqual(0);
+    expect(panel!.x + panel!.width).toBeLessThanOrEqual(viewport!.width);
+    expect(panel!.y + panel!.height).toBeLessThanOrEqual(viewport!.height);
+    // The desktop inspector is docked on the right and attribution stays at bottom-left. Either
+    // axis can provide clearance; requiring the credit below the panel rejects this valid layout.
+    const separatedHorizontally = credit!.x + credit!.width <= panel!.x || panel!.x + panel!.width <= credit!.x;
+    const separatedVertically = credit!.y + credit!.height <= panel!.y || panel!.y + panel!.height <= credit!.y;
+    expect(separatedHorizontally || separatedVertically).toBe(true);
     expect(credit!.y + credit!.height).toBeGreaterThan(bottomRow!.y - credit!.height);
     expect(credit!.y + credit!.height).toBeLessThanOrEqual(bottomRow!.y + 1);
   });

@@ -1,8 +1,9 @@
 // Point-identify and exact-ID access to Georgia's NAPR parcel lookup exposed by the MSDA viewer.
 // It deliberately has no area-query capability: a clicked parcel never proves a viewport complete.
+import { concatBytes } from './byte-utils.js';
 import { booleanPointInPolygon, feature as turfFeature, point as turfPoint } from '@turf/turf';
 import { canonicalParcelFeature, providerHttpError, upstreamError, validateGeometry } from './source-contract.js';
-import { parseKeralaWktPolygon } from './kerala-source.js';
+import { parseKeralaWktPolygon } from './kerala-wkt.js';
 
 const SOURCE_ID = 'ge-msda-napr-registered-land-plots';
 const ENDPOINT = 'https://ms.gov.ge/core-api/v1/search';
@@ -70,13 +71,13 @@ async function readJsonBounded(response, maxBytes) {
                 try { await reader.cancel(); } catch { /* response may already be closed */ }
                 throw invalidProvider('MSDA response exceeds the configured byte limit.');
             }
-            chunks.push(Buffer.from(value));
+            chunks.push(value);
         }
     } finally {
         try { reader.releaseLock(); } catch { /* ignore closed stream */ }
     }
     let payload;
-    try { payload = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(Buffer.concat(chunks, size))); }
+    try { payload = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(concatBytes(chunks, size))); }
     catch { throw invalidProvider('MSDA returned invalid JSON.'); }
     if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
         throw invalidProvider('MSDA returned an invalid response object.');

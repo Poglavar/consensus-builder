@@ -35,8 +35,8 @@ async function publishPark(page: Page, server: SharedProposalServer): Promise<Re
 }
 
 // Another device whose stored city is New York, sharing the same proposal server.
-async function deviceIn(browser: Browser, server: SharedProposalServer, cityId: string): Promise<{ context: BrowserContext; page: Page; errors: string[] }> {
-  const context = await browser.newContext({ baseURL: process.env.BASE_URL || 'http://localhost:8080' });
+async function deviceIn(browser: Browser, server: SharedProposalServer, cityId: string, baseURL: string): Promise<{ context: BrowserContext; page: Page; errors: string[] }> {
+  const context = await browser.newContext({ baseURL });
   await context.addInitScript((id) => {
     try {
       localStorage.setItem('cb_current_city', id);
@@ -116,9 +116,10 @@ test.describe('Worldwide publication and city routing @core', () => {
     await attachSharedProposalServer(author, server);
     const record = await publishPark(author, server);
     const publishedId = String(record.proposalId);
+    const baseURL = new URL(author.url()).origin;
 
     // the feed/search route: ?focusProposal= in New York for a Zagreb proposal
-    const first = await deviceIn(browser, server, 'new_york');
+    const first = await deviceIn(browser, server, 'new_york', baseURL);
     try {
       await first.page.goto(`/?city=new_york&reduceMotion=1&focusProposal=${record.id}`);
       await followToCity(first.page, 'zagreb', 'Zagreb');
@@ -133,7 +134,7 @@ test.describe('Worldwide publication and city routing @core', () => {
     const cityless: Record<string, any> = { ...record, id: 7101, proposalId: `${publishedId}-old` };
     delete cityless.city;
     server.records.set('7101', cityless);
-    const second = await deviceIn(browser, server, 'new_york');
+    const second = await deviceIn(browser, server, 'new_york', baseURL);
     try {
       await second.page.goto('/proposals/7101?reduceMotion=1');
       const croatian = await second.page.evaluate(() => {
@@ -199,5 +200,10 @@ test.describe('Worldwide publication and city routing @core', () => {
     expect(await readOnly(other)).toBe(false);
     await expect(banner(other)).toHaveCount(0);
     expect(await readOnly(first)).toBe(false);
+
+    await banner(second).getByRole('button', { name: 'Dismiss' }).click();
+    await expect(banner(second)).toHaveCount(0);
+    // Dismiss only hides the warning; the secondary tab remains read-only.
+    expect(await readOnly(second)).toBe(true);
   });
 });

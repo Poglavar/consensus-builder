@@ -15,8 +15,14 @@ describe('proposal details authoring contract', () => {
         expect(detailsSource).not.toContain('class="btn btn-primary btn-propose-proposal"');
     });
 
-    it('does not expose the generic geometry editor from the read-only details footer', () => {
-        expect(detailsSource).not.toContain('class="btn btn-outline-secondary btn-edit-geometry"');
+    it('keeps direct geometry editing as a contextual design action beside Fork', () => {
+        expect(detailsSource).toContain('const geometryEditable = proposalKey && !crossSectionButtonHtml');
+        expect(detailsSource).toContain("typeof canEditProposalGeometry === 'function'");
+        expect(detailsSource).toContain("typeof editProposalGeometry === 'function'");
+        expect(detailsSource).toContain('canEditProposalGeometry(fullProposal || proposal)');
+        expect(detailsSource).toContain('class="btn btn-outline-secondary btn-edit-geometry"');
+        expect(detailsSource).toContain('onclick="editProposalGeometry(${inlineJsArg(proposalKey)})"');
+        expect(detailsSource).toContain('crossSectionButtonHtml + editGeometryButtonHtml');
     });
 
     // The one in-place geometry action is a road's cross-section — the same rule as its node

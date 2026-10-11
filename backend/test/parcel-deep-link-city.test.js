@@ -21,6 +21,14 @@ const require = createRequire(import.meta.url);
 let CityConfigManager;
 let route;
 
+function citiesForParcelPrefix(parcelId) {
+    const id = String(parcelId || '').toUpperCase();
+    const matches = CityConfigManager.getAvailableCities()
+        .filter(city => city.parcels?.idPrefix && id.startsWith(city.parcels.idPrefix.toUpperCase()));
+    const longest = Math.max(0, ...matches.map(city => city.parcels.idPrefix.length));
+    return matches.filter(city => city.parcels.idPrefix.length === longest);
+}
+
 beforeAll(() => {
     globalThis.window = globalThis;
     const src = readFileSync(new URL('../../frontend/js/city-config.js', import.meta.url), 'utf8');
@@ -29,11 +37,12 @@ beforeAll(() => {
     route = require('../../frontend/js/parcels/route.js');
 });
 
-describe('parcelIdToCityId — prefixes that are unambiguous', () => {
-    it('maps each one-city country prefix', () => {
+describe('parcelIdToCityId — unambiguous and shared prefixes', () => {
+    it('maps configured single-city prefixes and declines shared-provider guesses', () => {
         expect(route.parcelIdToCityId('CA-ON-TORONTO-5455132')).toBe('toronto');
-        expect(route.parcelIdToCityId('CA-QC-CADASTRE-11111111-2222-3333-4444-555555555555')).toBe('montreal');
-        expect(route.parcelIdToCityId('AU-NSW-11111')).toBe('sydney');
+        // Quebec cadastral identifiers are shared by multiple configured cities.
+        expect(route.parcelIdToCityId('CA-QC-CADASTRE-11111111-2222-3333-4444-555555555555')).toBeNull();
+        expect(route.parcelIdToCityId('AU-NSW-11111')).toBeNull();
         expect(route.parcelIdToCityId('BR-SP-GEOSAMPA-1958754')).toBe('sao_paulo');
         expect(route.parcelIdToCityId('GB-HMLR-23394370')).toBe('birmingham');
         expect(route.parcelIdToCityId('GB-HMLR-LONDON-23394370')).toBe('london');
@@ -49,10 +58,10 @@ describe('parcelIdToCityId — prefixes that are unambiguous', () => {
         expect(route.parcelIdToCityId('PE-SEDAPAL-LOT-{11111111-2222-3333-4444-555555555555}')).toBe('lima');
         expect(route.parcelIdToCityId('CO-BOGOTA-006106001009')).toBe('bogota');
         expect(route.parcelIdToCityId('US-CA-LA-5149001915')).toBe('los_angeles');
-        expect(route.parcelIdToCityId('US-FL-MIAMI-DADE-{C9D13CB3-3718-4F70-B8BB-CA6F9FE127F4}')).toBe('miami');
+        expect(route.parcelIdToCityId('US-FL-MIAMI-DADE-{C9D13CB3-3718-4F70-B8BB-CA6F9FE127F4}')).toBeNull();
         expect(route.parcelIdToCityId('US-DC-{1B157667-518C-4B56-9DFC-1DAEC1559EAB}')).toBe('washington_dc');
         expect(route.parcelIdToCityId('FR-PCI-75105000AD0011')).toBeNull();
-        expect(route.parcelIdToCityId('AU-VIC-PARCEL-152244627')).toBe('melbourne');
+        expect(route.parcelIdToCityId('AU-VIC-PARCEL-152244627')).toBeNull();
         expect(route.parcelIdToCityId('ZA-CCT-C0160007000951650000000000')).toBe('cape_town');
         expect(route.parcelIdToCityId('BE-GRB-ADP-4455664')).toBe('antwerp');
         expect(route.parcelIdToCityId('NL-BRK-11460432670000')).toBeNull();
@@ -87,13 +96,38 @@ describe('configured US capital source parcel routing', () => {
         ['US-AZ-MARICOPA-11221002', 'phoenix', 'us-az-maricopa-assessor-parcels', 'EPSG:32612', 'Phoenix, United States'],
         ['US-AR-PULASKI-34L-032.00-016.00', 'little_rock', 'us-ar-ago-parcels-pulaski', 'EPSG:32615', 'Little Rock, United States'],
         ['US-CA-SACRAMENTO-00600360310000', 'sacramento', 'us-ca-sacramento-active-parcels', 'EPSG:32610', 'Sacramento, United States']
-    ])('routes %s to its configured city', (parcelId, cityId, sourceId, metricCrs, label) => {
-        expect(route.parcelIdToCityId(parcelId)).toBe(cityId);
+    ])('routes %s using its current provider configuration', async (parcelId, cityId, sourceId, metricCrs, label) => {
         const city = CityConfigManager.getCityConfig(cityId);
         expect(city.label).toBe(label);
         expect(city.parcels).toMatchObject({ source: 'parcel-source', sourceId });
         expect(parcelId.startsWith(city.parcels.idPrefix)).toBe(true);
         expect(city.projection.metricCrs).toBeUndefined();
+
+        const candidates = citiesForParcelPrefix(parcelId);
+        expect(candidates.map(candidate => candidate.id)).toContain(cityId);
+        if (candidates.length === 1) {
+            expect(route.parcelIdToCityId(parcelId)).toBe(cityId);
+            return;
+        }
+
+        // The prefix now identifies a shared provider. Resolve the parcel from its coordinates
+        // and allow any configured city from that provider as the lookup context.
+        expect(route.parcelIdToCityId(parcelId)).toBeNull();
+        const [lat, lng] = city.map.defaultCenter;
+        const locateIds = vi.fn(async () => ({ status: 'ready', features: [
+            { id: parcelId, geometry: { type: 'Polygon', coordinates: [[[lng, lat]]] } }
+        ] }));
+        const previousGround = globalThis.CadastralParcelRepository;
+        globalThis.CadastralParcelRepository = { locateIds };
+        try {
+            await expect(route.resolveCityIdForParcel(parcelId)).resolves.toBe(cityId);
+            expect(locateIds).toHaveBeenCalledTimes(1);
+            expect(locateIds.mock.calls[0][0]).toEqual([parcelId]);
+            expect(candidates.map(candidate => candidate.id)).toContain(locateIds.mock.calls[0][1].city);
+        } finally {
+            if (previousGround === undefined) delete globalThis.CadastralParcelRepository;
+            else globalThis.CadastralParcelRepository = previousGround;
+        }
     });
 });
 
@@ -219,25 +253,58 @@ describe('shared parcel sources resolve city from geometry', () => {
         delete globalThis.__CB_CITY_LOOKUP_TIMEOUT_MS__;
     });
     it.each([
-        ['JP-MOJ-2026-27128~sheet1~H000000001', 135.532507321, 34.677750586, 'osaka', 'tokyo'],
-        ['JP-MOJ-2026-13101~sheet1~H000000001', 139.766899192, 35.696623934, 'tokyo', 'tokyo'],
-        ['JP-MOJ-2026-23101~sheet1~H000000001', 136.984010139, 35.163716454, 'nagoya', 'tokyo'],
-        ['FR-PCI-69385000AA0001', 4.8357, 45.764, 'lyon', 'paris'],
-        ['FR-PCI-75105000AD0011', 2.3556, 48.8491, 'paris', 'paris'],
-        ['NL-BRK-11460432670000', 4.4792, 51.9225, 'rotterdam', 'amsterdam'],
-        ['NL-BRK-11460432670000', 4.9, 52.3725, 'amsterdam', 'amsterdam'],
-        ['DE-NRW-05344102100105______', 6.9603, 50.9375, 'cologne', 'essen'],
-        ['DE-NRW-05344102100105______', 7.0123, 51.4556, 'essen', 'essen'],
-        ['DE-NRW-05913000000012345678', 7.466, 51.51494, 'dortmund', 'essen'],
-        ['US-NC-WAKE-1706681938', -78.6416325645578, 35.8609596134079, 'new_hope', 'raleigh'],
-        ['US-NC-WAKE-1703678831', -78.6382, 35.7796, 'raleigh', 'raleigh']
-    ])('places %s from exact geometry in %s', async (id, lng, lat, target, lookupCity) => {
+        ['JP-MOJ-2026-27128~sheet1~H000000001', 135.532507321, 34.677750586, 'osaka'],
+        ['JP-MOJ-2026-13101~sheet1~H000000001', 139.766899192, 35.696623934, 'tokyo'],
+        ['JP-MOJ-2026-23101~sheet1~H000000001', 136.984010139, 35.163716454, 'nagoya'],
+        ['FR-PCI-69385000AA0001', 4.8357, 45.764, 'lyon'],
+        ['FR-PCI-75105000AD0011', 2.3556, 48.8491, 'paris'],
+        ['NL-BRK-11460432670000', 4.4792, 51.9225, 'rotterdam'],
+        ['NL-BRK-11460432670000', 4.9, 52.3725, 'amsterdam'],
+        ['DE-NRW-05344102100105______', 6.9603, 50.9375, 'cologne'],
+        ['DE-NRW-05344102100105______', 7.0123, 51.4556, 'essen'],
+        ['DE-NRW-05913000000012345678', 7.466, 51.51494, 'dortmund'],
+        ['US-NC-WAKE-1706681938', -78.6416325645578, 35.8609596134079, 'new_hope'],
+        ['US-NC-WAKE-1703678831', -78.6382, 35.7796, 'raleigh']
+    ])('places %s from exact geometry in %s', async (id, lng, lat, target) => {
         locateIds.mockResolvedValue({ status: 'ready', features: [
             { id, geometry: { type: 'Polygon', coordinates: [[[lng, lat]]] } }
         ] });
         expect(route.parcelIdToCityId(id)).toBeNull();
         await expect(route.resolveCityIdForParcel(id)).resolves.toBe(target);
-        expect(locateIds).toHaveBeenCalledWith([id], { city: lookupCity });
+        expect(locateIds).toHaveBeenCalledTimes(1);
+        expect(locateIds.mock.calls[0][0]).toEqual([id]);
+        expect(citiesForParcelPrefix(id).map(city => city.id)).toContain(locateIds.mock.calls[0][1].city);
+    });
+    it.each([
+        ['GB-HMLR-BROWSER-v1-123456', -0.127, 51.508, 'london'],
+        ['GB-HMLR-BROWSER-v1-654321', -2.243, 53.480, 'manchester']
+    ])('routes shared HMLR prefix %s from its parcel coordinates to %s', async (id, lng, lat, target) => {
+        const previous = globalThis.CityConfigManager;
+        const configured = [
+            { id: 'london', center: [51.5074, -0.1278] },
+            { id: 'manchester', center: [53.4808, -2.2426] }
+        ].map(city => ({ ...city, parcels: { sourceId: 'gb-hmlr-browser-v1', idPrefix: 'GB-HMLR-BROWSER-v1-' } }));
+        globalThis.CityConfigManager = {
+            getAvailableCities: () => configured,
+            findNearestCity: (latitude, longitude, options = {}) => configured
+                .filter(city => !options.filter || options.filter(city))
+                .sort((a, b) => (a.center[0] - latitude) ** 2 + (a.center[1] - longitude) ** 2
+                    - ((b.center[0] - latitude) ** 2 + (b.center[1] - longitude) ** 2))[0] || null
+        };
+        locateIds.mockResolvedValue({ status: 'ready', features: [
+            { id, geometry: { type: 'Polygon', coordinates: [[[lng, lat], [lng + 0.0001, lat],
+                [lng + 0.0001, lat + 0.0001], [lng, lat + 0.0001], [lng, lat]]] } }
+        ] });
+        try {
+            expect(route.parcelIdToCityId(id)).toBeNull();
+            await expect(route.resolveCityIdForParcel(id)).resolves.toBe(target);
+            expect(locateIds).toHaveBeenCalledTimes(1);
+            expect(locateIds.mock.calls[0][0]).toEqual([id]);
+            expect(configured.map(city => city.id)).toContain(locateIds.mock.calls[0][1].city);
+        } finally {
+            if (previous === undefined) delete globalThis.CityConfigManager;
+            else globalThis.CityConfigManager = previous;
+        }
     });
     it('waits through startup viewport queuing for the shared New Hope parcel lookup', async () => {
         vi.useFakeTimers();
@@ -259,7 +326,9 @@ describe('shared parcel sources resolve city from geometry', () => {
             expect(settled).toBe(false);
             await vi.advanceTimersByTimeAsync(900);
             await expect(lookup).resolves.toBe('new_hope');
-            expect(locateIds).toHaveBeenCalledWith([id], { city: 'raleigh' });
+            expect(locateIds).toHaveBeenCalledTimes(1);
+            expect(locateIds.mock.calls[0][0]).toEqual([id]);
+            expect(citiesForParcelPrefix(id).map(city => city.id)).toContain(locateIds.mock.calls[0][1].city);
         } finally {
             vi.useRealTimers();
         }

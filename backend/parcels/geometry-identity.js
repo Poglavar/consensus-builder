@@ -1,11 +1,10 @@
 // Reproducible application references for source polygons that have no published parcel key.
-import { createHash } from 'node:crypto';
-import { createRequire } from 'node:module';
+import siteHash from '../../frontend/js/proposals/site-hash.js';
 import { HttpError } from '../utils/helpers.js';
 import { validateGeometry, upstreamError } from './source-contract.js';
+import { sha256Hex } from './portable-hash.js';
 
-const require = createRequire(import.meta.url);
-const { canonicalSiteCoordinates, COORDINATE_SCALE } = require('../../frontend/js/proposals/site-hash.js');
+const { canonicalSiteCoordinates, COORDINATE_SCALE } = siteHash;
 export const GEOMETRY_IDENTITY_KIND = 'geometry-sha256-v1';
 
 export function geometryParcelFeature(descriptor, feature) {
@@ -22,7 +21,7 @@ export function geometryParcelFeature(descriptor, feature) {
         throw upstreamError('Outline geometry collapses at the identity precision.');
     }
     const encoded = JSON.stringify({ coordinates, type: 'MultiPolygon' });
-    const hash = createHash('sha256').update(`${descriptor.id}\n${GEOMETRY_IDENTITY_KIND}\n${encoded}`).digest('hex');
+    const hash = sha256Hex(`${descriptor.id}\n${GEOMETRY_IDENTITY_KIND}\n${encoded}`);
     const [longitude, latitude] = coordinates[0][0][0];
     // A deterministic vertex locates a fresh bounded read after a restart; the hash checks its shape.
     const parcelId = `${descriptor.idPrefix}g1~${longitude}~${latitude}~${hash}`;

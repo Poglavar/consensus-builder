@@ -49,7 +49,7 @@
         --right-dock-gap: 0px;
     }
 
-    .info-panel.right-dock-panel {
+    .info-panel.right-dock-panel:not(#proposal-details-panel):not(.is-minimized) {
         /* The default leaves the search/mode controls visible on a short phone while giving the
            build palette enough vertical room to use without immediately scrolling. JS can replace
            the height with a clamped pixel value while the handle is dragged. */
@@ -60,7 +60,7 @@
 
     /* The desktop parcel panel has an ID-level 50vh declaration. Keep the shared sheet height
        authoritative after the phone breakpoint switches it into the common dock. */
-    #parcel-info-panel.right-dock-panel {
+    #parcel-info-panel.right-dock-panel:not(.is-minimized) {
         height: min(var(--mobile-dock-sheet-height), calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance) - 8px));
         max-height: calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance) - 8px);
     }
@@ -119,6 +119,8 @@ body.map-edit-locked #drill-stack-panel {
 
 #parcel-info-panel .panel-header h3 {
     display: inline-flex;
+    flex: 1 1 0;
+    min-width: 0;
     align-items: center;
     gap: 8px;
     margin: 0;
@@ -127,6 +129,7 @@ body.map-edit-locked #drill-stack-panel {
 
 #parcel-info-panel .parcel-title-id {
     display: inline-flex;
+    min-width: 0;
     align-items: center;
     gap: 4px;
     font-size: 11px;
@@ -180,10 +183,7 @@ from .right-dock-panel — do not re-declare one here.
     background: #fff;
 }
 
-/* The Leaflet attribution needs no lift while this panel is open: the dock ends above the bottom
-   button row (--map-shell-bottom-clearance) on desktop and phones alike, and the credit sits under
-   that row. Lifting it (to 50vh, from when the panel reached the window's bottom edge) put it
-   BEHIND the opaque panel instead. */
+/* Credits occupy the lower left. Right-hand panels end just above the navigation row. */
 
 /* Collapsed to ONE line: the header, which reads "Parcel <number>". The panel is the SECONDARY
    surface when a proposal selection opened its own parcel underneath the proposal card.
@@ -200,11 +200,17 @@ from .right-dock-panel — do not re-declare one here.
 }
 
 #parcel-info-panel .panel-header #parcel-info-minimize {
-    margin-left: auto;
+    margin-left: 0;
 }
 
 #parcel-info-panel .panel-header #parcel-info-minimize + .close-button {
-    margin-left: 8px;
+    margin-left: 0;
+}
+
+#parcel-info-panel .panel-header > button {
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
 }
 
 /*
@@ -1714,64 +1720,6 @@ above the scroll fold.
     color: #999;
 }
 
-#proposal-details-panel .panel-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 0px 0px;
-    min-height: 40px;
-    border-radius: 12px 12px 0 0;
-    border-bottom: 1px solid black;
-}
-
-#proposal-details-panel .panel-header__actions {
-    margin-left: auto;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-#proposal-details-panel .panel-header__actions .close-button {
-    margin-left: 0;
-}
-
-/* Header now carries the proposal's name, so keep it to a single line with an ellipsis
-   (full name is in the title attribute) instead of wrapping and growing the collapsed card. */
-#proposal-details-panel .panel-header h3 {
-    line-height: 1.25;
-    display: block;
-    flex: 1 1 auto;
-    min-width: 0;
-    margin-right: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* A too-long proposal name rotates like text on a cylinder instead of ellipsizing: the track
-   holds two copies and slides exactly one copy-width (plus the gap) left, looping seamlessly.
-   details-panel.js applies .title-marquee only when the name overflows; hover pauses it, and
-   reduced motion keeps the plain ellipsis. */
-#proposal-details-title.title-marquee {
-    text-overflow: clip;
-}
-
-#proposal-details-title .title-marquee-track {
-    display: inline-flex;
-    gap: 48px;
-    animation: title-marquee var(--marquee-duration, 12s) linear infinite;
-    will-change: transform;
-}
-
-#proposal-details-title.title-marquee:hover .title-marquee-track {
-    animation-play-state: paused;
-}
-
-@keyframes title-marquee {
-    from { transform: translateX(0); }
-    to { transform: translateX(calc(-1 * var(--marquee-distance, 100%))); }
-}
-
 #proposal-details-panel .proposal-details-toggle {
     font-weight: 700;
 }
@@ -1807,11 +1755,13 @@ above the scroll fold.
 
 #parcel-info-panel .panel-header {
     border-radius: 12px 12px 0 0;
+    gap: 8px;
+    padding: 8px 12px;
 }
 
 #parcel-info-panel .panel-header h3 {
-    width: fit-content;
-    max-width: 100%;
+    width: 0;
+    max-width: none;
 }
 
 .panel-body {
@@ -1830,26 +1780,7 @@ above the scroll fold.
     min-width: 0;
 }
 
-/* Proposal details panel footer */
-#proposal-details-panel .panel-footer {
-    flex-shrink: 0;
-    padding: 12px 10px 0 10px;
-    border-top: 1px solid #eee;
-    background: rgba(248, 249, 250, 0.8);
-    border-radius: 0 0 12px 12px;
-    box-sizing: border-box;
-    border-top: 1px solid black;
-}
-
-#proposal-details-panel .panel-footer:empty {
-    display: none;
-}
-
-#proposal-details-panel .panel-footer .proposal-actions-group {
-    margin: 0;
-}
-
-/* Collapsed proposal card: hide the body, but keep the footer (Apply to map / Share) showing.
+/* Compact proposal card: hide the body, but keep its map and authoring actions showing.
    The header rounds only its top corners since the footer sits directly beneath it. */
 #proposal-details-panel.is-minimized .panel-header {
     border-bottom: none;

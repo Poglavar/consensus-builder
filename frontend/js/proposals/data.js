@@ -2007,7 +2007,7 @@ const multiParcelSelection = {
             renderParcelProposalActions();
         }
 
-        // Flows that watch the selection (the land-fork bar) listen for this instead of polling.
+        // Selection-dependent UI listens for this instead of polling.
         try {
             document.dispatchEvent(new CustomEvent('multi-parcel-selection-change', {
                 detail: { ids: Array.from(this.selectedParcels), isActive: this.isActive }
@@ -2185,7 +2185,7 @@ const multiParcelSelection = {
             const roadLabel = tParcelMulti('panel.parcel.multi.roadTag', {}, 'Road');
             return `
                             <div class="selected-parcel-item">
-                                <div class="parcel-number">${parcelLabel}</div>
+                                <div class="parcel-number"><span class="parcel-id-text" title="${escapeHtml(String(parcelId))}">${escapeHtml(parcelLabel)}</span></div>
                                 <div class="parcel-details">
                                             ${CbFormat.formatArea(area)} •
                                             ${CbFormat.formatMoney(price, currency, { maxFractionDigits: 0 })}

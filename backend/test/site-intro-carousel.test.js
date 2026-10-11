@@ -44,7 +44,7 @@ function makeNode(tag = 'div', attributes = {}) {
     return node;
 }
 
-function boot({ seen = null, search = '?intro=1' } = {}) {
+function boot({ seen = null, search = '?intro=1', pathname = '/', hash = '', ownsBoot = false, storageUnavailable = false } = {}) {
     const windowListeners = {};
     const document = {
         readyState: 'complete', activeElement: null,
@@ -82,13 +82,15 @@ function boot({ seen = null, search = '?intro=1' } = {}) {
     const storage = new Map(seen === null ? [] : [['cb_site_intro_seen_v1', seen]]);
     const closedEvents = [];
     const window = {
-        document, location: { search }, localStorage: {
+        document, location: { search, pathname, hash }, localStorage: {
             getItem(key) { return storage.get(key) ?? null; },
             setItem(key, value) { storage.set(key, value); }
         },
+        WorldEntry: { ownsBoot: () => ownsBoot },
         addEventListener(type, callback) { (windowListeners[type] ||= []).push(callback); },
         dispatchEvent(event) { closedEvents.push(event.type); for (const callback of windowListeners[event.type] || []) callback(event); }
     };
+    if (storageUnavailable) Object.defineProperty(window, 'localStorage', { get() { throw new Error('Storage unavailable'); } });
     class CustomEvent { constructor(type) { this.type = type; } }
     vm.runInNewContext(source, { window, document, CustomEvent, URLSearchParams, module: { exports: {} } });
     return { window, document, modal, slides, slideArea, close, skip, back, next, progress, dots, reopen, storage, closedEvents };
@@ -97,6 +99,53 @@ function boot({ seen = null, search = '?intro=1' } = {}) {
 function pageIndex(slides) { return slides.findIndex(slide => !slide.hidden); }
 
 describe('site intro carousel', () => {
+    it.each([
+        { pathname: '/', search: '' },
+        { pathname: '/', search: '?city=nairobi' },
+        { pathname: '/proposals/851', search: '?city=nairobi' },
+        { pathname: '/proposals/12,13', search: '' },
+        { pathname: '/proposals/garden-plan', search: '' },
+        { pathname: '/plans/garden-plan/score', search: '' },
+        { pathname: '/parcel/HR-335240-1323/2', search: '' },
+        { pathname: '/bets/market-account', search: '' },
+        { pathname: '/monitors/4', search: '' },
+        { pathname: '/', search: '?proposalShare=encoded' },
+        { pathname: '/', search: '?shared=encoded' },
+        { pathname: '/', search: '?parcel=HR-1' },
+        { pathname: '/', search: '?focusProposal=851&photo=1' },
+        { pathname: '/', search: '?activity=proposal%3A851' },
+        { pathname: '/', search: '?scene=courtyard' },
+        { pathname: '/', search: '?at=-1.264,36.840,17' },
+        { pathname: '/', search: '', hash: '#selected-place' }
+    ])('leaves a fresh arrival at $pathname$search$hash uninterrupted', location => {
+        const app = boot({ ...location, storageUnavailable: true });
+        expect(app.modal.hidden).toBe(true);
+        expect(app.document.activeElement).toBeNull();
+        expect(app.document.body.classList.contains('site-intro-open')).toBe(false);
+        app.window.dispatchEvent({ type: 'worldview:landed' });
+        expect(app.modal.hidden).toBe(true);
+        expect(app.window.location).toMatchObject(location);
+    });
+
+    it('does not queue an automatic tour after a first-visit globe', () => {
+        const app = boot({ search: '', ownsBoot: true });
+        app.window.dispatchEvent({ type: 'worldview:landed' });
+        expect(app.modal.hidden).toBe(true);
+        app.reopen.fire('click');
+        expect(app.modal.hidden).toBe(false);
+    });
+
+    it('retains a shared destination while an explicitly opened tour is viewed and closed', () => {
+        const location = { pathname: '/proposals/851', search: '?city=nairobi&intro=1&at=-1.264,36.840,17', hash: '#details' };
+        const app = boot(location);
+        expect(app.modal.hidden).toBe(false);
+        app.next.fire('click');
+        app.skip.fire('click');
+        expect(app.modal.hidden).toBe(true);
+        expect(app.window.location).toEqual(location);
+        expect(app.storage.size).toBe(0);
+    });
+
     it('clamps page movement and recognizes horizontal swipes only', () => {
         const api = requireIntroApi();
         expect([api.introPageIndex(0, -1, 5), api.introPageIndex(4, 1, 5), api.introPageIndex(2, -1, 5)])
@@ -135,7 +184,7 @@ describe('site intro carousel', () => {
         app.next.fire('click');
         expect(app.modal.hidden).toBe(true);
         expect(app.closedEvents).toEqual(['siteintro:closed']);
-        expect(app.storage.get('cb_site_intro_seen_v1')).toBe('1');
+        expect(app.storage.size).toBe(0);
     });
 
     it('skip closes from any slide and manual reopen resets to the first slide', () => {
@@ -153,7 +202,6 @@ describe('site intro carousel', () => {
         app.slideArea.fire('touchend', { touches: [], changedTouches: [{ clientX: 100, clientY: 20 }] });
         expect(pageIndex(app.slides)).toBe(0);
         expect(app.storage.get('cb_site_intro_seen_v1')).toBe('1');
-        expect(app.window.SiteIntro.STORAGE_KEY).toBe('cb_site_intro_seen_v1');
     });
 });
 

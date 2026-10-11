@@ -294,112 +294,13 @@
     // checked against its SITE — the bound parcels' part and the open ground alike — so the plots
     // must tile exactly the site's ground, whatever pool geometry the plan carries.
     function reparcellizationTopologyValidation(plan, options = {}) {
-        const errors = [];
-        const warnings = [];
-        const features = planFeatures(plan);
-        const rawCount = Array.isArray(plan?.polygons) ? plan.polygons.length : 0;
-        if (!rawCount) {
-            errors.push(issue('missing-polygons', 'Add at least one replacement parcel.', 'editorPayload.plan.polygons'));
-            return { errors, warnings };
-        }
-        if (features.length !== rawCount) {
-            errors.push(issue('invalid-polygon', 'Every replacement parcel needs a valid polygon.', 'editorPayload.plan.polygons'));
-        }
-        features.forEach((feature, index) => {
-            try {
-                if (typeof global.turf?.booleanValid === 'function' && !global.turf.booleanValid(feature)) {
-                    errors.push(issue('invalid-polygon', `Replacement parcel ${index + 1} is self-intersecting or otherwise invalid.`, 'editorPayload.plan.polygons', feature.geometry));
-                }
-            } catch (_) { }
-        });
-        const geometryKeys = new Set();
-        features.forEach(feature => {
-            const key = stable(feature.geometry);
-            if (geometryKeys.has(key)) {
-                errors.push(issue('overlapping-polygons', 'Two replacement parcels have identical geometry.', 'editorPayload.plan.polygons', feature.geometry));
-            }
-            geometryKeys.add(key);
-        });
-        const siteGeometry = options && options.site && /Polygon/.test(String(options.site.type || '')) ? options.site : null;
-        const poolGeometry = siteGeometry || plan?.poolGeometry;
-        if (poolGeometry && poolGeometry.type === 'MultiPolygon' && (poolGeometry.coordinates || []).length > 1) {
-            errors.push(issue(
-                'disconnected-readjustment',
-                'A land readjustment must be contiguous. Publish each disconnected area as a separate readjustment.',
-                'editorPayload.plan.poolGeometry',
-                poolGeometry
-            ));
-        }
-        let plotUnion = null;
-        if (turfRef && typeof turfRef.union === 'function') {
-            for (const item of features) {
-                try { plotUnion = plotUnion ? turfRef.union(plotUnion, item) : item; } catch (_) { }
-            }
-            if (plotUnion?.geometry?.type === 'MultiPolygon' && (plotUnion.geometry.coordinates || []).length > 1) {
-                errors.push(issue(
-                    'disconnected-readjustment',
-                    'A land readjustment must be contiguous. Publish each disconnected area as a separate readjustment.',
-                    'editorPayload.plan.polygons',
-                    plotUnion.geometry
-                ));
-            }
-        }
-        const explicitPoolArea = Number(geometryArea(poolGeometry));
-        const targetArea = explicitPoolArea > 0 ? explicitPoolArea : Number(plan?.totalArea);
-        const assignedArea = (plan?.polygons || []).reduce((sum, polygon) => {
-            const recorded = Number(polygon?.area);
-            if (Number.isFinite(recorded) && recorded >= 0) return sum + recorded;
-            return sum + (Number(geometryArea(polygon?.geometry || polygon)) || 0);
-        }, 0);
-        if (Number.isFinite(targetArea) && targetArea > 0 && assignedArea > 0) {
-            const tolerance = Math.max(0.5, targetArea * 0.005);
-            if (assignedArea < targetArea - tolerance) {
-                errors.push(issue('coverage-gap', siteGeometry
-                    ? 'The plots leave part of the site uncovered (its parcels or its open ground).'
-                    : 'Replacement parcels leave part of the required parent area uncovered.', 'editorPayload.plan.polygons'));
-            } else if (assignedArea > targetArea + tolerance) {
-                errors.push(issue('coverage-excess', siteGeometry
-                    ? 'The plots cover more than the site.'
-                    : 'Replacement parcel areas exceed the required parent coverage.', 'editorPayload.plan.polygons'));
-            }
-        }
-        if (!turfRef || typeof turfRef.intersect !== 'function' || typeof turfRef.area !== 'function') return { errors, warnings };
-        if (poolGeometry && plotUnion) {
-            try {
-                const poolFeature = { type: 'Feature', properties: {}, geometry: poolGeometry };
-                const gap = turfRef.difference(poolFeature, plotUnion);
-                const outside = turfRef.difference(plotUnion, poolFeature);
-                if ((gap && turfRef.area(gap) > 0.5) || (outside && turfRef.area(outside) > 0.5)) {
-                    errors.push(issue(
-                        'pool-coverage-mismatch',
-                        siteGeometry
-                            ? 'The plots must tile the site exactly: its parcels and its open ground.'
-                            : 'Replacement parcels must tile the saved readjustment extent exactly.',
-                        'editorPayload.plan.polygons',
-                        poolGeometry
-                    ));
-                }
-            } catch (_) { }
-        }
-        for (let i = 0; i < features.length; i += 1) {
-            for (let j = i + 1; j < features.length; j += 1) {
-                try {
-                    const intersection = turfRef.intersect(features[i], features[j]);
-                    if (!intersection) continue;
-                    const overlapArea = Number(turfRef.area(intersection)) || 0;
-                    const smaller = Math.min(
-                        Number(geometryArea(features[i].geometry)) || 0,
-                        Number(geometryArea(features[j].geometry)) || 0
-                    );
-                    // Manual line cuts leave hairline slivers along the shared edges (float noise);
-                    // only a real two-dimensional overlap counts as a plan error.
-                    if (overlapArea > Math.max(0.5, smaller * 0.001)) {
-                        errors.push(issue('overlapping-polygons', `Replacement parcels ${i + 1} and ${j + 1} overlap.`, 'editorPayload.plan.polygons', features[i].geometry));
-                    }
-                } catch (_) { }
-            }
-        }
-        return { errors, warnings };
+        const validator = global.ReparcellizationValidation
+            || (typeof require === 'function' ? require('./reparcellization-validation.js') : null);
+        if (!validator) throw new Error('Readjustment validation is unavailable.');
+        const result = validator.validatePlan(plan, options.fields || {}, { turf: turfRef, site: options.site });
+        const shape = item => issue(item.code, item.message, 'editorPayload.plan',
+            item.plotIndex == null ? null : plan?.polygons?.[item.plotIndex]?.geometry);
+        return { ...result, errors: result.errors.map(shape), warnings: result.warnings.map(shape) };
     }
 
     function stripImmutableProposalIdentity(proposal) {
@@ -1128,7 +1029,7 @@
                         parcelIds: selection.ids,
                         initialBuildings: features,
                         initialGroundTreatment: context.groundSurface?.treatment || null,
-                        initialTakeWholeParcels: context.takeWholeParcels === true
+                    initialTakeWholeParcels: context.takeWholeParcels === true
                     });
                     return opened !== false;
                 }
@@ -1241,7 +1142,7 @@
             const common = commonValidation(draft);
             const plan = draft.editorPayload?.plan;
             const site = plan && plan.poolSource === 'site' ? siteDraftApi().draftSite(draft) : null;
-            const topology = reparcellizationTopologyValidation(plan, { site });
+            const topology = reparcellizationTopologyValidation(plan, { site, fields: draft.fields });
             return {
                 valid: common.errors.length + topology.errors.length === 0,
                 errors: [...common.errors, ...topology.errors],

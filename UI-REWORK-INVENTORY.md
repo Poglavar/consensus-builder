@@ -218,3 +218,49 @@ and Serbian. Spanish and Serbian UI rendering have not had headed verification i
 
 Not vendored: import map → jsDelivr three@0.184.0. window.whenThreeReady() dynamically imports three,
 OrbitControls, GLTFLoader, sets window.THREE, fires threeReady, resolves true/false.
+
+## Control-retention audit — 2026-10-11
+
+Compared the pre-sidebar markup (`0cfc1c91^`) and the controls before the navigation reorganization
+(`fbe3758d^`) with the current working tree. Checked replacement entry points, conditional actions,
+and whether the controls can be reached in the rendered UI.
+
+| Capability | Current entry point |
+| --- | --- |
+| City selection, location, parcel lookup | City chip/world view and the search box; named palette commands |
+| Parcel, ownership, block, building and road layers | Layers; block/road analysis disclosures; model/photo controls follow the selected view |
+| Measurement and pinpoint | Measure button and command palette |
+| Proposal browsing, filters, plan statistics and sharing | Proposals sheet and Plan actions; proposal cards/details retain their contextual and support actions |
+| Land, building, road, track and station creation | Parcel/ground menus and the build palette; selected-land actions also live in the selection tray |
+| Parcel ownership and inspection tools | Parcel Tools tab, with wallet-dependent actions gated |
+| Events, actors, simulation and watched areas | Activity sheet, explorer and palette; simulation settings and technical status expand in place |
+| Data maintenance, source selection and information | Settings and Layers; per-dataset reset actions retain their debug gate |
+| Profile and wallet flows | User bubble and the existing contextual wallet actions |
+
+Found and fixed:
+
+- The direct **Actors** button and `activity.agents` command had been removed in `fbe3758d`.
+  Restored both, using the existing handler and translations. Tests execute the button handler and
+  command in every map mode, including cities where simulation is hidden.
+- The mobile road panel's full-width rule overrode its intended inset and intercepted the view
+  switches. A shared mobile inset now reserves the mode strip while drawing. The narrow header wraps
+  Cross-section onto a second row so Minimize and Close also stay inside the screen.
+- Editing or cancelling a cross-section before placing an edge tried to build a metric footprint
+  without any authored points and trapped the dialog. Empty/one-point drawings now keep a null
+  footprint; profile updates, Cancel, Close and undo remain usable. The regression test failed before
+  the fix and passes afterwards.
+
+The former claims-count and GeoJSON-upload controls were already disabled placeholders. Other removed
+sidebar/Tools buttons have the replacement paths above. No further missing supported actions were
+found in this audit. The proposal-panel actions restored earlier in this review remain covered.
+
+Validation: **889 tests in 48 focused headless files passed**, including command dispatch, shell and
+editor contracts, proposal/support/market controls, route/intro handling, road geometry and CSS checks.
+Removed the duplicate proposal-panel background declaration instead of allowing a new CSS conflict.
+Headed Chrome checks at **1280×900** and **320×640** covered the main sheets, lookup, world chooser,
+parcel/build menus, Actors button and palette command, loaded Bets controls, 2D/model/photo views,
+and road/site/station/watched-area editor controls. Road Cancel/Close/Apply before the first point,
+minimize/expand, and a 3D round trip were exercised without creating a proposal.
+
+Wallet transactions, authenticated publication, remote AI generation and destructive resets were
+reviewed for entry-point and gating retention; their external effects were not executed.

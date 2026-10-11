@@ -554,7 +554,7 @@ function renderProposalListModal() {
         retryButton.addEventListener('click', event => {
             event.preventDefault();
             event.stopPropagation();
-            ensureServerProposals(resolveCurrentCityCode());
+            ensureServerProposals(resolveCurrentCityCode(), { force: true });
         });
     }
 

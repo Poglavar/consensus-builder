@@ -54,6 +54,12 @@ async function expandProposalDetails(page: import('@playwright/test').Page): Pro
   if (await expand.isVisible()) await expand.click();
 }
 
+async function openProposalSection(page: import('@playwright/test').Page, section: 'verification'): Promise<void> {
+  const details = page.locator(`#proposal-details-panel details[data-proposal-section="${section}"]`);
+  await details.locator(':scope > summary').click();
+  await expect(details).toHaveJSProperty('open', true);
+}
+
 test.describe('Proposal browsing @features', () => {
   test('local list filters, sorts and switches proposal sources through visible controls', async ({ mockApi: page }) => {
     await openCity(page);
@@ -167,6 +173,7 @@ test.describe('Proposal browsing @features', () => {
     }), { parcelId: PARCEL_ID, program: PARCEL_PROGRAM, account: PROPOSAL_ACCOUNT });
     await showProposal(page, proposalId);
     await expandProposalDetails(page);
+    await openProposalSection(page, 'verification');
 
     const history = page.locator('.proposal-parcel-history-card');
     await expect(history).toBeVisible();
@@ -192,5 +199,14 @@ test.describe('Proposal browsing @features', () => {
     await expect(comparison).toBeVisible();
     await expect(comparison).toContainText('Compare park plan');
     await expect(comparison).toContainText('Compare square plan');
+    await comparison.getByRole('button', { name: 'Close', exact: true }).click();
+    await expect(comparison).toBeHidden();
+    await stack.locator('.drill-stack-compare').click();
+    await expect(comparison).toBeVisible();
+    const selectedId = await comparison.locator('.parcel-compare__picker--a select').inputValue();
+    await comparison.locator('.parcel-compare__picker--a .parcel-compare__details').click();
+    await expect(comparison).toBeHidden();
+    await expect(page.locator('#proposal-details-panel')).toBeVisible();
+    await expect.poll(() => page.evaluate(() => (window as any).currentlyHighlightedProposalId)).toBe(selectedId);
   });
 });

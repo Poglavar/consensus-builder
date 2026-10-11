@@ -63,20 +63,59 @@ test.describe('Activity and simulation controls @features', () => {
     await expect(modal.locator('[data-activity-view="actors"]')).toHaveAttribute('aria-pressed', 'true');
     await expect(modal.locator('[data-activity-actors]')).toBeVisible();
     await expect(modal.locator('[data-activity-actors]')).toContainText('Map Steward');
+    await modal.locator('[data-activity-view="events"]').click();
+    await expect(modal.locator('[data-activity-view="events"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(modal.locator('#game-log-content')).toBeVisible();
+    await expect(modal.locator('[data-activity-actors]')).toBeHidden();
+    await modal.getByRole('button', { name: 'Clear', exact: true }).click();
+    await expect(modal.locator('[data-activity-filter-field="query"]')).toHaveValue('');
+    await expect(modal.locator('#game-log-content')).toContainText('river park plan');
+    const beforeRefresh = requests.length;
+    await modal.locator('.activity-refresh').click();
+    await expect.poll(() => requests.length).toBeGreaterThan(beforeRefresh);
+    await expect(modal.locator('#game-log-content')).toContainText('river park plan');
     await modal.locator('.game-log-modal-close').click();
     await expect(modal).toHaveCount(0);
 
-    // Opening the explorer closes its parent Activity sheet. The separate Agents shortcut was
-    // removed (fbe3758d): the actors view is reached from the explorer's own view switch, so
-    // reopen the sheet through its real map-shell button and get there again.
+    // Opening the explorer closes its parent Activity sheet. Reopen the sheet to verify its
+    // dedicated Actors shortcut reaches the same view as the explorer's internal switch.
     await page.locator('#activity-button').click();
     await expect(page.locator('#activity-sheet')).toBeVisible();
-    await page.locator('#activity-explorer-button').click();
+    await page.locator('#activity-agents-button').click();
     await expect(modal).toBeVisible();
-    await modal.locator('[data-activity-view="actors"]').click();
     await expect(modal.locator('[data-activity-view="actors"]')).toHaveAttribute('aria-pressed', 'true');
     await expect(modal.locator('[data-activity-actors]')).toContainText('Map Steward');
     expect(requests.length).toBeGreaterThan(0);
+  });
+
+  test('the Activity sheet Actors action opens the actor view', async ({ mockApi: page }) => {
+    await openCity(page);
+    await page.locator('#activity-button').click();
+    const sheet = page.locator('#activity-sheet');
+    await expect(sheet).toBeVisible();
+    await sheet.locator('#activity-agents-button').click();
+    const modal = page.locator('.game-log-modal');
+    await expect(modal).toBeVisible();
+    await expect(modal.locator('[data-activity-view="actors"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(modal.locator('[data-activity-actors]')).toBeVisible();
+    await modal.locator('.game-log-modal-close').click();
+    await expect(modal).toHaveCount(0);
+  });
+
+  test('the command palette Actors action opens the actor view', async ({ mockApi: page }) => {
+    await openCity(page);
+    await page.keyboard.press('Meta+k');
+    const palette = page.locator('.command-palette-backdrop');
+    await expect(palette).toBeVisible();
+    await page.locator('.command-palette__input').fill('Actors');
+    await page.locator('.command-palette__item').filter({ hasText: 'Actors' }).first().click();
+
+    const modal = page.locator('.game-log-modal');
+    await expect(modal).toBeVisible();
+    await expect(modal.locator('[data-activity-view="actors"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(modal.locator('[data-activity-actors]')).toBeVisible();
+    await modal.locator('.game-log-modal-close').click();
+    await expect(modal).toHaveCount(0);
   });
 
   test('simulation settings change the interval, play advances turns, pause stops it, and New Game confirms reset', async ({ mockApi: page }) => {

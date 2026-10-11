@@ -10,7 +10,7 @@ const caches = new WeakMap();
 let coldLoadTail = Promise.resolve();
 const DEFAULT_BYTES = 24 * 1024 * 1024, DEFAULT_XML = 160 * 1024 * 1024;
 const HMLR = 'use-land-property-data.service.gov.uk', S3 = 'datapub-prd-s3-bucket.s3.amazonaws.com';
-async function boundedBytes(response, limit, signal) {
+export async function boundedBytes(response, limit, signal) {
     const length = response.headers?.get?.('content-length');
     if (length && (!/^\d+$/.test(length) || Number(length) > limit)) throw upstreamError('Parcel archive exceeds byte limit.');
     const reader = response.body?.getReader?.();
@@ -30,10 +30,22 @@ async function boundedBytes(response, limit, signal) {
 }
 
 // The anonymous session is scoped to HMLR only. Presigned S3 URLs and cookies are never logged/cached.
-async function officialArchiveFetch(endpoint, { signal } = {}) {
+export async function officialArchiveFetch(endpoint, { signal, headers = {}, redirect = 'follow' } = {}) {
     const original = new URL(endpoint);
     if (original.protocol !== 'https:' || original.hostname !== HMLR || original.username || original.password || original.port
-        || !/^\/datasets\/inspire\/download\/[A-Za-z_]+\.zip$/.test(original.pathname) || original.search) throw upstreamError('Unsupported official parcel archive endpoint.');
+        || !/^\/datasets\/inspire\/download(?:\/[A-Za-z_-]+\.zip)?$/.test(original.pathname) || original.search || original.hash) throw upstreamError('Unsupported official parcel archive endpoint.');
+    if (!['follow', undefined].includes(redirect)) throw upstreamError('HMLR archive redirects must use the verified follow policy.');
+    const archiveHeaders = new Headers(headers), safeArchiveHeaders = {};
+    for (const [name, value] of archiveHeaders) {
+        const key = name.toLowerCase();
+        if (key === 'accept') {
+            if (value !== 'application/zip') throw upstreamError('Unsupported HMLR archive request header.');
+            safeArchiveHeaders.Accept = value;
+        } else if (key === 'if-match') {
+            if (!/^"[\x21\x23-\x7e]{1,200}"$/.test(value)) throw upstreamError('Invalid HMLR archive revision header.');
+            safeArchiveHeaders['If-Match'] = value;
+        } else throw upstreamError('Unsupported HMLR archive request header.');
+    }
     const cookies = new Map();
     async function follow(initial) {
         let url = new URL(initial);
@@ -42,6 +54,7 @@ async function officialArchiveFetch(endpoint, { signal } = {}) {
             const response = await globalThis.fetch(url,{signal,redirect:'manual',headers:{
                 'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126.0.0.0 Safari/537.36',
                 Accept:'text/html,application/xml,application/zip,*/*', 'Accept-Language':'en-GB,en;q=0.9',
+                ...(url.hostname===S3?safeArchiveHeaders:{}),
                 ...(url.hostname===HMLR&&cookies.size?{Cookie:[...cookies].map(([k,v])=>`${k}=${v}`).join('; ')}:{})}});
             if(url.hostname===HMLR) for(const item of response.headers.getSetCookie?.()||[]) {
                 const pair=item.split(';',1)[0],index=pair.indexOf('=');if(index>0)cookies.set(pair.slice(0,index),pair.slice(index+1));
@@ -58,6 +71,7 @@ async function officialArchiveFetch(endpoint, { signal } = {}) {
     }
     const catalogue=await follow(`https://${HMLR}/datasets/inspire/download`);
     if(!catalogue.ok)throw providerHttpError(catalogue);
+    if(original.pathname==='/datasets/inspire/download')return catalogue;
     await boundedBytes(catalogue,1024*1024,signal);
     return follow(endpoint);
 }

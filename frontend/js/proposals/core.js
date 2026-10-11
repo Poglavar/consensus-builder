@@ -250,7 +250,8 @@ function openProposalFromList(proposalIdOrHash, options = {}) {
     focusProposalDetails(proposalKey, {
         parcelId: fallbackParcel,
         centerOnProposal: normalized.centerOnProposal !== false,
-        showDetails: normalized.showDetails !== false
+        showDetails: normalized.showDetails !== false,
+        presentation: normalized.presentation || 'details'
     });
 
     return true;
@@ -1083,7 +1084,7 @@ async function ensurePlanCity(rawPlanCityId) {
 
 async function handleProposalRouteFromUrl(attempt = 0) {
     try {
-        const pathname = window.location.pathname || '';
+        const pathname = (window.location.pathname || '').replace(/\/$/, '');
         const planScoreRoute = window.GrainScoreRules
             && typeof window.GrainScoreRules.parsePlanScorePath === 'function'
             ? window.GrainScoreRules.parsePlanScorePath(pathname)
@@ -1100,7 +1101,7 @@ async function handleProposalRouteFromUrl(attempt = 0) {
             }
             return;
         }
-        const isProposalPath = pathname.startsWith('/proposals/');
+        const isProposalPath = pathname === '/proposals' || pathname.startsWith('/proposals/');
 
         // Ignore non-proposal routes entirely
         if (!isProposalPath) {

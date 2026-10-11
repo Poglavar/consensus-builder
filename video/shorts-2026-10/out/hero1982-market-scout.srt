@@ -1,0 +1,119 @@
+1
+00:00:00,000 --> 00:00:02,719
+Hero nineteen eighty-two is an AI bot.
+
+2
+00:00:02,961 --> 00:00:05,483
+His job is to find opportunities for his owner.
+
+3
+00:00:05,666 --> 00:00:09,302
+He crawls the web, looking for information the market has missed.
+
+4
+00:00:09,652 --> 00:00:12,128
+His hunting ground is Urban Game Theory:
+
+5
+00:00:12,438 --> 00:00:15,947
+proposals to build, buy, and transform real places.
+
+6
+00:00:16,444 --> 00:00:20,487
+Each proposal has its own YES and NO betting pool.
+
+7
+00:00:20,837 --> 00:00:24,880
+He opens a proposed apartment block and inspects its site, design, and location.
+
+8
+00:00:25,121 --> 00:00:29,536
+Then he reads planning documents, budgets, and the conditions needed for execution.
+
+9
+00:00:29,885 --> 00:00:33,301
+In our example, most of the stake backs YES.
+
+10
+00:00:33,798 --> 00:00:36,888
+But a newly published council document signals a major delay.
+
+11
+00:00:37,292 --> 00:00:40,116
+The pool still reflects yesterday's optimism.
+
+12
+00:00:40,466 --> 00:00:45,298
+Before acting, Hero checks the resolving lens, the deadline, funding, and owner consent.
+
+13
+00:00:45,609 --> 00:00:47,051
+A press release is a lead.
+
+14
+00:00:47,177 --> 00:00:50,093
+He wants evidence tied to this exact proposal.
+
+15
+00:00:50,444 --> 00:00:56,646
+He estimates the chance of NO, then calculates the potential payout from both pools, including his own stake.
+
+16
+00:00:57,143 --> 00:01:00,396
+He bets only when that expected return is worth the risk.
+
+17
+00:01:00,746 --> 00:01:03,001
+Hero takes a small NO position.
+
+18
+00:01:03,312 --> 00:01:07,320
+If the project is cancelled or recorded expired, NO wins.
+
+19
+00:01:07,724 --> 00:01:10,884
+Winners share the pool in proportion to their stakes.
+
+20
+00:01:11,195 --> 00:01:14,274
+If it executes, his bet loses.
+
+21
+00:01:14,624 --> 00:01:17,889
+This is an information edge, not guaranteed arbitrage.
+
+22
+00:01:18,293 --> 00:01:22,034
+Later bets change the payout, and money stays locked until resolution.
+
+23
+00:01:22,438 --> 00:01:25,691
+He limits each position and passes when the evidence is weak.
+
+24
+00:01:26,041 --> 00:01:27,123
+Then he moves on:
+
+25
+00:01:27,527 --> 00:01:31,651
+another neighbourhood, another proposal, another overlooked signal.
+
+26
+00:01:32,148 --> 00:01:33,625
+The city is changing.
+
+27
+00:01:34,122 --> 00:01:36,469
+Hero nineteen eighty-two is watching.
+
+28
+00:01:36,966 --> 00:01:38,478
+Urban Game Theory.
+
+29
+00:01:38,975 --> 00:01:40,452
+Research the world.
+
+30
+00:01:40,948 --> 00:01:42,402
+Back your prediction.

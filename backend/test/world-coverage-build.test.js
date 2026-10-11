@@ -52,6 +52,27 @@ describe('city config parsing', () => {
         expect(cities.find(c => c.id === 'colorado')).toMatchObject({ name: 'Denver' });
         expect(cities.length).toBeGreaterThanOrEqual(8);
     });
+
+    it('parses only positive safe integer WUP city codes and preserves invalid explicit fields', () => {
+        const cities = parseCityConfigs(`const CITY_CONFIGS = {
+            valid: { id: 'valid', label: 'Valid', wupCityCode: 4536, map: { defaultCenter: [1, 2] } },
+            maximum: { id: 'maximum', label: 'Maximum', wupCityCode: 9007199254740991, map: { defaultCenter: [1, 2] } },
+            zero: { id: 'zero', label: 'Zero', wupCityCode: 0, map: { defaultCenter: [1, 2] } },
+            fraction: { id: 'fraction', label: 'Fraction', wupCityCode: 4.5, map: { defaultCenter: [1, 2] } },
+            expression: { id: 'expression', label: 'Expression', wupCityCode: 4536 + 0, map: { defaultCenter: [1, 2] } },
+            unsafe: { id: 'unsafe', label: 'Unsafe', wupCityCode: 9007199254740992, map: { defaultCenter: [1, 2] } },
+            numericString: { id: 'numericString', label: 'Numeric string', wupCityCode: '4536', map: { defaultCenter: [1, 2] } },
+            malformedString: { id: 'malformedString', label: 'Malformed string', wupCityCode: '4536x', map: { defaultCenter: [1, 2] } },
+            absent: { id: 'absent', label: 'Absent', map: { defaultCenter: [1, 2] } }
+        };`);
+        const byId = Object.fromEntries(cities.map(city => [city.id, city]));
+
+        expect(byId.valid.wupCityCode).toBe(4536);
+        expect(byId.maximum.wupCityCode).toBe(Number.MAX_SAFE_INTEGER);
+        expect(byId.numericString.wupCityCode).toBe(4536);
+        for (const id of ['zero', 'fraction', 'expression', 'unsafe', 'malformedString']) expect(byId[id].wupCityCode).toBeNull();
+        expect(Object.hasOwn(byId.absent, 'wupCityCode')).toBe(false);
+    });
 });
 
 describe('simplifyRing', () => {
@@ -255,6 +276,46 @@ describe('buildCoverage', () => {
             expect(result.populationSource).toMatchObject({
                 title: 'UN DESA WUP 2025 city populations', year: 2025, retrieved: '2026-10-07'
             });
+        });
+
+        it('joins shared-provider cities by explicit WUP code and never falls back from a broken code to app-city slugs', () => {
+            const cityIds = ['newcastle', 'oxford', 'wrong_country', 'ambiguous', 'missing_population', 'invalid_code', 'legacy'];
+            const config = `const CITY_CONFIGS = {
+                newcastle: { id: 'newcastle', label: 'Newcastle upon Tyne', wupCityCode: 4536, parcels: { sourceId: 'shared' }, map: { defaultCenter: [54.9873, -1.5538] } },
+                oxford: { id: 'oxford', label: 'Oxford', wupCityCode: 5278, parcels: { sourceId: 'shared' }, map: { defaultCenter: [51.752, -1.2577] } },
+                wrong_country: { id: 'wrong_country', label: 'Wrong Country', wupCityCode: 111, parcels: { sourceId: 'shared' }, map: { defaultCenter: [52, -1] } },
+                ambiguous: { id: 'ambiguous', label: 'Ambiguous', wupCityCode: 222, parcels: { sourceId: 'shared' }, map: { defaultCenter: [52, -1] } },
+                missing_population: { id: 'missing_population', label: 'Missing Population', wupCityCode: 333, parcels: { sourceId: 'shared' }, map: { defaultCenter: [52, -1] } },
+                invalid_code: { id: 'invalid_code', label: 'Invalid Code', wupCityCode: 0, parcels: { sourceId: 'shared' }, map: { defaultCenter: [52, -1] } },
+                legacy: { id: 'legacy', label: 'Legacy', parcels: { sourceId: 'shared' }, map: { defaultCenter: [52, -1] } }
+            };`;
+            const provider = {
+                ...source('shared', 'GB'),
+                liveIntegration: { status: 'enabled', cityIds }
+            };
+            const demographics = { cities: [
+                { wupCityCode: 4536, countryCode: 'GB', population2025: 760_969 },
+                { wupCityCode: 5278, countryCode: 'GB', population2025: 172_436 },
+                { wupCityCode: 111, countryCode: 'AA', population2025: 99_000 },
+                { wupCityCode: 222, countryCode: 'GB', population2025: 20_000 },
+                { wupCityCode: 222, countryCode: 'GB', population2025: 21_000 },
+                { wupCityCode: 333, countryCode: 'GB', population2025: null },
+                { wupCityCode: 444, countryCode: 'GB', appCityIds: ['wrong_country'], population2025: 88_000 },
+                { wupCityCode: 445, countryCode: 'GB', appCityIds: ['ambiguous'], population2025: 77_000 },
+                { wupCityCode: 446, countryCode: 'GB', appCityIds: ['missing_population'], population2025: 66_000 },
+                { wupCityCode: 447, countryCode: 'GB', appCityIds: ['invalid_code'], population2025: 55_000 },
+                { id: 'legacy-wup-row', appCityIds: ['legacy'], countryCode: 'GB', population2025: 44_000 }
+            ] };
+            const result = compile({ cc: 'GB', sourceRows: [provider], cityConfigSource: config, demographics });
+            const liveById = Object.fromEntries(result.liveCities.map(city => [city.id, city]));
+
+            expect(find(result, 'GB').coverage).toBe('partial');
+            expect(liveById.newcastle).toMatchObject({ cc: 'GB', population2025: 760_969 });
+            expect(liveById.oxford).toMatchObject({ cc: 'GB', population2025: 172_436 });
+            for (const id of ['wrong_country', 'ambiguous', 'missing_population', 'invalid_code']) {
+                expect(liveById[id].population2025).toBeNull();
+            }
+            expect(liveById.legacy.population2025).toBe(44_000);
         });
     });
 

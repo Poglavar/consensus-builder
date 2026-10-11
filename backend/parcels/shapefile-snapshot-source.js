@@ -1,9 +1,10 @@
 // Complete, revision-pinned public Shapefile archives support local exact and spatial queries.
-import { createHash } from 'node:crypto';
 import { bbox, bboxPolygon, booleanIntersects, feature as geoFeature } from '@turf/turf';
+import { concatBytes } from './byte-utils.js';
 import { HttpError } from '../utils/helpers.js';
 import { canonicalParcelFeature, upstreamError, providerHttpError, validateBounds, validateGeometry } from './source-contract.js';
 import { decodeSnapshotNativeId, encodeSnapshotNativeId } from './geojson-snapshot-source.js';
+import { sha256Hex } from './portable-hash.js';
 import { SHAPEFILE_CRS, readShapefileZipMembers, indexShapefileSnapshot } from './shapefile-zip-reader.js';
 
 const caches = new WeakMap();
@@ -68,8 +69,8 @@ export function createShapefileSnapshotParcelSource(input, { fetchImpl = fetch, 
                 chunks.push(part.value);
             }
             if (declared && !response.headers.get('content-encoding') && Number(declared) !== length) throw upstreamError('Parcel archive content length disagrees.');
-            let bytes = Buffer.concat(chunks, length); chunks.length = 0;
-            if (createHash('sha256').update(bytes).digest('hex') !== descriptor.expectedSnapshotSha256) throw upstreamError('Parcel archive revision differs from its verified release.');
+            let bytes = concatBytes(chunks, length); chunks.length = 0;
+            if (sha256Hex(bytes) !== descriptor.expectedSnapshotSha256) throw upstreamError('Parcel archive revision differs from its verified release.');
             const members = readShapefileZipMembers(bytes, descriptor); bytes = null;
             const index = await indexShapefileSnapshot(members, descriptor, signal);
             state.index = index; state.expires = now() + 300000; return index;

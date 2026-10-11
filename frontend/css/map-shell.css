@@ -17,7 +17,7 @@
     /* The rows the floating chrome occupies. A docked panel (parcel, proposal, road, block) starts
        below the top row and ends above the bottom row, so no control moves when a panel opens. */
     --map-shell-top-clearance: calc(var(--map-shell-edge) + var(--map-shell-button-size) + var(--map-shell-gap));
-    --map-shell-bottom-clearance: calc(var(--map-shell-dock-height) + var(--cb-control-height) + var(--map-shell-gap));
+    --map-shell-bottom-clearance: calc(var(--map-shell-dock-height) + var(--map-shell-gap));
 }
 
 /* ---- Hooks for later phases: empty until something mounts in them ---- */
@@ -193,12 +193,26 @@ body.site-tool-active .site-panel__actions {
 }
 
 @media (max-width: 767.98px) {
-    /* Editors retain access to the existing view strip while a draft is being previewed. */
+    /* utilities.css reads this inset in its important mobile full-bleed rule so view controls
+       remain reachable while the road editor is open. Other panels default to an inset of zero. */
     body.corridor-drawing-active #road-info-panel {
-        left: var(--map-mode-strip);
+        --info-panel-mobile-inset: var(--map-mode-strip);
         right: 0;
         width: auto;
         max-width: none;
+    }
+
+    /* At a narrow inset the title and cross-section label cannot share one row with the fixed
+       action circles. Keep title + actions together, then give Cross-section its own row. */
+    body.corridor-drawing-active #road-info-panel .road-panel-header {
+        flex-wrap: wrap;
+    }
+
+    body.corridor-drawing-active #road-info-panel #editRoadCrossSectionButton {
+        order: 1;
+        flex: 1 0 100%;
+        box-sizing: border-box;
+        white-space: normal;
     }
 }
 

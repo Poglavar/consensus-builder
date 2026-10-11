@@ -2,6 +2,7 @@
 import * as cheerio from 'cheerio';
 import { enqueue } from './archive.js';
 import { normalizeUrl } from './page-evidence.js';
+import { readBlobRow } from './blob-store.js';
 const norm=value=>String(value).normalize('NFKD').replace(/\p{M}/gu,'').toLowerCase().replace(/[^a-z0-9]/g,'');
 const social=/^(?:www\.)?(?:facebook\.com|instagram\.com|linkedin\.com|youtube\.com|tiktok\.com)$/i;
 export async function importSites(db,records) {
@@ -21,30 +22,32 @@ export async function importSites(db,records) {
 
 // Revisit every known agency-owned domain so daily crawls discover newly posted listings.
 export async function seedKnownSites(db) {
- const rows=(await db.query(`SELECT url,agency_id FROM floor_plan.site
+ const rows=(await db.query(`SELECT url,agency_id,COALESCE(evidence->>'sourceKind','agency') AS source_kind FROM floor_plan.site
   WHERE verification_status IS DISTINCT FROM 'social-profile'
   UNION
-  SELECT website AS url,registry_id AS agency_id FROM floor_plan.agency
+  SELECT website AS url,registry_id AS agency_id,'agency' AS source_kind FROM floor_plan.agency
   WHERE website IS NOT NULL AND in_scope`)).rows;
  const unique=new Map();
  for(const row of rows) {
   const url=normalizeUrl(row.url);
   if(!url || social.test(new URL(url).hostname)) continue;
-  if(!unique.has(url) || (!unique.get(url).agencyId && row.agency_id)) unique.set(url,{url,agencyId:row.agency_id || null});
+  if(!unique.has(url) || (!unique.get(url).agencyId && row.agency_id)) unique.set(url,{url,agencyId:row.agency_id || null,sourceKind:row.source_kind||'agency'});
  }
- for(const {url,agencyId} of unique.values()) {
-  await db.query(`INSERT INTO floor_plan.target AS t(url,agency_id,kind,priority,discovered_from,next_check_at)
-   VALUES($1,$2,'home',60,$1,now()) ON CONFLICT(url) DO UPDATE SET
+ for(const {url,agencyId,sourceKind} of unique.values()) {
+  await db.query(`INSERT INTO floor_plan.target AS t(url,agency_id,kind,priority,discovered_from,next_check_at,source_kind)
+   SELECT $1,$2,'home',60,$1,now(),$3 WHERE NOT EXISTS(SELECT 1 FROM floor_plan.exclusion WHERE url=$1)
+   ON CONFLICT(url) DO UPDATE SET
    kind='home',priority=GREATEST(t.priority,excluded.priority),
    agency_id=COALESCE(t.agency_id,excluded.agency_id),
-   discovered_from=excluded.discovered_from,
-   next_check_at=LEAST(t.next_check_at,now()),updated_at=now()`,[url,agencyId]);
-  await db.query(`INSERT INTO floor_plan.target AS t(url,agency_id,kind,priority,discovered_from,next_check_at)
-   VALUES($1,$2,'sitemap',40,$1,now()) ON CONFLICT(url) DO UPDATE SET
+   discovered_from=excluded.discovered_from,source_kind=excluded.source_kind,
+   next_check_at=LEAST(t.next_check_at,now()),updated_at=now() WHERE t.exclusion_reason IS NULL`,[url,agencyId,sourceKind]);
+  await db.query(`INSERT INTO floor_plan.target AS t(url,agency_id,kind,priority,discovered_from,next_check_at,source_kind)
+   SELECT $1,$2,'sitemap',40,$1,now(),$3 WHERE NOT EXISTS(SELECT 1 FROM floor_plan.exclusion WHERE url=$1)
+   ON CONFLICT(url) DO UPDATE SET
    kind='sitemap',priority=GREATEST(t.priority,excluded.priority),
    agency_id=COALESCE(t.agency_id,excluded.agency_id),
-   discovered_from=excluded.discovered_from,
-   next_check_at=LEAST(t.next_check_at,now()),updated_at=now()`,[new URL('/sitemap.xml',url).href,agencyId]);
+   discovered_from=excluded.discovered_from,source_kind=excluded.source_kind,
+   next_check_at=LEAST(t.next_check_at,now()),updated_at=now() WHERE t.exclusion_reason IS NULL`,[new URL('/sitemap.xml',url).href,agencyId,sourceKind]);
  }
  return {sites:unique.size};
 }
@@ -96,10 +99,12 @@ export async function importWebsiteCandidates(db,records) {
 }
 
 export async function verifyArchivedSites(db) {
- const pages=(await db.query(`SELECT t.*,b.data FROM floor_plan.target t JOIN floor_plan.blob b ON b.sha256=t.current_sha256 WHERE b.media_type ILIKE '%html%' AND (t.kind='home' OR t.url ~* 'kontakt|contact|o-nama|about|uvjeti|privacy|impressum') ORDER BY t.last_fetched_at`)).rows;
+ const pages=(await db.query(`SELECT t.*,b.sha256,b.storage_path,b.byte_count,b.bytes_available,b.media_type FROM floor_plan.target t JOIN floor_plan.blob b ON b.sha256=t.current_sha256 WHERE b.bytes_available AND b.media_type ILIKE '%html%' AND (t.kind='home' OR t.url ~* 'kontakt|contact|o-nama|about|uvjeti|privacy|impressum') ORDER BY t.last_fetched_at`)).rows;
  const verified=new Set();
  for(const page of pages) {
-  const match=await verifySiteFromPage(db,page,page.data.toString(),page.url);
+  const bytes=await readBlobRow(page);
+  if(!bytes) continue;
+  const match=await verifySiteFromPage(db,page,bytes.toString(),page.url);
   if(match) verified.add(match.registry_id);
  }
  return {pages:pages.length,verifiedAgencies:verified.size};

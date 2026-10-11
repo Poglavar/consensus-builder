@@ -78,6 +78,35 @@ class FloorPlanEvidence(unittest.TestCase):
         ImageDraw.Draw(image).line((20, 200, 780, 200), fill='black', width=1)
         _, result, _ = self.run_image(image)
         self.assertEqual(result['wallCandidates'], [])
+        self.assertEqual(result['scaleCandidates'], [])
+
+    def test_connected_ticked_alternating_baseline_has_measured_endpoints(self):
+        image = Image.new('RGB', (420, 240), 'white')
+        draw = ImageDraw.Draw(image)
+        start, y, interval, count = 50, 180, 60, 5
+        draw.line((start, y, start+count*interval, y), fill=(205, 205, 205), width=2)
+        for i in range(count):
+            if i % 2 == 0:
+                draw.line((start+i*interval, y, start+(i+1)*interval-1, y), fill='black', width=2)
+        for i in range(count+1):
+            x = start+i*interval
+            draw.line((x, y-4, x, y), fill='black', width=1)
+        _, result, _ = self.run_image(image)
+        self.assertEqual(result['scaleCandidates'], [{'a': [50, 180.5], 'b': [350, 180.5],
+                                                       'intervals': 5, 'id': 'S1'}])
+
+    def test_connected_ticked_line_without_alternating_fill_is_detected_but_lone_wall_is_not(self):
+        image = Image.new('RGB', (440, 260), 'white')
+        draw = ImageDraw.Draw(image)
+        draw.line((60, 190, 360, 190), fill=(200, 200, 200), width=1)
+        for x in range(60, 361, 60):
+            draw.line((x, 186, x, 190), fill='black', width=1)
+        draw.line((20, 70, 410, 70), fill='black', width=6)
+        _, result, _ = self.run_image(image)
+        self.assertEqual(len(result['scaleCandidates']), 1)
+        self.assertEqual(result['scaleCandidates'][0]['a'][0], 60)
+        self.assertEqual(result['scaleCandidates'][0]['b'][0], 360)
+        self.assertEqual(result['scaleCandidates'][0]['intervals'], 5)
 
     def test_annotation_mode_draws_root_opening_ids(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -99,7 +128,7 @@ class FloorPlanEvidence(unittest.TestCase):
             self.assertEqual(result['scaleStripIds'], ['S1'])
             self.assertEqual(result['scaleStrips'][0]['sourceCropPx'], [0, 91, 111, 29])
             with Image.open(output_path) as annotated:
-                pixels = list(annotated.convert('RGB').get_flattened_data())
+                pixels = list(annotated.convert('RGB').getdata())
                 self.assertGreater(annotated.width / annotated.height, 2.0)
                 self.assertTrue(any(pixel[0] > 220 and pixel[1] > 70 and pixel[1] < 190 and pixel[2] < 30
                                     for pixel in pixels))

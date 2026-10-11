@@ -659,7 +659,6 @@ function forwardAppliedCorridorClick(proposal, event) {
     if (drillHandled) return;
     const proposalKey = (typeof getProposalKey === 'function' && getProposalKey(proposal)) || proposal.proposalId;
     if (proposalKey && typeof selectAndHighlightProposal === 'function') {
-        window.__openProposalDetailsCollapsed = true;
         selectAndHighlightProposal(proposalKey, null, false, true);
     }
 }

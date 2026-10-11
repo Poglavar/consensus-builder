@@ -189,15 +189,28 @@ describe('parcel menu and selection tray commands', () => {
     });
 
     it('runs the tray actions on the existing selection functions', () => {
-        const clearSelection = vi.fn();
+        const selectedParcels = new Set(['parcel-1']);
+        const clearSelection = vi.fn(() => selectedParcels.clear());
         const cancelMultiParcelSelection = vi.fn();
         const propose = vi.fn();
-        const global = { multiParcelSelection: { clearSelection }, cancelMultiParcelSelection, SelectionTray: { propose } };
-        UiCommands.runCommand('selection.clear', { global });
-        UiCommands.runCommand('selection.done', { global });
-        UiCommands.runCommand('selection.propose', { global });
+        const global = {
+            document: { body: { classList: { contains: () => false } }, getElementById: () => null, querySelectorAll: () => [] },
+            multiParcelSelection: { isActive: true, selectedParcels, clearSelection },
+            cancelMultiParcelSelection,
+            SelectionTray: { propose }
+        };
+        const context = UiCommands.createBrowserContext(global, { mode: '2d' });
+
+        UiCommands.runCommand('selection.propose', context);
+        UiCommands.runCommand('selection.clear', context);
+        UiCommands.runCommand('selection.done', context);
         expect(clearSelection).toHaveBeenCalledOnce();
         expect(cancelMultiParcelSelection).toHaveBeenCalledOnce();
+        expect(propose).toHaveBeenCalledOnce();
+
+        expect(UiCommands.runCommand('selection.clear', context)).toBe(false);
+        expect(UiCommands.runCommand('selection.propose', context)).toBe(false);
+        expect(clearSelection).toHaveBeenCalledOnce();
         expect(propose).toHaveBeenCalledOnce();
     });
 });

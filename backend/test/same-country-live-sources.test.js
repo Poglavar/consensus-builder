@@ -148,12 +148,27 @@ describe.each(samples)('$city live parcel source contract', sample => {
         expect(binding).toMatchObject({ coverage: 'complete', source: `server:${descriptor.id}` });
         expect(binding.parcels.map(parcel => parcel.parcelId)).toEqual([f.id]);
 
-        const previous = globalThis.CityConfigManager; globalThis.CityConfigManager = cities;
+        const previous = globalThis.CityConfigManager;
+        const previousGround = globalThis.CadastralParcelRepository;
+        const locateIds = vi.fn(async ([id]) => ({ status: 'ready', features: [
+            { id, geometry: f.site }
+        ] }));
+        globalThis.CityConfigManager = cities;
+        if (sample.city === 'houston') globalThis.CadastralParcelRepository = { locateIds };
         try {
-            expect(route.parcelIdToCityId(f.id)).toBe(sample.city);
+            if (sample.city === 'houston') {
+                expect(route.parcelIdToCityId(f.id)).toBeNull();
+                await expect(route.resolveCityIdForParcel(f.id)).resolves.toBe('houston');
+                expect(locateIds).toHaveBeenCalledWith([f.id], { city: expect.any(String) });
+            } else {
+                expect(route.parcelIdToCityId(f.id)).toBe(sample.city);
+                await expect(route.resolveCityIdForParcel(f.id)).resolves.toBe(sample.city);
+            }
         } finally {
             if (previous === undefined) delete globalThis.CityConfigManager;
             else globalThis.CityConfigManager = previous;
+            if (previousGround === undefined) delete globalThis.CadastralParcelRepository;
+            else globalThis.CadastralParcelRepository = previousGround;
         }
         const city = cities.getCityConfig(sample.city);
         expect(city.parcels.sourceId).toBe(descriptor.id);

@@ -1,8 +1,12 @@
 // Purpose: exercise address gates, binding validation, fair resolution checkpoints, and stale identity reset.
 import { describe, expect, it, vi } from 'vitest';
 import { saveObservation } from '../floor-plans/archive.js';
-import { addressKey, augmentReviewedUnitAssets, chooseAddressedBuilding, importBuildingBindings, prepareBinding, resolveBuildingLinks, seedReviewedBindings } from '../floor-plans/building-resolution.js';
+import { addressKey, augmentReviewedUnitAssets, chooseAddressedBuilding, chooseBinding, importBuildingBindings, prepareBinding, resolveBuildingLinks, seedReviewedBindings, sourceLocality } from '../floor-plans/building-resolution.js';
 import { matchBuildingCandidates } from '../floor-plans/building-links.js';
+import { extractExplicitLocation } from '../floor-plans/explicit-location.js';
+
+const ownListingUrl = 'https://agency.test/listing';
+const ownListingHTML = '<main><h1>Stan u centru</h1><p>Adresa nekretnine: Ilica 1, Zagreb</p></main>';
 
 const binding = overrides => ({
     city: 'zagreb', source: 'zagreb-3d', ownerId: '', buildingId: '42', name: 'Example Building',
@@ -22,11 +26,28 @@ describe('address building resolution', () => {
         expect(addressKey('Ilica 1/2')).toBe('ilica 1/2');
     });
 
-    it('only joins an exact street and house number with corroborating coordinates', () => {
-        const row = { address: 'Ilica 1A, 10000 Zagreb', building_id: '42', lat: 45.81, lng: 15.98 };
-        expect(chooseAddressedBuilding({ facts: { address: 'Ilica 1, 10000 Zagreb', coordinates: { lat: 45.81, lng: 15.98 } } }, [row])).toBeNull();
-        expect(chooseAddressedBuilding({ facts: { address: '10000 Zagreb', coordinates: { lat: 45.81, lng: 15.98 } } }, [{ ...row, address: '10000 Zagreb' }])).toBeNull();
-        expect(chooseAddressedBuilding({ url: 'https://agency.test/listing', facts: { address: 'Ilica 1A, 10000 Zagreb', coordinates: { lat: 45.81, lng: 15.98 } } }, [row])?.building_id).toBe('42');
+    it('matches an explicit exact address without coordinates and rejects coordinates alone', () => {
+        const row = { address: 'Ilica 1, 10000 Zagreb', building_id: '42' };
+        const explicitLocation = extractExplicitLocation(ownListingHTML, ownListingUrl);
+        expect(explicitLocation).toMatchObject({ schema: 'explicit-listing-location.v1', street: 'Ilica', houseNumber: '1' });
+        const facts = { explicitLocation, title: 'Zagreb, Stan u centru' };
+        expect(chooseAddressedBuilding({ url: ownListingUrl, facts }, [row])?.building_id).toBe('42');
+        expect(chooseAddressedBuilding({ url: ownListingUrl, facts: { ...facts, locality: 'Split' } }, [row])).toBeNull();
+        expect(chooseAddressedBuilding({ url: ownListingUrl, facts: { explicitLocation } }, [row])).toBeNull();
+        expect(chooseAddressedBuilding({ url: ownListingUrl, facts: { address: 'Ilica 1, 10000 Zagreb', coordinates: { lat: 45.81, lng: 15.98 } } }, [row])).toBeNull();
+        expect(chooseAddressedBuilding({ url: ownListingUrl, facts }, [{ ...row, address: 'Ilica 1A, 10000 Zagreb' }])).toBeNull();
+    });
+
+    it('requires source locality to agree with a reviewed exact-address binding', () => {
+        const prepared = prepareBinding(binding());
+        const addressBinding = { city: prepared.city, source: prepared.source, owner_id: '', building_id: '42',
+            match_kind: prepared.matchKind, match_value: prepared.matchValue };
+        const explicitLocation = extractExplicitLocation(ownListingHTML, ownListingUrl);
+        expect(chooseBinding({ facts: { explicitLocation, locality: 'Zagreb' } }, [addressBinding])?.building_id).toBe('42');
+        expect(chooseBinding({ facts: { explicitLocation, locality: 'Split' } }, [addressBinding])).toBeNull();
+        expect(chooseBinding({ facts: { explicitLocation } }, [addressBinding])).toBeNull();
+        expect(sourceLocality({ title: 'Zagreb, apartment for sale' })).toBe('zagreb');
+        expect(sourceLocality({ title: 'Apartment for sale, Zagreb' })).toBeNull();
     });
 });
 
@@ -155,7 +176,7 @@ it('clears stale building identity when newly observed listing facts change', as
     const calls = [];
     const db = { query: vi.fn(async (sql, params = []) => { calls.push([sql, params]); return { rowCount: 1, rows: [] }; }) };
     await saveObservation(db, { url: 'https://agency.test/listing', kind: 'page', agency_id: 4 },
-        { body: Buffer.from('html'), status: 200, headers: { contentType: 'text/html' } },
+        { body: Buffer.from(ownListingHTML), status: 200, headers: { contentType: 'text/html' } },
         { listing: { address: 'Ilica 2' }, assets: [] }, 'run-1');
     const upsert = calls.find(([sql]) => sql.includes('INSERT INTO floor_plan.listing AS l'))[0];
     expect(upsert).toContain("match_status=CASE WHEN l.facts IS DISTINCT FROM excluded.facts THEN 'unresolved'");

@@ -57,7 +57,8 @@ describe('authoritative parcel source contracts', () => {
                     else if (value && typeof value === 'object') walkAst(value, bindings);
                 }
             };
-            walkAst(parse(source, { sourceType: 'script' }));
+            // The frontend includes both classic app scripts and module-based reports.
+            walkAst(parse(source, { sourceType: 'unambiguous' }));
             return found;
         };
         const transportFiles = files.filter(path => targetsParcels(read(path))).map(rel);

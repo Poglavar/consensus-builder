@@ -42,6 +42,14 @@ test.describe('Map shell sheets @features', () => {
       await expect(panel).toBeHidden();
       await expect(trigger).toHaveAttribute('aria-expanded', 'false');
       await expect(page.locator(selectors.openSheet)).toHaveCount(0);
+
+      // Exercise the sheet's own close affordance too; every sheet carries this control.
+      await trigger.click();
+      await expect(panel).toBeVisible();
+      await panel.locator(selectors.sheetClose).click();
+      await expect(panel).toBeHidden();
+      await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+      await expect(page.locator(selectors.openSheet)).toHaveCount(0);
     });
   }
 

@@ -1,4 +1,5 @@
 // Bounded Frankfurt cadastral WFS reader. Only the native FSK/OBJECTID and geometry leave this module.
+import { concatBytes } from './byte-utils.js';
 import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import proj4 from 'proj4';
 import { SaxesParser } from 'saxes';
@@ -179,10 +180,10 @@ export function createFrankfurtWfsParcelSource(descriptor, { fetchImpl = globalT
                         try { await reader.cancel(); } catch { /* Stream may already be closed. */ }
                         fail('Frankfurt WFS response exceeds the configured byte limit.');
                     }
-                    chunks.push(Buffer.from(item.value));
+                    chunks.push(item.value);
                 }
             } else {
-                const bytes = Buffer.from(await response.arrayBuffer());
+                const bytes = new Uint8Array(await response.arrayBuffer());
                 if (Date.now() >= budget.deadline) fail('Frankfurt WFS operation timed out.');
                 size = bytes.byteLength;
                 if (size > maxResponseBytes || budget.bytes + size > maxTotalResponseBytes) fail('Frankfurt WFS response exceeds the configured byte limit.');
@@ -192,7 +193,7 @@ export function createFrankfurtWfsParcelSource(descriptor, { fetchImpl = globalT
                 fail('Frankfurt WFS response body is incomplete.');
             }
             budget.bytes += size;
-            return Buffer.concat(chunks, size).toString('utf8');
+            return new TextDecoder('utf-8').decode(concatBytes(chunks, size));
         } finally { reader?.releaseLock(); }
     }
 

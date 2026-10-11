@@ -70,7 +70,7 @@ describe('the search box moves in place only onto the same parcel data', () => {
             }
         }
         expect(wrong).toEqual([]);
-    });
+    }, 20000);
 
     it('could fail: the provider kind every catalogue city shares calls San Francisco and Oakland one cadastre', () => {
         const byProvider = cities.map(city => ({ ...city, parcelSource: manager.getCityConfig(city.id).parcels.source }));

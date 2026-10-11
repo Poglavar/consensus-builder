@@ -76,7 +76,7 @@ describe('reparcellization.js wiring', () => {
         expect(rawInMarkup).toEqual([]);
         expect(source).toContain('ownerLegendCellHtml({ ...entry, displayName: ownerDisplayName(entry.displayName) }, color)');
         expect(source).toContain('cashOfferInputHtml(entry.ownerKey, cashOffer)');
-        expect(source).toContain("newPlotOwnerHtml({ ...o, displayName: ownerDisplayName(o.displayName, unassignedLabel) + (slice.jointPool ? ` (${formatPercent(o.share)})` : '') },");
+        expect(source).toContain("newPlotOwnerHtml({ ...o, displayName: ownerDisplayName(o.displayName, unassignedLabel) + (owners.length > 1 ? ` (${formatPercent(o.share)})` : '') },");
     });
 
     it('escapes Leaflet string tooltips (Leaflet renders them as HTML)', () => {

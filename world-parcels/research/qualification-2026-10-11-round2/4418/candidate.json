@@ -1,0 +1,61 @@
+{
+  "descriptor": {
+    "id": "us-ca-sacramento-active-parcels",
+    "name": "Sacramento County GIS — Sacramento",
+    "adapter": "arcgis",
+    "endpoint": "https://mapservices.gis.saccounty.gov/arcgis/rest/services/PARCELS/MapServer/8",
+    "idField": "PARCEL_NUMBER",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "idPattern": "^[0-9]{14}$",
+    "idPrefix": "US-CA-SACRAMENTO-",
+    "outFields": [
+      "PARCEL_NUMBER",
+      "OBJECTID"
+    ],
+    "pageSize": 500,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "metricSrid": 32610,
+    "countryCode": "US",
+    "stateCode": "CA",
+    "cityIds": [
+      "sacramento",
+      "4418"
+    ],
+    "operator": "Sacramento County GIS",
+    "scope": "Sacramento County active GIS parcel base; Sacramento entry only, no California-wide coverage claim.",
+    "caveats": [
+      "The full 14-character PARCEL_NUMBER is identity; shortened APN10 can collide across subparcels.",
+      "Assessment parcel geometry can include separately numbered subparcels; it is not ownership or a certified legal survey."
+    ],
+    "catalogueUrl": "https://data.saccounty.gov/",
+    "evidenceFile": "research/us-capitals-live-batch-2026-10-06.json",
+    "attribution": "Sacramento County GIS. Adapted to WGS84.",
+    "licenceNote": "Source conditions are informational; users choose their source and intended use."
+  },
+  "city": {
+    "code": "4418",
+    "name": "Prairie Oaks",
+    "point": [
+      -121.148601042322,
+      38.6720225936686
+    ]
+  },
+  "sampleIds": [
+    "US-CA-SACRAMENTO-07100401290000"
+  ],
+  "absentId": "US-CA-SACRAMENTO-99999999999999",
+  "metricEpsg": "EPSG:32610",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Sacramento County GIS — Sacramento",
+      "Executable parcel providers with cityIds for shared-provider city entries; research-only sources remain in registry.json until verified.; Sacramento County GIS — Sacramento; Sacramento County active GIS parcel base; Sacramento entry only, no California-wide coverage claim.; Real configured adapter acceptance; no parcel imports or raw geometry retained."
+    ]
+  },
+  "cellSizeDegrees": 0.001,
+  "sourceCandidateSha256": "ef19d0bddc7ec297b8e28520dce4f6a297aa4930c1e5511328ac4ecfb89a1180",
+  "qualificationRecordedSha256": "1e166867d6d7200e25f40efb7b8cfe85c2e51f8a1fd1b652254dd42805af02bb",
+  "sourceCandidatePath": "tmp/parcel-qualification/cities/4418/attempt-01/candidate.json"
+}

@@ -41,7 +41,11 @@ cd "$REPO_DIR"
 if [[ ! -x "$VENV_DIR/bin/python" ]]; then
   python3 -m venv "$VENV_DIR"
 fi
-"$VENV_DIR/bin/python" -m pip install --disable-pip-version-check -r "$BACKEND_DIR/floor-plans/requirements.txt"
+if ! "$VENV_DIR/bin/python" -m pip --version >/dev/null 2>&1; then
+  "$VENV_DIR/bin/python" -m ensurepip --upgrade
+fi
+# Use supported binary wheels; an OS upgrade must not silently start a NumPy source build.
+"$VENV_DIR/bin/python" -m pip install --only-binary=:all: --disable-pip-version-check -r "$BACKEND_DIR/floor-plans/requirements.txt"
 "$VENV_DIR/bin/python" "$SCRIPT_DIR/floor-plan-runtime-check.py"
 
 if [[ "$ENABLE" != true ]]; then

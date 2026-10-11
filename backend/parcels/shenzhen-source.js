@@ -2,7 +2,7 @@
 // Resolve that published value transiently, then restrict it to the one verified polygon layer.
 import { createArcgisParcelSource } from './arcgis-source.js';
 import { upstreamError, providerHttpError } from './source-contract.js';
-import { createHash } from 'node:crypto';
+import { sha256Hex } from './portable-hash.js';
 
 export const shenzhenLandCertainDescriptor = Object.freeze({
     adapter: 'arcgis',
@@ -264,7 +264,7 @@ export function createShenzhenLandCertainSource({ fetchImpl = globalThis.fetch }
             const objectKey = String(objectId);
             const priorObjectId = nativeToObjectId.get(nativeKey);
             const priorNativeId = objectIdToNative.get(objectKey);
-            const geometry = createHash('sha256').update(JSON.stringify(feature.geometry)).digest('hex');
+            const geometry = sha256Hex(JSON.stringify(feature.geometry));
             const priorGeometry = objectIdToGeometry.get(objectKey);
             if ((priorObjectId !== undefined && priorObjectId !== objectKey)
                 || (priorNativeId !== undefined && priorNativeId !== nativeKey)

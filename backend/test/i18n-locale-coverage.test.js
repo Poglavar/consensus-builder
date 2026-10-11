@@ -38,6 +38,7 @@ const DYNAMIC_KEY_PREFIXES = [
     'panel.parcel.ownershipType.',
     'panel.proposal.bindingDrift.coverageKinds.', // plot-crossings.test.js checks all four kinds, all locales
     'proposalDrafts.validation.issues.',
+    'reparcellization.validation.',
     'proposals.roadDesignation.',
     'rowHouses.modal.',
     'sidebar.proposals.grainScore.',

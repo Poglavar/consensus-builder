@@ -1,39 +1,53 @@
-// Verify matched-only extraction and honest pending/unprocessed accounting.
+// Verify located-building extraction and honest pending/unprocessed accounting.
 import {describe,expect,it,vi} from 'vitest';
 import {processAssets} from '../floor-plans/process-assets.js';
+vi.mock('../floor-plans/blob-store.js',()=>({readBlobRow:vi.fn(async()=>Buffer.from('fixture'))}));
 
 const hash=n=>String(n).repeat(64);
 const extracted={schema:'consensus-builder.floor-plan-draft.v1',status:'needs_review',pages:[],totalPages:1};
-function mockDb(rows,{pending=0,deferred=0}={}) {
+function mockDb(rows,{pending=0,deferred=0,awaiting=0}={}) {
  const calls=[];
  return {calls,query:vi.fn(async(sql,args=[])=>{
   calls.push({sql,args});
   if(sql.includes('pg_try_advisory_lock')) return {rows:[{locked:true}]};
-  if(sql.includes('SELECT e.sha256,b.media_type,b.data')) return {rows};
-  if(sql.includes('count(*) AS n')&&sql.includes('floor_plan.extraction')) return {rows:[{n:sql.includes('NOT EXISTS')?deferred:pending}]};
+  if(sql.includes('SELECT e.sha256,b.media_type,b.storage_path')) return {rows};
+  if(sql.includes('count(*) AS n')&&sql.includes('floor_plan.extraction')) return {rows:[{n:
+   sql.includes('AND NOT EXISTS (SELECT 1 FROM floor_plan.target location_asset')?deferred:
+   sql.includes('AND NOT (lower(b.media_type)')?awaiting:pending}]};
   if(sql.startsWith('UPDATE floor_plan.extraction')) return {rows:[],rowCount:1};
   return {rows:[],rowCount:1};
  })};
 }
 const extractor=vi.fn(async()=>({stdout:JSON.stringify(extracted)}));
 
-describe('matched floor-plan extraction',()=>{
- it('limits selection to matched assets and checks all extractor dependencies before status completion',async()=>{
-  const db=mockDb([{sha256:hash(1),media_type:'application/pdf',data:Buffer.from('pdf')}]);
-  const result=await processAssets(db,{maxAssets:1,maxMinutes:2,matchedOnly:true,extractor,log:()=>{}});
+describe('building-located floor-plan extraction',()=>{
+ it('limits selection to sources with a located owner before invoking the extractor',async()=>{
+  const db=mockDb([{sha256:hash(1),media_type:'application/pdf',storage_path:'blob.pdf',byte_count:3,bytes_available:true}]);
+  const result=await processAssets(db,{maxAssets:1,maxMinutes:2,extractor,log:()=>{}});
   expect(result).toMatchObject({status:'complete',selected:1,processed:1,needsReview:1,failed:0,pending:0});
-  const selection=db.calls.find(call=>call.sql.includes('SELECT e.sha256,b.media_type,b.data'));
-  expect(selection.args).toEqual([1,true]);
-  expect(selection.sql).toContain("listingOwned");
+  const selection=db.calls.find(call=>call.sql.includes('SELECT e.sha256,b.media_type,b.storage_path'));
+  expect(selection.sql).toContain('b.bytes_available');
+  expect(selection.args).toEqual([1]);
+  expect(selection.sql).toContain('location_asset.current_sha256=e.sha256');
+  expect(selection.sql).toContain('location_asset.kind=\'asset\'');
   expect(extractor).toHaveBeenCalledOnce();
  });
 
- it('records remaining matched work when the shared deadline leaves selected rows unprocessed',async()=>{
-  let clock=1000;const db=mockDb([1,2].map(n=>({sha256:hash(n),media_type:'image/png',data:Buffer.from('image')})),{pending:1,deferred:3});
+ it('records remaining located work and defers unlocated sources when time runs out',async()=>{
+  let clock=1000;const db=mockDb([1,2].map(n=>({sha256:hash(n),media_type:'image/png',storage_path:`${n}.png`,byte_count:5,bytes_available:true})),{pending:1,deferred:3});
   const runExtractor=vi.fn(async()=>{clock=62000;return {stdout:JSON.stringify(extracted)};});
-  const result=await processAssets(db,{maxAssets:2,maxMinutes:1,matchedOnly:true,now:()=>clock,extractor:runExtractor,log:()=>{}});
+  const result=await processAssets(db,{maxAssets:2,maxMinutes:1,now:()=>clock,extractor:runExtractor,log:()=>{}});
   expect(result).toMatchObject({status:'partial',selected:2,processed:1,unprocessed:1,pending:1,deferredUnmatched:3});
   expect(runExtractor).toHaveBeenCalledOnce();
+ });
+
+ it('does not extract unlocated sources and reports their backlog as partial',async()=>{
+  const db=mockDb([],{deferred:2});
+  const runExtractor=vi.fn();
+  const result=await processAssets(db,{extractor:runExtractor,log:()=>{}});
+  expect(result).toMatchObject({status:'partial',selected:0,pending:0,deferredUnmatched:2});
+  expect(runExtractor).not.toHaveBeenCalled();
+  expect(db.calls.find(({sql})=>sql.includes('AND NOT EXISTS (SELECT 1 FROM floor_plan.target location_asset'))).toBeTruthy();
  });
 
  it('marks extractor failures and does not report a successful empty extraction',async()=>{

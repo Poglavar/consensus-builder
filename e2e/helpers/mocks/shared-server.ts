@@ -1,7 +1,5 @@
 import { Page } from '@playwright/test';
 import { createHash, createHmac } from 'node:crypto';
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
 
 /** In-memory boundary for proposals published by one page and consumed by another. */
 export interface SharedProposalServer {
@@ -72,16 +70,13 @@ export async function attachSharedProposalServer(page: Page, server: SharedPropo
     const url = new URL(request.url());
     const path = url.pathname.replace(/\/$/, '');
 
-    // The local static server has no production-style SPA rewrite. Serve the real app shell for a
-    // proposal deep-link document request so its actual pathname reaches the app router. Never
-    // serve JSON for a browser navigation, and leave chain-proposal or unrelated paths alone.
+    // Keep the browser's deep-link pathname while fetching its shell from the configured server.
+    // This preserves the headed coverage server's identities instead of serving an uninstrumented
+    // filesystem copy. Never serve API JSON for a document navigation.
     if (request.isNavigationRequest()) {
       if (request.method() === 'GET' && /^\/proposals\/[0-9,]+$/.test(path)) {
-        await route.fulfill({
-          status: 200,
-          contentType: 'text/html; charset=utf-8',
-          body: readFileSync(resolve(__dirname, '../../../frontend/index.html'), 'utf8'),
-        });
+        const response = await route.fetch({ url: new URL('/index.html', url.origin).href });
+        await route.fulfill({ response });
       } else {
         await route.fallback();
       }

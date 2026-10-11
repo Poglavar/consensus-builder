@@ -271,7 +271,6 @@
         if (appliedProposal && typeof global.selectAndHighlightProposal === 'function') {
             const proposalKey = (typeof global.getProposalKey === 'function' && global.getProposalKey(appliedProposal))
                 || appliedProposal.proposalId;
-            global.__openProposalDetailsCollapsed = true;
             global.selectAndHighlightProposal(proposalKey, parcelId, false, true);
             if (typeof global.multiParcelSelection !== 'undefined'
                 && typeof global.multiParcelSelection.clearSingleParcelSelection === 'function') {

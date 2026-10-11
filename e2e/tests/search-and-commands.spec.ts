@@ -71,7 +71,6 @@ test.describe('Search and command palette @features', () => {
     await openCity(page);
     await page.locator('#settings-button').click();
     await expect(page.locator('#version-badge')).not.toBeEmpty();
-    await page.locator('#version-badge').focus();
     await page.keyboard.press('Meta+k');
     // Labelled "How it works" since a21963ab (the introduction tour).
     await page.locator('.command-palette__input').fill('How it works');
@@ -92,5 +91,37 @@ test.describe('Search and command palette @features', () => {
     expect(await page.evaluate(() => navigator.clipboard.readText())).toContain('Loaded 5 cadastral parcels.');
     await page.locator('#status-log-modal-close').click();
     await expect(page.locator('#status-log-modal')).toBeHidden();
+  });
+
+  test('the introduction Previous, Next, and page dots navigate the visible feature slides', async ({ mockApi: page }) => {
+    await openCity(page);
+    await page.locator('#settings-button').click();
+    await page.locator('#settings-sheet [data-site-intro-open]').click();
+    const intro = page.locator('#site-intro-modal');
+    await expect(intro).toBeVisible();
+    await expect(intro.locator('[data-site-intro-progress]')).toHaveText('1 / 5');
+    await expect(intro.locator('[data-site-intro-back]')).toBeDisabled();
+
+    await intro.locator('[data-site-intro-next]').click();
+    await expect(intro.locator('[data-site-intro-progress]')).toHaveText('2 / 5');
+    await expect(intro.locator('[data-site-intro-slide="propose"]')).toBeVisible();
+    await intro.locator('[data-site-intro-back]').click();
+    await expect(intro.locator('[data-site-intro-progress]')).toHaveText('1 / 5');
+
+    const slides = ['explore', 'propose', 'consent', 'activity', 'sources'];
+    for (const [index, slide] of slides.entries()) {
+      const dot = intro.locator(`[data-site-intro-page="${index}"]`);
+      await dot.click();
+      await expect(intro.locator('[data-site-intro-progress]')).toHaveText(`${index + 1} / ${slides.length}`);
+      await expect(intro.locator(`[data-site-intro-slide="${slide}"]`)).toBeVisible();
+      await expect(dot).toHaveAttribute('aria-current', 'step');
+    }
+    await intro.getByRole('button', { name: 'Close introduction', exact: true }).click();
+    await expect(intro).toBeHidden();
+    if (!(await page.locator('#settings-sheet').isVisible())) await page.locator('#settings-button').click();
+    await page.locator('#settings-sheet [data-site-intro-open]').click();
+    await expect(intro).toBeVisible();
+    await intro.locator('.site-intro-skip').click();
+    await expect(intro).toBeHidden();
   });
 });

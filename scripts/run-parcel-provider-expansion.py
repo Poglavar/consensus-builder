@@ -77,9 +77,9 @@ def _prepare_item(item, args, source_hash):
     return _pair_checkpoint(args.shared_root,item['city'],item['provider'],evidence,source_hash),evidence
 
 def _pair_checkpoint(shared, city, provider, evidence, source_hash):
-    code=_code(city); pkey=_provider_key(provider); p=Path(shared)/'tmp/parcel-provider-expansion/checkpoints'/code/f'{pkey}.json'
+    code=_code(city); pkey=_provider_key(provider); base=Path(shared)/'tmp/parcel-provider-expansion/checkpoints'/code
     data={'cityCode':code,'providerKey':pkey,'citySha256':_hash_bytes(_json_bytes(city)),'providerSha256':_hash_bytes(_json_bytes(provider)),'evidenceFiles':[{k:v for k,v in x.items() if k!='resolvedPath'} for x in evidence],'sourceSha256':source_hash}
-    data['pairSha256']=_hash_bytes(_json_bytes(data)); p.parent.mkdir(parents=True,exist_ok=True)
+    data['pairSha256']=_hash_bytes(_json_bytes(data)); p=base/pkey/f"{data['pairSha256']}.json"; p.parent.mkdir(parents=True,exist_ok=True)
     fd,tmp=tempfile.mkstemp(prefix='.'+p.name+'.',dir=p.parent)
     try:
         with os.fdopen(fd,'wb') as f: f.write(_json_bytes(data)); f.flush(); os.fsync(f.fileno())
@@ -251,17 +251,33 @@ def _make_packets(queue_city, provider, result, evidence, sample, sample_name, c
     return base,review
 
 def _pair_result_path(shared, code, provider_key):
-    return Path(shared)/'tmp/parcel-provider-expansion/results'/coord.canonical_code(code)/f'{provider_key}.json'
+    return Path(shared)/'tmp/parcel-provider-expansion/results'/coord.canonical_code(code)/provider_key
+
+def _pair_result_file(shared, code, checkpoint):
+    return _pair_result_path(shared,code,checkpoint['providerKey'])/f"{checkpoint['pairSha256']}.json"
 
 def _saved_pair_result(shared, code, checkpoint):
-    p=_pair_result_path(shared,code,checkpoint['providerKey'])
-    try: old=json.loads(p.read_text())
-    except Exception: return None
-    if old.get('pairSha256')==checkpoint.get('pairSha256') and old.get('status') in ('no-hit','held'): return old
+    p=_pair_result_file(shared,code,checkpoint)
+    legacy=_pair_result_path(shared,code,checkpoint['providerKey']).with_suffix('.json')
+    for candidate in (p,legacy):
+        try: old=json.loads(candidate.read_text())
+        except Exception: continue
+        if old.get('pairSha256')==checkpoint.get('pairSha256') and old.get('status') in ('no-hit','held'): return old
     return None
 
 def _save_pair_result(shared, code, checkpoint, status, details=None):
-    _atomic_json(_pair_result_path(shared,code,checkpoint['providerKey']),{'cityCode':coord.canonical_code(code),'providerKey':checkpoint['providerKey'],'pairSha256':checkpoint['pairSha256'],'status':status,'finishedAt':time.time(),'details':details or {}})
+    _atomic_json(_pair_result_file(shared,code,checkpoint),{'cityCode':coord.canonical_code(code),'providerKey':checkpoint['providerKey'],'pairSha256':checkpoint['pairSha256'],'status':status,'finishedAt':time.time(),'details':details or {}})
+
+def _inputs_unchanged(args, evidence, source_hash):
+    for item in evidence:
+        if item.get('missing'): continue
+        if not item.get('resolvedPath'): return False
+        try:
+            if _hash_file(item['resolvedPath'])!=item.get('sha256'): return False
+        except OSError: return False
+    source=Path(args.source); source=source if source.is_absolute() else Path(args.repo_root)/source
+    try: return source.is_file() and _hash_file(source)==source_hash
+    except OSError: return False
 
 def _heartbeat(path, run_id, args, current=None, status='running'):
     ident=coord.pid_start_identity(os.getpid())
@@ -271,6 +287,8 @@ def _probe_item(item, args, run_id, source_hash, heartbeat_path, provider_last, 
     city=item['city']; provider=item['provider']; code=_code(city)
     try: (same,checkpoint),evidence=prepared if prepared else _prepare_item(item,args,source_hash)
     except Exception as e: return {'status':'held','retry':False,'attempt':attempt_no,'error':str(e)}
+    if not _inputs_unchanged(args,evidence,source_hash):
+        _event(args.shared_root,{'runId':run_id,'cityCode':code,'status':'source-changed','providerKey':checkpoint.get('providerKey')}); return {'status':'source-changed','retry':False,'attempt':attempt_no}
     if coord.validate_completion(args.shared_root,code): return {'status':'skipped-completion','retry':False,'attempt':attempt_no}
     if _valid_existing_packet(args.shared_root,city,args.repo_root): return {'status':'skipped-existing','retry':False,'attempt':attempt_no}
     if not same: _event(args.shared_root,{'runId':run_id,'cityCode':code,'status':'source-changed','providerKey':checkpoint.get('providerKey')}); return {'status':'source-changed','retry':False,'attempt':attempt_no}
@@ -294,6 +312,8 @@ def _probe_item(item, args, run_id, source_hash, heartbeat_path, provider_last, 
         try:
             result=run_probe(args.repo_root,task,out,lambda:_heartbeat(heartbeat_path,run_id,args,{'cityCode':code,'attempt':attempt_no}))
             provider_last[str(provider_id)]=time.time()
+            if not _inputs_unchanged(args,evidence,source_hash):
+                _event(args.shared_root,{'runId':run_id,'cityCode':code,'status':'source-changed','providerKey':checkpoint.get('providerKey'),'attempt':attempt_no}); return {'status':'source-changed','retry':False,'attempt':attempt_no}
             status=result.get('status')
             if status not in ('discovered','no-hit','held'): raise ValueError(f'unrecognized probe status: {status}')
             if status=='discovered':
@@ -336,6 +356,8 @@ def run_queue(args):
             try: prepared=_prepare_item(item,args,source_hash)
             except Exception as e:
                 _event(shared,{'runId':run_id,'cityCode':code,'status':'held','reason':str(e)[:500]}); results.append({'cityCode':code,'status':'held'}); continue
+            if not _inputs_unchanged(args,prepared[1],source_hash):
+                _event(shared,{'runId':run_id,'cityCode':code,'status':'source-changed'}); results.append({'cityCode':code,'status':'source-changed'}); continue
             if coord.validate_completion(shared,code): results.append({'status':'skipped-completion','cityCode':code}); continue
             before=_valid_existing_packet(shared,item['city'],repo)
             if before: results.append({'status':'skipped-existing','cityCode':code}); continue

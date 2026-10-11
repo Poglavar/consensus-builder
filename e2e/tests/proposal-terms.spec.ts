@@ -8,6 +8,8 @@ test.describe('Proposal terms @features', () => {
     await showProposal(page, sourceId);
     const expand = page.locator('#proposal-details-panel').getByRole('button', { name: 'Expand', exact: true });
     if (await expand.isVisible()) await expand.click();
+    const moreActions = page.locator('#proposal-details-panel summary').filter({ hasText: 'More actions' });
+    if (await moreActions.isVisible()) await moreActions.click();
     await page.locator('.btn-counterpropose-proposal').click();
 
     const dialog = page.locator('.create-proposal-modal:visible');
@@ -75,6 +77,8 @@ test.describe('Proposal terms @features', () => {
     await showProposal(page, sourceId);
     const expand = page.locator('#proposal-details-panel').getByRole('button', { name: 'Expand', exact: true });
     if (await expand.isVisible()) await expand.click();
+    const moreActions = page.locator('#proposal-details-panel summary').filter({ hasText: 'More actions' });
+    if (await moreActions.isVisible()) await moreActions.click();
     await page.locator('.btn-counterpropose-proposal').click();
 
     const dialog = page.locator('.create-proposal-modal:visible');

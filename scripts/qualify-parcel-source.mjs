@@ -87,6 +87,39 @@ export function assessForcedQueryEvidence({ requests, expectedIds, returnedIds, 
         distinctFeatureQueries, duplicatePageRequests: identities.length - distinctFeatureQueries };
 }
 
+function validSnapshotDate(value) {
+    if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+    const parsed = new Date(`${value}T00:00:00Z`);
+    return Number.isFinite(parsed.valueOf()) && parsed.toISOString().slice(0, 10) === value;
+}
+
+export function assessHmlrBrowserCompletenessEvidence({ expectedSnapshotId, sampleIds, firstExact, secondExact,
+    absenceResult, firstPass, secondPass, absentId }) {
+    const expectedIds = Array.isArray(sampleIds) ? [...sampleIds].sort() : [];
+    const exactIds = result => result instanceof Map ? [...result.keys()].sort() : [];
+    const sourceDate = firstExact?.sourceDate;
+    const firstReads = Array.isArray(firstPass) ? firstPass : [];
+    const secondReads = Array.isArray(secondPass) ? secondPass : [];
+    const reads = [firstExact, secondExact, absenceResult, ...firstReads, ...secondReads];
+    const snapshotBound = /^[a-f0-9]{64}$/.test(expectedSnapshotId || '')
+        && reads.every(read => read?.snapshotId === expectedSnapshotId);
+    const sourceDateBound = validSnapshotDate(sourceDate) && reads.every(read => read?.sourceDate === sourceDate);
+    const exactSampleIdsRepeated = JSON.stringify(exactIds(firstExact)) === JSON.stringify(expectedIds)
+        && JSON.stringify(exactIds(secondExact)) === JSON.stringify(expectedIds);
+    const explicitAbsenceComplete = absenceResult?.complete === true && absenceResult.features?.length === 0
+        && absenceResult.absentIds?.length === 1 && absenceResult.absentIds[0] === absentId;
+    const completeSampleQueries = firstReads.length > 0 && firstReads.length === secondReads.length
+        && firstReads.every(read => read?.complete === true && Array.isArray(read.ids))
+        && secondReads.every(read => read?.complete === true && Array.isArray(read.ids));
+    const stableSampleIds = completeSampleQueries && firstReads.every((read, index) =>
+        JSON.stringify([...read.ids].sort()) === JSON.stringify([...secondReads[index].ids].sort()));
+    return { passed: snapshotBound && sourceDateBound && exactSampleIdsRepeated && explicitAbsenceComplete
+            && completeSampleQueries && stableSampleIds,
+        snapshotBound, sourceDateBound, sourceDate: validSnapshotDate(sourceDate) ? sourceDate : null,
+        exactSampleIdsRepeated, explicitAbsenceComplete, completeSampleQueries, stableSampleIds,
+        completePasses: completeSampleQueries ? 2 : 0, cellCount: firstReads.length };
+}
+
 function parseArgs(argv) {
     const args = {};
     for (let i = 0; i < argv.length; i++) {
@@ -143,7 +176,7 @@ function findRepoRoot(scriptFile) {
     return root;
 }
 
-function makeSafeFetch({ state, stage }) {
+function makeSafeFetch({ state, stage, timeoutMs = MAX_RESPONSE_MS }) {
     return async (input, init = {}) => {
         if (state.requests.length >= MAX_REQUESTS) throw Object.assign(new Error('Request budget exceeded.'), { code: 'qualification-request-budget' });
         const started = Date.now();
@@ -180,7 +213,7 @@ function makeSafeFetch({ state, stage }) {
                 ...(idsKey ? { idListParam: idsKey,
                     idListCount: String(values.get(idsKey)).split(',').filter(Boolean).length } : {}) };
             state.requests.push(requestRecord);
-            const timeout = AbortSignal.timeout(MAX_RESPONSE_MS);
+            const timeout = AbortSignal.timeout(timeoutMs);
             const signal = init.signal ? AbortSignal.any([init.signal, timeout]) : timeout;
             try {
                 const response = await globalThis.__qualificationOriginalFetch(input, { ...init, signal });
@@ -269,11 +302,12 @@ async function main() {
     const sourceId = candidate.descriptor.id;
     const makeAdapter = stage => {
         requestStage(state, stage);
-        const fetchImpl = makeSafeFetch({ state, stage });
         const descriptor = { ...candidate.descriptor };
+        const fetchImpl = makeSafeFetch({ state, stage,
+            timeoutMs: descriptor.adapter === 'hmlr-browser' ? 180_000 : MAX_RESPONSE_MS });
         if (stage === 'forced-page-size-one') { descriptor.pageSize = 1; descriptor.idBatchSize = 1; }
         const options = descriptor.adapter === 'gml-snapshot' ? {} : { fetchImpl };
-        if (descriptor.adapter === 'gml-snapshot') {
+        if (['gml-snapshot', 'hmlr-browser'].includes(descriptor.adapter)) {
             const previous = globalThis.fetch;
             globalThis.fetch = fetchImpl;
             const adapter = createParcelSource(descriptor, options);
@@ -308,6 +342,8 @@ async function main() {
             found.set(clean.id, clean);
         }
         if (found.size !== ids.length || ids.some(id => !found.has(id)) || result.absentIds.length) throw new Error('Exact-ID result did not return precisely all requested IDs.');
+        found.snapshotId = result.snapshotId;
+        found.sourceDate = result.sourceDate;
         return found;
     };
 
@@ -315,7 +351,7 @@ async function main() {
     const originalFetch = globalThis.fetch;
     globalThis.__qualificationOriginalFetch = originalFetch;
     try {
-        let firstExact, secondExact;
+        let firstExact, secondExact, absenceResult;
         try {
             firstExact = await runSource('exact-id-first-read', async adapter => getExact(adapter, candidate.sampleIds));
             ingest([...firstExact.values()]);
@@ -330,6 +366,7 @@ async function main() {
         } catch (error) { recordFailure('stableGeometry', error); checks.stableGeometry = checkRecord(false); }
         try {
             const result = await runSource('explicit-absence', async adapter => adapter.queryIds([candidate.absentId]));
+            absenceResult = result;
             const clean = Array.isArray(result?.features) ? result.features : null;
             const absent = Array.isArray(result?.absentIds) ? result.absentIds : [];
             checks.explicitAbsence = checkRecord(result?.complete === true && clean?.length === 0 && absent.length === 1 && absent[0] === candidate.absentId,
@@ -351,7 +388,8 @@ async function main() {
                         rowCount += features.length;
                         if (rowCount > MAX_FEATURES) throw Object.assign(new Error('13-cell row budget exceeded.'), { code: 'qualification-feature-budget' });
                         ingest(features);
-                        pass1.push({ ...cell, complete: r?.complete === true, featureCount: features.length, ids: features.map(f => f.id || f.properties?.parcelId) });
+                        pass1.push({ ...cell, complete: r?.complete === true, featureCount: features.length, ids: features.map(f => f.id || f.properties?.parcelId),
+                            snapshotId: r?.snapshotId, sourceDate: r?.sourceDate });
                     }
                 } finally { restore(); }
                 sampledCells.push(...pass1);
@@ -365,7 +403,8 @@ async function main() {
                         rowCount += features.length;
                         if (rowCount > MAX_FEATURES * 2) throw Object.assign(new Error('Repeated 13-cell row budget exceeded.'), { code: 'qualification-feature-budget' });
                         ingest(features);
-                        pass2.push({ index: cell.index, complete: r?.complete === true, featureCount: features.length, ids: features.map(f => f.id || f.properties?.parcelId) });
+                        pass2.push({ index: cell.index, complete: r?.complete === true, featureCount: features.length, ids: features.map(f => f.id || f.properties?.parcelId),
+                            snapshotId: r?.snapshotId, sourceDate: r?.sourceDate });
                     }
                 } finally { second.restore(); }
                 let stable = pass1.every((a, i) => a.complete && pass2[i]?.complete
@@ -396,6 +435,8 @@ async function main() {
                         centroidCell.complete = centroidStable;
                         centroidCell.featureCount = idsOne.length;
                         centroidCell.ids = idsOne;
+                        pass1.push({ complete: one.complete === true, ids: idsOne, snapshotId: one.snapshotId, sourceDate: one.sourceDate });
+                        pass2.push({ complete: two.complete === true, ids: idsTwo, snapshotId: two.snapshotId, sourceDate: two.sourceDate });
                         sampledCells.push(centroidCell);
                         stable = stable && centroidStable;
                     }
@@ -404,7 +445,15 @@ async function main() {
                 if (centroidCell) checks.sampling = checkWithDetails(stable, checks.sampling, { sampleCentroidCell: centroidCell });
                 checks.completeness = checkRecord(complete1 && stable, { completePasses: complete1 ? 2 : 0, cellCount: cells.length });
                 if (!stable || !complete1) throw new Error('13-cell results were incomplete or changed between passes.');
-                if (['geojson-snapshot', 'gml-snapshot'].includes(candidate.descriptor.adapter)) {
+                if (candidate.descriptor.adapter === 'hmlr-browser') {
+                    const evidence = assessHmlrBrowserCompletenessEvidence({ expectedSnapshotId: candidate.descriptor.snapshotId,
+                        sampleIds: candidate.sampleIds, firstExact, secondExact, absenceResult, firstPass: pass1, secondPass: pass2,
+                        absentId: candidate.absentId });
+                    const { passed: evidencePassed, ...evidenceDetails } = evidence;
+                    checks.completeness = checkWithDetails(checks.completeness.passed && evidencePassed, checks.completeness,
+                        { pagingRequired:false, immutableSnapshot:true, ...evidenceDetails });
+                    if (!evidencePassed) throw new Error('HMLR immutable release ID/date, repeated exact IDs, explicit absence, or complete repeated cells failed.');
+                } else if (['geojson-snapshot', 'gml-snapshot'].includes(candidate.descriptor.adapter)) {
                     checks.completeness = checkWithDetails(checks.completeness.passed, checks.completeness, { pagingRequired:false, reason:'Complete immutable snapshot loader; pagination is not part of the source protocol.' });
                 } else if (candidate.descriptor.adapter === 'catastro-wfs') {
                     const manifestComplete = complete1 && pass1.length === cells.length && pass1.every(cell => cell.complete);

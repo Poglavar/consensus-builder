@@ -1,0 +1,59 @@
+{
+  "descriptor": {
+    "id": "us-fl-miamidade-pa-parcels",
+    "name": "Miami-Dade County Property Appraiser parcels",
+    "adapter": "arcgis",
+    "endpoint": "https://gisfs.miamidade.gov/mdarcgis/rest/services/MD_PA_PropertySearch/MapServer/1",
+    "idField": "GLOBALID",
+    "idType": "string",
+    "idPattern": "^\\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\\}$",
+    "objectIdField": "OBJECTID",
+    "idPrefix": "US-FL-MIAMI-DADE-",
+    "outFields": [
+      "GLOBALID",
+      "OBJECTID"
+    ],
+    "pageSize": 1000,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "countryCode": "US",
+    "metricSrid": 32617,
+    "scope": "Miami-Dade County only; does not cover Broward or Palm Beach counties. Property assessment polygons are approximate.",
+    "evidenceFile": "research/miami-live.json",
+    "attribution": "Miami-Dade County GIS, Property Appraiser parcels. Adapted to WGS84.",
+    "licenceUrl": "https://gis-mdc.opendata.arcgis.com/datasets/MDC::parcel/about",
+    "licenceNote": "Official public dataset supplies data for use subject to an accuracy/reliance disclaimer; no named open-data licence is stated.",
+    "catalogueUrl": "https://gis-mdc.opendata.arcgis.com/datasets/MDC::parcel/about",
+    "cityIds": [
+      "miami",
+      "7263"
+    ],
+    "stateCode": "FL"
+  },
+  "city": {
+    "code": "7263",
+    "name": "Homestead",
+    "point": [
+      -80.4466277419018,
+      25.4832250785167
+    ]
+  },
+  "sampleIds": [
+    "US-FL-MIAMI-DADE-{0DB4A2AF-7351-458E-B933-90C684AE355B}",
+    "US-FL-MIAMI-DADE-{19750167-CB24-4BF6-AACE-25E950E23D28}",
+    "US-FL-MIAMI-DADE-{90F8464F-8C47-410B-97EE-230BE86D5643}"
+  ],
+  "absentId": "US-FL-MIAMI-DADE-{9FF9F9FF-9999-999F-F999-99F999FF999F}",
+  "metricEpsg": "EPSG:32617",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Miami-Dade County Property Appraiser parcels",
+      "Executable parcel providers with cityIds for shared-provider city entries; research-only sources remain in registry.json until verified.; Miami-Dade County Property Appraiser parcels; Miami-Dade County only; does not cover Broward or Palm Beach counties. Property assessment polygons are approximate.; Bounded source, native identity, paging and published data-term checks for Miami-Dade parcels."
+    ]
+  },
+  "cellSizeDegrees": 0.001,
+  "sourceCandidateSha256": "d5199d78cb26501f4d6479c21c88590214956797d44b473378da2d30ef86dd68",
+  "qualificationRecordedSha256": "903ec81122d5a89cc6abf5e8870f738e5e8f77603f72a7849b11430c8bc1f7a7",
+  "sourceCandidatePath": "tmp/parcel-qualification/cities/7263/attempt-01/candidate.json"
+}

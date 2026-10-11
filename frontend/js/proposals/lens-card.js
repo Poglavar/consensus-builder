@@ -134,7 +134,7 @@
         const options = lensMembers.map(member => `<option value="${escapeText(member.key)}" ${member.serviceUrl ? '' : 'disabled'}>${escapeText(member.label)}${member.serviceUrl ? '' : ` (${escapeText(t('panel.proposal.lens.noServiceUrlShort', 'no service URL'))})`}</option>`).join('');
         return `
             <li class="proposal-lens-parcel" data-lens-parcel="${escapeText(parcelUid)}">
-                <span class="proposal-lens-parcel-id">${escapeText(parcelUid)}</span>
+                <span class="proposal-lens-parcel-id parcel-id-text" title="${escapeText(parcelUid)}">${escapeText(parcelUid)}</span>
                 <span class="proposal-lens-consent" data-lens-consent aria-live="polite">${escapeText(t('panel.proposal.lens.consentLoading', 'Reading consent from chain…'))}</span>
                 ${withService.length ? `
                     <div class="proposal-lens-parcel-actions">

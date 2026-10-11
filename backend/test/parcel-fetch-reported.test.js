@@ -7,11 +7,13 @@ import vm from 'node:vm';
 const fetchSource = readFileSync(new URL('../../frontend/js/parcels/fetch.js', import.meta.url), 'utf8');
 const visibilitySource = readFileSync(new URL('../../frontend/js/parcels/ui/visibility.js', import.meta.url), 'utf8');
 
-function boot(ensureBounds) {
+function boot(ensureBounds, fabric = null, ParcelSourceHealth = null) {
     const statuses = [];
     const window = {
         map: { getBounds: () => ({ pad: () => 'padded-bounds' }), hasLayer: () => false },
         CadastralParcelRepository: { ensureBounds },
+        LiveParcelFabric: fabric,
+        ParcelSourceHealth,
         updateStatus: message => statuses.push(message),
         isZoomWithinParcelRange: () => true
     };
@@ -58,6 +60,24 @@ describe('fetchParcelDataReported', () => {
     it('passes a successful result through', async () => {
         const { window } = boot(async () => ({ cached: false, features: [1, 2] }));
         await expect(window.fetchParcelDataReported(undefined, 'x')).resolves.toMatchObject({ features: [1, 2] });
+    });
+
+    it('uses clone-free fabric counts when reporting a failed fetch', async () => {
+        const counts = vi.fn().mockReturnValueOnce(2).mockReturnValueOnce(7);
+        const queryBounds = vi.fn(() => { throw new Error('queryBounds should not clone for counts'); });
+        let loaded;
+        const fabric = { countBounds: counts, queryBounds };
+        const health = { createRequester: () => async () => {}, describeFailure: (_error, context) => {
+            loaded = context.loaded;
+            return 'reported';
+        } };
+        const { window, statuses } = boot(async () => { throw new Error('offline'); }, fabric, health);
+        await window.fetchParcelDataReported(undefined, 'test');
+
+        expect(loaded).toEqual({ inMemory: 2, inView: 7 });
+        expect(counts).toHaveBeenCalledTimes(2);
+        expect(queryBounds).not.toHaveBeenCalled();
+        expect(statuses.at(-1)).toBe('reported');
     });
 
     it('showAllParcels and showOnlyRoadParcels surface a failure without an unhandled rejection', async () => {

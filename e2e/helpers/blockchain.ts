@@ -103,6 +103,12 @@ export async function injectMockEvmWallet(page: Page, options: MockEvmWalletOpti
         if (method === 'net_version') {
           return String(parseInt(chainIdHex, 16));
         }
+        // Connected profiles read these quantities through the real ethers provider. RPC
+        // quantities are hex strings; null makes ethers throw before the UI can finish loading.
+        if (['eth_getBalance', 'eth_getTransactionCount'].includes(method)) return '0x0';
+        if (['eth_blockNumber', 'eth_gasPrice', 'eth_maxPriorityFeePerGas'].includes(method)) return '0x1';
+        if (method === 'eth_estimateGas') return '0x5208';
+        if (method === 'eth_getCode' || method === 'eth_call') return '0x';
         if (method === 'wallet_switchEthereumChain') {
           const requested = params && params[0] && params[0].chainId ? String(params[0].chainId) : chainIdHex;
           chainIdHex = normalizeHex(requested);

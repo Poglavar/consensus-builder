@@ -17,6 +17,12 @@ function polygon(id, properties = {}) {
     };
 }
 
+function deepFreeze(value) {
+    if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
+    Object.values(value).forEach(deepFreeze);
+    return Object.freeze(value);
+}
+
 async function mutate(fabric, operation) {
     const mutation = fabric.beginMutation({});
     try {
@@ -130,6 +136,41 @@ describe('parcel presenter atomic projection', () => {
         expect(presenter.getIdForLayer(originalLayer)).toBe('HR-A');
         expect(presenter.getLayer('HR-A#park-1')).toBeNull();
         expect(members).toEqual(new Set([originalLayer]));
+    });
+
+    it('projects a mutable owned clone from immutable draft peek and preserves rollback', async () => {
+        const { fabric, presenter, context, members } = environment();
+        await mutate(fabric, mutation => mutation.seedCadastre([polygon('HR-A')]));
+        const originalLayer = presenter.getLayer('HR-A');
+        const source = deepFreeze(polygon('HR-A', { sourceLabel: 'immutable' }));
+        const cloneFeature = vi.fn(value => structuredClone(value));
+        context.structuredClone = cloneFeature;
+        const draftView = {
+            peek: vi.fn(id => id === 'HR-A' ? source : undefined),
+            get: vi.fn(() => { throw new Error('clone-producing get must not be used'); })
+        };
+
+        const prepared = await presenter.prepare({
+            addedIds: [], updatedIds: ['HR-A'], removedIds: [], revision: 2
+        }, draftView);
+
+        expect(draftView.peek).toHaveBeenCalledWith('HR-A');
+        expect(draftView.get).not.toHaveBeenCalled();
+        expect(cloneFeature).toHaveBeenCalledTimes(1);
+        const replacement = prepared.replacements.get('HR-A');
+        expect(replacement.__parcelPresenterOwned).toBe(true);
+        expect(replacement.feature).not.toBe(source);
+        expect(Object.isFrozen(replacement.feature)).toBe(false);
+        replacement.feature.properties.presentationLabel = 'owned by presenter';
+        expect(source.properties).toEqual({ parcelId: 'HR-A', sourceLabel: 'immutable' });
+
+        presenter.commit(prepared);
+        expect(presenter.getLayer('HR-A')).toBe(replacement);
+        expect(members).toEqual(new Set([replacement]));
+        presenter.rollback(prepared);
+        expect(presenter.getLayer('HR-A')).toBe(originalLayer);
+        expect(members).toEqual(new Set([originalLayer]));
+        expect(presenter.snapshot().revision).toBe(1);
     });
 });
 

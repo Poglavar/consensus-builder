@@ -220,9 +220,8 @@
                 throw new Error('Invalid parcel source ID batch size.');
             }
             for (const batch of chunks(ids, batchSize)) {
-                const payload = await responseJson(`${backendBase()}/parcel-sources/${encodeURIComponent(provider.sourceId)}?${new URLSearchParams({ ids: batch.join(',') })}`, {
-                    headers: { Accept: 'application/json' }, cache: 'no-store'
-                });
+                if (!global.BrowserParcelSources) throw new Error('Browser parcel adapters are unavailable.');
+                const payload = await global.BrowserParcelSources.queryIds(provider.sourceId, batch, { city });
                 if (payload.complete !== true || !Array.isArray(payload.features) || !Array.isArray(payload.absentIds)) {
                     throw new Error('Parcel source returned an incomplete ID response.');
                 }
@@ -259,9 +258,8 @@
         if (provider?.strategy !== 'point' || provider.source !== 'parcel-source') throw new Error('Parcel point lookup is unavailable.');
         if (!Array.isArray(point) || point.length !== 2 || !point.every(Number.isFinite)
             || Math.abs(point[0]) > 180 || Math.abs(point[1]) > 90) throw new Error('Invalid parcel lookup point.');
-        const payload = await responseJson(`${backendBase()}/parcel-sources/${encodeURIComponent(provider.sourceId)}?${new URLSearchParams({ point: point.join(',') })}`, {
-            headers: { Accept: 'application/json' }, cache: 'no-store'
-        });
+        if (!global.BrowserParcelSources) throw new Error('Browser parcel adapters are unavailable.');
+        const payload = await global.BrowserParcelSources.queryPoint(provider.sourceId, point, { city });
         if (payload.complete !== true || payload.queryType !== 'point' || payload.sourceId !== provider.sourceId || !Array.isArray(payload.features)) {
             throw new Error('Parcel source returned an incomplete point response.');
         }
@@ -302,6 +300,13 @@
         }
         const absent = noRegisterError(context.city);
         if (absent) throw absent;
+        const provider = cityConfig(context.city || currentCity())?.parcels;
+        if (provider?.source === 'parcel-source') {
+            if (!global.BrowserParcelSources) throw new Error('Browser parcel adapters are unavailable.');
+            const payload = await global.BrowserParcelSources.queryBounds(provider.sourceId, latLonBbox.split(',').map(Number), { city: context.city });
+            if (payload.complete !== true || !Array.isArray(payload.features)) throw new Error('Parcel source returned an incomplete viewport response.');
+            return { features: payload.features, returnsWGS84: true };
+        }
         const builder = context.builder;
         const count = 2000;
         let startIndex = 0;
@@ -383,15 +388,20 @@
         if (!geom || !geom.type) throw new Error('Cadastral footprint geometry is missing.');
         const parcelsOnly = options.parcelsOnly === true;
         const provider = cityConfig(options.city || currentCity())?.parcels;
-        const path = provider?.source === 'parcel-source'
-            ? `/parcel-sources/${encodeURIComponent(provider.sourceId)}/under`
-            : '/parcels/under';
+        if (provider?.source === 'parcel-source') {
+            if (options.srid !== undefined && options.srid !== 4326) throw new Error('Browser parcel geometry must use WGS84.');
+            if (!global.BrowserParcelSources) throw new Error('Browser parcel adapters are unavailable.');
+            const payload = await global.BrowserParcelSources.queryGeometry(provider.sourceId, geom, { city: options.city || currentCity() });
+            if (payload.complete !== true || !Array.isArray(payload.features)) throw new Error('Parcel source returned an incomplete footprint response.');
+            return { status: 'ready', features: payload.features, absentIds: [], returnsWGS84: true,
+                coverage: null, count: payload.features.length, queryMs: null };
+        }
+        const path = '/parcels/under';
         const payload = await responseJson(`${backendBase()}${path}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
             body: JSON.stringify({ geometry: geom, srid: options.srid || 4326, ...(parcelsOnly ? { parcelsOnly: true } : {}) })
         });
-        if (provider?.source === 'parcel-source' && payload.complete !== true) throw new Error('Parcel source returned an incomplete footprint response.');
         if (!Array.isArray(payload.features)) throw new Error('/parcels/under response has no features array.');
         return {
             status: 'ready',
@@ -513,9 +523,9 @@
     function loadedParcelCounts() {
         const fabric = global.LiveParcelFabric;
         const bounds = global.map && typeof global.map.getBounds === 'function' ? global.map.getBounds() : null;
-        if (!fabric || typeof fabric.queryBounds !== 'function' || !bounds) return null;
-        // Both through queryBounds, so both leave out road and track corridors the same way.
-        return { inMemory: fabric.queryBounds([-180, -90, 180, 90]).length, inView: fabric.queryBounds(bounds).length };
+        if (!fabric || typeof fabric.countBounds !== 'function' || !bounds) return null;
+        // Count with the same corridor predicate as queryBounds, without cloning every geometry.
+        return { inMemory: fabric.countBounds([-180, -90, 180, 90]), inView: fabric.countBounds(bounds) };
     }
 
     // A failed ground fetch must be visible, never an unhandled rejection. Callers that do not
@@ -552,7 +562,7 @@
         // An explicit refresh is the visitor asking again, so a fallback screen they closed earlier
         // may be shown again if the register still fails.
         try { global.ParcelGroundFallback?.resetDismissal?.(currentCity()); } catch (_) { }
-        const task = () => fetchParcelData(customBounds);
+        const task = () => fetchParcelDataReported(customBounds, 'parcel refresh button');
         return button && typeof global.runWithButtonBusyState === 'function'
             ? global.runWithButtonBusyState(button, { key: 'common.busy.refreshing', fallback: 'Refreshing...' }, task)
             : task();

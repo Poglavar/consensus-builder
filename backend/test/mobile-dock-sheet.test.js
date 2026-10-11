@@ -12,8 +12,8 @@ const sheetSource = readFileSync(fileURLToPath(new URL('../../frontend/js/mobile
 const panelsCss = readFileSync(fileURLToPath(new URL('../../frontend/css/panels.css', import.meta.url)), 'utf8');
 
 describe('mobile dock sheet geometry', () => {
-    it('makes every right dock a tall sheet with a visible, touch-safe drag handle', () => {
-        expect(panelsCss).toMatch(/\.info-panel\.right-dock-panel\s*\{[\s\S]*?--mobile-dock-sheet-height:\s*66dvh/);
+    it('makes map tools tall sheets with visible, touch-safe drag handles', () => {
+        expect(panelsCss).toMatch(/\.info-panel\.right-dock-panel:not\(#proposal-details-panel\):not\(\.is-minimized\)\s*\{[\s\S]*?--mobile-dock-sheet-height:\s*66dvh/);
         expect(panelsCss).toMatch(/\.mobile-dock-sheet-handle\s*\{[\s\S]*?touch-action:\s*none/);
         expect(panelsCss).not.toMatch(/#parcel-info-panel\s*\{[\s\S]*?height:\s*33vh/);
     });
@@ -40,6 +40,13 @@ describe('mobile dock sheet geometry', () => {
     it('treats missing dimensions as missing instead of coercing null to a zero-height sheet', () => {
         expect(sheetHeight({ viewportHeight: 568, topClearance: null, bottomClearance: null })).toBeGreaterThan(0);
         expect(sheetHeight({ viewportHeight: 568, desiredHeight: null })).toBeGreaterThan(568 * 0.33);
+    });
+
+    it('keeps the full-screen proposal reader out of draggable sheet wiring', () => {
+        let mutated = false;
+        const panel = { id: 'proposal-details-panel', querySelector() { return null; }, insertBefore() { mutated = true; } };
+        wirePanel({ document: { createElement() { throw new Error('No handle should be created'); } } }, panel);
+        expect(mutated).toBe(false);
     });
 
     it('restores the handle when a panel renderer replaces its children', () => {
@@ -75,12 +82,12 @@ describe('mobile dock sheet geometry', () => {
         expect(callbacks).toHaveLength(1);
     });
 
-    it('wires a proposal sheet added after the initial page scan', () => {
+    it('wires a map tool sheet added after the initial page scan', () => {
         const mutationCallbacks = [];
         const panel = {
             nodeType: 1,
             handle: null,
-            matches(selector) { return selector === '.info-panel.right-dock-panel'; },
+            matches(selector) { return selector === '.info-panel.right-dock-panel:not(#proposal-details-panel)'; },
             querySelector() { return this.handle; },
             querySelectorAll() { return []; },
             insertBefore(handle) { this.handle = handle; }

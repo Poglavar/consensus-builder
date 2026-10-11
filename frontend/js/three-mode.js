@@ -626,6 +626,52 @@
         ensureNearbyProposalBuildings();
     }
 
+    let buildingRadiusPreview = null;
+    let stopBuildingRadiusPreview = null;
+    function showBuildingRadiusPreview(radiusMeters, visible) {
+        if (!visible || !isActive || realisticLayerActive) {
+            if (buildingRadiusPreview) buildingRadiusPreview.visible = false;
+            invalidateThreeView();
+            return;
+        }
+        if (!scene || !origin3857 || !sceneLoadGeometry) return;
+        if (!buildingRadiusPreview) {
+            buildingRadiusPreview = new THREE.Group();
+            buildingRadiusPreview.name = 'building-load-radius-preview';
+            scene.add(buildingRadiusPreview);
+        }
+        if (buildingRadiusPreview.userData.radiusMeters !== radiusMeters) {
+            const preview = snapshotNavigation.buildLoadRadiusPreview(sceneLoadGeometry, radiusMeters, turf);
+            if (!preview) return;
+            threeResources.disposeSharedSubtree(buildingRadiusPreview);
+            buildingRadiusPreview.clear();
+            const outer = preview.ring.map(coordsToXY);
+            const inner = preview.innerRing.map(coordsToXY);
+            const band = [];
+            for (let i = 0; i < outer.length - 1; i++) {
+                for (const point of [outer[i], inner[i], outer[i + 1], inner[i], inner[i + 1], outer[i + 1]]) {
+                    band.push(point[0], point[1], 0.6);
+                }
+            }
+            const borderGeometry = new THREE.BufferGeometry();
+            borderGeometry.setAttribute('position', new THREE.Float32BufferAttribute(band, 3));
+            const fillGeometry = new THREE.ShapeGeometry(new THREE.Shape(outer.map(p => new THREE.Vector2(p[0], p[1]))));
+            for (const [geometry, opacity, order] of [[fillGeometry, 0.07, 1000], [borderGeometry, 0.95, 1001]]) {
+                const mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({
+                    color: 0x2563eb, opacity, transparent: true, depthTest: false, depthWrite: false,
+                    side: THREE.DoubleSide
+                }));
+                mesh.renderOrder = order;
+                // This temporary measurement overlay must never intercept parcel selection.
+                mesh.raycast = () => {};
+                buildingRadiusPreview.add(mesh);
+            }
+            buildingRadiusPreview.userData = { radiusMeters, center: preview.center };
+        }
+        buildingRadiusPreview.visible = true;
+        invalidateThreeView();
+    }
+
     function getParcelFeatureById(parcelId) {
         return window.LiveParcelFabric?.get?.(String(parcelId)) || null;
     }
@@ -894,8 +940,9 @@
         const suggestedText = suggestedParcelPanelText(parcelId);
         const suggestedRow = suggestedText ? `
             <div class="parcel-panel-subnote parcel-panel-suggested">${escapeHtml(threeI18n('threeMode.parcelPanel.suggestedLayout', 'Suggested layout'))}: ${escapeHtml(suggestedText)}</div>` : '';
+        const canonicalParcelId = String(parcelId);
         panel.innerHTML = `
-            ${panelTitleHtml(`${L.title} ${escapeHtml(String(parcelId))}`)}
+            ${panelTitleHtml(`${L.title} <span class="parcel-id-text" title="${escapeHtml(canonicalParcelId)}">${escapeHtml(canonicalParcelId)}</span>`)}
             ${proposalRow}
             ${suggestedRow}
             ${metricsTableHtml(L, m.builtVolume, m.proposedVolume, m.builtFloorArea, m.proposedFloorArea)}
@@ -1143,8 +1190,7 @@
 
     function ensureBuildingModeControls() {
         const layersHost = document.getElementById('model-layer-controls');
-        const displayHost = document.getElementById('model-rendering-settings');
-        if (!threeContainer || !layersHost || !displayHost) return;
+        if (!threeContainer || !layersHost) return;
         if (buildingModeControlsEl && buildingModeControlsEl.parentElement === layersHost) {
             updateDisplayStateControls();
             return;
@@ -1180,13 +1226,35 @@
         radiusSlider.value = String(buildingLoadRadiusM);
         radiusSlider.title = threeI18n('threeMode.controls.radiusTooltip', 'Radius — how wide a band of surrounding real buildings is loaded and shown as context');
         radiusSlider.setAttribute('aria-label', radiusSlider.title);
-        // Live label while dragging; only refetch on release ('change') to avoid spamming the backend.
-        radiusSlider.addEventListener('input', () => { radiusValue.textContent = CbFormat.formatLength(Number(radiusSlider.value), { maxFractionDigits: 0 }); });
+        let hovered = false;
+        let dragging = false;
+        let focused = false;
+        const updateRadiusPreview = () => showBuildingRadiusPreview(Number(radiusSlider.value), hovered || dragging || focused);
+        stopBuildingRadiusPreview = () => {
+            hovered = dragging = focused = false;
+            showBuildingRadiusPreview(Number(radiusSlider.value), false);
+        };
+        radiusRow.addEventListener('pointerenter', () => { hovered = true; updateRadiusPreview(); });
+        radiusRow.addEventListener('pointerleave', () => { hovered = false; updateRadiusPreview(); });
+        radiusSlider.addEventListener('focus', () => { focused = true; updateRadiusPreview(); });
+        radiusSlider.addEventListener('blur', () => { focused = false; updateRadiusPreview(); });
+        radiusSlider.addEventListener('pointerdown', event => {
+            dragging = true;
+            radiusSlider.setPointerCapture(event.pointerId);
+            updateRadiusPreview();
+        });
+        radiusSlider.addEventListener('lostpointercapture', () => { dragging = false; updateRadiusPreview(); });
+        radiusSlider.addEventListener('pointercancel', () => { dragging = false; updateRadiusPreview(); });
+        // Live label and map circle while dragging; only refetch on release ('change').
+        radiusSlider.addEventListener('input', () => {
+            radiusValue.textContent = CbFormat.formatLength(Number(radiusSlider.value), { maxFractionDigits: 0 });
+            updateRadiusPreview();
+        });
         radiusSlider.addEventListener('change', () => { setBuildingLoadRadius(Number(radiusSlider.value)); });
 
         radiusRow.appendChild(radiusHeader);
         radiusRow.appendChild(radiusSlider);
-        displayHost.replaceChildren(radiusRow);
+        buildingModeControlsEl.appendChild(radiusRow);
 
         // Display-state rows use equal-width selects. Built has one more state than Planned, so
         // segmented buttons divided the same panel into four versus three unequal/truncated cells.
@@ -6994,7 +7062,8 @@
         proposalInteractionGroup = null;
         proposalDraftGroup = null;
         buildingModeControlsEl?.remove();
-        document.getElementById('model-rendering-settings')?.replaceChildren();
+        buildingRadiusPreview = null;
+        stopBuildingRadiusPreview = null;
         threeContainer && (threeContainer.innerHTML = '');
         buildingModeControlsEl = null;
         buildingModeButtons = { built: null, planned: null };
@@ -7181,6 +7250,7 @@
     }
 
     function exit3D() {
+        stopBuildingRadiusPreview?.();
         try { document.body.classList.remove('three-mode-active'); } catch (_) { }
         cancelViewAngleHint(); // never let it land on the 2D map after the user has left
         if (!isActive) return;
@@ -7772,6 +7842,7 @@
         // proposals are shown. Restored on return to model 3D.
         window.MapShell?.syncModeAvailability();
         if (realisticLayerActive) {
+            stopBuildingRadiusPreview?.();
             isolatedParcelId = null;
             isolatedProposalId = null;
             try { updateIsolationButton(); } catch (_) { }
@@ -7889,6 +7960,10 @@
 
     document.addEventListener('proposal-draft-preview-change', event => {
         rebuildProposalDraftPreview3D(event.detail || null);
+    });
+
+    document.addEventListener('mapshell:sheetclosed', event => {
+        if (event.detail?.id === 'layers-sheet') stopBuildingRadiusPreview?.();
     });
 
     threeContainer?.addEventListener('input', invalidateThreeView);

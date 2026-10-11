@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import * as turf from '@turf/turf';
 import { chooseArea, contestParcels, parcelsFromSource, pickedParcelIds, runKeyFor, seedFor, slotLabel, windowIn, withPublishedParcelSources } from '../agents/area-plan.js';
 import { planCandidates } from '../agents/planner.js';
+import { selectAlgorithmicPicks } from '../agents/algorithmic-picker.js';
 
 const square = (west, south, size = 0.0003) => ({ type: 'Polygon', coordinates: [[[west, south], [west + size, south], [west + size, south + size], [west, south + size], [west, south]]] });
 
@@ -82,6 +83,32 @@ describe('live parcel-source parcels', () => {
         expect(parcels[0].areaM2).toBeGreaterThan(250);
         const [candidate] = planCandidates(parcels, { name: 'p', weights: { density: 1 } }, { turf, limit: 1 });
         expect(candidate).toMatchObject({ rule: { source: 'default' }, builtKnown: false, parcelNumber: '3513080' });
+    });
+
+    it('carries geometry identity through planning and names it without exposing its coordinates or hash', () => {
+        const parcelId = `KE-NAIROBI-NM-g1~368402797~-12643572~${'a'.repeat(64)}`;
+        const fc = { type: 'FeatureCollection', features: [{
+            type: 'Feature', id: parcelId,
+            properties: {
+                parcelId, sourceId: 'ke-nairobi-maps-outlines', parcelNumber: null,
+                parcelIdentityKind: 'geometry-sha256-v1', geometryDisplayId: `G1-${'a'.repeat(12)}`
+            },
+            geometry: square(36.8452, -1.2662)
+        }] };
+        const [sourceParcel] = parcelsFromSource(fc, { turf, place: 'Nairobi' });
+        const [candidate] = planCandidates([sourceParcel], { name: 'densifier-01', weights: { density: 1 } }, { turf, limit: 1 });
+        const [pick] = selectAlgorithmicPicks({
+            day: '2026-10-11', persona: { name: 'densifier-01' }, candidates: [candidate]
+        }).picks;
+
+        expect(candidate.candidateId).toBe(`densifier-01:${parcelId}`);
+        expect(candidate).toMatchObject({
+            parcelId, parcelIdentityKind: 'geometry-sha256-v1', geometryDisplayId: `G1-${'a'.repeat(12)}`
+        });
+        expect(pick.name).toBe(`5-storey infill on parcel G1-${'a'.repeat(8)}, Nairobi`);
+        expect(pick.rationale).toContain(`parcel G1-${'a'.repeat(8)}`);
+        expect(pick.name).not.toContain('12643572');
+        expect(pick.name).not.toContain('a'.repeat(20));
     });
 });
 

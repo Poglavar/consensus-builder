@@ -1,6 +1,7 @@
-import { test as base, Page } from '@playwright/test';
+import { test as base, BrowserContext, Page } from '@playwright/test';
 import { clearStorage } from './app';
 import { mockAllApiRoutes } from './mocks/api-routes';
+import { recordControlCoverage, ObserveContexts } from './control-coverage';
 
 /**
  * Extended test fixtures for consensus-builder E2E tests.
@@ -18,17 +19,50 @@ export const test = base.extend<{
   /** Page with clean storage (localStorage + IndexedDB cleared) */
   cleanPage: Page;
   uncaughtPageErrors: void;
+  controlCoverage: void;
+  observeContexts: ObserveContexts;
 }>({
   seedCity: ['new_york', { option: true }],
 
+  // Shared-link and multi-device tests create extra contexts. Audit those before the first page
+  // opens too, so their clicks and exceptions cannot disappear from the report.
+  observeContexts: async ({ browser, context }, use) => {
+    const contexts = new Set<BrowserContext>([context]);
+    const observers: Array<(context: BrowserContext) => void | Promise<void>> = [];
+    const originalNewContext = browser.newContext;
+    const newContext: typeof browser.newContext = async options => {
+      const created = await originalNewContext.call(browser, options);
+      contexts.add(created);
+      for (const observe of observers) await observe(created);
+      return created;
+    };
+    browser.newContext = newContext;
+    try {
+      await use(async observe => {
+        observers.push(observe);
+        for (const created of contexts) await observe(created);
+      });
+    } finally {
+      if (browser.newContext === newContext) browser.newContext = originalNewContext;
+    }
+  },
+
+  controlCoverage: [async ({ observeContexts }, use, testInfo) => {
+    await recordControlCoverage(observeContexts, testInfo, use);
+  }, { auto: true }],
+
   // Includes fresh tabs used to open shared links, and tests that use `page` directly.
-  uncaughtPageErrors: [async ({ context }, use) => {
+  uncaughtPageErrors: [async ({ observeContexts }, use) => {
     const errors: string[] = [];
+    const contexts: BrowserContext[] = [];
     const watch = (page: Page) => page.on('pageerror', error => errors.push(error.message));
-    context.pages().forEach(watch);
-    context.on('page', watch);
+    await observeContexts(context => {
+      contexts.push(context);
+      context.pages().forEach(watch);
+      context.on('page', watch);
+    });
     await use();
-    context.off('page', watch);
+    contexts.forEach(context => context.off('page', watch));
     assertNoPageErrors(errors);
   }, { auto: true }],
 

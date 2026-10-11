@@ -752,7 +752,7 @@ function buildProposalListItemsHtml(dataset, options = {}) {
         }
         if (currentProposalPreviewId === proposalId) classes.push('is-previewing');
 
-        const safeTitle = escapeHtml(proposal.title || untitledLabel);
+        const safeTitle = escapeHtml(window.ProposalDisplayText.text(proposal.title || untitledLabel, proposal));
         const safeAuthor = escapeHtml(metrics.author || unknownAuthor);
 
         // Determine applied status. "Applied" is a fact about this map, so a server row that this
@@ -910,7 +910,6 @@ async function handleProposalListItemClick(event) {
     // Check local storage first, even when browsing the server tab
     let proposal = getProposalByIdOrHash(proposalIdAttr);
 
-    let justDownloaded = false;
     // A published proposal opens like any other: it is fetched into this browser on the way, with
     // no "Download?" question (that was an implementation detail asked of the user).
     if (!proposal && source === 'server') {
@@ -918,7 +917,6 @@ async function handleProposalListItemClick(event) {
         try {
             updateStatus('Downloading proposal…');
             proposal = await importServerProposal(serverId);
-            justDownloaded = true;
             // The card still said "Download". Downloading by clicking the ROW leaves the same card
             // on screen as downloading by its own button does, so it has to end in the same state —
             // otherwise the list keeps offering to fetch something it already holds.
@@ -939,12 +937,6 @@ async function handleProposalListItemClick(event) {
     }
 
     if (!proposal) return;
-
-    // A freshly downloaded proposal opens collapsed, the same way a freshly created one does:
-    // the collapsed card still exposes Apply to map and Share (see showProposalInfo).
-    if (justDownloaded && typeof window !== 'undefined') {
-        window.__openProposalDetailsCollapsed = true;
-    }
 
     const resolvedId = getProposalKey(proposal) || proposalIdAttr;
 
@@ -1004,10 +996,10 @@ async function handleProposalListDetailsClick(event) {
 
     const resolvedId = getProposalKey(proposal) || proposalId;
     if (typeof openProposalFromList === 'function') {
-        openProposalFromList(resolvedId, { proposal, centerOnProposal: false, closeSheets: true });
+        openProposalFromList(resolvedId, { proposal, centerOnProposal: false, closeSheets: true, presentation: 'details' });
     } else if (typeof selectAndHighlightProposal === 'function') {
         closeProposalList();
-        selectAndHighlightProposal(resolvedId, null, false, true);
+        selectAndHighlightProposal(resolvedId, null, false, true, false, { presentation: 'details' });
     }
 }
 

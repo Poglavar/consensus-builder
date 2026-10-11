@@ -1437,6 +1437,8 @@ function visualizeRoadAnalysis(metrics) {
                         if (points.length > 1) {
                             const midPointIndex = Math.floor(points.length / 2);
                             const label = L.marker(points[midPointIndex], {
+                                interactive: false,
+                                keyboard: false,
                                 icon: L.divIcon({
                                     className: 'segment-label',
                                     html: `<div style="background: rgba(0,0,0,0.7); color: white; padding: 3px 6px; border-radius: 3px;">${index + 1}</div>`,

@@ -176,7 +176,6 @@
         try {
             try { global.hideParcelInfoPanel?.(); } catch (_) { }
             if (typeof global.selectAndHighlightProposal === 'function') {
-                global.__openProposalDetailsCollapsed = true;
                 global.selectAndHighlightProposal(String(proposalId), null, false, true);
                 return true;
             } else if (typeof global.showProposalDetails === 'function') {

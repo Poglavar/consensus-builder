@@ -1,0 +1,265 @@
+{
+  "id": "jane-park-support",
+  "title": "Jane the Superpredictor",
+  "format": "9:16",
+  "voiceName": "Chris - Charming, Down-to-Earth (stock voice)",
+  "targetSeconds": [
+    90,
+    120
+  ],
+  "disclosure": "Illustrative devnet walkthrough. Election and council-document scenarios are hypothetical. No investment returns are guaranteed.",
+  "wordCount": 244,
+  "scenes": [
+    {
+      "id": "planet",
+      "startSeconds": 0,
+      "audioSeconds": 9.474,
+      "durationSeconds": 10.124,
+      "narration": "Jane is a planet surfer. She loves exploring our blue marble. Opinionated, well informed, and always monitoring the situation. We call her a Superpredictor.",
+      "visual": "Actual UGT planet or global map view, moving toward a city. Do not add fake markers."
+    },
+    {
+      "id": "proposal-list",
+      "startSeconds": 10.124,
+      "audioSeconds": 8.684,
+      "durationSeconds": 9.334,
+      "narration": "On a typical day, Jane opens Urban Game Theory and scrolls the latest proposals. A new apartment block in Zagreb catches her eye. She clicks.",
+      "visual": "Actual proposal list and a real apartment-block proposal in Zagreb if available. Keep its lifecycle and parcel details legible; retain the subtle illustrative-devnet label."
+    },
+    {
+      "id": "three-d",
+      "startSeconds": 19.458,
+      "audioSeconds": 9.52,
+      "durationSeconds": 10.17,
+      "narration": "The three-dimensional view brings it to life. New homes, on these parcels, in this neighbourhood. It looks good. But Jane knows something the picture cannot tell her.",
+      "visual": "Show the actual 3D view and design of the apartment-block proposal with surrounding streets. Do not add or imply a park footprint."
+    },
+    {
+      "id": "election-signal",
+      "startSeconds": 29.628,
+      "audioSeconds": 9.567,
+      "durationSeconds": 10.217,
+      "narration": "In this example, the party promising to block the project is leading the next election. Jane thinks execution is unlikely. That suggests a NO bet.",
+      "visual": "Use the supplied code-drawn concept clip labeled 'ILLUSTRATIVE SCENARIO'. It shows only the hypothetical possibility that an opposing party may win; it contains no poll, result, number, source, or app card. Do not present it as real election evidence."
+    },
+    {
+      "id": "proposal-checks",
+      "startSeconds": 39.845,
+      "audioSeconds": 14.118,
+      "durationSeconds": 14.768,
+      "narration": "First, she checks who will resolve the outcome. Does she trust that lens? Then the details: money committed, pledges, donations, and parcel-owner acceptances. Every signal can change her view.",
+      "visual": "Actual apartment-block proposal details: resolution lens/evidence, funds, pledges, donations, and owner acceptance progress. Show only visible real values."
+    },
+    {
+      "id": "no-bet",
+      "startSeconds": 54.613,
+      "audioSeconds": 14.489,
+      "durationSeconds": 15.139,
+      "narration": "Her conclusion holds. Jane selects NO, chooses her stake, and confirms. The stake stays locked until resolution. Cancellation or recorded expiry pays NO; execution pays YES.",
+      "visual": "Actual YES/NO market and stake flow, or an already existing devnet position. No new stake transaction is needed; do not fabricate a wallet receipt."
+    },
+    {
+      "id": "fifty-donation",
+      "startSeconds": 69.752,
+      "audioSeconds": 10.495,
+      "durationSeconds": 11.145,
+      "narration": "Then she spots another proposal nearby: buy two parcels and make a public park. Jane wants that to happen. She donates fifty dollars in devnet USDC.",
+      "visual": "Use the real public park proposal list only to establish the identity and nearby two-parcel context for UPU Borovje – javni park Z1-3 (published and unminted). Follow it with the supplied separate illustrative donation concept. The public proposal has no shown completed donation or conditional funds; do not imply it received Jane's hypothetical donation. No wallet flow, receipt, success state, or transaction."
+    },
+    {
+      "id": "expiry-refund",
+      "startSeconds": 80.897,
+      "audioSeconds": 10.681,
+      "durationSeconds": 11.331,
+      "narration": "The donation sits in escrow. This plan needs all parcel owners to accept. If it has not executed after a year, and expiry is recorded on-chain, Jane can claim her donation back.",
+      "visual": "Use the supplied code-drawn conditional refund diagram. It explains a one-year path only; it does not depict a real proposal already Expired or a completed transaction/claim. In an actual case, expiry must be recorded on-chain before a donor can claim."
+    },
+    {
+      "id": "globe-close",
+      "startSeconds": 92.228,
+      "audioSeconds": 12.91,
+      "durationSeconds": 13.56,
+      "narration": "A forecast on one project. Support for another. Jane returns to happily surfing the planet. Urban Game Theory. Explore your world, predict what changes, and help shape what comes next.",
+      "visual": "Return to the actual UGT globe or global map. Keep a genuine proposal/lifecycle marker visible if one is part of the application."
+    }
+  ],
+  "captions": [
+    {
+      "text": "Jane is a planet surfer.",
+      "start": 0,
+      "end": 1.454
+    },
+    {
+      "text": "She loves exploring our blue marble.",
+      "start": 1.637,
+      "end": 3.66
+    },
+    {
+      "text": "Opinionated, well informed, and always monitoring the situation.",
+      "start": 3.901,
+      "end": 7.294
+    },
+    {
+      "text": "We call her a Superpredictor.",
+      "start": 7.697,
+      "end": 9.674
+    },
+    {
+      "text": "On a typical day, Jane opens Urban Game Theory and scrolls the latest proposals.",
+      "start": 10.124,
+      "end": 15.131
+    },
+    {
+      "text": "A new apartment block in Zagreb catches her eye.",
+      "start": 15.314,
+      "end": 17.836
+    },
+    {
+      "text": "She clicks.",
+      "start": 17.961,
+      "end": 19.008
+    },
+    {
+      "text": "The three-dimensional view brings it to life.",
+      "start": 19.458,
+      "end": 21.678
+    },
+    {
+      "text": "New homes, on these parcels, in this neighbourhood.",
+      "start": 21.861,
+      "end": 24.732
+    },
+    {
+      "text": "It looks good.",
+      "start": 24.973,
+      "end": 26.078
+    },
+    {
+      "text": "But Jane knows something the picture cannot tell her.",
+      "start": 26.319,
+      "end": 29.178
+    },
+    {
+      "text": "In this example, the party promising to block the project is leading the next election.",
+      "start": 29.628,
+      "end": 34.518
+    },
+    {
+      "text": "Jane thinks execution is unlikely.",
+      "start": 35.131,
+      "end": 37.398
+    },
+    {
+      "text": "That suggests a NO bet.",
+      "start": 37.581,
+      "end": 39.395
+    },
+    {
+      "text": "First, she checks who will resolve the outcome.",
+      "start": 39.845,
+      "end": 42.576
+    },
+    {
+      "text": "Does she trust that lens?",
+      "start": 42.655,
+      "end": 44.271
+    },
+    {
+      "text": "Then the details:",
+      "start": 44.512,
+      "end": 45.954
+    },
+    {
+      "text": "money committed, pledges, donations, and parcel-owner acceptances.",
+      "start": 46.265,
+      "end": 51.597
+    },
+    {
+      "text": "Every signal can change her view.",
+      "start": 52.001,
+      "end": 54.163
+    },
+    {
+      "text": "Her conclusion holds.",
+      "start": 54.613,
+      "end": 56.113
+    },
+    {
+      "text": "Jane selects NO, chooses her stake, and confirms.",
+      "start": 56.517,
+      "end": 60.107
+    },
+    {
+      "text": "The stake stays locked until resolution.",
+      "start": 60.348,
+      "end": 62.615
+    },
+    {
+      "text": "Cancellation or recorded expiry pays NO; execution pays YES.",
+      "start": 63.112,
+      "end": 69.302
+    },
+    {
+      "text": "Then she spots another proposal nearby:",
+      "start": 69.752,
+      "end": 72.39
+    },
+    {
+      "text": "buy two parcels and make a public park.",
+      "start": 72.701,
+      "end": 75.293
+    },
+    {
+      "text": "Jane wants that to happen.",
+      "start": 75.789,
+      "end": 77.115
+    },
+    {
+      "text": "She donates fifty dollars in devnet USDC.",
+      "start": 77.426,
+      "end": 80.447
+    },
+    {
+      "text": "The donation sits in escrow.",
+      "start": 80.897,
+      "end": 83.14
+    },
+    {
+      "text": "This plan needs all parcel owners to accept.",
+      "start": 83.265,
+      "end": 85.555
+    },
+    {
+      "text": "If it has not executed after a year, and expiry is recorded on-chain, Jane can claim her donation back.",
+      "start": 85.68,
+      "end": 91.778
+    },
+    {
+      "text": "A forecast on one project.",
+      "start": 92.228,
+      "end": 94.274
+    },
+    {
+      "text": "Support for another.",
+      "start": 94.399,
+      "end": 95.667
+    },
+    {
+      "text": "Jane returns to happily surfing the planet.",
+      "start": 95.978,
+      "end": 98.605
+    },
+    {
+      "text": "Urban Game Theory.",
+      "start": 98.846,
+      "end": 100.207
+    },
+    {
+      "text": "Explore your world, predict what changes, and help shape what comes next.",
+      "start": 100.518,
+      "end": 105.338
+    }
+  ],
+  "durationSeconds": 105.789,
+  "audioFile": "out/jane-park-support-narration.mp3"
+}

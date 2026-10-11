@@ -260,7 +260,7 @@ async function fetchServerProposalSummaries(cityCode) {
     }
 }
 
-function ensureServerProposals(cityCode) {
+function ensureServerProposals(cityCode, { force = false } = {}) {
     const area = (typeof window !== 'undefined' && typeof window.getProposalCountAreaContext === 'function')
         ? window.getProposalCountAreaContext()
         : null;
@@ -282,8 +282,9 @@ function ensureServerProposals(cityCode) {
     // and this runs from that render.
     const queryChanged = isServerListTab()
         && serverListQuerySignature() !== (serverProposalCache.lastQuery || '');
-    if (!alreadyAsked || cityChanged || queryChanged) {
-        fetchServerProposalSummaries(city);
+    // An explicit Retry must bypass the recorded failed attempt; ordinary renders still reuse it.
+    if (force || !alreadyAsked || cityChanged || queryChanged) {
+        return fetchServerProposalSummaries(city);
     }
 }
 

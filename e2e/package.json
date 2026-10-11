@@ -10,6 +10,10 @@
     "test:smoke": "playwright test --grep @smoke",
     "test:core": "playwright test --grep @core",
     "test:features": "playwright test --grep @features",
+    "test:controls": "node scripts/run-controls.mjs",
+    "report:controls": "node scripts/report-controls.mjs --check",
+    "prove:controls": "node scripts/prove-controls.mjs",
+    "check:controls": "node --test scripts/control-source.test.mjs scripts/control-report.test.mjs scripts/control-coverage.test.mjs && node scripts/check-control-contract.mjs",
     "report": "playwright show-report",
     "check:features": "node scripts/check-feature-inventory.mjs"
   },

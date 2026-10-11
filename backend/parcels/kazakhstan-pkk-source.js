@@ -1,5 +1,6 @@
 // Official public EGKN PKK parcel views in their published district projections.
 import proj4 from 'proj4';
+import { concatBytes } from './byte-utils.js';
 import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
 import { canonicalParcelFeature, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
@@ -129,7 +130,7 @@ export function createKazakhstanPkkSource(descriptor, { fetchImpl = globalThis.f
                 if (size > maxResponseBytes || state.totalBytes > maxTotalResponseBytes) {
                     throw upstreamError('Kazakhstan PKK response exceeds the byte limit.');
                 }
-                chunks.push(Buffer.from(value));
+                chunks.push(value);
             }
         } catch (error) {
             try { await reader.cancel(); } catch { /* The stream may already be closed. */ }
@@ -137,7 +138,7 @@ export function createKazakhstanPkkSource(descriptor, { fetchImpl = globalThis.f
             if (signal.aborted || ['AbortError', 'TimeoutError'].includes(error?.name)) throw upstreamError('Kazakhstan PKK request timed out.', 504);
             throw upstreamError('Kazakhstan PKK response was interrupted.');
         } finally { reader.releaseLock(); }
-        try { return JSON.parse(Buffer.concat(chunks, size).toString('utf8')); }
+        try { return JSON.parse(new TextDecoder('utf-8').decode(concatBytes(chunks, size))); }
         catch { throw upstreamError('Kazakhstan PKK returned invalid GeoJSON.'); }
     }
 

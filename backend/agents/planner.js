@@ -154,6 +154,8 @@ export function planCandidates(parcels, persona, {
             candidateId: `${personaName}:${parcel.parcelId}`,
             parcelId: parcel.parcelId,
             parcelSourceId: parcel.parcelSourceId || null,
+            parcelIdentityKind: parcel.parcelIdentityKind ?? null,
+            geometryDisplayId: parcel.geometryDisplayId ?? null,
             koName: parcel.koName ?? null,
             areaM2,
             centroid: parcel.centroid ?? null,

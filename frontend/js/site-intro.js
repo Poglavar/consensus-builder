@@ -1,8 +1,6 @@
-// Owns the first-visit site explainer and its manual reopen behavior.
+// Owns the optional site explainer, opened from How it works or an explicit ?intro=1 link.
 (function attachSiteIntro(global) {
     'use strict';
-
-    const STORAGE_KEY = 'cb_site_intro_seen_v1';
 
     function introPageIndex(current, delta, count) {
         return Math.max(0, Math.min(Math.max(0, count - 1), current + delta));
@@ -16,16 +14,12 @@
         return dx < 0 ? 1 : -1;
     }
 
-    // A link that names what to show (an activity, a proposal, a bet) opens it, never the explainer.
-    function shouldShowSiteIntro(search, seenValue, pathname = '') {
-        let forced = false;
+    // Opening the app or a shared destination never requires dismissing the explainer.
+    function shouldShowSiteIntro(search) {
         try {
-            const params = new URLSearchParams(search || '');
-            forced = params.has('intro');
-            if (!forced && (params.get('activity') || params.get('focusProposal') || params.get('bets'))) return false;
-            if (!forced && /^\/bets\/./.test(String(pathname || ''))) return false;
-        } catch (_) { /* ignore */ }
-        return forced || seenValue !== '1';
+            const value = new URLSearchParams(search || '').get('intro');
+            return value === '' || value === '1';
+        } catch (_) { return false; }
     }
 
     function initSiteIntro() {
@@ -77,28 +71,19 @@
             renderPage(introPageIndex(page, delta, slides.length));
         }
 
-        function readSeen() {
-            try { return global.localStorage.getItem(STORAGE_KEY); } catch (_) { return null; }
-        }
-
-        function rememberSeen() {
-            try { global.localStorage.setItem(STORAGE_KEY, '1'); } catch (_) { /* ignore */ }
-        }
-
         function focusableElements() {
             return Array.from(modal.querySelectorAll(
                 'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
             )).filter(element => !element.hidden && element.getClientRects().length > 0);
         }
 
-        function openSiteIntro(options = {}) {
+        function openSiteIntro() {
             previousFocus = doc.activeElement;
             modal.hidden = false;
             unregisterEscape?.();
             unregisterEscape = global.ModalEscape?.register(modal, closeSiteIntro);
             modal.classList.add('is-open');
             doc.body.classList.add('site-intro-open');
-            if (options.remember !== false) rememberSeen();
             renderPage(0);
             try { global.i18n?.applyTranslations?.(modal); } catch (_) { /* ignore */ }
             const closeButton = modal.querySelector('[data-site-intro-close]');
@@ -120,7 +105,7 @@
         }
 
         doc.querySelectorAll('[data-site-intro-open]').forEach(button => {
-            button.addEventListener('click', () => openSiteIntro({ remember: false }));
+            button.addEventListener('click', openSiteIntro);
         });
         modal.querySelectorAll('[data-site-intro-close]').forEach(button => {
             button.addEventListener('click', closeSiteIntro);
@@ -178,19 +163,17 @@
         global.openSiteIntro = openSiteIntro;
         global.closeSiteIntro = closeSiteIntro;
 
-        const showIfDue = () => {
-            if (shouldShowSiteIntro(global.location?.search, readSeen(), global.location?.pathname)) openSiteIntro();
-        };
-        // A first-visit globe (js/ui/world-entry.js) is up: the intro waits until the visitor lands
-        // in a city — after the reload into it, or when the globe closes in place.
+        if (!shouldShowSiteIntro(global.location?.search)) return;
+        // An explicitly requested intro waits for an open globe (js/ui/world-entry.js). Ordinary
+        // arrivals do not register a listener that could interrupt later navigation.
         if (global.WorldEntry && typeof global.WorldEntry.ownsBoot === 'function' && global.WorldEntry.ownsBoot()) {
-            global.addEventListener('worldview:landed', showIfDue, { once: true });
+            global.addEventListener('worldview:landed', openSiteIntro, { once: true });
         } else {
-            showIfDue();
+            openSiteIntro();
         }
     }
 
-    const api = { STORAGE_KEY, shouldShowSiteIntro, introPageIndex, introSwipeDelta, initSiteIntro };
+    const api = { shouldShowSiteIntro, introPageIndex, introSwipeDelta, initSiteIntro };
     global.SiteIntro = api;
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
 

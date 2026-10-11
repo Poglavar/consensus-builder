@@ -1,5 +1,6 @@
 // TKGM MEGSİS point-identify and exact-ID lookup. The public viewer exposes one selected
 // parcel at a time; this adapter deliberately does not claim complete area coverage.
+import { concatBytes } from './byte-utils.js';
 import { booleanPointInPolygon, feature as turfFeature, point as turfPoint } from '@turf/turf';
 import { canonicalParcelFeature, providerHttpError, upstreamError, validateGeometry } from './source-contract.js';
 
@@ -111,13 +112,13 @@ async function readJsonBounded(response, maxBytes) {
                 try { await reader.cancel(); } catch { /* response may already be closed */ }
                 throw invalidProvider('TKGM response exceeds the configured byte limit.');
             }
-            chunks.push(Buffer.from(value));
+            chunks.push(value);
         }
     } finally {
         try { reader.releaseLock(); } catch { /* ignore closed streams */ }
     }
     let payload;
-    try { payload = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(Buffer.concat(chunks, size))); }
+    try { payload = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(concatBytes(chunks, size))); }
     catch { throw invalidProvider('TKGM returned invalid JSON.'); }
     return { payload, bytesRead: size };
 }

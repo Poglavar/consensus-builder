@@ -29,7 +29,7 @@ describe('selected unapplied proposal hit surface', () => {
         expect(layers[0].options.interactive).toBe(true);
         expect(layers[0].options.style().fillOpacity).toBe(0);
         layers[0].click({ originalEvent: {} });
-        expect(env.focusProposalDetails).toHaveBeenCalledWith('preview', { centerOnProposal: false, showDetails: true });
+        expect(env.focusProposalDetails).toHaveBeenCalledWith('preview', { centerOnProposal: false, showDetails: true, presentation: 'compact' });
         expect(env.L.DomEvent.stopPropagation).toHaveBeenCalledOnce();
     });
     it('keeps applied highlights passive so live fabric remains the click authority', () => {

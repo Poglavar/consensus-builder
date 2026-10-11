@@ -7,6 +7,9 @@ const png = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCA
 
 test('AI scene captures real pixels and height map, validates prompt, retries generation and copies its saved share link', async ({ mockApi: page }) => {
   await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+  // Native operating-system share UI is an external boundary; retain the app's share handler.
+  await page.addInitScript(() => Object.defineProperty(navigator, 'share', { configurable: true,
+    value: async (data: ShareData) => { (window as any).__nativeSceneShare = data; } }));
   await mockBuildingScene(page);
   await mockPhotoTiles(page);
   await page.route('**/ai-scene/models', route => route.fulfill({ json: { models: [
@@ -57,8 +60,23 @@ test('AI scene captures real pixels and height map, validates prompt, retries ge
   await modal.locator('.ai-scene-copy').click();
   const link = await page.evaluate(() => navigator.clipboard.readText());
   expect(link).toContain('fixture-render');
+  await modal.locator('.ai-scene-share').click();
+  await expect.poll(() => page.evaluate(() => (window as any).__nativeSceneShare?.url)).toBe(link);
+  expect(await page.evaluate(() => (window as any).__nativeSceneShare.title)).toBe('Urban Game Theory');
   expect(saved[0]).toMatchObject({ image: png, city: 'zg', model: 'fixture-b' });
   await expect(modal.locator('.ai-scene-tweet')).toHaveAttribute('href', /twitter\.com\/intent\/tweet/);
+  let intentUrl: URL | null = null;
+  await page.context().route('https://twitter.com/intent/tweet**', async route => {
+    intentUrl = new URL(route.request().url());
+    await route.fulfill({ status: 200, contentType: 'text/html', body: '<title>Tweet intent boundary</title>' });
+  });
+  const tweetPopup = page.waitForEvent('popup').then(async popup => {
+    await expect.poll(() => intentUrl?.pathname).toBe('/intent/tweet');
+    expect(intentUrl?.searchParams.get('text')).toBe('Photorealistic view of my urban proposal');
+    expect(intentUrl?.searchParams.get('url')).toBe(link);
+    await popup.close();
+  });
+  await Promise.all([tweetPopup, modal.locator('.ai-scene-tweet').click()]);
   const downloadPromise = page.waitForEvent('download');
   await modal.locator('.ai-scene-download').click();
   expect((await downloadPromise).suggestedFilename()).toBe('ai-scene.png');

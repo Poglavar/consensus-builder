@@ -22,6 +22,21 @@
             || null;
     }
 
+    // Use the frozen data anchor, not the movable camera target. Geographic circles retain their
+    // metre radius after projection, including at latitudes where Mercator stretches the scene.
+    function buildLoadRadiusPreview(geometry, radiusMeters, geo) {
+        if (!geometry || !Number.isFinite(radiusMeters) || radiusMeters <= 0) return null;
+        const center = geo.center(geo.feature(geometry)).geometry.coordinates;
+        if (!center.every(Number.isFinite)) return null;
+        const circle = radius => geo.circle(center, radius, { units: 'meters', steps: 96 }).geometry.coordinates[0];
+        return {
+            center: { lng: center[0], lat: center[1] },
+            radiusMeters,
+            ring: circle(radiusMeters),
+            innerRing: circle(Math.max(radiusMeters * 0.5, radiusMeters - Math.max(1.5, radiusMeters * 0.0075)))
+        };
+    }
+
     function configurePannableOrbitControls(controls, three) {
         if (!controls) return null;
         controls.enablePan = true;
@@ -73,6 +88,7 @@
     return {
         captureSceneLoadAnchor,
         resolveSceneLoadGeometry,
+        buildLoadRadiusPreview,
         configurePannableOrbitControls,
         resolveExitMapCenter
     };

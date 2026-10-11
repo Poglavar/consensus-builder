@@ -1,16 +1,17 @@
-// Server-side validation of a reparcellization plan's land shares. The client draws the child
-// polygons and stamps each with a `percent` (who gets how much land) + a `totalArea`; the server
-// used to store those numbers unverified — a client could persist shares that don't match the
-// geometry it drew. Because the child polygons are stored inline, this is a PURE turf recompute (no
-// DB, any city): re-derive each polygon's area and its true percent from the geometry, overwrite the
-// stored numbers with the geometry-truth, and flag `validated: false` when the client's claimed
-// percents diverged (a bug, drift, or tampering).
+// Use the same authored LR validation as the editor and apply/consent paths, then recompute
+// display areas/percentages from geometry. Source ownership evidence is an approval prerequisite,
+// not a requirement to publish a geometric design with abstract recipients.
 
 import * as turf from '@turf/turf';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const readjustmentDeal = require('../../frontend/js/reparcellization-deal.js');
+const readjustmentValidation = require('../../frontend/js/reparcellization-validation.js');
+
+export function validateReadjustmentProposal(proposal) {
+    return readjustmentValidation.validate(proposal, { turf });
+}
 
 // Compute from the normalized authored record, never trust the uploader's effectHash. This is a
 // content commitment plus structural allocation/cash validation, not a funding or title attestation.
@@ -18,55 +19,30 @@ export function readjustmentDealFingerprint(proposal) {
     return readjustmentDeal.fingerprint(proposal);
 }
 
-const PERCENT_TOLERANCE = 1.0; // percentage points — allow small rounding drift
-
-function polygonArea(geometry) {
-    if (!geometry || typeof geometry !== 'object') return 0;
-    try {
-        const feature = geometry.type === 'Feature'
-            ? geometry
-            : { type: 'Feature', properties: {}, geometry };
-        return turf.area(feature);
-    } catch (_) {
-        return 0;
-    }
-}
-
 // Recompute area/percent for each polygon from its geometry, and decide whether the client's stated
-// shares agree. Returns a NEW reparcellization object (polygons' area/percent + totalArea overwritten
-// with the geometry-truth) plus `validated` / `source`, or null if there is nothing to validate.
-export function validateReparcellizationShares(reparcellization) {
+// layout is valid. Area percentages are derived display values, not ownership title shares.
+// Returns a NEW object with shared validation evidence, or null if no layout was supplied.
+export function validateReparcellizationShares(reparcellization, proposal = null) {
     if (!reparcellization || !Array.isArray(reparcellization.polygons) || reparcellization.polygons.length === 0) {
         return null;
     }
-    const polygons = reparcellization.polygons;
-    const areas = polygons.map(p => polygonArea(p.geometry));
-    const computedTotalArea = areas.reduce((sum, a) => sum + a, 0);
-
-    let validated = computedTotalArea > 0;
-    let claimedPercentSum = 0;
-
-    const recomputed = polygons.map((p, i) => {
-        const area = areas[i];
-        const truePercent = computedTotalArea > 0 ? (area / computedTotalArea) * 100 : 0;
-        const claimed = Number(p.percent) || 0;
-        claimedPercentSum += claimed;
-        if (Math.abs(claimed - truePercent) > PERCENT_TOLERANCE) {
-            validated = false; // this polygon's stated share doesn't match its geometry
-        }
-        return { ...p, area: Math.round(area), percent: Number(truePercent.toFixed(2)) };
+    const result = proposal ? validateReadjustmentProposal({ ...proposal, reparcellization })
+        : readjustmentValidation.validatePlan(reparcellization, {}, { turf });
+    const measured = result.areas.filter(area => typeof area === 'number' && Number.isFinite(area));
+    const computedTotalArea = measured.length === reparcellization.polygons.length
+        ? measured.reduce((sum, area) => sum + area, 0) : null;
+    const recomputed = reparcellization.polygons.map((p, i) => {
+        const area = result.areas[i] ?? null;
+        const truePercent = area !== null && computedTotalArea > 0 ? (area / computedTotalArea) * 100 : null;
+        return { ...p, area: area === null ? null : Math.round(area), percent: truePercent === null ? null : Number(truePercent.toFixed(2)) };
     });
-
-    // The stated shares must also add up to ~100%.
-    if (Math.abs(claimedPercentSum - 100) > PERCENT_TOLERANCE) {
-        validated = false;
-    }
 
     return {
         ...reparcellization,
         polygons: recomputed,
-        totalArea: Math.round(computedTotalArea),
-        validated,
+        totalArea: computedTotalArea === null ? null : Math.round(computedTotalArea),
+        validated: result.valid,
+        validation: { valid: result.valid, errors: result.errors, warnings: result.warnings, metrics: result.metrics },
         source: 'server'
     };
 }
@@ -76,7 +52,8 @@ export function validateReparcellizationShares(reparcellization) {
 export function setupReparcellizationRoute(app) {
     app.post('/reparcellization/validate', (req, res) => {
         try {
-            const validated = validateReparcellizationShares(req.body && req.body.reparcellization);
+            const validated = validateReparcellizationShares(req.body && req.body.reparcellization,
+                req.body?.proposal ? { ...req.body.proposal, goal: 'reparcellization' } : null);
             if (!validated) {
                 return res.status(400).json({ error: 'reparcellization with polygons[] is required' });
             }

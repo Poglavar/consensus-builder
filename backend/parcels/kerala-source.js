@@ -1,10 +1,13 @@
 // Public Kerala Ente Bhoomi adapter. The viewer issues a short-lived auth key to
 // its normal map session; it stays only in this process's memory.
-import { load } from 'cheerio';
+import { load } from 'cheerio/slim';
 import { bbox as geometryBbox, bboxPolygon, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import proj4 from 'proj4';
+import { concatBytes } from './byte-utils.js';
 import { HttpError } from '../utils/helpers.js';
 import { canonicalParcelFeature, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
+import { parseKeralaWktPolygon } from './kerala-wkt.js';
+export { parseKeralaWktPolygon } from './kerala-wkt.js';
 
 const APP_ORIGIN = 'https://entebhoomi.kerala.gov.in';
 const MAP_ORIGIN = 'https://bhunaksha.entebhoomi.kerala.gov.in';
@@ -15,51 +18,8 @@ const toMetric = proj4('EPSG:4326', 'EPSG:32643');
 const toWgs84 = proj4('EPSG:32643', 'EPSG:4326');
 const USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36';
 const MAX_BYTES = 2 * 1024 * 1024;
-
-export function parseKeralaWktPolygon(wkt) {
-    if (typeof wkt !== 'string' || wkt.length > 1000000) throw upstreamError('Kerala parcel geometry is missing or too large.');
-    const typeMatch = /^\s*(POLYGON|MULTIPOLYGON)(?:\s+(?:Z|M|ZM))?\s*/i.exec(wkt);
-    if (!typeMatch) throw upstreamError('Kerala returned an unsupported parcel geometry.');
-    const type = typeMatch[1].toUpperCase() === 'MULTIPOLYGON' ? 'MultiPolygon' : 'Polygon';
-    const groupDepth = type === 'Polygon' ? 2 : 3;
-    const text = wkt.slice(typeMatch[0].length);
-    let at = 0;
-    const numberPattern = /^[+-]?(?:(?:\d+\.?\d*)|(?:\.\d+))(?:[eE][+-]?\d+)?/;
-    function group(depth = 0) {
-        if (depth >= groupDepth) throw upstreamError('Kerala returned excessively nested parcel geometry.');
-        while (/\s/.test(text[at] || '')) at++;
-        if (text[at++] !== '(') throw upstreamError('Kerala returned malformed parcel geometry.');
-        const values = [];
-        for (;;) {
-            while (/\s/.test(text[at] || '')) at++;
-            if (text[at] === '(') {
-                if (depth === groupDepth - 1) throw upstreamError('Kerala returned excessively nested parcel geometry.');
-                values.push(group(depth + 1));
-            }
-            else {
-                if (depth !== groupDepth - 1) throw upstreamError('Kerala returned malformed parcel geometry nesting.');
-                const point = [];
-                for (;;) {
-                    while (/\s/.test(text[at] || '')) at++;
-                    const match = numberPattern.exec(text.slice(at));
-                    if (!match) break;
-                    point.push(Number(match[0])); at += match[0].length;
-                }
-                if (point.length < 2 || point.some(value => !Number.isFinite(value))) throw upstreamError('Kerala returned malformed parcel coordinates.');
-                values.push(point.slice(0, 2));
-            }
-            while (/\s/.test(text[at] || '')) at++;
-            if (text[at] === ',') { at++; continue; }
-            if (text[at] === ')') { at++; break; }
-            throw upstreamError('Kerala returned malformed parcel geometry.');
-        }
-        return values;
-    }
-    const coordinates = group();
-    while (/\s/.test(text[at] || '')) at++;
-    if (at !== text.length) throw upstreamError('Kerala returned malformed parcel geometry.');
-    return { type, coordinates };
-}
+const utf8Decoder = new TextDecoder('utf-8', { fatal: true });
+const decodeUtf8 = bytes => utf8Decoder.decode(bytes);
 
 function projectCoordinates(coordinates, transform, depth, coordinateDepth) {
     if (!Array.isArray(coordinates) || !coordinates.length) throw upstreamError('Kerala returned malformed parcel coordinates.');
@@ -149,7 +109,7 @@ export function createKeralaParcelSource(descriptor, { fetchImpl = globalThis.fe
                 if (done) break;
                 size += value.byteLength;
                 if (size > limit) throw upstreamError('Kerala parcel response exceeds the byte limit; use a smaller area.');
-                chunks.push(Buffer.from(value));
+                chunks.push(value);
             }
         } catch (error) {
             try { await reader.cancel(); } catch { /* The stream may have closed already. */ }
@@ -158,7 +118,7 @@ export function createKeralaParcelSource(descriptor, { fetchImpl = globalThis.fe
         if (Number.isFinite(declared) && declared > 0 && !response.headers?.get?.('content-encoding') && declared !== size) {
             throw upstreamError('Kerala parcel response body was incomplete.');
         }
-        return Buffer.concat(chunks, size);
+        return concatBytes(chunks, size);
     }
 
     function streamReadError(error) {
@@ -187,7 +147,7 @@ export function createKeralaParcelSource(descriptor, { fetchImpl = globalThis.fe
     async function bootstrap() {
         const page = await checkedResponse(`${APP_ORIGIN}/web/ilms/map`, { headers: { 'User-Agent': USER_AGENT,
             Accept: 'text/html', 'Accept-Language': 'en-IN,en;q=0.9,ml;q=0.8' } }, 2 * 1024 * 1024);
-        const $ = load(page.bytes.toString('utf8'));
+        const $ = load(decodeUtf8(page.bytes));
         const csrfHeader = $('meta[name="_csrf_header"]').attr('content');
         const csrf = $('meta[name="_csrf"]').attr('content');
         if (!csrfHeader || !/^[A-Za-z0-9-]{1,80}$/.test(csrfHeader) || !csrf) throw upstreamError('Kerala map session could not be initialized.');
@@ -201,7 +161,7 @@ export function createKeralaParcelSource(descriptor, { fetchImpl = globalThis.fe
         const getJson = async (path, params = {}) => {
             const url = new URL(path, APP_ORIGIN); url.search = new URLSearchParams(params);
             const fetched = await checkedResponse(url.href, { headers }, 2 * 1024 * 1024);
-            try { return JSON.parse(fetched.bytes.toString('utf8')); }
+            try { return JSON.parse(decodeUtf8(fetched.bytes)); }
             catch { throw upstreamError('Kerala map selector returned invalid JSON.'); }
         };
         const talukList = await getJson('/web/taluk/gid', { districtId: districtGid });
@@ -214,7 +174,7 @@ export function createKeralaParcelSource(descriptor, { fetchImpl = globalThis.fe
         const selected = await checkedResponse(`${APP_ORIGIN}/web/ilms/map/view`, { method: 'POST', headers: {
             ...headers, 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({
             districtGid, talukGid, villageGid }) }, 2 * 1024 * 1024);
-        const map = load(selected.bytes.toString('utf8'));
+        const map = load(decodeUtf8(selected.bytes));
         let config;
         try { config = JSON.parse(map('#initdata').attr('value')); }
         catch { throw upstreamError('Kerala village map did not return its map configuration.'); }
@@ -254,7 +214,7 @@ export function createKeralaParcelSource(descriptor, { fetchImpl = globalThis.fe
         const bytes = await readBytes(response, maxResponseBytes);
         if (!bytes.length || !/json/i.test(response.headers.get('content-type') || '')) throw upstreamError('Kerala map export returned no parcel data.');
         let payload;
-        try { payload = JSON.parse(bytes.toString('utf8')); }
+        try { payload = JSON.parse(decodeUtf8(bytes)); }
         catch { throw upstreamError('Kerala map export returned invalid parcel JSON.'); }
         return payload;
     }
@@ -346,7 +306,7 @@ export function createKeralaParcelSource(descriptor, { fetchImpl = globalThis.fe
 
     function parseExact(bytes, requestedNativeId) {
         let rows;
-        try { rows = JSON.parse(bytes.toString('utf8')); } catch { throw upstreamError('Kerala exact parcel lookup returned invalid JSON.'); }
+        try { rows = JSON.parse(decodeUtf8(bytes)); } catch { throw upstreamError('Kerala exact parcel lookup returned invalid JSON.'); }
         if (!Array.isArray(rows) || rows.length > 1) throw upstreamError('Kerala exact parcel lookup returned an invalid record set.');
         if (!rows.length) return [];
         const row = rows[0];

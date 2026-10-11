@@ -219,10 +219,11 @@
 
         if (!normalized.length) return null;
 
-        const button = document.createElement('button');
-        button.type = 'button';
+        const button = document.createElement('span');
+        button.setAttribute('role', 'img');
         button.className = 'minted-proposal-lens-btn';
         button.title = t('modal.mintedProposals.lensLabel', 'Lens: {{count}}', { count: normalized.length });
+        button.setAttribute('aria-label', button.title);
 
         if (typeof globalScope.getLensPatternDataUrl === 'function') {
             try {
@@ -890,10 +891,18 @@
         return run();
     };
 
-    document.addEventListener('DOMContentLoaded', () => {
+    const initializeButtonVisibility = () => {
         refreshButtonVisibility();
         attachWalletObservers();
-    });
+    };
+
+    // This file is loaded dynamically by writeVersionedLocalScripts. If the first load happens
+    // after DOMContentLoaded, registering only that event leaves the minted button hidden forever.
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeButtonVisibility, { once: true });
+    } else {
+        initializeButtonVisibility();
+    }
 
     globalScope.openMintedProposalsModal = openMintedProposalsModal;
     globalScope.refreshMintedProposalsButtonVisibility = refreshButtonVisibility;

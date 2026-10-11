@@ -1076,6 +1076,9 @@ function showBlockInfo(blockName, deferStats = false) {
     const infoPanel = document.getElementById('block-info-panel');
     if (!infoPanel) return;
 
+    // Both inspectors occupy the right dock. The parcel panel would cover the block's lower
+    // actions after detecting a block from a selected parcel.
+    window.hideParcelInfoPanel?.();
     setActiveBlockTab('block-info-tab');
 
     const infoContent = document.getElementById('block-info-content');
@@ -1443,18 +1446,7 @@ function renderBlockInfoTools(blockName) {
     if (verticesBtn) {
         verticesBtn.classList.remove('active', 'active-black-border');
         verticesBtn.textContent = 'Show vertices';
-        verticesBtn.addEventListener('click', function () {
-            const isActive = verticesBtn.classList.toggle('active');
-            if (isActive) {
-                verticesBtn.classList.add('active-black-border');
-                verticesBtn.textContent = 'Hide vertices';
-                toggleBlockVerticesDisplay(blockName);
-            } else {
-                verticesBtn.classList.remove('active-black-border');
-                verticesBtn.textContent = 'Show vertices';
-                clearBlockVerticesDisplay();
-            }
-        });
+        verticesBtn.addEventListener('click', () => toggleBlockVerticesDisplay(blockName));
     }
 }
 
@@ -1852,6 +1844,11 @@ function toggleBlockVerticesDisplay(blockName) {
         }).addTo(blockVerticesLayer);
     });
     blockVerticesShownFor = blockName;
+    const verticesBtn = document.getElementById('block-vertices-button');
+    if (verticesBtn) {
+        verticesBtn.classList.add('active', 'active-black-border');
+        verticesBtn.textContent = 'Hide vertices';
+    }
 }
 
 // Helper for labeling rejected parcels

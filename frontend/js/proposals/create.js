@@ -595,9 +595,6 @@ async function createStructureProposalFromDialog(kind, parcelIds, geometry, bloc
     closeProposalDialog();
     try { if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton(); } catch (_) { }
 
-    // Open the details panel collapsed on first appearance (see showProposalInfo).
-    if (typeof window !== 'undefined') window.__openProposalDetailsCollapsed = true;
-
     const applied = await ProposalManager.applyProposal(proposalId);
     if (!applied) {
         showProposalAlertMessage('failed_to_apply_proposal', 'The proposal was saved but could not be applied to the cadastral fabric.');
@@ -605,7 +602,7 @@ async function createStructureProposalFromDialog(kind, parcelIds, geometry, bloc
 
     // Focus the stored snapshot after the canonical replay has materialized it.
     if (typeof focusProposalDetails === 'function') {
-        focusProposalDetails(proposalId, { parcelId: primaryParcelId, centerOnProposal: true });
+        focusProposalDetails(proposalId, { parcelId: primaryParcelId, centerOnProposal: true, presentation: 'compact' });
     }
 }
 
@@ -2235,8 +2232,6 @@ async function createProposal() {
                 waitingPopupVisible = true;
                 setProposalModalDimmed(true);
             }
-            // Open the details panel collapsed on first appearance (see showProposalInfo).
-            if (typeof window !== 'undefined') window.__openProposalDetailsCollapsed = true;
             if (typeof selectAndHighlightProposal === 'function') {
                 // Do not refocus map when opening details immediately after creation
                 selectAndHighlightProposal(proposalId, focusParcelId, false, true);

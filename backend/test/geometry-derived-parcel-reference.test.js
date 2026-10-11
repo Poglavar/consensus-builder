@@ -9,6 +9,7 @@ const parcelIds = require('../../frontend/js/proposals/parcel-id.js');
 const parcelMenu = require('../../frontend/js/ui/parcel-menu-model.js');
 const format = require('../../frontend/js/format.js');
 const panelSource = readFileSync(new URL('../../frontend/js/parcels/ui/parcel-panel.js', import.meta.url), 'utf8');
+const parcelCss = readFileSync(new URL('../../frontend/css/parcel-menu.css', import.meta.url), 'utf8');
 
 class Element {
     constructor(id = '') {
@@ -17,6 +18,7 @@ class Element {
         this.style = {};
         this.attributes = {};
         this.children = [];
+        this.listeners = {};
         this.hidden = false;
         this.classList = {
             add() {}, remove() {}, toggle() {}, contains() { return false; }
@@ -30,7 +32,7 @@ class Element {
     setAttribute(key, value) { this.attributes[key] = String(value); }
     removeAttribute(key) { delete this.attributes[key]; }
     getAttribute(key) { return this.attributes[key] || ''; }
-    addEventListener() {}
+    addEventListener(name, callback) { this.listeners[name] = callback; }
     querySelector() { return null; }
     querySelectorAll() { return []; }
 }
@@ -41,6 +43,7 @@ function renderParcelPanel(properties) {
         'parcel-owners-count', 'tools-tab', 'measureAsRoadButton', 'roadMeasurements'
     ];
     const elements = new Map(ids.map(id => [id, new Element(id)]));
+    const copied = [];
     const document = {
         getElementById: id => elements.get(id) || null,
         querySelectorAll: () => [],
@@ -55,6 +58,7 @@ function renderParcelPanel(properties) {
         getParcelId: parcelIds.getParcelIdFromFeature,
         getParcelDisplayNumberFromProperties: parcelIds.getParcelDisplayNumberFromProperties,
         getParcelDisplayNumberFromFeature: parcelIds.getParcelDisplayNumberFromFeature,
+        copyTextWithFeedback: value => copied.push(value),
         tParcel: (_key, _params, fallback) => fallback,
         i18n: { applyTranslations() {} },
         CityConfigManager: {
@@ -68,7 +72,12 @@ function renderParcelPanel(properties) {
     scope.window = scope;
     runInContext(panelSource, createContext(scope));
     scope.ParcelsUIParcelPanel.showParcelInfoPanel({ type: 'Feature', geometry: null, properties });
-    return { title: elements.get('parcel-info-title').textContent, info: elements.get('info-content').innerHTML };
+    return {
+        title: elements.get('parcel-info-title').textContent,
+        titleElement: elements.get('parcel-info-title'),
+        copied,
+        info: elements.get('info-content').innerHTML
+    };
 }
 
 describe('geometry-derived parcel references', () => {
@@ -116,5 +125,18 @@ describe('geometry-derived parcel references', () => {
             parcelId: 'native-123', parcelIdentityKind: 'registry', parcelNumber: '123'
         });
         expect(rendered.info).not.toContain('geometryReferenceNote');
+    });
+
+    it('keeps long parcel ids complete for copy while clamping only their visual layout', () => {
+        const canonicalId = 'KE-NAIROBI-NM-g1~368402797~-12643572~hash#chain_0123456789abcdef-2';
+        const rendered = renderParcelPanel({ parcelId: canonicalId, parcelIdentityKind: 'registry' });
+        const copyTarget = rendered.titleElement.children.find(child => child.className === 'parcel-title-id');
+
+        expect(copyTarget.textContent).toBe(canonicalId);
+        expect(copyTarget.listeners.click).toBeTypeOf('function');
+        copyTarget.listeners.click();
+        expect(rendered.copied).toEqual([canonicalId]);
+        expect(parcelCss).toMatch(/\.parcel-menu__title,[\s\S]*?#parcel-info-panel \.parcel-title-id-value\s*\{[^}]*-webkit-line-clamp:\s*2;/s);
+        expect(parcelCss).toMatch(/\.parcel-id-text[\s\S]*?word-break:\s*break-all;[\s\S]*?line-clamp:\s*2;/s);
     });
 });

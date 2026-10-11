@@ -1,5 +1,6 @@
 // Reconstructs full BEV cadastral parcels from maximum-resolution tiles, using the
 // reference API only to locate every required tile; its rectangles are never parcel geometry.
+import { concatBytes } from './byte-utils.js';
 import { VectorTile, classifyRings } from '@mapbox/vector-tile';
 import { PbfReader } from 'pbf';
 import { bbox as geometryBbox, bboxPolygon, booleanIntersects, feature, intersect, multiPolygon, union } from '@turf/turf';
@@ -126,15 +127,15 @@ export function createBevTileParcelSource(descriptor, { fetchImpl = globalThis.f
                         size += value.byteLength;
                         totalBytes += value.byteLength;
                         if (size > maxBytes || totalBytes > 32 * 1024 * 1024) throw upstreamError('BEV response exceeds the byte limit.');
-                        chunks.push(Buffer.from(value));
+                        chunks.push(value);
                     }
                 } catch (error) {
                     try { await reader.cancel(); } catch { /* Already closed or interrupted. */ }
                     throw error;
                 } finally { reader.releaseLock(); }
-                const bytes = Buffer.concat(chunks, size);
+                const bytes = concatBytes(chunks, size);
                 if (!json) return bytes;
-                const payload = JSON.parse(bytes.toString('utf8'));
+                const payload = JSON.parse(new TextDecoder('utf-8').decode(bytes));
                 if (response.status === 404) {
                     if (payload?.message === 'Grundstück nicht vorhanden') return null;
                     throw upstreamError('BEV could not confirm parcel absence.');

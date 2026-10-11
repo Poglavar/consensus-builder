@@ -72,7 +72,12 @@ const SAFE_GROUPS = [
             "js/thumbnail-bbox.js",
             "js/guest-policy.js",
             "js/map-screenshot.js",
-            "js/og-metadata.js",
+            "js/og-metadata.js"
+        ]
+    },
+    {
+        "name": "parcel-data-clients",
+        "paths": [
             "js/data-source.js",
             "js/basemap.js",
             "js/ui/map-credits.js",
@@ -190,6 +195,14 @@ const SAFE_GROUPS = [
             "js/proposals/plot-cut.js",
             "js/proposals/drill-stack.js",
             "js/proposals/hover-ground.js",
+            "vendor/noble-hashes-1.8.0/sha256.js",
+            "js/proposals/approval.js",
+            "js/proposals/approval-providers.js",
+            "js/proposals/approval-runtime.js",
+            "js/reparcellization-ownership.js",
+            "js/reparcellization-deal.js",
+            "js/reparcellization-validation.js",
+            "js/reparcellization-allocation.js",
             "js/proposals/ownership-flow.js",
             "js/proposals/cadastre-ancestry.js",
             "js/proposals/claims.js",

@@ -115,7 +115,6 @@
         // entry just points the proposal button box at that proposal (its status badge says
         // applied/parked/etc.), it does not navigate away from the parcel.
         if (typeof global.selectAndHighlightProposal === 'function') {
-            global.__openProposalDetailsCollapsed = true;
             global.selectAndHighlightProposal(proposalId, parcelId, false, true);
         } else if (typeof global.selectProposalFromList === 'function') {
             // Fallback to old function

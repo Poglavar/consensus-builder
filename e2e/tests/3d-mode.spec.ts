@@ -17,12 +17,38 @@ async function closeSheets(page: Page) {
   for (const close of await page.locator('.map-sheet:visible [data-sheet-close]').all()) await close.click();
   await expect(page.locator('.map-sheet:visible')).toHaveCount(0);
 }
-// The model's load radius lives under Settings > Display (fbe3758d).
-async function openModelDisplaySettings(page: Page) {
-  if (!(await page.locator('#settings-sheet').isVisible())) await page.locator('#settings-button').click();
-  const display = page.locator('#settings-sheet details.layer-actions[data-map-modes="3d"]');
-  if (!(await display.evaluate((details: HTMLDetailsElement) => details.open))) await display.locator('> summary').click();
-  await expect(page.locator('#model-rendering-settings .three-mode-radius-slider')).toBeVisible();
+// Built-context rendering and its load radius are both discoverable in the 3D Layers sheet.
+async function modelRadiusPreview(page: Page) {
+  return page.evaluate(() => {
+    const w = window as any;
+    const internals = w.getThreeModeInternals();
+    const scene = internals.scene;
+    const preview = scene.getObjectByName('building-load-radius-preview');
+    if (!preview) return null;
+    let maxRadius = 0;
+    preview.traverse((object: any) => {
+      const position = object.geometry?.attributes?.position;
+      if (!position) return;
+      for (let i = 0; i < position.count; i++) {
+        const point = new w.THREE.Vector3(position.getX(i), position.getY(i), position.getZ(i));
+        object.localToWorld(point);
+        const ll = internals.xyToLatLng(point.x, point.y);
+        const center = preview.userData?.center;
+        if (ll && center && w.turf?.distance) {
+          maxRadius = Math.max(maxRadius, w.turf.distance([center.lng, center.lat], [ll.lng, ll.lat], { units: 'meters' }));
+        }
+      }
+    });
+    let visible = true;
+    for (let object = preview; object; object = object.parent) visible &&= object.visible !== false;
+    return {
+      visible,
+      radiusMeters: preview.userData?.radiusMeters,
+      longitude: preview.userData?.center?.lng,
+      latitude: preview.userData?.center?.lat,
+      ringRadius: maxRadius
+    };
+  });
 }
 // Display changes hide retained building groups instead of rebuilding them (51152a2e), so only
 // meshes visible through their whole ancestor chain are actually drawn.
@@ -93,7 +119,7 @@ test.describe('3D rendering and controls @features', () => {
     // Isolation is exited through the banner's close button (the panel's Show-all button went in fbe3758d).
     const banner = page.locator('.three-mode-isolation-banner');
     await expect(banner).toBeVisible();
-    await banner.locator('.isolation-banner-close').click();
+    await page.locator('.three-mode-parcel-panel [data-role="close-panel"]').click();
     await expect(banner).toBeHidden();
     expect(await camera()).toEqual(before);
     expect((await sceneBuildings(page)).map(building => building.color)).toEqual(originalBuildings.map(building => building.color));
@@ -145,27 +171,80 @@ test.describe('3D rendering and controls @features', () => {
     await expect.poll(async () => (await sceneBuildings(page)).length).toBe(2);
   });
 
-  test('radius requests a wider snapshot and persists across re-entry', async ({ mockApi: page }) => {
+  test('radius preview follows hover, keyboard, and drag in Layers, then refetches on release', async ({ mockApi: page }) => {
     const requests = await mockBuildingScene(page);
     await openCity(page);
     await enter3D(page);
     await expect.poll(() => requests.length).toBe(1);
     const initial = requests[0];
-    await openModelDisplaySettings(page);
-    const slider = page.locator('.three-mode-radius-slider');
+    await openModelLayers(page);
+    const slider = page.locator('#layers-sheet .three-mode-radius-slider');
+    await expect(page.locator('#settings-sheet .three-mode-radius-slider')).toHaveCount(0);
+
+    // Hovering previews the full circle at its actual ground-plane radius without fetching.
+    const initialValue = Number(await slider.inputValue());
+    const sliderBox = await slider.boundingBox();
+    if (!sliderBox) throw new Error('No building-load-radius slider');
+    await page.mouse.move(sliderBox.x + sliderBox.width * 0.45, sliderBox.y + sliderBox.height / 2);
+    await expect.poll(async () => (await modelRadiusPreview(page))?.visible).toBe(true);
+    const hovered = await modelRadiusPreview(page);
+    expect(hovered?.radiusMeters).toBe(initialValue);
+    expect(hovered?.longitude).toEqual(expect.any(Number));
+    expect(hovered?.latitude).toEqual(expect.any(Number));
+    expect(hovered!.ringRadius).toBeGreaterThan(0);
+    expect(hovered!.ringRadius).toBeCloseTo(initialValue, -1);
+    expect(requests).toHaveLength(1);
+    await page.screenshot({ path: '/private/tmp/colosseum-3d-building-radius-preview.png' });
+
+    // Focus and keyboard input update both the control and ring; blur removes the preview.
+    await page.mouse.move(sliderBox.x + sliderBox.width + 30, sliderBox.y + sliderBox.height / 2);
+    await expect.poll(async () => (await modelRadiusPreview(page))?.visible ?? false).toBe(false);
     await slider.focus();
-    await page.keyboard.press('End');
-    await page.keyboard.press('Tab');
+    await page.keyboard.press('ArrowRight');
+    const keyboardValue = Number(await slider.inputValue());
+    expect(keyboardValue).toBeGreaterThan(initialValue);
+    await expect.poll(async () => (await modelRadiusPreview(page))?.radiusMeters).toBe(keyboardValue);
+    await expect.poll(async () => (await modelRadiusPreview(page))?.ringRadius).toBeCloseTo(keyboardValue, -1);
+    await page.locator('#three-mode-built-display').focus();
+    await expect.poll(async () => (await modelRadiusPreview(page))?.visible ?? false).toBe(false);
     await expect.poll(() => requests.length).toBe(2);
-    expect(requests[1].buffer_meters).toBeGreaterThan(initial.buffer_meters);
-    expect(requests[1].geometry).toEqual(initial.geometry);
+    await expect(page.locator('.three-mode-radius-value')).toContainText(String(keyboardValue));
+
+    // A pointer drag previews continuously but defers its expensive buildings request to release.
+    const box = await slider.boundingBox();
+    if (!box) throw new Error('No building-load-radius slider');
+    await page.mouse.move(box.x + box.width * 0.55, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(box.x + box.width * 0.98, box.y + box.height / 2, { steps: 8 });
+    const draggedValue = Number(await slider.inputValue());
+    expect(draggedValue).toBeGreaterThan(keyboardValue);
+    await expect.poll(async () => (await modelRadiusPreview(page))?.radiusMeters).toBe(draggedValue);
+    await expect.poll(async () => (await modelRadiusPreview(page))?.ringRadius).toBeCloseTo(draggedValue, -1);
+    expect(requests).toHaveLength(2);
+    await page.mouse.up();
+    await expect.poll(() => requests.length).toBe(3);
+    expect(requests[2].buffer_meters).toBeGreaterThan(requests[1].buffer_meters);
+    expect(requests[2].geometry).toEqual(initial.geometry);
     const saved = await slider.inputValue();
+    await page.mouse.move(box.x + box.width + 30, box.y + box.height / 2);
+    await page.locator('#three-mode-built-display').focus();
+    await expect.poll(async () => (await modelRadiusPreview(page))?.visible ?? false).toBe(false);
+    await page.mouse.move(box.x + box.width * 0.45, box.y + box.height / 2);
+    await expect.poll(async () => (await modelRadiusPreview(page))?.visible).toBe(true);
     await closeSheets(page);
+    await expect.poll(async () => (await modelRadiusPreview(page))?.visible ?? false).toBe(false);
     await page.locator('#mode-2d-toggle').click();
+    await expect.poll(async () => page.evaluate(() => !(window as any).isThreeModeActive?.())).toBe(true);
     await enter3D(page);
-    await openModelDisplaySettings(page);
+    await openModelLayers(page);
     await expect(slider).toHaveValue(saved);
     await expect(page.locator('.three-mode-radius-value')).toContainText(saved);
+    const reopenedBox = await slider.boundingBox();
+    if (!reopenedBox) throw new Error('No building-load-radius slider after re-entry');
+    await page.mouse.move(reopenedBox.x + reopenedBox.width * 0.45, reopenedBox.y + reopenedBox.height / 2);
+    await expect.poll(async () => (await modelRadiusPreview(page))?.visible).toBe(true);
+    await page.locator('#mode-2d-toggle').click();
+    await expect.poll(async () => page.evaluate(() => !(window as any).isThreeModeActive?.())).toBe(true);
   });
 
   test('Planned modes, massing/build-out, reroll and every facade style affect the actual scene', async ({ mockApi: page }) => {
@@ -235,6 +314,33 @@ test.describe('3D rendering and controls @features', () => {
     await expect.poll(async () => (await uniforms()).every((p: any) => p.enabled === 0)).toBe(true);
     await expect(page.locator('#three-mode-facade-style')).toBeDisabled();
   });
+});
+
+test('X-ray and Suggested layouts buttons render and remove real generated floor plans', async ({ mockApi: page }) => {
+  await mockBuildingScene(page);
+  await openCity(page);
+  await createBuilding(page);
+  await enter3D(page);
+  await openModelLayers(page);
+  const xray = page.locator('#three-mode-xray');
+  const suggested = page.locator('#three-mode-suggested-layouts');
+  const floorPlans = () => page.evaluate(() => (window as any).getThreeModeInternals().scene.getObjectByName('FloorPlans')?.children.length || 0);
+  await expect(xray).toHaveAttribute('aria-pressed', 'false');
+  await expect(suggested).toBeHidden();
+  await xray.click();
+  await expect(xray).toHaveAttribute('aria-pressed', 'true');
+  await expect(suggested).toBeVisible();
+  await expect(page.locator('#three-mode-xray-note')).toBeVisible();
+  await suggested.click();
+  await expect(suggested).toHaveAttribute('aria-pressed', 'true');
+  await expect.poll(floorPlans, { timeout: 15_000 }).toBeGreaterThan(0);
+  await expect(page.locator('#three-mode-xray-note')).toContainText('Suggested layouts');
+  await suggested.click();
+  await expect(suggested).toHaveAttribute('aria-pressed', 'false');
+  await expect.poll(floorPlans).toBe(0);
+  await xray.click();
+  await expect(suggested).toBeHidden();
+  await expect(page.locator('#three-mode-xray-note')).toBeHidden();
 });
 
 test('3D trees use real instanced geometry, toggle off and restore their saved preference', async ({ mockApi: page }) => {

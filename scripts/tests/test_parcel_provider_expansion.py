@@ -90,7 +90,38 @@ class ProviderControllerTests(unittest.TestCase):
   with patch.object(ctl,'run_probe',side_effect=lambda *a:(calls.append(1) or self.probe_result(None,'no-hit'))): self.run_items([item])
   item['provider']['scopeEvidence']['coverage']='changed'
   with patch.object(ctl,'run_probe',side_effect=lambda *a:(calls.append(2) or self.probe_result(None,'no-hit'))): result=self.run_items([item])
-  self.assertEqual(calls,[1]); self.assertEqual(result['counts']['source-changed'],1)
+  self.assertEqual(calls,[1,2]); self.assertEqual(result['counts']['no-hit'],1)
+  checkpoints=list((self.shared/'tmp/parcel-provider-expansion/checkpoints/403').glob('*/*.json')); self.assertEqual(len(checkpoints),2)
+  prior=[json.loads(x.read_text()) for x in checkpoints if json.loads(x.read_text())['providerSha256']!=ctl._hash_bytes(ctl._json_bytes(item['provider']))][0]
+  prior_result=self.shared/'tmp/parcel-provider-expansion/results/403'/prior['providerKey']/f"{prior['pairSha256']}.json"
+  self.assertEqual(json.loads(prior_result.read_text())['status'],'no-hit')
+  with patch.object(ctl,'run_probe',side_effect=lambda *a:(calls.append(3) or self.probe_result(None,'no-hit'))): result=self.run_items([item])
+  self.assertEqual(calls,[1,2]); self.assertEqual(result['counts']['skipped-prior-no-hit'],1)
+ def test_evidence_metadata_path_refresh_gets_checkpoint_and_reuses_each_version(self):
+  item=self.item(409); a=self.repo/'metadata-a.json'; b=self.repo/'metadata-b.json'; a.write_text('{"catalogue":"same"}'); b.write_text(a.read_text())
+  item['provider']['evidenceFiles']=[{'path':'metadata-a.json'}]; calls=[]
+  with patch.object(ctl,'run_probe',side_effect=lambda *args:(calls.append(1) or self.probe_result(None,'held'))): self.run_items([item])
+  first_checkpoint=json.loads(next((self.shared/'tmp/parcel-provider-expansion/checkpoints/409').glob('*/*.json')).read_text())
+  item['provider']['evidenceFiles']=[{'path':'metadata-b.json'}]
+  with patch.object(ctl,'run_probe',side_effect=lambda *args:(calls.append(2) or self.probe_result(None,'no-hit'))): result=self.run_items([item])
+  self.assertEqual(calls,[1,2]); self.assertEqual(result['counts']['no-hit'],1)
+  versions=list((self.shared/'tmp/parcel-provider-expansion/checkpoints/409').glob('*/*.json')); self.assertEqual(len(versions),2)
+  first_result=self.shared/'tmp/parcel-provider-expansion/results/409'/first_checkpoint['providerKey']/f"{first_checkpoint['pairSha256']}.json"
+  self.assertEqual(json.loads(first_result.read_text())['status'],'held')
+  with patch.object(ctl,'run_probe') as probe: result=self.run_items([item])
+  probe.assert_not_called(); self.assertEqual(result['counts']['skipped-prior-no-hit'],1)
+  item['provider']['evidenceFiles']=[{'path':'metadata-a.json'}]
+  with patch.object(ctl,'run_probe') as probe: result=self.run_items([item])
+  probe.assert_not_called(); self.assertEqual(result['counts']['skipped-prior-held'],1)
+ def test_input_mutated_during_probe_cannot_be_checkpointed_as_no_hit(self):
+  item=self.item(412); evidence=self.repo/'provider-evidence.json'; evidence.write_text('{"revision":1}')
+  item['provider']['evidenceFiles']=[{'path':'provider-evidence.json'}]
+  def mutate_then_return(*args):
+   evidence.write_text('{"revision":2}')
+   return self.probe_result(None,'no-hit')
+  with patch.object(ctl,'run_probe',side_effect=mutate_then_return): result=self.run_items([item])
+  self.assertEqual(result['counts']['source-changed'],1)
+  self.assertEqual(list((self.shared/'tmp/parcel-provider-expansion/results/412').glob('*/*.json')),[])
  def test_failed_pair_retries_after_next_pair(self):
   items=[self.item(404),self.item(405)]; calls=[]
   def probe(repo,task,out_dir,heartbeat):
@@ -117,5 +148,14 @@ class ProviderControllerTests(unittest.TestCase):
   c=ctl.coord.acquire(self.shared,'407','seed'); ctl.coord.publish_packet(self.shared,city,review,[sample],'provider-expansion/seed/407',c)
   with patch.object(ctl,'run_probe') as probe: result=self.run_items([item])
   probe.assert_not_called(); self.assertEqual(result['counts']['skipped-completion'],1)
+ def test_completion_skip_checks_source_integrity_and_keeps_receipt(self):
+  item=self.item(413); city={'cityCode':'413','rank':8,'point':[12.25,23.5],'population2025':123456,'population2025k':123.456,'status':'complete'}; review=dict(city)
+  sample={'type':'FeatureCollection','features':[{'type':'Feature','geometry':{'type':'Polygon','coordinates':[[[23,12],[23.1,12],[23.1,12.1],[23,12]]]},'properties':{'id':'x'}}]}
+  c=ctl.coord.acquire(self.shared,'413','seed'); receipt=ctl.coord.publish_packet(self.shared,city,review,[sample],'provider-expansion/seed/413',c)
+  prepare=ctl._prepare_item
+  def prepare_then_mutate(*args):
+   result=prepare(*args); (self.repo/'wup.gz').write_bytes(gzip.compress(b'changed source')); return result
+  with patch.object(ctl,'_prepare_item',side_effect=prepare_then_mutate), patch.object(ctl,'run_probe') as probe: result=self.run_items([item])
+  probe.assert_not_called(); self.assertEqual(result['counts']['source-changed'],1); self.assertEqual(ctl.coord.validate_completion(self.shared,'413'),receipt)
 
 if __name__=='__main__': unittest.main()

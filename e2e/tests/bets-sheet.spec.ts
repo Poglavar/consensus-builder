@@ -207,6 +207,35 @@ test.describe('Bets sheet @features', () => {
     await expect(page.locator('#proposalMarketOverlay .cb-dialog__title')).toHaveText('Bet no');
   });
 
+  test('finishing the initial page load preserves a stake form opened through the No button', async ({ mockApi: page }) => {
+    // Hold an actual nonessential page image at the network boundary. DOMContentLoaded and the
+    // map remain usable, while the browser's real window load event cannot fire yet.
+    let releaseImage!: () => void;
+    const imageReady = new Promise<void>(resolve => { releaseImage = resolve; });
+    await page.route('**/images/consensus-builder-logo.png', async route => {
+      await imageReady;
+      await route.fulfill({ contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>' });
+    });
+    await mockMarkets(page);
+    await injectMockSolanaWallet(page, { publicKey: SOLANA_WALLET, providerName: 'phantom' });
+    try {
+      await openCity(page);
+      await connectWalletByConnectorId(page, 'solana-phantom');
+      await page.locator('#bets-button').click();
+      await page.locator('#bets-sheet .bets-row').first().locator('.btn-market-no').click();
+      const form = page.locator('#proposalMarketOverlay');
+      await expect(form.locator('.cb-dialog__title')).toHaveText('Bet no');
+      await form.locator('[data-market-amount]').fill('0.25');
+      expect(await page.evaluate(() => document.readyState)).toBe('interactive');
+      releaseImage();
+      await page.waitForLoadState('load');
+      await expect(form.locator('.cb-dialog__title')).toHaveText('Bet no');
+      await expect(form.locator('[data-market-amount]')).toHaveValue('0.25');
+    } finally {
+      releaseImage();
+    }
+  });
+
   // A shared bet link (js/bets/bets-link.js) opens the bet's own dialog: the title, the land, the
   // chance, the pool and payouts, who proposed it, the links; the first-visit explainer stays out
   // of the way. "Copy link" there puts the same link (the shareable path form, with the city) on

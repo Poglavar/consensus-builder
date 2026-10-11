@@ -50,6 +50,19 @@ test.describe('World navigation and open ground @features', () => {
     await expect.poll(() => page.evaluate(() => (window as any).CityConfigManager.getCurrentCityId())).toBe('belgrade');
   });
 
+  test('Back to map closes the world globe and restores the current city map', async ({ mockApi: page }) => {
+    await openCity(page);
+    const cityBefore = await page.evaluate(() => (window as any).CityConfigManager.getCurrentCityId());
+    await page.locator('#settings-button').click();
+    await page.locator('#world-view-button').click();
+    const world = page.locator('#world-view');
+    await expect(world).toBeVisible();
+    await world.getByRole('button', { name: 'Back to map' }).click();
+    await expect(world).toHaveCount(0);
+    await expect.poll(() => page.evaluate(() => (window as any).CityConfigManager.getCurrentCityId())).toBe(cityBefore);
+    await expect(page.locator('#map')).toBeVisible();
+  });
+
   // A city pick arrives on the city's newest proposal in 3D (js/world/arrival.js); a city with none
   // lands on its map as before. Zagreb is already loaded here, so the pick lands in place.
   for (const hasProposal of [true, false]) {
@@ -157,16 +170,19 @@ test.describe('World navigation and open ground @features', () => {
       await expect(page.locator('#proposal-details-panel')).toContainText('Park · parcel 1234');
       await expect(page.locator('#parcel-menu')).toBeHidden();
       expect(await page.evaluate(id => (window as any).getProposalByIdOrHash(id).applied === true, id)).toBe(applied);
-      // A map click opens the compact card; its expand button shows the Activity link.
+      // A map click opens the proposal card. The global Activity control remains available even
+      // when there are no sibling proposals to show the per-parcel activity links.
       const expand = page.locator('#proposal-details-minimize');
       if (await expand.getAttribute('aria-expanded') === 'false') await expand.click();
       await expect(expand).toHaveAttribute('aria-expanded', 'true');
-      const activity = page.locator('#proposal-details-panel [data-activity-scope="proposalId"]');
-      await expect(activity).toBeVisible(); await activity.click();
-      await expect(page.locator('.game-log-modal')).toBeVisible();
+      const activitySheet = page.locator('#activity-sheet');
+      await expect(activitySheet).toBeHidden();
+      await page.locator('#activity-button').click();
+      await expect(activitySheet).toBeVisible();
+      await expect(activitySheet.locator('#activity-feed')).toBeVisible();
+      await activitySheet.locator('[data-sheet-close]').click();
+      await expect(activitySheet).toBeHidden();
       if (!applied) {
-        await page.locator('.game-log-modal-close').click();
-        await expect(page.locator('.game-log-modal')).toHaveCount(0);
         await page.mouse.click(180, 150);
         await expect(page.locator('path.proposal-primary-outline')).toHaveCount(0);
         expect(await page.evaluate(id => (window as any).getProposalByIdOrHash(id).applied === true, id)).toBe(false);

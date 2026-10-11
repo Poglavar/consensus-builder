@@ -1,3 +1,4 @@
+// Exercise site authoring and verify both dismiss controls discard only the temporary site.
 import { test, expect } from '../helpers/fixtures';
 import { openCity, openParcel, clickMapPoint } from '../helpers/runtime';
 
@@ -31,12 +32,13 @@ test.describe('Site authoring @features', () => {
     expect(await page.evaluate(() => (window as any).SiteTool.isActive())).toBe(false);
   });
 
-  test('cancelling a parcel site discards temporary geometry without creating a proposal', async ({ mockApi: page }) => {
+  for (const close of ['.site-panel__close', '.site-panel__actions [data-site-action="cancel"]']) test(`site ${close} discards temporary geometry without creating a proposal`, async ({ mockApi: page }) => {
     await openCity(page);
     await clickMapPoint(page, 15.9822, 45.80025);
     await page.locator('#parcel-menu [data-command="parcel.useAsSite"]').click();
-    await page.locator('#site-panel [data-site-action="cancel"]').first().click();
+    await page.locator(`#site-panel ${close}`).click();
     await expect(page.locator('#site-panel')).toBeHidden();
+    expect(await page.evaluate(() => (window as any).SiteTool.isActive())).toBe(false);
     expect(await page.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(0);
     await openParcel(page);
     await expect(page.locator('#parcel-info-panel')).toBeVisible();

@@ -1,0 +1,1980 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "5247",
+  "cityName": "Montoya",
+  "sourceId": "us-tx-el-paso-city-gis-parcels",
+  "candidateSha256": "09674841a60bf8a030d65d7033ffb585c3d03ef118cd358c6d6e0153a810681e",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 151,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 151,
+      "collectedUniqueCount": 151
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 444
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "object-ids-manifest",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "singletonObjectIdRequests": 5,
+      "distinctSingletonObjectIdQueries": 5,
+      "duplicateObjectIdRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "19928a1cbb664f7af5f85bc1e3d0159aa6b9a99129bc72fbed2a4e1e83da65d2",
+      "featureCount": 151,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32613",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "19928a1cbb664f7af5f85bc1e3d0159aa6b9a99129bc72fbed2a4e1e83da65d2",
+  "featureCount": 151,
+  "sampleIds": [
+    "US-TX-ELPASO-OBJECTID-165665",
+    "US-TX-ELPASO-OBJECTID-165677",
+    "US-TX-ELPASO-OBJECTID-165689"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        -106.548,
+        31.847,
+        -106.547,
+        31.848
+      ],
+      "complete": true,
+      "featureCount": 18,
+      "ids": [
+        "US-TX-ELPASO-OBJECTID-164570",
+        "US-TX-ELPASO-OBJECTID-164584",
+        "US-TX-ELPASO-OBJECTID-164646",
+        "US-TX-ELPASO-OBJECTID-164831",
+        "US-TX-ELPASO-OBJECTID-164848",
+        "US-TX-ELPASO-OBJECTID-164857",
+        "US-TX-ELPASO-OBJECTID-164874",
+        "US-TX-ELPASO-OBJECTID-164898",
+        "US-TX-ELPASO-OBJECTID-165101",
+        "US-TX-ELPASO-OBJECTID-165110",
+        "US-TX-ELPASO-OBJECTID-165118",
+        "US-TX-ELPASO-OBJECTID-165127",
+        "US-TX-ELPASO-OBJECTID-165137",
+        "US-TX-ELPASO-OBJECTID-165145",
+        "US-TX-ELPASO-OBJECTID-165449",
+        "US-TX-ELPASO-OBJECTID-165459",
+        "US-TX-ELPASO-OBJECTID-165471",
+        "US-TX-ELPASO-OBJECTID-165481"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        -106.547,
+        31.847,
+        -106.546,
+        31.848
+      ],
+      "complete": true,
+      "featureCount": 17,
+      "ids": [
+        "US-TX-ELPASO-OBJECTID-164418",
+        "US-TX-ELPASO-OBJECTID-164477",
+        "US-TX-ELPASO-OBJECTID-164584",
+        "US-TX-ELPASO-OBJECTID-164618",
+        "US-TX-ELPASO-OBJECTID-164648",
+        "US-TX-ELPASO-OBJECTID-164818",
+        "US-TX-ELPASO-OBJECTID-164821",
+        "US-TX-ELPASO-OBJECTID-164831",
+        "US-TX-ELPASO-OBJECTID-164848",
+        "US-TX-ELPASO-OBJECTID-165062",
+        "US-TX-ELPASO-OBJECTID-165084",
+        "US-TX-ELPASO-OBJECTID-165092",
+        "US-TX-ELPASO-OBJECTID-165101",
+        "US-TX-ELPASO-OBJECTID-165110",
+        "US-TX-ELPASO-OBJECTID-165418",
+        "US-TX-ELPASO-OBJECTID-165428",
+        "US-TX-ELPASO-OBJECTID-165438"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        -106.546,
+        31.847,
+        -106.545,
+        31.848
+      ],
+      "complete": true,
+      "featureCount": 14,
+      "ids": [
+        "US-TX-ELPASO-OBJECTID-164418",
+        "US-TX-ELPASO-OBJECTID-164529",
+        "US-TX-ELPASO-OBJECTID-164618",
+        "US-TX-ELPASO-OBJECTID-164702",
+        "US-TX-ELPASO-OBJECTID-164703",
+        "US-TX-ELPASO-OBJECTID-164791",
+        "US-TX-ELPASO-OBJECTID-164818",
+        "US-TX-ELPASO-OBJECTID-165037",
+        "US-TX-ELPASO-OBJECTID-165046",
+        "US-TX-ELPASO-OBJECTID-165053",
+        "US-TX-ELPASO-OBJECTID-165062",
+        "US-TX-ELPASO-OBJECTID-165372",
+        "US-TX-ELPASO-OBJECTID-165384",
+        "US-TX-ELPASO-OBJECTID-165397"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        -106.548,
+        31.848,
+        -106.547,
+        31.849
+      ],
+      "complete": true,
+      "featureCount": 17,
+      "ids": [
+        "US-TX-ELPASO-OBJECTID-165449",
+        "US-TX-ELPASO-OBJECTID-165459",
+        "US-TX-ELPASO-OBJECTID-165471",
+        "US-TX-ELPASO-OBJECTID-165481",
+        "US-TX-ELPASO-OBJECTID-165498",
+        "US-TX-ELPASO-OBJECTID-165689",
+        "US-TX-ELPASO-OBJECTID-165697",
+        "US-TX-ELPASO-OBJECTID-165704",
+        "US-TX-ELPASO-OBJECTID-165712",
+        "US-TX-ELPASO-OBJECTID-165727",
+        "US-TX-ELPASO-OBJECTID-165733",
+        "US-TX-ELPASO-OBJECTID-166047",
+        "US-TX-ELPASO-OBJECTID-166058",
+        "US-TX-ELPASO-OBJECTID-166071",
+        "US-TX-ELPASO-OBJECTID-166077",
+        "US-TX-ELPASO-OBJECTID-166086",
+        "US-TX-ELPASO-OBJECTID-166092"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        -106.547,
+        31.848,
+        -106.546,
+        31.849
+      ],
+      "complete": true,
+      "featureCount": 14,
+      "ids": [
+        "US-TX-ELPASO-OBJECTID-165418",
+        "US-TX-ELPASO-OBJECTID-165428",
+        "US-TX-ELPASO-OBJECTID-165438",
+        "US-TX-ELPASO-OBJECTID-165449",
+        "US-TX-ELPASO-OBJECTID-165650",
+        "US-TX-ELPASO-OBJECTID-165665",
+        "US-TX-ELPASO-OBJECTID-165677",
+        "US-TX-ELPASO-OBJECTID-165689",
+        "US-TX-ELPASO-OBJECTID-165697",
+        "US-TX-ELPASO-OBJECTID-166010",
+        "US-TX-ELPASO-OBJECTID-166028",
+        "US-TX-ELPASO-OBJECTID-166038",
+        "US-TX-ELPASO-OBJECTID-166047",
+        "US-TX-ELPASO-OBJECTID-166058"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        -106.546,
+        31.848,
+        -106.545,
+        31.849
+      ],
+      "complete": true,
+      "featureCount": 13,
+      "ids": [
+        "US-TX-ELPASO-OBJECTID-165362",
+        "US-TX-ELPASO-OBJECTID-165372",
+        "US-TX-ELPASO-OBJECTID-165384",
+        "US-TX-ELPASO-OBJECTID-165397",
+        "US-TX-ELPASO-OBJECTID-165418",
+        "US-TX-ELPASO-OBJECTID-165613",
+        "US-TX-ELPASO-OBJECTID-165628",
+        "US-TX-ELPASO-OBJECTID-165642",
+        "US-TX-ELPASO-OBJECTID-165650",
+        "US-TX-ELPASO-OBJECTID-165972",
+        "US-TX-ELPASO-OBJECTID-165987",
+        "US-TX-ELPASO-OBJECTID-165998",
+        "US-TX-ELPASO-OBJECTID-166010"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        -106.548,
+        31.849,
+        -106.547,
+        31.85
+      ],
+      "complete": true,
+      "featureCount": 20,
+      "ids": [
+        "US-TX-ELPASO-OBJECTID-166047",
+        "US-TX-ELPASO-OBJECTID-166058",
+        "US-TX-ELPASO-OBJECTID-166071",
+        "US-TX-ELPASO-OBJECTID-166077",
+        "US-TX-ELPASO-OBJECTID-166086",
+        "US-TX-ELPASO-OBJECTID-166092",
+        "US-TX-ELPASO-OBJECTID-166364",
+        "US-TX-ELPASO-OBJECTID-166372",
+        "US-TX-ELPASO-OBJECTID-166385",
+        "US-TX-ELPASO-OBJECTID-166393",
+        "US-TX-ELPASO-OBJECTID-166400",
+        "US-TX-ELPASO-OBJECTID-166414",
+        "US-TX-ELPASO-OBJECTID-166842",
+        "US-TX-ELPASO-OBJECTID-166845",
+        "US-TX-ELPASO-OBJECTID-166847",
+        "US-TX-ELPASO-OBJECTID-166877",
+        "US-TX-ELPASO-OBJECTID-167014",
+        "US-TX-ELPASO-OBJECTID-167086",
+        "US-TX-ELPASO-OBJECTID-167107",
+        "US-TX-ELPASO-OBJECTID-167140"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        -106.547,
+        31.849,
+        -106.546,
+        31.85
+      ],
+      "complete": true,
+      "featureCount": 20,
+      "ids": [
+        "US-TX-ELPASO-OBJECTID-166010",
+        "US-TX-ELPASO-OBJECTID-166028",
+        "US-TX-ELPASO-OBJECTID-166038",
+        "US-TX-ELPASO-OBJECTID-166047",
+        "US-TX-ELPASO-OBJECTID-166328",
+        "US-TX-ELPASO-OBJECTID-166342",
+        "US-TX-ELPASO-OBJECTID-166354",
+        "US-TX-ELPASO-OBJECTID-166364",
+        "US-TX-ELPASO-OBJECTID-166372",
+        "US-TX-ELPASO-OBJECTID-166676",
+        "US-TX-ELPASO-OBJECTID-166689",
+        "US-TX-ELPASO-OBJECTID-166713",
+        "US-TX-ELPASO-OBJECTID-166765",
+        "US-TX-ELPASO-OBJECTID-166842",
+        "US-TX-ELPASO-OBJECTID-166877",
+        "US-TX-ELPASO-OBJECTID-166966",
+        "US-TX-ELPASO-OBJECTID-166976",
+        "US-TX-ELPASO-OBJECTID-167013",
+        "US-TX-ELPASO-OBJECTID-167070",
+        "US-TX-ELPASO-OBJECTID-167140"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        -106.546,
+        31.849,
+        -106.545,
+        31.85
+      ],
+      "complete": true,
+      "featureCount": 22,
+      "ids": [
+        "US-TX-ELPASO-OBJECTID-165961",
+        "US-TX-ELPASO-OBJECTID-165972",
+        "US-TX-ELPASO-OBJECTID-165987",
+        "US-TX-ELPASO-OBJECTID-165998",
+        "US-TX-ELPASO-OBJECTID-166010",
+        "US-TX-ELPASO-OBJECTID-166284",
+        "US-TX-ELPASO-OBJECTID-166295",
+        "US-TX-ELPASO-OBJECTID-166304",
+        "US-TX-ELPASO-OBJECTID-166318",
+        "US-TX-ELPASO-OBJECTID-166328",
+        "US-TX-ELPASO-OBJECTID-166634",
+        "US-TX-ELPASO-OBJECTID-166651",
+        "US-TX-ELPASO-OBJECTID-166663",
+        "US-TX-ELPASO-OBJECTID-166673",
+        "US-TX-ELPASO-OBJECTID-166676",
+        "US-TX-ELPASO-OBJECTID-166689",
+        "US-TX-ELPASO-OBJECTID-166900",
+        "US-TX-ELPASO-OBJECTID-166914",
+        "US-TX-ELPASO-OBJECTID-166940",
+        "US-TX-ELPASO-OBJECTID-166953",
+        "US-TX-ELPASO-OBJECTID-166966",
+        "US-TX-ELPASO-OBJECTID-166976"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        -106.547,
+        31.846,
+        -106.546,
+        31.847
+      ],
+      "complete": true,
+      "featureCount": 16,
+      "ids": [
+        "US-TX-ELPASO-OBJECTID-163881",
+        "US-TX-ELPASO-OBJECTID-163918",
+        "US-TX-ELPASO-OBJECTID-163991",
+        "US-TX-ELPASO-OBJECTID-164018",
+        "US-TX-ELPASO-OBJECTID-164031",
+        "US-TX-ELPASO-OBJECTID-164083",
+        "US-TX-ELPASO-OBJECTID-164146",
+        "US-TX-ELPASO-OBJECTID-164172",
+        "US-TX-ELPASO-OBJECTID-164205",
+        "US-TX-ELPASO-OBJECTID-164277",
+        "US-TX-ELPASO-OBJECTID-164350",
+        "US-TX-ELPASO-OBJECTID-164388",
+        "US-TX-ELPASO-OBJECTID-164418",
+        "US-TX-ELPASO-OBJECTID-164477",
+        "US-TX-ELPASO-OBJECTID-164584",
+        "US-TX-ELPASO-OBJECTID-164618"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        -106.547,
+        31.85,
+        -106.546,
+        31.851
+      ],
+      "complete": true,
+      "featureCount": 17,
+      "ids": [
+        "US-TX-ELPASO-OBJECTID-166842",
+        "US-TX-ELPASO-OBJECTID-166966",
+        "US-TX-ELPASO-OBJECTID-166976",
+        "US-TX-ELPASO-OBJECTID-167013",
+        "US-TX-ELPASO-OBJECTID-167070",
+        "US-TX-ELPASO-OBJECTID-167140",
+        "US-TX-ELPASO-OBJECTID-167345",
+        "US-TX-ELPASO-OBJECTID-167418",
+        "US-TX-ELPASO-OBJECTID-167473",
+        "US-TX-ELPASO-OBJECTID-167606",
+        "US-TX-ELPASO-OBJECTID-167659",
+        "US-TX-ELPASO-OBJECTID-167728",
+        "US-TX-ELPASO-OBJECTID-167820",
+        "US-TX-ELPASO-OBJECTID-167885",
+        "US-TX-ELPASO-OBJECTID-167896",
+        "US-TX-ELPASO-OBJECTID-167991",
+        "US-TX-ELPASO-OBJECTID-168155"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        -106.549,
+        31.848,
+        -106.548,
+        31.849
+      ],
+      "complete": true,
+      "featureCount": 19,
+      "ids": [
+        "US-TX-ELPASO-OBJECTID-165498",
+        "US-TX-ELPASO-OBJECTID-165508",
+        "US-TX-ELPASO-OBJECTID-165515",
+        "US-TX-ELPASO-OBJECTID-165520",
+        "US-TX-ELPASO-OBJECTID-165525",
+        "US-TX-ELPASO-OBJECTID-165539",
+        "US-TX-ELPASO-OBJECTID-165727",
+        "US-TX-ELPASO-OBJECTID-165733",
+        "US-TX-ELPASO-OBJECTID-165737",
+        "US-TX-ELPASO-OBJECTID-165744",
+        "US-TX-ELPASO-OBJECTID-165752",
+        "US-TX-ELPASO-OBJECTID-165758",
+        "US-TX-ELPASO-OBJECTID-166086",
+        "US-TX-ELPASO-OBJECTID-166092",
+        "US-TX-ELPASO-OBJECTID-166099",
+        "US-TX-ELPASO-OBJECTID-166107",
+        "US-TX-ELPASO-OBJECTID-166110",
+        "US-TX-ELPASO-OBJECTID-166120",
+        "US-TX-ELPASO-OBJECTID-166139"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        -106.545,
+        31.848,
+        -106.544,
+        31.849
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "ids": [
+        "US-TX-ELPASO-OBJECTID-165331",
+        "US-TX-ELPASO-OBJECTID-165345",
+        "US-TX-ELPASO-OBJECTID-165351",
+        "US-TX-ELPASO-OBJECTID-165362",
+        "US-TX-ELPASO-OBJECTID-165372",
+        "US-TX-ELPASO-OBJECTID-165565",
+        "US-TX-ELPASO-OBJECTID-165581",
+        "US-TX-ELPASO-OBJECTID-165591",
+        "US-TX-ELPASO-OBJECTID-165606",
+        "US-TX-ELPASO-OBJECTID-165613",
+        "US-TX-ELPASO-OBJECTID-165928",
+        "US-TX-ELPASO-OBJECTID-165936",
+        "US-TX-ELPASO-OBJECTID-165950",
+        "US-TX-ELPASO-OBJECTID-165961",
+        "US-TX-ELPASO-OBJECTID-165972"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 113,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:32:56.854Z",
+      "queryHash": "1dd52dd21bfe7cfda48b9077c35a7b11b465b14bc477d3abccc52f8bbdf25b05",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 602
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:32:57.463Z",
+      "queryHash": "1dd52dd21bfe7cfda48b9077c35a7b11b465b14bc477d3abccc52f8bbdf25b05",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 538
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:32:58.003Z",
+      "queryHash": "6368583e5413f8d7465e89a4bd52bbbf6a1c608fb0f445e785e1d86f22193b55",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 223
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:32:58.230Z",
+      "queryHash": "1dd52dd21bfe7cfda48b9077c35a7b11b465b14bc477d3abccc52f8bbdf25b05",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:32:58.405Z",
+      "queryHash": "1dd52dd21bfe7cfda48b9077c35a7b11b465b14bc477d3abccc52f8bbdf25b05",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:32:58.583Z",
+      "queryHash": "6368583e5413f8d7465e89a4bd52bbbf6a1c608fb0f445e785e1d86f22193b55",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 237
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:32:58.822Z",
+      "queryHash": "11c3eada6b7e19c38cd32fcf970e0a915e49b861b56aa8501d8f7e8b59f3b632",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:32:58.998Z",
+      "queryHash": "11c3eada6b7e19c38cd32fcf970e0a915e49b861b56aa8501d8f7e8b59f3b632",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:32:59.175Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 182
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:32:59.359Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 178
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:32:59.538Z",
+      "queryHash": "78bed442930d420df3fc6af199ceffb7a49453fc40631a34c639e89088e5a36c",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 18,
+      "httpStatus": 200,
+      "elapsedMs": 178
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:32:59.719Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:32:59.896Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:00.073Z",
+      "queryHash": "ddf2196600c3df0769acc98a8c421a5bb177f08834fc3bb2f2af88a4a494d549",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 17,
+      "httpStatus": 200,
+      "elapsedMs": 213
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:00.288Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 307
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:00.596Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 306
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:00.902Z",
+      "queryHash": "5ea39ca8de03d743b8fc0b88ae560de3a389f5055f41f8e17cc5434bffc255b2",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 14,
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:01.084Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:01.261Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 180
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:01.443Z",
+      "queryHash": "dd61ffca8b0bcabcc8ef4e18773be8c839961cc0c45c2b664c54eaca74480634",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 17,
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:01.619Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:01.794Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:01.978Z",
+      "queryHash": "02d71dfdcaa759189a5d96f0df1e4dea020a3484a056b1c7cfbdbfc5cec70fe4",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 14,
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:02.155Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:02.332Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 178
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:02.511Z",
+      "queryHash": "c29d1759e61539989b3c82026cc6e2433ee2f33c5492ddbb0c8021bad7c13405",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 13,
+      "httpStatus": 200,
+      "elapsedMs": 180
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:02.693Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:02.869Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 179
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:03.049Z",
+      "queryHash": "84b768d6cb659ccdc05cd7150a2ec0a73aeb9aa9a3017337769c6f6ed814d4ff",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 20,
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:03.228Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:03.404Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 178
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:03.583Z",
+      "queryHash": "179d0aaf035c8c4b605e5ee7a7f0d908b6167bfb5e32f582aeb77b37fc7825b2",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 20,
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:03.759Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:03.937Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:04.114Z",
+      "queryHash": "6ca17aa24215911c85ccf1dfe4d05cf7205625ac686e0be072651141347f288c",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 22,
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:04.294Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 173
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:04.468Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 179
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:04.647Z",
+      "queryHash": "4a8d670463cedf57ad0e600a2443a4584824b226d92b4c8c09d29b4669b27e54",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 16,
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:04.825Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:05.002Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:05.178Z",
+      "queryHash": "b6fd7f550d1bd8d2ef4fcbd9f567cad10d5df29235e7c5d844af9ea703f5d558",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 17,
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:05.354Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 173
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:05.528Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:05.704Z",
+      "queryHash": "3434051b12a7066c7f96c1e72717e34449e346755d38fae2025581909e9976f6",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 19,
+      "httpStatus": 200,
+      "elapsedMs": 178
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:05.884Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:06.059Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:06.236Z",
+      "queryHash": "28d1c4c90d6f49053d9082b9c0611efdec8a9a9b298f3daa264e5651ffb4ae74",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 15,
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:06.413Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:06.589Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 178
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:06.768Z",
+      "queryHash": "78bed442930d420df3fc6af199ceffb7a49453fc40631a34c639e89088e5a36c",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 18,
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:06.945Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:07.123Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:07.301Z",
+      "queryHash": "ddf2196600c3df0769acc98a8c421a5bb177f08834fc3bb2f2af88a4a494d549",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 17,
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:07.477Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:07.654Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 178
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:07.833Z",
+      "queryHash": "5ea39ca8de03d743b8fc0b88ae560de3a389f5055f41f8e17cc5434bffc255b2",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 14,
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:08.010Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 181
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:08.192Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 179
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:08.371Z",
+      "queryHash": "dd61ffca8b0bcabcc8ef4e18773be8c839961cc0c45c2b664c54eaca74480634",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 17,
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:08.547Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:08.726Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:08.903Z",
+      "queryHash": "02d71dfdcaa759189a5d96f0df1e4dea020a3484a056b1c7cfbdbfc5cec70fe4",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 14,
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:09.079Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:09.257Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 178
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:09.436Z",
+      "queryHash": "c29d1759e61539989b3c82026cc6e2433ee2f33c5492ddbb0c8021bad7c13405",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 13,
+      "httpStatus": 200,
+      "elapsedMs": 186
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:09.623Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:09.801Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:09.979Z",
+      "queryHash": "84b768d6cb659ccdc05cd7150a2ec0a73aeb9aa9a3017337769c6f6ed814d4ff",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 20,
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:10.156Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:10.332Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 180
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:10.512Z",
+      "queryHash": "179d0aaf035c8c4b605e5ee7a7f0d908b6167bfb5e32f582aeb77b37fc7825b2",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 20,
+      "httpStatus": 200,
+      "elapsedMs": 173
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:10.687Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:10.863Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 179
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:11.043Z",
+      "queryHash": "6ca17aa24215911c85ccf1dfe4d05cf7205625ac686e0be072651141347f288c",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 22,
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:11.218Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:11.395Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:11.572Z",
+      "queryHash": "4a8d670463cedf57ad0e600a2443a4584824b226d92b4c8c09d29b4669b27e54",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 16,
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:11.748Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:11.925Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:12.103Z",
+      "queryHash": "b6fd7f550d1bd8d2ef4fcbd9f567cad10d5df29235e7c5d844af9ea703f5d558",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 17,
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:12.279Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:12.454Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:12.631Z",
+      "queryHash": "3434051b12a7066c7f96c1e72717e34449e346755d38fae2025581909e9976f6",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 19,
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:12.807Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 180
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:12.988Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 193
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:13.181Z",
+      "queryHash": "28d1c4c90d6f49053d9082b9c0611efdec8a9a9b298f3daa264e5651ffb4ae74",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 15,
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:13.363Z",
+      "queryHash": "7f84c76ba7b2100d7c10de06c8e3d8d28492ac0556e75e44a7219a471f15fc2b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 173
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:13.537Z",
+      "queryHash": "7f84c76ba7b2100d7c10de06c8e3d8d28492ac0556e75e44a7219a471f15fc2b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:13.712Z",
+      "queryHash": "1ab8b74b9b4c6e1da794962c803b08f3f4a845e745c5a52e960290ae87ffe714",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 173
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:13.886Z",
+      "queryHash": "87218574e20fdd2c15abfa56ef2675cbc0093927f63bd65dc264834e47207853",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 170
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:14.057Z",
+      "queryHash": "87218574e20fdd2c15abfa56ef2675cbc0093927f63bd65dc264834e47207853",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:14.234Z",
+      "queryHash": "1ecf47944e660347614e16978a85edbebd10bd81924c4f8dc790e92a50fdd2f7",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 173
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:14.408Z",
+      "queryHash": "c68360b0705fb75722d8f7ae7e44171b50bebee7d37aaa8c00a8cfd9dab7a582",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 172
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:14.580Z",
+      "queryHash": "c68360b0705fb75722d8f7ae7e44171b50bebee7d37aaa8c00a8cfd9dab7a582",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 173
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:14.755Z",
+      "queryHash": "63b5f0ed0d70386af75d86f7f6940dc56fcab096e941122d0fe8f5b465bfa9ec",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:14.933Z",
+      "queryHash": "78f583897feacdea3790abc2ca21e0e8e840aa884bfa05c3bb019d5e8e8e622a",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:15.108Z",
+      "queryHash": "78f583897feacdea3790abc2ca21e0e8e840aa884bfa05c3bb019d5e8e8e622a",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 173
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:15.282Z",
+      "queryHash": "6239a63c06af3ea59d56dcd75a2cdd06e5abd75b2a04c2995f3f35a48d7de892",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:15.458Z",
+      "queryHash": "23021139777967f5aa5dc4830da79c5dffa587c3b450ce2d74ab964a4b5de047",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 173
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:15.631Z",
+      "queryHash": "23021139777967f5aa5dc4830da79c5dffa587c3b450ce2d74ab964a4b5de047",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 172
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:15.804Z",
+      "queryHash": "576680f1da2882706090c708ad413f3ec59672893d0e143a52ffbb4cc47c0c8a",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:15.981Z",
+      "queryHash": "1dd52dd21bfe7cfda48b9077c35a7b11b465b14bc477d3abccc52f8bbdf25b05",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 171
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:16.155Z",
+      "queryHash": "1dd52dd21bfe7cfda48b9077c35a7b11b465b14bc477d3abccc52f8bbdf25b05",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 173
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:16.329Z",
+      "queryHash": "6368583e5413f8d7465e89a4bd52bbbf6a1c608fb0f445e785e1d86f22193b55",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:16.515Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:16.693Z",
+      "queryHash": "f7a2f965a3fe71355559d30af996bc5ebe8df566250287ee9252edf4344ecfa1",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 175
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:16.869Z",
+      "queryHash": "8653ae19e8a0828e9f99fb8203af5b4e5cf84d829c4f4dd4f9fe0e1fbcdaae02",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 4,
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:17.112Z",
+      "queryHash": "4aad071f1ffc422e6a53d18c1801272a8cc6b62b86ac89ec509439fdfba9cc83",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 181
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:17.294Z",
+      "queryHash": "4aad071f1ffc422e6a53d18c1801272a8cc6b62b86ac89ec509439fdfba9cc83",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:17.471Z",
+      "queryHash": "7b38b555f4b45a0710ad8c7446aa6c6ef1488b633892f4a819e4383239fa0e02",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 80,
+      "httpStatus": 200,
+      "elapsedMs": 182
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:17.656Z",
+      "queryHash": "62bc7a9a2d72b9a23da6c91cd2c87b4223460f96c59505a2482410b191f82771",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 177
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:17.833Z",
+      "queryHash": "62bc7a9a2d72b9a23da6c91cd2c87b4223460f96c59505a2482410b191f82771",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 182
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gis.elpasotexas.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:33:18.015Z",
+      "queryHash": "23715edeb3b8ba522960f5a26eba3590696a1b9723cd31b6d719a636e3322acf",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 71,
+      "httpStatus": 200,
+      "elapsedMs": 192
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

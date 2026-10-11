@@ -122,6 +122,15 @@ describe('rehoused sidebar controls', () => {
         }
     });
 
+    it('opens the Actors view from its Activity sheet button', () => {
+        const button = openingTags(shellHtml, 'button').find(tag => attr(tag, 'id') === 'activity-agents-button');
+        expect(button).toBeTruthy();
+        expect(shellHtml).toMatch(/<button[^>]*id="activity-agents-button"[^>]*>[\s\S]*?data-i18n-key="sidebar\.game\.showAgents"/);
+        const showGameLogDialog = vi.fn();
+        new Function('showGameLogDialog', `${attr(button, 'onclick')};`)(showGameLogDialog);
+        expect(showGameLogDialog).toHaveBeenCalledWith({ view: 'actors' });
+    });
+
     it('backs every command that drives a control with a control that exists', () => {
         for (const entry of commands.filter(c => c.control)) {
             expect(indexHtml, `${entry.id} -> #${entry.control}`).toContain(`id="${entry.control}"`);
@@ -180,15 +189,38 @@ describe('availability and search', () => {
     it('puts the explorer and the simulation on the Activity sheet surface, and in the palette', () => {
         const activity = UiCommands.commandsFor('activity', fakeCtx()).map(c => c.id);
         expect(activity).toEqual(expect.arrayContaining(['activity.explorer',
-            'game.enable', 'game.playPause', 'game.interval', 'game.new']));
+            'activity.agents', 'game.enable', 'game.playPause', 'game.interval', 'game.new']));
         expect(UiCommands.SURFACES).not.toContain('game');
         const palette = UiCommands.commandsFor('palette', fakeCtx()).map(c => c.id);
-        expect(palette).toEqual(expect.arrayContaining(['activity.explorer', 'game.playPause']));
+        expect(palette).toEqual(expect.arrayContaining(['activity.explorer', 'activity.agents', 'game.playPause']));
         // A city that hides the game section loses the simulation, not the explorer.
         const noGame = { ...fakeCtx(), isSectionHidden: section => section === 'game' };
         const withoutGame = UiCommands.commandsFor('activity', noGame).map(c => c.id);
-        expect(withoutGame).toEqual(expect.arrayContaining(['activity.explorer']));
+        expect(withoutGame).toEqual(expect.arrayContaining(['activity.explorer', 'activity.agents']));
         expect(withoutGame.filter(id => id.startsWith('game.'))).toEqual([]);
+    });
+
+    it('dispatches the Actors command across all map modes, including cities that hide simulation', () => {
+        const command = UiCommands.findCommand('activity.agents');
+        expect(command.surfaces).toContain('activity');
+        expect(command.modes).toBeUndefined();
+        const global = { showGameLogDialog: vi.fn() };
+        for (const mode of ['2d', 'model', 'photo']) {
+            const ctx = { mode, global };
+            expect(UiCommands.isAvailable('activity.agents', ctx), mode).toBe(true);
+            UiCommands.runCommand('activity.agents', ctx);
+            expect(global.showGameLogDialog).toHaveBeenCalledTimes(1);
+            expect(global.showGameLogDialog).toHaveBeenCalledWith({ view: 'actors' });
+            global.showGameLogDialog.mockClear();
+        }
+        const noSimulation = {
+            mode: '2d', global,
+            isSectionHidden: section => section === 'game'
+        };
+        expect(UiCommands.isAvailable('activity.agents', noSimulation)).toBe(true);
+        UiCommands.runCommand('activity.agents', noSimulation);
+        expect(global.showGameLogDialog).toHaveBeenCalledTimes(1);
+        expect(global.showGameLogDialog).toHaveBeenCalledWith({ view: 'actors' });
     });
 
     it('keeps watched-area access available in every map mode and reveals its inline list', () => {

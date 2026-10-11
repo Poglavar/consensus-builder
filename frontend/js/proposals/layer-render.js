@@ -587,8 +587,7 @@ function renderAppliedProposalHighlight(proposal, { blink = false } = {}) {
                     L.DomEvent.stopPropagation(event);
                     const panel = document.getElementById('proposal-details-panel');
                     if (panel?.classList.contains('visible')) return;
-                    focusProposalDetails(getProposalKey(proposal), { centerOnProposal: false, showDetails: true });
-                    setProposalDetailsPanelMinimized(panel, false);
+                    focusProposalDetails(getProposalKey(proposal), { centerOnProposal: false, showDetails: true, presentation: 'compact' });
                 }
             });
         });
@@ -738,7 +737,7 @@ function showOwnParcelInfoForProposal(proposal) {
     }
 }
 
-function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = false, showDetails = true, keepHighlightsWithoutUi = false) {
+function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = false, showDetails = true, keepHighlightsWithoutUi = false, panelOptions = { presentation: 'compact' }) {
     // While a corridor tool is drawing, NOTHING may select a proposal — the session opened with a
     // clean selection and every click belongs to the drawing. Any call here mid-drawing is a bug
     // (this is what painted the blue outline + panel over an active drawing session); refuse it
@@ -775,8 +774,7 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
         window.currentlyHighlightedProposal = proposal;
         window.selectedParcelInProposal = parcelId;
         if (showDetails) {
-            window.__openProposalDetailsCollapsed = true;
-            showProposalInfo(proposal, parcelId);
+            showProposalInfo(proposal, parcelId, null, panelOptions);
             showOwnParcelInfoForProposal(proposal);
         } else {
             hideProposalDetailsPanel();
@@ -811,8 +809,7 @@ function selectAndHighlightProposal(proposalIdOrHash, parcelId, shouldCenter = f
 
     // Show proposal info immediately (no visual changes yet)
     if (showDetails) {
-        window.__openProposalDetailsCollapsed = true;
-        showProposalInfo(proposal, parcelId);
+        showProposalInfo(proposal, parcelId, null, panelOptions);
         showOwnParcelInfoForProposal(proposal);
     } else {
         hideProposalDetailsPanel();

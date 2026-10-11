@@ -139,7 +139,8 @@
                 'css/world.css',
                 'css/ground-fallback.css',
                 'css/urban-blocks.css',
-                'css/urban-blocks-playground.css'
+                'css/urban-blocks-playground.css',
+                'css/proposal-details.css'
             ];
             var cacheBuster = (typeof window !== 'undefined' && typeof window.getCacheBustToken === 'function')
                 ? window.getCacheBustToken()
@@ -965,6 +966,10 @@
                         <i class="fas fa-wave-square" aria-hidden="true"></i>
                         <span data-i18n-key="mapShell.commands.activityExplorer">Open activity explorer</span>
                     </button>
+                    <button type="button" id="activity-agents-button" class="btn btn-info" onclick="showGameLogDialog({ view: 'actors' })">
+                        <i class="fas fa-robot" aria-hidden="true"></i>
+                        <span data-i18n-key="sidebar.game.showAgents">Actors</span>
+                    </button>
                 </div>
                 <!-- Simulation: the in-UI game, a secondary feature (the agents that matter run in the
                      background and show up in the explorer). Play/pause with date · turn, and its
@@ -1067,7 +1072,6 @@
                     aria-label="Close" title="Close" data-i18n-key="common.close" data-i18n-attr="aria-label,title">×</button>
             </div>
             <div class="map-sheet-body">
-                <details class="layer-actions" data-map-modes="3d" hidden><summary data-i18n-key="mapShell.reorg.display">Display</summary><div id="model-rendering-settings"></div></details>
                 <div class="settings-brand">
                     <img src="images/consensus-builder-logo.png" alt="Consensus Builder logo" class="settings-brand-logo">
                     <span class="settings-brand-title" data-i18n-key="sidebar.header.title">Consensus Builder</span>
@@ -1080,11 +1084,11 @@
                     </span>
                 </div>
                 <div class="settings-badge-bar">
-                    <button id="dev-badge" class="dev-badge" type="button"
-                        data-i18n-key="sidebar.header.devBadge">Development</button>
-                    <button id="debug-badge" class="dev-badge debug-badge" type="button"
-                        data-i18n-key="sidebar.header.debugBadge">Debug</button>
-                    <button id="version-badge" class="dev-badge version-badge" type="button" aria-label="Version"></button>
+                    <span id="dev-badge" class="dev-badge"
+                        data-i18n-key="sidebar.header.devBadge">Development</span>
+                    <span id="debug-badge" class="dev-badge debug-badge"
+                        data-i18n-key="sidebar.header.debugBadge">Debug</span>
+                    <span id="version-badge" class="dev-badge version-badge" aria-label="Version"></span>
                 </div>
 
                 <!-- Every capability by name (js/ui/command-palette.js); also Ctrl/Cmd-K anywhere -->
@@ -1369,7 +1373,7 @@
         </div>
 
         <!-- Proposal Details Panel -->
-        <div id="proposal-details-panel" class="info-panel right-dock-panel">
+        <div id="proposal-details-panel" class="info-panel right-dock-panel" role="region" aria-labelledby="proposal-details-title">
             <div class="panel-header">
                 <h3 id="proposal-details-title">Proposal Details</h3>
                 <div class="panel-header__actions">
@@ -1703,6 +1707,7 @@
             'js/guest-policy.js',
             'js/map-screenshot.js',
             'js/og-metadata.js',
+            'js/parcels/browser-client.js',
             'js/data-source.js',
             'js/basemap.js?v=20261009-map-credits',
             'js/ui/map-credits.js?v=20261009-map-credits',
@@ -1823,6 +1828,8 @@
             'js/proposals/approval-runtime.js',
             'js/reparcellization-ownership.js',
             'js/reparcellization-deal.js',
+            'js/reparcellization-validation.js',
+            'js/reparcellization-allocation.js',
             'js/proposals/ownership-flow.js',
             'js/proposals/cadastre-ancestry.js',
             'js/proposals/claims.js',
@@ -1839,6 +1846,8 @@
             'js/proposals/agent-provenance.js',
             'js/proposals/server-sync.js',
             'js/proposals/urban-rules.js',
+            'js/proposals/display-text.js',
+            'js/proposals/panel-presentation.js',
             'js/proposals/list-ui.js',
             'js/proposals/map-action.js',
             'js/proposals/road-actions-model.js',

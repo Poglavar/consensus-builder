@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Resumable, evidence-gated city qualification runner. Nothing runs without --run."""
+"""Direct-first parcel qualification with a separate LLM exception pool; requires --run."""
 from __future__ import annotations
 
 import argparse
@@ -230,7 +230,55 @@ def _strip_api_key_env() -> dict[str, str]:
     return env
 
 
+def _direct_worker_main(request_path: Path, output_path: Path) -> int:
+    request = read_json(request_path)
+    root, attempt = Path(request["repoRoot"]), request_path.parent
+    candidate = attempt / "candidate.json"
+    preparation = attempt / "preparation.json"
+    with (attempt / "direct.log").open("w") as log:
+        prepared = subprocess.run(["node", str(root / "scripts/prepare-parcel-qualification.mjs"),
+                                   "--request", str(request_path), "--output", str(candidate)],
+                                  stdout=log, stderr=log, timeout=120)
+        if prepared.returncode == 0:
+            qualified = subprocess.run(["node", str(root / "scripts/qualify-parcel-source.mjs"),
+                                        "--candidate", str(candidate), "--output", str(attempt / "evidence"),
+                                        "--metric-script", str(root / "scripts/parcel-qualification-metric.py")],
+                                       stdout=log, stderr=log)
+            ok, reason = verify_technical_artifacts(attempt, request["cityCode"])
+            if qualified.returncode == 0 and ok:
+                status, summary = "technical-qualified", "Direct qualification passed all source and geometry gates; primary review remains required."
+            else:
+                status, summary = "needs-llm", f"Direct qualification needs troubleshooting: {reason}"
+        else:
+            report = read_json(preparation) if preparation.exists() else {}
+            status, summary = "needs-llm", report.get("reason", "No verified descriptor/native-ID candidate could be prepared.")
+    prefix = attempt.relative_to(attempt.parent).as_posix() + "/"
+    evidence = [prefix + "direct.log"]
+    evidence += [prefix + str(p.relative_to(attempt)) for p in (preparation, candidate, attempt / "evidence/qualification.json") if p.is_file()]
+    atomic_json(output_path, {"executionMode": "direct", "data": {"cityCode": request["cityCode"],
+                "status": status, "summary": summary, "evidenceFiles": evidence}})
+    return 0
+
+
 def _worker_main(request_path: Path, output_path: Path) -> int:
+    request = read_json(request_path)
+    if request.get("phase") == "direct":
+        try:
+            return _direct_worker_main(request_path, output_path)
+        except Exception as error:
+            # A failed preparation or subprocess is an actionable exception, never a
+            # claim that the city lacks parcels or a reason to stop the direct queue.
+            evidence = request_path.parent / "direct-error.json"
+            atomic_json(evidence, {"errorType": type(error).__name__})
+            atomic_json(output_path, {"executionMode": "direct", "data": {
+                "cityCode": request["cityCode"], "status": "needs-llm",
+                "summary": f"Direct worker needs troubleshooting: {type(error).__name__}",
+                "evidenceFiles": [str(evidence.relative_to(request_path.parent.parent))]}})
+            return 0
+    return _llm_worker_main(request_path, output_path)
+
+
+def _llm_worker_main(request_path: Path, output_path: Path) -> int:
     request = read_json(request_path)
     sys.path.insert(0, str(LLM_DIR))
     from llm_cost import create_cli_llm, record_subscription_run, compute_cost
@@ -342,6 +390,9 @@ class Runner:
             elif entry.get("status") == "resource-held" and self.city_bytes(city_dir) < MAX_CITY_BYTES:
                 entry.update(status="pending", summary="", evidenceFiles=[])
         self.state["pid"] = os.getpid()
+        self.state["executionMode"] = "direct-first"
+        self.state["directWorkers"] = self.args.workers
+        self.state["llmWorkers"] = getattr(self.args, "llm_workers", 1)
         for entry in cities.values():
             if entry.get("status") == "running":
                 entry.update(status="pending", pid=None, summary="Interrupted attempt; retry from retained artifacts")
@@ -372,10 +423,14 @@ class Runner:
         city_dir = self.city_dir(code)
         attempt_dir = city_dir / f"attempt-{attempt:02d}"
         attempt_dir.mkdir(parents=True, exist_ok=False)
+        phase = entry.get("phase", "direct")
         prompt = city_prompt(city, self.source_root, self.root, city_dir, attempt_dir)
+        if phase == "llm" and entry.get("directAttemptDir"):
+            prompt += f"\nA deterministic attempt already ran. Read its retained evidence at `{entry['directAttemptDir']}` and address its recorded failed gates; do not repeat discovery or overwrite prior evidence.\n"
         (attempt_dir / "prompt.md").write_text(prompt, encoding="utf-8")
         request_path, answer_path = attempt_dir / "worker-request.json", attempt_dir / "worker-answer.json"
         atomic_json(request_path, {"cityCode": code, "attempt": attempt, "cwd": str(attempt_dir),
+                                   "city": city, "phase": phase, "repoRoot": str(self.root), "sourceRoot": str(self.source_root),
                                    "timeoutMs": self.args.max_turn_minutes * 60 * 1000,
                                    "system": "Follow the task exactly. Keep evidence complete, bounded, and safe; never alter the source repository.",
                                    "prompt": prompt})
@@ -385,12 +440,13 @@ class Runner:
         process = self.popen(command, cwd=attempt_dir, stdin=subprocess.DEVNULL, stdout=out, stderr=err,
                              start_new_session=True, env=_strip_api_key_env())
         entry.update(status="running", attempts=attempt, currentAttempt=attempt,
+                     phase=phase, phaseAttempts=int(entry.get("phaseAttempts", 0)) + 1,
                      currentDir=str(attempt_dir), pid=process.pid, startedAt=utc_now())
         item = {"city": city, "process": process, "attempt": attempt, "cityDir": city_dir, "started": self.clock(),
                 "attemptDir": attempt_dir, "answerPath": answer_path, "stdout": out, "stderr": err,
-                "timedOut": False, "termAt": None, "resourceHeld": False}
+                "timedOut": False, "termAt": None, "resourceHeld": False, "phase": phase}
         self.active[process.pid] = item
-        self.log("worker-started", cityCode=code, attempt=attempt, pid=process.pid, workdir=str(attempt_dir))
+        self.log("worker-started", cityCode=code, attempt=attempt, phase=phase, pid=process.pid, workdir=str(attempt_dir))
         self.save()
         return item
 
@@ -415,7 +471,10 @@ class Runner:
         if not isinstance(data, dict) or str(data.get("cityCode")) != code:
             raise ValueError("worker returned invalid JSON or wrong cityCode")
         status = data.get("status")
-        if status not in {"technical-qualified", "held", "excluded"} or not str(data.get("summary", "")).strip():
+        allowed = {"technical-qualified", "held", "excluded"}
+        if answer.get("executionMode") == "direct" and item.get("phase") == "direct":
+            allowed.add("needs-llm")
+        if status not in allowed or not str(data.get("summary", "")).strip():
             raise ValueError("worker result lacks an allowed status or substantive summary")
         evidence = data.get("evidenceFiles")
         if not isinstance(evidence, list) or not evidence:
@@ -475,13 +534,15 @@ class Runner:
         try:
             if error is None:
                 result = self._verify_worker_answer(item)
-                entry.update(status=result["status"], summary=result["summary"], evidenceFiles=result["evidenceFiles"],
+                entry.update(status="pending" if result["status"] == "needs-llm" else result["status"], summary=result["summary"], evidenceFiles=result["evidenceFiles"],
                              pid=None, finishedAt=utc_now(), currentAttempt=None)
+                if result["status"] == "needs-llm":
+                    entry.update(phase="llm", phaseAttempts=0, directAttemptDir=str(item["attemptDir"]))
                 self.log("city-finished", cityCode=code, attempt=item["attempt"], status=result["status"], summary=result["summary"])
             else:
                 err_path = item["attemptDir"] / "worker-error.txt"
                 err_path.write_text(error, encoding="utf-8")
-                if entry["attempts"] < self.args.max_retries:
+                if entry.get("phaseAttempts", entry["attempts"]) < self.args.max_retries:
                     entry.update(status="pending", summary=error, pid=None, currentAttempt=None,
                                  lastErrorPath=str(err_path.relative_to(item["cityDir"])))
                 else:
@@ -492,7 +553,7 @@ class Runner:
         except Exception as exc:
             err_path = item["attemptDir"] / "worker-error.txt"
             err_path.write_text(f"{type(exc).__name__}: {exc}\n", encoding="utf-8")
-            if entry["attempts"] < self.args.max_retries:
+            if entry.get("phaseAttempts", entry["attempts"]) < self.args.max_retries:
                 entry.update(status="pending", summary=str(exc), pid=None, currentAttempt=None,
                              lastErrorPath=str(err_path.relative_to(item["cityDir"])))
             else:
@@ -503,10 +564,13 @@ class Runner:
         self.active.pop(item["process"].pid, None)
         self.save()
 
-    def run_batch(self) -> None:
+    def _fill_slots(self, launched: list[dict[str, Any]]) -> None:
         pending = [city for city in self.records if self.state["cities"][str(city["cityCode"])].get("status") == "pending"]
-        launched: list[dict[str, Any]] = []
-        for city in pending[:self.args.workers]:
+        counts = {phase: sum(item.get("phase", "llm") == phase for item in launched) for phase in ("direct", "llm")}
+        limits = {"direct": self.args.workers, "llm": getattr(self.args, "llm_workers", 1)}
+        for city in pending:
+            phase = self.state["cities"][str(city["cityCode"])].get("phase", "direct")
+            if counts[phase] >= limits[phase]: continue
             if self.stop_requested: break
             if self.free_bytes() < MIN_FREE_BYTES:
                 self.state["status"] = "resource-held"
@@ -523,7 +587,9 @@ class Runner:
                 self.log("city-resource-held", cityCode=str(city["cityCode"]), bytes=self.city_bytes(city_dir))
                 self.save()
                 continue
-            try: launched.append(self._start(city))
+            try:
+                launched.append(self._start(city))
+                counts[phase] += 1
             except Exception as exc:
                 entry = self.state["cities"][str(city["cityCode"])]
                 entry["attempts"] = int(entry.get("attempts", 0)) + 1
@@ -536,6 +602,10 @@ class Runner:
                              evidenceFiles=[err_path.name])
                 self.log("worker-start-failed", cityCode=str(city["cityCode"]), error=str(exc), status=entry["status"])
                 self.save()
+
+    def run_batch(self) -> None:
+        launched: list[dict[str, Any]] = []
+        self._fill_slots(launched)
         while launched:
             if self.stop_requested:
                 for item in launched: self._kill(item, signal.SIGTERM)
@@ -581,6 +651,10 @@ class Runner:
                         self._finish_item(item, f"Codex worker exited {proc.returncode}: {stderr[-1000:]}")
                     else:
                         self._finish_item(item)
+            # Each finished city frees its own slot immediately; slow exception work cannot
+            # hold the direct queue behind a batch barrier.
+            if not self.args.once and self.state.get("status") != "resource-held":
+                self._fill_slots(launched)
             self._heartbeat_if_due()
             if launched: self.sleep(POLL_SECONDS)
 
@@ -653,7 +727,11 @@ def status_report(state_dir: Path) -> dict[str, Any]:
             "pidAlive": alive, "pidIdentityVerified": identity_verified,
             "heartbeat": heartbeat, "heartbeatAgeSeconds": age, "queueSha256": state.get("queueSha256"),
             "cityCount": state.get("cityCount"), "counts": counts, "activePids": state.get("activePids", []),
-            "statePath": str(path), "resourceReason": state.get("resourceReason")}
+            "statePath": str(path), "resourceReason": state.get("resourceReason"),
+            "executionMode": state.get("executionMode"), "directWorkers": state.get("directWorkers"),
+            "llmWorkers": state.get("llmWorkers"),
+            "pendingByPhase": {phase: sum(e.get("status") == "pending" and e.get("phase", "direct") == phase
+                                          for e in state.get("cities", {}).values()) for phase in ("direct", "llm")}}
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
@@ -666,6 +744,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--source-root")
     parser.add_argument("--state-dir", default="tmp/parcel-qualification")
     parser.add_argument("--workers", type=int, choices=range(1, 4), default=3)
+    parser.add_argument("--llm-workers", type=int, choices=range(1, 4), default=1)
     parser.add_argument("--max-turn-minutes", type=int, default=45)
     parser.add_argument("--max-retries", type=int, default=2)
     parser.add_argument("--once", action="store_true")

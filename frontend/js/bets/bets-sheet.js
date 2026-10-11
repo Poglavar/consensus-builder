@@ -612,8 +612,11 @@
     // A shared bet link (/bets/<account>?city=… or ?bets=<account>): the bet's own dialog opens
     // once the app has booted. The link is left in the address bar, like ?focusProposal=, so a
     // reload lands on the same bet.
+    // Capture it now: a user can open a stake form before the last image finishes loading, and
+    // that action also writes /bets/<account>. A delayed load must not reopen it as an overview.
+    const initialBetLink = root.BetsLink && typeof root.BetsLink.parse === 'function' ? root.BetsLink.parse(root.location) : null;
     async function openFromUrl() {
-        const link = root.BetsLink && typeof root.BetsLink.parse === 'function' ? root.BetsLink.parse(root.location) : null;
+        const link = initialBetLink;
         if (!link) return;
         try {
             if (typeof root.whenAppBooted === 'function') await root.whenAppBooted();
