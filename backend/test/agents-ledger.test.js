@@ -80,13 +80,27 @@ describe('updateRun', () => {
         expect(params).toEqual([RUN_ID, 'chosen', 'running', JSON.stringify({ picks: [2] })]);
     });
 
-    it('stamps finished_at only for a terminal status, and patches nothing by default', async () => {
+    it('stamps finished_at for a terminal status and clears a previous attempt error on completion', async () => {
         const pool = createMockPool();
         pool.setResult({ rows: [RUN_ROW], rowCount: 1 });
         await updateRun(pool, RUN_ID, { status: 'done' });
         const { sql, params } = lastCall(pool);
         expect(normalize(sql)).toContain("finished_at = CASE WHEN $3 IN ('done', 'failed') THEN now() ELSE finished_at END");
-        expect(params).toEqual([RUN_ID, null, 'done', '{}']);
+        expect(params).toEqual([RUN_ID, null, 'done', '{"error":null}']);
+    });
+
+    it('preserves failure diagnostics until a successful retry completes', async () => {
+        const pool = createMockPool();
+        pool.setResults(Array.from({ length: 3 }, () => ({ rows: [RUN_ROW], rowCount: 1 })));
+        const failed = { error: 'RPC rate limited', outcome: 'failed' };
+        await updateRun(pool, RUN_ID, { status: 'failed', summaryPatch: failed });
+        expect(JSON.parse(lastCall(pool).params[3])).toEqual(failed);
+        await updateRun(pool, RUN_ID, { status: 'running', summaryPatch: { picks: [2] } });
+        expect(JSON.parse(lastCall(pool).params[3])).toEqual({ picks: [2] });
+        const recovered = { outcome: 'completed', stakes: { a: 'confirmed' } };
+        await updateRun(pool, RUN_ID, { status: 'done', summaryPatch: recovered });
+        expect(JSON.parse(lastCall(pool).params[3])).toEqual({ ...recovered, error: null });
+        expect(recovered).not.toHaveProperty('error');
     });
 
     it('fails loudly when the run row does not exist', async () => {

@@ -48,6 +48,16 @@ export async function checkCandidateBinding({
     if (!result || typeof result.ok !== 'boolean') {
         throw new Error(`binding checker returned no boolean result for ${candidate.candidateId}`);
     }
+    if (result.ok && result.binding?.coverage !== 'complete') {
+        const coverage = typeof result.binding?.coverage === 'string' ? result.binding.coverage : 'missing';
+        return {
+            ...result,
+            ok: false,
+            status: 409,
+            code: 'agent-cadastre-incomplete',
+            error: `Autonomous proposals require complete cadastre binding; checker reported ${coverage} coverage.`
+        };
+    }
     return result;
 }
 

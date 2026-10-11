@@ -40,7 +40,7 @@ import pg from 'pg';
 import { Keypair } from '@solana/web3.js';
 import * as turf from '@turf/turf';
 import { fetchCandidateParcels } from './parcel-source.js';
-import { chooseArea, contestParcels, parcelsFromSource, pickedParcelIds, runKeyFor, seedFor, slotLabel, windowIn } from './area-plan.js';
+import { chooseArea, contestParcels, parcelsFromSource, pickedParcelIds, runKeyFor, seedFor, slotLabel, windowIn, withPublishedParcelSources } from './area-plan.js';
 import { planCandidates } from './planner.js';
 import { prepareAgentPublication, verifyPublicationReadable, mirrorAgentPublication } from './chain-publication.js';
 import { markAgentRunFailed, safeFailureDiagnostic } from './run-failure.js';
@@ -361,8 +361,12 @@ async function main() {
             }
             if (existing && stageIndex(existing.stage) >= stageIndex('planned') && existing.summary?.candidates?.length) {
                 log(`${persona.name} ${i + 1}/${personas.length} planned: resumed ${existing.summary.candidates.length} candidates from ${runId}`);
-                let candidates = existing.summary.candidates;
+                let candidates = withPublishedParcelSources(existing.summary.candidates, allRuns);
                 let run = existing;
+                if (candidates !== existing.summary.candidates) {
+                    run = await updateRun(pool, runId, { summaryPatch: { candidates } });
+                    log(`${persona.name} restored rival parcel sources from their published cadastral snapshots`);
+                }
                 if (!Array.isArray(existing.summary.picks)) {
                     const preflight = await preflightCandidates({
                         db: pool, rankedCandidates: candidates, limit: args.candidates,

@@ -102,6 +102,50 @@ export function pickedParcelIds(runs, { persona = null } = {}) {
     return ids;
 }
 
+function snapshotParcelSource(record, { proposalId, parcelId }) {
+    if (record?.proposalId !== proposalId) return null;
+    const snapshot = record.cadastreSnapshot;
+    if (snapshot?.protocol !== 'cadastre-snapshot/1' || !Array.isArray(snapshot.parcels)) return null;
+    const parcel = snapshot.parcels.find(entry => String(entry?.id ?? '') === String(parcelId));
+    if (!parcel) return null;
+    const source = parcel.sourceId ?? snapshot.source;
+    if (typeof source !== 'string') return null;
+    const sourceId = source.trim();
+    return sourceId && sourceId !== 'hr-cadastre' ? sourceId : null;
+}
+
+function publishedParcelSource(runs, { persona, proposalId, parcelId }) {
+    for (const run of runs || []) {
+        if (run?.persona !== persona) continue;
+        const summary = run.summary || {};
+        for (const pick of summary.picks || []) {
+            if (pick?.proposalId !== proposalId || !summary.posts?.[pick.candidateId]) continue;
+            const record = summary.publications?.[pick.candidateId]?.record;
+            const sourceId = snapshotParcelSource(record, { proposalId: pick.proposalId, parcelId });
+            if (sourceId) return sourceId;
+        }
+    }
+    return null;
+}
+
+/** Carry verified parcel-source identity onto resumed rival candidates without changing their design. */
+export function withPublishedParcelSources(candidates, runs) {
+    if (!Array.isArray(candidates)) throw new TypeError('candidates must be an array');
+    let changed = false;
+    const updated = candidates.map(candidate => {
+        if (candidate?.parcelSourceId || !candidate?.rival?.persona || !candidate.rival.proposalId) return candidate;
+        const parcelSourceId = publishedParcelSource(runs, {
+            persona: candidate.rival.persona,
+            proposalId: candidate.rival.proposalId,
+            parcelId: candidate.parcelId
+        });
+        if (!parcelSourceId) return candidate;
+        changed = true;
+        return { ...candidate, parcelSourceId };
+    });
+    return changed ? updated : candidates;
+}
+
 /**
  * The rival's parcels: land other proposers published on in the last `withinDays` days, as planner
  * parcels carrying the stored geometry and what was measured there. A rival proposal on the same
@@ -124,9 +168,13 @@ export function contestParcels(runs, { persona, runDay, withinDays = 3, floorCap
             const candidate = (summary.candidates || []).find(item => item.candidateId === pick.candidateId);
             if (!candidate?.geometry || byParcel.has(candidate.parcelId)) continue;
             if (retired.has(summary.mints?.[pick.candidateId]?.proposalPda)) continue;
+            const record = summary.publications?.[pick.candidateId]?.record;
+            const parcelSourceId = candidate.parcelSourceId || snapshotParcelSource(record, {
+                proposalId: pick.proposalId, parcelId: candidate.parcelId
+            });
             byParcel.set(candidate.parcelId, {
                 parcelId: candidate.parcelId,
-                parcelSourceId: candidate.parcelSourceId || null,
+                parcelSourceId: parcelSourceId === 'hr-cadastre' ? null : parcelSourceId || null,
                 parcelNumber: candidate.parcelNumber ?? null,
                 koName: candidate.koName ?? null,
                 city: summary.city ?? null,
