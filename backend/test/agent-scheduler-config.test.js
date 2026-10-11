@@ -23,6 +23,12 @@ describe('algorithmic agent schedule', () => {
         expect(actors).toHaveLength(10);
         for (const actor of actors) expect(actor.env.AGENT_SOL_FUNDING_ENABLED).toBe('1');
     });
+    it('uses the production provider account limit for the API and every actor', () => {
+        const apiEnv = require('../ecosystem.config.cjs').apps.find(item => item.name === 'consensus-builder-api').env;
+        expect(apiEnv.SOLANA_RPC_MAX_ACCOUNTS).toBe('5');
+        const actors = apps.filter(item => /^agents\/(run|support-run|society-run|lens-member-run)\.mjs$/.test(item.script));
+        for (const actor of actors) expect(actor.env.SOLANA_RPC_MAX_ACCOUNTS).toBe(apiEnv.SOLANA_RPC_MAX_ACCOUNTS);
+    });
     it('checkpoints support and society runs before RPC reads and persists pre-action failures', () => {
         const supporter = fs.readFileSync(new URL('../agents/support-run.mjs', import.meta.url), 'utf8');
         const society = fs.readFileSync(new URL('../agents/society-run.mjs', import.meta.url), 'utf8');

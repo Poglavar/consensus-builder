@@ -104,7 +104,7 @@ describe('society account reads', () => {
             }
         };
 
-        await expect(readAccounts(connection, addresses)).resolves.toEqual([
+        await expect(readAccounts(connection, addresses, { SOLANA_RPC_MAX_ACCOUNTS: '5' })).resolves.toEqual([
             'info:address-0', null, 'info:address-2', 'info:address-3', 'info:address-4',
             'info:address-5', 'info:address-6', 'info:address-7', null, 'info:address-9',
             'info:address-10', 'info:address-11'
@@ -123,7 +123,7 @@ describe('society account reads', () => {
             }
         };
 
-        await expect(readAccounts(connection, ['a', 'b', 'c'])).rejects.toThrow(/returned 2 for 3 address/);
+        await expect(readAccounts(connection, ['a', 'b', 'c'])).rejects.toThrow(/returned 2 results for a batch of 3 accounts/);
         expect(calls).toEqual([['a', 'b', 'c']]);
     });
 

@@ -28,6 +28,8 @@ module.exports = {
       PUBLIC_API_BASE_URL: 'https://api.urbangametheory.xyz',
       // Read immutable metadata from the same public gateway as the pinning service.
       IPFS_READ_GATEWAY: 'https://gateway.pinata.cloud/ipfs',
+      // The configured devnet RPC plan accepts five accounts per getMultipleAccounts request.
+      SOLANA_RPC_MAX_ACCOUNTS: '5',
       // Basemap tiles for server-rendered proposal thumbnails (thumbnails/tile-stitch.js). Public
       // key — the browser basemap (frontend/js/basemap.js) ships the same one.
       MAPTILER_API_KEY: 'kps68PDVgfwEhLNACcHe',

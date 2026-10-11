@@ -8,6 +8,7 @@ import { Connection } from '@solana/web3.js';
 import { buildContests, proposalAccountOf } from '../markets/contests.js';
 import { decodeProposalState } from '../agents/lifecycle-actions.js';
 import { EFFECTIVE_STATUS_SQL, normalizeCityCode } from './proposals.js';
+import { accountsPerRequest, getMultipleAccountsBatched } from '../solana/account-batching.js';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
@@ -18,7 +19,6 @@ marketClient.configure({ web3 });
 export const DEVNET_USDC_MINT = '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU';
 const PROPOSAL_STATUS_NAMES = Object.freeze(['Active', 'Executed', 'Cancelled', 'Expired']);
 const CACHE_TTL_MS = 20_000;
-const ACCOUNTS_PER_RPC = 100;
 const MAX_PROPOSALS = 2000;
 
 // The columns rowToProposal reads; the bet link route (bets-share.js) selects one row by account.
@@ -84,22 +84,20 @@ export function rowToProposal(row) {
 // Market accounts for a list of proposal accounts, read in batches through SOLANA_RPC_URL.
 // Returns Map(proposalAccount → { address, market|null }).
 export function defaultMarketReader(env = process.env) {
+    const batchSize = accountsPerRequest(env);
     let connection = null;
     return async (proposalAccounts) => {
         connection ??= new Connection(env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
         const pdas = proposalAccounts.map(account => ({ account, pda: marketClient.getMarketPda(account)[0] }));
         const result = new Map();
-        for (let offset = 0; offset < pdas.length; offset += ACCOUNTS_PER_RPC) {
-            const slice = pdas.slice(offset, offset + ACCOUNTS_PER_RPC);
-            const infos = await connection.getMultipleAccountsInfo(slice.map(entry => entry.pda), 'confirmed');
-            slice.forEach((entry, index) => {
-                const info = infos[index];
-                result.set(entry.account, {
-                    address: entry.pda.toBase58(),
-                    market: info && info.data ? marketClient.decodeMarket(info.data) : null
-                });
+        const infos = await getMultipleAccountsBatched(connection, pdas.map(entry => entry.pda), { batchSize });
+        pdas.forEach((entry, index) => {
+            const info = infos[index];
+            result.set(entry.account, {
+                address: entry.pda.toBase58(),
+                market: info && info.data ? marketClient.decodeMarket(info.data) : null
             });
-        }
+        });
         return result;
     };
 }
@@ -108,24 +106,23 @@ export function defaultMarketReader(env = process.env) {
 // Returns Map(proposalAccount → 'Active' | 'Executed' | 'Cancelled' | 'Expired'); unreadable
 // accounts are left out, so the database word stands in for them.
 export function defaultProposalStatusReader(env = process.env) {
+    const batchSize = accountsPerRequest(env);
     let connection = null;
     return async (proposalAccounts) => {
         connection ??= new Connection(env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
         const result = new Map();
-        for (let offset = 0; offset < proposalAccounts.length; offset += ACCOUNTS_PER_RPC) {
-            const slice = proposalAccounts.slice(offset, offset + ACCOUNTS_PER_RPC);
-            const infos = await connection.getMultipleAccountsInfo(slice.map(account => new web3.PublicKey(account)), 'confirmed');
-            slice.forEach((account, index) => {
-                const info = infos[index];
-                if (!info || !info.data) return;
-                try {
-                    const name = PROPOSAL_STATUS_NAMES[decodeProposalState(info.data).status];
-                    if (name) result.set(account, name);
-                } catch (error) {
-                    console.warn(`[${new Date().toISOString()}] GET /markets: proposal ${account} did not decode: ${error.message}`);
-                }
-            });
-        }
+        const addresses = proposalAccounts.map(account => new web3.PublicKey(account));
+        const infos = await getMultipleAccountsBatched(connection, addresses, { batchSize });
+        proposalAccounts.forEach((account, index) => {
+            const info = infos[index];
+            if (!info || !info.data) return;
+            try {
+                const name = PROPOSAL_STATUS_NAMES[decodeProposalState(info.data).status];
+                if (name) result.set(account, name);
+            } catch (error) {
+                console.warn(`[${new Date().toISOString()}] GET /markets: proposal ${account} did not decode: ${error.message}`);
+            }
+        });
         return result;
     };
 }

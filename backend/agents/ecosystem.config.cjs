@@ -8,9 +8,12 @@
 // The proposer now renders its immutable thumbnail before minting. Use the same
 // public basemap configuration as the API that rendered its old server-side post.
 const apiEnv = require('../ecosystem.config.cjs').apps.find(app => app.name === 'consensus-builder-api').env;
-const fundingEnv = { AGENT_SOL_FUNDING_ENABLED: '1' };
+const botEnv = {
+  AGENT_SOL_FUNDING_ENABLED: '1',
+  SOLANA_RPC_MAX_ACCOUNTS: apiEnv.SOLANA_RPC_MAX_ACCOUNTS
+};
 const lensEnv = {
-  ...fundingEnv,
+  ...botEnv,
   NODE_ENV: 'production',
   X402_NETWORK: 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1',
   X402_FACILITATOR_URL: 'https://api.cdp.coinbase.com/platform/v2/x402',
@@ -39,7 +42,7 @@ function proposerJob(name, persona, cron) {
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
-      ...fundingEnv,
+      ...botEnv,
       MAPTILER_API_KEY: apiEnv.MAPTILER_API_KEY,
       IPFS_READ_GATEWAY: apiEnv.IPFS_READ_GATEWAY,
       AGENT_DAILY_ACTION_CAP: '13',
@@ -66,7 +69,7 @@ function societyJob(name, persona, cron, caps) {
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
-      ...fundingEnv,
+      ...botEnv,
       AGENT_API_BASE: 'https://api.urbangametheory.xyz',
       AGENT_SOCIETY_ACTION_CAP: caps.actions,
       AGENT_SOCIETY_USDC_CAP: caps.usdc
@@ -91,7 +94,7 @@ module.exports = {
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
-      ...fundingEnv,
+      ...botEnv,
       MAPTILER_API_KEY: apiEnv.MAPTILER_API_KEY,
       IPFS_READ_GATEWAY: apiEnv.IPFS_READ_GATEWAY,
       // 3 for the day's proposal (mint, market, stake) + 3 retirements × (cancel, resolve, claim).
@@ -121,7 +124,7 @@ module.exports = {
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
-      ...fundingEnv,
+      ...botEnv,
       AGENT_API_BASE: 'https://api.urbangametheory.xyz',
       AGENT_SUPPORT_USDC_CAP: '0.25'
     },
@@ -146,7 +149,7 @@ module.exports = {
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
-      ...fundingEnv,
+      ...botEnv,
       AGENT_API_BASE: 'https://api.urbangametheory.xyz',
       // One NO stake (0.01 USDC) plus a possible market creation, after collecting any winnings.
       AGENT_SOCIETY_ACTION_CAP: '3',
@@ -172,7 +175,7 @@ module.exports = {
     kill_timeout: 900000,
     env: {
       NODE_ENV: 'production',
-      ...fundingEnv,
+      ...botEnv,
       AGENT_API_BASE: 'https://api.urbangametheory.xyz',
       // One pledge or one revoke per invocation (a pledge is a soft 0.05 USDC commitment), after
       // collecting any winnings.
