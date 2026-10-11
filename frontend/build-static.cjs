@@ -151,6 +151,7 @@ const SAFE_GROUPS = [
             "js/parcels/source-health.js",
             "js/parcels/schelling-grid.js",
             "js/parcels/ground-fallback.js",
+            "js/parcels/source-progress.js",
             "js/parcels/fetch.js",
             "js/parcels/ground-service.js",
             "js/parcels/point-map.js",
