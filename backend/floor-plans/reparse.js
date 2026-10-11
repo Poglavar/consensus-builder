@@ -5,7 +5,7 @@ import { enqueue } from './archive.js';
 import { addressKey,sourceLocality } from './building-resolution.js';
 import { eligibleListingSql,qualifyPageEvidence,excludeSource,LOCATION_POLICY } from './source-policy.js';
 import { purgeExcludedContent } from './source-retention.js';
-import { readBlobRow } from './blob-store.js';
+import { readBlobRow,pruneDiscardedFiles } from './blob-store.js';
 
 export async function reparseListings(db,{log=console.log}={}) {
  const locked=(await db.query(`SELECT pg_try_advisory_lock(hashtext('floor-plan-crawl')) AS locked`)).rows[0].locked;
@@ -38,6 +38,7 @@ export async function reparseListings(db,{log=console.log}={}) {
       if(row.match_status==='candidate'||row.match_status==='verified'||row.building_id) result.buildingLinksWithdrawn++;
       result.excluded++;
       await db.query('COMMIT');
+      await pruneDiscardedFiles(db);
      } catch(error) {await db.query('ROLLBACK');throw error;}
      result.processed++;
      if(!evidence.listing) result.notListing++;

@@ -2,6 +2,7 @@
 import { extractPageEvidence } from './page-evidence.js';
 import * as cheerio from 'cheerio';
 import { listingIdentity } from './explicit-location.js';
+import { readBlobRow,pruneDiscardedFiles } from './blob-store.js';
 import { EXCLUSION_REASON,ORPHAN_ASSET_REASON,LOCATION_POLICY,ELIGIBLE_ASSET_SQL,excludeSource,qualifyPageEvidence } from './source-policy.js';
 
 const hashStrings=value=>JSON.stringify(value).match(/\b[a-f0-9]{64}\b/g)||[];
@@ -32,8 +33,8 @@ export async function purgeExcludedContent(db) {
  }
  const purge=candidates.filter(hash=>!protectedHashes.has(hash));
  const discarded=(await db.query(`WITH removed AS (
-  UPDATE floor_plan.blob SET data=NULL,discarded_at=now(),discard_reason=$2,updated_at=now()
-   WHERE sha256=ANY($1::text[]) AND data IS NOT NULL RETURNING byte_count)
+  UPDATE floor_plan.blob SET bytes_available=false,discarded_at=now(),discard_reason=$2,updated_at=now()
+   WHERE sha256=ANY($1::text[]) AND bytes_available RETURNING byte_count)
   SELECT count(*)::int AS blobs,COALESCE(sum(byte_count),0)::text AS bytes FROM removed`,[purge,EXCLUSION_REASON])).rows[0];
  await db.query(`UPDATE floor_plan.extraction SET model=NULL,evidence=jsonb_build_object('excluded',true,'reason',$2::text),
   status='not_plan',error=NULL,updated_at=now() WHERE sha256=ANY($1::text[])`,[purge,EXCLUSION_REASON]);
@@ -83,7 +84,7 @@ export async function enforceSourcePolicy(db,{apply=false,log=console.log}={}) {
    const rows=(await db.query(`SELECT l.*,t.url,t.agency_id,l.url IS NOT NULL AS has_listing,
     COALESCE(l.last_observed_at,t.last_fetched_at,
      (SELECT max(o.observed_at) FROM floor_plan.observation o WHERE o.url=t.url)) AS source_observed_at,
-    t.current_sha256,t.exclusion_reason,t.source_kind,b.data,b.media_type,
+    t.current_sha256,t.exclusion_reason,t.source_kind,b.sha256,b.storage_path,b.byte_count,b.bytes_available,b.media_type,
     EXISTS(SELECT 1 FROM floor_plan.exclusion x WHERE x.url=t.url OR x.identity=t.source_identity) AS permanently_excluded
     FROM floor_plan.target t LEFT JOIN floor_plan.listing l USING(url) LEFT JOIN floor_plan.blob b ON b.sha256=t.current_sha256
     WHERE t.url>$1 AND (l.url IS NOT NULL OR (t.kind IN ('home','page') AND t.current_sha256 IS NOT NULL))
@@ -94,7 +95,8 @@ export async function enforceSourcePolicy(db,{apply=false,log=console.log}={}) {
     for(const row of rows) {
      cursor=row.url;result.checked++;
      if(row.permanently_excluded||row.exclusion_reason) {result.alreadyExcluded++;continue;}
-     const html=row.data&&/html/i.test(row.media_type||'')?row.data.toString():null;
+     const bytes=/html/i.test(row.media_type||'')?await readBlobRow(row):null;
+     const html=bytes?bytes.toString():null;
      const document=cheerio.load(html||'');
      const evidence=qualifyPageEvidence(html||'',row.url,extractPageEvidence(html||'',row.url,{sourceKind:row.source_kind,discovery:false,document}),{document});
      // Legacy parsers could archive an object page without ever creating a listing row.
@@ -135,6 +137,7 @@ export async function enforceSourcePolicy(db,{apply=false,log=console.log}={}) {
    await db.query('BEGIN');
    try {result.cleanup=await purgeExcludedContent(db);await db.query('COMMIT');}
    catch(error) {await db.query('ROLLBACK');throw error;}
+   await pruneDiscardedFiles(db);
   }
   return result;
  } finally {await db.query(`SELECT pg_advisory_unlock(hashtext('floor-plan-crawl'))`);}

@@ -49,7 +49,7 @@ describe('durable image classification stage',()=>{
   const prepared=await imageStageAdapter({render}).prepare(db,task,llm,{deadline:Infinity});
   expect(prepared.localResult).toMatchObject({classified:1,discarded:0});
   expect(render).not.toHaveBeenCalled();expect(llm.batchRequest).not.toHaveBeenCalled();
-  expect(calls.some(([sql])=>sql.includes('UPDATE floor_plan.blob SET data=NULL'))).toBe(false);
+  expect(calls.some(([sql])=>sql.includes('UPDATE floor_plan.blob SET bytes_available=false'))).toBe(false);
   const update=calls.find(([sql])=>sql.includes('UPDATE floor_plan.image_task SET status'));
   expect(update[1][1]).toBe('complete');
   expect(JSON.parse(update[1][2]).reading).toMatchObject({kind:'floor_plan',containsPlan:true});
@@ -65,7 +65,7 @@ describe('durable image classification stage',()=>{
   const reading={kind:'photo',containsPlan:false,confidence:'low',reason:'Ambiguous image.',discardConfirmed:false};
   const saved=await storeImageReading(db,task,reading,{sourceUrl,model:'cheap-model'});
   expect(saved).toMatchObject({needsReview:1,discarded:0});
-  expect(calls.some(([sql])=>sql.includes('UPDATE floor_plan.blob SET data=NULL'))).toBe(false);
+  expect(calls.some(([sql])=>sql.includes('UPDATE floor_plan.blob SET bytes_available=false'))).toBe(false);
   expect(calls.find(([sql])=>sql.includes('UPDATE floor_plan.target SET image_kind'))[1][1]).toBe('uncertain');
  });
 
@@ -96,7 +96,7 @@ describe('durable image classification stage',()=>{
   expect(await enqueueImageTasks(db,{limit:1,site:'opereta.hr'})).toMatchObject({reused:1,enqueued:0});
   expect(calls.find(([sql])=>sql.includes('FROM floor_plan.image_task it JOIN'))[0])
    .toContain("it.result->'reading'->>'discardConfirmed'='true'");
-  expect(calls.some(([sql])=>sql.includes('UPDATE floor_plan.blob SET data=NULL'))).toBe(true);
+  expect(calls.some(([sql])=>sql.includes('UPDATE floor_plan.blob SET bytes_available=false'))).toBe(true);
   expect(calls.some(([sql])=>sql.includes('INSERT INTO floor_plan.image_task'))).toBe(false);
  });
 

@@ -1,8 +1,14 @@
 import { createRequire } from 'node:module';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 const require = createRequire(import.meta.url);
+const repoRoot = path.join(os.homedir(), 'code', 'consensus-builder');
+const backendRoot = path.join(repoRoot, 'backend');
+const solanaConfig = path.join(os.homedir(), '.config', 'solana');
+const backendLogs = path.join(backendRoot, 'logs');
 const apps = require('../agents/ecosystem.config.cjs').apps;
 const app = apps[0];
 
@@ -149,7 +155,7 @@ describe('algorithmic agent schedule', () => {
             autorestart: false,
             cron_restart: '30 2 * * *',
             merge_logs: true,
-            env: { LAND_ORACLE_RUN_STATS: '/root/code/consensus-builder/backend/logs/land-oracle-stats.json' }
+            env: { LAND_ORACLE_RUN_STATS: path.join(backendLogs, 'land-oracle-stats.json') }
         });
         const source = fs.readFileSync(new URL('../scripts/sync-land-events.mjs', import.meta.url), 'utf8');
         expect(source).toContain('buildLandOracleRunStats');
@@ -161,16 +167,16 @@ describe('algorithmic agent schedule', () => {
         expect(resolver).toMatchObject({
             script: 'blockchain/solana/scripts/prospective-external-market.mjs',
             args: '--settle --live',
-            cwd: '/root/code/consensus-builder',
+            cwd: repoRoot,
             instances: 1,
             autorestart: false,
             cron_restart: '45 * * * *',
             merge_logs: true,
             env: {
-                SOLANA_KEYPAIR: '/root/.config/solana/court-oracle.json',
-                PROSPECTIVE_BETTOR_KEYPAIR: '/root/.config/solana/ugt-persona-01.json',
-                PROSPECTIVE_MARKET_STATE: '/root/.config/solana/ugt-prospective-court-v2.json',
-                PROSPECTIVE_RUN_STATS: '/root/code/consensus-builder/backend/logs/prospective-resolver-stats.json'
+                SOLANA_KEYPAIR: path.join(solanaConfig, 'court-oracle.json'),
+                PROSPECTIVE_BETTOR_KEYPAIR: path.join(solanaConfig, 'ugt-persona-01.json'),
+                PROSPECTIVE_MARKET_STATE: path.join(solanaConfig, 'ugt-prospective-court-v2.json'),
+                PROSPECTIVE_RUN_STATS: path.join(backendLogs, 'prospective-resolver-stats.json')
             }
         });
     });

@@ -11,6 +11,7 @@ import { isGeneratedSearchTarget } from './discovery-policy.js';
 import { NEGATIVE_IMAGE_CACHE_SQL } from './image-retention.js';
 import { ALLOWED_TARGET_SQL,canFetchTarget,qualifyPageEvidence } from './source-policy.js';
 import { purgeExcludedContent } from './source-retention.js';
+import { pruneDiscardedFiles } from './blob-store.js';
 import { crawlMetricCounters, crawlMetricTelemetry, emptyCrawlMetrics, recordCrawlAttempt, recordCrawlResponse, recordCrawlSuccess } from './crawl-metrics.js';
 const sameSite=(a,b)=>new URL(a).hostname.replace(/^www\./,'')===new URL(b).hostname.replace(/^www\./,'');
 export function discoverTargetsWithStats(target,response,evidence) {
@@ -106,6 +107,7 @@ export async function crawl(db,{maxPages=1000,maxMinutes=45,agencyId=null,site=n
    await db.query('BEGIN');
    try {counters.cleanup=await purgeExcludedContent(db);await db.query('COMMIT');}
    catch(error) {await db.query('ROLLBACK');throw error;}
+   await pruneDiscardedFiles(db);
   }
   const {pending,deferredUnmatchedAssets,deferredUnownedAssets,deferredGeneratedSearchTargets}=await countPendingTargets(db,{agencyId,site,discoveryOnly,assetOnly,matchedAssetsOnly,ownedAssetsOnly,planAssetsOnly});
   const status=counters.failed||counters.blocked||pending?'partial':'complete';

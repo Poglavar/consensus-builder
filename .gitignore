@@ -34,7 +34,7 @@ frontend/rpc-config.js
 /data/metrocoalescence-chapter-*.mp3
 /data/Metrocoalescense-SinglePages.pdf
 
-# Raw agency downloads stay in the database or local source caches, outside Git.
+# Raw source HTML, images, PDFs and migration reports are local files, outside Git.
 /data/floor-plan-downloads/
 /data/floor-plan-agencies/raw/
 /data/floor-plan-agencies/downloads/

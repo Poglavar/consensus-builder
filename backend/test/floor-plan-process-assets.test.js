@@ -1,6 +1,7 @@
 // Verify located-building extraction and honest pending/unprocessed accounting.
 import {describe,expect,it,vi} from 'vitest';
 import {processAssets} from '../floor-plans/process-assets.js';
+import {readBlobRow} from '../floor-plans/blob-store.js';
 vi.mock('../floor-plans/blob-store.js',()=>({readBlobRow:vi.fn(async()=>Buffer.from('fixture'))}));
 
 const hash=n=>String(n).repeat(64);
@@ -51,9 +52,19 @@ describe('building-located floor-plan extraction',()=>{
  });
 
  it('marks extractor failures and does not report a successful empty extraction',async()=>{
-  const db=mockDb([{sha256:hash(3),media_type:'application/pdf',data:Buffer.from('bad')}]);
+  const db=mockDb([{sha256:hash(3),media_type:'application/pdf',storage_path:'bad.pdf',byte_count:3,bytes_available:true}]);
   const result=await processAssets(db,{maxAssets:1,maxMinutes:2,extractor:async()=>{throw new Error('OpenCV unavailable');},log:()=>{}});
   expect(result).toMatchObject({status:'partial',selected:1,processed:1,failed:1,pending:0});
   expect(db.calls.some(({sql,args})=>sql.includes("SET status='error'")&&args[0]===hash(3))).toBe(true);
+ });
+
+ it('surfaces missing retained files as extraction errors',async()=>{
+  const sha=hash(4),db=mockDb([{sha256:sha,media_type:'application/pdf',storage_path:'missing.pdf',byte_count:3,bytes_available:true}]);
+  readBlobRow.mockResolvedValueOnce(null);
+  const runExtractor=vi.fn();
+  const result=await processAssets(db,{maxAssets:1,maxMinutes:2,extractor:runExtractor,log:()=>{}});
+  expect(result).toMatchObject({status:'partial',selected:1,processed:1,failed:1});
+  expect(runExtractor).not.toHaveBeenCalled();
+  expect(db.calls.some(({sql,args})=>sql.includes("SET status='error'")&&args[0]===sha&&/Archived source bytes are missing/.test(args[1]))).toBe(true);
  });
 });

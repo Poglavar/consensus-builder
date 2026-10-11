@@ -38,7 +38,8 @@ export async function productionPreflight(db,{env=process.env,python=env.FLOOR_P
  const requiredColumns=[['floor_plan','listing','building_city'],['floor_plan','listing','building_source'],
   ['floor_plan','listing','building_owner_id'],['floor_plan','listing','match_checked_at'],['floor_plan','processed_plan','publication'],
   ['floor_plan','ai_batch','stage'],['floor_plan','target','image_kind'],['floor_plan','target','image_classified_sha256'],
-  ['floor_plan','blob','discarded_at'],['floor_plan','target','source_identity'],['floor_plan','target','source_kind'],
+  ['floor_plan','blob','discarded_at'],['floor_plan','blob','storage_path'],['floor_plan','blob','bytes_available'],
+  ['floor_plan','blob','stored_at'],['floor_plan','target','source_identity'],['floor_plan','target','source_kind'],
   ['floor_plan','target','exclusion_reason']];
  const columnRows=(await db.query(`SELECT r.table_schema,r.table_name,r.column_name
   FROM unnest($1::text[],$2::text[],$3::text[]) AS r(table_schema,table_name,column_name)

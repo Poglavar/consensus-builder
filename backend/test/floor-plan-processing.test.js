@@ -6,6 +6,9 @@ import {taskId,taskContext,enqueuePlanTasks,currentTaskContext,reservationUsd,st
 import {createLlm,DEFAULTS} from '../../../agents/lib/llm-cost/llm.mjs';
 import {processAssets} from '../floor-plans/process-assets.js';
 import {reparseListings} from '../floor-plans/reparse.js';
+vi.mock('../floor-plans/blob-store.js',async importOriginal=>({
+    ...await importOriginal(),readBlobRow:vi.fn(async row=>row?.sourceBytes??Buffer.from('fixture'))
+}));
 
 // The real shared layer over a client that must never be called: building a request is offline.
 const never=vi.fn(async()=>{throw new Error('building a request makes no API call');});
@@ -138,7 +141,7 @@ it('tombstones and purges a formerly eligible listing when fresh archived HTML l
     const row={url:listingUrl,agency_id:9,source_id:'I4812',facts:{explicitLocation:{schema:'explicit-listing-location.v1',street:'Ilica',houseNumber:'1'}},
         asset_urls:[{url:'https://cdn.test/old-photo.jpg',listingOwned:true}],match_status:'verified',building_city:'zagreb',building_source:'zagreb-3d',
         building_owner_id:'',building_id:'42',building_evidence:{basis:'previous'},match_checked_at:new Date(),media_type:'text/html',
-        current_sha256:sourceHash,source_kind:'agency',data:Buffer.from(`<script type="application/ld+json">{"@type":"Apartment","identifier":"I4812"}</script>
+        current_sha256:sourceHash,source_kind:'agency',sourceBytes:Buffer.from(`<script type="application/ld+json">{"@type":"Apartment","identifier":"I4812"}</script>
             <main><h1>Listing without an advertised address</h1><p>Details with no street or house number.</p><img src="https://cdn.test/new-photo.jpg"></main>`)};
     const calls=[];let delivered=false;
     const db={query:vi.fn(async(sql,args=[])=>{
@@ -158,7 +161,7 @@ it('tombstones and purges a formerly eligible listing when fresh archived HTML l
     expect(result).toMatchObject({processed:1,changed:1,notListing:0,excluded:1,buildingLinksWithdrawn:1,enqueued:0});
     expect(calls.some(({sql,args})=>sql.startsWith('INSERT INTO floor_plan.exclusion')&&args[0]==='opereta:4812')).toBe(true);
     expect(calls.some(({sql})=>sql.startsWith('UPDATE floor_plan.listing l SET facts=jsonb_build_object'))).toBe(true);
-    expect(calls.some(({sql})=>sql.startsWith('WITH removed AS')&&sql.includes('data=NULL'))).toBe(true);
+    expect(calls.some(({sql})=>sql.startsWith('WITH removed AS')&&sql.includes('bytes_available=false'))).toBe(true);
     expect(calls.some(({sql})=>sql.startsWith('DELETE FROM floor_plan.observation'))).toBe(true);
     expect(calls.some(({sql})=>sql.startsWith('INSERT INTO floor_plan.target'))).toBe(false);
     expect(calls.some(({sql})=>sql.startsWith('UPDATE floor_plan.listing SET source_id='))).toBe(false);

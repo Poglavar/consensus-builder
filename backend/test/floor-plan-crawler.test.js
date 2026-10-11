@@ -6,6 +6,11 @@ import { DEFERRED_GENERATED_SEARCH_SQL, isGeneratedSearchTarget } from '../floor
 import { importAgencies, saveObservation } from '../floor-plans/archive.js';
 import { seedKnownSites } from '../floor-plans/agency-sites.js';
 import { runCli } from '../scripts/floor-plan-archive.mjs';
+import { readFile } from 'node:fs/promises';
+import { sourceFilePath } from '../floor-plans/blob-store.js';
+import { useTestArchive } from './helpers/floor-plan-file-store.js';
+
+useTestArchive();
 
 const response = (body, contentType = 'text/html') => ({ body: Buffer.from(body), headers: { contentType }, finalUrl: 'https://agency.test/home', status: 200 });
 const explicitLocation = { schema: 'explicit-listing-location.v1', street: 'Ilica', houseNumber: '12', address: 'Ilica 12', quote: 'Ilica 12', basis: 'structured-property-address', sourceUrl: 'https://agency.test/listing' };
@@ -556,13 +561,16 @@ it('counts only work eligible in the current phase and reports deferred unmatche
 });
 
 describe('floor-plan archive behavior', () => {
-    it('stores content-addressed bytes and observation metadata', async () => {
+    it('stores content-addressed files and observation metadata without sending bytes to PostgreSQL', async () => {
         const calls = [];
         const db = { query: vi.fn(async (sql, params) => { calls.push([sql, params]); return { rowCount: 1, rows: sql.includes('AS allowed FROM floor_plan.target') ? [{ allowed: true }] : [] }; }) };
         const target = { url: 'https://agency.test/a', kind: 'asset', current_sha256: null, agency_id: 4, discovered_from: 'https://agency.test/home' };
         const result = await saveObservation(db, target, { body: Buffer.from('plan'), status: 200, headers: { contentType: 'application/pdf', etag: 'e', lastModified: 'l' } }, { listing: null, assets: [] }, 'run-1');
         expect(result.changed).toBe(true);
-        expect(calls.some(([sql, params]) => sql.includes('floor_plan.blob') && params[3].equals(Buffer.from('plan')))).toBe(true);
+        const [sql,params]=calls.find(([sql])=>sql.includes('INSERT INTO floor_plan.blob'));
+        expect(await readFile(sourceFilePath(params[3],result.hash))).toEqual(Buffer.from('plan'));
+        expect(sql).not.toMatch(/\bdata\b/);
+        expect(params.some(Buffer.isBuffer)).toBe(false);
         expect(calls.some(([sql]) => sql.includes('floor_plan.extraction'))).toBe(true);
     });
 

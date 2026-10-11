@@ -58,6 +58,9 @@ describe('floor-plan daily pipeline',()=>{
   expect(result.stages.recognizeBuildings.submitted).toBe(1);
   expect(result.stages.classifyImages.submitted).toBe(0);
   expect(result.storage).toMatchObject({newBlobs:1,newBytes:50});
+  const snapshot=db.query.mock.calls.find(([sql])=>sql.includes('AS blobs'))[0];
+  expect(snapshot).toContain('WHERE bytes_available');
+  expect(snapshot).not.toMatch(/\bdata\b/i);
   expect(db.query.mock.calls.some(([sql])=>sql.includes("SET status=$2,result=$3,finished_at=now()"))).toBe(true);
  });
 
@@ -159,6 +162,14 @@ describe('floor-plan production preflight',()=>{
   const result=await productionPreflight(db,{env:{ANTHROPIC_API_KEY:'x'},runtimeCheck:async()=>{},price:()=>0.00001});
   expect(result.checks).toMatchObject({schema:true,sites:false,sourceTargets:false});
   expect(result.errors).toEqual(expect.arrayContaining([expect.stringContaining('no known agency sites'),expect.stringContaining('no agency home-page targets')]));
+ });
+ it('requires retained-source storage metadata columns',async()=>{
+  for(const column of ['storage_path','bytes_available','stored_at']) {
+   const result=await productionPreflight(fakeDb({missingColumns:[`blob.${column}`]}),
+    {env:{ANTHROPIC_API_KEY:'x'},runtimeCheck:async()=>{},price:()=>0.00001});
+   expect(result.checks.schema).toBe(false);
+   expect(result.errors).toEqual(expect.arrayContaining([expect.stringContaining(`floor_plan.blob.${column}`)]));
+  }
  });
  it('requires all three task tables and image retention columns',async()=>{
   const absentTable=await productionPreflight(fakeDb({missing:['floor_plan.building_task']}),

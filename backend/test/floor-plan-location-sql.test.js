@@ -9,6 +9,13 @@ import {PROCESSOR} from '../floor-plans/plan-reading.js';
 import {enqueuePlanTasks,currentTaskContext} from '../floor-plans/interpret-plans.js';
 import {processAssets} from '../floor-plans/process-assets.js';
 
+const fixtureBlobBytes=vi.hoisted(()=>new Map());
+vi.mock('../floor-plans/blob-store.js',async importOriginal=>{
+    const actual=await importOriginal();
+    return {...actual,readBlobRow:vi.fn(async row=>row?.bytes_available
+        ?fixtureBlobBytes.get(row.sha256||row.current_sha256)||null:null)};
+});
+
 const listingUrl='https://agency.test/listing/1',assetUrl='https://agency.test/plan.pdf';
 const listingHash='a'.repeat(64),assetHash='b'.repeat(64);
 const eligibleFacts={explicitLocation:{schema:'explicit-listing-location.v1',street:'Example Street',houseNumber:'12'}};
@@ -37,7 +44,8 @@ describe.runIf(process.env.FLOOR_PLAN_LOCATION_DB_TEST==='1')('floor-plan locati
                 result jsonb,candidate_map jsonb) ON COMMIT DROP;
             CREATE TEMP TABLE extraction (sha256 text PRIMARY KEY,model jsonb,status text,
                 created_at timestamptz DEFAULT now(),updated_at timestamptz,vision_checked_at timestamptz,error text) ON COMMIT DROP;
-            CREATE TEMP TABLE blob (sha256 text PRIMARY KEY,media_type text,data bytea) ON COMMIT DROP;
+            CREATE TEMP TABLE blob (sha256 text PRIMARY KEY,media_type text,byte_count integer NOT NULL,
+                storage_path text,bytes_available boolean NOT NULL DEFAULT true,stored_at timestamptz NOT NULL DEFAULT now()) ON COMMIT DROP;
             CREATE TEMP TABLE plan_task (id text PRIMARY KEY,source_sha256 text,source_url text,page int,
                 listing_url text,context jsonb,processor text,status text DEFAULT 'queued',created_at timestamptz DEFAULT now()) ON COMMIT DROP;
             CREATE TEMP TABLE model_revision (source_sha256 text,model_sha256 text,model jsonb) ON COMMIT DROP;`);
@@ -51,6 +59,8 @@ describe.runIf(process.env.FLOOR_PLAN_LOCATION_DB_TEST==='1')('floor-plan locati
         if(client) {try {await client.query('ROLLBACK');} finally {await client.end();}}
     });
     beforeEach(async()=>{
+        fixtureBlobBytes.clear();
+        fixtureBlobBytes.set(assetHash,Buffer.from('test document'));
         await client.query('TRUNCATE pg_temp.listing,pg_temp.target,pg_temp.exclusion,pg_temp.building_task,pg_temp.extraction,pg_temp.blob,pg_temp.plan_task,pg_temp.model_revision');
         await db.query(`INSERT INTO floor_plan.listing VALUES($1,$2,$3,'unresolved',NULL,NULL,NULL,NULL)`,
             [listingUrl,JSON.stringify(eligibleFacts),JSON.stringify([{url:assetUrl,listingOwned:true}])]);
@@ -60,7 +70,8 @@ describe.runIf(process.env.FLOOR_PLAN_LOCATION_DB_TEST==='1')('floor-plan locati
             [listingUrl,listingHash,BUILDING_PROCESSOR,JSON.stringify(candidateResult()),JSON.stringify([candidate])]);
         await db.query(`INSERT INTO floor_plan.extraction(sha256,model,status) VALUES($1,$2,'needs_review')`,
             [assetHash,JSON.stringify({schema:'consensus-builder.floor-plan-draft.v1',totalPages:1})]);
-        await db.query(`INSERT INTO floor_plan.blob VALUES($1,'application/pdf',$2)`,[assetHash,Buffer.from('test document')]);
+        await db.query(`INSERT INTO floor_plan.blob(sha256,media_type,byte_count,storage_path,bytes_available)
+            VALUES($1,'application/pdf',13,'fixture/test-document.pdf',true)`,[assetHash]);
     });
     const eligible=async()=>Boolean((await db.query(`SELECT ${locatedListingSql()} AS eligible FROM floor_plan.listing l WHERE l.url=$1`,[listingUrl])).rows[0]?.eligible);
 

@@ -1,5 +1,5 @@
 // Source exclusion and retention behavior against isolated PostgreSQL temporary tables.
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import dotenv from 'dotenv';
 import pg from 'pg';
 import { fileURLToPath } from 'node:url';
@@ -9,6 +9,17 @@ import { listingIdentity } from '../floor-plans/explicit-location.js';
 import { extractPageEvidence } from '../floor-plans/page-evidence.js';
 import { EXCLUSION_REASON, ORPHAN_ASSET_REASON, excludeSource, qualifyPageEvidence } from '../floor-plans/source-policy.js';
 import { enforceSourcePolicy, purgeExcludedContent } from '../floor-plans/source-retention.js';
+
+const fixtureBlobBytes = vi.hoisted(() => new Map());
+vi.mock('../floor-plans/blob-store.js', async importOriginal => {
+    const actual = await importOriginal();
+    return {
+        ...actual,
+        readBlobRow: vi.fn(async row => row?.bytes_available
+            ? fixtureBlobBytes.get(row.sha256 || row.current_sha256) || null : null),
+        pruneDiscardedFiles: vi.fn(async () => ({ filesDeleted: 0, bytesDeleted: 0 }))
+    };
+});
 
 const hash = char => char.repeat(64);
 const validLocation = { schema: 'explicit-listing-location.v1', street: 'Example Street', houseNumber: '12' };
@@ -21,11 +32,16 @@ const campusHtml = `<html><head><title>Old title</title></head><body><main><sect
 describe.runIf(process.env.FLOOR_PLAN_LOCATION_DB_TEST === '1')('floor-plan source policy on isolated temporary tables', () => {
     let client, db;
 
+    const storeFixtureBlob = async ({ hashValue, bytes, mediaType = 'text/html' }) => {
+        const body = Buffer.from(bytes);
+        fixtureBlobBytes.set(hashValue, body);
+        await db.query(`INSERT INTO floor_plan.blob(sha256,media_type,byte_count,storage_path,bytes_available,stored_at)
+            VALUES($1,$2,$3,$4,true,now())`, [hashValue, mediaType, body.length, `fixture/${hashValue}`]);
+    };
+
     const storeArchivedPage = async ({ url, hashValue, html, sourceKind = 'agency', sourceId = null,
         facts = {}, legacyVerified = false, includeListing = true, kind = 'page', mediaType = 'text/html' }) => {
-        const bytes = Buffer.from(html);
-        await db.query(`INSERT INTO floor_plan.blob(sha256,media_type,byte_count,data)
-            VALUES($1,$2,$3,$4)`, [hashValue, mediaType, bytes.length, bytes]);
+        await storeFixtureBlob({ hashValue, bytes: html, mediaType });
         await db.query(`INSERT INTO floor_plan.target(url,kind,source_kind,current_sha256,last_fetched_at)
             VALUES($1,$2,$3,$4,now())`, [url, kind, sourceKind, hashValue]);
         if (includeListing) await db.query(`INSERT INTO floor_plan.listing(url,source_id,facts,asset_urls,building_id,building_source,
@@ -71,7 +87,8 @@ describe.runIf(process.env.FLOOR_PLAN_LOCATION_DB_TEST === '1')('floor-plan sour
                 created_at timestamptz DEFAULT now(), updated_at timestamptz DEFAULT now()
             ) ON COMMIT DROP;
             CREATE TEMP TABLE blob (
-                sha256 text PRIMARY KEY, media_type text NOT NULL, byte_count integer NOT NULL, data bytea,
+                sha256 text PRIMARY KEY, media_type text NOT NULL, byte_count integer NOT NULL,
+                storage_path text, bytes_available boolean NOT NULL DEFAULT true, stored_at timestamptz NOT NULL DEFAULT now(),
                 discarded_at timestamptz, discard_reason text, created_at timestamptz DEFAULT now(),
                 updated_at timestamptz DEFAULT now()
             ) ON COMMIT DROP;
@@ -120,6 +137,7 @@ describe.runIf(process.env.FLOOR_PLAN_LOCATION_DB_TEST === '1')('floor-plan sour
     });
 
     beforeEach(async () => {
+        fixtureBlobBytes.clear();
         await client.query(`TRUNCATE pg_temp.target, pg_temp.listing, pg_temp.exclusion, pg_temp.blob,
             pg_temp.observation, pg_temp.extraction, pg_temp.model_revision, pg_temp.processed_plan,
             pg_temp.image_task, pg_temp.building_task, pg_temp.plan_task, pg_temp.building_floor_model`);
@@ -178,7 +196,7 @@ describe.runIf(process.env.FLOOR_PLAN_LOCATION_DB_TEST === '1')('floor-plan sour
         const snapshot = async () => ({
             targets: (await db.query('SELECT url,source_identity,exclusion_reason,current_sha256 FROM floor_plan.target ORDER BY url')).rows,
             listings: (await db.query('SELECT url,facts,asset_urls,match_status FROM floor_plan.listing ORDER BY url')).rows,
-            blobs: (await db.query('SELECT sha256,data IS NULL AS discarded,discard_reason FROM floor_plan.blob ORDER BY sha256')).rows,
+            blobs: (await db.query('SELECT sha256,NOT bytes_available AS discarded,discard_reason FROM floor_plan.blob ORDER BY sha256')).rows,
             observations: (await db.query('SELECT url,sha256,evidence FROM floor_plan.observation ORDER BY url')).rows,
             exclusions: (await db.query('SELECT identity,url,reason FROM floor_plan.exclusion ORDER BY identity')).rows
         });
@@ -218,7 +236,7 @@ describe.runIf(process.env.FLOOR_PLAN_LOCATION_DB_TEST === '1')('floor-plan sour
         const snapshot = async () => ({
             targets: (await db.query('SELECT url,kind,source_identity,exclusion_reason,current_sha256 FROM floor_plan.target ORDER BY url')).rows,
             listings: (await db.query('SELECT url,facts,asset_urls,match_status FROM floor_plan.listing ORDER BY url')).rows,
-            blobs: (await db.query('SELECT sha256,data IS NULL AS discarded,discard_reason FROM floor_plan.blob ORDER BY sha256')).rows,
+            blobs: (await db.query('SELECT sha256,NOT bytes_available AS discarded,discard_reason FROM floor_plan.blob ORDER BY sha256')).rows,
             observations: (await db.query('SELECT url,sha256,evidence FROM floor_plan.observation ORDER BY url')).rows,
             exclusions: (await db.query('SELECT identity,url,reason FROM floor_plan.exclusion ORDER BY identity')).rows
         });
@@ -246,11 +264,11 @@ describe.runIf(process.env.FLOOR_PLAN_LOCATION_DB_TEST === '1')('floor-plan sour
                 { url: binaryUrl, kind: 'asset', source_identity: binaryUrl, exclusion_reason: ORPHAN_ASSET_REASON, current_sha256: null },
                 { url: unparsedUrl, kind: 'page', source_identity: 'opereta:73002', exclusion_reason: EXCLUSION_REASON, current_sha256: null }
             ]);
-        expect((await db.query('SELECT data IS NULL AS discarded FROM floor_plan.blob WHERE sha256=$1', [homeHash])).rows[0].discarded)
+        expect((await db.query('SELECT NOT bytes_available AS discarded FROM floor_plan.blob WHERE sha256=$1', [homeHash])).rows[0].discarded)
             .toBe(false);
-        expect((await db.query('SELECT data IS NULL AS discarded FROM floor_plan.blob WHERE sha256=$1', [unparsedHash])).rows[0].discarded)
+        expect((await db.query('SELECT NOT bytes_available AS discarded FROM floor_plan.blob WHERE sha256=$1', [unparsedHash])).rows[0].discarded)
             .toBe(true);
-        expect((await db.query('SELECT data IS NULL AS discarded FROM floor_plan.blob WHERE sha256=$1', [binaryHash])).rows[0].discarded)
+        expect((await db.query('SELECT NOT bytes_available AS discarded FROM floor_plan.blob WHERE sha256=$1', [binaryHash])).rows[0].discarded)
             .toBe(true);
         expect((await db.query('SELECT count(*)::int AS n FROM floor_plan.observation WHERE url=$1', [homeUrl])).rows[0].n)
             .toBe(1);
@@ -276,9 +294,7 @@ describe.runIf(process.env.FLOOR_PLAN_LOCATION_DB_TEST === '1')('floor-plan sour
         await storeArchivedPage({ url: operetaUrl, hashValue: operetaHash, html: operetaHtml,
             sourceKind: 'agency', sourceId: 'I74002', facts: { private: 'old Opereta details' } });
 
-        const aliasBytes = Buffer.from('previous locale alias content');
-        await db.query(`INSERT INTO floor_plan.blob(sha256,media_type,byte_count,data) VALUES($1,'text/html',$2,$3)`,
-            [aliasHash, aliasBytes.length, aliasBytes]);
+        await storeFixtureBlob({ hashValue: aliasHash, bytes: 'previous locale alias content' });
         await db.query(`INSERT INTO floor_plan.target(url,kind,source_kind,current_sha256,etag,last_modified,failure)
             VALUES($1,'page','agency',$2,'hr-tag','date','old failure')`, [operetaAlias, aliasHash]);
         await db.query(`INSERT INTO floor_plan.image_task(source_sha256,result,status,cost_usd)
@@ -310,7 +326,7 @@ describe.runIf(process.env.FLOOR_PLAN_LOCATION_DB_TEST === '1')('floor-plan sour
                 { identity: 'https://studio.test/project/without-address', url: addresslessUrl, reason: EXCLUSION_REASON },
                 { identity: 'opereta:74002', url: operetaAlias, reason: EXCLUSION_REASON }
             ]);
-        expect((await db.query('SELECT sha256,data IS NULL AS discarded FROM floor_plan.blob ORDER BY sha256')).rows)
+        expect((await db.query('SELECT sha256,NOT bytes_available AS discarded FROM floor_plan.blob ORDER BY sha256')).rows)
             .toEqual([
                 { sha256: eligibleHash, discarded: false }, { sha256: addresslessHash, discarded: true },
                 { sha256: operetaHash, discarded: true }, { sha256: aliasHash, discarded: true }
@@ -323,13 +339,13 @@ describe.runIf(process.env.FLOOR_PLAN_LOCATION_DB_TEST === '1')('floor-plan sour
             .toMatchObject({ sourceEvidenceStatus: 'excluded', exclusionReason: EXCLUSION_REASON });
         expect((await db.query('SELECT cost_usd FROM floor_plan.image_task WHERE source_sha256=$1', [addresslessHash])).rows[0].cost_usd)
             .toBe('0.123');
-        expect((await db.query('SELECT data FROM floor_plan.blob WHERE sha256=$1', [eligibleHash])).rows[0].data).not.toBeNull();
+        expect((await db.query('SELECT bytes_available FROM floor_plan.blob WHERE sha256=$1', [eligibleHash])).rows[0].bytes_available).toBe(true);
 
         const snapshot = async () => ({
             targets: (await db.query('SELECT * FROM floor_plan.target ORDER BY url')).rows,
             listings: (await db.query('SELECT * FROM floor_plan.listing ORDER BY url')).rows,
             exclusions: (await db.query('SELECT * FROM floor_plan.exclusion ORDER BY identity')).rows,
-            blobs: (await db.query('SELECT sha256,byte_count,data IS NULL AS discarded,discarded_at,discard_reason FROM floor_plan.blob ORDER BY sha256')).rows,
+            blobs: (await db.query('SELECT sha256,byte_count,NOT bytes_available AS discarded,discarded_at,discard_reason FROM floor_plan.blob ORDER BY sha256')).rows,
             observations: (await db.query('SELECT * FROM floor_plan.observation ORDER BY url')).rows,
             imageTasks: (await db.query('SELECT * FROM floor_plan.image_task ORDER BY source_sha256')).rows
         });
@@ -375,9 +391,12 @@ describe.runIf(process.env.FLOOR_PLAN_LOCATION_DB_TEST === '1')('floor-plan sour
         const htmlHash = hash('a'), imageHash = hash('b'), sharedHash = hash('c'), reviewedHash = hash('d');
         const discardedBytes = Buffer.from('private source bytes that must be dropped');
 
-        await db.query(`INSERT INTO floor_plan.blob(sha256,media_type,byte_count,data) VALUES
-            ($1,'text/html',$5,$6),($2,'image/jpeg',$5,$6),($3,'text/html',$5,$6),($4,'image/jpeg',$5,$6)`,
-        [htmlHash, imageHash, sharedHash, reviewedHash, discardedBytes.length, discardedBytes]);
+        await Promise.all([
+            storeFixtureBlob({ hashValue: htmlHash, bytes: discardedBytes }),
+            storeFixtureBlob({ hashValue: imageHash, bytes: discardedBytes, mediaType: 'image/jpeg' }),
+            storeFixtureBlob({ hashValue: sharedHash, bytes: discardedBytes }),
+            storeFixtureBlob({ hashValue: reviewedHash, bytes: discardedBytes, mediaType: 'image/jpeg' })
+        ]);
         await db.query(`INSERT INTO floor_plan.target(url,kind,current_sha256,exclusion_reason,source_identity,etag,last_modified,failure) VALUES
             ($1,'page',$5,$6,$7,'tag','date','old failure'),($2,'asset',$8,NULL,$9,NULL,NULL,NULL),
             ($3,'page',$10,$6,$11,NULL,NULL,NULL),($4,'page',$12,$6,$13,NULL,NULL,NULL),
@@ -413,7 +432,7 @@ describe.runIf(process.env.FLOOR_PLAN_LOCATION_DB_TEST === '1')('floor-plan sour
 
         const first = await purgeExcludedContent(db);
         expect(first).toMatchObject({ assetsExcluded: 1, blobsDiscarded: 2, protectedBlobs: 2 });
-        expect((await db.query(`SELECT sha256,data IS NULL AS bytes_discarded,discard_reason,byte_count
+        expect((await db.query(`SELECT sha256,NOT bytes_available AS bytes_discarded,discard_reason,byte_count
             FROM floor_plan.blob ORDER BY sha256`)).rows).toEqual([
             { sha256: htmlHash, bytes_discarded: true, discard_reason: EXCLUSION_REASON, byte_count: discardedBytes.length },
             { sha256: imageHash, bytes_discarded: true, discard_reason: EXCLUSION_REASON, byte_count: discardedBytes.length },
@@ -430,8 +449,8 @@ describe.runIf(process.env.FLOOR_PLAN_LOCATION_DB_TEST === '1')('floor-plan sour
             .toMatchObject({ source_sha256: imageHash, cost_usd: '0.08', result: { excluded: true, reason: EXCLUSION_REASON }, status: 'complete' });
         expect((await db.query('SELECT current_sha256,etag,last_modified,failure,exclusion_reason FROM floor_plan.target WHERE url=$1', [excludedUrl])).rows[0])
             .toMatchObject({ current_sha256: null, etag: null, last_modified: null, failure: null, exclusion_reason: EXCLUSION_REASON });
-        expect((await db.query('SELECT data FROM floor_plan.blob WHERE sha256=$1', [sharedHash])).rows[0].data).not.toBeNull();
-        expect((await db.query('SELECT data FROM floor_plan.blob WHERE sha256=$1', [reviewedHash])).rows[0].data).not.toBeNull();
+        expect((await db.query('SELECT bytes_available FROM floor_plan.blob WHERE sha256=$1', [sharedHash])).rows[0].bytes_available).toBe(true);
+        expect((await db.query('SELECT bytes_available FROM floor_plan.blob WHERE sha256=$1', [reviewedHash])).rows[0].bytes_available).toBe(true);
 
         expect(await enqueue(db, excludedUrl)).toBe(false);
         const second = await purgeExcludedContent(db);

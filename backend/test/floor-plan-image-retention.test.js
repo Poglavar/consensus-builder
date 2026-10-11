@@ -2,6 +2,11 @@ import { describe,expect,it,vi } from 'vitest';
 import { recordImageDisposition,NEGATIVE_IMAGE_CACHE_SQL } from '../floor-plans/image-retention.js';
 import { putBlob,sha256 as hashBytes } from '../floor-plans/archive.js';
 import { setupFloorPlanArchiveRoute } from '../routes/floor-plan-archive.js';
+import { readFile } from 'node:fs/promises';
+import { sourceFilePath } from '../floor-plans/blob-store.js';
+import { useTestArchive } from './helpers/floor-plan-file-store.js';
+
+useTestArchive();
 
 const sourceUrl='https://cdn.example/photo.jpg';
 const bytes=Buffer.from('image bytes');
@@ -27,7 +32,7 @@ describe('confirmed image retention',()=>{
   const result=await recordImageDisposition(db,{sourceUrl,sha256,kind:'photo',classificationId:'screen-1',confirmed:true,confidence:'high'});
   expect(result).toMatchObject({status:'discarded',targets:2});
   const target=queries.find(([sql])=>sql.includes('UPDATE floor_plan.target SET image_kind'));
-  const blob=queries.find(([sql])=>sql.includes('UPDATE floor_plan.blob SET data=NULL'));
+  const blob=queries.find(([sql])=>sql.includes('UPDATE floor_plan.blob SET bytes_available=false'));
   expect(target[1]).toEqual([sha256,'photo']);
   expect(blob[1][0]).toBe(sha256);
   expect(JSON.parse(blob[1][1])).toMatchObject({kind:'photo',classificationId:'screen-1',confidence:'high'});
@@ -43,7 +48,7 @@ describe('confirmed image retention',()=>{
   const {db,queries}=fakeDb({protectedBy:{[reason]:true}});
   expect(await recordImageDisposition(db,{sourceUrl,sha256,kind:'render',classificationId:'screen-2',confirmed:true}))
    .toMatchObject({status:'protected',reasons:[reason]});
-  expect(queries.some(([sql])=>sql.includes('UPDATE floor_plan.blob SET data=NULL'))).toBe(false);
+  expect(queries.some(([sql])=>sql.includes('UPDATE floor_plan.blob SET bytes_available=false'))).toBe(false);
   expect(queries.some(([sql])=>sql.includes('UPDATE floor_plan.target SET image_kind'))).toBe(false);
  });
 
@@ -52,7 +57,7 @@ describe('confirmed image retention',()=>{
   expect(await recordImageDisposition(uncertain.db,{sourceUrl,sha256,kind:'uncertain',classificationId:'screen-3'}))
    .toMatchObject({status:'retained'});
   expect(uncertain.queries.some(([sql])=>sql.includes('UPDATE floor_plan.target SET image_kind'))).toBe(true);
-  expect(uncertain.queries.some(([sql])=>sql.includes('UPDATE floor_plan.blob SET data=NULL'))).toBe(false);
+  expect(uncertain.queries.some(([sql])=>sql.includes('UPDATE floor_plan.blob SET bytes_available=false'))).toBe(false);
   const unconfirmed=fakeDb();
   expect(await recordImageDisposition(unconfirmed.db,{sourceUrl,sha256,kind:'photo',classificationId:'screen-4'}))
    .toMatchObject({status:'needs_review'});
@@ -66,19 +71,21 @@ describe('confirmed image retention',()=>{
   expect(queries.some(([sql])=>sql.startsWith('UPDATE'))).toBe(false);
  });
 
- it('rehydrates a tombstoned hash on explicit fetch without replacing retained bytes',async()=>{
+ it('writes an explicitly refetched source to a file and restores only its database metadata',async()=>{
   const db={query:vi.fn(async()=>({rowCount:1,rows:[]}))};
   expect(await putBlob(db,bytes,'image/jpeg')).toBe(sha256);
-  const [sql,params]=db.query.mock.calls[0];
-  expect(params[3]).toEqual(bytes);
-  expect(sql).toContain('ON CONFLICT(sha256) DO UPDATE SET data=excluded.data');
-  expect(sql).toContain('WHERE floor_plan.blob.data IS NULL');
+  const [sql,params]=db.query.mock.calls.find(([sql])=>sql.includes('INSERT INTO floor_plan.blob'));
+  expect(typeof params[3]).toBe('string');
+  expect(await readFile(sourceFilePath(params[3],sha256))).toEqual(bytes);
+  expect(sql).toContain('ON CONFLICT(sha256) DO UPDATE SET');
+  expect(sql).toContain('bytes_available=true');
+  expect(sql).not.toMatch(/\bdata\b/);
   expect(sql).toContain('discarded_at=NULL,discard_reason=NULL');
  });
 
  it('returns an unavailable response for a tombstoned asset byte route',async()=>{
   const routes=new Map(),app={get:(path,handler)=>routes.set(path,handler)};
-  const pool={query:vi.fn(async()=>({rows:[{media_type:'image/jpeg',data:null}]}))};
+  const pool={query:vi.fn(async()=>({rows:[{media_type:'image/jpeg',bytes_available:false}]}))};
   setupFloorPlanArchiveRoute(app,pool);
   const response={set:vi.fn().mockReturnThis(),status:vi.fn().mockReturnThis(),json:vi.fn().mockReturnThis()};
   await routes.get('/floor-plan-archive/asset/:sha256')({params:{sha256}},response,vi.fn());

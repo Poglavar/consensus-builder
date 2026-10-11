@@ -1,6 +1,9 @@
 import { createHash } from 'node:crypto';
 import { describe, expect, it, vi } from 'vitest';
 import { saveObservation } from '../floor-plans/archive.js';
+import { useTestArchive } from './helpers/floor-plan-file-store.js';
+
+useTestArchive();
 
 const origin = 'https://opereta.hr/stan/123';
 const finalUrl = 'https://www.opereta.hr/stan/123/';

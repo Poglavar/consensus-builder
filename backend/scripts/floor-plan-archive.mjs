@@ -20,6 +20,8 @@ import { enqueueBuildingTasks,recognizeBuildings,recognitionStatus } from '../fl
 import { enqueueImageTasks,classifyImages,imageClassificationStatus } from '../floor-plans/classify-images.js';
 import { enforceSourcePolicy } from '../floor-plans/source-retention.js';
 import { importArchitectureSites } from '../floor-plans/architecture-sites.js';
+import { migrateArchiveStorage } from '../floor-plans/storage-migration.js';
+import { pruneDiscardedFiles } from '../floor-plans/blob-store.js';
 
 dotenv.config({path:fileURLToPath(new URL('../.env',import.meta.url)),quiet:true});
 
@@ -49,6 +51,9 @@ const HELP=`Usage: node scripts/floor-plan-archive.mjs <command> [options]
  match                        Suggest building candidates from property coordinates
  reparse                      Rebuild current listing associations from archived HTML
  source-policy [--apply]      Audit explicit addresses; --apply permanently excludes and purges other sources
+ migrate-storage [--apply] [--report FILE] [--drop-database-bytes [--reclaim-space]]
+                              Export and verify files; drop database bytes only when explicitly requested
+ prune-files                  Retry removal of files already marked discarded in metadata
  daily [--max-pages 10000] [--max-minutes 180] [--max-assets 100] [--ai-stage images|plans|buildings|none] [--ai-budget-usd 5|none] [--ai-chunk-size 1] [--run-stats FILE] [--no-ai]
  status                       Print coverage and recent run
  Environment: backend/.env, PGHOST override or DATABASE_URL. Public sources only.
@@ -62,6 +67,10 @@ export async function runCli(argv=process.argv.slice(2),{clientFactory=options=>
  const args=argv,action=args[0],has=name=>args.includes(name),option=name=>args[args.indexOf(name)+1];
  if(!action||has('--help')) {console.log(HELP);return 0;}
  if(has('--model')) throw new Error('--model was removed: the model is the shared default in agents/lib/llm-cost/defaults.json.');
+ if(action==='migrate-storage'&&has('--drop-database-bytes')&&!has('--apply'))
+  throw new Error('--drop-database-bytes requires --apply.');
+ if(action==='migrate-storage'&&has('--reclaim-space')&&!has('--drop-database-bytes'))
+  throw new Error('--reclaim-space requires --drop-database-bytes.');
  if(has('--site')&&!['crawl','enqueue-images'].includes(action))
   throw new Error('--site is supported by crawl and enqueue-images only. A site-specific image submission requires an explicit taskIds allowlist.');
  let crawlSite=null;
@@ -118,6 +127,11 @@ export async function runCli(argv=process.argv.slice(2),{clientFactory=options=>
   else if(action==='match') result=await matchBuildingCandidates(client);
   else if(action==='reparse') result=await reparseListings(client);
   else if(action==='source-policy') result=await enforceSourcePolicy(client,{apply:has('--apply')});
+  else if(action==='migrate-storage') {
+   result=await migrateArchiveStorage(client,{apply:has('--apply'),dropDatabaseBytes:has('--drop-database-bytes'),
+    reportFile:has('--report')?option('--report'):null,reclaimSpace:has('--reclaim-space')});
+  }
+  else if(action==='prune-files') result=await pruneDiscardedFiles(client);
   else if(action==='daily') {
    const startedAt=new Date().toISOString(),statsFile=has('--run-stats')?option('--run-stats'):null;
    if(has('--run-stats')&&!statsFile) throw new Error('--run-stats requires a file path.');

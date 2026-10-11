@@ -69,7 +69,7 @@ export async function writeSourceFile(bytes, hash, mediaType, options={}) {
  checkHash(hash);
  const body=Buffer.from(bytes);
  verifyBytes(body,hash,body.length);
- const storagePath=sourceStoragePath(hash,mediaType), path=sourceFilePath(storagePath,hash,options);
+ const storagePath=options.storagePath || sourceStoragePath(hash,mediaType), path=sourceFilePath(storagePath,hash,options);
  await mkdir(dirname(path),{recursive:true,mode:0o700});
  try {
   verifyBytes(await readFile(path),hash,body.length);
@@ -104,7 +104,9 @@ async function withSourceLock(db,hash,work) {
 export async function writeBlob(db,bytes,mediaType='application/octet-stream',options={}) {
  const body=Buffer.from(bytes),hash=contentHash(body);
  return withSourceLock(db,hash,async()=>{
-  const storagePath=await writeSourceFile(body,hash,mediaType,options);
+  const existing=(await db.query(`SELECT storage_path FROM floor_plan.blob WHERE sha256=$1 FOR UPDATE`,[hash])).rows[0];
+  // One hash keeps one file even if a later response supplies a different MIME spelling.
+  const storagePath=await writeSourceFile(body,hash,mediaType,{...options,storagePath:existing?.storage_path});
   await db.query(`INSERT INTO floor_plan.blob(sha256,media_type,byte_count,storage_path,bytes_available,stored_at)
    VALUES($1,$2,$3,$4,true,now()) ON CONFLICT(sha256) DO UPDATE SET
     media_type=excluded.media_type,byte_count=excluded.byte_count,storage_path=excluded.storage_path,
