@@ -458,6 +458,91 @@ function setProposalModalInteractivity(enabled) {
     modal.classList.toggle('proposal-modal-disabled', !enabled);
 }
 
+// Cash is authored per owner in the LR ledger; the generic offer input cannot change that total.
+function refreshReparcellizationCashTerms(modal) {
+    const plan = window.pendingReparcellizationPlan;
+    if (!modal || !plan || !Array.isArray(plan.ownerShares)) return;
+    const input = modal.querySelector('#proposalOffer');
+    const currency = modal.querySelector('#proposalCurrency');
+    if (!input) return;
+    const total = window.ReparcellizationAgreements.cashOfferTotal(plan);
+    input.value = CbFormat.formatNumber(total, { minFractionDigits: 2, maxFractionDigits: 2 });
+    input.readOnly = true;
+    if (currency) { currency.value = 'EUR'; currency.disabled = true; }
+    if (!modal.querySelector('[data-reparcel-cash-terms]')) {
+        const hint = document.createElement('p');
+        hint.className = 'reparcel-agreement-hint';
+        hint.dataset.reparcelCashTerms = '';
+        hint.id = 'reparcel-cash-terms';
+        hint.textContent = getProposalI18nHelper()('reparcellization.modal.cashTermsHint',
+            'Total compensation from the owner ledger. Edit individual cash offers in the land readjustment editor.');
+        input.closest('.form-group')?.appendChild(hint);
+    }
+    input.setAttribute('aria-describedby', 'reparcel-cash-terms');
+}
+
+// Agreements are a proposal decision, after the geometry editor has finished its layout.
+function mountReparcellizationAgreementOptions(modal) {
+    const plan = window.pendingReparcellizationPlan;
+    if (plan?.algorithm !== 'amend' || !(plan.inputParcels?.length > 1)) return;
+    const offerGroup = modal.querySelector('#proposalOffer')?.closest('.form-group');
+    if (!offerGroup) return;
+    const t = getProposalI18nHelper();
+    let parts = [];
+    let reason = '';
+    try { parts = window.ReparcellizationPlanUtils.splitPlanPerParcel(plan, turf); }
+    catch (error) {
+        reason = error.code === 'courtyard-required'
+            ? t('reparcellization.modal.agreementRequiresCourtyard', 'Draw a shared courtyard before creating separate parcel agreements.')
+            : t('reparcellization.modal.agreementPrivateTransfers', 'Separate agreements must keep private land with its original owners. Use one agreement for this layout.');
+    }
+    const fieldset = document.createElement('fieldset');
+    fieldset.className = 'reparcel-agreement-options';
+    const legend = document.createElement('legend');
+    legend.textContent = t('reparcellization.modal.agreementTitle', 'Agreements');
+    fieldset.appendChild(legend);
+    const selected = plan.agreementMode === 'individual' && !reason ? 'individual' : 'single';
+    plan.agreementMode = selected;
+    for (const [value, label] of [
+        ['single', t('reparcellization.modal.agreementSingle', 'One agreement')],
+        ['individual', t('reparcellization.modal.agreementIndividual', 'Separate parcel agreements') + (parts.length ? ` (${parts.length})` : '')]
+    ]) {
+        const row = document.createElement('label');
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = 'reparcel-agreement';
+        input.value = value;
+        input.checked = value === selected;
+        input.disabled = value === 'individual' && !!reason;
+        const text = document.createElement('span');
+        text.textContent = label;
+        row.append(input, text);
+        fieldset.appendChild(row);
+        input.addEventListener('change', () => {
+            plan.agreementMode = value;
+            const draftId = window.pendingProposalDraftId;
+            if (draftId && window.proposalDraftStore?.getDraft(draftId)) {
+                window.proposalDraftStore.updateDraft(draftId, { editorPayload: { plan } }, { coalesceKey: 'reparcellization-agreements' });
+            }
+            hint.textContent = reason || t('reparcellization.modal.agreementHint',
+                'Each parcel keeps its remainder with its current owners and contributes its part of the shared courtyard.');
+            details.hidden = value !== 'individual';
+            updateCreateProposalSubmitState();
+        });
+    }
+    const hint = document.createElement('p');
+    hint.className = 'reparcel-agreement-hint';
+    hint.textContent = reason || t('reparcellization.modal.agreementHint',
+        'Each parcel keeps its remainder with its current owners and contributes its part of the shared courtyard.');
+    const details = document.createElement('p');
+    details.className = 'reparcel-agreement-hint';
+    details.hidden = selected !== 'individual';
+    details.textContent = t('reparcellization.modal.agreementOfferHint',
+        'Cash follows each owner’s compensation in the land readjustment ledger. Review each agreement separately before publishing it.');
+    fieldset.append(hint, details);
+    modal.querySelector('#proposalOptionsSection').before(fieldset);
+}
+
 function showProposalDialog(overrides = null) {
     // No guest gate here: creating stays on this device (guest-policy.js). Minting, publishing and
     // sharing ask for a profile name; "Offer my land" asks for proof of ownership.
@@ -614,10 +699,17 @@ function showProposalDialog(overrides = null) {
     const ownershipOnly = !!(proposalDialogOverrides && proposalDialogOverrides.ownershipOnly);
     const acquisitionLocked = !!(proposalDialogOverrides && proposalDialogOverrides.lockAcquisition);
 
-    const selection = getCurrentParcelSelectionContext();
-    const selectedParcels = selection.layers;
+    const agreementBatch = pendingReparcellizationAgreementBatch();
+    const selection = agreementBatch ? { ids: [], layers: [] } : getCurrentParcelSelectionContext();
     const parcelIds = selection.ids;
-    const selectedFeatures = parcelIds.map(id => window.LiveParcelFabric?.get?.(String(id))).filter(Boolean);
+    // A retry reviews saved terms even when the batch has already replaced its original pieces.
+    const selectedFeatures = agreementBatch ? agreementBatch.items.map(item => {
+        const input = item.record.reparcellization.inputParcels[0];
+        return { type: 'Feature', geometry: input.geometry, properties: {
+            BROJ_CESTICE: input.label, calculatedArea: item.record.reparcellization.totalArea
+        } };
+    }) : parcelIds.map(id => window.LiveParcelFabric?.get?.(String(id))).filter(Boolean);
+    const selectedParcels = agreementBatch ? selectedFeatures.map(feature => ({ feature })) : selection.layers;
     const isSingleParcelSelection = selectedParcels.length === 1;
     const roadScreenshotContext = ((typeof window !== 'undefined' && window.pendingRoadDrawingProposal)
         ? window.pendingRoadDrawingProposal
@@ -626,7 +718,7 @@ function showProposalDialog(overrides = null) {
     // it is only needed to draw a thumbnail. Building it here would hold the dialog closed while the
     // user waits, so it is deferred until after the modal has painted; the container is reserved now and
     // removed later if there turns out to be nothing to preview.
-    const hasScreenshotCandidate = selectedParcels.length > 0 || !!roadScreenshotContext;
+    const hasScreenshotCandidate = !agreementBatch && (selectedParcels.length > 0 || !!roadScreenshotContext);
 
     // Which chain this proposal will be minted on, if any. Minting is implicit — it follows whichever
     // wallet is connected or whether Canton mode is on — so the dialog has to say so out loud.
@@ -651,7 +743,7 @@ function showProposalDialog(overrides = null) {
     const siteContext = (!ownershipOnly && proposalDialogOverrides && proposalDialogOverrides.siteContext
         && proposalDialogOverrides.siteContext.site) ? proposalDialogOverrides.siteContext : null;
     window.pendingProposalSiteContext = siteContext;
-    if (!siteContext && (!selectedParcels.length || selectedFeatures.length !== parcelIds.length)) {
+    if (!siteContext && !agreementBatch && (!selectedParcels.length || selectedFeatures.length !== parcelIds.length)) {
         updateStatus(noParcelsMessage);
         return;
     }
@@ -663,7 +755,11 @@ function showProposalDialog(overrides = null) {
         return sum + area;
     }, 0);
 
-    const ownershipStats = computeOwnershipStatsFromSelection(selection);
+    const ownershipStats = agreementBatch ? {
+        ownerCount: new Set(agreementBatch.items.flatMap(item =>
+            item.record.reparcellization.inputParcels.flatMap(input => input.owners.map(owner => owner.ownerKey)))).size,
+        mode: 'multiple'
+    } : computeOwnershipStatsFromSelection(selection);
     const totalOwners = siteContext ? siteParcelIds.length : (ownershipStats.ownerCount || selectedParcels.length);
     const siteSummaryHtml = siteContext ? `<p class="proposal-site-summary">${siteParcelIds.length
         ? t('modal.createProposal.site.bound', 'Site of {{area}} m², bound parcels: {{count}}. Publishing checks the binding against the full cadastre.', { area: CbFormat.formatNumber(siteArea, { maxFractionDigits: 0 }), count: siteParcelIds.length })
@@ -1466,6 +1562,9 @@ function showProposalDialog(overrides = null) {
     }
 
     attachProposalCurrencyHandlers();
+
+    refreshReparcellizationCashTerms(modal);
+    mountReparcellizationAgreementOptions(modal);
 
     // Focus the default Land use radio (not a text input) to avoid triggering mobile keyboards
     const defaultLandUseRadio = modal.querySelector('input[name="proposalLandUse"]:checked')

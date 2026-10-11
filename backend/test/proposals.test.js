@@ -518,6 +518,9 @@ describe('POST /proposals', () => {
 
     it('serializes only non-empty collections and nested proposal objects into insert params (acceptances are never taken from the uploader)', async () => {
         pool.setResults([insertResult(), updateResult()]);
+        const layout = { polygons: [{ ownerKey: 'owner-a', percent: 100,
+            geometry: { type: 'Polygon', coordinates: [[[1, 1], [1.001, 1], [1.001, 1.001], [1, 1]]] }
+        }] };
 
         const res = await request(app)
             .post('/proposals')
@@ -527,7 +530,9 @@ describe('POST /proposals', () => {
                 roadProposal: { width: 5, type: 'primary' },
                 buildingProposal: { height: 12 },
                 structureProposal: { floors: 3 },
-                reparcellization: { merge: true },
+                reparcellization: layout,
+                offer: 0,
+                offerCurrency: 'EUR',
                 lens: ['planning', 'traffic'],
                 bounds: [1, 2, 3, 4]
             }));
@@ -546,7 +551,9 @@ describe('POST /proposals', () => {
         expect(insertParams[24]).toBe(JSON.stringify({ width: 5, type: 'primary' }));
         expect(insertParams[25]).toBe(JSON.stringify({ height: 12 }));
         expect(insertParams[26]).toBe(JSON.stringify({ floors: 3 }));
-        expect(insertParams[27]).toBe(JSON.stringify({ merge: true }));
+        expect(JSON.parse(insertParams[27])).toMatchObject({
+            polygons: layout.polygons, source: 'server', validated: true
+        });
         expect(insertParams[28]).toBe(JSON.stringify(['planning', 'traffic']));
         expect(insertParams[29]).toBe(JSON.stringify([1, 2, 3, 4]));
         expect(insertParams[30]).toBeNull();

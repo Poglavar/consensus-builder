@@ -971,6 +971,22 @@ function showUploadProposalModal(proposal) {
                 return;
             }
 
+            // Existing v1 chain adapters cannot represent abstract rights or signed owner
+            // decisions. Stop before wallet connection, mint-record preparation, or parcel-NFT
+            // checks; the proposal remains shareable and can still be uploaded off-chain.
+            if (window.ProposalApprovalRuntime?.uses(proposal)) {
+                const translate = typeof getProposalI18nHelper === 'function' ? getProposalI18nHelper() : null;
+                const message = translate
+                    ? translate('proposalApproval.chainUnsupported', 'This approval setup is not supported by the current chain adapter.')
+                    : 'This approval setup is not supported by the current chain adapter.';
+                mintButton.disabled = true;
+                if (uploadStatus) {
+                    uploadStatus.style.color = '#2b3954';
+                    uploadStatus.textContent = message;
+                }
+                return;
+            }
+
             const setMintStatus = (message, opts = {}) => {
                 if (!uploadStatus) return;
                 const { isError = false, html = false } = opts;

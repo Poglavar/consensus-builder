@@ -1,5 +1,14 @@
 # Lens model: soulbound parcels, a list of trusted attesters, attested execution
 
+**Ownership abstraction clarification (2026-10-11):** LR and other proposal tools are to work with
+stable abstract owner entities. Lens-trusted providers separately establish each entity's parcel
+rights/exact shares and which authenticated actors may act for it. Geometry proposals can be
+created without parcels or ownership information; owner acceptance/voting requires the complete
+relevant rights model. The local proposal model now implements pluggable rights snapshots,
+exact owner/area rules and verified decision providers. Production authority providers and the
+wallet/count-based chain protocol below still need to support that contract. See
+[`land-readjustmend.md` §16](land-readjustmend.md#16-pluggable-rights-and-a-separate-approval-setup-2026-10-11).
+
 Design of record for making the proposal lens real on Solana. Written 2026-10-01 against branch
 `colosseum-worlds-fair` at `24d4eaf`; every "today" statement cites the code at that commit. It
 replaces the parcel-ownership model with three separated concepts and splits the work into

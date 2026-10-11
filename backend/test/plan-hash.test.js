@@ -2,7 +2,13 @@
 // content moves, and must NOT move for prose, thumbnails or lifecycle state.
 
 import { describe, it, expect } from 'vitest';
-import { memberHash, planHash, nextVersionSlug, stableStringify, changedMembers } from '../plans/plan-hash.js';
+import { createHash } from 'node:crypto';
+import { createRequire } from 'node:module';
+import { memberHash, memberContent, planHash, nextVersionSlug, stableStringify, changedMembers } from '../plans/plan-hash.js';
+import { createPlanStore } from '../plans/plan-store.js';
+
+const require = createRequire(import.meta.url);
+const deal = require('../../frontend/js/reparcellization-deal.js');
 
 const building = {
     id: 7, type: 'building', goal: 'buildings', title: 'Blok M1-9', description: 'Prvi opis',
@@ -12,6 +18,58 @@ const building = {
     geometry: { buildings: [{ type: 'Feature', properties: { height: 17.5 }, geometry: { type: 'Polygon', coordinates: [] } }] },
     screenshot_url: 'https://example.invalid/a.png', lifecycle_status: 'Active'
 };
+
+const plot = x => ({
+    type: 'Polygon',
+    coordinates: [[[x, 0], [x + 1, 0], [x + 1, 1], [x, 1], [x, 0]]]
+});
+
+function readjustment() {
+    return {
+        proposalId: 'lr-member', type: 'parcel', goal: 'reparcellization',
+        cadastreParcelIds: ['HR-A', 'HR-B'], offer: 100, offerCurrency: 'EUR',
+        isConditional: true, expiresAt: '2030-01-01T00:00:00.000Z',
+        depositEnabled: true, depositPercent: 10, decayEnabled: true,
+        decayPercent: 5, decayDurationMs: 3600000, disbursementMode: 'partial',
+        reparcellizationAgreement: { groupId: 'deal-1', index: 0, count: 1 },
+        reparcellization: {
+            poolGeometry: plot(-1), poolSource: 'site', contributionBasis: 'area',
+            poolUnitValue: 10, totalValue: 2000, contributionRatio: 1,
+            polygons: [
+                { geometry: plot(0), jointPool: false, percent: 50, owners: [
+                    { ownerKey: 'ana', displayName: 'Ana', share: 0.5 },
+                    { ownerKey: 'bob', displayName: 'Bob', share: 0.5 }
+                ] },
+                { geometry: plot(2), ownerKey: 'ana', displayName: 'Ana', percent: 50 }
+            ],
+            inputParcels: [{ geometry: plot(-1), ownerKey: 'ana', displayName: 'Ana' }],
+            ownerShares: [
+                { ownerKey: 'ana', cashOffer: 60, contributedArea: 100, contributedValue: 1000,
+                    entitledValue: 1000, assignedArea: 100, assignedValue: 1000, cashBalance: 0 },
+                { ownerKey: 'bob', cashOffer: 40, contributedArea: 100, contributedValue: 1000,
+                    entitledValue: 1000, assignedArea: 100, assignedValue: 1000, cashBalance: 0 }
+            ],
+            regime: { id: 'consensus-v1' }, policy: { threshold: 0.75 }, electorate: ['ana', 'bob']
+        }
+    };
+}
+
+function asDatabaseRow(proposal) {
+    return {
+        type: proposal.type, goal: proposal.goal,
+        cadastre_parcel_ids: proposal.cadastreParcelIds,
+        offer: String(proposal.offer), offer_currency: proposal.offerCurrency,
+        is_conditional: proposal.isConditional, expires_at: new Date(proposal.expiresAt),
+        deposit_enabled: proposal.depositEnabled, deposit_percent: proposal.depositPercent,
+        decay_enabled: proposal.decayEnabled, decay_percent: proposal.decayPercent,
+        decay_duration_ms: String(proposal.decayDurationMs), disbursement_mode: proposal.disbursementMode,
+        reparcellization: proposal.reparcellization,
+        proposal_data: {
+            reparcellizationAgreement: proposal.reparcellizationAgreement,
+            currency: proposal.currency
+        }
+    };
+}
 
 describe('memberHash', () => {
     it('ignores prose, thumbnails and lifecycle state', () => {
@@ -32,6 +90,67 @@ describe('memberHash', () => {
         expect(memberHash(shuffled)).toBe(memberHash(building));
         expect(stableStringify({ b: 1, a: [2, { d: 3, c: 4 }] })).toBe('{"a":[2,{"c":4,"d":3}],"b":1}');
     });
+
+    it('preserves the historical non-readjustment digest', () => {
+        const oldProjection = {
+            type: building.type ?? null,
+            goal: building.goal ?? null,
+            parcels: [...building.cadastre_parcel_ids].map(String).sort(),
+            road: null,
+            building: building.building_proposal.parameters,
+            structure: null,
+            layout: null,
+            geometry: building.geometry
+        };
+        const expected = createHash('sha256').update(stableStringify(oldProjection)).digest('hex');
+        expect(memberHash(building)).toBe(expected);
+    });
+
+    it('uses the shared versioned LR deal fingerprint for database-shaped rows', () => {
+        const proposal = readjustment();
+        const row = asDatabaseRow(proposal);
+        expect(memberContent(row)).toBe(deal.fingerprint(proposal));
+        expect(memberHash(row)).toBe(deal.fingerprint(proposal));
+    });
+
+    it.each([
+        ['co-owner shares', proposal => { proposal.reparcellization.polygons[0].owners[0].share = 0.6; proposal.reparcellization.polygons[0].owners[1].share = 0.4; }],
+        ['cash allocation', proposal => { proposal.reparcellization.ownerShares[0].cashOffer = 70; proposal.reparcellization.ownerShares[1].cashOffer = 30; }],
+        ['total cash offer', proposal => { proposal.offer = 120; proposal.reparcellization.ownerShares[0].cashOffer = 80; proposal.reparcellization.ownerShares[1].cashOffer = 40; }],
+        ['same-outline plot partition', proposal => { proposal.reparcellization.polygons[1].ownerKey = 'bob'; proposal.reparcellization.polygons[1].displayName = 'Bob'; }],
+        ['valuation', proposal => { proposal.reparcellization.totalValue += 1; }],
+        ['policy', proposal => { proposal.reparcellization.policy.threshold = 0.8; }],
+        ['regime', proposal => { proposal.reparcellization.regime.id = 'consensus-v2'; }],
+        ['electorate', proposal => { proposal.reparcellization.electorate.push('cara'); }]
+    ])('moves the named member digest when LR %s changes', (_label, mutate) => {
+        const original = readjustment();
+        const changed = readjustment();
+        mutate(changed);
+        expect(memberHash(asDatabaseRow(changed))).not.toBe(memberHash(asDatabaseRow(original)));
+    });
+
+    it('ignores LR presentation and validation metadata', () => {
+        const original = readjustment();
+        const cosmetic = readjustment();
+        cosmetic.title = 'Renamed';
+        cosmetic.screenshotUrl = '/new-thumbnail.png';
+        cosmetic.reparcellization.validated = false;
+        cosmetic.reparcellization.polygons.forEach(polygon => { polygon.percent = 1; });
+        expect(memberHash(asDatabaseRow(cosmetic))).toBe(memberHash(asDatabaseRow(original)));
+    });
+});
+
+describe('createPlanStore member query', () => {
+    it('selects the serialized deal fields and raw proposal data needed by the shared fingerprint', async () => {
+        let sql;
+        const store = createPlanStore({ query: async query => { sql = query; return { rows: [] }; } });
+        await store.members([7]);
+        for (const column of ['p.offer,', 'p.offer_currency', 'p.is_conditional', 'p.expires_at',
+            'p.deposit_enabled', 'p.deposit_percent', 'p.decay_enabled', 'p.decay_percent',
+            'p.decay_duration_ms', 'p.disbursement_mode', 'p.proposal_data']) {
+            expect(sql).toContain(column);
+        }
+    });
 });
 
 describe('planHash', () => {
@@ -47,6 +166,33 @@ describe('changedMembers', () => {
         const hashes = { 7: memberHash(building), 9: 'gone' };
         expect(changedMembers(hashes, [building])).toEqual(['9']);
         expect(changedMembers(hashes, [{ ...building, building_proposal: { parameters: { floors: 9 } } }])).toEqual(['7', '9']);
+    });
+
+    it('reports an invalid current LR member as changed without rewriting its named hash', () => {
+        const original = asDatabaseRow(readjustment());
+        const namedHash = memberHash(original);
+        const hashes = { 7: namedHash };
+        const malformed = { ...original, id: 7,
+            reparcellization: { ...original.reparcellization,
+                ownerShares: original.reparcellization.ownerShares.map((owner, index) => index === 0
+                    ? { ...owner, cashOffer: -1 } : owner) } };
+
+        expect(changedMembers(hashes, [malformed])).toEqual(['7']);
+        expect(hashes[7]).toBe(namedHash);
+    });
+
+    it('rethrows unexpected fingerprint infrastructure errors', () => {
+        const row = { ...asDatabaseRow(readjustment()), id: 7 };
+        const hashes = { 7: memberHash(row) };
+        const hadOverride = Object.prototype.hasOwnProperty.call(globalThis, '__consentSha256');
+        const previous = globalThis.__consentSha256;
+        globalThis.__consentSha256 = { sha256Hex() { throw new Error('digest service unavailable'); } };
+        try {
+            expect(() => changedMembers(hashes, [row])).toThrow('digest service unavailable');
+        } finally {
+            if (hadOverride) globalThis.__consentSha256 = previous;
+            else delete globalThis.__consentSha256;
+        }
     });
 });
 

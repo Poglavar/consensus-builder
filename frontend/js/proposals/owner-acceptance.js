@@ -41,7 +41,8 @@
                 owners,
                 ownerOrder,
                 acceptedOwnerKeys,
-                acceptedBy
+                acceptedBy,
+                ...(Array.isArray(entry?.acceptanceHistory) ? { acceptanceHistory: entry.acceptanceHistory } : {})
             };
         });
         return normalized;

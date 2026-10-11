@@ -209,7 +209,9 @@
         const ctx = context || {};
         const verdict = reason => ({ ok: !reason, reason: reason || null });
         if (!plan || !Array.isArray(plan.polygons) || !plan.polygons.length) return verdict('missing');
-        if (plan.poolSource === 'site') {
+        // Saved parcel readjustments also reopen with an authored site after their inputs
+        // have been replaced. Compare that immutable pool, not an empty live selection.
+        if (plan.poolSource === 'site' || ctx.site) {
             const site = geometryOf(ctx.site);
             if (!site) return verdict('site-missing');
             const pool = geometryOf(plan.poolGeometry);

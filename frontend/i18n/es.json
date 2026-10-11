@@ -167,6 +167,17 @@
         "warning": "Esta ciudad ya está abierta en otra pestaña. Para no perder las propuestas guardadas, los cambios en esta pestaña no se guardarán — cierra las demás pestañas de esta ciudad y recarga esta para editar. Otras ciudades pueden quedar abiertas.",
         "notSaved": "La propuesta NO se ha guardado y se perderá al recargar el navegador."
     },
+    "proposalApproval": {
+        "ownerLabel": "Propietario {{label}}",
+        "ownershipUnresolved": "La propiedad no está resuelta. Puedes diseñar y compartir esta propuesta; la aprobación requiere una declaración completa de derechos.",
+        "authorityPending": "Se han proporcionado los derechos. Para aprobar, hace falta una firma autorizada mediante el lente seleccionado.",
+        "tally": "{{accepted}} / {{total}} propietarios han aprobado",
+        "areaTally": "{{accepted}} / {{total}} m² respaldados",
+        "areaUnknown": "Las superficies de las parcelas no están resueltas.",
+        "chainUnsupported": "El adaptador de cadena actual no admite esta configuración de aprobación.",
+        "approvalUnavailable": "El lente seleccionado no ha establecido estos derechos ni tu autoridad para actuar por este propietario.",
+        "invalidTerms": "Corrige las condiciones de la propuesta antes de aceptar."
+    },
     "proposalDrafts": {
         "title": "Borradores",
         "entryAria": "Abrir {{count}} borrador(es) de propuesta guardados",
@@ -191,6 +202,7 @@
             "design": "Diseño",
             "parcels": "Parcelas",
             "ownership": "Propiedad",
+            "approval": "Aprobación",
             "terms": "Condiciones",
             "details": "Detalles"
         },
@@ -211,6 +223,20 @@
             "termsCopy": "Ajusta la financiación, el vencimiento, la reducción y el depósito.",
             "designTitle": "Diseño",
             "designCopy": "Edita la geometría y los parámetros canónicos en la herramienta de diseño vinculada al mapa."
+        },
+        "approval": {
+            "title": "Propiedad y aprobación",
+            "explainer": "Carga derechos abstractos de propietarios de parcelas y define quién debe aprobar. Estos datos son independientes de la geometría; su ausencia no impide revisar la propuesta geométrica. Los derechos describen la propiedad declarada, pero no demuestran autorización.",
+            "rightsTitle": "Derechos de propietarios", "importHelp": "Importa un archivo JSON de derechos de parcelas o carga los datos desde una fuente registrada. Si falla la importación, se conserva el conjunto anterior.",
+            "source": "Fuente de derechos", "reference": "Referencia o consulta de la fuente", "file": "Archivo JSON de derechos (hasta 1 MB)", "upload": "Subir JSON",
+            "import": "Importar y previsualizar", "template": "Descargar plantilla", "remove": "Quitar derechos", "noRights": "No hay datos de propiedad cargados. La geometría y la revisión de la propuesta siguen disponibles.",
+            "noOwners": "No hay propietarios indicados", "complete": "Completo", "incomplete": "Incompleto", "ready": "Los datos de propiedad están completos para las parcelas seleccionadas.",
+            "notReady": "Preparación para aprobar: {{reason}}", "reason": {"missingRights": "No se han cargado datos de derechos de propiedad.", "missingParcels": "Selecciona parcelas para comprobar los datos de propiedad.", "incompleteRights": "Los datos de propiedad están incompletos para una o más parcelas seleccionadas.", "missingOwners": "No se han declarado propietarios para las parcelas seleccionadas."}, "missingParcels": "Faltan parcelas seleccionadas: {{parcels}}", "emptyRights": "El conjunto de datos aún no contiene parcelas.",
+            "policyTitle": "Política de aprobación", "policyType": "Política", "unanimous": "Unanimidad", "threshold": "Umbrales personalizados",
+            "ownerThreshold": "Umbral de cantidad de propietarios (fracción)", "areaThreshold": "Umbral de superficie (fracción)", "ownerRule": "Regla de cantidad de propietarios", "areaRule": "Regla de superficie",
+            "atLeast": "Al menos", "strictlyMore": "Más de forma estricta", "lensMembers": "Claves de miembros del lente", "lensPlaceholder": "Una clave por línea", "ownerPrefix": "Propietario",
+            "apiMissing": "La compatibilidad con derechos de propiedad no está disponible.", "chooseFile": "Elige un archivo JSON para importar.", "fileTooLarge": "El archivo JSON debe pesar 1 MB o menos.", "providerUnavailable": "Esta fuente de propiedad no está disponible.",
+            "policyContextUnanimous": "Todos los propietarios declarados deben aprobar.", "policyContextThreshold": "La aprobación usa los umbrales de cantidad de propietarios {{owners}} y superficie {{area}}.", "invalidFraction": "Introduce una fracción como 1/2."
         },
         "fields": {
             "name": "Nombre",
@@ -1198,6 +1224,11 @@
                 "title": "Estado de aceptación de las parcelas:",
                 "parcelTitle": "Estado de aceptación de parcelas:",
                 "ownerTitle": "Estado de aceptación de propietarios:",
+                "cashOffers": "Ofertas monetarias de reparcelación",
+                "cashOffersScope": "Compensación propuesta para cada propietario por el acuerdo completo.",
+                "cashTotal": "Oferta monetaria total",
+                "invalidReadjustment": "Corrija las asignaciones de parcelas y las condiciones monetarias antes de aceptar.",
+                "termsChanged": "Las condiciones cambiaron — revíselas y acepte de nuevo",
                 "accept": "Aceptar",
                 "undo": "Deshacer",
                 "accepted": "Aceptada",
@@ -3178,17 +3209,38 @@
     },
     "reparcellization": {
         "modal": {
+            "savedRecipientUnresolved": "El destinatario guardado de la parcela resultante no tiene una contribución coincidente en las entradas actuales.",
             "title": "Reparcelación",
             "subtitle": "{{algorithm}} · {{parcels}}",
             "subtitleWithOwners": "{{algorithm}} · {{parcels}} · {{owners}}",
             "algorithms": {
                 "borderPerpendicular": "Perpendicular al borde",
-                "sweepLine": "Algoritmo de línea de barrido",
+                "sweepLine": "Automático",
                 "centroidalVoronoi": "Voronoi centroidal",
                 "wasserstein": "Wasserstein",
-                "manual": "Manual"
+                "manual": "Dibujar libremente",
+                "amend": "Mantener las parcelas existentes"
             },
             "algorithmTitle": "Tipo de reparcelación",
+            "layoutTitle": "Distribución inicial",
+            "sharedCourtyard": "Patio compartido",
+            "courtyardFromBuilding": "De un bloque de edificios",
+            "courtyardDraw": "Dibujar en el mapa",
+            "jointOwnership": "Propiedad conjunta",
+            "jointAssignButton": "Compartir entre destinatarios",
+            "choosePlanTitle": "Elegir un bloque de edificios",
+            "agreementTitle": "Acuerdos",
+            "agreementSingle": "Un acuerdo",
+            "agreementIndividual": "Acuerdos separados por parcela",
+            "agreementHint": "Cada parcela conserva su resto con sus propietarios actuales y aporta su parte del patio compartido.",
+            "agreementOfferHint": "Los importes siguen la compensación de cada propietario en el balance de reajuste de tierras. Revise cada acuerdo por separado antes de publicarlo.",
+            "agreementRetry": "Reintentar los acuerdos restantes",
+            "agreementCreate": "Crear acuerdos de parcela",
+            "agreementRequiresCourtyard": "Dibuja un patio compartido antes de crear acuerdos separados por parcela.",
+            "agreementPrivateTransfers": "Los acuerdos separados deben mantener el terreno privado con sus propietarios originales. Usa un acuerdo para esta distribución.",
+            "agreementCreated": "Se crearon {{count}} acuerdos de parcela.",
+            "agreementFailed": "Se crearon {{created}} acuerdos de parcela; {{failed}} requieren atención. El borrador se conserva para reintentarlo.",
+            "perParcelProposalName": "{{name}} — parcela {{parcel}}",
             "closeAria": "Cerrar",
             "done": "Listo",
             "allPublic": "Todo público",
@@ -3255,7 +3307,12 @@
                 "lineAnchored": "Anclada en {{count}} puntos — la línea se trazará entre los dos extremos, y en ningún otro sitio.",
                 "lineOneAnchor": "Un anclaje por ahora. Cruza otro lindero, o termina en una esquina existente.",
                 "lineNoAnchor": "Aún sin anclajes. Una línea tiene que cruzar un lindero o tocar una esquina existente en dos sitios para crear uno.",
-                "lineNoAnchors": "La línea tocó los linderos existentes en menos de dos sitios, así que no hay nada entre lo que trazar. Cruza dos linderos, o empieza en una esquina y cruza uno."
+                "lineNoAnchors": "La línea tocó los linderos existentes en menos de dos sitios, así que no hay nada entre lo que trazar. Cruza dos linderos, o empieza en una esquina y cruza uno.",
+                "amendHint": "Mantén las parcelas y los propietarios existentes. Recorta un patio compartido o edita los límites.",
+                "noBlockProposals": "Ningún bloque de edificios con patio cerrado se superpone a estas parcelas.",
+                "courtyardCarved": "Patio recortado y asignado conjuntamente.",
+                "courtyardDrawHint": "Dibuja el patio compartido. Sus participaciones de propiedad siguen el terreno privado asignado a cada destinatario.",
+                "courtyardError": "No se pudo recortar el patio. Se ha conservado la distribución."
             },
             "assignOwners": "Asignar propietarios",
             "colOrigArea": "Original",
@@ -3334,7 +3391,10 @@
             "subdivisionTitle": "Parcelación",
             "siteParcelsMissing": "No se pudieron cargar las parcelas bajo este sitio: {{ids}}.",
             "siteUnavailable": "Este sitio no se puede parcelar aquí.",
-            "siteGroundTaken": "Este sitio cubre terreno que otra propuesta ya formó: {{names}}. Dibuje el sitio fuera de él o retire primero esa propuesta."
+            "siteGroundTaken": "Este sitio cubre terreno que otra propuesta ya formó: {{names}}. Dibuje el sitio fuera de él o retire primero esa propuesta.",
+            "compareSliderLabel": "Comparación antes y después",
+            "cashTermsHint": "Compensación total del balance de propietarios. Edite las ofertas individuales en el editor de reajuste de tierras.",
+            "jointShareHint": "Las participaciones conjuntas siguen el valor del terreno privado restante de cada propietario. Con un valor uniforme por metro cuadrado, siguen la superficie privada."
         }
     },
     "status": {
@@ -3872,6 +3932,7 @@
             "building_proposal_workflow_is_unavailable": "El flujo de propuestas de edificio no está disponible.",
             "cannot_undo_acceptance_from_an_executed_proposal_that_has_descendant_parcels": "No se puede deshacer la aceptación de una propuesta ejecutada que tiene parcelas descendientes.",
             "could_not_prepare_building_data_for_the_proposal_please_try_again": "No se pudieron preparar los datos del edificio para la propuesta. Inténtalo de nuevo.",
+            "readjustment_terms_invalid": "Complete y corrija las asignaciones de parcelas y las condiciones monetarias de la reparcelación antes de aceptar.",
             "error_accepting_proposal_please_try_again": "Error al aceptar la propuesta. Inténtalo de nuevo.",
             "error_rejecting_proposal_please_try_again": "Error al rechazar la propuesta. Inténtalo de nuevo.",
             "failed_to_wipe_local_data": "No se pudieron borrar los datos locales:",

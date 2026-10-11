@@ -2,6 +2,25 @@
 // is named, so a member repaired in place later is detectable instead of silently changing a plan
 // people bet on. Pure: rows in, hex digests out.
 import { createHash } from 'node:crypto';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+const reparcellizationDeal = require('../../frontend/js/reparcellization-deal.js');
+
+function approvalContextFor(proposal) {
+    if (!proposal || typeof proposal !== 'object') return null;
+    const hasConfig = Object.prototype.hasOwnProperty.call(proposal, 'approvalConfig')
+        && proposal.approvalConfig !== undefined;
+    const hasLensEntries = Array.isArray(proposal.lens) && proposal.lens.length > 0;
+    if (!hasConfig && !hasLensEntries) return null;
+    const approval = require('../../frontend/js/proposals/approval.js');
+    const contextSource = Array.isArray(proposal.lens)
+        ? { ...proposal, lens: proposal.lens.filter(entry => !(entry && typeof entry === 'object'
+            && !entry.address && !entry.key && entry.name)) }
+        : proposal;
+    if (!hasConfig && !approval.lensKeys(contextSource).length) return null;
+    return approval.contextContent(contextSource);
+}
 
 const sha256 = text => createHash('sha256').update(text).digest('hex');
 
@@ -24,7 +43,11 @@ export function stableStringify(value) {
  *              structure_proposal, reparcellization, geometry }
  */
 export function memberContent(row) {
-    return {
+    if (reparcellizationDeal.isReadjustment(row)) {
+        return reparcellizationDeal.fingerprint(readjustmentProposal(row));
+    }
+    const proposalData = row.proposal_data && typeof row.proposal_data === 'object' ? row.proposal_data : {};
+    const content = {
         type: row.type ?? null,
         goal: row.goal ?? null,
         parcels: Array.isArray(row.cadastre_parcel_ids) ? [...row.cadastre_parcel_ids].map(String).sort() : [],
@@ -44,10 +67,49 @@ export function memberContent(row) {
             : null,
         geometry: row.geometry ?? null
     };
+    const context = approvalContextFor({
+        ...proposalData,
+        approvalConfig: row.approval_config ?? proposalData.approvalConfig,
+        lens: row.lens ?? proposalData.lens,
+        cadastreParcelIds: row.cadastre_parcel_ids ?? proposalData.cadastreParcelIds
+    });
+    if (context) content.approvalContext = context;
+    return content;
 }
 
 export function memberHash(row) {
-    return sha256(stableStringify(memberContent(row)));
+    const content = memberContent(row);
+    // LR content is already committed by the shared versioned canonical fingerprint. Keep this
+    // branch out of the legacy projection so old non-LR member hashes remain byte-identical.
+    return typeof content === 'string' ? content : sha256(stableStringify(content));
+}
+
+const choose = (value, fallback) => value === undefined || value === null ? fallback : value;
+const isoDate = value => value === undefined || value === null ? value
+    : (value instanceof Date ? value.toISOString() : new Date(value).toISOString());
+const optionalNumber = value => value === undefined || value === null ? value : Number(value);
+
+// The query provides the same authoritative columns used by serializeProposalRow, plus the raw
+// JSONB record for fields without dedicated columns (currency alias and agreement included).
+function readjustmentProposal(row) {
+    const data = row.proposal_data && typeof row.proposal_data === 'object' ? row.proposal_data : {};
+    const numericOffer = choose(row.offer, data.offer);
+    return {
+        ...data,
+        goal: choose(row.goal, choose(data.goal, row.type)),
+        reparcellization: choose(row.reparcellization, data.reparcellization),
+        cadastreParcelIds: choose(row.cadastre_parcel_ids, data.cadastreParcelIds),
+        offer: numericOffer === undefined || numericOffer === null ? numericOffer : Number(numericOffer),
+        offerCurrency: choose(row.offer_currency, data.offerCurrency),
+        isConditional: choose(row.is_conditional, data.isConditional),
+        expiresAt: isoDate(choose(row.expires_at, data.expiresAt)),
+        depositEnabled: choose(row.deposit_enabled, data.depositEnabled),
+        depositPercent: optionalNumber(choose(row.deposit_percent, data.depositPercent)),
+        decayEnabled: choose(row.decay_enabled, data.decayEnabled),
+        decayPercent: optionalNumber(choose(row.decay_percent, data.decayPercent)),
+        decayDurationMs: optionalNumber(choose(row.decay_duration_ms, data.decayDurationMs)),
+        disbursementMode: choose(row.disbursement_mode, data.disbursementMode)
+    };
 }
 
 // The plan's own identity: its members, in order, each with what it builds. `proposalId` is the
@@ -72,7 +134,15 @@ export function changedMembers(memberHashes, currentRows) {
     return Object.entries(memberHashes || {})
         .filter(([id, hash]) => {
             const row = byId.get(String(id));
-            return !row || memberHash(row) !== hash;
+            if (!row) return true;
+            try {
+                return memberHash(row) !== hash;
+            } catch (error) {
+                // An invalid current LR deal has drifted from every valid named commitment.
+                // Other failures (for example a broken SHA implementation) must still surface.
+                if (error?.code === 'invalid-readjustment-deal') return true;
+                throw error;
+            }
         })
         .map(([id]) => id);
 }

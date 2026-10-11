@@ -129,7 +129,9 @@
             decayDurationMs: Number(proposal?.decayDurationMs) || 0,
             depositEnabled: proposal?.depositEnabled === true,
             depositPercent: Number(proposal?.depositPercent) || 0,
-            facets: clone(proposal?.facets || proposal?.proposalFacets || null)
+            facets: clone(proposal?.facets || proposal?.proposalFacets || null),
+            approvalConfig: clone(proposal?.approvalConfig || null),
+            lens: clone(Array.isArray(proposal?.lens) ? proposal.lens : [])
         };
     }
 
@@ -404,7 +406,8 @@
         const output = clone(proposal || {});
         [
             'proposalId', 'proposal_id', 'id', 'hash', 'chainProposalId', 'tokenId', 'onchain', 'nft',
-            'createdAt', 'updatedAt', 'acceptedParcelIds', 'ownerAcceptances', 'executedAt', 'appliedAt'
+            'createdAt', 'updatedAt', 'acceptedParcelIds', 'ownerAcceptances', 'ownerApprovals',
+            'ownerApprovalHistory', 'ownershipApprovals', 'executedAt', 'appliedAt'
         ].forEach(key => delete output[key]);
         return output;
     }
@@ -449,6 +452,23 @@
         output.decayDurationMs = Number(fields.decayDurationMs) || 0;
         output.depositEnabled = fields.depositEnabled === true;
         output.depositPercent = Number(fields.depositPercent) || 0;
+        const approval = global.ProposalApproval;
+        if (approval?.normalizeConfig) {
+            output.approvalConfig = approval.normalizeConfig(fields.approvalConfig || {
+                schema: approval.CONFIG_SCHEMA || 'proposal-approval/v1',
+                rights: null,
+                policy: { type: 'unanimous' }
+            });
+        } else if (fields.approvalConfig && typeof fields.approvalConfig === 'object') {
+            output.approvalConfig = clone(fields.approvalConfig);
+        } else {
+            delete output.approvalConfig;
+        }
+        if (Array.isArray(fields.lens)) {
+            output.lens = clone(fields.lens);
+        } else {
+            delete output.lens;
+        }
         const facets = clone(fields.facets || output.facets || output.proposalFacets || {}) || {};
         if (fields.ownership !== undefined && fields.ownership !== null && fields.ownership !== '') facets.ownership = fields.ownership;
         if (fields.recipientScope !== undefined && fields.recipientScope !== null && fields.recipientScope !== '') facets.recipientScope = fields.recipientScope;
@@ -498,7 +518,9 @@
             ['decayPercent', 'Decay percent'],
             ['decayDurationMs', 'Decay duration'],
             ['depositEnabled', 'Deposit'],
-            ['depositPercent', 'Deposit percent']
+            ['depositPercent', 'Deposit percent'],
+            ['approvalConfig', 'Approval rights and policy'],
+            ['lens', 'Lens members']
         ];
         const changedFacets = facets.filter(([key]) => !same(before[key], after[key])).map(([key, label]) => ({
             key,
@@ -740,7 +762,7 @@
         return {
             key,
             label: options.label || proposalTypeLabel(key),
-            sections: options.sections || ['parcels', 'ownership', 'terms', 'details'],
+            sections: options.sections || ['parcels', 'ownership', 'approval', 'terms', 'details'],
             hasDesign: options.hasDesign === true,
             canEdit() { return true; },
             draftFromProposal(proposal) {
@@ -800,7 +822,7 @@
     function buildStructureAdapter(key) {
         const adapter = buildGenericAdapter(key, {
             hasDesign: true,
-            sections: ['design', 'parcels', 'ownership', 'terms', 'details']
+            sections: ['design', 'parcels', 'ownership', 'approval', 'terms', 'details']
         });
         adapter.draftFromProposal = function draftStructureFromProposal(proposal) {
             const geometry = structureGeometry(proposal);
@@ -862,7 +884,7 @@
     function buildStationAdapter() {
         const adapter = buildGenericAdapter('station', {
             label: 'Transit station',
-            sections: ['design', 'parcels', 'ownership', 'terms', 'details'],
+            sections: ['design', 'parcels', 'ownership', 'approval', 'terms', 'details'],
             hasDesign: true
         });
         adapter.draftFromProposal = function draftStationFromProposal(proposal) {
@@ -943,7 +965,7 @@
     const corridorAdapter = {
         key: 'road-track',
         label: 'Road / Track',
-        sections: ['design', 'parcels', 'ownership', 'terms', 'details'],
+        sections: ['design', 'parcels', 'ownership', 'approval', 'terms', 'details'],
         hasDesign: true,
         canEdit(proposal) {
             const definition = corridorDefinition(proposal);
@@ -1052,7 +1074,7 @@
         return {
             key,
             label: proposalTypeLabel(key),
-            sections: ['design', 'parcels', 'ownership', 'terms', 'details'],
+            sections: ['design', 'parcels', 'ownership', 'approval', 'terms', 'details'],
             hasDesign: true,
             canEdit(proposal) {
                 const context = proposalBuildingContext(proposal);
@@ -1196,7 +1218,7 @@
     const reparcellizationAdapter = {
         key: 'reparcellization',
         label: 'Reparcellization',
-        sections: ['design', 'parcels', 'ownership', 'terms', 'details'],
+        sections: ['design', 'parcels', 'ownership', 'approval', 'terms', 'details'],
         hasDesign: true,
         canEdit(proposal) {
             const plan = proposal?.reparcellization;
@@ -1251,7 +1273,8 @@
                     ownershipMode: 'multiple',
                     initialPolygons: clone(plan.polygons || []),
                     poolGeometry: clone(site),
-                    sitePool: { site: clone(site), boundParcelIds: plan.parcelIds.slice() }
+                    sitePool: { site: clone(site), boundParcelIds: plan.parcelIds.slice() },
+                    approvalConfig: clone(draft.fields?.approvalConfig || null)
                 });
             }
             const selection = await prepareProposalDraftParcelSelection(draft);
@@ -1272,16 +1295,22 @@
                 algorithm: plan.algorithm || 'sweep-line',
                 ownershipMode: plan.ownershipMode || 'multiple',
                 initialPolygons: clone(plan.polygons || []),
-                poolGeometry: clone(plan.poolGeometry || null)
+                poolGeometry: clone(plan.poolGeometry || null),
+                approvalConfig: clone(draft.fields?.approvalConfig || null)
             });
         },
         serializeProposal(draft) {
             const output = commonProposalFromDraft(draft);
             const plan = clone(draft.editorPayload?.plan || {});
             delete plan.parcelIds;
+            delete plan.agreementBatch;
             output.goal = 'reparcellization';
             output.primaryType = 'Reparcellization';
             output.reparcellization = plan;
+            const agreements = global.ReparcellizationAgreements
+                || (typeof require === 'function' ? require('./reparcellization-agreements.js') : null);
+            output.offer = output.budget = agreements.cashOfferTotal(plan);
+            output.offerCurrency = output.budgetCurrency = 'EUR';
             return finalizeAuthoredProposal(output);
         },
         summarizeChanges(source, draft) {

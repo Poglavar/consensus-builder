@@ -64,6 +64,12 @@
         superParcel: null,
         totalArea: 0,
         ownerShares: [],
+        approvalConfig: null,
+        savedOwnerShares: [],
+        savedLedgerMetadata: null,
+        parcelOwnerIndex: new Map(),
+        cadastreIdsByLiveParcel: new Map(),
+        amendInputs: [],
         slices: [],
         hasFitBounds: false,
         resizeHandler: null,
@@ -116,7 +122,7 @@
             active: false, points: [], frozen: [], tempLayer: null, tempMarkers: [],
             mode: 'polygon', cursor: null, rawCursor: null, shift: false,
             context: null, ghostLayer: null, snapLayer: null, snap: null,
-            statusText: null, keyHandler: null, zoomHandler: null
+            statusText: null, keyHandler: null, zoomHandler: null, joint: false
         },
         drawBtn: null,
         lineBtn: null,
@@ -133,7 +139,7 @@
         cashOfferOverrides: {},
         // Before/after swipe comparison (a second "before" map clipped by a slider).
         compareBtn: null,
-        compare: { active: false, map2: null, beforeEl: null, handleEl: null, labels: null, x: 0, cleanupDrag: null },
+        compare: { active: false, map2: null, beforeEl: null, handleEl: null, labels: null, percent: 50, control: null },
         // Footprints of applied building proposals overlapping the pool, shown as a
         // guide layer so the readjustment can be aligned to planned buildings.
         buildingFootprintLayer: null,
@@ -251,13 +257,18 @@
         return [
             {
                 key: 'sweep-line',
-                label: t('reparcellization.modal.algorithms.sweepLine', 'Sweep line algorithm'),
+                label: t('reparcellization.modal.algorithms.sweepLine', 'Automatic'),
                 disabled: false
             },
             {
                 key: 'manual',
-                label: t('reparcellization.modal.algorithms.manual', 'Manual'),
+                label: t('reparcellization.modal.algorithms.manual', 'Draw freely'),
                 disabled: false
+            },
+            {
+                key: 'amend',
+                label: t('reparcellization.modal.algorithms.amend', 'Keep existing parcels'),
+                disabled: !!state.sitePool
             }
         ];
     }
@@ -345,9 +356,13 @@
     function layoutSignature() {
         try {
             return JSON.stringify({
+                algorithm: state.algorithm,
+                cash: state.cashOfferOverrides,
                 slices: (state.slices || []).map(s => ({
                     g: s?.geometry || null,
                     o: s ? (s.ownerKey ?? null) : null,
+                    j: s?.jointPool === true,
+                    d: s?.derivation || null,
                     w: s && Array.isArray(s.owners) ? s.owners.map(o => `${o.ownerKey}:${o.share || 0}`).join('|') : ''
                 })),
                 shares: (state.ownerShares || []).map(o => ({ k: o.ownerKey, v: o.share ?? null }))
@@ -418,6 +433,12 @@
             setProposalModalDimmed(false);
         }
         state.ownerShares = [];
+        state.approvalConfig = null;
+        state.savedOwnerShares = [];
+        state.savedLedgerMetadata = null;
+        state.parcelOwnerIndex = new Map();
+        state.cadastreIdsByLiveParcel = new Map();
+        state.amendInputs = [];
         state.slices = [];
         state.selection = null;
         state.superParcel = null;
@@ -477,7 +498,13 @@
 
         const algorithmControls = `
                     <div class="reparcel-controls" data-reparcel-alg-group>
-                        <div class="reparcel-alg-options">${buildAlgorithmRadios(state.algorithm)}</div>
+                        <div class="reparcel-alg-options" role="group" aria-label="${t('reparcellization.modal.layoutTitle', 'Starting layout')}">${buildAlgorithmRadios(state.algorithm)}</div>
+                        <div class="reparcel-courtyard-tools" data-reparcel-courtyard-tools hidden>
+                            <span class="reparcel-courtyard-label">${t('reparcellization.modal.sharedCourtyard', 'Shared courtyard')}</span>
+                            <button type="button" class="btn" data-reparcel-courtyard-building>${t('reparcellization.modal.courtyardFromBuilding', 'From a building block')}</button>
+                            <button type="button" class="btn" data-reparcel-courtyard-draw>${t('reparcellization.modal.courtyardDraw', 'Draw on map')}</button>
+                            <p class="reparcel-courtyard-hint">${t('reparcellization.modal.jointShareHint', 'Joint shares follow the value of each owner’s remaining private land. With a uniform value per square metre, this follows private area.')}</p>
+                        </div>
                         <div class="reparcel-edit-tools">
                             <div class="reparcel-legend-actions">
                                 <button type="button" class="btn-icon" data-reparcel-draw aria-pressed="false" title="${t('reparcellization.modal.drawPlot', 'Draw plot')}">&#x2B1F;</button>
@@ -560,6 +587,13 @@
         state.nodesBtn = overlay.querySelector('[data-reparcel-nodes]');
         state.undoEditBtn = overlay.querySelector('[data-reparcel-undo-edit]');
         state.drawBtn = overlay.querySelector('[data-reparcel-draw]');
+        state.courtyardToolsEl = overlay.querySelector('[data-reparcel-courtyard-tools]');
+        overlay.querySelector('[data-reparcel-courtyard-building]').addEventListener('click', openBuiltFormPicker);
+        overlay.querySelector('[data-reparcel-courtyard-draw]').addEventListener('click', () => {
+            cancelDraw();
+            clearNodeHandles();
+            startDraw('polygon', { joint: true });
+        });
         state.lineBtn = overlay.querySelector('[data-reparcel-line]');
         state.eraseBtn = overlay.querySelector('[data-reparcel-erase]');
         state.compareBtn = overlay.querySelector('[data-reparcel-compare]');
@@ -665,10 +699,8 @@
                 if (option.key !== 'sweep-line') {
                     destroySweepOrientation();
                 }
-                // Drawing only applies to manual; cancel any active draw when leaving it.
-                if (option.key !== 'manual') {
-                    cancelDraw();
-                }
+                // Changing the starting layout replaces the canvas; abandon any unfinished stroke.
+                cancelDraw();
                 updateDrawToolButtons();
                 // Manual means the NODE/EDGE system, not the polygon tool. It used to arm
                 // drawing on entry, which made "draw a plot" look like the only manual way to
@@ -676,7 +708,7 @@
                 // tools inside this mode; the handles are the mode.
                 if (state.historyCtl) state.historyCtl.clear();
                 refreshPreview().then(() => {
-                    toggleNodeEditing(option.key === 'manual');
+                    toggleNodeEditing(option.key === 'manual' || option.key === 'amend');
                 }).catch(() => { });
             });
         }
@@ -837,6 +869,107 @@
         return assignedArea;
     }
 
+    function computeProRataJointOwners() {
+        return window.ReparcellizationPlanUtils.jointOwnersForLayout(
+            state.ownerShares.filter(owner => owner.ownerKey !== PUBLIC_LAND_KEY && !isNoOwnerEntry(owner)),
+            state.slices, turf, ledgerUsesMoney() ? state.poolUnitValue : 1
+        );
+    }
+
+    function applyJointOwnersToSlice(slice, owners) {
+        slice.owners = cloneOwners(owners);
+        slice.jointPool = true;
+        slice.ownerKey = slice.owners[0]?.ownerKey || '';
+        slice.displayName = t('reparcellization.modal.jointOwnership', 'Joint ownership');
+        slice.color = blendOwnerColors(slice.owners);
+    }
+
+    function resyncJointSliceShares() {
+        if (!state.slices.some(slice => slice.jointPool)) return;
+        const owners = computeProRataJointOwners();
+        state.slices.filter(slice => slice.jointPool).forEach(slice => applyJointOwnersToSlice(slice, owners));
+    }
+
+    function buildAmendSlices() {
+        if (!state.amendInputs.length) {
+            const features = liveSelectionFeatures(state.selection);
+            const plots = window.ReparcellizationPlanUtils.existingParcelPlots(features, state.parcelOwnerIndex);
+            state.amendInputs = plots.map((plot, index) => ({
+                geometry: plot.geometry,
+                owners: cloneOwners(plot.owners),
+                label: features[index].properties.BROJ_CESTICE || features[index].properties.parcelId,
+                area: computeFeatureArea(features[index]),
+                parcelId: String(features[index].properties.parcelId),
+                ...(state.cadastreIdsByLiveParcel.has(String(features[index].properties.parcelId))
+                    ? { cadastreParcelId: state.cadastreIdsByLiveParcel.get(String(features[index].properties.parcelId)) } : {})
+            }));
+        }
+        return state.amendInputs.map(input => makePlotFromOwners(
+            JSON.parse(JSON.stringify(input.geometry)), input.owners, 'amend'
+        ));
+    }
+
+    function applyCourtyard(courtyard, derivation) {
+        cancelDraw();
+        toggleEraseMode(false);
+        pushHistory();
+        // Clip the building's courtyard to this selection; a building may span a larger block.
+        if (!carvePlotIntoPlan(courtyard, computeProRataJointOwners(), 'form', { jointPool: true, derivation })) {
+            discardLastHistory();
+            setStatus(t('reparcellization.modal.status.courtyardError', 'Could not carve the courtyard. The layout has been kept.'), 'error');
+            return;
+        }
+        conformLayout();
+        settleSlices();
+        updateLegend(state.ownerShares);
+        drawPreview();
+        updateCommitState();
+        renderNodeHandles();
+        setStatus(t('reparcellization.modal.status.courtyardCarved', 'Courtyard carved and assigned jointly.'), 'info');
+    }
+
+    function openBuiltFormPicker() {
+        if (state.algorithm !== 'amend') return;
+        let candidates;
+        try {
+            const proposals = typeof proposalStorage !== 'undefined' ? proposalStorage.getAllProposals() : [];
+            candidates = window.ReparcellizationPlanUtils.buildingCourtyardCandidates(proposals, state.superParcel, turf);
+        } catch (error) {
+            console.error('[reparcellization] Building courtyard lookup failed', error);
+            setStatus(t('reparcellization.modal.status.courtyardError', 'Could not carve the courtyard. The layout has been kept.'), 'error');
+            return;
+        }
+        if (!candidates.length) {
+            setStatus(t('reparcellization.modal.status.noBlockProposals',
+                'No building block with an enclosed courtyard overlaps these parcels.'), 'warning');
+            return;
+        }
+        if (candidates.length === 1) {
+            applyCourtyard(candidates[0].courtyard, candidates[0].derivation);
+            return;
+        }
+        dismissOwnerPopup();
+        const container = document.createElement('div');
+        container.className = 'reparcel-owner-popup';
+        const title = document.createElement('div');
+        title.className = 'reparcel-owner-popup__title';
+        title.textContent = t('reparcellization.modal.choosePlanTitle', 'Choose a building block');
+        container.appendChild(title);
+        for (const entry of candidates) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'reparcel-owner-popup__joint';
+            button.textContent = entry.proposal.title || entry.proposal.name || String(entry.proposal.proposalId);
+            button.addEventListener('click', () => {
+                dismissOwnerPopup();
+                applyCourtyard(entry.courtyard, entry.derivation);
+            });
+            container.appendChild(button);
+        }
+        state.ownerAssignmentPopup = L.popup({ maxWidth: 320 })
+            .setLatLng(state.map.getCenter()).setContent(container).openOn(state.map);
+    }
+
     // Default cash offer for an owner: the shortfall to compensate when they were
     // assigned less than their entitlement (negative balance), otherwise nothing.
     function defaultCashOffer(ledger) {
@@ -848,9 +981,10 @@
     function getCashOffer(ownerKey, ledger) {
         if (ledger && ledger.noOwner) return null;
         if (Object.prototype.hasOwnProperty.call(state.cashOfferOverrides, ownerKey)) {
-            return state.cashOfferOverrides[ownerKey];
+            return Math.round(state.cashOfferOverrides[ownerKey] * 100) / 100;
         }
-        return defaultCashOffer(ledger);
+        const value = defaultCashOffer(ledger);
+        return value === null ? null : Math.round(value * 100) / 100;
     }
 
     function computeTotalCashOffer() {
@@ -859,7 +993,7 @@
             if (isNoOwnerEntry(entry)) continue;
             total += getCashOffer(entry.ownerKey, computeOwnerLedger(entry)) || 0;
         }
-        return total;
+        return Math.round(total * 100) / 100;
     }
 
     function updateCashTotalDisplay() {
@@ -873,7 +1007,7 @@
         state.cashTotalEl.textContent = t(
             'reparcellization.modal.totalCashOffer',
             'Total cash offers: {{amount}}',
-            { amount: formatLedgerMetric(total) }
+            { amount: CbFormat.formatMoney(total, 'EUR', { minFractionDigits: 2, maxFractionDigits: 2 }) }
         );
     }
 
@@ -907,6 +1041,7 @@
     }
 
     function updateCommitState() {
+        resyncJointSliceShares();
         const c = evaluatePlanCompleteness();
         ensureCommitAvailability(c.ok);
         // NO auto-persist here. This used to write the plan to the draft on every state change —
@@ -941,6 +1076,7 @@
     }
 
     function updateLegend(ownerShares) {
+        resyncJointSliceShares();
         // ── Original Owners table ──
         if (state.legendListEl) {
             state.legendListEl.innerHTML = '';
@@ -980,13 +1116,23 @@
                 const balSign = ledger.cashBalance > 0 ? '+' : '';
                 const cashOffer = getCashOffer(entry.ownerKey, ledger);
                 const tr = document.createElement('tr');
+                if (entry.unresolvedContribution) tr.className = 'reparcel-ledger-row--unresolved';
+                const unresolvedNote = entry.unresolvedContribution
+                    ? `<small class="reparcel-ledger-unresolved-note">${escapeHtml(t('reparcellization.modal.savedRecipientUnresolved', 'Saved output recipient has no matching current input contribution.'))}</small>`
+                    : '';
                 tr.innerHTML = `
-                    <td>${ownerLegendCellHtml({ ...entry, displayName: ownerDisplayName(entry.displayName) }, color)}</td>
+                    <td>${ownerLegendCellHtml({ ...entry, displayName: ownerDisplayName(entry.displayName) }, color)}${unresolvedNote}</td>
                     <td class="area-cell">${formatLedgerMetric(ledger.contributed)}</td>
                     <td class="area-cell">${formatLedgerMetric(ledger.assigned)}</td>
                     <td class="area-cell ${balClass}">${balSign}${formatLedgerMetric(ledger.cashBalance)}</td>
                     <td class="cash-offer-cell">${cashOfferInputHtml(entry.ownerKey, cashOffer)}</td>`;
                 tbody.appendChild(tr);
+            });
+            const labels = Array.from(thead.querySelectorAll('th'), th => th.textContent);
+            tbody.querySelectorAll('tr').forEach(row => {
+                Array.from(row.cells).forEach((cell, index) => { cell.dataset.label = labels[index]; });
+                const input = row.querySelector('.cash-offer-input');
+                if (input) input.setAttribute('aria-label', `${labels[4]} — ${row.cells[0].textContent.trim()}`);
             });
             table.appendChild(tbody);
             state.legendListEl.appendChild(table);
@@ -1023,7 +1169,7 @@
                     : [{ displayName: slice.displayName, color: slice.color }];
                 const unassignedLabel = t('reparcellization.modal.unassigned', 'Unassigned');
                 const ownerHtml = owners
-                    .map(o => newPlotOwnerHtml({ ...o, displayName: ownerDisplayName(o.displayName, unassignedLabel) }, { publicKey: PUBLIC_LAND_KEY, unassignedLabel }))
+                    .map(o => newPlotOwnerHtml({ ...o, displayName: ownerDisplayName(o.displayName, unassignedLabel) + (slice.jointPool ? ` (${formatPercent(o.share)})` : '') }, { publicKey: PUBLIC_LAND_KEY, unassignedLabel }))
                     .join('');
                 const tr = document.createElement('tr');
                 tr.className = 'reparcel-newplot-row';
@@ -1285,25 +1431,8 @@
             descriptionInput.value = t('reparcellization.modal.defaultDescription', 'Reparcellization proposal for {{label}}', { label });
         }
 
-        // The total cash compensation owed to short-changed owners IS the proposal's
-        // offer. Prefill the offer field (in EUR) from the readjustment ledger so the
-        // settlement is carried as the proposal's financial term.
-        const totalCash = (typeof window !== 'undefined' && window.pendingReparcellizationPlan)
-            ? Number(window.pendingReparcellizationPlan.totalCashOffer)
-            : 0;
-        if (Number.isFinite(totalCash) && totalCash > 0) {
-            const currencySelect = document.getElementById('proposalCurrency');
-            if (currencySelect && Array.from(currencySelect.options).some(o => o.value === 'EUR')) {
-                currencySelect.value = 'EUR';
-            }
-            const offerInput = document.getElementById('proposalOffer');
-            if (offerInput) {
-                offerInput.value = String(Math.round(totalCash));
-                // Run the app's offer formatter/handler if present so it stays consistent.
-                if (typeof handleProposalOfferInput === 'function') {
-                    try { handleProposalOfferInput(offerInput); } catch (_) { }
-                }
-            }
+        if (typeof refreshReparcellizationCashTerms === 'function') {
+            refreshReparcellizationCashTerms(document.querySelector('.create-proposal-modal'));
         }
     }
 
@@ -1333,26 +1462,8 @@
         }));
     }
 
-    // Replace a slice with its disjoint parts as independent plots (each keeps the
-    // slice's owners). Pieces under 1 m² are dropped as slivers.
-    function pushSliceParts(target, geometry, owners, source) {
-        geometryToPolygonFeatures(geometry).forEach(part => {
-            if (computeFeatureArea(part) < 1) return;
-            target.push(makePlotFromOwners(part.geometry, cloneOwners(owners), source));
-        });
-    }
-
-    function makePlotFromOwners(geometry, owners, source) {
-        const safeOwners = (Array.isArray(owners) ? owners : []).map(o => ({
-            ownerKey: o.ownerKey,
-            displayName: o.displayName,
-            color: o.color,
-            share: o.share || 0
-        }));
-        if (safeOwners.length) {
-            const equalShare = 1 / safeOwners.length;
-            safeOwners.forEach(o => { if (!o.share) o.share = equalShare; });
-        }
+    function makePlotFromOwners(geometry, owners, source, flags = {}) {
+        const safeOwners = normalizePlotOwners({ owners });
         const primary = safeOwners[0] || null;
         return {
             ownerKey: primary ? primary.ownerKey : '',
@@ -1363,7 +1474,9 @@
             color: safeOwners.length ? blendOwnerColors(safeOwners) : '#cccccc',
             geometry,
             owners: safeOwners,
-            source: source || 'manual'
+            source: source || 'manual',
+            jointPool: flags.jointPool === true,
+            ...(flags.derivation ? { derivation: JSON.parse(JSON.stringify(flags.derivation)) } : {})
         };
     }
 
@@ -1398,33 +1511,30 @@
                     geometry: JSON.parse(JSON.stringify(polygon.geometry)),
                     owners: normalizePlotOwners({ ...polygon, ownerKey, displayName, color })
                         .map(owner => ({ ...owner, color: safePlanColor(owner.color, color) })),
-                    source: polygon.source || 'manual'
+                    source: polygon.source || 'manual',
+                    jointPool: polygon.jointPool === true,
+                    ...(polygon.derivation ? { derivation: JSON.parse(JSON.stringify(polygon.derivation)) } : {})
                 };
             });
     }
 
     // Carve a polygon into the current plan: clip to the pool, subtract it from
     // every overlapping plot, then add it as a new plot. Returns true on success.
-    function carvePlotIntoPlan(polygonFeature, ownersForNew, source) {
+    function carvePlotIntoPlan(polygonFeature, ownersForNew, source, flags = {}) {
         if (typeof turf === 'undefined' || !state.superParcel) return false;
-        let clipped = null;
-        try { clipped = turf.intersect(state.superParcel, polygonFeature); } catch (_) { clipped = null; }
-        if (!clipped || !clipped.geometry) return false;
-        const newArea = computeFeatureArea(clipped);
-        if (!newArea || newArea < 1) return false; // ignore slivers < 1 m²
-
-        const remaining = [];
-        for (const slice of state.slices) {
-            let diff = null;
-            try { diff = turf.difference(sliceToFeature(slice), clipped); } catch (_) { diff = sliceToFeature(slice); }
-            if (!diff || !diff.geometry) continue;            // fully consumed by the new plot
-            // A subtraction can split a plot into disjoint parts → separate plots.
-            pushSliceParts(remaining, diff.geometry, slice.owners, slice.source);
+        try {
+            const next = window.ReparcellizationPlanUtils.carveLayout({
+                pool: state.superParcel, slices: state.slices, polygon: polygonFeature,
+                owners: ownersForNew, source, jointPool: flags.jointPool === true, derivation: flags.derivation
+            }, turf);
+            if (!next) return false;
+            state.slices = next.map(slice => makePlotFromOwners(slice.geometry, slice.owners, slice.source, slice));
+            return true;
+        } catch (error) {
+            console.error('[reparcellization] Carve failed; layout retained', error);
+            setStatus(t('reparcellization.modal.status.courtyardError', 'Could not carve the courtyard. The layout has been kept.'), 'error');
+            return false;
         }
-        // The new plot itself may be disjoint (drawn across a gap) → separate plots.
-        pushSliceParts(remaining, clipped.geometry, ownersForNew, source);
-        state.slices = remaining;
-        return true;
     }
 
     // Settle the current plot list back onto the pool and drop whatever no longer has land.
@@ -1519,7 +1629,7 @@
                 return;
             }
             pieces.forEach((geometry, position) => {
-                next.push(makePlotFromOwners(geometry, cloneOwners(slice.owners), slice.source || 'manual'));
+                next.push(makePlotFromOwners(geometry, cloneOwners(slice.owners), slice.source || 'manual', slice));
                 // The first piece inherits the parent it was cut from; the rest are new, which the
                 // scoped settle reads as "changed, and holding nothing before". The arithmetic
                 // balances — the parent is counted once and the pieces add back up to it.
@@ -1541,11 +1651,11 @@
 
     // ── Manual plot drawing ──────────────────────────────────────────────
 
-    // Drawing/splitting only applies to the Manual (blank-slate) layout, so the
-    // pencil/scissors icons are disabled (greyed out) for other algorithms.
+    // The two hand-edited starting layouts share the same drawing and boundary tools.
     function updateDrawToolButtons() {
-        const enabled = state.ownershipMode === 'multiple' && state.algorithm === 'manual';
+        const enabled = state.ownershipMode === 'multiple' && ['manual', 'amend'].includes(state.algorithm);
         [state.drawBtn, state.lineBtn, state.eraseBtn].forEach(btn => { if (btn) btn.disabled = !enabled; });
+        if (state.courtyardToolsEl) state.courtyardToolsEl.hidden = state.algorithm !== 'amend' || state.plotsTab === 'old';
         if (!enabled && state.erase.active) toggleEraseMode(false);
     }
 
@@ -1892,7 +2002,8 @@
             cancelDraw();
             return;
         }
-        const ok = carvePlotIntoPlan(polygon, [], 'manual');
+        const joint = state.drawing.joint;
+        const ok = carvePlotIntoPlan(polygon, joint ? computeProRataJointOwners() : [], 'manual', { jointPool: joint });
         cancelDraw();
         if (!ok) {
             setStatus(t('reparcellization.modal.status.drawNoOverlap', 'The drawn plot is outside the pooled land.'), 'error');
@@ -1905,7 +2016,9 @@
         // makes, and healing puts that land back into a neighbour instead of letting it leave.
         conformLayout();
         settleSlices();
-        setStatus(t('reparcellization.modal.status.drawSuccess', 'Plot added. Click it to assign owners.'), 'info');
+        setStatus(joint
+            ? t('reparcellization.modal.status.courtyardCarved', 'Courtyard carved and assigned jointly.')
+            : t('reparcellization.modal.status.drawSuccess', 'Plot added. Click it to assign owners.'), 'info');
         updateLegend(state.ownerShares);
         drawPreview();
         updateCommitState();
@@ -1929,13 +2042,14 @@
         return t('reparcellization.modal.status.drawInvalid', 'Could not build a valid plot from those points.');
     }
 
-    function startDraw(mode) {
+    function startDraw(mode, options = {}) {
         if (!state.map) return;
         exitCompare(); // editing and before/after are mutually exclusive
         dismissOwnerPopup();
         toggleEraseMode(false);
         state.drawing.active = true;
         state.drawing.mode = mode === 'line' ? 'line' : 'polygon';
+        state.drawing.joint = options.joint === true;
         state.drawing.points = [];
         state.drawing.frozen = [];
         state.drawing.shift = false;
@@ -1974,7 +2088,9 @@
         state.map.on('mousemove', onDrawMouseMove);
         setDrawButtonsActive();
         updateDrawToolbar();
-        setStatus(state.drawing.mode === 'line'
+        setStatus(state.drawing.joint
+            ? t('reparcellization.modal.status.courtyardDrawHint', 'Draw the shared courtyard. Its ownership shares follow the private land assigned to each recipient.')
+            : state.drawing.mode === 'line'
             ? t('reparcellization.modal.status.lineHint', 'Click to place the line. It is drawn only between the places it meets an existing boundary or corner — at least two of them.')
             : t('reparcellization.modal.status.drawHint', 'Click to add points, drag to adjust, then press Finish.'), 'info');
     }
@@ -1987,6 +2103,7 @@
             state.drawing.snapLayer = null;
         }
         state.drawing.active = false;
+        state.drawing.joint = false;
         state.drawing.points = [];
         state.drawing.frozen = [];
         state.drawing.cursor = null;
@@ -2043,7 +2160,7 @@
 
     function eraseAvailable() {
         return !!(window.__plotTopology && window.__plotCut && state.map && state.slices.length
-            && state.ownershipMode === 'multiple' && state.algorithm === 'manual');
+            && state.ownershipMode === 'multiple' && ['manual', 'amend'].includes(state.algorithm));
     }
 
     function toggleEraseMode(force) {
@@ -2916,6 +3033,18 @@
         title.textContent = t('reparcellization.modal.assignOwners', 'Assign owners');
         container.appendChild(title);
 
+        const jointBtn = document.createElement('button');
+        jointBtn.type = 'button';
+        jointBtn.className = 'reparcel-owner-popup__joint';
+        jointBtn.textContent = t('reparcellization.modal.jointAssignButton', 'Share among recipients');
+        jointBtn.addEventListener('click', () => {
+            pushHistory();
+            applyJointOwnersToSlice(slice, computeProRataJointOwners());
+            updateCommitState();
+            dismissOwnerPopup();
+        });
+        container.appendChild(jointBtn);
+
         const ownerList = document.createElement('div');
         ownerList.className = 'reparcel-owner-popup__list';
 
@@ -2993,6 +3122,7 @@
         if (!Array.isArray(state.slices) || !state.slices.length) return;
         const publicOwner = getPublicLandOwner();
         state.slices.forEach((slice, i) => {
+            slice.jointPool = false;
             slice.owners = [{ ownerKey: publicOwner.ownerKey, displayName: publicOwner.displayName, color: publicOwner.color, share: 1 }];
             syncSlicePrimaryOwner(i);
         });
@@ -3003,6 +3133,8 @@
 
     function toggleOwnerOnSlice(sliceIndex, owner, add) {
         const slice = state.slices[sliceIndex];
+        pushHistory();
+        slice.jointPool = false;
         if (!slice.owners) {
             slice.owners = [{ ownerKey: slice.ownerKey, displayName: slice.displayName, color: slice.color, share: 1 }];
         }
@@ -3197,7 +3329,7 @@
     function updateCompareClip() {
         if (!state.compare.active || !state.map) return;
         const W = state.map.getContainer().clientWidth;
-        const x = Math.max(0, Math.min(W, state.compare.x));
+        const x = W * state.compare.percent / 100;
         if (state.compare.beforeEl) state.compare.beforeEl.style.clipPath = `inset(0 ${Math.max(0, W - x)}px 0 0)`;
         if (state.compare.handleEl) state.compare.handleEl.style.left = x + 'px';
     }
@@ -3231,7 +3363,7 @@
         state.compare.beforeEl = beforeEl;
         state.compare.handleEl = handleEl;
         state.compare.labels = [beforeLabel, afterLabel];
-        state.compare.x = container.clientWidth / 2;
+        state.compare.percent = 50;
 
         const map2 = L.map(beforeEl, { zoomControl: false, attributionControl: false, fadeAnimation: false });
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, maxNativeZoom: 19, minZoom: 3 }).addTo(map2);
@@ -3245,28 +3377,11 @@
             try { map2.invalidateSize(); map2.setView(state.map.getCenter(), state.map.getZoom(), { animate: false }); updateCompareClip(); } catch (_) { }
         }, 60);
 
-        const onMove = (clientX) => {
-            const rect = container.getBoundingClientRect();
-            state.compare.x = Math.max(0, Math.min(rect.width, clientX - rect.left));
-            updateCompareClip();
-        };
-        const ptrMove = (e) => { onMove(e.touches ? e.touches[0].clientX : e.clientX); if (e.cancelable) e.preventDefault(); };
-        const ptrUp = () => {
-            document.removeEventListener('mousemove', ptrMove);
-            document.removeEventListener('mouseup', ptrUp);
-            document.removeEventListener('touchmove', ptrMove);
-            document.removeEventListener('touchend', ptrUp);
-        };
-        const ptrDown = (e) => {
-            e.preventDefault();
-            document.addEventListener('mousemove', ptrMove);
-            document.addEventListener('mouseup', ptrUp);
-            document.addEventListener('touchmove', ptrMove, { passive: false });
-            document.addEventListener('touchend', ptrUp);
-        };
-        handleEl.addEventListener('mousedown', ptrDown);
-        handleEl.addEventListener('touchstart', ptrDown, { passive: false });
-        state.compare.cleanupDrag = ptrUp;
+        state.compare.control = window.__MapCompareControl.create({
+            container, handle: handleEl, value: 50,
+            label: t('reparcellization.modal.compareSliderLabel', 'Before and after comparison'),
+            onChange: percent => { state.compare.percent = percent; updateCompareClip(); }
+        });
 
         updateCompareClip();
         if (state.compareBtn) state.compareBtn.classList.add('active');
@@ -3274,7 +3389,8 @@
 
     function exitCompare() {
         if (!state.compare.active) return;
-        if (state.compare.cleanupDrag) { try { state.compare.cleanupDrag(); } catch (_) { } state.compare.cleanupDrag = null; }
+        state.compare.control?.dispose();
+        state.compare.control = null;
         if (state.compare.map2) { try { state.compare.map2.remove(); } catch (_) { } state.compare.map2 = null; }
         ['beforeEl', 'handleEl'].forEach(k => { if (state.compare[k]) { try { state.compare[k].remove(); } catch (_) { } state.compare[k] = null; } });
         if (state.compare.labels) { state.compare.labels.forEach(l => { try { l.remove(); } catch (_) { } }); state.compare.labels = null; }
@@ -3545,6 +3661,9 @@
             poolUnitValue: state.poolUnitValue,
             contributionRatio: state.contributionRatio,
             isSingleOwner: false,
+            // Authored source shapes and ownership are needed later, after this layout has already
+            // replaced its inputs on the map, to create independent courtyard contributions.
+            inputParcels: state.algorithm === 'amend' ? JSON.parse(JSON.stringify(state.amendInputs)) : [],
             // Cash offers (the compensation part of the proposal) and their total.
             totalCashOffer: computeTotalCashOffer(),
             ownerShares: state.ownerShares.map(entry => {
@@ -3570,6 +3689,8 @@
                 percent: slice.percent,
                 color: slice.color,
                 source: slice.source || 'manual',
+                jointPool: slice.jointPool === true,
+                ...(slice.derivation ? { derivation: JSON.parse(JSON.stringify(slice.derivation)) } : {}),
                 area: computeFeatureArea(sliceToFeature(slice)),
                 geometry: slice.geometry,
                 owners: Array.isArray(slice.owners) && slice.owners.length
@@ -3621,39 +3742,101 @@
         return (Number(area) || 0) * avg;
     }
 
-    // Who an owner IS, for the purpose of pooling land.
-    //
-    // An ownership SLOT is scoped to its parcel — `parcel:<id>:owner:<name>` — because the ownership
-    // panel and the acceptance flow ask "who has to sign for THIS parcel". A readjustment asks a
-    // different question: the same person entering with three parcels is one contributor, owed one
-    // share of the pool and drawn in one colour. Keying the legend on the slot made GRAD ŠIBENIK
-    // three separate owners with three separate colours, and the sweep handed each of them a plot.
-    //
-    // So identity here is the person, resolved exactly the way the contribution accounting resolves
-    // it (readjustment-contributions.ownerKeyOf): the normalised name. Deliberately NOT the slot's
-    // `agentId` — that field carries the owner's postal address (routes/parcels.js: `address ||
-    // place`), which the cadastre records inconsistently and which is not an identity at all.
-    // Editor and apply then agree on who is who.
-    //
-    // A PLACEHOLDER slot is the opposite case — it means this parcel's ownership could not be read,
-    // not that one unknown person owns every unreadable parcel. Those stay parcel-scoped, and take
-    // their parcel's name so the legend never shows two identical rows.
+    // Explicit owner IDs alone join contributions across parcels. Without one, a slot stays a
+    // parcel-scoped draft participant; names and addresses never imply identity.
     function ownerIdentityForSlot(slot, parcelId, fallbackName) {
-        const unassigned = t('reparcellization.modal.unassigned', 'Unassigned');
-        if (!slot || slot.placeholder === true) {
-            return {
-                ownerKey: `parcel:${parcelId}:owner`,
-                displayName: String(fallbackName || unassigned)
-            };
+        return { ownerKey: slot?.ownerId || `draft-owner:${parcelId}:${slot?.draftOwnerIndex ?? 0}`,
+            displayName: t('proposalApproval.ownerLabel', 'Owner {{label}}', { label: 'A' }) };
+    }
+
+    function savedOutputRecipientIds() {
+        const ids = new Set();
+        for (const plot of state.initialPolygons || []) {
+            for (const owner of [plot, ...(Array.isArray(plot.owners) ? plot.owners : [])]) {
+                const id = owner?.ownerKey;
+                if (id && id !== PUBLIC_LAND_KEY && !owner.noOwner) ids.add(String(id));
+            }
         }
-        const { displayName, identityName } = resolveOwnerLabel(
-            slot.displayName, fallbackName, (key, fallback) => t(key, fallback), [unassigned]
-        );
-        const contributions = (typeof window !== 'undefined') ? window.__readjustmentContributions : null;
-        const key = (contributions && typeof contributions.ownerKeyOf === 'function')
-            ? contributions.ownerKeyOf({ name: identityName })
-            : String(identityName).trim().replace(/\s+/g, ' ').toLowerCase();
-        return { ownerKey: key || `parcel:${parcelId}:owner`, displayName };
+        return [...ids].sort();
+    }
+
+    function appendSavedOutputRecipients(entries) {
+        const known = new Set(entries.map(entry => String(entry.ownerKey || '')));
+        for (const ownerKey of savedOutputRecipientIds()) {
+            if (known.has(ownerKey)) continue;
+            entries.push({ ownerKey, displayName: '', parcelIds: [], area: 0, value: 0,
+                percent: 0, color: pickOwnerColor(ownerKey, entries.length), unresolvedContribution: true });
+            known.add(ownerKey);
+        }
+        return entries;
+    }
+
+    function restoreSavedLedgerMetadata(entries) {
+        const saved = state.savedLedgerMetadata || {};
+        const areas = entries.map(entry => Number(entry.contributedArea ?? entry.area)).filter(Number.isFinite);
+        const totalArea = areas.reduce((sum, area) => sum + area, 0);
+        const values = entries.map(entry => entry.contributedValue ?? entry.value);
+        const totalValue = values.length && values.every(value => value !== null && value !== undefined && Number.isFinite(Number(value)))
+            ? values.reduce((sum, value) => sum + Number(value), 0) : null;
+        state.totalValue = Object.prototype.hasOwnProperty.call(saved, 'totalValue')
+            ? saved.totalValue : totalValue;
+        state.poolUnitValue = Object.prototype.hasOwnProperty.call(saved, 'poolUnitValue')
+            ? saved.poolUnitValue
+            : (Number.isFinite(state.totalValue) && totalArea > 0 ? state.totalValue / totalArea : null);
+        state.contributionBasis = saved.contributionBasis || (state.totalValue > 0 ? 'value' : 'area');
+    }
+
+    function replaceSavedInputOwnersFromRights(inputs, liveToCadastreIds = new Map()) {
+        const records = new Map((state.approvalConfig?.rights?.parcels || []).map(parcel => [String(parcel.parcelId), parcel]));
+        for (const input of Array.isArray(inputs) ? inputs : []) {
+            const liveId = String(input.parcelId || input.id || '');
+            const candidate = liveToCadastreIds.has(liveId)
+                ? liveToCadastreIds.get(liveId)
+                : String(input.cadastreParcelId || input.parcelId || input.id || '');
+            // Composite provenance identifies more than one cadastral parcel. It cannot authorize
+            // replacing this saved input's owner vector with any one member's ownership.
+            if (!candidate || candidate.includes('+')) continue;
+            const record = records.get(candidate);
+            if (!record?.complete) continue;
+            input.cadastreParcelId = candidate;
+            input.owners = normalizeOwnerSlots(record.owners.map(owner => ({
+                ownerId: owner.ownerId, key: owner.ownerId, shareText: owner.share
+            }))).map(({ slot, fraction }, index) => ({
+                ownerKey: slot.ownerId,
+                displayName: '',
+                color: pickOwnerColor(slot.ownerId, index),
+                share: fraction
+            }));
+        }
+        return inputs;
+    }
+
+    function declaredOwnerSlots(parcelId) {
+        const record = state.approvalConfig?.rights?.parcels.find(parcel => parcel.parcelId === String(parcelId));
+        if (!record?.complete) return null;
+        return record.owners.map(owner => ({ key: owner.ownerId, ownerId: owner.ownerId, shareText: owner.share,
+            type: 'abstract', placeholder: false }));
+    }
+
+    function labelAbstractOwners(entries) {
+        const ids = [...new Set([
+            ...entries.filter(entry => !entry.noOwner && entry.ownerKey && entry.ownerKey !== PUBLIC_LAND_KEY).map(entry => entry.ownerKey),
+            ...savedOutputRecipientIds(),
+            ...(state.amendInputs || []).flatMap(input => (input.owners || []).map(owner => owner.ownerKey).filter(Boolean))
+        ])].sort();
+        const label = id => {
+            const english = window.ProposalApproval.ownerLabel(id, ids);
+            return t('proposalApproval.ownerLabel', 'Owner {{label}}', { label: english.replace(/^Owner\s*/, '') });
+        };
+        for (const entry of entries) if (ids.includes(entry.ownerKey)) entry.displayName = label(entry.ownerKey);
+        for (const owners of state.parcelOwnerIndex.values()) {
+            for (const owner of owners) if (ids.includes(owner.ownerKey)) owner.displayName = label(owner.ownerKey);
+        }
+        for (const plot of [...(state.initialPolygons || []), ...(state.amendInputs || [])]) {
+            if (ids.includes(plot.ownerKey)) plot.displayName = label(plot.ownerKey);
+            for (const owner of plot.owners || []) if (ids.includes(owner.ownerKey)) owner.displayName = label(owner.ownerKey);
+        }
+        return entries;
     }
 
     function cadastralIdentityForLiveParcel(parcelId, selection) {
@@ -3687,7 +3870,9 @@
         const byOwner = new Map();
         for (const part of pool.parts) {
             let slots = [];
-            if (typeof ensureParcelOwnerSlots === 'function') {
+            const declared = declaredOwnerSlots(part.parcelId);
+            if (declared) slots = declared;
+            else if (typeof ensureParcelOwnerSlots === 'function') {
                 try { slots = await ensureParcelOwnerSlots(part.parcelId); } catch (error) {
                     console.warn('[reparcellization] owner slots unavailable for', part.parcelId, error);
                 }
@@ -3695,7 +3880,8 @@
             if (!Array.isArray(slots) || !slots.length) {
                 slots = [{ key: `parcel:${part.parcelId}:synthetic-owner`, displayName: t('reparcellization.modal.syntheticOwner', 'Owner of {{parcel}}', { parcel: part.parcelId }), shareText: '1/1' }];
             }
-            normalizeOwnerSlots(slots).forEach(({ slot, fraction }) => {
+            normalizeOwnerSlots(slots).forEach(({ slot, fraction }, index) => {
+                slot = { ...slot, draftOwnerIndex: index };
                 const fallbackOwnerName = t('reparcellization.modal.syntheticOwner', 'Owner of {{parcel}}', { parcel: part.parcelId });
                 const { ownerKey, displayName } = ownerIdentityForSlot(slot, part.parcelId, fallbackOwnerName);
                 const entry = byOwner.get(ownerKey) || { ownerKey, displayName, area: 0, value: null, parcelIds: [] };
@@ -3711,13 +3897,24 @@
         state.contributionBasis = result.basis;
         state.totalValue = result.totalValue;
         state.poolUnitValue = result.poolUnitValue;
-        return result.shares.map((entry, index) => ({
+        return labelAbstractOwners(result.shares.map((entry, index) => ({
             ...entry,
             color: entry.noOwner ? OPEN_GROUND_COLOR : pickOwnerColor(entry.ownerKey, index)
-        }));
+        })));
     }
 
     async function buildOwnerShares(selection) {
+        state.parcelOwnerIndex = new Map();
+        state.cadastreIdsByLiveParcel = new Map();
+        if (!state.approvalConfig?.rights && state.savedOwnerShares.length) {
+            const entries = appendSavedOutputRecipients(state.savedOwnerShares.map(entry => ({ ...entry,
+                area: entry.contributedArea ?? entry.area ?? 0,
+                value: entry.contributedValue ?? entry.value ?? 0,
+                parcelIds: entry.parcelIds || []
+            })));
+            restoreSavedLedgerMetadata(state.savedOwnerShares);
+            return labelAbstractOwners(entries);
+        }
         if (state.sitePool) return buildSitePoolShares();
         const result = new Map();
         const parcelFeatures = liveSelectionFeatures(selection);
@@ -3728,6 +3925,7 @@
             if (!feature || !feature.properties) continue;
             const parcelId = feature.properties.parcelId;
             const cadastralIdentity = cadastralIdentityForLiveParcel(parcelId, selection);
+            state.cadastreIdsByLiveParcel.set(String(parcelId), String(cadastralIdentity));
             const area = Number(feature.properties.calculatedArea) || computeFeatureArea(feature);
             if (!area || !Number.isFinite(area)) continue;
 
@@ -3736,7 +3934,9 @@
             totalValue += value;
 
             let slots = [];
-            if (typeof ensureParcelOwnerSlots === 'function') {
+            const declared = declaredOwnerSlots(cadastralIdentity);
+            if (declared) slots = declared;
+            else if (typeof ensureParcelOwnerSlots === 'function') {
                 try {
                     slots = await ensureParcelOwnerSlots(parcelId);
                 } catch (error) {
@@ -3756,7 +3956,9 @@
             }
 
             const normalizedSlots = normalizeOwnerSlots(slots);
-            normalizedSlots.forEach(({ slot, fraction }) => {
+            const parcelOwners = [];
+            normalizedSlots.forEach(({ slot, fraction }, index) => {
+                slot = { ...slot, draftOwnerIndex: index };
                 const parcelLabel = feature.properties.BROJ_CESTICE || cadastralIdentity;
                 // “Unassigned” describes a PLOT with no owner. If an ownership source uses that
                 // same placeholder for a contributor, give the contributor a stable parcel-based
@@ -3767,6 +3969,7 @@
                     { parcel: parcelLabel }
                 );
                 const { ownerKey, displayName } = ownerIdentityForSlot(slot, cadastralIdentity, fallbackOwnerName);
+                parcelOwners.push({ ownerKey, displayName, color: pickOwnerColor(ownerKey, 0), share: fraction });
                 const existing = result.get(ownerKey) || {
                     ownerKey,
                     displayName,
@@ -3779,10 +3982,18 @@
                 if (parcelId) existing.parcelIds.add(parcelId);
                 result.set(ownerKey, existing);
             });
+            state.parcelOwnerIndex.set(String(parcelId), parcelOwners);
         }
 
         if (!totalArea) {
-            return [];
+            state.totalValue = 0;
+            state.poolUnitValue = 0;
+            state.contributionBasis = 'area';
+            return labelAbstractOwners(appendSavedOutputRecipients([]));
+        }
+
+        if (state.algorithm === 'amend' && state.approvalConfig?.rights) {
+            replaceSavedInputOwnersFromRights(state.amendInputs, state.cadastreIdsByLiveParcel);
         }
 
         // Contribution percent is by value when value data is meaningful,
@@ -3793,7 +4004,7 @@
         state.poolUnitValue = useValue && totalArea > 0 ? totalValue / totalArea : 0;
         state.contributionBasis = useValue ? 'value' : 'area';
 
-        return Array.from(result.values()).map((entry, index) => {
+        const entries = Array.from(result.values()).map((entry, index) => {
             const percent = useValue
                 ? entry.totalValue / totalValue
                 : entry.totalArea / totalArea;
@@ -3807,6 +4018,8 @@
                 color: pickOwnerColor(entry.ownerKey, index)
             };
         }).filter(entry => entry.percent > 0).sort((a, b) => b.percent - a.percent);
+        appendSavedOutputRecipients(entries);
+        return labelAbstractOwners(entries);
     }
 
     function safeIntersect(featureA, featureB) {
@@ -3910,6 +4123,10 @@
                 return;
             }
             setStatus('', 'info');
+        } else if (state.algorithm === 'amend') {
+            state.slices = buildAmendSlices();
+            setStatus(t('reparcellization.modal.status.amendHint',
+                'Keep the existing plots and owners. Carve a shared courtyard or edit the boundaries.'), 'info');
         } else if (state.algorithm === 'manual') {
             // Manual: blank slate. Discard any sweep-line result and start from the
             // undivided superparcel as a single unassigned plot to draw/split on.
@@ -4119,6 +4336,12 @@
             : null;
         let planPool = null;
         state.sitePool = null;
+        state.approvalConfig = options.approvalConfig || window.getActiveProposalDesignDraft?.()?.fields?.approvalConfig || null;
+        const pendingPlan = window.pendingReparcellizationPlan || {};
+        state.savedOwnerShares = JSON.parse(JSON.stringify(pendingPlan.ownerShares || []));
+        state.savedLedgerMetadata = Object.fromEntries(['contributionBasis', 'totalValue', 'poolUnitValue']
+            .filter(key => Object.prototype.hasOwnProperty.call(pendingPlan, key))
+            .map(key => [key, pendingPlan[key]]));
 
         // Every opener of a subdivision lands here: the draft adapter passes `sitePool`; the create
         // dialog's Edit only has the pending plan, whose pool IS the site.
@@ -4156,6 +4379,8 @@
             : ((window.pendingReparcellizationPlan && Array.isArray(window.pendingReparcellizationPlan.polygons))
                 ? window.pendingReparcellizationPlan.polygons
                 : null);
+        state.amendInputs = savedPolygons?.length && Array.isArray(window.pendingReparcellizationPlan?.inputParcels)
+            ? JSON.parse(JSON.stringify(window.pendingReparcellizationPlan.inputParcels)) : [];
         if (!state.sitePool && savedPolygons && savedPolygons.length) {
             const planIds = declaredPlanParcelIds(selection);
             const resolved = planIds.length ? await resolveInputParcelFeatures(planIds) : { features: [], missing: [] };
@@ -4247,7 +4472,10 @@
         // One unified land-readjustment method for both single- and multiple-owner
         // selections. ownershipMode is kept only as metadata on the saved plan.
         state.ownershipMode = 'multiple';
-        state.cashOfferOverrides = {};
+        state.cashOfferOverrides = Object.fromEntries((savedPolygons?.length
+            ? window.pendingReparcellizationPlan?.ownerShares || [] : [])
+            .filter(owner => !owner.noOwner && Number.isFinite(owner.cashOffer) && owner.cashOffer >= 0)
+            .map(owner => [owner.ownerKey, owner.cashOffer]));
         state.algorithm = options.algorithm || 'sweep-line';
         state.initialPolygons = (Array.isArray(options.initialPolygons) && options.initialPolygons.length)
             ? JSON.parse(JSON.stringify(options.initialPolygons))
@@ -4275,7 +4503,7 @@
         await refreshPreview();
         // Manual IS the node/edge system — there are not two manual modes, one with handles and
         // one without. Draw-plot and split-with-line are tools used inside it.
-        if (state.algorithm === 'manual') toggleNodeEditing(true);
+        if (state.algorithm === 'manual' || state.algorithm === 'amend') toggleNodeEditing(true);
         // Baseline for "did anything change?" — taken AFTER the opening layout is generated, so
         // simply opening and closing is never treated as unsaved work.
         state.openSignature = layoutSignature();

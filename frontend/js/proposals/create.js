@@ -43,6 +43,107 @@ function updateCreateProposalSubmitState() {
     if (typeof updateVoteExpiryFieldVisibility === 'function') {
         updateVoteExpiryFieldVisibility();
     }
+    refreshReparcellizationAgreementSubmit();
+}
+
+function pendingReparcellizationAgreementBatch() {
+    const draft = window.pendingProposalDraftId && window.proposalDraftStore?.getDraft(window.pendingProposalDraftId);
+    return draft?.publish?.parcelAgreementBatch || window.pendingReparcellizationPlan?.agreementBatch || null;
+}
+
+function cloneProposalCreateValue(value) {
+    if (value === undefined) return undefined;
+    return JSON.parse(JSON.stringify(value));
+}
+
+// A published editor draft is a new proposal snapshot, but its chosen rights, approval policy,
+// and exact lens selection (including an empty selection) are part of the authored terms.
+function applyPublishingDraftApproval(proposal, draftFields = {}) {
+    const hasDraftLens = Object.prototype.hasOwnProperty.call(draftFields, 'lens') && Array.isArray(draftFields.lens);
+    if (Object.prototype.hasOwnProperty.call(draftFields, 'approvalConfig')) {
+        const approval = typeof window !== 'undefined' ? window.ProposalApproval : null;
+        const config = draftFields.approvalConfig || { schema: 'proposal-approval/v1', rights: null, policy: { type: 'unanimous' } };
+        proposal.approvalConfig = approval?.normalizeConfig
+            ? approval.normalizeConfig(config)
+            : cloneProposalCreateValue(config);
+    }
+    if (hasDraftLens) proposal.lens = cloneProposalCreateValue(draftFields.lens);
+
+    const governed = proposal?.goal === 'reparcellization' || !!proposal?.reparcellization || proposal?.approvalConfig != null;
+    if (governed) {
+        proposal.acceptedParcelIds = [];
+        proposal.ownerAcceptances = {};
+        proposal.ownerApprovals = {};
+        delete proposal.ownerApprovalHistory;
+        delete proposal.ownerAcceptanceHistory;
+    }
+    return hasDraftLens;
+}
+
+function shouldSkipUnsupportedApprovalMint({ selectedTool, proposalMainType, approvalConfig }, adapter) {
+    const requiresAbstractApproval = selectedTool === 'reparcellization'
+        || proposalMainType === 'Reparcellization' || approvalConfig != null;
+    if (!requiresAbstractApproval) return false;
+    return typeof adapter?.supportsProposalApproval !== 'function'
+        || adapter.supportsProposalApproval('proposal-approval/v1') !== true;
+}
+
+function refreshReparcellizationAgreementSubmit() {
+    const t = getProposalI18nHelper();
+    const batch = pendingReparcellizationAgreementBatch();
+    const button = document.getElementById('createProposalSubmitButton');
+    if (!button) return;
+    if (batch) {
+        // A retry finishes the immutable proposals already saved, so terms cannot change midway.
+        document.querySelector('.create-proposal-modal')?.querySelectorAll('input, select, textarea, [data-geometry-action]').forEach(input => { input.disabled = true; });
+        button.disabled = false;
+        button.textContent = t('reparcellization.modal.agreementRetry', 'Retry remaining agreements');
+    } else if (window.pendingReparcellizationPlan?.agreementMode === 'individual') {
+        button.textContent = t('reparcellization.modal.agreementCreate', 'Create parcel agreements');
+    }
+}
+
+async function finishReparcellizationAgreementBatch(batch, draftId) {
+    const t = getProposalI18nHelper();
+    const result = await window.ReparcellizationAgreements.resumeBatch(batch, {
+        storage: proposalStorage,
+        persistBatch(next) {
+            if (window.pendingReparcellizationPlan) window.pendingReparcellizationPlan.agreementBatch = next;
+            if (draftId && window.proposalDraftStore?.getDraft(draftId)) {
+                window.proposalDraftStore.updateDraft(draftId, { publish: { parcelAgreementBatch: next } },
+                    { force: true, recordHistory: false, dirty: false });
+                window.proposalDraftStore.flush();
+            }
+        },
+        apply: id => ProposalManager.applyProposal(id),
+        isApplied: proposal => typeof isProposalApplied === 'function' ? isProposalApplied(proposal) : proposal?.applied === true,
+        applyFailure: id => ProposalManager.getLastApplyFailure?.(id)?.message
+    });
+    updateShowProposalsButton();
+    updateProposalList();
+    if (!result.complete) {
+        const message = t('reparcellization.modal.agreementFailed',
+            'Created {{created}} parcel agreements; {{failed}} need attention. Your draft is kept for retry.',
+            { created: result.created, failed: result.failures.length });
+        const error = new Error(`${message}\n${result.failures[0]?.message || ''}`);
+        if (draftId) window.proposalDraftStore?.markPublishFailed(draftId, error);
+        console.error('[reparcellization] Agreement batch incomplete', result.failures);
+        updateStatus(error.message);
+        if (typeof window.showStyledAlert === 'function') window.showStyledAlert(error.message);
+        return false;
+    }
+    const ids = result.batch.items.map(item => item.proposalId);
+    if (draftId && window.proposalDraftStore?.getDraft(draftId)) window.proposalDraftStore.consumeAfterPublish(draftId, ids[0]);
+    const user = typeof getCurrentUserAgent === 'function' ? getCurrentUserAgent() : null;
+    if (user) agentStorage.updateAgent(user.id, { proposalsCreated: [...new Set([...(user.proposalsCreated || []), ...ids])] });
+    window.pendingReparcellizationPlan = null;
+    closeProposalDialog();
+    if (typeof window.releaseEditorSeededMultiSelection === 'function') window.releaseEditorSeededMultiSelection();
+    if (typeof selectAndHighlightProposal === 'function') selectAndHighlightProposal(ids[0], null, false, true);
+    const message = t('reparcellization.modal.agreementCreated', 'Created {{count}} parcel agreements.', { count: ids.length });
+    updateStatus(message);
+    if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 5000, 'success');
+    return true;
 }
 
 // Show the "voting period (days)" input only for vote proposals, and clamp it to 1..365.
@@ -515,10 +616,29 @@ async function createProposal() {
     const publishingDraftId = (typeof window !== 'undefined' && window.pendingProposalDraftId)
         ? String(window.pendingProposalDraftId)
         : null;
+    const publishingDraft = publishingDraftId ? window.proposalDraftStore?.getDraft?.(publishingDraftId) : null;
+    const publishingDraftFields = publishingDraft?.fields && typeof publishingDraft.fields === 'object'
+        ? publishingDraft.fields : {};
     const markDraftPublishFailed = (error) => {
         if (!publishingDraftId || !window.proposalDraftStore?.getDraft?.(publishingDraftId)) return;
         window.proposalDraftStore.markPublishFailed(publishingDraftId, error);
     };
+    const pendingAgreementBatch = pendingReparcellizationAgreementBatch();
+    if (pendingAgreementBatch) {
+        setProposalCreateButtonState(true);
+        setProposalModalInteractivity(false);
+        try { return await finishReparcellizationAgreementBatch(pendingAgreementBatch, publishingDraftId); }
+        catch (error) {
+            markDraftPublishFailed(error);
+            console.error('[reparcellization] Agreement retry failed', error);
+            updateStatus(error.message);
+        } finally {
+            setProposalModalInteractivity(true);
+            setProposalCreateButtonState(false);
+            refreshReparcellizationAgreementSubmit();
+        }
+        return;
+    }
     const selectedTool = getSelectedProposalTool();
     if (!selectedTool) {
         showProposalAlertMessage('select_a_proposal_goal_before_creating_a_proposal', 'Select a proposal goal before creating a proposal.');
@@ -548,6 +668,7 @@ async function createProposal() {
     const proposalMainTypeInput = document.getElementById('proposalMainType');
     const proposalMainType = proposalMainTypeInput && proposalMainTypeInput.value ? proposalMainTypeInput.value : 'Purchase';
     const pendingReparcelPlan = (typeof window !== 'undefined') ? window.pendingReparcellizationPlan : null;
+    const separateAgreements = proposalMainType === 'Reparcellization' && pendingReparcelPlan?.agreementMode === 'individual';
     if (proposalMainType === 'Reparcellization') {
         if (!pendingReparcelPlan || !Array.isArray(pendingReparcelPlan.polygons) || pendingReparcelPlan.polygons.length === 0) {
             showProposalAlertMessage('run_the_reparcellization_algorithm_and_click_done_before_creating_this_proposal', 'Run the reparcellization algorithm and click Done before creating this proposal.');
@@ -556,9 +677,12 @@ async function createProposal() {
     }
     const proposalName = (document.getElementById('proposalName') && document.getElementById('proposalName').value || '').trim();
     const description = document.getElementById('proposalDescription').value.trim();
-    const offer = window.parseProposalOfferValue(document.getElementById('proposalOffer').value) || 0;
+    const offer = proposalMainType === 'Reparcellization'
+        ? window.ReparcellizationAgreements.cashOfferTotal(pendingReparcelPlan)
+        : window.parseProposalOfferValue(document.getElementById('proposalOffer').value) || 0;
     const offerCurrencySelect = document.getElementById('proposalCurrency');
-    const offerCurrency = offerCurrencySelect && offerCurrencySelect.value ? offerCurrencySelect.value : 'USDT';
+    const offerCurrency = proposalMainType === 'Reparcellization' ? 'EUR'
+        : (offerCurrencySelect && offerCurrencySelect.value ? offerCurrencySelect.value : 'USDT');
     const acquisitionInput = document.getElementById('proposalAcquisitionMode');
     const acquisitionMode = acquisitionInput && acquisitionInput.value ? acquisitionInput.value : null;
     const boundaryInput = document.getElementById('proposalBoundaryMode');
@@ -597,7 +721,7 @@ async function createProposal() {
         showProposalAlertMessage('please_enter_a_description', 'Please enter a description.');
         return;
     }
-    if (offer <= 0) {
+    if (!Number.isFinite(offer) || offer < 0 || (offer === 0 && proposalMainType !== 'Reparcellization')) {
         showProposalAlertMessage('please_enter_a_valid_offer_amount', 'Please enter a valid offer amount.');
         return;
     }
@@ -680,7 +804,19 @@ async function createProposal() {
         const cantonActive = !!(window.CantonMode && typeof window.CantonMode.isActive === 'function' && window.CantonMode.isActive());
 
         console.debug('[createProposal] Blockchain supported:', blockchainSupported, 'Solana supported:', solanaBlockchainSupported, 'Wallet connected:', isWalletConnected, 'Canton:', cantonActive);
-        let shouldMintOnchain = ((((blockchainSupported || solanaBlockchainSupported) && isWalletConnected) || cantonActive) && (finalParcelIds.length > 0 || !!siteContext));
+        let shouldMintOnchain = !separateAgreements && ((((blockchainSupported || solanaBlockchainSupported) && isWalletConnected) || cantonActive) && (finalParcelIds.length > 0 || !!siteContext));
+        const approvalMintAdapter = cantonActive ? window.CantonProposalChainBridge
+            : isSolanaWalletConnected ? window.SolanaProposalChainBridge : window.ProposalChainBridge;
+        if (shouldMintOnchain && shouldSkipUnsupportedApprovalMint({
+            selectedTool, proposalMainType,
+            approvalConfig: Object.prototype.hasOwnProperty.call(publishingDraftFields, 'approvalConfig')
+                ? publishingDraftFields.approvalConfig || { schema: 'proposal-approval/v1', rights: null }
+                : null
+        }, approvalMintAdapter)) {
+            shouldMintOnchain = false;
+            const unsupportedMessage = t('proposalApproval.chainUnsupported', 'This approval setup is not supported by the current chain adapter.');
+            showProposalAlertMessage('abstract_approval_chain_unsupported', unsupportedMessage);
+        }
         // Minting leaves the device and the record carries its author (GuestPolicy 'mint').
         if (shouldMintOnchain && guestPolicyBlocks('mint')) return;
 
@@ -1166,7 +1302,8 @@ async function createProposal() {
         console.debug('[createProposal] Building proposal object complete, adding lens data');
         // Skip lens for ownership-transfer-from-me proposals
         const skipLens = selectedTool === 'ownership-transfer-from-me';
-        if (!skipLens) {
+        const hasDraftLens = applyPublishingDraftApproval(proposal, publishingDraftFields);
+        if (!skipLens && !hasDraftLens) {
             const lensSnapshot = normalizeLensEntries(typeof getLensEntries === 'function' ? getLensEntries() : []);
             if (lensSnapshot.length) {
                 proposal.lens = lensSnapshot;
@@ -1214,6 +1351,7 @@ async function createProposal() {
             proposal.goal = 'reparcellization';
             proposal.reparcellization = JSON.parse(JSON.stringify(pendingReparcelPlan));
             delete proposal.reparcellization.parcelIds;
+            delete proposal.reparcellization.agreementBatch;
         }
 
         // Building/urban-rule proposals: consume pendingBuildingProposalContext
@@ -1315,6 +1453,22 @@ async function createProposal() {
                 throw validationError;
             }
             window.proposalDraftStore.markPublishing(publishingDraftId);
+        }
+
+        if (separateAgreements) {
+            const parts = window.ReparcellizationPlanUtils.splitPlanPerParcel(proposal.reparcellization, turf);
+            await window.CadastralParcelRepository.ensureIds(authoredCadastreParcelIds);
+            const cadastralParcels = authoredCadastreParcelIds.map(id => {
+                const feature = window.CadastralParcelRepository.get(id);
+                if (!feature) throw new Error(`Cadastral parcel ${id} is unavailable.`);
+                return { id, feature };
+            });
+            const batch = window.ReparcellizationAgreements.buildBatch({
+                proposal, parts, cadastralParcels,
+                groupId: publishingDraftId || window.crypto.randomUUID(),
+                titleForParcel: (name, parcel) => t('reparcellization.modal.perParcelProposalName', '{{name}} — parcel {{parcel}}', { name, parcel })
+            }, turf);
+            return await finishReparcellizationAgreementBatch(batch, publishingDraftId);
         }
 
         let hash = null;
@@ -2122,6 +2276,7 @@ async function createProposal() {
         hideWaitingPopupSafe();
         setProposalModalInteractivity(true);
         setProposalCreateButtonState(false);
+        refreshReparcellizationAgreementSubmit();
     }
 }
 

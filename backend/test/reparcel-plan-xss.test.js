@@ -48,7 +48,7 @@ describe('legend HTML from a crafted plan', () => {
         const html = cashOfferInputHtml(ATTR_BREAKOUT, 12.4);
         expectInert(html);
         expect(html).toContain('data-owner-key="&quot;&gt;&lt;img src=x onerror=alert(1)&gt;"');
-        expect(html).toContain('value="12"');
+        expect(html).toContain('value="12.4"');
         expect(cashOfferInputHtml('k', 'NaN"><img')).toContain('value="0"');
     });
 
@@ -76,7 +76,7 @@ describe('reparcellization.js wiring', () => {
         expect(rawInMarkup).toEqual([]);
         expect(source).toContain('ownerLegendCellHtml({ ...entry, displayName: ownerDisplayName(entry.displayName) }, color)');
         expect(source).toContain('cashOfferInputHtml(entry.ownerKey, cashOffer)');
-        expect(source).toContain('newPlotOwnerHtml({ ...o, displayName: ownerDisplayName(o.displayName, unassignedLabel) },');
+        expect(source).toContain("newPlotOwnerHtml({ ...o, displayName: ownerDisplayName(o.displayName, unassignedLabel) + (slice.jointPool ? ` (${formatPercent(o.share)})` : '') },");
     });
 
     it('escapes Leaflet string tooltips (Leaflet renders them as HTML)', () => {

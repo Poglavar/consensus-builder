@@ -34,12 +34,12 @@
         return { type: 'Feature', properties: {}, geometry: value };
     }
 
-    // Owners are matched on a normalised name: the same person written "Ivan Horvat" in one parcel
-    // and "IVAN  HORVAT" in another is one contributor, or they would be paid twice for half each.
+    // Only explicit abstract identity joins contributions across parcels. Display names and postal
+    // addresses neither prove equality nor distinguish two different people with the same name.
     function ownerKeyOf(owner) {
-        const raw = owner && (owner.ownerKey || owner.name || owner.ownerLabel);
+        const raw = owner && (owner.ownerId || owner.ownerKey);
         const text = (raw === undefined || raw === null) ? '' : String(raw);
-        return text.trim().replace(/\s+/g, ' ').toLowerCase();
+        return text.trim();
     }
 
     // A share may be recorded as 50, "50", "50%" or 0.5. Anything unreadable is NOT silently zero

@@ -59,6 +59,17 @@ describe('fork of a site-only subdivision through the create path', () => {
         expect(subdivision.planCreateVerdict({ polygons: plan.polygons }, { selectedParcelIds: ['A'] }).reason).toBe('missing');
     });
 
+    it('accepts a parcel-based LR fork on its exact saved pool after live inputs were replaced', () => {
+        const { plan, site } = forkForCreate(record);
+        delete plan.poolSource;
+        plan.parcelIds = ['A', 'B'];
+        expect(subdivision.planCreateVerdict(plan, { selectedParcelIds: [], site }).ok).toBe(true);
+        const moved = turf.transformTranslate(turf.feature(site), 30, 90, { units: 'meters' }).geometry;
+        expect(subdivision.planCreateVerdict(plan, { selectedParcelIds: [], site: moved }).reason).toBe('site-changed');
+        delete plan.poolGeometry;
+        expect(subdivision.planCreateVerdict(plan, { selectedParcelIds: [], site }).reason).toBe('missing');
+    });
+
     it('createProposal decides with planCreateVerdict, passing the site context, not a parcelIds requirement', () => {
         expect(createSource).toMatch(/__subdivision\.planCreateVerdict\(pendingReparcelPlan, \{/);
         expect(createSource).toMatch(/site: siteContext \? siteContext\.site : null/);

@@ -3245,3 +3245,32 @@ body.share-plan-mode .leaflet-control-container .leaflet-control-zoom {
 .proposal-support-actions {
     display: contents;
 }
+.owner-acceptance-changed {
+    display: block;
+    color: var(--text-secondary, #666);
+    font-weight: normal;
+    line-height: 1.35;
+}
+
+.readjustment-cash-review {
+    margin: 8px 0 12px;
+    padding: 10px;
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 8px;
+}
+
+.readjustment-cash-review h4 { margin: 0 0 4px; font-size: 13px; }
+.readjustment-cash-review p { margin: 0 0 8px; font-size: 12px; color: var(--text-secondary, #666); }
+.readjustment-cash-review ul { margin: 0; padding: 0; list-style: none; }
+.readjustment-cash-review li,
+.readjustment-cash-review-total {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    padding: 4px 0;
+    font-size: 13px;
+}
+.readjustment-cash-review li span { overflow-wrap: anywhere; }
+.readjustment-cash-review strong { white-space: nowrap; }
+.readjustment-cash-review-total { border-top: 1px solid var(--border-color, #ddd); margin-top: 4px; }
+.readjustment-cash-review-invalid { color: var(--color-danger, #b42318); font-size: 13px; }

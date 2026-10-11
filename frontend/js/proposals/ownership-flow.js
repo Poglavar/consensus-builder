@@ -11,6 +11,8 @@
 // acceptances standing, a material change voids them (see execution.js). Inputs are STORED fields
 // only (geometry, goal, the stamped flow) — never live map state — so the hash is identical on
 // every machine and across sessions.
+// LR is an allocation agreement: its effect is the complete versioned deal in
+// reparcellization-deal.js, including internal borders, all recipients and their cash terms.
 //
 // Pure: plain objects in and out, no DOM, no map. `turf` resolves via plan-order.js.
 
@@ -119,6 +121,9 @@
     // everywhere); opts.ownershipFlow lets the accept path supply a freshly computed one for
     // never-published local proposals.
     function effectFingerprintOf(proposal, options) {
+        const deal = global.ReparcellizationDeal
+            || (typeof require === 'function' ? require('../reparcellization-deal.js') : null);
+        if (deal?.isReadjustment(proposal)) return deal.fingerprint(proposal);
         const api = planOrder();
         const opts = options || {};
         if (!api || !proposal) return null;
@@ -207,7 +212,10 @@
 
     // A record from before the mechanism carries no hash and stays valid; so does any record when
     // the current hash cannot be computed (no basis to lapse on).
-    function isAcceptanceRecordValid(record, currentHash) {
+    function isAcceptanceRecordValid(record, currentHash, options = {}) {
+        // LR records without the complete deal commitment cannot prove agreement to allocations.
+        // Fail closed when the current deal is invalid or the module could not produce its hash.
+        if (options.requireHash) return !!record?.effectHash && !!currentHash && record.effectHash === currentHash;
         if (!record || !record.effectHash || !currentHash) return true;
         return record.effectHash === currentHash;
     }
@@ -215,9 +223,11 @@
     // Recompute which owner acceptances still count against `currentHash`, and rebuild the
     // proposal's acceptedParcelIds from them. Records are never deleted — consent history is
     // immutable — they just stop (or resume) counting. Only parcels governed by an
-    // ownerAcceptances entry are touched; ids accepted through the plain path are left alone.
-    function refreshAcceptanceValidity(proposal, currentHash) {
+    // ownerAcceptances entry are touched; ids accepted through the plain path are left alone,
+    // except for requireHash deals, where only current scoped owner receipts can count.
+    function refreshAcceptanceValidity(proposal, currentHash, options = {}) {
         if (!proposal || !proposal.ownerAcceptances || typeof proposal.ownerAcceptances !== 'object') {
+            if (proposal && options.requireHash) proposal.acceptedParcelIds = [];
             return { lapsedOwners: 0 };
         }
         let lapsedOwners = 0;
@@ -226,22 +236,23 @@
             if (!entry) return;
             const acceptedKeys = Array.isArray(entry.acceptedOwnerKeys) ? entry.acceptedOwnerKeys : [];
             const validKeys = acceptedKeys.filter(key => {
-                const valid = isAcceptanceRecordValid(entry.acceptedBy && entry.acceptedBy[key], currentHash);
+                const valid = isAcceptanceRecordValid(entry.acceptedBy && entry.acceptedBy[key], currentHash, options);
                 if (!valid) lapsedOwners += 1;
                 return valid;
             });
             const ownerOrder = (Array.isArray(entry.ownerOrder) && entry.ownerOrder.length > 0)
                 ? entry.ownerOrder
-                : acceptedKeys;
+                : (options.requireHash ? [] : acceptedKeys);
             const fullyAccepted = ownerOrder.length > 0
                 ? ownerOrder.every(key => validKeys.includes(key))
-                : validKeys.length > 0;
-            if (fullyAccepted) validParcelIds.push(String(entryParcelId));
+                : (!options.requireHash && validKeys.length > 0);
+            const inScope = !options.requireHash || (proposal.cadastreParcelIds || []).map(String).includes(String(entryParcelId));
+            if (fullyAccepted && inScope) validParcelIds.push(String(entryParcelId));
         });
         const governed = new Set(Object.keys(proposal.ownerAcceptances).map(String));
         proposal.acceptedParcelIds = (Array.isArray(proposal.acceptedParcelIds) ? proposal.acceptedParcelIds : [])
             .map(String)
-            .filter(id => !governed.has(id) || validParcelIds.includes(id));
+            .filter(id => (!options.requireHash && !governed.has(id)) || validParcelIds.includes(id));
         validParcelIds.forEach(id => {
             if (!proposal.acceptedParcelIds.includes(id)) proposal.acceptedParcelIds.push(id);
         });

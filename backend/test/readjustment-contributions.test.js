@@ -35,7 +35,7 @@ function parcel(id, geometry, owners) {
     };
 }
 
-const owner = (name, percentageShare) => ({ name, ownerLabel: name, percentageShare });
+const owner = (name, percentageShare, ownerId = `test:${name}`) => ({ ownerId, name, ownerLabel: name, percentageShare });
 
 const A = box(16.0000, 46.0000, 16.0004, 46.0003);
 const B = box(16.0004, 46.0000, 16.0008, 46.0003);
@@ -58,6 +58,19 @@ describe('one owner, whole parcels', () => {
         const parents = [parcel('P1', A, [owner('Ivan', 100)]), parcel('P2', B, [owner('Ivan', 100)])];
         const { contributions } = contrib.contributionsByOwner(parents, null);
         expect(contributions[0].parcels).toEqual(['P1', 'P2']);
+    });
+
+    it('aggregates the same explicit owner across three parcels to the exact area contribution', () => {
+        const id = 'person:three-parcels';
+        const parents = [
+            parcel('P1', A, [owner('Owner', 100, id)]),
+            parcel('P2', B, [owner('Owner renamed', 100, id)]),
+            parcel('P3', C, [owner('Owner of parcel three', 100, id)])
+        ];
+        const { contributions, totalM2 } = contrib.contributionsByOwner(parents, null);
+        expect(contributions).toHaveLength(1);
+        expect(contributions[0].ownerKey).toBe(id);
+        expect(contributions[0].areaM2).toBeCloseTo(totalM2, 0);
     });
 });
 
@@ -116,7 +129,7 @@ describe('a parcel with several owners', () => {
     });
 
     it('reads "50%" written as text', () => {
-        const { contributions } = contrib.contributionsByOwner([parcel('P1', A, [{ name: 'Ivan', percentageShare: '50%' }])], null);
+        const { contributions } = contrib.contributionsByOwner([parcel('P1', A, [{ ownerId: 'person:ivan', name: 'Ivan', percentageShare: '50%' }])], null);
         expect(contributions[0].areaM2).toBeCloseTo(areaOf(parcel('x', A)) * 0.5, 0);
     });
 });
@@ -136,15 +149,31 @@ describe('one owner across several parcels is one contributor', () => {
         expect(ivan.parcels).toEqual(['P1', 'P2']);
     });
 
-    it('treats the same name written differently as the same person', () => {
-        // Two half-payments to one person, not one payment each to two people who do not exist.
+    it('merges renamed records only when they carry the same explicit owner ID', () => {
         const parents = [
-            parcel('P1', A, [{ name: 'Ivan Horvat', percentageShare: 100 }]),
-            parcel('P2', B, [{ name: '  IVAN   HORVAT ', percentageShare: 100 }])
+            parcel('P1', A, [{ ownerId: 'person:ivan-1', name: 'Ivan Horvat', percentageShare: 100 }]),
+            parcel('P2', B, [{ ownerId: 'person:ivan-1', name: 'Ivan renamed', percentageShare: 100 }])
         ];
         const { contributions } = contrib.contributionsByOwner(parents, null);
         expect(contributions).toHaveLength(1);
         expect(contributions[0].areaM2).toBeCloseTo(areaOf(parcel('x', A)) + areaOf(parcel('x', B)), 0);
+    });
+
+    it('keeps homonyms with different IDs separate and does not merge missing IDs by name', () => {
+        const parents = [parcel('P1', A, [
+            { ownerId: 'person:one', name: 'Ivan Horvat', percentageShare: 50 },
+            { ownerId: 'person:two', name: 'IVAN HORVAT', percentageShare: 50 }
+        ])];
+        const homonyms = contrib.contributionsByOwner(parents, null).contributions;
+        expect(homonyms).toHaveLength(2);
+        expect(homonyms.map(item => item.ownerKey).sort()).toEqual(['person:one', 'person:two']);
+
+        const noIdResult = contrib.contributionsByOwner([
+            parcel('P1', A, [{ name: 'Ivan Horvat', percentageShare: 100 }]),
+            parcel('P2', B, [{ name: 'Ivan Horvat', percentageShare: 100 }])
+        ], null);
+        expect(noIdResult.contributions).toEqual([]);
+        expect(noIdResult.unreadable.map(item => item.parcelId)).toEqual(['P1', 'P2']);
     });
 
     it('shares sum to one across the pool', () => {

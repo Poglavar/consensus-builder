@@ -136,6 +136,10 @@ export function stripLocalProposalState(proposal) {
         'childParcelIds', 'descendantParcelIds', 'parentFeatures',
         'parentProposals', 'childProposals', 'parentProposalIds', 'childProposalIds',
         'formation', 'demolishedBuildings', 'demolitionScanned', 'parcelSourceId',
+        // Approval configuration is authored content and survives publication. Approval
+        // decisions and authority workflow state are runtime claims from one client and never do.
+        'ownerApprovals', 'ownerApprovalHistory', 'approvalState', 'approvalRuntimeState',
+        'authorityApprovals', 'authorityApprovalHistory', 'authorityState', 'authorityRuntimeState',
         // the prepared artifact travels with a record to its publication, which stores it in
         // consensus.proposal_prepared; it is never part of the record itself
         'preparedArtifact'
@@ -208,7 +212,8 @@ export function serializeProposalRow(row, options = {}) {
     proposal.updatedAt = iso(row.updated_at, proposal.updatedAt);
     proposal.decayEnabled = choose(row.decay_enabled, proposal.decayEnabled);
     proposal.decayPercent = choose(row.decay_percent, proposal.decayPercent);
-    proposal.decayDurationMs = choose(row.decay_duration_ms, proposal.decayDurationMs);
+    // pg returns BIGINT as text; the authored deal and its commitment use a finite duration number.
+    proposal.decayDurationMs = present(row.decay_duration_ms) ? Number(row.decay_duration_ms) : proposal.decayDurationMs;
     proposal.depositEnabled = choose(row.deposit_enabled, proposal.depositEnabled);
     proposal.depositPercent = choose(row.deposit_percent, proposal.depositPercent);
     proposal.isConditional = choose(row.is_conditional, proposal.isConditional);

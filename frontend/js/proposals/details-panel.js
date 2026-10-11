@@ -1353,7 +1353,8 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             {
                 resolveLens: () => (proposalLensEntries.length ? proposalLensEntries : fetchLensFromChain(fullProposal)),
                 parcelIds: Array.isArray(fullProposal?.cadastreParcelIds) ? fullProposal.cadastreParcelIds : [],
-                proposalAccount: nftInfo.tokenId
+                proposalAccount: nftInfo.tokenId,
+                approvalUnsupported: window.ProposalApprovalRuntime?.uses(fullProposal) === true
             }
         );
     }

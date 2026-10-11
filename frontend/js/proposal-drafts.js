@@ -199,7 +199,9 @@
             decayDurationMs: Number.isFinite(Number(proposal?.decayDurationMs)) ? Number(proposal.decayDurationMs) : 0,
             depositEnabled: proposal?.depositEnabled === true,
             depositPercent: Number.isFinite(Number(proposal?.depositPercent)) ? Number(proposal.depositPercent) : 0,
-            facets: cloneDraftValue(proposal?.proposalFacets || proposal?.facets || null)
+            facets: cloneDraftValue(proposal?.proposalFacets || proposal?.facets || null),
+            approvalConfig: cloneDraftValue(proposal?.approvalConfig || null),
+            lens: cloneDraftValue(Array.isArray(proposal?.lens) ? proposal.lens : [])
         };
     }
 
@@ -799,6 +801,8 @@
             delete output.chainProposalId;
             delete output.onchain;
             delete output.nft;
+            ['acceptedParcelIds', 'ownerAcceptances', 'ownerApprovals', 'ownerApprovalHistory', 'ownershipApprovals']
+                .forEach(key => delete output[key]);
             // The share/upload link is the numeric serverProposalId. A proposal built from a draft is
             // a NEW proposal (buildings, structures, reparcellization, station, road design-finalize
             // all commit through here); it must not inherit the source's server-upload identity, or an

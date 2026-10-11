@@ -102,6 +102,22 @@ function proposalContentHash(str) {
     return (h1 >>> 0).toString(36) + (h2 >>> 0).toString(36);
 }
 
+function approvalApiForFingerprint() {
+    if (typeof window !== 'undefined' && window.ProposalApproval) return window.ProposalApproval;
+    if (typeof globalThis !== 'undefined' && globalThis.ProposalApproval) return globalThis.ProposalApproval;
+    // The API server and the focused Node tests load this classic-script module through CommonJS.
+    // Resolve lazily so geometry-only fingerprints keep working without an approval config.
+    if (typeof require === 'function') return require('./approval.js');
+    return null;
+}
+
+function approvalContextSource(proposal) {
+    if (!Array.isArray(proposal?.lens)) return proposal;
+    // Names are display labels, not member identities. Keep them out of approval commitments.
+    return { ...proposal, lens: proposal.lens.filter(entry => !(entry && typeof entry === 'object'
+        && !entry.address && !entry.key && entry.name)) };
+}
+
 // A stable fingerprint of a proposal's IMPORTANT content — the geometry payload + the terms that
 // define what it IS — excluding view/identity/lifecycle state (applied, ids, timestamps, carved
 // children). Used as the dedup id when publishing: each edited local snapshot has its own local
@@ -142,6 +158,20 @@ function proposalContentPayload(proposal, includeCadastre = false) {
         content.cadastreParcelIds = (Array.isArray(proposal.cadastreParcelIds)
             ? proposal.cadastreParcelIds : []).map(String).slice().sort();
     }
+    const hasApprovalConfig = Object.prototype.hasOwnProperty.call(proposal, 'approvalConfig')
+        && proposal.approvalConfig !== undefined;
+    const lens = Array.isArray(proposal.lens) ? proposal.lens.slice() : [];
+    if (hasApprovalConfig || lens.length) {
+        const approval = approvalApiForFingerprint();
+        if (!approval?.contextContent) throw new Error('Proposal approval canonicalizer is unavailable.');
+        const contextSource = approvalContextSource(proposal);
+        const lensKeys = approval.lensKeys(contextSource);
+        if (hasApprovalConfig || lensKeys.length) {
+            // The shared context drops display labels and canonicalizes rights, policy, lens keys
+            // and the cadastral declaration together. Its presence is conditional to preserve old hashes.
+            content.approvalContext = approval.contextContent(contextSource);
+        }
+    }
     return content;
 }
 
@@ -155,6 +185,17 @@ function proposalContentFingerprint(proposal) {
 function proposalConsentFingerprint(proposal) {
     if (!proposal || typeof proposal !== 'object') return null;
     const content = proposalContentPayload(proposal, true);
+    if (proposal.approvalConfig != null) {
+        // Commit the content itself with SHA-256, not an older short geometry fingerprint.
+        // Approval is shared across tools, so financial/recipient/vote terms must travel with it.
+        const terms = Object.fromEntries([
+            'facets', 'proposalFacets', 'ownershipFlow', 'acquisitionMode', 'boundaryAdjustment',
+            'disbursementMode', 'expiresAt', 'decayEnabled', 'decayPercent', 'decayDurationMs',
+            'depositEnabled', 'depositPercent', 'isVote', 'voteExpiryDays', 'ownershipTransferProposal'
+        ].map(key => [key, proposal[key] ?? null]));
+        const approval = approvalApiForFingerprint();
+        return approval.consentHash(proposal, approval.stableStringify({ content, terms }));
+    }
     const str = (typeof stableStringify === 'function') ? stableStringify(content) : JSON.stringify(content);
     return 'c-' + proposalContentHash(str);
 }

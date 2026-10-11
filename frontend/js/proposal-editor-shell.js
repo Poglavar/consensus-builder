@@ -8,6 +8,7 @@
         design: ['proposalDrafts.tabs.design', 'Design'],
         parcels: ['proposalDrafts.tabs.parcels', 'Parcels'],
         ownership: ['proposalDrafts.tabs.ownership', 'Ownership'],
+        approval: ['proposalDrafts.tabs.approval', 'Approval'],
         terms: ['proposalDrafts.tabs.terms', 'Terms'],
         details: ['proposalDrafts.tabs.details', 'Details']
     };
@@ -17,7 +18,9 @@
         tab: null,
         comparison: 'overlay',
         localMutation: false,
-        unsubscribe: null
+        unsubscribe: null,
+        approvalError: null,
+        approvalImportSequence: 0
     };
 
     function tDraft(key, fallback, params = {}) {
@@ -218,6 +221,145 @@
             </section>`;
     }
 
+    function approvalApi() {
+        return global.ProposalApproval || null;
+    }
+
+    function approvalConfigFor(draft) {
+        const api = approvalApi();
+        if (!api || typeof api.normalizeConfig !== 'function') return null;
+        return api.normalizeConfig(draft.fields?.approvalConfig || {
+            schema: api.CONFIG_SCHEMA || 'proposal-approval/v1',
+            rights: null,
+            policy: { type: 'unanimous' }
+        });
+    }
+
+    function approvalCadastreParcelIds(draft) {
+        const fields = draft?.fields || {};
+        const registry = global.proposalEditorAdapterRegistry;
+        const adapter = registry?.get?.(draft?.adapterKey || draft?.goal);
+        if (typeof adapter?.serializeProposal === 'function') {
+            try {
+                // Serializers are the source of truth for live-piece to cadastral projection.
+                // Pass a JSON copy so preview and template generation cannot mutate the draft.
+                const serialized = adapter.serializeProposal(JSON.parse(JSON.stringify(draft)));
+                if (Array.isArray(serialized?.cadastreParcelIds)) {
+                    return [...new Set(serialized.cadastreParcelIds.map(String))];
+                }
+            } catch (_) { }
+        }
+        return [...new Set((Array.isArray(fields.cadastreParcelIds) ? fields.cadastreParcelIds : []).map(String))];
+    }
+
+    function fractionText(value) {
+        if (!value || typeof value !== 'object') return '';
+        return `${value.numerator}/${value.denominator}`;
+    }
+
+    function ownerDisplayName(ownerId, ownerIds) {
+        const api = approvalApi();
+        const raw = api?.ownerLabel?.(ownerId, ownerIds) || String(ownerId || '');
+        const label = raw.replace(/^Owner\s*/, '');
+        return tDraft('proposalApproval.ownerLabel', 'Owner {{label}}', { label });
+    }
+
+    function renderApprovalPreview(config, draft) {
+        const rights = config?.rights;
+        if (!rights) return `<div class="proposal-editor-card"><p>${escapeHtml(tDraft('proposalDrafts.approval.noRights', 'No uploaded ownership dataset. Geometry and proposal review remain available.'))}</p></div>`;
+        const api = approvalApi();
+        const proposal = {
+            approvalConfig: config,
+            cadastreParcelIds: approvalCadastreParcelIds(draft)
+        };
+        let inspection = { ready: false, reason: '', ownerIds: [], missingParcelIds: [] };
+        try { inspection = api?.inspect?.(proposal) || inspection; } catch (error) {
+            inspection = { ...inspection, reason: error?.message || String(error) };
+        }
+        const sourceRows = Array.isArray(rights.parcels) ? rights.parcels : [];
+        const ownerIds = [...new Set(sourceRows.flatMap(entry => (entry.owners || []).map(owner => owner.ownerId)))].sort();
+        const reasons = {
+            'missing-rights': tDraft('proposalDrafts.approval.reason.missingRights', 'No ownership rights dataset is loaded.'),
+            'missing-parcels': tDraft('proposalDrafts.approval.reason.missingParcels', 'Select parcels to check ownership data.'),
+            'incomplete-rights': tDraft('proposalDrafts.approval.reason.incompleteRights', 'Ownership data is incomplete for one or more selected parcels.'),
+            'missing-owners': tDraft('proposalDrafts.approval.reason.missingOwners', 'No owners are declared for the selected parcels.')
+        };
+        const rows = sourceRows.map(entry => {
+            const ownerList = (entry.owners || []).map(owner =>
+                `${escapeHtml(ownerDisplayName(owner.ownerId, ownerIds))} · ${escapeHtml(owner.ownerId)} · ${escapeHtml(owner.share)}`
+            ).join('<br>') || escapeHtml(tDraft('proposalDrafts.approval.noOwners', 'No owners listed'));
+            const area = typeof entry.areaM2 === 'number' ? `${entry.areaM2} m²` : '—';
+            const completeness = entry.complete
+                ? tDraft('proposalDrafts.approval.complete', 'Complete')
+                : tDraft('proposalDrafts.approval.incomplete', 'Incomplete');
+            return `<div class="proposal-editor-approval-row"><strong>${escapeHtml(entry.parcelId)}</strong><span>${escapeHtml(area)} · ${escapeHtml(completeness)}</span><div>${ownerList}</div></div>`;
+        }).join('');
+        const status = inspection.ready
+            ? tDraft('proposalDrafts.approval.ready', 'Ownership data is complete for the selected parcels.')
+            : tDraft('proposalDrafts.approval.notReady', 'Approval readiness: {{reason}}', { reason: reasons[inspection.reason] || tDraft('proposalDrafts.approval.incomplete', 'incomplete ownership data') });
+        const missing = (inspection.missingParcelIds || []).length
+            ? `<p>${escapeHtml(tDraft('proposalDrafts.approval.missingParcels', 'Missing selected parcels: {{parcels}}', { parcels: inspection.missingParcelIds.join(', ') }))}</p>`
+            : '';
+        return `<div class="proposal-editor-approval-status ${inspection.ready ? 'is-ready' : 'is-incomplete'}">${escapeHtml(status)}</div>${missing}<div class="proposal-editor-approval-list">${rows || `<p>${escapeHtml(tDraft('proposalDrafts.approval.emptyRights', 'The dataset has no parcel rows yet.'))}</p>`}</div>`;
+    }
+
+    function renderApproval(draft) {
+        const api = approvalApi();
+        let config = null;
+        let configError = null;
+        try { config = approvalConfigFor(draft); } catch (error) { configError = error?.message || String(error); }
+        const providers = global.ProposalApprovalSources;
+        let sourceList = [];
+        try { sourceList = providers?.list?.() || []; } catch (_) { }
+        const selectedSource = sourceList.some(source => source.id === config?.rights?.source?.provider)
+            ? config.rights.source.provider : 'upload';
+        const sourceOptions = sourceList.map(source => option(source.id,
+            source.id === 'upload' ? tDraft('proposalDrafts.approval.upload', 'Upload JSON') : (source.label || source.id), selectedSource)).join('');
+        const policy = config?.policy || { type: 'unanimous' };
+        const threshold = policy.type === 'threshold' ? policy : {};
+        const policySummary = policy.type === 'threshold'
+            ? tDraft('proposalDrafts.approval.policyContextThreshold', 'Approval uses owner-count {{owners}} and area {{area}} thresholds.', {
+                owners: fractionText(policy.owners), area: fractionText(policy.area)
+            })
+            : tDraft('proposalDrafts.approval.policyContextUnanimous', 'Every declared owner must approve.');
+        const lens = Array.isArray(draft.fields?.lens) ? draft.fields.lens : [];
+        const lensLines = lens.map(entry => typeof entry === 'string' ? entry : (entry?.address || entry?.key || '')).filter(Boolean).join('\n');
+        const message = editorState.approvalError || configError;
+        return `
+            <section class="proposal-editor-section" data-editor-section="approval">
+                <h3>${escapeHtml(tDraft('proposalDrafts.approval.title', 'Ownership and approval'))}</h3>
+                <p class="proposal-editor-section-copy">${escapeHtml(tDraft('proposalDrafts.approval.explainer', 'Upload abstract parcel-owner rights and set who must approve. This data is separate from parcel geometry; missing rights do not block the geometric proposal. Rights describe declared ownership and do not prove authorization.'))}</p>
+                <div class="proposal-editor-card">
+                    <h4>${escapeHtml(tDraft('proposalDrafts.approval.rightsTitle', 'Parcel-owner rights'))}</h4>
+                    <p>${escapeHtml(tDraft('proposalDrafts.approval.importHelp', 'Import a parcel-rights JSON file, or load it from a registered source. The previous dataset stays in place if import fails.'))}</p>
+                    <div class="proposal-editor-grid">
+                        <label class="proposal-editor-field"><span>${escapeHtml(tDraft('proposalDrafts.approval.source', 'Rights source'))}</span><select data-approval-source>${sourceOptions || option('upload', tDraft('proposalDrafts.approval.upload', 'Upload JSON'), 'upload')}</select></label>
+                        <label class="proposal-editor-field"><span>${escapeHtml(tDraft('proposalDrafts.approval.reference', 'Source reference or query'))}</span><input type="text" data-approval-reference value="${escapeHtml(config?.rights?.source?.reference || '')}" autocomplete="off"${selectedSource === 'upload' ? ' disabled' : ''}></label>
+                    </div>
+                    <label class="proposal-editor-field"><span>${escapeHtml(tDraft('proposalDrafts.approval.file', 'Rights JSON file (up to 1 MB)'))}</span><input type="file" accept="application/json,.json" data-approval-file${selectedSource !== 'upload' ? ' disabled' : ''}></label>
+                    <div class="proposal-editor-toolbar">
+                        <button type="button" class="proposal-editor-secondary" data-editor-action="approval-import">${escapeHtml(tDraft('proposalDrafts.approval.import', 'Import and preview'))}</button>
+                        <button type="button" class="proposal-editor-secondary" data-editor-action="approval-template">${escapeHtml(tDraft('proposalDrafts.approval.template', 'Download template'))}</button>
+                        <button type="button" class="proposal-editor-danger" data-editor-action="approval-remove"${config?.rights ? '' : ' disabled'}>${escapeHtml(tDraft('proposalDrafts.approval.remove', 'Remove rights'))}</button>
+                    </div>
+                    ${message ? `<div class="proposal-editor-approval-error" role="alert">${escapeHtml(message)}</div>` : ''}
+                    ${config ? renderApprovalPreview(config, draft) : `<div class="proposal-editor-approval-error">${escapeHtml(tDraft('proposalDrafts.approval.apiMissing', 'Ownership rights support is unavailable.'))}</div>`}
+                </div>
+                <div class="proposal-editor-card">
+                    <h4>${escapeHtml(tDraft('proposalDrafts.approval.policyTitle', 'Approval policy'))}</h4>
+                    <p>${escapeHtml(policySummary)}</p>
+                    <label class="proposal-editor-field"><span>${escapeHtml(tDraft('proposalDrafts.approval.policyType', 'Policy'))}</span><select data-approval-policy-type>${option('unanimous', tDraft('proposalDrafts.approval.unanimous', 'Unanimous'), policy.type)}${option('threshold', tDraft('proposalDrafts.approval.threshold', 'Custom threshold'), policy.type)}</select></label>
+                    ${policy.type === 'threshold' ? `<div class="proposal-editor-approval-thresholds">
+                        <label class="proposal-editor-field"><span>${escapeHtml(tDraft('proposalDrafts.approval.ownerThreshold', 'Owner-count threshold (fraction)'))}</span><input type="text" data-approval-fraction="owners" value="${escapeHtml(fractionText(threshold.owners))}" placeholder="1/2"></label>
+                        <label class="proposal-editor-field"><span>${escapeHtml(tDraft('proposalDrafts.approval.areaThreshold', 'Area threshold (fraction)'))}</span><input type="text" data-approval-fraction="area" value="${escapeHtml(fractionText(threshold.area))}" placeholder="7/10"></label>
+                        <label class="proposal-editor-field"><span>${escapeHtml(tDraft('proposalDrafts.approval.ownerRule', 'Owner-count rule'))}</span><select data-approval-strict="owners">${option('false', tDraft('proposalDrafts.approval.atLeast', 'At least'), String(threshold.owners?.strict) === 'true' ? 'true' : 'false')}${option('true', tDraft('proposalDrafts.approval.strictlyMore', 'Strictly more than'), String(threshold.owners?.strict) === 'true' ? 'true' : 'false')}</select></label>
+                        <label class="proposal-editor-field"><span>${escapeHtml(tDraft('proposalDrafts.approval.areaRule', 'Area rule'))}</span><select data-approval-strict="area">${option('false', tDraft('proposalDrafts.approval.atLeast', 'At least'), String(threshold.area?.strict) === 'true' ? 'true' : 'false')}${option('true', tDraft('proposalDrafts.approval.strictlyMore', 'Strictly more than'), String(threshold.area?.strict) === 'true' ? 'true' : 'false')}</select></label>
+                    </div>` : ''}
+                </div>
+                <label class="proposal-editor-field"><span>${escapeHtml(tDraft('proposalDrafts.approval.lensMembers', 'Lens member keys'))}</span><textarea data-approval-lens placeholder="${escapeHtml(tDraft('proposalDrafts.approval.lensPlaceholder', 'One key per line'))}">${escapeHtml(lensLines)}</textarea></label>
+            </section>`;
+    }
+
     function renderTerms(draft) {
         const fields = draft.fields || {};
         return `
@@ -385,7 +527,7 @@
             return;
         }
         const adapter = global.proposalEditorAdapterRegistry?.get(draft.adapterKey || draft.goal);
-        const sections = [...new Set(adapter?.sections || ['parcels', 'ownership', 'terms', 'details'])];
+        const sections = [...new Set([...(adapter?.sections || ['parcels', 'ownership', 'terms', 'details']), 'approval'])];
         if (!editorState.tab || !sections.includes(editorState.tab)) editorState.tab = sections.includes('design') ? 'design' : sections[0];
         const reviewing = draft.state === 'review';
         let body = '';
@@ -393,6 +535,7 @@
         else if (editorState.tab === 'design') body = renderDesign(draft, adapter);
         else if (editorState.tab === 'parcels') body = renderParcels(draft);
         else if (editorState.tab === 'ownership') body = renderOwnership(draft);
+        else if (editorState.tab === 'approval') body = renderApproval(draft);
         else if (editorState.tab === 'terms') body = renderTerms(draft);
         else body = renderDetails(draft);
 
@@ -421,8 +564,7 @@
                 ${comparisonButton('overlay', tDraft('proposalDrafts.comparison.overlay', 'Overlay'))}
             </div>
             ${reviewing ? '' : `<nav class="proposal-editor-tabs">${sections.map(section => `<button type="button" data-editor-action="tab" data-editor-tab="${escapeHtml(section)}" class="${editorState.tab === section ? 'is-active' : ''}">${escapeHtml(tDraft(TAB_LABELS[section]?.[0] || '', TAB_LABELS[section]?.[1] || section))}</button>`).join('')}</nav>`}
-            <div class="proposal-editor-body">${body}</div>
-            ${renderValidation(draft)}
+            <div class="proposal-editor-body">${body}${renderValidation(draft)}</div>
             <footer class="proposal-editor-footer">
                 <button type="button" class="proposal-editor-danger" data-editor-action="discard">${escapeHtml(tDraft('proposalDrafts.actions.discard', 'Discard draft'))}</button>
                 ${reviewing
@@ -493,6 +635,25 @@
     }
 
     function handleShellChange(event) {
+        const sourceControl = event.target?.closest?.('[data-approval-source]');
+        if (sourceControl) {
+            const shell = ensureShell();
+            shell.querySelector('[data-approval-reference]').disabled = sourceControl.value === 'upload';
+            shell.querySelector('[data-approval-file]').disabled = sourceControl.value !== 'upload';
+            return;
+        }
+        const policyControl = event.target?.closest?.('[data-approval-policy-type], [data-approval-fraction], [data-approval-strict]');
+        if (policyControl && editorState.draftId) {
+            saveApprovalPolicy();
+            return;
+        }
+        const lensControl = event.target?.closest?.('[data-approval-lens]');
+        if (lensControl && editorState.draftId) {
+            const addresses = [...new Set(String(lensControl.value || '').split(/[\n,]+/).map(value => value.trim()).filter(Boolean))];
+            global.proposalDraftStore.updateDraft(editorState.draftId, { fields: { lens: addresses } }, { coalesceKey: 'approval-lens' });
+            renderShell();
+            return;
+        }
         const corridorKindInput = event.target?.closest?.('[data-draft-corridor-kind]');
         if (corridorKindInput && editorState.draftId) {
             const kind = corridorKindInput.value === 'track' ? 'track' : 'road';
@@ -528,6 +689,114 @@
         const input = event.target?.closest?.('[data-draft-path]');
         if (!input) return;
         mutateFromInput(input, true);
+    }
+
+    function parseApprovalFraction(text, fallback) {
+        if (text === undefined || text === null) return fallback;
+        const match = /^\s*(\d+)\s*\/\s*(\d+)\s*$/.exec(String(text || ''));
+        if (!match) throw new Error(tDraft('proposalDrafts.approval.invalidFraction', 'Enter a fraction such as 1/2.'));
+        return { numerator: Number(match[1]), denominator: Number(match[2]) };
+    }
+
+    function saveApprovalPolicy() {
+        const api = approvalApi();
+        if (!api?.normalizeConfig || !editorState.draftId) return;
+        const shell = ensureShell();
+        try {
+            const current = approvalConfigFor(global.proposalDraftStore.getDraft(editorState.draftId));
+            const type = shell?.querySelector('[data-approval-policy-type]')?.value || 'unanimous';
+            let policy = { type: 'unanimous' };
+            if (type === 'threshold') {
+                const old = current.policy?.type === 'threshold' ? current.policy : {};
+                const ownerFraction = parseApprovalFraction(shell.querySelector('[data-approval-fraction="owners"]')?.value, old.owners || { numerator: 1, denominator: 2 });
+                const areaFraction = parseApprovalFraction(shell.querySelector('[data-approval-fraction="area"]')?.value, old.area || { numerator: 7, denominator: 10 });
+                const strict = kind => shell.querySelector(`[data-approval-strict="${kind}"]`)?.value === 'true';
+                policy = {
+                    type: 'threshold',
+                    owners: { ...ownerFraction, strict: strict('owners') },
+                    area: { ...areaFraction, strict: strict('area') }
+                };
+            }
+            const normalized = api.normalizeConfig({ ...current, policy });
+            editorState.approvalError = null;
+            global.proposalDraftStore.updateDraft(editorState.draftId, { fields: { approvalConfig: normalized } }, { coalesceKey: 'approval-policy' });
+        } catch (error) {
+            editorState.approvalError = error?.message || String(error);
+        }
+        renderShell();
+    }
+
+    async function importApprovalRights() {
+        const api = approvalApi();
+        const providers = global.ProposalApprovalSources;
+        const shell = ensureShell();
+        const store = global.proposalDraftStore;
+        const draft = store?.getDraft(editorState.draftId);
+        if (!api?.normalizeRights || !api?.normalizeConfig || !draft) return;
+        const importSequence = ++editorState.approvalImportSequence;
+        try {
+            const sourceId = shell.querySelector('[data-approval-source]')?.value || 'upload';
+            const reference = shell.querySelector('[data-approval-reference]')?.value || '';
+            const parcelIds = approvalCadastreParcelIds(draft);
+            let raw;
+            if (sourceId === 'upload') {
+                const file = shell.querySelector('[data-approval-file]')?.files?.[0];
+                if (!file) throw new Error(tDraft('proposalDrafts.approval.chooseFile', 'Choose a JSON file to import.'));
+                if (file.size > 1024 * 1024) throw new Error(tDraft('proposalDrafts.approval.fileTooLarge', 'The JSON file must be 1 MB or smaller.'));
+                const text = await file.text();
+                if (new TextEncoder().encode(text).byteLength > 1024 * 1024) throw new Error(tDraft('proposalDrafts.approval.fileTooLarge', 'The JSON file must be 1 MB or smaller.'));
+                raw = providers?.load ? await providers.load(sourceId, text, { parcelIds }) : JSON.parse(text);
+            } else {
+                if (!providers?.load) throw new Error(tDraft('proposalDrafts.approval.providerUnavailable', 'This ownership source is unavailable.'));
+                raw = await providers.load(sourceId, reference, { parcelIds });
+            }
+            if (importSequence !== editorState.approvalImportSequence || editorState.draftId !== draft.id) return;
+            const latest = store.getDraft(draft.id);
+            if (!latest) return;
+            const rights = api.normalizeRights(raw);
+            const current = approvalConfigFor(latest);
+            const approvalConfig = api.normalizeConfig({ ...current, rights });
+            editorState.approvalError = null;
+            store.updateDraft(draft.id, { fields: { approvalConfig } }, { coalesceKey: 'approval-rights-import' });
+        } catch (error) {
+            // Keep the previous canonical snapshot untouched when a file or provider fails.
+            if (importSequence !== editorState.approvalImportSequence || editorState.draftId !== draft.id) return;
+            editorState.approvalError = error?.message || String(error);
+        }
+        renderShell();
+    }
+
+    function removeApprovalRights() {
+        editorState.approvalImportSequence += 1;
+        const api = approvalApi();
+        const draft = global.proposalDraftStore?.getDraft(editorState.draftId);
+        if (!api?.normalizeConfig || !draft) return;
+        try {
+            const current = approvalConfigFor(draft);
+            const approvalConfig = api.normalizeConfig({ ...current, rights: null });
+            editorState.approvalError = null;
+            global.proposalDraftStore.updateDraft(draft.id, { fields: { approvalConfig } }, { coalesceKey: 'approval-rights-remove' });
+        } catch (error) {
+            editorState.approvalError = error?.message || String(error);
+        }
+        renderShell();
+    }
+
+    function downloadApprovalTemplate() {
+        const api = approvalApi();
+        if (!api?.createTemplate || !global.Blob || !global.URL?.createObjectURL) return;
+        const draft = global.proposalDraftStore?.getDraft(editorState.draftId);
+        if (!draft) return;
+        const parcelIds = approvalCadastreParcelIds(draft);
+        const template = api.createTemplate(parcelIds);
+        const url = global.URL.createObjectURL(new global.Blob([JSON.stringify(template, null, 2)], { type: 'application/json' }));
+        const link = global.document.createElement('a');
+        link.href = url;
+        link.download = 'parcel-rights-template.json';
+        global.document.body.appendChild(link);
+        link.click();
+        link.remove();
+        global.setTimeout(() => global.URL.revokeObjectURL(url), 0);
     }
 
     async function confirmDestructive(message, options = {}) {
@@ -590,6 +859,12 @@
             store.updateDraft(draftId, { fields: { selectedParcelIds: (context.ids || []).map(String) } });
             store.validateDraft(draftId);
             renderShell();
+        } else if (action === 'approval-import') {
+            await importApprovalRights();
+        } else if (action === 'approval-template') {
+            downloadApprovalTemplate();
+        } else if (action === 'approval-remove') {
+            removeApprovalRights();
         } else if (action === 'focus-issue') {
             const draft = store.getDraft(draftId);
             const issues = [...(draft.validation?.errors || []), ...(draft.validation?.warnings || [])];
@@ -697,6 +972,7 @@
         if (!store) return null;
         const draft = store.getDraft(draftId);
         if (!draft) return null;
+        if (editorState.draftId !== draft.id) editorState.approvalError = null;
         store.resumeDraft(draft.id);
         editorState.draftId = draft.id;
         editorState.tab = options.tab || null;
@@ -1500,6 +1776,8 @@
         }
         if (draft.goal === 'reparcellization') {
             global.pendingReparcellizationPlan = JSON.parse(JSON.stringify(payload.plan || {}));
+            // Selection is transient dialog state; stored plans intentionally omit live parcel IDs.
+            global.pendingReparcellizationPlan.parcelIds = (draft.fields?.selectedParcelIds || []).map(String);
             return true;
         }
         return !!payload.geometry;
@@ -1574,10 +1852,12 @@
             binding: draft.fields?.binding || null,
             cadastreParcelIds: (draft.fields?.cadastreParcelIds || []).map(String)
         } : null;
-        const selection = siteContext
+        // Batch retries use saved input snapshots after live inputs have been replaced.
+        const resumingAgreements = !!draft.publish?.parcelAgreementBatch;
+        const selection = (siteContext || resumingAgreements)
             ? { ids: [], layers: [], complete: true }
             : await global.prepareProposalDraftParcelSelection?.(draft);
-        if (!siteContext && !selection?.layers?.length) {
+        if (!siteContext && !resumingAgreements && !selection?.layers?.length) {
             const message = tDraft('proposalDrafts.errors.parcelsUnavailable', 'The draft parcels are not available in the current city.');
             store.markPublishFailed(draftId, new Error(message));
             // The editor shell is dormant UI — say it out loud instead of rendering into the void.
@@ -1585,7 +1865,7 @@
             else if (typeof global.updateStatus === 'function') global.updateStatus(message);
             return false;
         }
-        if ((selection.usesSourceChildren || selection.substituted) && selection.ids?.length) {
+        if ((selection?.usesSourceChildren || selection?.substituted) && selection.ids?.length) {
             store.updateDraft(draftId, { fields: { selectedParcelIds: selection.ids.map(String) } }, {
                 coalesceKey: 'applied-source-descendants'
             });
@@ -1662,6 +1942,8 @@
                     : tDraft('proposalDrafts.actions.createProposal', 'Create proposal'));
             submit.dataset.proposalDraftId = draft.id;
         }
+        global.refreshReparcellizationCashTerms?.(global.document?.querySelector?.('.create-proposal-modal'));
+        global.refreshReparcellizationAgreementSubmit?.();
         closeProposalEditorShell();
         return true;
     }
@@ -2054,7 +2336,9 @@
         module.exports = {
             formatDuration,
             patchForPath,
-            displayValue
+            displayValue,
+            approvalCadastreParcelIds,
+            renderApprovalPreview
         };
     }
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -8,14 +8,22 @@ function getProposalOwnerAcceptanceState(proposal, parcelId, options = {}) {
     if (!proposal) {
         return { entries: [] };
     }
+    if (usesAbstractProposalApproval(proposal)) {
+        return window.ProposalApprovalRuntime?.state(proposal, parcelId,
+            typeof getCurrentUserAgent === 'function' ? getCurrentUserAgent() : null,
+            currentConsentBindingHash(proposal)) || { entries: [], ownershipResolved: false };
+    }
 
+    refreshProposalAcceptanceValidity(proposal);
     const ownerSlots = getOwnerSlotsForParcel(parcelId);
-    const entry = ensureOwnerAcceptanceEntry(proposal, parcelId, ownerSlots);
+    const entry = ensureOwnerAcceptanceEntry(proposal, parcelId, ownerSlots, {
+        syncWithParcelAcceptance: !proposalRequiresDealConsent(proposal)
+    });
     if (!entry) {
         return { entries: [] };
     }
 
-    const acceptedKeys = new Set(entry.acceptedOwnerKeys || []);
+    const acceptedKeys = new Set(currentProposalOwnerAcceptanceKeys(proposal, entry));
     const currentUser = typeof getCurrentUserAgent === 'function' ? getCurrentUserAgent() : null;
     const entries = (entry.ownerOrder || []).map(ownerKey => {
         const slot = entry.owners[ownerKey] || ownerSlots.find(s => s.key === ownerKey) || { key: ownerKey };
@@ -41,6 +49,7 @@ function getProposalOwnerAcceptanceState(proposal, parcelId, options = {}) {
             shareText: slot.shareText || '',
             shareDetail: slot.shareDetail || '',
             accepted: isAccepted,
+            termsChanged: !isAccepted && (entry.acceptedOwnerKeys || []).includes(ownerKey),
             acceptedAt: acceptanceMeta.acceptedAt || null,
             acceptedByName: acceptanceMeta.username || '',
             acceptedByAgentId: acceptanceMeta.agentId || null,
@@ -67,7 +76,7 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
     const acceptanceState = getProposalOwnerAcceptanceState(proposal, parcelId, options);
     const entries = acceptanceState.entries || [];
     if (!entries.length) {
-        return '';
+        return usesAbstractProposalApproval(proposal) ? buildAbstractApprovalStatusHtml(proposal) : '';
     }
     const compact = options.compact ? 'owner-acceptance-list compact' : 'owner-acceptance-list';
     const skipParcelPanelFocus = options && options.skipParcelPanelFocus === true;
@@ -107,7 +116,8 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
         const safeShare = entry.shareText ? (typeof escapeHtml === 'function' ? escapeHtml(entry.shareText) : entry.shareText) : '';
         const shareTitle = entry.shareDetail ? (typeof escapeHtml === 'function' ? escapeHtml(entry.shareDetail) : entry.shareDetail) : '';
         const ownerFraction = parseOwnerShareFraction(entry.shareText);
-        const ownerPayoutText = formatPayout(parcelPayout * ownerFraction);
+        // LR cash is explicitly assigned in its owner ledger, never inferred from parcel area.
+        const ownerPayoutText = proposalRequiresDealConsent(proposal) ? '' : formatPayout(parcelPayout * ownerFraction);
         const payoutHtml = ownerPayoutText ? `<span class="owner-payout" style="color:#444; font-size:0.85em;">· ${ownerPayoutText}</span>` : '';
         const shareHtml = safeShare
             ? `<span class="owner-share" style="color:#666; font-size:0.85em;"${shareTitle ? ` title="${shareTitle}"` : ''}>${safeShare}</span>${payoutHtml}`
@@ -115,6 +125,9 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
 
         let buttonsHtml = '';
         const tProposalUI = getProposalI18nHelper();
+        const changedHint = entry.termsChanged
+            ? `<small class="owner-acceptance-changed">${tProposalUI('panel.proposal.acceptance.termsChanged', 'Terms changed — review and accept again')}</small>`
+            : '';
         if (isSolanaConsent) {
             const hint = tProposalUI('panel.proposal.acceptance.solanaLensHint', 'Say yes in the Lens card');
             buttonsHtml = entry.accepted
@@ -170,7 +183,7 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
         return `
             <div class="owner-acceptance-row" data-owner-key="${entry.key}" onclick="event.stopPropagation(); event.preventDefault(); return false;" style="display:grid; grid-template-columns: 1fr auto auto; align-items:center; gap:8px; padding:4px 0;">
                 <div class="owner-identity" onclick="event.stopPropagation(); event.preventDefault(); return false;" style="font-size: 13px; font-weight:500;">
-                    ${safeName}
+                    ${safeName}${changedHint}
                 </div>
                 <div class="owner-share" onclick="event.stopPropagation(); event.preventDefault(); return false;" style="font-size: 13px; color:#666; text-align:right;">
                     ${shareHtml || '-'}
@@ -204,10 +217,39 @@ function buildOwnerAcceptanceSectionHtml(proposal, parcelId, options = {}) {
             </div>`;
     }
 
-    return `<div class="${compact}" style="width: 100%; box-sizing: border-box;">${recipientRowHtml}${rowsHtml}</div>`;
+    const cashReview = proposalRequiresDealConsent(proposal) && (!firstParcel || firstParcel === parcelKey)
+        ? buildReadjustmentCashReviewHtml(proposal) : '';
+    const approvalStatus = usesAbstractProposalApproval(proposal) && (!firstParcel || firstParcel === parcelKey)
+        ? buildAbstractApprovalStatusHtml(proposal) : '';
+    return `${cashReview}${approvalStatus}<div class="${compact}" style="width: 100%; box-sizing: border-box;">${recipientRowHtml}${rowsHtml}</div>`;
+}
+
+function buildReadjustmentCashReviewHtml(proposal) {
+    const t = getProposalI18nHelper();
+    let deal;
+    try { deal = window.ReparcellizationDeal.content(proposal); }
+    catch (_) {
+        return `<p class="readjustment-cash-review-invalid">${t('panel.proposal.acceptance.invalidReadjustment', 'Correct the readjustment allocations and cash terms before accepting.')}</p>`;
+    }
+    if (!deal) return '';
+    const ids = [...new Set((proposal.reparcellization.ownerShares || []).filter(owner => !owner.noOwner)
+        .map(owner => String(owner.ownerKey).trim()))].sort();
+    const labels = new Map(ids.map(id => [id, window.ProposalApprovalRuntime?.label(id, ids) || `Owner ${ids.indexOf(id) + 1}`]));
+    const money = cents => CbFormat.formatMoney(cents / 100, 'EUR', { minFractionDigits: 2, maxFractionDigits: 2 });
+    const rows = deal.ledger.filter(owner => !owner.noOwner).map(owner => `<li>
+        <span>${escapeHtml(String(labels.get(owner.ownerKey) || owner.ownerKey))}</span>
+        <strong>${money(owner.cashCents)}</strong>
+    </li>`).join('');
+    return `<section class="readjustment-cash-review" aria-label="${t('panel.proposal.acceptance.cashOffers', 'Readjustment cash offers')}">
+        <h4>${t('panel.proposal.acceptance.cashOffers', 'Readjustment cash offers')}</h4>
+        <p>${t('panel.proposal.acceptance.cashOffersScope', 'Proposed compensation for each owner across the whole agreement.')}</p>
+        <ul>${rows}</ul>
+        <div class="readjustment-cash-review-total"><span>${t('panel.proposal.acceptance.cashTotal', 'Total cash offer')}</span><strong>${money(deal.terms.totalCashCents)}</strong></div>
+    </section>`;
 }
 
 function buildParcelAcceptanceStatusHtml(proposal) {
+    refreshProposalAcceptanceValidity(proposal);
     const tProposalUI = getProposalI18nHelper();
     const parcelIds = Array.isArray(proposal?.cadastreParcelIds) ? proposal.cadastreParcelIds : [];
     const total = parcelIds.length;
@@ -270,6 +312,10 @@ function buildParcelAcceptanceStatusHtml(proposal) {
 }
 
 function buildProposalOwnerAcceptanceSummaryFast(proposal) {
+    if (usesAbstractProposalApproval(proposal)) {
+        return window.ProposalApprovalRuntime?.summary(proposal, currentConsentBindingHash(proposal))
+            || { entries: [], totalOwners: 0, acceptedOwners: 0, ownershipResolved: false };
+    }
     const summary = {
         entries: [],
         totalOwners: 0,
@@ -279,6 +325,7 @@ function buildProposalOwnerAcceptanceSummaryFast(proposal) {
         return summary;
     }
 
+    refreshProposalAcceptanceValidity(proposal);
     const acceptances = proposal.ownerAcceptances || {};
     let includeEntries = true;
 
@@ -294,9 +341,7 @@ function buildProposalOwnerAcceptanceSummaryFast(proposal) {
         const ownerOrder = Array.isArray(entry.ownerOrder)
             ? entry.ownerOrder
             : Object.keys(entry.owners || {});
-        const acceptedKeysArray = Array.isArray(entry.acceptedOwnerKeys)
-            ? entry.acceptedOwnerKeys
-            : Object.keys(entry.acceptedBy || {});
+        const acceptedKeysArray = currentProposalOwnerAcceptanceKeys(proposal, entry);
         const acceptedSet = new Set(acceptedKeysArray.map(key => key && key.toString()).filter(Boolean));
 
         summary.totalOwners += ownerOrder.length;
@@ -383,6 +428,7 @@ function buildOwnerAcceptanceStatusHtml(proposal, summaryOverride) {
 }
 
 function buildProposalOwnerAcceptanceSummary(proposal) {
+    if (usesAbstractProposalApproval(proposal)) return buildProposalOwnerAcceptanceSummaryFast(proposal);
     const summary = {
         entries: [],
         totalOwners: 0,
@@ -1145,17 +1191,111 @@ function createLeafletViewSettlePromise(beforeCenter, beforeZoom) {
 // is identical on every machine. An edit that changes the effect changes the hash and the stored
 // acceptances stop counting — automatically, with the records preserved (consent history is
 // immutable; an edit back to the accepted effect even revalidates them). Records from before this
-// mechanism carry no hash and stay valid.
+// mechanism carry no hash and stay valid for other proposal kinds. LR requires its complete deal
+// hash: an older footprint-only approval does not establish consent to the allocation and cash.
+function proposalRequiresDealConsent(proposal) {
+    return !!proposal && (proposal.goal === 'reparcellization' || !!proposal.reparcellization);
+}
+
+function usesAbstractProposalApproval(proposal) {
+    return !!proposal && (proposalRequiresDealConsent(proposal) || proposal.approvalConfig != null);
+}
+
+function buildAbstractApprovalStatusHtml(proposal) {
+    const t = getProposalI18nHelper();
+    const summary = window.ProposalApprovalRuntime?.summary(proposal, currentConsentBindingHash(proposal));
+    const resolved = summary?.ownershipResolved;
+    const message = resolved
+        ? t('proposalApproval.authorityPending', 'Rights supplied. Approval requires a signer authorized through the selected lens.')
+        : t('proposalApproval.ownershipUnresolved', 'Ownership unresolved. You can design and share this proposal; owner approval needs a complete rights snapshot.');
+    const tally = resolved ? `<p>${escapeHtml(t('proposalApproval.tally', '{{accepted}} / {{total}} owners approved', {
+        accepted: summary.acceptedOwners, total: summary.totalOwners
+    }))}</p><p>${escapeHtml(summary.totalAreaM2 == null
+        ? t('proposalApproval.areaUnknown', 'Parcel areas are unresolved.')
+        : t('proposalApproval.areaTally', '{{accepted}} / {{total}} m² supported', {
+            accepted: summary.acceptedAreaM2, total: summary.totalAreaM2
+        }))}</p>` : '';
+    return `<section class="proposal-approval-status" role="status"><p>${escapeHtml(message)}</p>${tally}</section>`;
+}
+
+// One abstract-owner decision covers all of that owner's interests in this proposal. This local
+// adapter consumes evidence from installed authority providers; uploaded metadata grants nothing.
+async function recordAbstractProposalDecision(proposal, parcelId, ownerId, actor, withdraw = false) {
+    const t = getProposalI18nHelper();
+    const hash = currentConsentBindingHash(proposal);
+    const nft = typeof getProposalNftInfo === 'function' ? getProposalNftInfo(proposal) : null;
+    const status = typeof getLifecycleStatus === 'function' ? getLifecycleStatus(proposal) : proposal.lifecycleStatus;
+    if (nft || !hash || status === 'Cancelled' || status === 'Expired'
+        || (!withdraw && status === 'Executed')
+        || (typeof isProposalExpired === 'function' && isProposalExpired(proposal))) {
+        showProposalAlertMessage(nft ? 'abstract_approval_chain_unsupported' : 'readjustment_terms_invalid',
+            nft ? t('proposalApproval.chainUnsupported', 'This approval setup is not supported by the current chain adapter.')
+                : t('proposalApproval.invalidTerms', 'Correct the proposal terms before accepting.'));
+        return null;
+    }
+    const result = await window.ProposalApprovalRuntime?.decide(proposal, parcelId, ownerId, actor, hash, withdraw,
+        () => (typeof isProposalExpired === 'function' && isProposalExpired(proposal)) ? null : currentConsentBindingHash(proposal));
+    if (!result || result.error) {
+        showProposalAlertMessage('abstract_approval_unavailable', t('proposalApproval.approvalUnavailable',
+            'The selected lens has not established these rights and your authority to act for this owner.'));
+        return null;
+    }
+    const canExecute = !withdraw && result.passed && proposal.funded !== false
+        && !(typeof isVoteProposal === 'function' && isVoteProposal(proposal))
+        && proposalRecipientConsentSatisfied(proposal);
+    if (canExecute) {
+        proposal.lifecycleStatus = 'Executed';
+        proposal.executedAt = new Date().toISOString();
+    } else if (withdraw && status === 'Executed') {
+        proposal.lifecycleStatus = 'Active';
+        delete proposal.executedAt;
+    }
+    proposalStorage._indexProposal?.(proposal);
+    proposalStorage.save();
+    if (canExecute) {
+        updateShowProposalsButton();
+        autoApplyExecutedProposalToMap(proposal);
+        applyProposalOwnershipTransfer(proposal);
+    }
+    return { ownerKey: result.ownerId, ownerAccepted: !withdraw,
+        parcelAccepted: result.acceptedParcelIds.includes(String(parcelId)), proposalExecuted: canExecute,
+        parcelNumber: String(parcelId) };
+}
+
+function currentProposalOwnerAcceptanceKeys(proposal, entry) {
+    if (usesAbstractProposalApproval(proposal)) {
+        const keys = window.ProposalApprovalRuntime?.validIds(proposal, currentConsentBindingHash(proposal)) || [];
+        return keys.filter(key => entry?.ownerOrder?.includes(key));
+    }
+    const hash = currentConsentBindingHash(proposal);
+    const options = { requireHash: proposalRequiresDealConsent(proposal) };
+    const api = window.__ownershipFlow;
+    return (entry?.acceptedOwnerKeys || []).filter(key => (entry.ownerOrder || []).includes(key)
+        && (api ? api.isAcceptanceRecordValid(entry.acceptedBy?.[key], hash, options) : !options.requireHash));
+}
+
 function currentConsentBindingHash(proposal) {
+    if (proposalRequiresDealConsent(proposal)) {
+        try { return window.ReparcellizationDeal?.fingerprint(proposal) || null; }
+        catch (_) { return null; } // Invalid LR terms must never fall back to a weaker footprint hash.
+    }
+    if (proposal.approvalConfig != null) {
+        try { return proposalConsentFingerprint(proposal); }
+        catch (_) { return null; }
+    }
     try {
         const flowApi = (typeof window !== 'undefined') ? window.__ownershipFlow : null;
         const effect = flowApi ? flowApi.effectFingerprintOf(proposal) : null;
-        if (effect) return effect;
+        if (effect) return proposal.approvalConfig != null
+            ? window.ProposalApproval?.consentHash(proposal, effect) || null : effect;
     } catch (_) { /* fall through to the content fingerprint */ }
     try {
         // For a content-only proposal the cadastral TARGETS are part of the terms an owner
         // consented to — an offer retargeted to other ground must lapse.
-        if (typeof proposalConsentFingerprint === 'function') return proposalConsentFingerprint(proposal);
+        if (typeof proposalConsentFingerprint === 'function') {
+            const fingerprint = proposalConsentFingerprint(proposal);
+            return proposal.approvalConfig != null ? window.ProposalApproval?.consentHash(proposal, fingerprint) || null : fingerprint;
+        }
         return (typeof proposalContentFingerprint === 'function') ? proposalContentFingerprint(proposal) : null;
     } catch (_) {
         return null;
@@ -1167,8 +1307,18 @@ function currentConsentBindingHash(proposal) {
 // being absent (then nothing ever lapses, which is the pre-mechanism behaviour).
 function refreshProposalAcceptanceValidity(proposal) {
     const flowApi = (typeof window !== 'undefined') ? window.__ownershipFlow : null;
-    if (!flowApi || !proposal) return { lapsedOwners: 0 };
-    const result = flowApi.refreshAcceptanceValidity(proposal, currentConsentBindingHash(proposal));
+    if (!proposal) return { lapsedOwners: 0 };
+    if (usesAbstractProposalApproval(proposal)) {
+        if (window.ProposalApprovalRuntime) return window.ProposalApprovalRuntime.refresh(proposal, currentConsentBindingHash(proposal));
+        proposal.acceptedParcelIds = [];
+        return { lapsedOwners: 0, ownershipResolved: false };
+    }
+    const requireHash = proposalRequiresDealConsent(proposal);
+    if (!flowApi) {
+        if (requireHash) proposal.acceptedParcelIds = [];
+        return { lapsedOwners: 0 };
+    }
+    const result = flowApi.refreshAcceptanceValidity(proposal, currentConsentBindingHash(proposal), { requireHash });
     if (result.lapsedOwners > 0) {
         console.debug('[refreshProposalAcceptanceValidity] acceptances lapsed against the current effect', {
             proposalId: proposal.proposalId, lapsedOwners: result.lapsedOwners
@@ -1177,7 +1327,7 @@ function refreshProposalAcceptanceValidity(proposal) {
     return result;
 }
 
-function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
+async function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
     try {
         const suppressAlerts = metadata && metadata.suppressAlerts === true;
         const notifyAcceptIssue = (key, fallback) => {
@@ -1198,6 +1348,10 @@ function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
             notifyAcceptIssue('proposal_not_found', 'Proposal not found.');
             return null;
         }
+        if (usesAbstractProposalApproval(proposal)) {
+            return await recordAbstractProposalDecision(proposal, parcelId, ownerKey,
+                typeof getCurrentUserAgent === 'function' ? getCurrentUserAgent() : null);
+        }
 
         const normalizedParcelId = normalizeParcelId(parcelId);
         if (!normalizedParcelId) {
@@ -1211,6 +1365,12 @@ function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
             return null;
         }
 
+        const consentHash = currentConsentBindingHash(proposal);
+        if (proposalRequiresDealConsent(proposal) && !consentHash) {
+            notifyAcceptIssue('readjustment_terms_invalid', 'Complete and correct the readjustment allocations and cash terms before accepting.');
+            return null;
+        }
+        refreshProposalAcceptanceValidity(proposal);
         proposal.acceptedParcelIds = normalizeParcelIdList(proposal.acceptedParcelIds || []);
 
         const ownerSlots = getOwnerSlotsForParcel(normalizedParcelId);
@@ -1220,12 +1380,13 @@ function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
             return null;
         }
 
+        const currentAcceptedKeys = currentProposalOwnerAcceptanceKeys(proposal, entry);
         let effectiveOwnerKey = ownerKey;
         if (!effectiveOwnerKey) {
             if (entry.ownerOrder.length === 1) {
                 effectiveOwnerKey = entry.ownerOrder[0];
             } else if (suppressAlerts) {
-                const firstUnacceptedOwnerKey = entry.ownerOrder.find(key => !entry.acceptedOwnerKeys.includes(key));
+                const firstUnacceptedOwnerKey = entry.ownerOrder.find(key => !currentAcceptedKeys.includes(key));
                 effectiveOwnerKey = firstUnacceptedOwnerKey || null;
             } else {
                 notifyAcceptIssue('select_which_owner_share_you_are_accepting_for', 'Select which owner share you are accepting for.');
@@ -1233,32 +1394,38 @@ function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
             }
         }
 
-        if (!effectiveOwnerKey) {
+        if (!effectiveOwnerKey || !entry.ownerOrder.includes(effectiveOwnerKey)) {
             notifyAcceptIssue('unable_to_determine_which_owner_share_to_accept', 'Unable to determine which owner share to accept.');
             return null;
         }
 
-        if (entry.acceptedOwnerKeys.includes(effectiveOwnerKey)) {
+        if (currentAcceptedKeys.includes(effectiveOwnerKey)) {
             notifyAcceptIssue('this_owner_has_already_accepted_the_proposal', 'This owner has already accepted the proposal.');
             return null;
         }
 
-        entry.acceptedOwnerKeys.push(effectiveOwnerKey);
+        if (entry.acceptedBy[effectiveOwnerKey]) {
+            entry.acceptanceHistory = [...(entry.acceptanceHistory || []), {
+                ownerKey: effectiveOwnerKey, ...entry.acceptedBy[effectiveOwnerKey]
+            }];
+        }
+        if (!entry.acceptedOwnerKeys.includes(effectiveOwnerKey)) entry.acceptedOwnerKeys.push(effectiveOwnerKey);
         entry.acceptedBy[effectiveOwnerKey] = {
             agentId: metadata.acceptedByAgentId || null,
             username: metadata.acceptedByName || null,
             acceptedAt: new Date().toISOString(),
             // What this owner is consenting TO (§12 step 4): the proposal's effect as it stands
             // right now. If the effect later changes, this acceptance stops counting.
-            effectHash: currentConsentBindingHash(proposal)
+            effectHash: consentHash
         };
 
         proposal.ownerAcceptances[normalizedParcelId] = entry;
 
-        const ownerOrder = entry.ownerOrder.length > 0 ? entry.ownerOrder : entry.acceptedOwnerKeys;
+        const validKeys = currentProposalOwnerAcceptanceKeys(proposal, entry);
+        const ownerOrder = entry.ownerOrder.length > 0 ? entry.ownerOrder : validKeys;
         const parcelFullyAccepted = ownerOrder.length > 0
-            ? ownerOrder.every(key => entry.acceptedOwnerKeys.includes(key))
-            : entry.acceptedOwnerKeys.length > 0;
+            ? ownerOrder.every(key => validKeys.includes(key))
+            : validKeys.length > 0;
 
         if (parcelFullyAccepted) {
             if (!proposal.acceptedParcelIds.includes(normalizedParcelId)) {
@@ -1268,6 +1435,8 @@ function acceptProposal(proposalId, parcelId, ownerKey, metadata = {}) {
             proposal.acceptedParcelIds = proposal.acceptedParcelIds.filter(id => id !== normalizedParcelId);
         }
 
+        // Persist the same validity decision the UI and execution use, including other parcels.
+        refreshProposalAcceptanceValidity(proposal);
         if (typeof proposalStorage._indexProposal === 'function') {
             proposalStorage._indexProposal(proposal);
         }
@@ -1352,6 +1521,11 @@ async function handleUserRejectProposal(proposalId, parcelId, ownerKey = null) {
         showProposalAlertMessage('proposal_not_found', 'Proposal not found.');
         return;
     }
+    if (usesAbstractProposalApproval(proposal)) {
+        const result = await rejectProposal(proposalId, parcelId, ownerKey);
+        if (result) refreshProposalOwnerAcceptanceUI(proposal, parcelId);
+        return;
+    }
 
     const acceptanceState = getProposalOwnerAcceptanceState(proposal, parcelId);
     if (!acceptanceState.entries.length) {
@@ -1423,7 +1597,7 @@ async function handleUserRejectProposal(proposalId, parcelId, ownerKey = null) {
     }
 
     // On-chain succeeded (or not on-chain) — now record locally
-    const result = rejectProposal(proposalId, parcelId, targetEntry.key);
+    const result = await rejectProposal(proposalId, parcelId, targetEntry.key);
     if (!result) {
         return;
     }
@@ -1480,12 +1654,16 @@ async function handleUserRejectProposal(proposalId, parcelId, ownerKey = null) {
     }, 0);
 }
 
-function rejectProposal(proposalId, parcelId, ownerKey = null) {
+async function rejectProposal(proposalId, parcelId, ownerKey = null) {
     try {
         const proposal = proposalStorage.getProposal(proposalId);
         if (!proposal) {
             showProposalAlertMessage('proposal_not_found', 'Proposal not found.');
             return null;
+        }
+        if (usesAbstractProposalApproval(proposal)) {
+            return await recordAbstractProposalDecision(proposal, parcelId, ownerKey,
+                typeof getCurrentUserAgent === 'function' ? getCurrentUserAgent() : null, true);
         }
 
         const normalizedParcelId = normalizeParcelId(parcelId);

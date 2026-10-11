@@ -326,12 +326,13 @@
             </div>
             ${directoryError ? `<p class="lens-picker-note">${escapeText(t('panel.proposal.lens.directoryUnavailable', 'Member directory unavailable; showing keys only.'))}</p>` : ''}
             <ul class="proposal-lens-members">${list}</ul>
-            ${lensMembers.length && parcelIds.length ? `
+            ${ctx.approvalUnsupported ? `<p class="lens-picker-note">${escapeText(t('proposalApproval.chainUnsupported', 'This approval setup is not supported by the current chain adapter.'))}</p>` : ''}
+            ${!ctx.approvalUnsupported && lensMembers.length && parcelIds.length ? `
                 <h4>${escapeText(t('panel.proposal.lens.ownershipTitle', 'Ownership attestation'))}</h4>
                 <p class="lens-picker-note">${escapeText(t('panel.proposal.lens.ownershipHint', 'If you own one of these parcels, ask a lens member to attest it: your wallet signs a one-time challenge, the member checks its registry and issues the attestation.'))}</p>
                 <p class="lens-picker-note">${escapeText(t('panel.proposal.lens.sayYesHint', 'Once attested, "Say yes" signs your consent on chain. Every owner the member attested must say yes before the parcel counts; a yes cannot be withdrawn.'))}</p>
                 <ul class="proposal-lens-parcels">${parcelIds.map(parcelUid => renderParcelRow(parcelUid, lensMembers)).join('')}</ul>` : ''}
-            ${lensMembers.length && proposalAccount ? `
+            ${!ctx.approvalUnsupported && lensMembers.length && proposalAccount ? `
                 <h4>${escapeText(t('panel.proposal.lens.verdictTitle', 'Settle with a verdict'))}</h4>
                 <p class="lens-picker-note">${escapeText(t('panel.proposal.lens.verdictHint', 'Anyone may submit a lens member\'s verdict attestation. "expired" ends the proposal; "executed" only applies to proposals minted to accept it.'))}</p>
                 <p class="lens-picker-note" data-lens-proposal-status></p>
@@ -343,16 +344,18 @@
                 </div>
                 <div class="proposal-lens-result" data-lens-verdict-result aria-live="polite"></div>` : ''}`;
 
-        bindAttest(section, lensMembers);
-        bindSayYes(section, ctx, lensMembers);
-        bindVerdict(section, ctx);
-        refreshConsent(section, ctx);
+        if (!ctx.approvalUnsupported) {
+            bindAttest(section, lensMembers);
+            bindSayYes(section, ctx, lensMembers);
+            bindVerdict(section, ctx);
+            refreshConsent(section, ctx);
+        }
     }
 
     // resolveLens: () => entries | Promise<entries> ({address} or strings). proposalAccount: the
     // proposal PDA, needed to read consent and to sign. The section may be replaced while this
     // awaits (another proposal opened), so every write checks it is attached.
-    async function mount(section, { resolveLens, parcelIds = [], proposalAccount = null } = {}) {
+    async function mount(section, { resolveLens, parcelIds = [], proposalAccount = null, approvalUnsupported = false } = {}) {
         if (!section) return;
         section.textContent = t('panel.proposal.lens.loading', 'Loading lens…');
         let lensKeys = [];
@@ -377,6 +380,7 @@
             members,
             parcelIds: Array.from(new Set(parcelIds.map(String))),
             directoryError,
+            approvalUnsupported,
             proposalAccount: proposalAccount && root.LensCore.isBase58Pubkey(String(proposalAccount)) ? String(proposalAccount) : null
         });
     }

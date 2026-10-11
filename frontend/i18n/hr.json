@@ -167,6 +167,17 @@
         "warning": "Ovaj grad je već otvoren u drugoj kartici. Da se spremljeni prijedlozi ne izgube, promjene u ovoj kartici neće se spremiti — zatvorite ostale kartice ovog grada i ponovno učitajte ovu za uređivanje. Drugi gradovi mogu ostati otvoreni.",
         "notSaved": "Prijedlog NIJE spremljen i izgubit će se pri ponovnom učitavanju stranice."
     },
+    "proposalApproval": {
+        "ownerLabel": "Vlasnik {{label}}",
+        "ownershipUnresolved": "Vlasništvo nije razriješeno. Prijedlog možete oblikovati i podijeliti; za odobravanje vlasnika potreban je potpun skup prava.",
+        "authorityPending": "Podaci o pravima su dostavljeni. Za odobrenje je potreban potpisnik ovlašten putem odabrane leće.",
+        "tally": "Odobrilo je {{accepted}} / {{total}} vlasnika",
+        "areaTally": "Potvrđeno je {{accepted}} / {{total}} m²",
+        "areaUnknown": "Površine čestica nisu razriješene.",
+        "chainUnsupported": "Trenutačni adapter lanca ne podržava ovu postavku odobravanja.",
+        "approvalUnavailable": "Odabrana leća nije potvrdila ova prava ni vaše ovlaštenje da zastupate ovog vlasnika.",
+        "invalidTerms": "Ispravite uvjete prijedloga prije odobravanja."
+    },
     "proposalDrafts": {
         "title": "Skice",
         "entryAria": "Otvori {{count}} spremljenih skica prijedloga",
@@ -191,6 +202,7 @@
             "design": "Dizajn",
             "parcels": "Čestice",
             "ownership": "Vlasništvo",
+            "approval": "Odobravanje",
             "terms": "Uvjeti",
             "details": "Detalji"
         },
@@ -211,6 +223,20 @@
             "termsCopy": "Prilagodite financiranje, istek, opadanje i polog.",
             "designTitle": "Dizajn",
             "designCopy": "Uredite izvornu geometriju i parametre u postojećem alatu povezanom s kartom."
+        },
+        "approval": {
+            "title": "Vlasništvo i odobravanje",
+            "explainer": "Prenesite apstraktne podatke o vlasnicima čestica i odredite tko mora odobriti prijedlog. Ti su podaci odvojeni od geometrije; bez njih i dalje možete pregledati geometrijski prijedlog. Podaci opisuju prijavljeno vlasništvo, ali ne dokazuju ovlaštenje.",
+            "rightsTitle": "Prava vlasnika čestica", "importHelp": "Uvezite JSON s pravima čestica ili učitajte podatke iz registriranog izvora. Prethodni skup ostaje sačuvan ako uvoz ne uspije.",
+            "source": "Izvor prava", "reference": "Referenca ili upit izvora", "file": "JSON datoteka prava (do 1 MB)", "upload": "Prijenos JSON-a",
+            "import": "Uvezi i pregledaj", "template": "Preuzmi predložak", "remove": "Ukloni prava", "noRights": "Nema prenesenog skupa vlasništva. Geometrija i pregled prijedloga ostaju dostupni.",
+            "noOwners": "Nema navedenih vlasnika", "complete": "Potpuno", "incomplete": "Nepotpuno", "ready": "Podaci o vlasništvu potpuni su za odabrane čestice.",
+            "notReady": "Spremnost za odobravanje: {{reason}}", "reason": {"missingRights": "Nema učitanih podataka o vlasničkim pravima.", "missingParcels": "Odaberite čestice za provjeru vlasničkih podataka.", "incompleteRights": "Vlasnički podaci nisu potpuni za jednu ili više odabranih čestica.", "missingOwners": "Za odabrane čestice nisu navedeni vlasnici."}, "missingParcels": "Nedostaju odabrane čestice: {{parcels}}", "emptyRights": "Skup podataka još nema redaka čestica.",
+            "policyTitle": "Pravila odobravanja", "policyType": "Pravilo", "unanimous": "Jednoglasno", "threshold": "Prilagođeni pragovi",
+            "ownerThreshold": "Prag broja vlasnika (razlomak)", "areaThreshold": "Prag površine (razlomak)", "ownerRule": "Pravilo broja vlasnika", "areaRule": "Pravilo površine",
+            "atLeast": "Najmanje", "strictlyMore": "Strogo više od", "lensMembers": "Ključevi članova leće", "lensPlaceholder": "Jedan ključ po retku", "ownerPrefix": "Vlasnik",
+            "apiMissing": "Podrška za prava vlasnika nije dostupna.", "chooseFile": "Odaberite JSON datoteku za uvoz.", "fileTooLarge": "JSON datoteka mora imati najviše 1 MB.", "providerUnavailable": "Ovaj izvor vlasništva nije dostupan.",
+            "policyContextUnanimous": "Svi prijavljeni vlasnici moraju odobriti prijedlog.", "policyContextThreshold": "Odobravanje koristi prag broja vlasnika {{owners}} i površine {{area}}.", "invalidFraction": "Unesite razlomak poput 1/2."
         },
         "fields": {
             "name": "Naziv",
@@ -1182,6 +1208,11 @@
                 "title": "Status prihvaćanja čestice:",
                 "parcelTitle": "Status prihvaćanja čestice:",
                 "ownerTitle": "Status prihvaćanja vlasnika:",
+                "cashOffers": "Novčane ponude preparcelacije",
+                "cashOffersScope": "Predložena naknada svakom vlasniku za cijeli sporazum.",
+                "cashTotal": "Ukupna novčana ponuda",
+                "invalidReadjustment": "Prije prihvaćanja ispravite dodjelu parcela i novčane uvjete preparcelacije.",
+                "termsChanged": "Uvjeti su promijenjeni — pregledajte ih i ponovno prihvatite",
                 "accept": "Prihvati",
                 "undo": "Poništi",
                 "accepted": "Prihvaćeno",
@@ -3163,15 +3194,17 @@
     },
     "reparcellization": {
         "modal": {
+            "savedRecipientUnresolved": "Spremljeni primatelj izlazne čestice nema odgovarajući doprinos među trenutačnim ulazima.",
             "title": "Reparcelacija",
             "subtitle": "{{algorithm}} · {{parcels}}",
             "subtitleWithOwners": "{{algorithm}} · {{parcels}} · {{owners}}",
             "subtitleSingleOwner": "{{parcels}} · jedan vlasnik",
             "algorithms": {
-                "sweepLine": "Sweep line algoritam",
+                "sweepLine": "Automatski",
                 "borderPerpendicular": "Okomito na granicu",
                 "centroidalVoronoi": "Centroidalni Voronoi",
-                "manual": "Ručno",
+                "manual": "Slobodno nacrtaj",
+                "amend": "Zadrži postojeće parcele",
                 "wasserstein": "Wasserstein"
             },
             "closeAria": "Zatvori",
@@ -3262,7 +3295,12 @@
                 "lineAnchored": "Uporišta: {{count}}. Linija će biti povučena između krajnja dva, i nigdje drugdje.",
                 "lineOneAnchor": "Zasad jedno uporište. Prijeđi još jednu među ili završi na postojećem vrhu.",
                 "lineNoAnchor": "Još nema uporišta. Linija mora prijeći među ili dotaknuti postojeći vrh na dva mjesta da bi nastala nova međa.",
-                "lineNoAnchors": "Linija je dotaknula postojeće međe na manje od dva mjesta, pa nema između čega povući među. Prijeđi dvije međe, ili počni na vrhu i prijeđi jednu."
+                "lineNoAnchors": "Linija je dotaknula postojeće međe na manje od dva mjesta, pa nema između čega povući među. Prijeđi dvije međe, ili počni na vrhu i prijeđi jednu.",
+                "amendHint": "Zadrži postojeće parcele i vlasnike. Izreži zajedničko dvorište ili uredi granice.",
+                "noBlockProposals": "Nijedan građevni blok sa zatvorenim dvorištem ne preklapa ove čestice.",
+                "courtyardCarved": "Dvorište je izrezano i dodijeljeno u zajedničko vlasništvo.",
+                "courtyardDrawHint": "Nacrtaj zajedničko dvorište. Vlasnički udjeli prate privatno zemljište dodijeljeno svakom primatelju.",
+                "courtyardError": "Nije moguće izrezati dvorište. Raspored je zadržan."
             },
             "algorithmTitle": "Vrsta reparcelacije",
             "assignOwners": "Dodijeli vlasnike",
@@ -3319,7 +3357,29 @@
             "subdivisionTitle": "Parcelacija",
             "siteParcelsMissing": "Čestice ispod ove lokacije nije moguće učitati: {{ids}}.",
             "siteUnavailable": "Ovu lokaciju ovdje nije moguće parcelirati.",
-            "siteGroundTaken": "Lokacija pokriva tlo koje je već oblikovao drugi prijedlog: {{names}}. Nacrtajte lokaciju izvan njega ili najprije poništite primjenu tog prijedloga."
+            "siteGroundTaken": "Lokacija pokriva tlo koje je već oblikovao drugi prijedlog: {{names}}. Nacrtajte lokaciju izvan njega ili najprije poništite primjenu tog prijedloga.",
+            "layoutTitle": "Početni raspored",
+            "sharedCourtyard": "Zajedničko dvorište",
+            "courtyardFromBuilding": "Iz građevnog bloka",
+            "courtyardDraw": "Nacrtaj na karti",
+            "jointOwnership": "Zajedničko vlasništvo",
+            "jointAssignButton": "Podijeli među primateljima",
+            "choosePlanTitle": "Odaberi građevni blok",
+            "agreementTitle": "Sporazumi",
+            "agreementSingle": "Jedan sporazum",
+            "agreementIndividual": "Zasebni sporazumi za čestice",
+            "agreementHint": "Svaka čestica zadržava svoj ostatak s postojećim vlasnicima i ulaže svoj dio u zajedničko dvorište.",
+            "agreementOfferHint": "Novčani iznosi slijede naknade svakog vlasnika u obračunu preparcelacije. Prije objave pregledajte svaki sporazum zasebno.",
+            "agreementRetry": "Ponovi preostale sporazume",
+            "agreementCreate": "Izradi sporazume za čestice",
+            "agreementRequiresCourtyard": "Nacrtaj zajedničko dvorište prije izrade zasebnih sporazuma za čestice.",
+            "agreementPrivateTransfers": "Zasebni sporazumi moraju zadržati privatno zemljište kod izvornih vlasnika. Za ovaj raspored upotrijebi jedan sporazum.",
+            "agreementCreated": "Izrađeno je {{count}} sporazuma za čestice.",
+            "agreementFailed": "Izrađeno je {{created}} sporazuma za čestice; {{failed}} zahtijeva pažnju. Skica je sačuvana za ponovni pokušaj.",
+            "perParcelProposalName": "{{name}} — čestica {{parcel}}",
+            "compareSliderLabel": "Usporedba prije i poslije",
+            "cashTermsHint": "Ukupna naknada iz obračuna vlasnika. Pojedinačne novčane ponude uredite u uređivaču preparcelacije.",
+            "jointShareHint": "Suvlasnički udjeli prate vrijednost preostalog privatnog zemljišta svakog vlasnika. Uz jednaku vrijednost po kvadratnom metru, udjeli prate privatnu površinu."
         }
     },
     "status": {
@@ -3858,6 +3918,7 @@
             "building_proposal_workflow_is_unavailable": "Tok za prijedlog zgrade nije dostupan.",
             "cannot_undo_acceptance_from_an_executed_proposal_that_has_descendant_parcels": "Ne može se poništiti prihvaćanje za izvršen prijedlog koji ima potomke čestica.",
             "could_not_prepare_building_data_for_the_proposal_please_try_again": "Nije moguće pripremiti podatke o zgradi za prijedlog. Pokušaj ponovno.",
+            "readjustment_terms_invalid": "Prije prihvaćanja dovršite i ispravite dodjelu parcela i novčane uvjete preparcelacije.",
             "error_accepting_proposal_please_try_again": "Pogreška pri prihvaćanju prijedloga. Pokušaj ponovno.",
             "error_rejecting_proposal_please_try_again": "Pogreška pri odbijanju prijedloga. Pokušaj ponovno.",
             "failed_to_wipe_local_data": "Brisanje lokalnih podataka nije uspjelo:",

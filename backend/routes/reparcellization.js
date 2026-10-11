@@ -7,6 +7,16 @@
 // percents diverged (a bug, drift, or tampering).
 
 import * as turf from '@turf/turf';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+const readjustmentDeal = require('../../frontend/js/reparcellization-deal.js');
+
+// Compute from the normalized authored record, never trust the uploader's effectHash. This is a
+// content commitment plus structural allocation/cash validation, not a funding or title attestation.
+export function readjustmentDealFingerprint(proposal) {
+    return readjustmentDeal.fingerprint(proposal);
+}
 
 const PERCENT_TOLERANCE = 1.0; // percentage points — allow small rounding drift
 

@@ -44,6 +44,20 @@ describe('proposalContentFingerprint (v2, upload identity)', () => {
 });
 
 describe('proposalConsentFingerprint', () => {
+    it('binds configured approvals to full content and terms with SHA-256, excluding receipt state', () => {
+        const original = { ...base(), approvalConfig: { schema: 'proposal-approval/v1', rights: null },
+            lens: ['member-a'], expiresAt: '2027-01-01T00:00:00Z', depositPercent: 10 };
+        const hash = sharing.proposalConsentFingerprint(original);
+        expect(hash).toMatch(/^consent1-sha256:[a-f0-9]{64}$/);
+        for (const changed of [
+            { offer: 2000 }, { expiresAt: '2027-02-01T00:00:00Z' }, { depositPercent: 20 },
+            { lens: ['member-b'] }, { facets: { ownership: 'public' } },
+            { roadProposal: { definition: { ...original.roadProposal.definition, width: 12 } } }
+        ]) expect(sharing.proposalConsentFingerprint({ ...original, ...changed })).not.toBe(hash);
+        expect(sharing.proposalConsentFingerprint({ ...original,
+            ownerApprovals: { 'owner-a': { effectHash: hash } }, acceptedParcelIds: ['HR-1-824'] })).toBe(hash);
+    });
+
     it('is c-prefixed and moves with the cadastral scope (the consent-binding semantics)', () => {
         const a = sharing.proposalConsentFingerprint(base());
         expect(a).toMatch(/^c-/);

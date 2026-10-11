@@ -4,6 +4,7 @@
 
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { createJsonBodyValidator, validators } from '../utils/request-validation.js';
 import { defaultThumbnailQueue } from '../thumbnails/thumbnail-queue.js';
 import { publicApiBaseUrl } from '../utils/public-base-url.js';
@@ -29,9 +30,11 @@ import {
 import { footprintParts, hasFootprint } from '../proposals/footprint.js';
 import { verifyPreparation, isConstructedCorridor, PREPARED_TABLE, PREPARED_INSERT_COLUMNS, preparedRowValues } from '../proposals/prepare.js';
 import { recomputeCorridorStats } from './road-corridor.js';
-import { validateReparcellizationShares } from './reparcellization.js';
+import { validateReparcellizationShares, readjustmentDealFingerprint } from './reparcellization.js';
 import { attachProposalFloorModels } from '../buildings/floor-models.js';
 import { resolveChainMirror } from '../proposals/chain-mirror.js';
+
+const require = createRequire(import.meta.url);
 
 const MAX_PROPOSAL_ID_LENGTH = 255;
 const MAX_CITY_LENGTH = 100;
@@ -518,6 +521,18 @@ export function precheckProposalCreate(req) {
     // cached children, formation data, demolition scans or proposal ancestry.
     const validated = stripLocalProposalState(req.validatedBody);
 
+    // Approval terms are authored content. Canonicalize them before the paid route's precheck
+    // passes control to settlement, so malformed explicit terms can never be charged or stored.
+    // Chain mirrors keep their signer-verified authored bytes untouched.
+    if (!req.chainMirror && Object.prototype.hasOwnProperty.call(body, 'approvalConfig')) {
+        try {
+            const approval = require('../../frontend/js/proposals/approval.js');
+            validated.approvalConfig = approval.normalizeConfig(body.approvalConfig);
+        } catch (error) {
+            return { ok: false, status: 422, code: error?.code || 'invalid-proposal-approval', error: error.message };
+        }
+    }
+
     const explicitProposalId = validated.proposalId ?? validated.id ?? validated.proposal_id ?? null;
     if (isReservedNumericProposalId(explicitProposalId)) {
         return fail('proposalId must not be purely numeric: numeric ids are the server\'s row ids.');
@@ -715,6 +730,9 @@ export function createProposalCreateHandler(pool) {
             }
             const { validated, type, cadastreParcelIds, ownershipFlow } = precheck.value;
             const proposal = stripLocalProposalState(req.body);
+            if (!req.chainMirror && Object.prototype.hasOwnProperty.call(req.body || {}, 'approvalConfig')) {
+                proposal.approvalConfig = validated.approvalConfig;
+            }
             const paid = Boolean(req.x402Payment);
             const droppedClaims = dropUnprovableClaims(proposal, { paid, chainMirror: Boolean(req.chainMirror) });
             if (req.chainMirror?.agent) proposal.agent = structuredClone(req.chainMirror.agent);
@@ -824,6 +842,19 @@ export function createProposalCreateHandler(pool) {
                 createdAt: createdAt.toISOString(),
                 ...(authoredAt ? { authoredAt } : {})
             });
+            if (!req.chainMirror && (reparcellization || proposalData.goal === 'reparcellization')) {
+                try {
+                    // Commit to the same normalized terms written to the dedicated DB columns,
+                    // including accepted aliases; JSONB and a later GET must describe one deal.
+                    Object.assign(proposalData, {
+                        offer, offerCurrency, expiresAt, isConditional, disbursementMode,
+                        depositEnabled, depositPercent, decayEnabled, decayPercent, decayDurationMs
+                    });
+                    proposalData.effectHash = readjustmentDealFingerprint(proposalData);
+                } catch (error) {
+                    return res.status(422).json({ code: 'invalid-readjustment-deal', error: error.message });
+                }
+            }
             if (!authoredAt) delete proposalData.authoredAt;
             if (!req.chainMirror) delete proposalData.toleranceM;
             if (!proposalData.site) delete proposalData.site;

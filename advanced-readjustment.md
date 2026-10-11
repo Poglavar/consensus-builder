@@ -1,5 +1,14 @@
 # Perimeter-Block Reparcellization Pipeline
 
+Current LR status, international research and the implementation sequence are consolidated in
+[land-readjustmend.md](land-readjustmend.md). The plan below is historical. Its useful courtyard,
+joint-ownership and separate-agreement logic was selectively integrated into the current checkout
+on 2026-10-11, with ownership, cash, accessibility and mobile fixes. The old
+`advanced-readjustment-integration` branch and worktree were archived and deleted. See §13 of the
+consolidated audit for current code, verification and remaining consent/settlement limits. In
+particular, the historical “building permission” and gradual-adoption promises below are not
+implemented legal or contractual guarantees.
+
 ## Context
 
 Goal: enable the classic European perimeter block through reparcellization — buildings on the perimeter, each on its own parcel, with one shared **joint courtyard** parcel inside. Two user-requested capabilities drive this: (a) **form-first** derivation ("draw the block first, derive the parcel plan from it"), and (b) **gradual adoption** ("owners join individually: accept to cede your courtyard sliver, get your building permission — no unanimity needed"). Scope approved: full pipeline, joint **pro-rata** custody of the courtyard.

@@ -124,8 +124,8 @@
     }
 
     function cashOfferInputHtml(ownerKey, value) {
-        const amount = Number.isFinite(Number(value)) ? Math.round(Number(value)) : 0;
-        return `<input type="number" class="cash-offer-input" min="0" step="1" data-owner-key="${esc(ownerKey)}" value="${amount}">`;
+        const amount = Number.isFinite(Number(value)) ? Math.round(Number(value) * 100) / 100 : 0;
+        return `<input type="number" class="cash-offer-input" min="0" step="0.01" data-owner-key="${esc(ownerKey)}" value="${amount}">`;
     }
 
     // One owner chip in the New plots table. White/public swatches get a border to stay visible.

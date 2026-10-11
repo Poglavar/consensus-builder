@@ -81,13 +81,14 @@ function normalizeLensEntries(entries) {
     entries.forEach(item => {
         const address = typeof item === 'string'
             ? item
-            : (item && (item.address || item.addr || item.value || item.wallet));
+            : (item && (item.address || item.key || item.addr || item.value || item.wallet));
         const name = item && typeof item === 'object'
             ? (item.name || item.label || item.title || '')
             : '';
         const normalizedAddress = address ? String(address).trim() : '';
         const normalizedName = name ? String(name).trim() : '';
-        const key = normalizedAddress.toLowerCase();
+        // Lens keys can be case-sensitive (for example Solana public keys).
+        const key = normalizedAddress;
         if (!normalizedAddress && !normalizedName) {
             return;
         }

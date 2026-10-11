@@ -4,6 +4,9 @@
 // What a member builds, in the shape plan-hash.js memberContent() reads.
 const MEMBER_COLUMNS = `p.id, p.proposal_id, COALESCE(p.title, p.name) AS title, p.city, p.type,
     p.proposal_data->>'goal' AS goal, ST_AsGeoJSON(p.site, 9)::json AS site, p.cadastre_parcel_ids,
+    p.offer, p.offer_currency, p.is_conditional, p.expires_at,
+    p.deposit_enabled, p.deposit_percent, p.decay_enabled, p.decay_percent, p.decay_duration_ms,
+    p.disbursement_mode, p.proposal_data,
     p.road_proposal, p.building_proposal, p.structure_proposal, p.reparcellization,
     p.proposal_data->'geometry' AS geometry, p.onchain_data`;
 

@@ -1257,6 +1257,19 @@ async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
         return;
     }
 
+    // Validate the full LR deal before opening a wallet flow. The local receipt must bind to
+    // exactly the reviewed terms; a malformed allocation must not reach a chain call first.
+    if (proposalRequiresDealConsent(proposal) && !currentConsentBindingHash(proposal)) {
+        showProposalAlertMessage('readjustment_terms_invalid', 'Complete and correct the readjustment allocations and cash terms before accepting.');
+        return;
+    }
+
+    if (usesAbstractProposalApproval(proposal)) {
+        const result = await acceptProposal(proposalId, parcelId, ownerKey);
+        if (result) refreshProposalOwnerAcceptanceUI(proposal, parcelId);
+        return;
+    }
+
     const normalizedParcelId = normalizeParcelId(parcelId);
     if (!normalizedParcelId) {
         showProposalAlertMessage('invalid_parcel_identifier', 'Invalid parcel identifier.');
@@ -1356,7 +1369,7 @@ async function handleUserAcceptProposal(proposalId, parcelId, ownerKey = null) {
     }
 
     // On-chain succeeded (or not on-chain) — now record locally
-    const result = acceptProposal(proposalId, parcelId, effectiveOwnerKey, {
+    const result = await acceptProposal(proposalId, parcelId, effectiveOwnerKey, {
         acceptedByAgentId: userAgent.id,
         acceptedByName: userAgent.name
     });
