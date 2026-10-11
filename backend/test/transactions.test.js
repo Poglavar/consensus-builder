@@ -219,7 +219,8 @@ describe('GET /transactions', () => {
         const pool = createStorePool({ seed: [X402_SIG], syncRun: {
             run_id: 'run-2', job_name: 'land-oracle', status: 'failed', started_at: new Date('2026-10-11T02:00:00Z'),
             completed_at: new Date('2026-10-11T02:01:00Z'), last_success_at: new Date('2026-10-11T01:01:00Z'),
-            scanned: 0, new_signatures: 0, fetched: 0, failed: 0, error: '429 rate limited', error_stack: 'Error: 429 rate limited', rpc_counts: { getSignaturesForAddress: 4 }
+            scanned: 0, new_signatures: 0, fetched: 0, failed: 0, error: '429 rate limited',
+            error_stack: 'PRIVATE_STACK_SENTINEL_INTERNAL_ONLY', rpc_counts: { getSignaturesForAddress: 4 }
         } });
         const stub = { getSignaturesForAddress() { throw new Error('route must not access RPC'); } };
         const app = createApp(stub, pool);
@@ -227,7 +228,9 @@ describe('GET /transactions', () => {
         expect(res.body.sync.status).toBe('failed');
         expect(res.body.sync.jobName).toBe('land-oracle');
         expect(res.body.sync.error).toBe('429 rate limited');
-        expect(res.body.sync.errorStack).toContain('Error: 429');
+        expect(res.body.sync).toMatchObject({ scanned: 0, newSignatures: 0, fetched: 0, failed: 0, rpcCounts: { getSignaturesForAddress: 4 } });
+        expect(res.body.sync).not.toHaveProperty('errorStack');
+        expect(res.text).not.toContain('PRIVATE_STACK_SENTINEL_INTERNAL_ONLY');
         expect(res.body.sync.at).toBe('2026-10-11T02:01:00.000Z');
         expect(res.body.sync.lastSuccessAt).toBe('2026-10-11T01:01:00.000Z');
         const syncStatusSql = pool.calls.find(call => call.sql.includes('FROM consensus.transaction_sync_run')).sql;
@@ -365,7 +368,7 @@ describe('POST /transactions/sync', () => {
             run_id: 'failed-run', status: 'failed', started_at: new Date('2026-10-11T02:00:00Z'),
             completed_at: new Date('2026-10-11T02:01:00Z'), last_success_at: null,
             scanned: 0, new_signatures: 0, fetched: 0, failed: 0, error: '429 Too Many Requests',
-            error_stack: 'Error: 429 Too Many Requests', rpc_counts: { getSignaturesForAddress: 1 }
+            error_stack: 'PRIVATE_STACK_SENTINEL_INTERNAL_ONLY', rpc_counts: { getSignaturesForAddress: 1 }
         } });
         const stub = { getSignaturesForAddress() { throw new Error('route must not access RPC'); } };
 
@@ -373,7 +376,9 @@ describe('POST /transactions/sync', () => {
 
         expect(res.status).toBe(200);
         expect(res.body.sync.error).toContain('429');
-        expect(res.body.sync.errorStack).toContain('Error: 429');
+        expect(res.body.sync).toMatchObject({ scanned: 0, newSignatures: 0, fetched: 0, failed: 0, rpcCounts: { getSignaturesForAddress: 1 } });
+        expect(res.body.sync).not.toHaveProperty('errorStack');
+        expect(res.text).not.toContain('PRIVATE_STACK_SENTINEL_INTERNAL_ONLY');
         expect(res.body.stored).toBe(1);
     });
 

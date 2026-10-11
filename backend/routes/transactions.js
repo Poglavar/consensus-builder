@@ -102,7 +102,7 @@ async function latestTransactionSync(pool) {
     const { rows } = await pool.query(`
         SELECT last_run.run_id, last_run.job_name, last_run.status, last_run.started_at, last_run.completed_at,
                last_run.scanned, last_run.new_signatures, last_run.fetched, last_run.failed,
-               last_run.error, last_run.error_stack, last_run.rpc_counts,
+               last_run.error, last_run.rpc_counts,
                last_success.completed_at AS last_success_at
           FROM (
               SELECT * FROM consensus.transaction_sync_run
@@ -128,7 +128,6 @@ async function latestTransactionSync(pool) {
         fetched: run.fetched,
         failed: run.failed,
         error: run.error,
-        errorStack: run.error_stack,
         rpcCounts: run.rpc_counts || {}
     };
 }
