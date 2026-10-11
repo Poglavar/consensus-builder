@@ -2,7 +2,7 @@
 // parcel-source features as planner parcels, the persona's already-picked parcels and rival parcels.
 import { describe, expect, it } from 'vitest';
 import * as turf from '@turf/turf';
-import { chooseArea, contestParcels, parcelsFromSource, pickedParcelIds, runKeyFor, seedFor, slotLabel, windowIn } from '../agents/area-plan.js';
+import { chooseArea, contestParcels, parcelsFromSource, pickedParcelIds, runKeyFor, seedFor, slotLabel, windowIn, withPublishedParcelSources } from '../agents/area-plan.js';
 import { planCandidates } from '../agents/planner.js';
 
 const square = (west, south, size = 0.0003) => ({ type: 'Polygon', coordinates: [[[west, south], [west + size, south], [west + size, south + size], [west, south + size], [west, south]]] });
@@ -20,6 +20,23 @@ function run({ persona, day, slot = null, city = 'san_francisco', parcelId = 'US
             ...(retiredPda ? { retirements: { [retiredPda]: { cancel: { signature: 'x' } } } } : {})
         }
     };
+}
+
+function withPublishedSnapshot(value, { parcelId, sourceId, source, protocol = 'cadastre-snapshot/1', recordProposalId } = {}) {
+    const pick = value.summary.picks[0];
+    value.summary.publications = {
+        [pick.candidateId]: {
+            record: {
+                proposalId: recordProposalId ?? pick.proposalId,
+                cadastreSnapshot: {
+                    protocol,
+                    ...(source ? { source } : {}),
+                    parcels: [{ id: parcelId ?? value.summary.candidates[0].parcelId, ...(sourceId ? { sourceId } : {}) }]
+                }
+            }
+        }
+    };
+    return value;
 }
 
 describe('agent run keys and slots', () => {
@@ -89,6 +106,82 @@ describe('parcels a persona has used and rival parcels', () => {
             rival: { proposalId: 'agent-densifier-01-2026-10-11-1', persona: 'densifier-01' } });
         const [candidate] = planCandidates(parcels, { name: 'gentle-01', weights: { density: 1 } }, { turf, limit: 1 });
         expect(candidate).toMatchObject({ allowedFloors: 5, plannedFloors: 3, rival: { persona: 'densifier-01' } });
+    });
+
+    it('propagates verified source identity from a published rival into contest planning', () => {
+        const rival = withPublishedSnapshot(run({
+            persona: 'densifier-01', day: '2026-10-11', city: 'new_york', parcelId: 'US-NYC-BBL-1001440001'
+        }), { sourceId: 'us-nyc-dof-digital-tax-map' });
+
+        const [parcel] = contestParcels([rival], { persona: 'gentle-01', runDay: '2026-10-11' });
+        expect(parcel.parcelSourceId).toBe('us-nyc-dof-digital-tax-map');
+
+        const [planned] = planCandidates([parcel], { name: 'gentle-01', weights: { density: 1 } }, { turf, limit: 1 });
+        expect(planned).toMatchObject({
+            parcelSourceId: 'us-nyc-dof-digital-tax-map',
+            rival: { persona: 'densifier-01', proposalId: rival.summary.picks[0].proposalId }
+        });
+    });
+
+    it('restores a resumed candidate source only from its exact published rival record', () => {
+        const rival = withPublishedSnapshot(run({ persona: 'densifier-01', day: '2026-10-11' }), {
+            source: 'us-ca-sf-datasf-active-parcels'
+        });
+        const resumed = [{
+            candidateId: 'gentle-01:US-CA-SF-1', parcelId: 'US-CA-SF-1', parcelSourceId: null,
+            rival: { persona: 'densifier-01', proposalId: rival.summary.picks[0].proposalId },
+            geometry: square(-122.42, 37.77), pickId: 'unchanged'
+        }];
+
+        const restored = withPublishedParcelSources(resumed, [rival]);
+        expect(restored).not.toBe(resumed);
+        expect(restored[0]).not.toBe(resumed[0]);
+        expect(restored[0]).toMatchObject({ parcelSourceId: 'us-ca-sf-datasf-active-parcels', pickId: 'unchanged' });
+        expect(restored[0].geometry).toBe(resumed[0].geometry);
+        expect(restored[0].rival).toBe(resumed[0].rival);
+    });
+
+    it('does not restore a source from an unrelated proposal, wrong snapshot parcel, or mismatched record id', () => {
+        const proposalId = 'agent-densifier-01-2026-10-11-1';
+        const resumed = [{
+            candidateId: 'gentle-01:US-CA-SF-1', parcelId: 'US-CA-SF-1', parcelSourceId: null,
+            rival: { persona: 'densifier-01', proposalId }
+        }];
+        const wrongPick = withPublishedSnapshot(run({ persona: 'densifier-01', day: '2026-10-11' }), {
+            parcelId: 'US-CA-SF-1', sourceId: 'us-nyc-dof-digital-tax-map'
+        });
+        wrongPick.summary.picks[0].proposalId = 'different-proposal';
+        const wrongParcel = withPublishedSnapshot(run({ persona: 'densifier-01', day: '2026-10-11' }), {
+            parcelId: 'US-CA-SF-other', sourceId: 'us-nyc-dof-digital-tax-map', recordProposalId: proposalId
+        });
+        wrongParcel.summary.picks[0].proposalId = proposalId;
+        const wrongRecord = withPublishedSnapshot(run({ persona: 'densifier-01', day: '2026-10-11' }), {
+            parcelId: 'US-CA-SF-1', sourceId: 'us-nyc-dof-digital-tax-map', recordProposalId: 'different-proposal'
+        });
+        wrongRecord.summary.picks[0].proposalId = proposalId;
+        const wrongProtocol = withPublishedSnapshot(run({ persona: 'densifier-01', day: '2026-10-11' }), {
+            parcelId: 'US-CA-SF-1', sourceId: 'us-nyc-dof-digital-tax-map', protocol: 'cadastre-snapshot/2'
+        });
+        const unpublished = withPublishedSnapshot(run({ persona: 'densifier-01', day: '2026-10-11', posted: false }), {
+            parcelId: 'US-CA-SF-1', sourceId: 'us-nyc-dof-digital-tax-map'
+        });
+
+        for (const runs of [[wrongPick], [wrongParcel], [wrongRecord], [wrongProtocol], [unpublished]]) {
+            expect(withPublishedParcelSources(resumed, runs)).toBe(resumed);
+        }
+    });
+
+    it('keeps native HR cadastre on the database path instead of treating it as a parcel adapter', () => {
+        const rival = withPublishedSnapshot(run({
+            persona: 'densifier-01', day: '2026-10-11', city: 'zagreb', parcelId: 'HR-335614-1754/1'
+        }), { sourceId: 'hr-cadastre' });
+        const [parcel] = contestParcels([rival], { persona: 'gentle-01', runDay: '2026-10-11' });
+        expect(parcel.parcelSourceId).toBeNull();
+
+        const resumed = [{ parcelId: 'HR-335614-1754/1', parcelSourceId: null,
+            rival: { persona: 'densifier-01', proposalId: rival.summary.picks[0].proposalId } }];
+        expect(withPublishedParcelSources(resumed, [rival])).toBe(resumed);
+        expect(resumed[0].parcelSourceId).toBeNull();
     });
 
     it('keeps a rule-backed parcel rule-backed with its stated ceiling', () => {

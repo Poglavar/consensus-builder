@@ -62,7 +62,8 @@ export async function startRun(pool, { runId, persona, day, mode } = {}) {
 /**
  * Advance a run's checkpoint. `summaryPatch` is merged into `summary` with jsonb `||` — a SHALLOW
  * merge, so a patch key replaces that whole key's value (the caller passes the complete object for
- * any key it touches). `finished_at` is stamped when the status becomes terminal.
+ * any key it touches). `finished_at` is stamped when the status becomes terminal. A completed
+ * retry clears the previous attempt's error; its failure remains in the run logs.
  */
 export async function updateRun(pool, runId, { stage = null, status = null, summaryPatch = null } = {}) {
     requirePool(pool);
@@ -79,7 +80,7 @@ export async function updateRun(pool, runId, { stage = null, status = null, summ
                 updated_at  = now()
           WHERE run_id = $1
           RETURNING ${RUN_COLUMNS}`,
-        [runId, stage, status, toJson(summaryPatch ?? {})]
+        [runId, stage, status, toJson(status === 'done' ? { ...summaryPatch, error: null } : (summaryPatch ?? {}))]
     );
     if (!rows[0]) throw new Error(`no consensus.agent_run row for ${runId} — startRun() first`);
     return rows[0];
