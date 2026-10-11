@@ -16,6 +16,7 @@ import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import pg from 'pg';
 import { Connection, Keypair, PublicKey } from '@solana/web3.js';
+import { accountsPerRequest, getMultipleAccountsBatched } from '../solana/account-batching.js';
 import { proposalAccount, proposalKey, isOthersActiveMinted, isSolanaMinted, fitsBudget } from './policies/common.js';
 import { societyHistory } from './policies/history.js';
 import { decideTurn } from './policies/collect.js';
@@ -49,7 +50,6 @@ const MAX_RECORDS = 40;
 const SUMMARY_PAGE = 1000;
 const MAX_DISCOVERED = 3000;
 const MAX_MINTED = 500;
-const ACCOUNTS_PER_RPC = 100;
 const PLEDGE_STATUS = ['active', 'fulfilled', 'revoked', 'voided'];
 // proposal_nft status byte → word (oracle/proposal-lifecycle.js); collect.js maps terminal ones to an outcome.
 const PROPOSAL_STATUS = ['active', 'executed', 'cancelled', 'expired'];
@@ -69,7 +69,8 @@ function usage(code) {
         '  --day YYYY-MM-DD     UTC run day (default: today)',
         '  --api URL            Backend base URL',
         '  --help               This text', '',
-        'Env: AGENT_SOCIETY_ACTION_CAP (4), AGENT_SOCIETY_USDC_CAP (0.05) per invocation; AGENT_LLM_* with --controller llm.'
+        'Env: SOLANA_RPC_MAX_ACCOUNTS (100; 1-100 per RPC request), AGENT_SOCIETY_ACTION_CAP (4),',
+        '     AGENT_SOCIETY_USDC_CAP (0.05) per invocation; AGENT_LLM_* with --controller llm.'
     ].join('\n'));
     process.exit(code);
 }
@@ -163,17 +164,12 @@ async function discoverProposals(apiBase, persona) {
     return Array.from(byId.values()).sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
 }
 
-// Batched account reads: one getMultipleAccountsInfo per ACCOUNTS_PER_RPC addresses, results in order.
-async function readAccounts(connection, addresses) {
-    const infos = [];
-    for (let index = 0; index < addresses.length; index += ACCOUNTS_PER_RPC) {
-        infos.push(...await connection.getMultipleAccountsInfo(addresses.slice(index, index + ACCOUNTS_PER_RPC), 'confirmed'));
-    }
-    return infos;
-}
-
 function decodeOrNull(info, decode) {
     return info?.data ? decode(info.data) : null;
+}
+
+export function readAccounts(connection, addresses, env = process.env) {
+    return getMultipleAccountsBatched(connection, addresses, { batchSize: accountsPerRequest(env) });
 }
 
 // Everything a policy and the collect step read, gathered fresh for every turn so turn k sees what

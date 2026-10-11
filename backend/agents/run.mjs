@@ -44,6 +44,8 @@ import { chooseArea, contestParcels, parcelsFromSource, pickedParcelIds, runKeyF
 import { planCandidates } from './planner.js';
 import { prepareAgentPublication, verifyPublicationReadable, mirrorAgentPublication } from './chain-publication.js';
 import { markAgentRunFailed, safeFailureDiagnostic } from './run-failure.js';
+import { bindingRejection, checkCandidateBinding, preflightCandidates, prioritizedPlannedCandidates } from './candidate-preflight.js';
+import { checkProposalBinding } from '../proposals/binding.js';
 import { hash32, selectAlgorithmicPicks } from './algorithmic-picker.js';
 import { buildPickRequests, parsePicks, estimateBatchCostUsd, runPickBatch, pickCustomId, createAgentLlm } from './llm-picker.js';
 import { mintProposal } from './minter.js';
@@ -135,6 +137,11 @@ function loadKeypair(keypairPath) {
 
 function stageIndex(stage) {
     return stage ? STAGES.indexOf(stage) : -1;
+}
+
+function logCandidatePreflight(persona, result) {
+    const rejected = result.rejected.map(item => `${item.candidateId} ${item.code} m${item.missing}/e${item.extra}`);
+    log(`${persona} binding preflight: ${result.scanned} checked · ${result.candidates.length} accepted · ${result.rejected.length} rejected${rejected.length ? ` (${rejected.join('; ')})` : ''}`);
 }
 
 // summary.picks carry a deterministic authored proposalId; a mirror is keyed by the chain location.
@@ -352,7 +359,23 @@ async function main() {
             }
             if (existing && stageIndex(existing.stage) >= stageIndex('planned') && existing.summary?.candidates?.length) {
                 log(`${persona.name} ${i + 1}/${personas.length} planned: resumed ${existing.summary.candidates.length} candidates from ${runId}`);
-                entries.push({ persona, runId, run: existing, candidates: existing.summary.candidates });
+                let candidates = existing.summary.candidates;
+                let run = existing;
+                if (!Array.isArray(existing.summary.picks)) {
+                    const preflight = await preflightCandidates({
+                        db: pool, rankedCandidates: candidates, limit: args.candidates,
+                        scanLimit: args.candidates * 2, persona, runId,
+                        city: existing.summary.city ?? 'zagreb', turf,
+                        checkBinding: checkProposalBinding
+                    });
+                    candidates = preflight.candidates;
+                    logCandidatePreflight(persona.name, preflight);
+                    run = await updateRun(pool, runId, { summaryPatch: {
+                        candidates,
+                        candidatePreflight: { scanned: preflight.scanned, accepted: candidates.length, rejected: preflight.rejected }
+                    } });
+                }
+                entries.push({ persona, runId, run, candidates });
                 continue;
             }
             const area = chooseArea(persona.areas, runKey, persona.name);
@@ -361,8 +384,13 @@ async function main() {
             // The default envelope for a parcel without a stated rule (5 floors) is taller than anything
             // the 2025 GUP actually says in this bbox (3), so rule-backed candidates come first and the
             // default-rule ones are only used when nothing else is on offer.
-            const ruleBacked = planned.filter((c) => c.rule?.source === 'urban-rule');
-            const candidates = (ruleBacked.length ? ruleBacked : planned).slice(0, args.candidates);
+            const preflight = await preflightCandidates({
+                db: pool, rankedCandidates: prioritizedPlannedCandidates(planned),
+                limit: args.candidates, scanLimit: args.candidates * 2,
+                persona, runId, city, turf, checkBinding: checkProposalBinding
+            });
+            const candidates = preflight.candidates;
+            logCandidatePreflight(persona.name, preflight);
             log(`${persona.name} ${i + 1}/${personas.length} planned in ${where}: ${parcels.length} parcels → ${candidates.length} candidates`);
             for (const c of candidates) {
                 log(`   ${c.parcelId} ${c.koName ?? ''} ${Math.round(c.areaM2)} m² · built ${c.builtKnown === false ? 'unknown' : `${Math.round(c.builtGfaM2)} m²`} → ${Math.round(c.proposedGfaM2)} m² (${c.plannedFloors ?? c.allowedFloors}/${c.allowedFloors} fl) · gain €${Math.round(c.gainEur)} · offer €${c.offerEur} · score ${c.score.toFixed(3)}`);
@@ -371,6 +399,7 @@ async function main() {
             if (args.live) {
                 run = await updateRun(pool, runId, { stage: 'planned', status: 'running', summaryPatch: {
                     candidates, city, area: where, slot, wallet: persona.wallet,
+                    candidatePreflight: { scanned: preflight.scanned, accepted: candidates.length, rejected: preflight.rejected },
                     controller, ...(model ? { model } : {})
                 } });
             }
@@ -448,6 +477,20 @@ async function main() {
                 return;
             }
             if (stageIndex(args.until) < stageIndex('chosen')) return;
+
+            for (const e of needDecision.filter(entry => !entry.candidates.length)) {
+                e.run = await updateRun(pool, e.runId, { stage: 'chosen', status: 'done', summaryPatch: {
+                    controller: 'llm',
+                    picks: [],
+                    rejectedPicks: [],
+                    pickCostUsd: 0,
+                    decisionInput: { controller: 'llm', day, candidateIds: [] },
+                    decisionResult: { controller: 'llm', costUsd: 0, reason: 'no-binding-eligible-candidates' },
+                    outcome: 'no-picks'
+                } });
+                log(`${e.persona.name} chosen: 0 picks; no binding-eligible candidates · $0.0000`);
+                report.push(`${e.persona.name}: no binding-eligible candidates · $0.0000`);
+            }
 
             if (needPicks.length) {
                 assertUnderCap({ spentUsd: spent, estimateUsd: estimate, capUsd: cap });
@@ -582,6 +625,30 @@ async function main() {
                 const candidate = e.candidates.find((c) => c.candidateId === pick.candidateId);
                 if (!candidate) { failures.push(`${persona.name}: pick ${pick.candidateId} has no candidate`); personaFailed = true; break; }
                 const tag = `${persona.name} ${k + 1}/${picks.length} ${pick.proposalId}`;
+
+                // Recheck the exact body before any unposted pick proceeds. This also protects a
+                // resumed run that already has a mint but has not completed its paid post.
+                if (!posts[pick.candidateId]) {
+                    const binding = await checkCandidateBinding({
+                        db: pool, candidate, pick, persona: { ...persona, controller: runController },
+                        runId: e.runId, city, turf, checkBinding: checkProposalBinding
+                    });
+                    if (!binding?.ok) {
+                        const refusal = {
+                            ...bindingRejection(candidate, binding),
+                            proposalId: pick.proposalId,
+                            phase: 'before-mint-or-post'
+                        };
+                        const bindingFailures = [...(summary.bindingFailures ?? []), refusal];
+                        log(`${tag} binding refused: ${refusal.code} m${refusal.missing}/e${refusal.extra}`);
+                        failures.push(`${tag} binding ${refusal.code}: ${refusal.reason}`);
+                        personaFailed = true;
+                        await updateRun(pool, e.runId, { status: 'failed', summaryPatch: {
+                            bindingFailures, outcome: 'failed', error: `binding preflight refused ${refusal.code}`
+                        } });
+                        break;
+                    }
+                }
 
                 // mint
                 if (!mints[pick.candidateId]) {
